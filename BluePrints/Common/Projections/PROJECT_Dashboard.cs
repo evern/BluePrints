@@ -34,7 +34,7 @@ namespace BluePrints.Common.Projections
 
     public static class PROJECT_DashboardQueries
     {
-        public static IQueryable<PROJECT_Dashboard> SummarizePROJECTDashboard(IQueryable<PROJECT> PROJECTS, Func<IQueryable<PROGRESS>> getLivePROGRESSESFunc, Func<IQueryable<BASELINE>> getLiveBASELINESFunc, Func<IQueryable<RATE>> getRATESFunc, Func<IQueryable<VARIATION>> getApprovedVARIATIONFunc = null, Action raisePropertyChanged = null)
+        public static IQueryable<PROJECT_Dashboard> SummarizePROJECTDashboard(IQueryable<PROJECT> PROJECTS, Func<IQueryable<PROGRESS>> getLivePROGRESSESFunc, Func<IQueryable<BASELINE>> getLiveBASELINESFunc, Func<IQueryable<RATE>> getRATESFunc, Func<IQueryable<VARIATION>> getApprovedVARIATIONFunc = null, Action raisePropertyChanged = null, bool ignoreLiveStatus = false)
         {
             IEnumerable<BASELINE> LiveBASELINES = getLiveBASELINESFunc().ToArray().AsEnumerable();
             IEnumerable<PROGRESS> LivePROGRESSES = getLivePROGRESSESFunc().ToArray().AsEnumerable();
@@ -45,7 +45,12 @@ namespace BluePrints.Common.Projections
                 ApprovedVARIATIONS = new List<VARIATION>();
             
             IEnumerable<RATE> AllRATES = getRATESFunc();
-            IEnumerable<PROJECT> localPROJECTS = PROJECTS.Where(x => x.STATUS == ProjectStatus.Active).ToArray().AsEnumerable(); //process only active PROJECTS
+            IEnumerable<PROJECT> localPROJECTS;
+            if(ignoreLiveStatus)
+                localPROJECTS = PROJECTS.ToArray().AsEnumerable();
+            else
+                localPROJECTS = PROJECTS.Where(x => x.STATUS == ProjectStatus.Active).ToArray().AsEnumerable(); //process only active PROJECTS
+
             List<PROJECT_Dashboard> returnPROJECT_Dashboard = new List<PROJECT_Dashboard>();
             IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             IP6EntitiesUnitOfWork p6UnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();

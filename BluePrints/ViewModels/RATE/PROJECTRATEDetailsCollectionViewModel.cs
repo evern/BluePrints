@@ -30,7 +30,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public CollectionViewModel<RATE, Guid, IBluePrintsEntitiesUnitOfWork> PROJECTRATESDetails
         {
-            get { return GetDetailsCollectionViewModel((PROJECTViewModel x) => x.PROJECTRATESDetails, x => x.RATES, x => x.GUID_PROJECT, (x, key) => { x.GUID_PROJECT = key; }); }
+            get { return GetDetailsCollectionViewModel((PROJECTRATEDetailsCollectionViewModel x) => x.PROJECTRATESDetails, x => x.RATES, x => x.GUID_PROJECT, (x, key) => { x.GUID_PROJECT = key; }); }
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public IEntitiesViewModel<DEPARTMENT> LookUpDEPARTMENTS
         {
-            get { return GetLookUpEntitiesViewModel((PROJECTViewModel x) => x.LookUpDEPARTMENTS, x => x.DEPARTMENTS); }
+            get { return GetLookUpEntitiesViewModel((PROJECTRATEDetailsCollectionViewModel x) => x.LookUpDEPARTMENTS, x => x.DEPARTMENTS); }
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public IEntitiesViewModel<DISCIPLINE> LookUpDISCIPLINES
         {
-            get { return GetLookUpEntitiesViewModel((PROJECTViewModel x) => x.LookUpDISCIPLINES, x => x.DISCIPLINES); }
+            get { return GetLookUpEntitiesViewModel((PROJECTRATEDetailsCollectionViewModel x) => x.LookUpDISCIPLINES, x => x.DISCIPLINES); }
         }
     }
 

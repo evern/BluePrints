@@ -53,7 +53,7 @@ namespace BluePrints.Common.ViewModel
             dispatchTimer.Stop();
         }
 
-        public TProjection SummaryEntity { get; set; }
+        public virtual TProjection SummaryEntity { get; set; }
         public void OnSelectedEntityChanged(IEnumerable<TProjection> entities)
         {
             if (entities.Count() == 0)

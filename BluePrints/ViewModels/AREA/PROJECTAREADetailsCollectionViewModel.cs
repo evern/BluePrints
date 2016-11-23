@@ -29,7 +29,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public CollectionViewModel<AREA, Guid, IBluePrintsEntitiesUnitOfWork> PROJECTAREASDetails
         {
-            get { return GetDetailsCollectionViewModel((PROJECTViewModel x) => x.PROJECTAREASDetails, x => x.AREAS, x => x.GUID_PROJECT, (x, key) => { x.GUID_PROJECT = key; }); }
+            get { return GetDetailsCollectionViewModel((PROJECTAREADetailsCollectionViewModel x) => x.PROJECTAREASDetails, x => x.AREAS, x => x.GUID_PROJECT, (x, key) => { x.GUID_PROJECT = key; }); }
         }
     }
 }

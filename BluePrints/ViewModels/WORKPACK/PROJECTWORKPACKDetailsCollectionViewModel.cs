@@ -15,8 +15,8 @@ namespace BluePrints.ViewModels
     public class PROJECTWORKPACKDetailsCollectionViewModel : DetailsFilterableSingleObjectViewModel<PROJECT, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
-        /// Initializes a new instance of the PROJECTViewModel class.
-        /// This constructor is declared protected to avoid undesired instantiation of the PROJECTViewModel type without the POCO proxy factory.
+        /// Initializes a new instance of the PROJECTWORKPACKDetailsCollectionViewModel class.
+        /// This constructor is declared protected to avoid undesired instantiation of the PROJECTWORKPACKDetailsCollectionViewModel type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
         protected PROJECTWORKPACKDetailsCollectionViewModel(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
@@ -110,7 +110,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public CollectionViewModel<WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork> PROJECTWORKPACKSDetails
         {
-            get { return GetDetailsCollectionViewModel((PROJECTViewModel x) => x.PROJECTWORKPACKSDetails, x => x.WORKPACKS, x => x.GUID_PROJECT, (x, key) => { x.GUID_PROJECT = key; }); }
+            get { return GetDetailsCollectionViewModel((PROJECTWORKPACKDetailsCollectionViewModel x) => x.PROJECTWORKPACKSDetails, x => x.WORKPACKS, x => x.GUID_PROJECT, (x, key) => { x.GUID_PROJECT = key; }); }
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public IEntitiesViewModel<PHASE> LookUpPHASES
         {
-            get { return GetLookUpEntitiesViewModel((PROJECTViewModel x) => x.LookUpPHASES, x => x.PHASES, query => query.Where(phase => phase.GUID_PROJECT == Entity.GUID)); }
+            get { return GetLookUpEntitiesViewModel((PROJECTWORKPACKDetailsCollectionViewModel x) => x.LookUpPHASES, x => x.PHASES, query => query.Where(phase => phase.GUID_PROJECT == Entity.GUID)); }
         }
 
         /// <summary>
@@ -126,28 +126,28 @@ namespace BluePrints.ViewModels
         /// </summary>
         public IEntitiesViewModel<AREA> LookUpAREAS
         {
-            get { return GetLookUpEntitiesViewModel((PROJECTViewModel x) => x.LookUpAREAS, x => x.AREAS, query => query.Where(area => area.GUID_PROJECT == Entity.GUID)); }
+            get { return GetLookUpEntitiesViewModel((PROJECTWORKPACKDetailsCollectionViewModel x) => x.LookUpAREAS, x => x.AREAS, query => query.Where(area => area.GUID_PROJECT == Entity.GUID)); }
         }
         /// <summary>
         /// The view model that contains a look-up collection of DEPARTMENTS for the corresponding navigation property in the view.
         /// </summary>
         public IEntitiesViewModel<DEPARTMENT> LookUpDEPARTMENTS
         {
-            get { return GetLookUpEntitiesViewModel((PROJECTViewModel x) => x.LookUpDEPARTMENTS, x => x.DEPARTMENTS); }
+            get { return GetLookUpEntitiesViewModel((PROJECTWORKPACKDetailsCollectionViewModel x) => x.LookUpDEPARTMENTS, x => x.DEPARTMENTS); }
         }
         /// <summary>
         /// The view model that contains a look-up collection of DISCIPLINES for the corresponding navigation property in the view.
         /// </summary>
         public IEntitiesViewModel<DISCIPLINE> LookUpDISCIPLINES
         {
-            get { return GetLookUpEntitiesViewModel((PROJECTViewModel x) => x.LookUpDISCIPLINES, x => x.DISCIPLINES); }
+            get { return GetLookUpEntitiesViewModel((PROJECTWORKPACKDetailsCollectionViewModel x) => x.LookUpDISCIPLINES, x => x.DISCIPLINES); }
         }
         /// <summary>
         /// The view model that contains a look-up collection of DOCTYPES for the corresponding navigation property in the view.
         /// </summary>
         public IEntitiesViewModel<DOCTYPE> LookUpDOCTYPES
         {
-            get { return GetLookUpEntitiesViewModel((PROJECTViewModel x) => x.LookUpDOCTYPES, x => x.DOCTYPES); }
+            get { return GetLookUpEntitiesViewModel((PROJECTWORKPACKDetailsCollectionViewModel x) => x.LookUpDOCTYPES, x => x.DOCTYPES); }
         }
     }
 

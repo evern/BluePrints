@@ -10,13 +10,14 @@ using DevExpress.Xpf.Grid;
 using BluePrints.Common.ViewModel.Filtering;
 using DevExpress.Mvvm;
 using System.Linq.Expressions;
+using BluePrints.Common.Projections;
 
 namespace BluePrints.ViewModels
 {
     /// <summary>
     /// Represents the PROJECTS collection view model.
     /// </summary>
-    public partial class PROJECTCollectionViewModel : CollectionViewModel<PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>
+    public partial class PROJECTCollectionViewModel : CollectionViewModel<PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>, ISupportCustomDocumentTypeNameAndParameter
     {
         /// <summary>
         /// Creates a new instance of PROJECTCollectionViewModel as a POCO view model.
@@ -36,5 +37,27 @@ namespace BluePrints.ViewModels
             : base(unitOfWorkFactory ?? BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(), x => x.PROJECTS, projection)
         {
         }
+
+        #region ISupportCustomDocumentTypeNameAndParameter
+        public string GetCustomDocumentTypeName()
+        {
+            return "PROJECTView";
+        }
+
+        public object GetCustomDocumentParameter()
+        {
+            return new EntitiesParameter<PROJECT>(this.SelectedEntity);
+        }
+
+        public string GetCustomDocumentTitle()
+        {
+            return "[" + this.SelectedEntity.NUMBER + "]";
+        }
+
+        public bool IsCustomModeEnabled()
+        {
+            return true;
+        }
+        #endregion
     }
 }

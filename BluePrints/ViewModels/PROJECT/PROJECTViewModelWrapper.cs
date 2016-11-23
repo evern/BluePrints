@@ -1,55 +1,51 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using BluePrints.Common.Utils;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.DataModel;
 using BluePrints.Data;
 using BluePrints.Common.ViewModel;
-using DevExpress.Xpf.Grid;
 using BluePrints.Common.ViewModel.Filtering;
-using DevExpress.Mvvm;
-using System.Linq.Expressions;
-using BluePrints.Common;
-using BluePrints.Data.Helpers;
-using BluePrints.P6EntitiesDataModel;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
-using BluePrints.Common.ViewModel.Reporting;
-using System.Windows.Threading;
-using DevExpress.Xpf.Bars;
-using System.ComponentModel;
 using BluePrints.Common.Projections;
+using BluePrints.Data.Helpers;
+using BluePrints.Common;
 
 namespace BluePrints.ViewModels
 {
     /// <summary>
     /// Represents the PROJECTS collection view model.
     /// </summary>
-    public class PROJECTDashboardViewModelWrapper : DashboardViewModelWrapper<PROJECT, PROJECT_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>, ISupportCustomDocumentTypeNameAndParameter
+    public class PROJECTViewModelWrapper : DashboardViewModelWrapper<PROJECT, PROJECT_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>, ISupportCustomDocumentTypeNameAndParameter
     {
         /// <summary>
         /// Creates a new instance of PROJECT_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static PROJECTDashboardViewModelWrapper Create()
+        public static PROJECTViewModelWrapper Create()
         {
-            return ViewModelSource.Create(() => new PROJECTDashboardViewModelWrapper());
+            return ViewModelSource.Create(() => new PROJECTViewModelWrapper());
         }
 
         /// <summary>
         /// Initializes a new instance of the PROJECTViewModel class.
         /// This constructor is declared protected to avoid undesired instantiation of the PROJECTViewModel type without the POCO proxy factory.
         /// </summary>
-        protected PROJECTDashboardViewModelWrapper()
+        protected PROJECTViewModelWrapper()
         {
         }
 
         #region Database Operation
+        PROJECT loadPROJECT;
         IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void InitializeParameters(object parameter)
         {
-
+            EntitiesParameter<BluePrints.Data.PROJECT> PROJECTParameter = (EntitiesParameter<BluePrints.Data.PROJECT>)parameter;
+            this.loadPROJECT = PROJECTParameter.GetEntity();
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
@@ -58,24 +54,50 @@ namespace BluePrints.ViewModels
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddEntitiesLoader<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>(1, bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, null, null, OnEntitiesChanged);
             loaderCollection.AddEntitiesLoader<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>(2, bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, null, null, OnEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(3, bluePrintsUnitOfWorkFactory, x => x.RATES, null, null, null, OnEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(3, bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, null, null, OnEntitiesChanged);
             loaderCollection.AddEntitiesLoader<VARIATION, VARIATION, Guid, IBluePrintsEntitiesUnitOfWork>(4, bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc, null, null, OnEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>(5, bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
+            loaderCollection.AddEntitiesLoader<PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork>(6, bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
+            loaderCollection.AddEntitiesLoader<ESTIMATION, ESTIMATION, Guid, IBluePrintsEntitiesUnitOfWork>(7, bluePrintsUnitOfWorkFactory, x => x.ESTIMATIONS, ESTIMATIONProjectionFunc);
+            loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(8, bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
+            loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(9, bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
+            
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
         Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
         {
-            return query => query.Where(x => x.STATUS == BaselineStatus.Live).Include(x => x.BASELINE_ITEM);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live).Include(x => x.BASELINE_ITEM);
         }
 
         Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
         {
-            return query => query.Where(x => x.STATUS == ProgressStatus.Live).Include(x => x.PROGRESS_ITEM);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == ProgressStatus.Live).Include(x => x.PROGRESS_ITEM);
         }
 
         Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
         {
-            return query => query.Where(x => x.APPROVED != null);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.APPROVED != null);
+        }
+
+        Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        Func<IRepositoryQuery<ESTIMATION>, IQueryable<ESTIMATION>> ESTIMATIONProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
@@ -91,7 +113,7 @@ namespace BluePrints.ViewModels
             Func<IQueryable<RATE>> getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
             Func<IQueryable<VARIATION>> getVARIATIONSFunc = loaderCollection.GetCollectionFunc<VARIATION>();
 
-            return query => PROJECT_DashboardQueries.SummarizePROJECTDashboard(query, getPROGRESSESFunc, getBASELINESFunc, getRATESFunc, getVARIATIONSFunc, () => this.RaisePropertyChanged());
+            return query => PROJECT_DashboardQueries.SummarizePROJECTDashboard(query, getPROGRESSESFunc, getBASELINESFunc, getRATESFunc, getVARIATIONSFunc, () => this.RaisePropertyChanged(), true);
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)
@@ -129,6 +151,88 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        public CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork> BASELINEViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return (CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<BASELINE>();
+            }
+        }
+
+        public CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESSViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return (CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROGRESS>();
+            }
+        }
+
+        public CollectionViewModel<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork> AREAViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return (CollectionViewModel<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<AREA>();
+            }
+        }
+
+        public CollectionViewModel<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork> RATEViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return (CollectionViewModel<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<RATE>();
+            }
+        }
+
+        public CollectionViewModel<PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork> PHASEViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return (CollectionViewModel<PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PHASE>();
+            }
+        }
+
+        public CollectionViewModel<ESTIMATION, ESTIMATION, Guid, IBluePrintsEntitiesUnitOfWork> ESTIMATIONViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return (CollectionViewModel<ESTIMATION, ESTIMATION, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<ESTIMATION>();
+            }
+        }
+
+        public IEnumerable<DEPARTMENT> DEPARTMENTCollection
+        {
+            get
+            {
+                return GetEntities<DEPARTMENT>();
+            }
+        }
+
+        public IEnumerable<DISCIPLINE> DISCIPLINECollection
+        {
+            get
+            {
+                return GetEntities<DISCIPLINE>();
+            }
+        }
+
         public bool CanEditReport()
         {
             if (MainViewModel == null || MainViewModel.Entities.Count == 0)
@@ -162,6 +266,7 @@ namespace BluePrints.ViewModels
             DocumentManagerService.ShowExistingEntityDocument<WORKPACK_Dashboard, Guid>(this, entity.GUID, string.Empty);
         }
 
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
@@ -169,7 +274,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return "PROJECTDashboardViewModelWrapper";
+                return "PROJECTViewModelWrapper";
             }
         }
         #endregion
@@ -182,12 +287,12 @@ namespace BluePrints.ViewModels
 
         public object GetCustomDocumentParameter()
         {
-            return this.MainViewModel.SelectedEntity;
+            return this.SummaryEntity;
         }
 
         public string GetCustomDocumentTitle()
         {
-            return this.MainViewModel.SelectedEntity.PROJECT.NUMBER + " - WORKPACKS";
+            return this.SummaryEntity.PROJECT.NUMBER + " - WORKPACKS";
         }
 
         public bool IsCustomModeEnabled()

@@ -29,7 +29,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public CollectionViewModel<PHASE, Guid, IBluePrintsEntitiesUnitOfWork> PROJECTPHASESDetails
         {
-            get { return GetDetailsCollectionViewModel((PROJECTViewModel x) => x.PROJECTPHASESDetails, x => x.PHASES, x => x.GUID_PROJECT, (x, key) => { x.GUID_PROJECT = key; }); }
+            get { return GetDetailsCollectionViewModel((PROJECTPHASEDetailsCollectionViewModel x) => x.PROJECTPHASESDetails, x => x.PHASES, x => x.GUID_PROJECT, (x, key) => { x.GUID_PROJECT = key; }); }
         }
     }
 }

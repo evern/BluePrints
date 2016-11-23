@@ -209,7 +209,7 @@
                             <dxg:GridSummaryItem x:Name="totalSummaryPeriodActual" ShowInColumn="Summary_PeriodActual.ProgressDataPoint_Units" FieldName="Summary_PeriodActual.ProgressDataPoint_Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
-                            <dxg:TableView Name="tableView" AllowEditing="False" Style="{StaticResource DefaultTableViewTemplate}">
+                            <dxg:TableView Name="tableView" AllowEditing="False" Style="{StaticResource DefaultTableViewTemplate}" NewItemRowPosition="None" ShowGroupPanel="False">
                                 <dxg:TableView.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Workpacks" Command="{Binding View.DataContext.EditCommand}" CommandParameter="{Binding Row.Row}" Glyph="{dx:DXImage Image=Line_32x32.png}" />
                                     <dxb:BarButtonItem Content="Refresh" Command="{Binding View.DataContext.RefreshCommand}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />

@@ -1069,7 +1069,7 @@
     <Compile Include="ViewModels\WORKPACK\PROJECTWORKPACKDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTCollectionViewModel.cs" />
-    <Compile Include="ViewModels\PROJECT\PROJECTViewModel.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECTViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT_REPORT\PROJECT_REPORTCollectionViewModel.cs" />
     <Compile Include="ViewModels\PROJECT_REPORT\PROJECT_REPORTViewModel.cs" />
     <Compile Include="ViewModels\RATE\PROJECTRATEDetailsCollectionViewModel.cs" />
