@@ -1024,7 +1024,7 @@
             // 
             this.xrDataSummaryPeriodBurnedPercent.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataSummaryPeriodBurnedPercent.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Summary_PeriodBurned.UnitsPercentage")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Summary_PeriodBurned.UnitsPercentage", "{0:0.00%}")});
             this.xrDataSummaryPeriodBurnedPercent.Dpi = 100F;
             this.xrDataSummaryPeriodBurnedPercent.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataSummaryPeriodBurnedPercent.FormattingRules.Add(this.SummaryPeriodBurnedEfficiency_Bad);

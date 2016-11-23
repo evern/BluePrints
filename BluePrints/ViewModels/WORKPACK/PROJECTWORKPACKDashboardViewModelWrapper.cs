@@ -57,6 +57,12 @@ namespace BluePrints.ViewModels
         {
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
+            loaderCollection.AddEntitiesLoader<PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork>(1, bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
+            loaderCollection.AddEntitiesLoader<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>(2, bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
+            loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(3, bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
+            loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(4, bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
+            loaderCollection.AddEntitiesLoader<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(5, bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
+            
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -64,6 +70,16 @@ namespace BluePrints.ViewModels
         {
             CreateMainViewModel(this.bluePrintsUnitOfWorkFactory, x => x.WORKPACKS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoader.CreateCollectionViewModel()));
+        }
+
+        Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == projectDashboard.PROJECT.GUID);
+        }
+
+        Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == projectDashboard.PROJECT.GUID);
         }
 
         protected override Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK_Dashboard>> ConstructMainViewModelProjection()
@@ -95,6 +111,46 @@ namespace BluePrints.ViewModels
             get
             {
                 return "WORKPACKDashboardViewModelWrapper";
+            }
+        }
+
+        public IEnumerable<PHASE> PHASECollection
+        {
+            get
+            {
+                return GetEntities<PHASE>();
+            }
+        }
+
+        public IEnumerable<AREA> AREACollection
+        {
+            get
+            {
+                return GetEntities<AREA>();
+            }
+        }
+
+        public IEnumerable<DEPARTMENT> DEPARTMENTCollection
+        {
+            get
+            {
+                return GetEntities<DEPARTMENT>();
+            }
+        }
+
+        public IEnumerable<DISCIPLINE> DISCIPLINECollection
+        {
+            get
+            {
+                return GetEntities<DISCIPLINE>();
+            }
+        }
+
+        public IEnumerable<DOCTYPE> DOCTYPECollection
+        {
+            get
+            {
+                return GetEntities<DOCTYPE>();
             }
         }
         #endregion

@@ -91,7 +91,7 @@ namespace BluePrints.ViewModels
             Func<IQueryable<RATE>> getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
             Func<IQueryable<VARIATION>> getVARIATIONSFunc = loaderCollection.GetCollectionFunc<VARIATION>();
 
-            return query => PROJECT_DashboardQueries.SummarizePROJECTDashboard(query, getPROGRESSESFunc, getBASELINESFunc, getRATESFunc, getVARIATIONSFunc);
+            return query => PROJECT_DashboardQueries.SummarizePROJECTDashboard(query, getPROGRESSESFunc, getBASELINESFunc, getRATESFunc, getVARIATIONSFunc, () => this.RaisePropertyChanged());
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)
@@ -106,6 +106,18 @@ namespace BluePrints.ViewModels
         protected override void OnEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
 
+        }
+        #endregion
+
+        #region View Behavior
+        public Action Redraw;
+
+        public void RaisePropertyChanged()
+        {
+            if (Redraw != null)
+                mainThreadDispatcher.BeginInvoke(new Action(() => this.Redraw()));
+
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
         #endregion
 

@@ -2,8 +2,10 @@
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.P6EntitiesDataModel;
+using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,7 +34,7 @@ namespace BluePrints.Common.Projections
 
     public static class PROJECT_DashboardQueries
     {
-        public static IQueryable<PROJECT_Dashboard> SummarizePROJECTDashboard(IQueryable<PROJECT> PROJECTS, Func<IQueryable<PROGRESS>> getLivePROGRESSESFunc, Func<IQueryable<BASELINE>> getLiveBASELINESFunc, Func<IQueryable<RATE>> getRATESFunc, Func<IQueryable<VARIATION>> getApprovedVARIATIONFunc = null)
+        public static IQueryable<PROJECT_Dashboard> SummarizePROJECTDashboard(IQueryable<PROJECT> PROJECTS, Func<IQueryable<PROGRESS>> getLivePROGRESSESFunc, Func<IQueryable<BASELINE>> getLiveBASELINESFunc, Func<IQueryable<RATE>> getRATESFunc, Func<IQueryable<VARIATION>> getApprovedVARIATIONFunc = null, Action raisePropertyChanged = null)
         {
             IEnumerable<BASELINE> LiveBASELINES = getLiveBASELINESFunc().ToArray().AsEnumerable();
             IEnumerable<PROGRESS> LivePROGRESSES = getLivePROGRESSESFunc().ToArray().AsEnumerable();
@@ -41,11 +43,10 @@ namespace BluePrints.Common.Projections
                 ApprovedVARIATIONS = getApprovedVARIATIONFunc().ToArray().AsEnumerable();
             else
                 ApprovedVARIATIONS = new List<VARIATION>();
-
+            
             IEnumerable<RATE> AllRATES = getRATESFunc();
             IEnumerable<PROJECT> localPROJECTS = PROJECTS.Where(x => x.STATUS == ProjectStatus.Active).ToArray().AsEnumerable(); //process only active PROJECTS
             List<PROJECT_Dashboard> returnPROJECT_Dashboard = new List<PROJECT_Dashboard>();
-
             IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             IP6EntitiesUnitOfWork p6UnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
 
@@ -68,17 +69,40 @@ namespace BluePrints.Common.Projections
                     LiveBASELINE_ITEMS, () => currentPROJECTLivePROGRESS, () => currentPROJECTLiveBASELINE, () => LivePROGRESS_ITEMS, () => RATESByProject).ToArray().AsEnumerable();
 
                 PROJECT_Dashboard currentPROJECT_Dashboard = new PROJECT_Dashboard() { GUID = localPROJECT.GUID, PROJECT = localPROJECT, VARIATIONS = ApprovedVARIATIONSByProject };
+
                 currentPROJECT_Dashboard.InitializeBuilder(PROJECTInfos, currentPROJECTLivePROGRESS, currentPROJECTLiveBASELINE, bluePrintsUnitOfWork, p6UnitOfWork);
                 returnPROJECT_Dashboard.Add(currentPROJECT_Dashboard);
             }
 
-            foreach (PROJECT_Dashboard project in returnPROJECT_Dashboard)
-            {
-                BuildProjectStats summaryManufacturer = new BuildProjectStats();
-                summaryManufacturer.Manufacture(project.SummaryBuilder);
-            }
+            BackgroundWorker summaryBackgroundWorker = new BackgroundWorker();
+            summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
+            summaryBackgroundWorker.WorkerSupportsCancellation = true;
+            summaryBackgroundWorker.RunWorkerAsync(new object[] { returnPROJECT_Dashboard, raisePropertyChanged });
 
             return returnPROJECT_Dashboard.AsQueryable();
+        }
+
+        static void summaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            object[] argumentObject = (object[])e.Argument;
+            BuildProjectStats summaryManufacturer = new BuildProjectStats();
+            IEnumerable<PROJECT_Dashboard> projects = (IEnumerable<PROJECT_Dashboard>)argumentObject[0];
+            Action raisePropertyChanged = (Action)argumentObject[1];
+
+            foreach(PROJECT_Dashboard project in projects)
+            {
+                summaryManufacturer.Manufacture(project.SummaryBuilder);
+                if (raisePropertyChanged != null)
+                    raisePropertyChanged();
+            }
+
+            if (((BackgroundWorker)sender).CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+            else
+                e.Result = raisePropertyChanged;
         }
 
         public static PROJECT_Dashboard SummarizeSinglePROJECTDashboard(PROJECT PROJECT, Func<PROGRESS> getPROGRESSFunc, Func<IQueryable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc, Func<IQueryable<BASELINE_ITEM>> getBASELINE_ITEMSFunc, Func<BASELINE> getBASELINEFunc, Func<IQueryable<RATE>> getRATESFunc)

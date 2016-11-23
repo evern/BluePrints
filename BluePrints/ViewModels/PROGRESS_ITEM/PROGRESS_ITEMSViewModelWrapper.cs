@@ -197,8 +197,25 @@ namespace BluePrints.ViewModels
             currentPROJECTSummary.ReportingDataDate = loadPROGRESS.DATA_DATE;
             currentPROJECTSummary.RATES = loaderCollection.GetCollection<RATE>();
             currentPROJECTSummary.ReportableObjects = entities;
+
             PROJECTSummaryBuilder projectSummaryBuilder = new PROJECTSummaryBuilder(currentPROJECTSummary);
-            CalculateMinimalStats(projectSummaryBuilder);
+            BackgroundWorker summaryBackgroundWorker = new BackgroundWorker();
+            summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
+            summaryBackgroundWorker.WorkerSupportsCancellation = true;
+            summaryBackgroundWorker.RunWorkerAsync(projectSummaryBuilder);
+        }
+
+        void summaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            PROJECTSummaryBuilder summaryBuilder = (PROJECTSummaryBuilder)e.Argument;
+            CalculateMinimalStats(summaryBuilder);
+            CalculateStatsForReport(summaryBuilder);
+
+            if (((BackgroundWorker)sender).CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
         }
 
         void CalculateMinimalStats(PROJECTSummaryBuilder summaryBuilder)
@@ -208,10 +225,12 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
 
+        bool isReportReady;
         void CalculateStatsForReport(PROJECTSummaryBuilder summaryBuilder)
         {
             BuildFullStatsIncludingPROGRESS_ITEMSummary summaryManufacturer = new BuildFullStatsIncludingPROGRESS_ITEMSummary();
             summaryManufacturer.Manufacture(summaryBuilder);
+            isReportReady = true;
         }
 
         protected override void OnEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
@@ -498,6 +517,11 @@ namespace BluePrints.ViewModels
                 reportDesigner.Dispose();
         }
 
+        public bool CanViewReport()
+        {
+            return isReportReady;
+        }
+
         public void ViewReport()
         {
             XtraReportPROGRESS_ITEMS progressReport = new XtraReportPROGRESS_ITEMS();
@@ -514,7 +538,7 @@ namespace BluePrints.ViewModels
             }
 
             PROJECTSummaryBuilder projectSummaryBuilder = new PROJECTSummaryBuilder(currentPROJECTSummary);
-            CalculateStatsForReport(projectSummaryBuilder);
+            //CalculateStatsForReport(projectSummaryBuilder);
             progressReport.AssignProperties(currentPROJECTSummary, loadPROGRESS.PROJECT.NAME);
             DocumentPreviewWindow previewWindow = new DocumentPreviewWindow();
             previewWindow.PreviewControl.DocumentSource = progressReport;
