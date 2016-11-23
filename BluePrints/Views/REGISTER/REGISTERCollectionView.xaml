@@ -1,0 +1,128 @@
+﻿<UserControl x:Class="BluePrints.Views.REGISTERCollectionView"
+        xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+        xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+        xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+        xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
+        xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+        xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+        xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
+        xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
+        mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:REGISTERCollectionViewModel}">
+    <dxmvvm:Interaction.Behaviors>
+        <dx:DXMessageBoxService />
+        <dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />
+        <dxmvvm:EventToCommand Event="Unloaded" Command="{Binding OnUnloadedCommand}" />
+        <dx:WindowedDocumentUIService YieldToParent="True" />
+    </dxmvvm:Interaction.Behaviors>
+    <Grid>
+        <DockPanel>
+            <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
+                <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
+                    <dxr:RibbonPage Caption="Home">
+                        <dxr:RibbonPageGroup Caption="REGISTER Tasks">
+                            <dxb:BarButtonItem Content="New" Command="{Binding NewCommand}" LargeGlyph="{dx:DXImage Image=New_32x32.png}" Glyph="{dx:DXImage Image=New_16x16.png}" />
+                            <dxb:BarButtonItem Content="Edit" Command="{Binding EditCommand}" CommandParameter="{Binding SelectedEntity}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
+                            <dxb:BarButtonItem Content="Delete" Command="{Binding DeleteCommand}" CommandParameter="{Binding SelectedEntity}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                            <dxb:BarButtonItem Content="Refresh" Command="{Binding RefreshCommand}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                        </dxr:RibbonPageGroup>
+                    </dxr:RibbonPage>
+                </dxr:RibbonDefaultPageCategory>
+            </dxr:RibbonControl>
+            <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
+                <dxr:RibbonStatusBarControl.LeftItems>
+                    <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                </dxr:RibbonStatusBarControl.LeftItems>
+            </dxr:RibbonStatusBarControl>
+            <Grid>
+                <dxmvvm:Interaction.Behaviors>
+                    <dxmvvm:LayoutSerializationService />
+                </dxmvvm:Interaction.Behaviors>
+                <dxg:GridControl Name="gridControl" ItemsSource="{Binding Entities}" ShowBorder="False" CurrentItem="{Binding SelectedEntity}" ShowLoadingPanel="{Binding IsLoading}">
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding EditCommand}" EventName="MouseDoubleClick" MarkRoutedEventsAsHandled="True">
+                            <dxmvvm:EventToCommand.EventArgsConverter>
+                                <dx:EventArgsToDataRowConverter />
+                            </dxmvvm:EventToCommand.EventArgsConverter>
+                        </dxmvvm:EventToCommand>
+                    </dxmvvm:Interaction.Behaviors>
+                    <dxg:GridControl.Columns>
+                        <dxg:GridColumn IsSmart="True" FieldName="GUID" />
+                        <dxg:GridColumn IsSmart="True" FieldName="GUID_AREA" />
+                        <dxg:GridColumn IsSmart="True" FieldName="UNIQUE_DI_NUM" />
+                        <dxg:GridColumn IsSmart="True" FieldName="UNIQUE_DC_NUM" />
+                        <dxg:GridColumn IsSmart="True" FieldName="UNIQUE_R_NUM" />
+                        <dxg:GridColumn IsSmart="True" FieldName="UNIQUE_H_NUM" />
+                        <dxg:GridColumn IsSmart="True" FieldName="TITLE" />
+                        <dxg:GridColumn IsSmart="True" FieldName="DESCRIPTION" />
+                        <dxg:GridColumn IsSmart="True" FieldName="DESCRIPTION_H" />
+                        <dxg:GridColumn IsSmart="True" FieldName="COMMENTS" />
+                        <dxg:GridColumn IsSmart="True" FieldName="FINAL_RESOLUTION" />
+                        <dxg:GridColumn IsSmart="True" FieldName="CLIENT_NOTIFICATION" />
+                        <dxg:GridColumn IsSmart="True" FieldName="NOTIFIED_PERSON" />
+                        <dxg:GridColumn IsSmart="True" FieldName="DATERAISED_DI" />
+                        <dxg:GridColumn IsSmart="True" FieldName="DATERAISED_DC" />
+                        <dxg:GridColumn IsSmart="True" FieldName="DATERAISED_H" />
+                        <dxg:GridColumn IsSmart="True" FieldName="RAISEDBY_DI" />
+                        <dxg:GridColumn IsSmart="True" FieldName="RAISEDBY_DC" />
+                        <dxg:GridColumn IsSmart="True" FieldName="RAISEDBY_H" />
+                        <dxg:GridColumn IsSmart="True" FieldName="DATECLOSED_DI" />
+                        <dxg:GridColumn IsSmart="True" FieldName="DATECLOSED_DC" />
+                        <dxg:GridColumn IsSmart="True" FieldName="DATECLOSED_H" />
+                        <dxg:GridColumn IsSmart="True" FieldName="DATEAPPROVED_DC" />
+                        <dxg:GridColumn IsSmart="True" FieldName="DATEIDENTIFIED_R" />
+                        <dxg:GridColumn IsSmart="True" FieldName="CLOSING_MECHANISM" />
+                        <dxg:GridColumn IsSmart="True" FieldName="DWG_ACTIONED" />
+                        <dxg:GridColumn IsSmart="True" FieldName="SCHEDULE_IMPACT" />
+                        <dxg:GridColumn IsSmart="True" FieldName="COST_IMPACT" />
+                        <dxg:GridColumn IsSmart="True" FieldName="IMPACT_TYPE" />
+                        <dxg:GridColumn IsSmart="True" FieldName="CHANGE_APPROVED" />
+                        <dxg:GridColumn IsSmart="True" FieldName="INTERDISC_CHECKED" />
+                        <dxg:GridColumn IsSmart="True" FieldName="HAZARD_GROUP" />
+                        <dxg:GridColumn IsSmart="True" FieldName="HAZARD_TYPE" />
+                        <dxg:GridColumn IsSmart="True" FieldName="HAZARD_CAUSE" />
+                        <dxg:GridColumn IsSmart="True" FieldName="RISK_LIKELIHOOD" />
+                        <dxg:GridColumn IsSmart="True" FieldName="RISK_CONSEQ" />
+                        <dxg:GridColumn IsSmart="True" FieldName="CONTROL_MEASURES" />
+                        <dxg:GridColumn IsSmart="True" FieldName="RRISK_LIKELIHOOD" />
+                        <dxg:GridColumn IsSmart="True" FieldName="RRISK_CONSEQ" />
+                        <dxg:GridColumn IsSmart="True" FieldName="RHAZARD" />
+                        <dxg:GridColumn IsSmart="True" FieldName="FURTHER_ACTION" />
+                        <dxg:GridColumn IsSmart="True" FieldName="REFERENCE" />
+                        <dxg:GridColumn IsSmart="True" FieldName="ACTION" />
+                        <dxg:GridColumn IsSmart="True" FieldName="CREATED" />
+                        <dxg:GridColumn IsSmart="True" FieldName="CREATEDBY" />
+                        <dxg:GridColumn IsSmart="True" FieldName="UPDATED" />
+                        <dxg:GridColumn IsSmart="True" FieldName="UPDATEDBY" />
+                        <dxg:GridColumn IsSmart="True" FieldName="DELETED" />
+                        <dxg:GridColumn IsSmart="True" FieldName="DELETEDBY" />
+                        <dxg:GridColumn Header="PROJECT" ReadOnly="True" FieldName="PROJECT.NAME" />
+                    </dxg:GridControl.Columns>
+                    <dxg:GridControl.TotalSummary>
+                        <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
+                    </dxg:GridControl.TotalSummary>
+                    <dxg:GridControl.GroupSummary>
+                        <dxg:GridSummaryItem SummaryType="Count" />
+                    </dxg:GridControl.GroupSummary>
+                    <dxg:GridControl.View>
+                        <dxg:TableView Name="tableView" AllowEditing="False" ShowFixedTotalSummary="True" AllowPerPixelScrolling="True">
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxrudex:GridReportManagerService x:Name="REGISTERCollectionViewReportService" />
+                            </dxmvvm:Interaction.Behaviors>
+                            <dxg:TableView.RowCellMenuCustomizations>
+                                <dxb:BarButtonItem Content="New" Command="{Binding View.DataContext.NewCommand}" Glyph="{dx:DXImage Image=New_16x16.png}" />
+                                <dxb:BarButtonItem Content="Edit" Command="{Binding View.DataContext.EditCommand}" CommandParameter="{Binding Row.Row}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
+                                <dxb:BarButtonItem Content="Delete" Command="{Binding View.DataContext.DeleteCommand}" CommandParameter="{Binding Row.Row}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                <dxb:BarButtonItem Content="Refresh" Command="{Binding View.DataContext.RefreshCommand}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                            </dxg:TableView.RowCellMenuCustomizations>
+                        </dxg:TableView>
+                    </dxg:GridControl.View>
+                </dxg:GridControl>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</UserControl>

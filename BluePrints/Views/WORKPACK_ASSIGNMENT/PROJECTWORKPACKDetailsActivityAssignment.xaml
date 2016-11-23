@@ -1,0 +1,72 @@
+﻿<dx:DXWindow x:Class="BluePrints.Views.PROJECTWORKPACKDetailsActivityAssignment"
+   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" 
+    Title="Activity's Workpack Assignment" Height="520" Width="700" 
+    WindowStartupLocation="CenterScreen"
+    >
+    <dxlc:LayoutControl Orientation="Vertical">
+        <dxlc:LayoutGroup Name="LayoutGroupWorkpackSelection" View="GroupBox" Header="Current P6 Activity" Orientation="Vertical" >
+            <dxlc:LayoutItem Height="25" Label="Activity:" IsRequired="True">
+                <dxg:LookUpEdit AutoPopulateColumns="False" x:Name="lookupActivity" SelectedItem="{Binding SelectedTASK, Mode=TwoWay}" DisplayMember="Description" ItemsSource="{Binding TASKSItemSource}" >
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxmvvm:EventToCommand EventName="EditValueChanging" Command="{Binding lookupActivity_EditValueChangingCommand}" PassEventArgsToCommand="True"/>
+                    </dxmvvm:Interaction.Behaviors>
+                    <dxg:LookUpEdit.PopupContentTemplate>
+                        <ControlTemplate TargetType="ContentControl" >
+                            <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False" >
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn IsSmart="True" AllowEditing="False" FieldName="Subject" />
+                                    <dxg:GridColumn IsSmart="True" AllowEditing="False" Width="500" FieldName="Description" />
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.View>
+                                    <dxg:TreeListView Name="treeListView1" TreeDerivationMode="Selfreference" KeyFieldName="task_id" ParentFieldName="ParentId"/>
+                                </dxg:GridControl.View>
+                            </dxg:GridControl>
+                        </ControlTemplate>
+                    </dxg:LookUpEdit.PopupContentTemplate>
+                </dxg:LookUpEdit>
+            </dxlc:LayoutItem>
+            <dxlc:LayoutGroup View="GroupBox" Header="Assignments" Orientation="Horizontal" >
+                <dxlc:LayoutItem Height="330">
+                    <dxg:GridControl x:Name="gridControlTASK_ASSIGNMENTS" SelectionMode="Row" ShowBorder="False" SelectedItem="{Binding SelectedWORKPACK_ASSIGNMENT, Mode=TwoWay}" ItemsSource="{Binding TASK_ASSIGNMENTS}" >
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="P6 ID" FieldName="P6_ACTIVITYID" VisibleIndex="0" />
+                            <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="P6 Description" FieldName="P6_ACTIVITYID" VisibleIndex="1" Width="150">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding TASKSItemSource}" ValueMember="Subject" DisplayMember="Description" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="Low Value" FieldName="LOW_VALUE" VisibleIndex="2" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings DisplayFormat="n2" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="High Value" FieldName="HIGH_VALUE" VisibleIndex="3" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings DisplayFormat="n2" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                        </dxg:GridControl.Columns>
+                        <dxg:GridControl.View>
+                            <dxg:TableView x:Name="gridViewTASK_ASSIGNMENTS" FocusedRow="{Binding SelectedWORKPACK_ASSIGNMENT, Mode=TwoWay}" NavigationStyle="Row" ShowGroupPanel="False" AutoWidth="False" AllowEditing="False" AllowSorting="False" />
+                        </dxg:GridControl.View>
+                    </dxg:GridControl>
+                </dxlc:LayoutItem>
+                <dxlc:LayoutGroup x:Name="assignmentNavigationLayoutGroup" HorizontalAlignment="Right" Orientation="Vertical">
+                    <dxlc:LayoutItem >
+                        <Button x:Name="btnAssignmentDelete" VerticalAlignment="Top" Width="40" Height="40" Padding="0, 0, 0, 0" Command="{Binding DeleteAssignmentCommand}">
+                            <StackPanel>
+                                <Image Source="{dx:DXImageOffice2013 Image=DeleteFooter_32x32.png}" />
+                            </StackPanel>
+                        </Button>
+                    </dxlc:LayoutItem>
+                </dxlc:LayoutGroup>
+            </dxlc:LayoutGroup>
+        </dxlc:LayoutGroup>
+    </dxlc:LayoutControl>
+</dx:DXWindow>

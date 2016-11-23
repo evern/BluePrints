@@ -1,0 +1,51 @@
+﻿<Window
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
+    xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+    xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
+    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" 
+    xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
+    x:Class="BluePrints.Views.LoginWindow"
+    Height="320" Width="550" WindowStartupLocation="CenterScreen" WindowStyle="None">
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:EventToCommand EventName="KeyUp" Command="{Binding Window_KeyUpCommand}" PassEventArgsToCommand="True"/>
+    </dxmvvm:Interaction.Behaviors>
+    <dxlc:LayoutControl Orientation="Vertical">
+        <dxlc:LayoutGroup x:Name="LayoutGroupWorkpackSelection" View="Group" Orientation="Vertical" >
+            <dxlc:LayoutItem x:Name="layoutItemLogo">
+                <dxe:ImageEdit Source="/BluePrints;component/Common/Images/PRIMERO.jpg" IsReadOnly="True" />
+            </dxlc:LayoutItem>
+            <dxlc:LayoutItem Label="Username" IsRequired="True" x:Name="layoutItemUsername" Height="30" Margin="10">
+                <dxe:TextEdit x:Name="txtUsername" EditValue="{Binding UserName, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" MaxLength="100" />
+            </dxlc:LayoutItem>
+            <dxlc:LayoutItem Label="Password" IsRequired="True" x:Name="layoutItemPassword" Height="30" Margin="10">
+                <dxe:PasswordBoxEdit x:Name="txtPassword" EditValue="{Binding UserPassword, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" MaxLength="100" />
+            </dxlc:LayoutItem>
+        </dxlc:LayoutGroup>
+        <dxlc:LayoutGroup x:Name="LayoutGroupButtons" View="Group" Height="50">
+            <DockPanel Margin="5" Grid.Row="1">
+                <Button x:Name="btnLogin" DockPanel.Dock="Left" HorizontalAlignment="Left" Width="100">
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxmvvm:EventToCommand EventName="Click" Command="{Binding LoginCommand}"/>
+                    </dxmvvm:Interaction.Behaviors>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{dx:DXImageOffice2013 Image=Apply_32x32.png}" Width="32" Height="32"/>
+                        <TextBlock Text="Login" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="btnCancel" DockPanel.Dock="Right" HorizontalAlignment="Right" Width="100">
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxmvvm:EventToCommand EventName="Click" Command="{Binding ExitCommand}"/>
+                    </dxmvvm:Interaction.Behaviors>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{dx:DXImageOffice2013 Image=Cancel_32x32.png}" Width="32" Height="32"/>
+                        <TextBlock Text="Cancel" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </DockPanel>
+        </dxlc:LayoutGroup>
+    </dxlc:LayoutControl>
+</Window>

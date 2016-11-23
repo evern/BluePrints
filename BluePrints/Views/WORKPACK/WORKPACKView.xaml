@@ -1,0 +1,159 @@
+﻿<UserControl x:Class="BluePrints.Views.WORKPACKView"
+        xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+        xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+        xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+        xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
+        xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+        xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+        xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
+        xmlns:view="clr-namespace:BluePrints.Views"
+        mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:WORKPACKViewModel}">
+    <dxmvvm:Interaction.Behaviors>
+        <dx:DXMessageBoxService />
+        <dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />
+    </dxmvvm:Interaction.Behaviors>
+    <Grid>
+        <DockPanel>
+            <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False">
+                <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
+                    <dxr:RibbonPage Caption="Home">
+                        <dxr:RibbonPageGroup Caption="WORKPACK Tasks">
+                            <dxb:BarButtonItem Content="Save" Command="{Binding SaveCommand}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" Glyph="{dx:DXImage Image=Save_16x16.png}" />
+                            <dxb:BarButtonItem Content="Save And Close" Command="{Binding SaveAndCloseCommand}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
+                            <dxb:BarButtonItem Content="Save And New" Command="{Binding SaveAndNewCommand}" LargeGlyph="{dx:DXImage Image=SaveAndNew_32x32.png}" Glyph="{dx:DXImage Image=SaveAndNew_16x16.png}" />
+                            <dxb:BarButtonItem Content="Reset Changes" Command="{Binding ResetCommand}" LargeGlyph="{dx:DXImage Image=Reset_32x32.png}" Glyph="{dx:DXImage Image=Reset_16x16.png}" />
+                            <dxb:BarButtonItem Content="Delete" Command="{Binding DeleteCommand}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                            <dxb:BarButtonItem Content="Close" Command="{Binding CloseCommand}" LargeGlyph="{dx:DXImage Image=Close_32x32.png}" Glyph="{dx:DXImage Image=Close_16x16.png}" />
+                        </dxr:RibbonPageGroup>
+                        <dxr:RibbonPageGroup Caption="Layout">
+                            <dxb:BarCheckItem Content="Customize" IsChecked="{Binding IsCustomization, ElementName=layoutControl}" LargeGlyph="{dx:DXImage Image=PageSetup_32x32.png}" Glyph="{dx:DXImage Image=PageSetup_16x16.png}" />
+                            <dxb:BarButtonItem Content="Save Layout" Command="{Binding SaveLayoutCommand}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" Glyph="{dx:DXImage Image=Save_16x16.png}" />
+                            <dxb:BarButtonItem Content="Reset Layout" Command="{Binding ResetLayoutCommand}" LargeGlyph="{dx:DXImage Image=Reset_32x32.png}" Glyph="{dx:DXImage Image=Reset_16x16.png}" />
+                        </dxr:RibbonPageGroup>
+                    </dxr:RibbonPage>
+                </dxr:RibbonDefaultPageCategory>
+            </dxr:RibbonControl>
+            <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom" />
+            <Grid>
+                <dxmvvm:Interaction.Behaviors>
+                    <dxmvvm:LayoutSerializationService />
+                </dxmvvm:Interaction.Behaviors>
+                <dxlc:DataLayoutControl AutoGenerateItems="False" CurrentItem="{Binding Entity}" x:Name="layoutControl" Orientation="Vertical" IsEnabled="{Binding Entity, Converter={dxmvvm:ObjectToBooleanConverter}}">
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxmvvm:EventToCommand Event="{x:Static Binding.SourceUpdatedEvent}" Command="{Binding UpdateCommand}" />
+                    </dxmvvm:Interaction.Behaviors>
+                    <dxlc:DataLayoutItem Label="GUID" Name="layoutItemGUID" Binding="{Binding GUID, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding DataContext.IsPrimaryKeyReadOnly, RelativeSource={RelativeSource AncestorType={x:Type dxlc:DataLayoutControl}}}" />
+                    <dxlc:DataLayoutItem Label="GUID_PROJECT" Name="layoutItemGUID_PROJECT" Binding="{Binding GUID_PROJECT, UpdateSourceTrigger=PropertyChanged}" />
+                    <dxlc:DataLayoutItem Label="INTERNAL_NAME" Name="layoutItemINTERNAL_NAME" Binding="{Binding INTERNAL_NAME1, UpdateSourceTrigger=PropertyChanged}" />
+                    <dxlc:DataLayoutItem Label="STARTDATE" Name="layoutItemSTARTDATE" Binding="{Binding STARTDATE, UpdateSourceTrigger=PropertyChanged}" />
+                    <dxlc:DataLayoutItem Label="ENDDATE" Name="layoutItemENDDATE" Binding="{Binding ENDDATE, UpdateSourceTrigger=PropertyChanged}" />
+                    <dxlc:DataLayoutItem Label="REVIEWSTARTDATE" Name="layoutItemREVIEWSTARTDATE" Binding="{Binding REVIEWSTARTDATE, UpdateSourceTrigger=PropertyChanged}" />
+                    <dxlc:DataLayoutItem Label="REVIEWENDDATE" Name="layoutItemREVIEWENDDATE" Binding="{Binding REVIEWENDDATE, UpdateSourceTrigger=PropertyChanged}" />
+                    <dxlc:DataLayoutItem Label="FORECASTSTARTDATE" Name="layoutItemFORECASTSTARTDATE" Binding="{Binding FORECASTSTARTDATE, UpdateSourceTrigger=PropertyChanged}" />
+                    <dxlc:DataLayoutItem Label="FORECASTENDDATE" Name="layoutItemFORECASTENDDATE" Binding="{Binding FORECASTENDDATE, UpdateSourceTrigger=PropertyChanged}" />
+                    <dxlc:DataLayoutItem Label="AUTOGENERATED" Name="layoutItemAUTOGENERATED" Binding="{Binding AUTOGENERATED, UpdateSourceTrigger=PropertyChanged}" />
+                    <dxlc:DataLayoutItem Label="CREATED" Name="layoutItemCREATED" Binding="{Binding CREATED, UpdateSourceTrigger=PropertyChanged}" />
+                    <dxlc:DataLayoutItem Label="CREATEDBY" Name="layoutItemCREATEDBY" Binding="{Binding CREATEDBY, UpdateSourceTrigger=PropertyChanged}" />
+                    <dxlc:DataLayoutItem Label="UPDATED" Name="layoutItemUPDATED" Binding="{Binding UPDATED, UpdateSourceTrigger=PropertyChanged}" />
+                    <dxlc:DataLayoutItem Label="UPDATEDBY" Name="layoutItemUPDATEDBY" Binding="{Binding UPDATEDBY, UpdateSourceTrigger=PropertyChanged}" />
+                    <dxlc:DataLayoutItem Label="DELETED" Name="layoutItemDELETED" Binding="{Binding DELETED, UpdateSourceTrigger=PropertyChanged}" />
+                    <dxlc:DataLayoutItem Label="DELETEDBY" Name="layoutItemDELETEDBY" Binding="{Binding DELETEDBY, UpdateSourceTrigger=PropertyChanged}" />
+                    <dxlc:LayoutItem Label="AREA" Name="layoutItemAREA">
+                        <dxg:LookUpEdit ItemsSource="{Binding LookUpAREAS.Entities}" EditValue="{Binding Entity.GUID_DAREA, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnSourceUpdated=True}" ValueMember="GUID" DisplayMember="TITLE" IsTextEditable="False" AllowUpdateTwoWayBoundPropertiesOnSynchronization="False">
+                            <dxg:LookUpEdit.PopupContentTemplate>
+                                <ControlTemplate TargetType="ContentControl">
+                                    <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False" ShowLoadingPanel="{Binding LookUpAREAS.IsLoading}" />
+                                </ControlTemplate>
+                            </dxg:LookUpEdit.PopupContentTemplate>
+                        </dxg:LookUpEdit>
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="DEPARTMENT" Name="layoutItemDEPARTMENT">
+                        <dxg:LookUpEdit ItemsSource="{Binding LookUpDEPARTMENTS.Entities}" EditValue="{Binding Entity.GUID_DDEPARTMENT, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnSourceUpdated=True}" ValueMember="GUID" DisplayMember="NAME" IsTextEditable="False" AllowUpdateTwoWayBoundPropertiesOnSynchronization="False">
+                            <dxg:LookUpEdit.PopupContentTemplate>
+                                <ControlTemplate TargetType="ContentControl">
+                                    <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False" ShowLoadingPanel="{Binding LookUpDEPARTMENTS.IsLoading}" />
+                                </ControlTemplate>
+                            </dxg:LookUpEdit.PopupContentTemplate>
+                        </dxg:LookUpEdit>
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="DISCIPLINE" Name="layoutItemDISCIPLINE">
+                        <dxg:LookUpEdit ItemsSource="{Binding LookUpDISCIPLINES.Entities}" EditValue="{Binding Entity.GUID_DDISCIPLINE, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnSourceUpdated=True}" ValueMember="GUID" DisplayMember="NAME" IsTextEditable="False" AllowUpdateTwoWayBoundPropertiesOnSynchronization="False">
+                            <dxg:LookUpEdit.PopupContentTemplate>
+                                <ControlTemplate TargetType="ContentControl">
+                                    <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False" ShowLoadingPanel="{Binding LookUpDISCIPLINES.IsLoading}" />
+                                </ControlTemplate>
+                            </dxg:LookUpEdit.PopupContentTemplate>
+                        </dxg:LookUpEdit>
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="DOCTYPE" Name="layoutItemDOCTYPE">
+                        <dxg:LookUpEdit ItemsSource="{Binding LookUpDOCTYPES.Entities}" EditValue="{Binding Entity.GUID_DDOCTYPE, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnSourceUpdated=True}" ValueMember="GUID" DisplayMember="NAME" IsTextEditable="False" AllowUpdateTwoWayBoundPropertiesOnSynchronization="False">
+                            <dxg:LookUpEdit.PopupContentTemplate>
+                                <ControlTemplate TargetType="ContentControl">
+                                    <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False" ShowLoadingPanel="{Binding LookUpDOCTYPES.IsLoading}" />
+                                </ControlTemplate>
+                            </dxg:LookUpEdit.PopupContentTemplate>
+                        </dxg:LookUpEdit>
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutGroup x:Name="Tabs" View="Tabs" MinHeight="250">
+                        <Grid dxb:MergingProperties.AllowMerging="False" x:Name="WORKPACKWORKPACK_ASSIGNMENTSDetailsPanel" dxb:BarNameScope.IsScopeOwner="True" DataContext="{Binding WORKPACKWORKPACK_ASSIGNMENTSDetails}" dxlc:LayoutControl.TabHeader="WORKPACK_ASSIGNMENTS">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <dxb:ToolBarControl>
+                                <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="New" Command="{Binding NewCommand}" Glyph="{dx:DXImage Image=New_16x16.png}" />
+                                <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Edit" Command="{Binding EditCommand}" CommandParameter="{Binding SelectedEntity}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
+                                <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Delete" Command="{Binding DeleteCommand}" CommandParameter="{Binding SelectedEntity}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Refresh" Command="{Binding RefreshCommand}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                            </dxb:ToolBarControl>
+                            <dxg:GridControl dx:DXSerializer.SerializationID="WORKPACKWORKPACK_ASSIGNMENTSDetailsGrid" ItemsSource="{Binding Entities}" CurrentItem="{Binding SelectedEntity}" MaxHeight="2000" ShowLoadingPanel="{Binding IsLoading}" Grid.Row="1">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding EditCommand}" EventName="MouseDoubleClick">
+                                        <dxmvvm:EventToCommand.EventArgsConverter>
+                                            <dx:EventArgsToDataRowConverter />
+                                        </dxmvvm:EventToCommand.EventArgsConverter>
+                                    </dxmvvm:EventToCommand>
+                                </dxmvvm:Interaction.Behaviors>
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn IsSmart="True" FieldName="GUID" />
+                                    <dxg:GridColumn IsSmart="True" FieldName="ISMODIFIEDBASELINE" />
+                                    <dxg:GridColumn IsSmart="True" FieldName="P6_ACTIVITYID" />
+                                    <dxg:GridColumn IsSmart="True" FieldName="LOW_VALUE" />
+                                    <dxg:GridColumn IsSmart="True" FieldName="HIGH_VALUE" />
+                                    <dxg:GridColumn IsSmart="True" FieldName="PRIORITY" />
+                                    <dxg:GridColumn IsSmart="True" FieldName="CREATED" />
+                                    <dxg:GridColumn IsSmart="True" FieldName="CREATEDBY" />
+                                    <dxg:GridColumn IsSmart="True" FieldName="UPDATED" />
+                                    <dxg:GridColumn IsSmart="True" FieldName="UPDATEDBY" />
+                                    <dxg:GridColumn IsSmart="True" FieldName="DELETED" />
+                                    <dxg:GridColumn IsSmart="True" FieldName="DELETEDBY" />
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.TotalSummary>
+                                    <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
+                                </dxg:GridControl.TotalSummary>
+                                <dxg:GridControl.GroupSummary>
+                                    <dxg:GridSummaryItem SummaryType="Count" />
+                                </dxg:GridControl.GroupSummary>
+                                <dxg:GridControl.View>
+                                    <dxg:TableView AllowEditing="False" ShowFixedTotalSummary="True" AllowPerPixelScrolling="True" ShowGroupPanel="False">
+                                        <dxg:TableView.RowCellMenuCustomizations>
+                                            <dxb:BarButtonItem Content="New" Command="{Binding View.DataContext.NewCommand}" Glyph="{dx:DXImage Image=New_16x16.png}" />
+                                            <dxb:BarButtonItem Content="Edit" Command="{Binding View.DataContext.EditCommand}" CommandParameter="{Binding Row.Row}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
+                                            <dxb:BarButtonItem Content="Delete" Command="{Binding View.DataContext.DeleteCommand}" CommandParameter="{Binding Row.Row}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                            <dxb:BarButtonItem Content="Refresh" Command="{Binding View.DataContext.RefreshCommand}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                        </dxg:TableView.RowCellMenuCustomizations>
+                                    </dxg:TableView>
+                                </dxg:GridControl.View>
+                            </dxg:GridControl>
+                        </Grid>
+                    </dxlc:LayoutGroup>
+                </dxlc:DataLayoutControl>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</UserControl>
