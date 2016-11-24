@@ -53,6 +53,9 @@ namespace BluePrints.ViewModels
 
         protected override void InitializeParameters(object parameter)
         {
+            delayedPROGRESSSavingDispatcher = new DispatcherTimer();
+            delayedPROGRESSSavingDispatcher.Interval = new TimeSpan(0, 0, 1);
+            delayedPROGRESSSavingDispatcher.Tick += delayedPROGRESSSavingDispatcher_Tick;
             OptionalEntitiesParameter<BluePrints.Data.PROJECT, PROGRESS> receiveParameter = (OptionalEntitiesParameter<BluePrints.Data.PROJECT, PROGRESS>)parameter;
             this.loadPROJECT = receiveParameter.GetFirstEntity();
             this.loadPROGRESS = receiveParameter.GetSecondEntity();
@@ -113,6 +116,8 @@ namespace BluePrints.ViewModels
             }
 
             this.loadPROGRESS = entities.First();
+            mainThreadDispatcher.BeginInvoke(new Action(() => DateChange(DateNavigationType.Current)));
+
             return true;
         }
 
@@ -374,22 +379,62 @@ namespace BluePrints.ViewModels
 
         public void DateForward()
         {
-            DateChange(true);
+            DateChange(DateNavigationType.Forward);
         }
 
         public void DateBackward()
         {
-            DateChange(false);
+            DateChange(DateNavigationType.Backward);
         }
 
-        private void DateChange(bool isForward)
+        DispatcherTimer delayedPROGRESSSavingDispatcher;
+
+        void delayedPROGRESSSavingDispatcher_Tick(object sender, EventArgs e)
         {
-            var interval = ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(loadPROGRESS);
-            int multiplier = isForward == true ? 1 : -1;
-            loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(multiplier * interval.Days);
+            delayedPROGRESSSavingDispatcher.Stop();
             CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESSCollectionViewModel = (CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROGRESS>();
             PROGRESSCollectionViewModel.Save(loadPROGRESS);
             this.RaisePropertyChanged(x => x.DataDate);
+        }
+
+        private void DateChange(DateNavigationType navigationType)
+        {
+            var interval = ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(loadPROGRESS);
+            int multiplier;
+            if (navigationType == DateNavigationType.Current)
+            {
+                TimeSpan timeDifferenceFromCurrent = loadPROGRESS.DATA_DATE - DateTime.Now;
+
+                if (timeDifferenceFromCurrent.TotalSeconds > interval.TotalSeconds)
+                {
+                    do
+                    {
+                        loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(-1 * interval.Days);
+                    } while (loadPROGRESS.DATA_DATE > DateTime.Now);
+                }
+                else
+                {
+                    if (timeDifferenceFromCurrent.TotalSeconds < (-1 * interval.TotalSeconds))
+                    {
+                        do
+                        {
+                            loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(1 * interval.Days);
+                        } while (loadPROGRESS.DATA_DATE < (DateTime.Now - interval));
+                    }
+                    else
+                        return;
+                }
+            }
+            else
+            {
+                multiplier = navigationType == DateNavigationType.Forward ? 1 : -1;
+                loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(multiplier * interval.Days);
+            }
+
+            delayedPROGRESSSavingDispatcher.Start();
+            //CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESSCollectionViewModel = (CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROGRESS>();
+            //PROGRESSCollectionViewModel.Save(loadPROGRESS);
+            //this.RaisePropertyChanged(x => x.DataDate);
         }
 
         PROJECTWORKPACKSMappingViewModelWrapper WORKPACK_DashboardViewModel;

@@ -158,4 +158,11 @@ namespace BluePrints.Common
         Multiply,
         Divide
     }
+
+    public enum DateNavigationType
+    {
+        Forward,
+        Backward,
+        Current
+    }
 }

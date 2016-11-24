@@ -28,6 +28,14 @@ namespace BluePrints.Common
             return CurrentUser.ROLE.ROLE_PERMISSION.Any(x => x.PERMISSION == permissionKey);
         }
 
+        public static Guid CurrentUserGuid()
+        {
+            if (CurrentUser == null)
+                return Guid.Empty;
+
+            return CurrentUser.GUID;
+        }
+
         private static Dictionary<string, string> PermissionDictionary = GetPermissionLookUpInDictionary();
         public static Dictionary<string, string> GetPermissionLookUpInDictionary()
         {

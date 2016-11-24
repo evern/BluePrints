@@ -15,7 +15,6 @@ namespace BluePrints.ViewModels
     /// </summary>
     public partial class PROGRESSCollectionViewModel : CollectionViewModel<PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>
     {
-
         /// <summary>
         /// Creates a new instance of PROGRESSCollectionViewModel as a POCO view model.
         /// </summary>
