@@ -34,8 +34,9 @@
                 </Style>
             </dx:DialogService.DialogStyle>
         </dx:DialogService>
+        <dxmvvm:LayoutSerializationService />
     </dxmvvm:Interaction.Behaviors>
-    <Grid DataContext="{Binding MainViewModel}">
+    <Grid DataContext="{Binding MainViewModel}" dx:DXSerializer.StoreLayoutMode="UI">
         <DockPanel>
             <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
                 <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
@@ -58,9 +59,6 @@
                 </dxr:RibbonStatusBarControl.LeftItems>
             </dxr:RibbonStatusBarControl>
             <Grid>
-                <dxmvvm:Interaction.Behaviors>
-                    <dxmvvm:LayoutSerializationService />
-                </dxmvvm:Interaction.Behaviors>
                 <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="BASELINE_ITEMSGrid" Style="{StaticResource WrapperGridTemplate}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="BASELINE_ITEM.GUID_WORKPACK" Header="WORKPACK" Visible="False" VisibleIndex="0">

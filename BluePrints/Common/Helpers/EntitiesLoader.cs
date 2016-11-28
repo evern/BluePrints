@@ -165,6 +165,12 @@ namespace BluePrints.Data.Helpers
             this.collectionViewModel = CollectionViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork>.CreateCollectionViewModel(this.unitOfWorkFactory, this.getRepositoryFunc, projection);
             this.collectionViewModel.OnEntitiesLoadedCallBack = OnEntitiesFirstLoaded;
             this.collectionViewModel.OnEntitiesChangedCallBack = collectionViewModelChangedCallBack;
+
+            this.collectionViewModel.Entities.ToList();
+        }
+
+        public void LoadCollectionViewModel()
+        {
             this.collectionViewModel.Entities.ToList();
         }
 
@@ -249,6 +255,7 @@ namespace BluePrints.Data.Helpers
         void OnDestroy();
         Type GetProjectionEntityType();
         void CreateCollectionViewModel();
+        void LoadCollectionViewModel();
         bool isLoaded { get; set; }
         int loadOrder { get; set; }
         Type dependencyType { get; set; }

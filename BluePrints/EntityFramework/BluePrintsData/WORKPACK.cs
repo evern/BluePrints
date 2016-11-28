@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -12,6 +13,8 @@ namespace BluePrints.Data
         public WORKPACK()
         {
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
+            ESTIMATION_ITEM_INSTALL = new HashSet<ESTIMATION_ITEM>();
+            ESTIMATION_ITEM_SUPPLY = new HashSet<ESTIMATION_ITEM>();
             WORKPACK_ASSIGNMENT = new HashSet<WORKPACK_ASSIGNMENT>();
             STARTDATE = DateTime.Now;
             ENDDATE = DateTime.Now;
@@ -31,8 +34,7 @@ namespace BluePrints.Data
         [Required]
         public Guid GUID_DAREA { get; set; }
 
-        [Required]
-        public Guid GUID_DDOCTYPE { get; set; }
+        public Guid? GUID_DDOCTYPE { get; set; }
 
         [Required]
         public Guid GUID_DDEPARTMENT { get; set; }
@@ -40,7 +42,6 @@ namespace BluePrints.Data
         [Required]
         public Guid GUID_DDISCIPLINE { get; set; }
 
-        [Required]
         [StringLength(200)]
         public string INTERNAL_NAME1 { get; set; }
 
@@ -75,7 +76,13 @@ namespace BluePrints.Data
 
         public virtual AREA AREA { get; set; }
 
+        public WorkpackType TYPE { get; set; }
+
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
+
+        public virtual ICollection<ESTIMATION_ITEM> ESTIMATION_ITEM_INSTALL { get; set; }
+
+        public virtual ICollection<ESTIMATION_ITEM> ESTIMATION_ITEM_SUPPLY { get; set; }
 
         public virtual DEPARTMENT DEPARTMENT { get; set; }
 

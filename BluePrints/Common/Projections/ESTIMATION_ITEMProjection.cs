@@ -95,21 +95,15 @@ namespace BluePrints.Common.Projections
 
     public static class ESTIMATION_ITEMProjectionQueries
     {
-        public static IQueryable<ESTIMATION_ITEMProjection> JoinCOMMODITYAndRATESOnESTIMATION_ITEMS(IQueryable<ESTIMATION_ITEM> ESTIMATION_ITEMS, Func<ESTIMATION> getESTIMATIONFunc, Func<IQueryable<DEPARTMENT>> getDEPARTMENTSFunc, Func<IQueryable<RATE>> getRATESFunc = null, bool isESTIMATIONQueryProcessed = false)
+        public static IQueryable<ESTIMATION_ITEMProjection> JoinCOMMODITYAndRATESOnESTIMATION_ITEMS(IQueryable<ESTIMATION_ITEM> ESTIMATION_ITEMS, Func<ESTIMATION> getESTIMATIONFunc, Func<DEPARTMENT> getDEPARTMENTFunc, Func<IQueryable<RATE>> getRATESFunc = null, bool isESTIMATIONQueryProcessed = false)
         {
             ESTIMATION ESTIMATION = getESTIMATIONFunc();
-            IQueryable<DEPARTMENT> DEPARTMENTS = getDEPARTMENTSFunc();
-            DEPARTMENT constructionDEPARTMENT = null;
-            Guid constructionDEPARTMENTGuid = Guid.Empty;
+            DEPARTMENT DEPARTMENT = getDEPARTMENTFunc();
             IQueryable<ESTIMATION_ITEM> contextESTIMATION_ITEMS;
-            if (ESTIMATION == null || DEPARTMENTS == null)
+            if (ESTIMATION == null || DEPARTMENT == null)
                 contextESTIMATION_ITEMS = ESTIMATION_ITEMS.Where(x => x.GUID == Guid.Empty);
             else
             {
-                constructionDEPARTMENT = DEPARTMENTS.FirstOrDefault(x => x.NAME.ToUpper() == CommonResources.DefaultConstructionDepartment);
-                if(constructionDEPARTMENT != null)
-                    constructionDEPARTMENTGuid = constructionDEPARTMENT.GUID;
-
                 if (isESTIMATIONQueryProcessed)
                     contextESTIMATION_ITEMS = ESTIMATION_ITEMS;
                 else
@@ -118,7 +112,7 @@ namespace BluePrints.Common.Projections
 
             IQueryable<RATE> RATES = getRATESFunc();
             return contextESTIMATION_ITEMS.ToArray().AsQueryable().Select(x => new ESTIMATION_ITEMProjection() { GUID = x.GUID, ESTIMATION_ITEM = x, 
-                                                                                                                 RATE = RATES.FirstOrDefault(y => y.GUID_DEPARTMENT == constructionDEPARTMENTGuid && y.GUID_DISCIPLINE == x.GUID_DISCIPLINE),
+                                                                                                                 RATE = RATES.FirstOrDefault(y => y.GUID_DEPARTMENT == DEPARTMENT.GUID && y.GUID_DISCIPLINE == x.GUID_DISCIPLINE),
                                                                                                                  ESTIMATION_MARGIN = ESTIMATION.MARGIN,
                                                                                                                  ESTIMATION_CONTINGENCY = ESTIMATION.CONTINGENCY
 

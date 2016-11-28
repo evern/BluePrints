@@ -22,7 +22,9 @@ namespace BluePrints.Data
 
         public Guid? GUID_AREA { get; set; }
 
-        public Guid? GUID_WORKPACK { get; set; }
+        public Guid? GUID_SUPPLYWORKPACK { get; set; }
+
+        public Guid? GUID_INSTALLWORKPACK { get; set; }
 
         public Guid? GUID_DISCIPLINE { get; set; }
 
@@ -52,6 +54,7 @@ namespace BluePrints.Data
         public Guid? DELETEDBY { get; set; }
 
         public virtual AREA AREA { get; set; }
+
         public virtual COMMODITY COMMODITY { get; set; }
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
@@ -59,5 +62,9 @@ namespace BluePrints.Data
         public virtual ESTIMATION ESTIMATION { get; set; }
 
         public virtual PHASE PHASE { get; set; }
+
+        public virtual WORKPACK SUPPLYWORKPACK { get; set; }
+
+        public virtual WORKPACK INSTALLWORKPACK { get; set; }
     }
 }

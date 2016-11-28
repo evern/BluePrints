@@ -165,4 +165,11 @@ namespace BluePrints.Common
         Backward,
         Current
     }
+
+    public enum WorkpackType
+    {
+        Design,
+        Supply,
+        Install
+    }
 }

@@ -34,8 +34,9 @@
                 </Style>
             </dx:DialogService.DialogStyle>
         </dx:DialogService>
+        <dxmvvm:LayoutSerializationService />
     </dxmvvm:Interaction.Behaviors>
-    <Grid DataContext="{Binding MainViewModel}" >
+    <Grid DataContext="{Binding MainViewModel}" dx:DXSerializer.StoreLayoutMode="UI">
         <DockPanel>
             <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
                 <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
@@ -58,14 +59,21 @@
                 </dxr:RibbonStatusBarControl.LeftItems>
             </dxr:RibbonStatusBarControl>
             <Grid>
-                <dxmvvm:Interaction.Behaviors>
-                    <dxmvvm:LayoutSerializationService />
-                </dxmvvm:Interaction.Behaviors>
                 <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="ESTIMATION_ITEMSGrid" Style="{StaticResource WrapperGridTemplate}">
                     <dxmvvm:Interaction.Behaviors>
                         <dxg:GridDragDropManager x:Name="dragDropManager" Drop="dragDropManager_Drop" />
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl.Columns>
+                        <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="ESTIMATION_ITEM.GUID_SUPPLYWORKPACK" Header="SUPPLY WORKPACK" VisibleIndex="1">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1" ItemsSource="{Binding DataContext.SupplyWORKPACKCollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="INTERNAL_NAME2" ValueMember="GUID" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Name="colWORKPACKInternalName2" FieldName="ESTIMATION_ITEM.GUID_INSTALLWORKPACK" Header="INSTALL WORKPACK" VisibleIndex="2">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName2" ItemsSource="{Binding DataContext.InstallWORKPACKCollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="INTERNAL_NAME2" ValueMember="GUID" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
                         <dxg:GridColumn Name="colPHASE" FieldName="ESTIMATION_ITEM.GUID_PHASE" Header="PHASE" VisibleIndex="10" >
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="INTERNAL_NUM" ValueMember="GUID"/>
@@ -129,7 +137,7 @@
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn Name="colCOMMENTS" FieldName="ESTIMATION_ITEM.COMMENTS" Header="COMMENTS" VisibleIndex="50"/>
-                        <dxg:GridColumn Header="NAME" FieldName="GUID_COMMODITYCODE" ReadOnly="True" AllowEditing="False" VisibleIndex="60" >
+                        <dxg:GridColumn Name="colCOMMODITYCODE" FieldName="GUID_COMMODITYCODE" Header="NAME" ReadOnly="True" AllowEditing="False" VisibleIndex="60" >
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID"/>
                             </dxg:GridColumn.EditSettings>
@@ -246,6 +254,7 @@
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:TableView.RowCellMenuCustomizations>
                                 <dxb:BarButtonItem Content="Bulk Edit" Command="{Binding View.DataContext.BulkColumnEditCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
+                                <dxb:BarButtonItem Name="contextMenuPopulate" Content="Populate" Glyph="{dx:DXImageOffice2013 Image=PictureShapeFillColor_16x16.png}" Command="{Binding DataContext.AutoPopulateCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                 <dxb:BarButtonItem Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" Command="{Binding View.DataContext.FillUpCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                 <dxb:BarButtonItem Content="Fill Down" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" Command="{Binding View.DataContext.FillDownCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                 <dxb:BarButtonItem Content="Delete" Command="{Binding View.DataContext.BulkDeleteCommand}" CommandParameter="{Binding View.DataContext.SelectedEntities}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />

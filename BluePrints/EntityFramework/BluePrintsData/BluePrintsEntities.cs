@@ -162,7 +162,7 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<DOCTYPE>()
                 .HasMany(e => e.WORKPACK)
-                .WithRequired(e => e.DOCTYPE)
+                .WithOptional(e => e.DOCTYPE)
                 .HasForeignKey(e => e.GUID_DDOCTYPE)
                 .WillCascadeOnDelete(false);
 
@@ -324,6 +324,16 @@ namespace BluePrints.Data
                 .HasMany(e => e.BASELINE_ITEM)
                 .WithOptional(e => e.WORKPACK)
                 .HasForeignKey(e => e.GUID_WORKPACK);
+
+            modelBuilder.Entity<WORKPACK>()
+                .HasMany(e => e.ESTIMATION_ITEM_SUPPLY)
+                .WithOptional(e => e.SUPPLYWORKPACK)
+                .HasForeignKey(e => e.GUID_SUPPLYWORKPACK);
+
+            modelBuilder.Entity<WORKPACK>()
+                .HasMany(e => e.ESTIMATION_ITEM_INSTALL)
+                .WithOptional(e => e.INSTALLWORKPACK)
+                .HasForeignKey(e => e.GUID_INSTALLWORKPACK);
 
             modelBuilder.Entity<WORKPACK>()
                 .HasMany(e => e.WORKPACK_ASSIGNMENT)

@@ -26,8 +26,9 @@
         <dx:DXMessageBoxService />
         <dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />
         <dx:WindowedDocumentUIService YieldToParent="True" />
+        <dxmvvm:LayoutSerializationService />
     </dxmvvm:Interaction.Behaviors>
-    <Grid DataContext="{Binding MainViewModel}" >
+    <Grid DataContext="{Binding MainViewModel}" dx:DXSerializer.StoreLayoutMode="UI">
         <DockPanel>
             <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
                 <dxr:RibbonDefaultPageCategory Caption="defaultCategory">

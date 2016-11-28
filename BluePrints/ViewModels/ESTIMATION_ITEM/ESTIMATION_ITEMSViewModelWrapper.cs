@@ -162,9 +162,9 @@ namespace BluePrints.ViewModels
         {
             Func<IQueryable<RATE>> getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
             Func<ESTIMATION> getESTIMATIONFunc = loaderCollection.GetObjectFunc<ESTIMATION>();
-            Func<IQueryable<DEPARTMENT>> getDEPARTMENTSFunc = loaderCollection.GetCollectionFunc<DEPARTMENT>();
+            Func<DEPARTMENT> getDEPARTMENTFunc = loaderCollection.GetObjectFunc<DEPARTMENT>();
 
-            return query => ESTIMATION_ITEMProjectionQueries.JoinCOMMODITYAndRATESOnESTIMATION_ITEMS(query, getESTIMATIONFunc, getDEPARTMENTSFunc, getRATESFunc);
+            return query => ESTIMATION_ITEMProjectionQueries.JoinCOMMODITYAndRATESOnESTIMATION_ITEMS(query, getESTIMATIONFunc, getDEPARTMENTFunc, getRATESFunc);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATION_ITEMProjection> entities)
@@ -294,7 +294,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return "ESTIMATION_ITEMSViewModelWrapper";
+                return "ESTIMATION_ITEMWrapperView";
             }
         }
 

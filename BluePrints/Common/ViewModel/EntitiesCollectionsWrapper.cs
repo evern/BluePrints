@@ -21,7 +21,7 @@ namespace BluePrints.Common.ViewModel
         where TMainEntity : class
         where TMainProjectionEntity : class
         where TMainEntityUnitOfWork : IUnitOfWork
-        where TMainViewModel : IEntitiesViewModel<TMainProjectionEntity>
+        where TMainViewModel : CollectionViewModel<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork>
     {
         protected bool isSubEntitiesAdded;
         protected EntitiesLoaderDescriptionCollection loaderCollection = null;

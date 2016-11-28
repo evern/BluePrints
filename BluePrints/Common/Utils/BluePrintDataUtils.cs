@@ -84,7 +84,7 @@ namespace BluePrints.Common.ViewModel.Utils
         /// <summary>
         /// Generate internal number1 when all required fields are populated
         /// </summary>
-        public static string BASELINEITEM_Generate_InternalNumber(PROJECT fromPROJECT, BASELINE_ITEM fromBASELINE_ITEM, IEnumerable<BASELINE_ITEM> BASELINE_ITEMEntities, AREA selectedAREA, DISCIPLINE selectedDISCIPLINE, DOCTYPE selectedDOCTYPE)
+        public static string BASELINEITEM_Generate_InternalNumber(PROJECT fromPROJECT, IEnumerable<BASELINE_ITEM> BASELINE_ITEMEntities, AREA selectedAREA, DISCIPLINE selectedDISCIPLINE, DOCTYPE selectedDOCTYPE)
         {
             if (selectedAREA != null && selectedDISCIPLINE != null && selectedDOCTYPE != null)
             {
@@ -172,6 +172,48 @@ namespace BluePrints.Common.ViewModel.Utils
                 InternalName += findDISCIPLINE.CODE;
 
                 int InternalNameCount = WORKPACKEntities.Count(obj => obj.INTERNAL_NAME2 != null && obj.INTERNAL_NAME2.Contains(InternalName)) + 1;
+
+                InternalName += InternalNameCount.ToString();
+
+                return InternalName;
+            }
+            else
+                return string.Empty;
+        }
+
+        /// <summary>
+        /// Generate internal number2 when all required fields are populated
+        /// </summary>
+        public static string WORKPACK_Generate_InstallSupplyInternalNumber(PROJECT fromPROJECT, WORKPACK fromWORKPACK, IEnumerable<WORKPACK> WORKPACKEntities, IEntitiesViewModel<AREA> lookUpAREA, IEntitiesViewModel<DISCIPLINE> lookUpDISCIPLINE, IEntitiesViewModel<PHASE> lookUpPHASE, bool IsInstall)
+        {
+            AREA findAREA;
+            DISCIPLINE findDISCIPLINE;
+            PHASE findPHASE;
+
+            if (fromWORKPACK.AREA == null || fromWORKPACK.DISCIPLINE == null || fromWORKPACK.AREA == null)
+            {
+                findAREA = lookUpAREA.Entities.FirstOrDefault(area => area.GUID == fromWORKPACK.GUID_DAREA);
+                findPHASE = lookUpPHASE.Entities.FirstOrDefault(phase => phase.GUID == fromWORKPACK.GUID_DPHASE);
+                findDISCIPLINE = lookUpDISCIPLINE.Entities.FirstOrDefault(discipline => discipline.GUID == fromWORKPACK.GUID_DDISCIPLINE);
+            }
+            else
+            {
+                findAREA = fromWORKPACK.AREA;
+                findPHASE = fromWORKPACK.PHASE;
+                findDISCIPLINE = fromWORKPACK.DISCIPLINE;
+            }
+
+            if (findAREA != null && findDISCIPLINE != null && findPHASE != null)
+            {
+                string InternalName = fromPROJECT.NUMBER;
+                InternalName += IsInstall == true ? "I" : "S";
+                InternalName += findAREA.INTERNAL_NUM;
+                InternalName += findDISCIPLINE.CODE;
+
+                int InternalNameCount = WORKPACKEntities.Count(obj => obj.INTERNAL_NAME2 != null && obj.INTERNAL_NAME2.Contains(InternalName)) + 1;
+
+                if (InternalNameCount < 10)
+                    InternalName += "0";
 
                 InternalName += InternalNameCount.ToString();
 

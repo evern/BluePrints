@@ -24,10 +24,10 @@
     <dxmvvm:Interaction.Behaviors>
         <dx:DXMessageBoxService />
         <dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />
-        <!--<dxmvvm:EventToCommand Event="Unloaded" Command="{Binding OnUnloadedCommand}" />-->
         <dx:WindowedDocumentUIService YieldToParent="True" />
+        <dxmvvm:LayoutSerializationService />
     </dxmvvm:Interaction.Behaviors>
-    <Grid DataContext="{Binding MainViewModel}" >
+    <Grid DataContext="{Binding MainViewModel}" dx:DXSerializer.StoreLayoutMode="UI">
         <DockPanel>
             <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
                 <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
@@ -66,9 +66,6 @@
                 </dxr:RibbonStatusBarControl.LeftItems>
             </dxr:RibbonStatusBarControl>
             <Grid>
-                <dxmvvm:Interaction.Behaviors>
-                    <dxmvvm:LayoutSerializationService />
-                </dxmvvm:Interaction.Behaviors>
                 <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="PROGRESS_ITEMSGrid" Style="{StaticResource WrapperGridTemplate}">
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:EventToCommand Command="{Binding DataContext.CustomSummaryCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="CustomSummary" />

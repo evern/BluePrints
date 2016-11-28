@@ -35,8 +35,9 @@
                 </Style>
             </dx:DialogService.DialogStyle>
         </dx:DialogService>
+        <dxmvvm:LayoutSerializationService />
     </dxmvvm:Interaction.Behaviors>
-    <Grid DataContext="{Binding MainViewModel}" >
+    <Grid DataContext="{Binding MainViewModel}" dx:DXSerializer.StoreLayoutMode="UI">
         <DockPanel>
             <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
                 <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
@@ -57,9 +58,6 @@
                 </dxr:RibbonStatusBarControl.LeftItems>
             </dxr:RibbonStatusBarControl>
             <Grid>
-                <dxmvvm:Interaction.Behaviors>
-                    <dxmvvm:LayoutSerializationService />
-                </dxmvvm:Interaction.Behaviors>
                 <dxg:TreeListControl Name="treeListControl" Style="{StaticResource WrapperTreeTemplate}" >
                     <dxmvvm:Interaction.Behaviors>
                         <dxg:TreeListDragDropManager x:Name="dragDropManager" Drop="dragDropManager_Drop" />

@@ -30,8 +30,9 @@
         <dx:DXMessageBoxService />
         <dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />
         <dx:WindowedDocumentUIService YieldToParent="True" />
+        <dxmvvm:LayoutSerializationService />
     </dxmvvm:Interaction.Behaviors>
-    <Grid DataContext="{Binding MainViewModel}" >
+    <Grid DataContext="{Binding MainViewModel}" dx:DXSerializer.StoreLayoutMode="UI">
         <DockPanel>
             <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
                 <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
@@ -48,9 +49,6 @@
                 </dxr:RibbonStatusBarControl.LeftItems>
             </dxr:RibbonStatusBarControl>
             <dxlc:LayoutControl Orientation="Vertical">
-                <dxmvvm:Interaction.Behaviors>
-                    <dxmvvm:LayoutSerializationService />
-                </dxmvvm:Interaction.Behaviors>
                 <dxlc:LayoutGroup Name="LayoutGroupSchedule" View="Group" Header="Schedule" Orientation="Horizontal" dxlc:LayoutControl.AllowVerticalSizing="True">
                     <wfi:WindowsFormsHost x:Name="winFormHost" Height="auto" Width="auto">
                     </wfi:WindowsFormsHost>

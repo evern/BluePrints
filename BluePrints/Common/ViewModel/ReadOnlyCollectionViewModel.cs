@@ -178,7 +178,7 @@ namespace BluePrints.Common.ViewModel
             }
         }
 
-        void SaveLayout()
+        public void SaveLayout()
         {
             PersistentLayoutHelper.TrySerializeLayout(LayoutSerializationService, ViewName);
         }
