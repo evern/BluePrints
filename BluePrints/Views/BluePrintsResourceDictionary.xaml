@@ -76,7 +76,7 @@
                         <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}" EventName="ValidateCell" />
                         <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}" EventName="ValidateRow" />
                         <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard"/>
-                        <dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}" CommandParameter="{Binding SelectedEntities}" />
+                        <!--<dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}"  />-->
                         <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}"  />
                         <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}"  />
                     </ItemsControl>
@@ -121,6 +121,15 @@
         <Setter Property="CurrentItem" Value="{Binding SelectedEntity}" />
         <Setter Property="SelectedItems" Value="{Binding SelectedEntities, Mode=TwoWay}" />
         <Setter Property="ShowBorder" Value="False" />
+        <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <ItemsControl>
+                        <dxmvvm:KeyToCommand Command="{Binding ShowPopUpCommand}" KeyGesture="Space" CommandParameter="{Binding ElementName=gridControl}"/>
+                    </ItemsControl>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
     <Style x:Key="WrapperTreeTemplate" TargetType="{x:Type dxg:TreeListControl}">
         <Setter Property="ItemsSource" Value="{Binding Entities}" />
@@ -614,16 +623,26 @@
         </dxg:GridColumn>
     </collections:ArrayList>
     <collections:ArrayList x:Key="VARIATIONColumns">
-        <dxg:GridColumn FieldName="NAME" />
-        <dxg:GridColumn FieldName="COMMENTS" />
-        <dxg:GridColumn FieldName="SUBMITTED" />
-        <dxg:GridColumn FieldName="APPROVED" />
-        <dxg:GridColumn Header="FROM BASELINE" FieldName="GUID_ORIBASELINE" ReadOnly="True" AllowEditing="False">
+        <dxg:GridColumn FieldName="NAME" VisibleIndex="10" />
+        <dxg:GridColumn FieldName="TYPE" VisibleIndex="20">
+            <dxg:GridColumn.EditSettings>
+                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationType}}"/>
+            </dxg:GridColumn.EditSettings>
+        </dxg:GridColumn>
+        <dxg:GridColumn FieldName="COMMENTS" VisibleIndex="30" />
+        <dxg:GridColumn FieldName="CREATEDBY" ReadOnly="True" VisibleIndex="40" >
+            <dxg:GridColumn.EditSettings>
+                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
+            </dxg:GridColumn.EditSettings>
+        </dxg:GridColumn>
+        <dxg:GridColumn FieldName="SUBMITTED" VisibleIndex="50" />
+        <dxg:GridColumn FieldName="APPROVED" VisibleIndex="60" />
+        <dxg:GridColumn Header="FROM BASELINE" FieldName="GUID_ORIBASELINE" ReadOnly="True" AllowEditing="False" VisibleIndex="70">
             <dxg:GridColumn.EditSettings>
                 <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.BASELINECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="REVISION" ValueMember="GUID" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn Header="TO BASELINE" FieldName="GUID_BASELINE" ReadOnly="True" AllowEditing="False">
+        <dxg:GridColumn Header="TO BASELINE" FieldName="GUID_BASELINE" ReadOnly="True" AllowEditing="False" VisibleIndex="80" >
             <dxg:GridColumn.EditSettings>
                 <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.BASELINECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="REVISION" ValueMember="GUID" />
             </dxg:GridColumn.EditSettings>

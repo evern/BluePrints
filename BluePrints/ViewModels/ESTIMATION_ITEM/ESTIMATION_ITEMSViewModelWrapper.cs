@@ -58,6 +58,8 @@ namespace BluePrints.ViewModels
         #region Database Operations
         PROJECT loadPROJECT;
         ESTIMATION loadESTIMATION;
+        DEPARTMENT loadDEPARTMENT;
+
         bool isQueryForLiveStatus;
         IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void InitializeParameters(object parameter)
@@ -77,12 +79,12 @@ namespace BluePrints.ViewModels
             loaderCollection.AddEntitiesLoader<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0, bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT, OnEntitiesChanged);
             loaderCollection.AddEntitiesLoader<ESTIMATION, ESTIMATION, Guid, IBluePrintsEntitiesUnitOfWork>(1, bluePrintsUnitOfWorkFactory, x => x.ESTIMATIONS, ESTIMATIONProjectionFunc, typeof(PROJECT), isContinueLoadingAfterESTIMATION, OnEntitiesChanged);
             loaderCollection.AddEntitiesLoader<COMMODITY, COMMODITY, Guid, IBluePrintsEntitiesUnitOfWork>(2, bluePrintsUnitOfWorkFactory, x => x.COMMODITIES, COMMODITYProjectionFunc, typeof(PROJECT), null, OnEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork>(3, bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc, typeof(PROJECT));
             loaderCollection.AddEntitiesLoader<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>(4, bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc, typeof(PROJECT));
             loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(5, bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
-            loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(6, bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
+            loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(6, bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, null, isContinueLoadingAfterDEPARTMENT, OnEntitiesChanged);
             loaderCollection.AddEntitiesLoader<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(7, bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, typeof(PROJECT), null, OnEntitiesChanged);
             loaderCollection.AddEntitiesLoader<COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork>(8, bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, null, null, null, OnEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>(9, bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc, null, null, OnEntitiesChanged);
             
             InvokeEntitiesLoaderDescriptionLoading();
         }
@@ -111,6 +113,18 @@ namespace BluePrints.ViewModels
             return true;
         }
 
+        bool isContinueLoadingAfterDEPARTMENT(IEnumerable<DEPARTMENT> entities)
+        {
+            if (entities.Count() == 0)
+            {
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed, "DEPARTMENT"))));
+                return false;
+            }
+
+            this.loadDEPARTMENT = entities.First();
+            return true;
+        }
+
         Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
         {
             if (isQueryForLiveStatus)
@@ -132,14 +146,14 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == this.loadPROJECT.GUID);
         }
 
-        Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        Func<IRepositoryQuery<DEPARTMENT>, IQueryable<DEPARTMENT>> DEPARTMENTProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => query.Where(x => x.NAME == CommonResources.DefaultConstructionDepartment);
         }
 
-        Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
+        Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE != WorkpackType.Design);
         }
 
         Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
@@ -182,7 +196,8 @@ namespace BluePrints.ViewModels
 
 
             if (loadESTIMATION != null && changedType == typeof(ESTIMATION) && loadESTIMATION.GUID.ToString() == key.ToString() ||
-                loadPROJECT != null && changedType == typeof(PROJECT) && loadPROJECT.GUID.ToString() == key.ToString())
+                loadPROJECT != null && changedType == typeof(PROJECT) && loadPROJECT.GUID.ToString() == key.ToString() ||
+                loadDEPARTMENT != null && changedType == typeof(DEPARTMENT) && loadDEPARTMENT.GUID.ToString() == key.ToString())
             {
                 if (messageType == EntityMessageType.Added)
                     MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Restored, StringFormatUtils.GetEntityNameByType(changedType)));
@@ -190,7 +205,7 @@ namespace BluePrints.ViewModels
                     MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed, StringFormatUtils.GetEntityNameByType(changedType)));
             }
 
-            if (loadPROJECT != null || loadESTIMATION != null)
+            if (loadPROJECT != null || loadESTIMATION != null || loadDEPARTMENT != null)
             {
                 if (MainViewModel != null)
                     mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
@@ -259,22 +274,52 @@ namespace BluePrints.ViewModels
             foreach (TreeListNode obj in e.DraggedRows)
             {
                 COMMODITYProjection droppedCOMMODITY = obj.Content as COMMODITYProjection;
-                if (droppedCOMMODITY == null)
-                    continue;
-
-                ESTIMATION_ITEMProjection newESTIMATION_ITEM = new ESTIMATION_ITEMProjection();
-                newESTIMATION_ITEM.ESTIMATION_ITEM.GUID_COMMODITY = droppedCOMMODITY.GUID;
-                COMMODITY_CODE droppedCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == droppedCOMMODITY.COMMODITY.GUID_COMMODITYCODE);
-                newESTIMATION_ITEM.ESTIMATION_ITEM.GUID_DISCIPLINE = droppedCOMMODITY_CODE.GUID_DISCIPLINE;
-                string errorMessage = string.Empty;
-                if(!MainViewModel.IsValidEntity(newESTIMATION_ITEM, ref errorMessage))
+                if (droppedCOMMODITY != null)
                 {
-                    mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage(errorMessage)));
+                    ESTIMATION_ITEMProjection newESTIMATION_ITEM = new ESTIMATION_ITEMProjection();
+                    newESTIMATION_ITEM.ESTIMATION_ITEM.GUID_COMMODITY = droppedCOMMODITY.GUID;
+                    COMMODITY_CODE droppedCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == droppedCOMMODITY.COMMODITY.GUID_COMMODITYCODE);
+                    newESTIMATION_ITEM.ESTIMATION_ITEM.GUID_DISCIPLINE = droppedCOMMODITY_CODE.GUID_DISCIPLINE;
+                    string errorMessage = string.Empty;
+                    if (!MainViewModel.IsValidEntity(newESTIMATION_ITEM, ref errorMessage))
+                    {
+                        mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage(errorMessage)));
+                    }
+                    else
+                    {
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(newESTIMATION_ITEM, null, null, null, EntityMessageType.Added);
+                        MainViewModel.Save(newESTIMATION_ITEM);
+                    }
                 }
                 else
                 {
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(newESTIMATION_ITEM, null, null, null, EntityMessageType.Added);
-                    MainViewModel.Save(newESTIMATION_ITEM);
+                    COMMODITY_CODE droppedCOMMODITY_CODE = obj.Content as COMMODITY_CODE;
+                    if(droppedCOMMODITY_CODE != null)
+                    {
+                        COMMODITY existingCOMMODITY = COMMODITYCollection.FirstOrDefault(x => x.GUID == droppedCOMMODITY_CODE.GUID);
+                        if(existingCOMMODITY == null)
+                        {
+                            COMMODITY newCOMMODITY = new COMMODITY();
+                            newCOMMODITY.GUID_COMMODITYCODE = droppedCOMMODITY_CODE.GUID;
+                            newCOMMODITY.GUID_PROJECT = loadPROJECT.GUID;
+                            newCOMMODITY.CREATED = DateTime.Now;
+                            ((CollectionViewModel<COMMODITY, COMMODITY, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<COMMODITY>()).Save(newCOMMODITY);
+
+                            ESTIMATION_ITEMProjection newESTIMATION_ITEM = new ESTIMATION_ITEMProjection();
+                            newESTIMATION_ITEM.ESTIMATION_ITEM.GUID_COMMODITY = newCOMMODITY.GUID;
+
+                            string errorMessage = string.Empty;
+                            if (!MainViewModel.IsValidEntity(newESTIMATION_ITEM, ref errorMessage))
+                            {
+                                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage(errorMessage)));
+                            }
+                            else
+                            {
+                                MainViewModel.EntitiesUndoRedoManager.AddUndo(newESTIMATION_ITEM, null, null, null, EntityMessageType.Added);
+                                MainViewModel.Save(newESTIMATION_ITEM);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -283,7 +328,87 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Commands
+        public bool CanAutoPopulate(object button)
+        {
+            if (MainViewModel == null || MainViewModel.SelectedEntities.Count == 0)
+                return false;
 
+            return true;
+        }
+
+        public void AutoPopulate(object button)
+        {
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
+
+            string disciplineFieldName = BindableBase.GetPropertyName(() => new ESTIMATION_ITEMProjection().ESTIMATION_ITEM) + "." + BindableBase.GetPropertyName(() => new ESTIMATION_ITEM().GUID_DISCIPLINE);
+            string areaFieldName = BindableBase.GetPropertyName(() => new ESTIMATION_ITEMProjection().ESTIMATION_ITEM) + "." + BindableBase.GetPropertyName(() => new ESTIMATION_ITEM().GUID_AREA);
+            string supplyWorkpackFieldName = BindableBase.GetPropertyName(() => new ESTIMATION_ITEMProjection().ESTIMATION_ITEM) + "." + BindableBase.GetPropertyName(() => new ESTIMATION_ITEM().GUID_SUPPLYWORKPACK);
+            string installWorkpackFieldName = BindableBase.GetPropertyName(() => new ESTIMATION_ITEMProjection().ESTIMATION_ITEM) + "." + BindableBase.GetPropertyName(() => new ESTIMATION_ITEM().GUID_INSTALLWORKPACK);
+
+            List<ESTIMATION_ITEMProjection> entitiesToSave = new List<ESTIMATION_ITEMProjection>();
+
+            foreach (ESTIMATION_ITEMProjection entity in MainViewModel.SelectedEntities)
+            {
+                if (info.Column.FieldName == disciplineFieldName || info.Column.FieldName == areaFieldName)
+                {
+                    WORKPACK entityWORKPACK = WORKPACKCollection.FirstOrDefault(x => x.GUID == entity.ESTIMATION_ITEM.GUID_SUPPLYWORKPACK);
+                    if (entityWORKPACK == null)
+                        entityWORKPACK = WORKPACKCollection.FirstOrDefault(x => x.GUID == entity.ESTIMATION_ITEM.GUID_INSTALLWORKPACK);
+
+                    if (entityWORKPACK == null)
+                        continue;
+
+                    if (info.Column.FieldName == disciplineFieldName)
+                        MainViewModel.SetNestedValueWithUndo(entity, info.Column.FieldName, entityWORKPACK.GUID_DDISCIPLINE);
+                    else if (info.Column.FieldName == areaFieldName)
+                        MainViewModel.SetNestedValueWithUndo(entity, info.Column.FieldName, entityWORKPACK.GUID_DAREA);
+
+                    entitiesToSave.Add(entity);
+                }
+                else if (info.Column.FieldName == supplyWorkpackFieldName || info.Column.FieldName == installWorkpackFieldName)
+                {
+                    if (entity.ESTIMATION_ITEM.GUID_DISCIPLINE == Guid.Empty || entity.ESTIMATION_ITEM.GUID_AREA == Guid.Empty)
+                        continue;
+
+                    WORKPACK findWORKPACK;
+                    if(info.Column.FieldName == supplyWorkpackFieldName)
+                        findWORKPACK = WORKPACKCollection.FirstOrDefault(x => x.GUID_DDEPARTMENT == loadDEPARTMENT.GUID && x.GUID_DDISCIPLINE == entity.ESTIMATION_ITEM.GUID_DISCIPLINE && x.TYPE == WorkpackType.Supply);
+                    else
+                        findWORKPACK = WORKPACKCollection.FirstOrDefault(x => x.GUID_DDEPARTMENT == loadDEPARTMENT.GUID && x.GUID_DDISCIPLINE == entity.ESTIMATION_ITEM.GUID_DISCIPLINE && x.TYPE == WorkpackType.Install);
+
+                    if (findWORKPACK == null)
+                    {
+                        WORKPACK newWORKPACK = new WORKPACK();
+                        newWORKPACK.GUID_PROJECT = loadPROJECT.GUID;
+                        newWORKPACK.GUID_DAREA = (Guid)entity.ESTIMATION_ITEM.GUID_AREA;
+                        newWORKPACK.GUID_DDISCIPLINE = (Guid)entity.ESTIMATION_ITEM.GUID_DISCIPLINE;
+                        newWORKPACK.GUID_DDEPARTMENT = loadDEPARTMENT.GUID;
+                        newWORKPACK.INTERNAL_NAME2 = BluePrintDataUtils.WORKPACK_Generate_InstallSupplyInternalNumber(loadPROJECT, newWORKPACK, WORKPACKCollection, loaderCollection.GetViewModel<AREA>(), loaderCollection.GetViewModel<DISCIPLINE>(), loaderCollection.GetViewModel<PHASE>(), info.Column.FieldName == installWorkpackFieldName);
+
+                        newWORKPACK.STARTDATE = DateTime.Now;
+                        newWORKPACK.ENDDATE = BluePrintDataUtils.WORKPACK_Calculate_EndDate(newWORKPACK.STARTDATE, loadPROJECT);
+                        DateTime reviewStartDate = newWORKPACK.STARTDATE;
+                        DateTime reviewEndDate = newWORKPACK.ENDDATE;
+                        BluePrintDataUtils.WORKPACK_Calculate_ReviewPeriod(ref reviewStartDate, ref reviewEndDate, loadPROJECT, false);
+                        newWORKPACK.REVIEWSTARTDATE = reviewStartDate;
+                        newWORKPACK.REVIEWENDDATE = reviewEndDate;
+                        newWORKPACK.AUTOGENERATED = true;
+                        newWORKPACK.TYPE = info.Column.FieldName == supplyWorkpackFieldName ? WorkpackType.Supply : WorkpackType.Install;
+                        ((CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<WORKPACK>()).Save(newWORKPACK);
+
+                        MainViewModel.SetNestedValueWithUndo(entity, info.Column.FieldName, newWORKPACK.GUID);
+                    }
+                    else
+                        MainViewModel.SetNestedValueWithUndo(entity, info.Column.FieldName, findWORKPACK.GUID);
+
+                    entitiesToSave.Add(entity);
+                }
+            }
+
+            MainViewModel.BulkSave(entitiesToSave);
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+        }
         #endregion
 
         #region View Properties
@@ -298,19 +423,14 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<PHASE> PHASECollection
-        {
-            get
-            {
-                return GetEntities<PHASE>();
-            }
-        }
-
         public IEnumerable<AREA> AREACollection
         {
             get
             {
-                return GetEntities<AREA>();
+                var collection = GetEntities<AREA>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
+                return collection;
             }
         }
 
@@ -318,7 +438,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<DISCIPLINE>();
+                var collection = GetEntities<DISCIPLINE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
             }
         }
 
@@ -335,6 +458,34 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<COMMODITY_CODE>();
+            }
+        }
+
+        public IEnumerable<WORKPACK> SupplyWORKPACKCollection
+        {
+            get
+            {
+                return GetEntities<WORKPACK>() == null ? null : GetEntities<WORKPACK>().Where(x => x.TYPE == WorkpackType.Supply).OrderBy(x => x.INTERNAL_NAME2);
+            }
+        }
+
+        public IEnumerable<WORKPACK> InstallWORKPACKCollection
+        {
+            get
+            {
+                return GetEntities<WORKPACK>() == null ? null : GetEntities<WORKPACK>().Where(x => x.TYPE == WorkpackType.Install).OrderBy(x => x.INTERNAL_NAME2);
+            }
+        }
+
+
+        public IEnumerable<WORKPACK> WORKPACKCollection
+        {
+            get
+            {
+                var collection = GetEntities<WORKPACK>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NAME2);
+                return collection;
             }
         }
         #endregion

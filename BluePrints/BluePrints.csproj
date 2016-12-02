@@ -24,7 +24,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>16</ApplicationRevision>
+    <ApplicationRevision>24</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -1041,6 +1041,7 @@
     <Compile Include="ViewModels\ESTIMATION\ESTIMATIONCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATION_ITEM\ESTIMATION_ITEMSViewModelWrapper.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\SelectDetailUSERSViewModel.cs" />
     <Compile Include="ViewModels\WORKPACK_ASSIGNMENT\PROJECTWORKPACKAssignmentViewModel.cs" />
     <Compile Include="ViewModels\WORKPACK_ASSIGNMENT\PROJECTWORKPACKSMappingViewModelWrapper.cs" />
@@ -1086,7 +1087,7 @@
     <Compile Include="ViewModels\UOM\UOMViewModel.cs" />
     <Compile Include="ViewModels\USER\USERCollectionViewModel.cs" />
     <Compile Include="ViewModels\USER\USERViewModel.cs" />
-    <Compile Include="ViewModels\VARIATION\VARIATIONCollectionViewModel.cs" />
+    <Compile Include="ViewModels\VARIATION\VARIATIONSViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\VARIATION_ITEMSViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\VARIATION_ITEMViewModel.cs" />
     <Compile Include="ViewModels\WORKPACK\PROJECTWORKPACKDetailsCollectionViewModel.cs" />

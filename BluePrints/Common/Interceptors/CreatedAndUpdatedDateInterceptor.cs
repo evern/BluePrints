@@ -1,5 +1,8 @@
-﻿using System;
+﻿using BluePrints.Common;
+using System;
+using System.Collections.Generic;
 using System.Data.Entity.Core.Common.CommandTrees;
+using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure.Interception;
 using System.Linq;
@@ -9,7 +12,9 @@ namespace BluePrints.Data
     public class CreatedAndUpdatedDateInterceptor : IDbCommandTreeInterceptor
     {
         public const string CreatedColumnName = "CREATED";
+        public const string CreatedByColumnName = "CREATEDBY";
         public const string ModifiedColumnName = "UPDATED";
+        public const string ModifiedByColumnName = "UPDATEDBY";
 
         public void TreeCreated(DbCommandTreeInterceptionContext interceptionContext)
         {
@@ -37,6 +42,7 @@ namespace BluePrints.Data
 
             var setClauses = insertCommand.SetClauses
                 .Select(clause => clause.UpdateIfMatch(CreatedColumnName, DbExpression.FromDateTime(now)))
+                .Select(clause => clause.UpdateIfMatch(CreatedByColumnName, DbExpression.FromGuid(LoginCredentials.CurrentUserGuid())))
                 .ToList();
 
             return new DbInsertCommandTree(
@@ -53,7 +59,17 @@ namespace BluePrints.Data
 
             var setClauses = updateCommand.SetClauses
                 .Select(clause => clause.UpdateIfMatch(ModifiedColumnName, DbExpression.FromDateTime(now)))
+                .Select(clause => clause.UpdateIfMatch(ModifiedByColumnName, DbExpression.FromGuid(LoginCredentials.CurrentUserGuid())))
                 .ToList();
+
+            //var setClauses = new List<DbModificationClause>();
+            //setClauses.Add(DbExpressionBuilder.SetClause(
+            //    updateCommand.Target.VariableType.Variable(updateCommand.Target.VariableName).Property(ModifiedColumnName),
+            //    DbExpression.FromDateTime(now)));
+
+            //setClauses.Add(DbExpressionBuilder.SetClause(
+            //    updateCommand.Target.VariableType.Variable(updateCommand.Target.VariableName).Property(ModifiedByColumnName),
+            //    DbExpression.FromGuid(LoginCredentials.CurrentUserGuid())));
 
             return new DbUpdateCommandTree(
                 updateCommand.MetadataWorkspace,

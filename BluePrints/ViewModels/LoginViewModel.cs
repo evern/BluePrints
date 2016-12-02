@@ -132,7 +132,7 @@ namespace BluePrints.ViewModels
         public void ShowMainWindow()
         {
             MainWindow mainWindow = new MainWindow();
-            mainWindow.ShowLoginWindow = this.ShowThisControl;
+            //mainWindow.ShowLoginWindow = this.ShowThisControl;
             mainWindow.Show();
         }
 

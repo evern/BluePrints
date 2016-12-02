@@ -4,6 +4,8 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using BluePrints.ViewModels;
 using DevExpress.Xpf.Grid;
+using System.Windows.Input;
+using DevExpress.Xpf.Editors;
 
 namespace BluePrints.Views
 {

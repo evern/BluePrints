@@ -24,6 +24,9 @@ using BluePrints.Common.ViewModel.Utils;
 using DevExpress.Xpf.Editors.Settings;
 using DevExpress.Xpf.Grid.TreeList;
 using BluePrints.ViewModels;
+using System.Windows.Input;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace BluePrints.Common.ViewModel
 {
@@ -367,8 +370,8 @@ namespace BluePrints.Common.ViewModel
                 foreach(string requiredPropertyString in requiredPropertyStrings)
                 {
                     var requiredPropertyValue = DataUtils.GetNestedValue(requiredPropertyString, entity);
-                    if(requiredPropertyValue == null)
-                        requiredPropertyNames += requiredPropertyString.Split('.').Last() + ", ";
+                    if(requiredPropertyValue == null || requiredPropertyValue.ToString() == Guid.Empty.ToString())
+                        requiredPropertyNames += requiredPropertyString.Replace("GUID_", "").Split('.').Last() + ", ";
                 }
 
                 if (requiredPropertyNames != string.Empty)
@@ -413,6 +416,18 @@ namespace BluePrints.Common.ViewModel
         #endregion
 
         #region Views
+        public void ShowPopUp(object sender)
+        {
+            var editor = sender as GridControl;
+            var comboBoxEditor = editor.View.ActiveEditor as ComboBoxEdit;
+            if (comboBoxEditor == null)
+                return;
+            if (comboBoxEditor.IsPopupOpen)
+                return;
+            else
+                comboBoxEditor.ShowPopup();
+        }
+
         protected virtual void OnSelectedEntitiesChanged() { }
 
         public Action<TProjection, CellValueChangedEventArgs> ExistingProjectionEditCallBack;
@@ -603,6 +618,7 @@ namespace BluePrints.Common.ViewModel
             return false;
         }
 
+        public Func<TProjection, string, object, bool> ValidateBulkEditCallBack;
         public void BulkColumnEdit(object button)
         {
             var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
@@ -668,6 +684,9 @@ namespace BluePrints.Common.ViewModel
                 {
                     foreach (TProjection selectedProjection in SelectedEntities)
                     {
+                        if (ValidateBulkEditCallBack != null && !ValidateBulkEditCallBack(selectedProjection, info.Column.FieldName, newValue))
+                            continue;
+
                         if (newValue.GetType() == typeof(decimal) && operation != Arithmetic.None)
                         {
                             decimal currentValue = (decimal)DataUtils.GetNestedValue(info.Column.FieldName, selectedProjection);
@@ -748,9 +767,9 @@ namespace BluePrints.Common.ViewModel
         /// Since CollectionViewModelBase is a POCO view model, this method will be used as a CanExecute callback for BulkDeleteCommand.
         /// </summary>
         /// <param name="projectionEntity">Entities to delete.</param>
-        public virtual bool CanBulkDelete(IEnumerable<TProjection> entities)
+        public virtual bool CanBulkDelete()
         {
-            return Entities != null && Entities.Count > 0 && !IsLoading && (CanBulkDeleteCallBack == null || CanBulkDeleteCallBack(entities));
+            return Entities != null && Entities.Count > 0 && !IsLoading && (CanBulkDeleteCallBack == null || CanBulkDeleteCallBack(selectedentities));
         }
 
         /// <summary>
@@ -768,10 +787,10 @@ namespace BluePrints.Common.ViewModel
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the DeleteCommand property that can be used as a binding source in views.
         /// </summary>
         /// <param name="projectionEntity">An entity to edit.</param>
-        public virtual void BulkDelete(IEnumerable<TProjection> entities)
+        public virtual void BulkDelete()
         {
             EntitiesUndoRedoManager.PauseActionId();
-            BaseBulkDelete(entities);
+            BaseBulkDelete(this.selectedentities);
             EntitiesUndoRedoManager.UnpauseActionId();
         }
 
@@ -783,7 +802,10 @@ namespace BluePrints.Common.ViewModel
         public virtual void BulkSave(IEnumerable<TProjection> entities)
         {
             EntitiesUndoRedoManager.PauseActionId();
-            BaseBulkSave(entities);
+            foreach(var entity in entities)
+            {
+                Save(entity);
+            }
             EntitiesUndoRedoManager.UnpauseActionId();
         }
         #endregion
@@ -885,12 +907,14 @@ namespace BluePrints.Common.ViewModel
                                         }
                                     }
                                 }
-                                else if (columnPropertyInfo.PropertyType == typeof(decimal) || columnPropertyInfo.PropertyType == typeof(int) || columnPropertyInfo.PropertyType == typeof(double))
+                                else if (columnPropertyInfo.PropertyType == typeof(decimal) || columnPropertyInfo.PropertyType == typeof(decimal?)
+                                    || columnPropertyInfo.PropertyType == typeof(int) || columnPropertyInfo.PropertyType == typeof(int?)
+                                    || columnPropertyInfo.PropertyType == typeof(double) || columnPropertyInfo.PropertyType == typeof(double?))
                                 {
                                     Regex rgx = new Regex("[^0-9a-z\\.]");
                                     string cleanColumnString = rgx.Replace(ColumnStrings[i], "");
 
-                                    if (columnPropertyInfo.PropertyType == typeof(decimal))
+                                    if (columnPropertyInfo.PropertyType == typeof(decimal) || columnPropertyInfo.PropertyType == typeof(decimal?))
                                     {
                                         decimal getDecimal;
                                         if (decimal.TryParse(cleanColumnString, out getDecimal))
@@ -903,7 +927,7 @@ namespace BluePrints.Common.ViewModel
                                         else
                                             return;
                                     }
-                                    else if (columnPropertyInfo.PropertyType == typeof(int))
+                                    else if (columnPropertyInfo.PropertyType == typeof(int) || columnPropertyInfo.PropertyType == typeof(int?))
                                     {
                                         int getInt;
                                         if (int.TryParse(cleanColumnString, out getInt))
@@ -911,7 +935,7 @@ namespace BluePrints.Common.ViewModel
                                         else
                                             return;
                                     }
-                                    else if (columnPropertyInfo.PropertyType == typeof(double))
+                                    else if (columnPropertyInfo.PropertyType == typeof(double) || columnPropertyInfo.PropertyType == typeof(double?))
                                     {
                                         double getDouble;
                                         if (double.TryParse(cleanColumnString, out getDouble))
@@ -1202,6 +1226,7 @@ namespace BluePrints.Common.ViewModel
         public virtual string EntityDisplayName { get { return typeof(TEntity).Name; } }
 
         public Func<TProjection, bool> PreSave;
+        public Func<TProjection, bool, bool> PreSaveWithNewEntityDetection;
         public Action<TProjection, bool> PostSave;
         /// <summary>
         /// Saves the given entity.
@@ -1211,12 +1236,17 @@ namespace BluePrints.Common.ViewModel
         [Display(AutoGenerateField = false)]
         public virtual void Save(TProjection projectionEntity)
         {
-            if(PreSave != null)
-                if(!PreSave(projectionEntity))
+            if (PreSave != null)
+                if (!PreSave(projectionEntity))
                     return;
 
             bool isNewEntity;
             var entity = Repository.FindExistingOrAddNewEntity(projectionEntity, (p, e) => { ApplyProjectionPropertiesToEntity(p, e); }, out isNewEntity);
+            
+            if (PreSaveWithNewEntityDetection != null)
+                if (!PreSaveWithNewEntityDetection(projectionEntity, isNewEntity))
+                    return;
+
             try
             {
                 OnBeforeEntitySaved(entity);

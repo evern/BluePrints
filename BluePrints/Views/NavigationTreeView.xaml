@@ -30,7 +30,7 @@
             <dxg:TreeListColumn Header="Title" FieldName="ModuleTitle" VisibleIndex="0" Width="*" />
         </dxg:TreeListControl.Columns>
         <dxg:TreeListControl.View>
-            <dxg:TreeListView x:Name="TreeListView" ShowNodeImages="True" TreeLineStyle="None" ExpandStateFieldName="TreeViewIsExpanded" ImageFieldName="TreeViewImage" AllowEditing="False" AllowSorting="False" ParentFieldName="TreeViewParentId" KeyFieldName="TreeViewId" >
+            <dxg:TreeListView x:Name="TreeListView" ShowNodeImages="True" ShowHorizontalLines="False" ShowVerticalLines="False" TreeLineStyle="None" ShowColumnHeaders="False" ShowIndicator="False" ExpandStateFieldName="TreeViewIsExpanded" ImageFieldName="TreeViewImage" AllowEditing="False" AllowSorting="False" ParentFieldName="TreeViewParentId" KeyFieldName="TreeViewId" >
                 <dxmvvm:Interaction.Behaviors>
                     <dxmvvm:EventToCommand EventName="MouseDoubleClick" Command="{Binding NavigateCommand}" />
                 </dxmvvm:Interaction.Behaviors>

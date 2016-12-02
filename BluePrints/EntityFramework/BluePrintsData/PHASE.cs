@@ -12,7 +12,6 @@ namespace BluePrints.Data
         public PHASE()
         {
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
-            ESTIMATION_ITEM = new HashSet<ESTIMATION_ITEM>();
             WORKPACK = new HashSet<WORKPACK>();
         }
 
@@ -46,8 +45,6 @@ namespace BluePrints.Data
         public Guid? DELETEDBY { get; set; }
 
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
-
-        public virtual ICollection<ESTIMATION_ITEM> ESTIMATION_ITEM { get; set; }
 
         public virtual PROJECT PROJECT { get; set; }
 

@@ -14,7 +14,7 @@
         xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
         xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
         xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
-        mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:VARIATIONCollectionViewModel}">
+        mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:VARIATIONSViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -34,7 +34,8 @@
                     <dxr:RibbonPage Caption="Home">
                         <dxr:RibbonPageGroup Caption="PROJECT Tasks">
                             <dxb:BarButtonItem Content="Edit" Command="{Binding DataContext.EditCommand, ElementName=userControl}" CommandParameter="{Binding SelectedEntity}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
-                            <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}" CommandParameter="{Binding SelectedEntities}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                            <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"  LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                            <dxb:BarButtonItem Content="Submit" Command="{Binding DataContext.SubmitCommand, ElementName=userControl}" CommandParameter="{Binding SelectedEntity}" LargeGlyph="{dx:DXImage Image=CheckBox_32x32.png}" Glyph="{dx:DXImage Image=CheckBox_16x16.png}" />
                             <dxb:BarButtonItem Content="Approve" Command="{Binding DataContext.ApproveCommand, ElementName=userControl}" CommandParameter="{Binding SelectedEntity}" LargeGlyph="{dx:DXImage Image=Apply_32x32.png}" Glyph="{dx:DXImage Image=Apply_16x16.png}" />
                             <dxb:BarButtonItem Content="Refresh" Command="{Binding RefreshCommand}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                             <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
@@ -64,7 +65,8 @@
                             <dxg:TableView.RowCellMenuCustomizations>
                                 <dxb:BarButtonItem Content="Edit" Command="{Binding View.DataContext.EditCommand}" CommandParameter="{Binding Row.Row}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                 <dxb:BarButtonItem Content="Fill Down" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" Command="{Binding View.DataContext.FillDownCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                <dxb:BarButtonItem Content="Approve" Glyph="{dx:DXImageOffice2013 Image=Apply_16x16.png}" Command="{Binding DataContext.MainViewModel.ApproveCommand, ElementName=userControl}" CommandParameter="{Binding DataContext.PROJECTVARIATIONSDetails.SelectedEntity, ElementName=userControl}" />
+                                <dxb:BarButtonItem Content="Submit" Command="{Binding DataContext.SubmitCommand, ElementName=userControl}" CommandParameter="{Binding Row.Row}" LargeGlyph="{dx:DXImage Image=CheckBox_32x32.png}" Glyph="{dx:DXImage Image=CheckBox_16x16.png}" />
+                                <dxb:BarButtonItem Content="Approve" Glyph="{dx:DXImageOffice2013 Image=Apply_16x16.png}" Command="{Binding DataContext.MainViewModel.ApproveCommand, ElementName=userControl}" CommandParameter="{Binding SelectedEntity, ElementName=userControl}" />
                                 <dxb:BarButtonItem Content="Delete" Command="{Binding View.DataContext.BulkDeleteCommand}" CommandParameter="{Binding View.DataContext.SelectedEntities}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding View.DataContext.RefreshCommand}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                             </dxg:TableView.RowCellMenuCustomizations>

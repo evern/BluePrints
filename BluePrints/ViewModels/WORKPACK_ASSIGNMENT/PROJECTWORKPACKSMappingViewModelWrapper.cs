@@ -254,7 +254,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<TASK>();
+                var collection = GetEntities<TASK>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.task_name);
+                return collection;
             }
         }
 

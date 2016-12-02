@@ -353,7 +353,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<DISCIPLINE>();
+                var collection = GetEntities<DISCIPLINE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
             }
         }
 
@@ -361,7 +364,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<UOM>();
+                var collection = GetEntities<UOM>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.UOM1);
+                return collection;
             }
         }
         #endregion

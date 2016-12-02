@@ -198,4 +198,7 @@
   <data name="DefaultConstructionDepartment" xml:space="preserve">
     <value>CONSTRUCTION</value>
   </data>
+  <data name="WORKPACK_InternalNameChange" xml:space="preserve">
+    <value>Do you wish to change the internal name too?</value>
+  </data>
 </root>

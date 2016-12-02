@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BluePrints.Common;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity.Core.Common.CommandTrees;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
@@ -11,6 +12,7 @@ namespace BluePrints.Data
     public class SoftDeleteInterceptor : IDbCommandTreeInterceptor
     {
         public const string DeletedColumnName = "DELETED";
+        public const string DeletedByColumnName = "DELETEDBY";
 
         public void TreeCreated(DbCommandTreeInterceptionContext interceptionContext)
         {
@@ -55,6 +57,10 @@ namespace BluePrints.Data
             setClauses.Add(DbExpressionBuilder.SetClause(
                 deleteCommand.Target.VariableType.Variable(deleteCommand.Target.VariableName).Property(DeletedColumnName),
                 DbExpression.FromDateTime(now)));
+
+            setClauses.Add(DbExpressionBuilder.SetClause(
+                deleteCommand.Target.VariableType.Variable(deleteCommand.Target.VariableName).Property(DeletedByColumnName),
+                DbExpression.FromGuid(LoginCredentials.CurrentUserGuid())));
 
             return new DbUpdateCommandTree(
                 deleteCommand.MetadataWorkspace,

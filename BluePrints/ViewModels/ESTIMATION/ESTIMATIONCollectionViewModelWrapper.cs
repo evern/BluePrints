@@ -142,7 +142,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<BluePrints.P6Data.PROJWBS>();
+                var collection = GetEntities<BluePrints.P6Data.PROJWBS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.wbs_short_name);
+                return collection;
             }
         }
         #endregion

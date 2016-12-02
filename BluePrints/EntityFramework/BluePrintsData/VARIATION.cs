@@ -1,10 +1,11 @@
 namespace BluePrints.Data
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Data.Entity.Spatial;
+    using BluePrints.Common;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.Spatial;
 
     [Table("VARIATION")]
     public partial class VARIATION
@@ -31,6 +32,9 @@ namespace BluePrints.Data
 
         [StringLength(500)]
         public string COMMENTS { get; set; }
+
+        [Required]
+        public VariationType TYPE { get; set; }
 
         public DateTime? SUBMITTED { get; set; }
 

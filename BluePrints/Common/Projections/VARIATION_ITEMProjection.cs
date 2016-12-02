@@ -49,6 +49,17 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public decimal MINUNITS
+        {
+            get
+            {
+                if (PROGRESS_ITEMSBeforeReportingDate == null || BASELINE_ITEMJoinRATE == null || BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS == 0)
+                    return 0;
+                else
+                    return -1 * (BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS - PROGRESS_ITEMCurrent.EARNED_UNITS - PastPROGRESS_ITEMS_UNITS);
+            }
+        }
+
         public bool CANTOGGLECANCELLATION
         {
             get { return !ISLOCKED && VARIATION_ITEM.ACTION != VariationAction.Add; }
@@ -81,17 +92,20 @@ namespace BluePrints.Common.Projections
                 BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS = PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(BASELINE_ITEMS.Where(x => x.GUID == Guid.Empty), getPROGRESSFunc, getBASELINEFunc, getPROGRESS_ITEMSFunc, getRATESFunc, true);
             else
             {
-                if(VARIATION.SUBMITTED != null)
-                    BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS = PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(BASELINE_ITEMS.Where(x => x.GUID_VARIATION == VARIATION.GUID && x.GUID_BASELINE != null), getPROGRESSFunc, getBASELINEFunc, getPROGRESS_ITEMSFunc, getRATESFunc, true);
+                if(VARIATION.APPROVED != null)
+                    BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS = PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(BASELINE_ITEMS.Where(x => x.GUID_VARIATION == VARIATION.GUID && x.GUID_BASELINE == VARIATION.GUID_BASELINE), getPROGRESSFunc, getBASELINEFunc, getPROGRESS_ITEMSFunc, getRATESFunc, true);
                 else
                     BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS = PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(BASELINE_ITEMS.Where(x => x.GUID_BASELINE == BASELINE.GUID || (x.GUID_VARIATION == VARIATION.GUID && x.GUID_BASELINE == null)), getPROGRESSFunc, getBASELINEFunc, getPROGRESS_ITEMSFunc, getRATESFunc, true);
             }
 
+            DateTime reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
             return BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS.ToArray().AsQueryable().Select(x => new VARIATION_ITEMProjection() 
             {   GUID = x.GUID,
                 VARIATION_ITEM = LoadVARIATION_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL).FirstOrDefault(),
                 BASELINE_ITEMJoinRATE = x.BASELINE_ITEMJoinRATE,
-                ISLOCKED = IsLocked
+                ISLOCKED = IsLocked,
+                ReportingDataDate = reportingDate,
+                PROGRESS_ITEMS = LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL).ToArray().AsEnumerable()
             });
         }
     }

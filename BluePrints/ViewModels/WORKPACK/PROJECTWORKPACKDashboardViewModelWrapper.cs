@@ -118,7 +118,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<PHASE>();
+                var collection = GetEntities<PHASE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
+                return collection;
             }
         }
 
@@ -126,7 +129,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<AREA>();
+                var collection = GetEntities<AREA>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
+                return collection;
             }
         }
 
@@ -134,7 +140,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<DEPARTMENT>();
+                var collection = GetEntities<DEPARTMENT>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
             }
         }
 
@@ -142,7 +151,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<DISCIPLINE>();
+                var collection = GetEntities<DISCIPLINE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
             }
         }
 
@@ -150,7 +162,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<DOCTYPE>();
+                var collection = GetEntities<DOCTYPE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
             }
         }
         #endregion

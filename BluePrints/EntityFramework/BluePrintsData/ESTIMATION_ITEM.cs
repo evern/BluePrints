@@ -18,8 +18,6 @@ namespace BluePrints.Data
 
         public Guid? GUID_VARIATION { get; set; }
 
-        public Guid? GUID_PHASE { get; set; }
-
         public Guid? GUID_AREA { get; set; }
 
         public Guid? GUID_SUPPLYWORKPACK { get; set; }
@@ -60,8 +58,6 @@ namespace BluePrints.Data
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 
         public virtual ESTIMATION ESTIMATION { get; set; }
-
-        public virtual PHASE PHASE { get; set; }
 
         public virtual WORKPACK SUPPLYWORKPACK { get; set; }
 

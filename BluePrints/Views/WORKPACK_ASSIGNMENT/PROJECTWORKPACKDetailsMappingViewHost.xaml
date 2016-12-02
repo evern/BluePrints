@@ -30,30 +30,34 @@
         <dx:DXMessageBoxService />
         <dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />
         <dx:WindowedDocumentUIService YieldToParent="True" />
-        <dxmvvm:LayoutSerializationService />
     </dxmvvm:Interaction.Behaviors>
-    <Grid DataContext="{Binding MainViewModel}" dx:DXSerializer.StoreLayoutMode="UI">
-        <DockPanel>
-            <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
-                <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                    <dxr:RibbonPage Caption="Home">
-                        <dxr:RibbonPageGroup Caption="PROJECT Tasks">
+    <Grid dx:DXSerializer.StoreLayoutMode="UI">
+        <dxmvvm:Interaction.Behaviors>
+            <dxmvvm:LayoutSerializationService />
+        </dxmvvm:Interaction.Behaviors>
+        <Grid DataContext="{Binding MainViewModel}" dx:DXSerializer.StoreLayoutMode="UI">
+            <DockPanel>
+                <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
+                    <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
+                        <dxr:RibbonPage Caption="Home">
+                            <dxr:RibbonPageGroup Caption="PROJECT Tasks">
 
-                        </dxr:RibbonPageGroup>
-                    </dxr:RibbonPage>
-                </dxr:RibbonDefaultPageCategory>
-            </dxr:RibbonControl>
-            <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
-                <dxr:RibbonStatusBarControl.LeftItems>
-                    <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
-                </dxr:RibbonStatusBarControl.LeftItems>
-            </dxr:RibbonStatusBarControl>
-            <dxlc:LayoutControl Orientation="Vertical">
-                <dxlc:LayoutGroup Name="LayoutGroupSchedule" View="Group" Header="Schedule" Orientation="Horizontal" dxlc:LayoutControl.AllowVerticalSizing="True">
-                    <wfi:WindowsFormsHost x:Name="winFormHost" Height="auto" Width="auto">
-                    </wfi:WindowsFormsHost>
-                </dxlc:LayoutGroup>
-            </dxlc:LayoutControl>
-        </DockPanel>
+                            </dxr:RibbonPageGroup>
+                        </dxr:RibbonPage>
+                    </dxr:RibbonDefaultPageCategory>
+                </dxr:RibbonControl>
+                <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
+                    <dxr:RibbonStatusBarControl.LeftItems>
+                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                    </dxr:RibbonStatusBarControl.LeftItems>
+                </dxr:RibbonStatusBarControl>
+                <dxlc:LayoutControl Orientation="Vertical">
+                    <dxlc:LayoutGroup Name="LayoutGroupSchedule" View="Group" Header="Schedule" Orientation="Horizontal" dxlc:LayoutControl.AllowVerticalSizing="True">
+                        <wfi:WindowsFormsHost x:Name="winFormHost" Height="auto" Width="auto">
+                        </wfi:WindowsFormsHost>
+                    </dxlc:LayoutGroup>
+                </dxlc:LayoutControl>
+            </DockPanel>
+        </Grid>
     </Grid>
 </UserControl>

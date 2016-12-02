@@ -172,4 +172,10 @@ namespace BluePrints.Common
         Supply,
         Install
     }
+
+    public enum VariationType
+    {
+        Internal,
+        External
+    }
 }

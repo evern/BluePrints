@@ -67,17 +67,17 @@ namespace BluePrints.ViewModels
 
         Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live).Include(x => x.BASELINE_ITEM);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == ProgressStatus.Live).Include(x => x.PROGRESS_ITEM);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.APPROVED != null);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
@@ -121,6 +121,13 @@ namespace BluePrints.ViewModels
             MainViewModel = (CollectionViewModel<PROJECT, PROJECT_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>)mainEntityLoader.GetViewModel();
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             MainViewModel.SetParentViewModel(this);
+            BASELINEViewModel.PreSave = this.BASELINEPreSave;
+            PROGRESSViewModel.PreSave = this.PROGRESSPreSave;
+            RATEViewModel.PreSave = this.RATEPreSave;
+            AREAViewModel.PreSave = this.AREAPreSave;
+            PHASEViewModel.PreSave = this.PHASEPreSave;
+            ESTIMATIONViewModel.PreSave = this.ESTIMATIONPreSave;
+
             base.OnMainViewModelLoaded(entities);
             return true;
         }
@@ -136,6 +143,44 @@ namespace BluePrints.ViewModels
             else
                 mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
         }
+
+        #region CallBacks
+        public bool BASELINEPreSave(BASELINE entity)
+        {
+            entity.GUID_PROJECT = this.loadPROJECT.GUID;
+            return true;
+        }
+
+        public bool PROGRESSPreSave(PROGRESS entity)
+        {
+            entity.GUID_PROJECT = this.loadPROJECT.GUID;
+            return true;
+        }
+
+        public bool RATEPreSave(RATE entity)
+        {
+            entity.GUID_PROJECT = this.loadPROJECT.GUID;
+            return true;
+        }
+
+        public bool AREAPreSave(AREA entity)
+        {
+            entity.GUID_PROJECT = this.loadPROJECT.GUID;
+            return true;
+        }
+
+        public bool PHASEPreSave(PHASE entity)
+        {
+            entity.GUID_PROJECT = this.loadPROJECT.GUID;
+            return true;
+        }
+
+        public bool ESTIMATIONPreSave(ESTIMATION entity)
+        {
+            entity.GUID_PROJECT = this.loadPROJECT.GUID;
+            return true;
+        }
+        #endregion
         #endregion
 
         #region View Behavior
@@ -221,7 +266,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<DEPARTMENT>();
+                var collection = GetEntities<DEPARTMENT>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
             }
         }
 
@@ -229,7 +277,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<DISCIPLINE>();
+                var collection = GetEntities<DISCIPLINE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
             }
         }
 

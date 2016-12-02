@@ -45,7 +45,7 @@ namespace BluePrints.Common.ViewModel
         void loadEntitiesCollectionOnMainThread()
         {
             IEnumerable<IEntitiesLoaderDescription> entitiesLoader = loaderCollection.Where(x => !x.isLoaded);
-            if (entitiesLoader == null)
+            if (entitiesLoader == null || entitiesLoader.Count() == 0)
                 return;
 
             int currentLoadOrder = entitiesLoader.Min(x => x.loadOrder);

@@ -36,70 +36,74 @@
             </dx:DialogService.DialogStyle>
         </dx:DialogService>
         <dx:DXMessageBoxService />
-        <dxmvvm:LayoutSerializationService />
     </dxmvvm:Interaction.Behaviors>
     <Grid dx:DXSerializer.StoreLayoutMode="UI">
-        <DockPanel>
-            <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
-                <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                    <dxr:RibbonPage Caption="Home">
-                        <dxr:RibbonPageGroup Caption="ROLE Tasks">
-                            <dxb:BarButtonItem Content="Refresh" Command="{Binding ROLECollection.RefreshCommand}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                            <dxb:BarButtonItem Content="Add Role" Command="{Binding AddRoleCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" LargeGlyph="{dx:DXImage Image=Add_32x32.png}" Glyph="{dx:DXImage Image=Add_16x16.png}" />
-                            <dxb:BarButtonItem Content="Delete Role" Command="{Binding ROLECollection.BulkDeleteCommand}" CommandParameter="{Binding ROLECollection.SelectedEntities}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                        </dxr:RibbonPageGroup>
-                    </dxr:RibbonPage>
-                </dxr:RibbonDefaultPageCategory>
-            </dxr:RibbonControl>
-            <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
-                <dxr:RibbonStatusBarControl.LeftItems>
-                    <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
-                </dxr:RibbonStatusBarControl.LeftItems>
-            </dxr:RibbonStatusBarControl>
-            <Grid>
-                <dxlc:LayoutControl Name="LayoutControlRoot" Orientation="Horizontal">
-                    <dxlc:LayoutGroup Name="LayoutGroupGrid" DataContext="{Binding ROLECollection}" View="Group" Header="Edit Value" Orientation="Horizontal" dxlc:LayoutControl.AllowVerticalSizing="True">
-                        <dxg:TreeListControl Name="treeListControl" Style="{StaticResource DefaultTreeTemplate}">
-                            <dxg:TreeListControl.Columns>
-                                <dxg:TreeListColumn FieldName="NAME" />
-                                <dxg:TreeListColumn FieldName="SORTORDER" Visible="False" />
-                            </dxg:TreeListControl.Columns>
-                            <dxg:TreeListControl.View>
-                                <dxg:TreeListView x:Name="treeListView" AllowSorting="False" ParentFieldName="PARENTGUID" KeyFieldName="GUID" AutoExpandAllNodes="True">
-                                    <dxmvvm:Interaction.Behaviors>
-                                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding TreelistExistingRowAddUndoAndSaveCommand}" EventName="CellValueChanged" />
-                                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}" EventName="ValidateCell" />
-                                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}" EventName="ValidateRow" />
-                                        <dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}" CommandParameter="{Binding SelectedEntities}" />
-                                    </dxmvvm:Interaction.Behaviors>
-                                </dxg:TreeListView>
-                            </dxg:TreeListControl.View>
-                            <dxmvvm:Interaction.Behaviors>
-                                <dxg:TreeListDragDropManager x:Name="dragDropManager" Dropped="dragDropManager_Dropped" />
-                            </dxmvvm:Interaction.Behaviors>
-                        </dxg:TreeListControl>
-                    </dxlc:LayoutGroup>
-                    <dxlc:LayoutGroup Name="LayoutGroupPermission" DataContext="{Binding ROLE_PERMISSIONCollection}" View="Group" Header="Edit Value" Orientation="Horizontal" dxlc:LayoutControl.AllowVerticalSizing="True">
-                        <dxg:GridControl Style="{StaticResource DefaultGridTemplate}">
-                            <dxg:GridControl.Columns>
-                                <dxg:GridColumn FieldName="PERMISSION" AllowEditing="False" MinWidth="300">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.PermissionLookUp, ElementName=userControl}" IsTextEditable="False" DisplayMember="Value" ValueMember="Key"/>
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="ASSIGNED" />
-                            </dxg:GridControl.Columns>
-                            <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" NewItemRowPosition="None" AutoWidth="True" >
-                                    <dxmvvm:Interaction.Behaviors>
-                                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding DataContext.AssignPermissionCommand, ElementName=userControl}" EventName="CellValueChanging" />
-                                    </dxmvvm:Interaction.Behaviors>
-                                </dxg:TableView>
-                            </dxg:GridControl.View>
-                        </dxg:GridControl>
-                    </dxlc:LayoutGroup>
-                </dxlc:LayoutControl>
-            </Grid>
-        </DockPanel>
+        <dxmvvm:Interaction.Behaviors>
+            <dxmvvm:LayoutSerializationService />
+        </dxmvvm:Interaction.Behaviors>
+        <Grid>
+            <DockPanel>
+                <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
+                    <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
+                        <dxr:RibbonPage Caption="Home">
+                            <dxr:RibbonPageGroup Caption="ROLE Tasks">
+                                <dxb:BarButtonItem Content="Refresh" Command="{Binding ROLECollection.RefreshCommand}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                <dxb:BarButtonItem Content="Add Role" Command="{Binding AddRoleCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" LargeGlyph="{dx:DXImage Image=Add_32x32.png}" Glyph="{dx:DXImage Image=Add_16x16.png}" />
+                                <dxb:BarButtonItem Content="Delete Role" Command="{Binding ROLECollection.BulkDeleteCommand}" CommandParameter="{Binding ROLECollection.SelectedEntities}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                            </dxr:RibbonPageGroup>
+                        </dxr:RibbonPage>
+                    </dxr:RibbonDefaultPageCategory>
+                </dxr:RibbonControl>
+                <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
+                    <dxr:RibbonStatusBarControl.LeftItems>
+                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                    </dxr:RibbonStatusBarControl.LeftItems>
+                </dxr:RibbonStatusBarControl>
+                <Grid>
+                    <dxlc:LayoutControl Name="LayoutControlRoot" Orientation="Horizontal">
+                        <dxlc:LayoutGroup Name="LayoutGroupGrid" DataContext="{Binding ROLECollection}" View="Group" Header="Edit Value" Orientation="Horizontal" dxlc:LayoutControl.AllowVerticalSizing="True">
+                            <dxg:TreeListControl Name="treeListControl" Style="{StaticResource DefaultTreeTemplate}">
+                                <dxg:TreeListControl.Columns>
+                                    <dxg:TreeListColumn FieldName="NAME" />
+                                    <dxg:TreeListColumn FieldName="SORTORDER" Visible="False" />
+                                </dxg:TreeListControl.Columns>
+                                <dxg:TreeListControl.View>
+                                    <dxg:TreeListView x:Name="treeListView" AllowSorting="False" ParentFieldName="PARENTGUID" KeyFieldName="GUID" AutoExpandAllNodes="True">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding TreelistExistingRowAddUndoAndSaveCommand}" EventName="CellValueChanged" />
+                                            <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}" EventName="ValidateCell" />
+                                            <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}" EventName="ValidateRow" />
+                                            <dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}"  />
+                                        </dxmvvm:Interaction.Behaviors>
+                                    </dxg:TreeListView>
+                                </dxg:TreeListControl.View>
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxg:TreeListDragDropManager x:Name="dragDropManager" Dropped="dragDropManager_Dropped" />
+                                </dxmvvm:Interaction.Behaviors>
+                            </dxg:TreeListControl>
+                        </dxlc:LayoutGroup>
+                        <dxlc:LayoutGroup Name="LayoutGroupPermission" DataContext="{Binding ROLE_PERMISSIONCollection}" View="Group" Header="Edit Value" Orientation="Horizontal" dxlc:LayoutControl.AllowVerticalSizing="True">
+                            <dxg:GridControl Style="{StaticResource DefaultGridTemplate}">
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn FieldName="PERMISSION" AllowEditing="False" MinWidth="300">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.PermissionLookUp, ElementName=userControl}" IsTextEditable="False" DisplayMember="Value" ValueMember="Key"/>
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="ASSIGNED" />
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.View>
+                                    <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" NewItemRowPosition="None" AutoWidth="True" >
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding DataContext.AssignPermissionCommand, ElementName=userControl}" EventName="CellValueChanging" />
+                                        </dxmvvm:Interaction.Behaviors>
+                                    </dxg:TableView>
+                                </dxg:GridControl.View>
+                            </dxg:GridControl>
+                        </dxlc:LayoutGroup>
+                    </dxlc:LayoutControl>
+                </Grid>
+            </DockPanel>
+        </Grid>
     </Grid>
 </UserControl>

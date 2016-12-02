@@ -36,7 +36,7 @@
                         <dxr:RibbonPageGroup Caption="COMMODITY CODE Tasks">
                             <dxb:BarButtonItem Content="Insert Before" Command="{Binding AddCommodityCodeRowBeforeCommand}" LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" />
                             <dxb:BarButtonItem Content="Insert After" Command="{Binding AddCommodityCodeRowAfterCommand}" LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" />
-                            <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}" CommandParameter="{Binding SelectedEntities}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                            <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"  LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                             <dxb:BarButtonItem Content="Refresh" Command="{Binding RefreshCommand}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                             <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
                             <dxb:BarButtonItem Content="Redo" Command="{Binding RedoCommand}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
@@ -82,7 +82,7 @@
                                 <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding TreelistExistingRowAddUndoAndSaveCommand}" EventName="CellValueChanged" />
                                 <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}" EventName="ValidateCell" />
                                 <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}" EventName="ValidateRow" />
-                                <dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}" CommandParameter="{Binding SelectedEntities}" />
+                                <dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}"  />
                                 <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}"  />
                                 <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}"  />
                                 <dxmvvm:EventToCommand EventName="CustomUnboundColumnData" Command="{Binding CustomUnboundColumnDataCommand}" PassEventArgsToCommand="True" />

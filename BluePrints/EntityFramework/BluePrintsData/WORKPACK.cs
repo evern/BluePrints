@@ -31,8 +31,7 @@ namespace BluePrints.Data
 
         public Guid? GUID_DPHASE { get; set; }
 
-        [Required]
-        public Guid GUID_DAREA { get; set; }
+        public Guid? GUID_DAREA { get; set; }
 
         public Guid? GUID_DDOCTYPE { get; set; }
 

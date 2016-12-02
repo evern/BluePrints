@@ -286,6 +286,15 @@ namespace BluePrints.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Do you wish to change the internal name too?.
+        /// </summary>
+        internal static string WORKPACK_InternalNameChange {
+            get {
+                return ResourceManager.GetString("WORKPACK_InternalNameChange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to BluePrints.
         /// </summary>
         internal static string XMLDefaultDirectory {

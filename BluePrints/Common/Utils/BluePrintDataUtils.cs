@@ -103,6 +103,28 @@ namespace BluePrints.Common.ViewModel.Utils
                 return string.Empty;
         }
 
+        public static string BASELINEITEM_Generate_InternalNumber(PROJECT fromPROJECT, IEnumerable<BASELINE_ITEM> BASELINE_ITEMEntities, AREA selectedAREA, DISCIPLINE selectedDISCIPLINE, DOCTYPE selectedDOCTYPE, Guid? excludeGUID = null)
+        {
+            if (selectedAREA != null && selectedDISCIPLINE != null && selectedDOCTYPE != null)
+            {
+                string InternalNum = fromPROJECT.NUMBER;
+                if (selectedAREA != null)
+                    InternalNum += "-" + selectedAREA.INTERNAL_NUM;
+                if (selectedDOCTYPE != null)
+                    InternalNum += selectedDOCTYPE.CODE;
+                if (selectedDISCIPLINE != null)
+                    InternalNum += selectedDISCIPLINE.CODE;
+
+                int internalNameCount = BASELINE_ITEMEntities.Where(x => x.GUID != excludeGUID).Count(x => x.INTERNAL_NUM != null && x.INTERNAL_NUM.Contains(InternalNum));
+                internalNameCount += 1;
+                InternalNum += internalNameCount.ToString();
+
+                return InternalNum;
+            }
+            else
+                return string.Empty;
+        }
+
         /// <summary>
         /// Generate internal number1 when all required fields are populated
         /// </summary>

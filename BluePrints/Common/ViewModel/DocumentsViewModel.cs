@@ -191,7 +191,7 @@ namespace BluePrints.Common.ViewModel
 
         public virtual TModule DefaultModule { get { return Modules.First(); } }
 
-        protected bool IsLoaded { get; private set; }
+        protected bool IsLoaded { get; set; }
 
         protected virtual void OnSelectedModuleChanged(TModule oldModule)
         {

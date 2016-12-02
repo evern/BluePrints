@@ -24,12 +24,13 @@ namespace BluePrints
         {
             InitializeComponent();
         }
-        public Action ShowLoginWindow { get; set; }
+        //public Action ShowLoginWindow { get; set; }
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
-            if (ShowLoginWindow != null)
-                ShowLoginWindow();
+            System.Environment.Exit(1);
+            //if (ShowLoginWindow != null)
+            //    ShowLoginWindow();
         }
     }
 }

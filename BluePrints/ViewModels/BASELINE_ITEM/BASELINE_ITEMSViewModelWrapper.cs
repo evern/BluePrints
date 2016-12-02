@@ -395,12 +395,17 @@ namespace BluePrints.ViewModels
                     {
                         WORKPACK newWORKPACK = new WORKPACK();
                         newWORKPACK.GUID_PROJECT = loadPROJECT.GUID;
-                        newWORKPACK.GUID_DAREA = (Guid)entity.BASELINE_ITEM.GUID_AREA;
+                        if (entity.BASELINE_ITEM.GUID_AREA != null)
+                            newWORKPACK.GUID_DAREA = (Guid)entity.BASELINE_ITEM.GUID_AREA;
                         if (entity.BASELINE_ITEM.GUID_PHASE != null)
                             newWORKPACK.GUID_DPHASE = entity.BASELINE_ITEM.GUID_PHASE;
-                        newWORKPACK.GUID_DDISCIPLINE = (Guid)entity.BASELINE_ITEM.GUID_DISCIPLINE;
-                        newWORKPACK.GUID_DDEPARTMENT = (Guid)entity.BASELINE_ITEM.GUID_DEPARTMENT;
-                        newWORKPACK.GUID_DDOCTYPE = (Guid)entity.BASELINE_ITEM.GUID_DOCTYPE;
+                        if (entity.BASELINE_ITEM.GUID_DISCIPLINE != null)
+                            newWORKPACK.GUID_DDISCIPLINE = (Guid)entity.BASELINE_ITEM.GUID_DISCIPLINE;
+                        if (entity.BASELINE_ITEM.GUID_DEPARTMENT != null)
+                            newWORKPACK.GUID_DDEPARTMENT = (Guid)entity.BASELINE_ITEM.GUID_DEPARTMENT;
+                        if (entity.BASELINE_ITEM.GUID_DOCTYPE != null)
+                            newWORKPACK.GUID_DDOCTYPE = (Guid)entity.BASELINE_ITEM.GUID_DOCTYPE;
+
                         newWORKPACK.INTERNAL_NAME1 = BluePrintDataUtils.WORKPACK_Generate_InternalNumber1(loadPROJECT, newWORKPACK, WORKPACKCollection, loaderCollection.GetViewModel<AREA>(), loaderCollection.GetViewModel<DISCIPLINE>(), loaderCollection.GetViewModel<DOCTYPE>());
                         newWORKPACK.INTERNAL_NAME2 = BluePrintDataUtils.WORKPACK_Generate_InternalNumber2(loadPROJECT, newWORKPACK, WORKPACKCollection, loaderCollection.GetViewModel<AREA>(), loaderCollection.GetViewModel<DISCIPLINE>(), loaderCollection.GetViewModel<PHASE>());
                        
@@ -470,7 +475,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<WORKPACK>();
+                var collection = GetEntities<WORKPACK>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NAME1).OrderBy(x => x.INTERNAL_NAME2);
+                return collection;
             }
         }
 
@@ -478,7 +486,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<PHASE>();
+                var collection = GetEntities<PHASE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
+                return collection;
             }
         }
 
@@ -486,7 +497,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<AREA>();
+                var collection = GetEntities<AREA>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
+                return collection;
             }
         }
 
@@ -494,7 +508,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<DEPARTMENT>();
+                var collection = GetEntities<DEPARTMENT>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
             }
         }
 
@@ -502,7 +519,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<DISCIPLINE>();
+                var collection = GetEntities<DISCIPLINE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
             }
         }
 
@@ -510,7 +530,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<DOCTYPE>();
+                var collection = GetEntities<DOCTYPE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.CODE);
+                return collection;
             }
         }
         #endregion

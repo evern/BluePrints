@@ -167,7 +167,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 else
                 {
                     if (PROGRESS_ITEMcurrent == null)
-                        PROGRESS_ITEMcurrent = value.FirstOrDefault(y => y.GUID_ORIBASEITEM == BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL && y.EARNED_DATE == ReportingDataDate);
+                        PROGRESS_ITEMcurrent = value.Where(y => y.GUID_ORIBASEITEM == BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL && y.EARNED_DATE == ReportingDataDate).OrderBy(x => x.EARNED_UNITS).FirstOrDefault();
                     if (PROGRESS_ITEMSafterreportingdate == null)
                         PROGRESS_ITEMSafterreportingdate = value.Where(y => y.GUID_ORIBASEITEM == BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL && y.EARNED_DATE > ReportingDataDate).ToList();
                     if (PROGRESS_ITEMSbeforereportingdate == null)

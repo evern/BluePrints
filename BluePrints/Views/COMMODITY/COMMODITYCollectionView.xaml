@@ -35,87 +35,91 @@
                 </Style>
             </dx:DialogService.DialogStyle>
         </dx:DialogService>
-        <dxmvvm:LayoutSerializationService />
     </dxmvvm:Interaction.Behaviors>
-    <Grid DataContext="{Binding MainViewModel}" dx:DXSerializer.StoreLayoutMode="UI">
-        <DockPanel>
-            <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
-                <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                    <dxr:RibbonPage Caption="Home">
-                        <dxr:RibbonPageGroup Caption="COMMODITY Tasks" SmallGlyph="{dx:DXImage Image=Add_32x32.png}" Glyph="{dx:DXImage Image=Add_32x32.png}" >
-                            <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}" CommandParameter="{Binding SelectedEntities}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                            <dxb:BarButtonItem Content="Refresh" Command="{Binding RefreshCommand}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                            <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
-                            <dxb:BarButtonItem Content="Redo" Command="{Binding RedoCommand}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
-                            <dxb:BarButtonItem Content="Add" Command="{Binding DataContext.AddCommodityFromDialogCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Add_32x32.png}" Glyph="{dx:DXImage Image=Add_16x16.png}" />
-                        </dxr:RibbonPageGroup>
-                    </dxr:RibbonPage>
-                </dxr:RibbonDefaultPageCategory>
-            </dxr:RibbonControl>
-            <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
-                <dxr:RibbonStatusBarControl.LeftItems>
-                    <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
-                </dxr:RibbonStatusBarControl.LeftItems>
-            </dxr:RibbonStatusBarControl>
-            <Grid>
-                <dxg:TreeListControl Name="treeListControl" Style="{StaticResource WrapperTreeTemplate}" >
-                    <dxmvvm:Interaction.Behaviors>
-                        <dxg:TreeListDragDropManager x:Name="dragDropManager" Drop="dragDropManager_Drop" />
-                    </dxmvvm:Interaction.Behaviors>
-                    <dxg:TreeListControl.Columns>
-                        <dxg:TreeListColumn FieldName="COMMODITY.ITEM_DESC" Header="DESCRIPTION" VisibleIndex="0"/>
-                        <dxg:TreeListColumn FieldName="COMMODITY.RATE_SUPPLY" Header="SUPPLY RATE" VisibleIndex="10" >
-                            <dxg:TreeListColumn.CellTemplate>
-                                <DataTemplate>
-                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.ISREADONLY, Converter={StaticResource BooleanNegationConverter}}"/>
-                                </DataTemplate>
-                            </dxg:TreeListColumn.CellTemplate>
-                        </dxg:TreeListColumn>
-                        <dxg:TreeListColumn FieldName="COMMODITY.HOURS_INSTALL" Header="INSTALL HOURS" VisibleIndex="20" >
-                            <dxg:TreeListColumn.CellTemplate>
-                                <DataTemplate>
-                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.ISREADONLY, Converter={StaticResource BooleanNegationConverter}}" />
-                                </DataTemplate>
-                            </dxg:TreeListColumn.CellTemplate>
-                        </dxg:TreeListColumn>
-                        <dxg:TreeListColumn FieldName="COMMODITY.RATE_FREIGHT" Header="FREIGHT RATE" VisibleIndex="30" >
-                            <dxg:TreeListColumn.CellTemplate>
-                                <DataTemplate>
-                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.ISREADONLY, Converter={StaticResource BooleanNegationConverter}}" />
-                                </DataTemplate>
-                            </dxg:TreeListColumn.CellTemplate>
-                        </dxg:TreeListColumn>
-                        <dxg:TreeListColumn FieldName="COMMODITY.COMMODITY_CODE.CODE" Header="CODE" ReadOnly="True" VisibleIndex="40" />
-                        <dxg:TreeListColumn Header="FULLCODE" FieldName="COMMODITY.COMMODITY_CODE.FULLCODE" ReadOnly="True" VisibleIndex="50" />
-                        <dxg:TreeListColumn FieldName="COMMODITY.COMMODITY_CODE.NAME" Header="NAME" ReadOnly="True" />
-                        <dxg:TreeListColumn FieldName="COMMODITY.COMMODITY_CODE.GUID_DISCIPLINE" Header="DISCIPLINE" ReadOnly="True" VisibleIndex="60" >
-                            <dxg:TreeListColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
-                            </dxg:TreeListColumn.EditSettings>
-                        </dxg:TreeListColumn>
-                        <dxg:TreeListColumn FieldName="COMMODITY.COMMODITY_CODE.TYPE" Header="TYPE" ReadOnly="True" VisibleIndex="70" />
-                        <dxg:TreeListColumn FieldName="COMMODITY.COMMODITY_CODE.SPEC" Header="SPEC" ReadOnly="True" VisibleIndex="80" />
-                        <dxg:TreeListColumn FieldName="COMMODITY.COMMODITY_CODE.DESCRIPTION" Header="DESCRIPTION" ReadOnly="True" VisibleIndex="90" />
-                        <dxg:TreeListColumn FieldName="COMMODITY.COMMODITY_CODE.UOM" Header="UOM" ReadOnly="True" VisibleIndex="100" />
-                    </dxg:TreeListControl.Columns>
-                    <dxg:TreeListControl.View>
-                        <dxg:TreeListView x:Name="treeListView" AllowSorting="True" ExpandStateFieldName="ISEXPANDED" KeyFieldName="GUID" ParentFieldName="GUID_PARENT" >
-                            <dxmvvm:Interaction.Behaviors>
-                                <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding DataContext.TreelistExistingRowAddUndoAndSaveCommand, ElementName=userControl}" EventName="CellValueChanged" />
-                                <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}" EventName="ValidateCell" />
-                                <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}" EventName="ValidateRow" />
-                                <dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}" CommandParameter="{Binding SelectedEntities}" />
-                                <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}"  />
-                                <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}"  />
-                            </dxmvvm:Interaction.Behaviors>
-                            <dxg:TreeListView.RowCellMenuCustomizations>
-                                <dxb:BarButtonItem Content="Add" Command="{Binding DataContext.AddCommodityCodeCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Add_32x32.png}" Glyph="{dx:DXImage Image=Add_16x16.png}" />
-                                <dxb:BarButtonItem Content="Delete" Command="{Binding View.DataContext.BulkDeleteCommand}" CommandParameter="{Binding View.DataContext.SelectedEntities}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                            </dxg:TreeListView.RowCellMenuCustomizations>
-                        </dxg:TreeListView>
-                    </dxg:TreeListControl.View>
-                </dxg:TreeListControl>
-            </Grid>
-        </DockPanel>
+    <Grid dx:DXSerializer.StoreLayoutMode="UI">
+        <dxmvvm:Interaction.Behaviors>
+            <dxmvvm:LayoutSerializationService />
+        </dxmvvm:Interaction.Behaviors>
+        <Grid DataContext="{Binding MainViewModel}" >
+            <DockPanel>
+                <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
+                    <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
+                        <dxr:RibbonPage Caption="Home">
+                            <dxr:RibbonPageGroup Caption="COMMODITY Tasks" SmallGlyph="{dx:DXImage Image=Add_32x32.png}" Glyph="{dx:DXImage Image=Add_32x32.png}" >
+                                <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"  LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                <dxb:BarButtonItem Content="Refresh" Command="{Binding RefreshCommand}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
+                                <dxb:BarButtonItem Content="Redo" Command="{Binding RedoCommand}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
+                                <dxb:BarButtonItem Content="Add" Command="{Binding DataContext.AddCommodityFromDialogCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Add_32x32.png}" Glyph="{dx:DXImage Image=Add_16x16.png}" />
+                            </dxr:RibbonPageGroup>
+                        </dxr:RibbonPage>
+                    </dxr:RibbonDefaultPageCategory>
+                </dxr:RibbonControl>
+                <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
+                    <dxr:RibbonStatusBarControl.LeftItems>
+                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                    </dxr:RibbonStatusBarControl.LeftItems>
+                </dxr:RibbonStatusBarControl>
+                <Grid>
+                    <dxg:TreeListControl Name="treeListControl" Style="{StaticResource WrapperTreeTemplate}" >
+                        <dxmvvm:Interaction.Behaviors>
+                            <dxg:TreeListDragDropManager x:Name="dragDropManager" Drop="dragDropManager_Drop" />
+                        </dxmvvm:Interaction.Behaviors>
+                        <dxg:TreeListControl.Columns>
+                            <dxg:TreeListColumn FieldName="COMMODITY.ITEM_DESC" Header="DESCRIPTION" VisibleIndex="0"/>
+                            <dxg:TreeListColumn FieldName="COMMODITY.RATE_SUPPLY" Header="SUPPLY RATE" VisibleIndex="10" >
+                                <dxg:TreeListColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.ISREADONLY, Converter={StaticResource BooleanNegationConverter}}"/>
+                                    </DataTemplate>
+                                </dxg:TreeListColumn.CellTemplate>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn FieldName="COMMODITY.HOURS_INSTALL" Header="INSTALL HOURS" VisibleIndex="20" >
+                                <dxg:TreeListColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.ISREADONLY, Converter={StaticResource BooleanNegationConverter}}" />
+                                    </DataTemplate>
+                                </dxg:TreeListColumn.CellTemplate>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn FieldName="COMMODITY.RATE_FREIGHT" Header="FREIGHT RATE" VisibleIndex="30" >
+                                <dxg:TreeListColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.ISREADONLY, Converter={StaticResource BooleanNegationConverter}}" />
+                                    </DataTemplate>
+                                </dxg:TreeListColumn.CellTemplate>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn FieldName="COMMODITY.COMMODITY_CODE.CODE" Header="CODE" ReadOnly="True" VisibleIndex="40" />
+                            <dxg:TreeListColumn Header="FULLCODE" FieldName="COMMODITY.COMMODITY_CODE.FULLCODE" ReadOnly="True" VisibleIndex="50" />
+                            <dxg:TreeListColumn FieldName="COMMODITY.COMMODITY_CODE.NAME" Header="NAME" ReadOnly="True" />
+                            <dxg:TreeListColumn FieldName="COMMODITY.COMMODITY_CODE.GUID_DISCIPLINE" Header="DISCIPLINE" ReadOnly="True" VisibleIndex="60" >
+                                <dxg:TreeListColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn FieldName="COMMODITY.COMMODITY_CODE.TYPE" Header="TYPE" ReadOnly="True" VisibleIndex="70" />
+                            <dxg:TreeListColumn FieldName="COMMODITY.COMMODITY_CODE.SPEC" Header="SPEC" ReadOnly="True" VisibleIndex="80" />
+                            <dxg:TreeListColumn FieldName="COMMODITY.COMMODITY_CODE.DESCRIPTION" Header="DESCRIPTION" ReadOnly="True" VisibleIndex="90" />
+                            <dxg:TreeListColumn FieldName="COMMODITY.COMMODITY_CODE.UOM" Header="UOM" ReadOnly="True" VisibleIndex="100" />
+                        </dxg:TreeListControl.Columns>
+                        <dxg:TreeListControl.View>
+                            <dxg:TreeListView x:Name="treeListView" AllowSorting="True" ExpandStateFieldName="ISEXPANDED" KeyFieldName="GUID" ParentFieldName="GUID_PARENT" >
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding DataContext.TreelistExistingRowAddUndoAndSaveCommand, ElementName=userControl}" EventName="CellValueChanged" />
+                                    <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}" EventName="ValidateCell" />
+                                    <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}" EventName="ValidateRow" />
+                                    <dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}"  />
+                                    <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}"  />
+                                    <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}"  />
+                                </dxmvvm:Interaction.Behaviors>
+                                <dxg:TreeListView.RowCellMenuCustomizations>
+                                    <dxb:BarButtonItem Content="Add" Command="{Binding DataContext.AddCommodityCodeCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Add_32x32.png}" Glyph="{dx:DXImage Image=Add_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Delete" Command="{Binding View.DataContext.BulkDeleteCommand}" CommandParameter="{Binding View.DataContext.SelectedEntities}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                </dxg:TreeListView.RowCellMenuCustomizations>
+                            </dxg:TreeListView>
+                        </dxg:TreeListControl.View>
+                    </dxg:TreeListControl>
+                </Grid>
+            </DockPanel>
+        </Grid>
     </Grid>
 </UserControl>

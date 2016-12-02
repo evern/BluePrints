@@ -54,7 +54,7 @@ namespace BluePrints.ViewModels
         protected override void InitializeParameters(object parameter)
         {
             delayedPROGRESSSavingDispatcher = new DispatcherTimer();
-            delayedPROGRESSSavingDispatcher.Interval = new TimeSpan(0, 0, 1);
+            delayedPROGRESSSavingDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 10);
             delayedPROGRESSSavingDispatcher.Tick += delayedPROGRESSSavingDispatcher_Tick;
             OptionalEntitiesParameter<BluePrints.Data.PROJECT, PROGRESS> receiveParameter = (OptionalEntitiesParameter<BluePrints.Data.PROJECT, PROGRESS>)parameter;
             this.loadPROJECT = receiveParameter.GetFirstEntity();
@@ -126,7 +126,7 @@ namespace BluePrints.ViewModels
             if (isQueryForLiveStatus)
                 return query => query.Where(x => x.GUID == this.loadPROJECT.GUID);
             else
-                return query => query.Where(x => x.GUID == this.loadPROGRESS.GUID_PROJECT);
+                return query => query.Where(x => x.GUID == this.loadPROGRESS.GUID_PROJECT).OrderBy(x => x.NUMBER);
         }
 
         Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
@@ -187,7 +187,7 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROGRESS_ITEMProjection> entities)
         {
             MainViewModel.PreSave = this.MainEntityPreSave;
-            MainViewModel.BulkPreSave = this.MainEntityBulkPreSave;
+            //MainViewModel.BulkPreSave = this.MainEntityBulkPreSave;
             MainViewModel.ValidateFillDownCallBack = this.ValidateFillDownCallBack;
             MainViewModel.SetParentViewModel(this);
             mainThreadDispatcher.BeginInvoke(new Action(() => this.InitializePROJECTSummary(entities)));
@@ -244,7 +244,8 @@ namespace BluePrints.ViewModels
             if (changedType == typeof(PROGRESS_ITEM))
             {
                 PROGRESS_ITEMProjection mappedEntity = MainViewModel.Entities.FirstOrDefault(x => x.PROGRESS_ITEMCurrent != null && x.PROGRESS_ITEMCurrent.GUID.ToString() == key.ToString());
-                mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(mappedEntity.GUID, EntityMessageType.Changed, this))));
+                if(mappedEntity != null)
+                    mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(mappedEntity.GUID, EntityMessageType.Changed, this))));
                 return;
             }
 
@@ -271,15 +272,15 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-        private bool MainEntityBulkPreSave(IEnumerable<PROGRESS_ITEMProjection> entities)
-        {
-            foreach (var entity in entities)
-            {
-                MainEntityPreSave(entity);
-            }
+        //private bool MainEntityBulkPreSave(IEnumerable<PROGRESS_ITEMProjection> entities)
+        //{
+        //    foreach (var entity in entities)
+        //    {
+        //        MainEntityPreSave(entity);
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
         bool MainEntityPreSave(PROGRESS_ITEMProjection projectionEntity)
         {
@@ -343,7 +344,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<WORKPACK>();
+                var collection = GetEntities<WORKPACK>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NAME1).OrderBy(x => x.INTERNAL_NAME2);
+                return collection;
             }
         }
 

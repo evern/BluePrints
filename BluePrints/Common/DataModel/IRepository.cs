@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.ComponentModel;
 using BluePrints.Common.Utils;
+using BluePrints.Data.Helpers;
 
 namespace BluePrints.Common.DataModel
 {

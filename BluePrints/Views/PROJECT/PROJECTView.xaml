@@ -26,10 +26,9 @@
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
         <dx:DXMessageBoxService />
-        <dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />
-        <dxmvvm:LayoutSerializationService />
+        <!--<dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />-->
     </dxmvvm:Interaction.Behaviors>
-    <Grid DataContext="{Binding MainViewModel}" dx:DXSerializer.StoreLayoutMode="UI">
+    <Grid DataContext="{Binding MainViewModel}" >
         <DockPanel>
             <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False">
                 <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
@@ -45,9 +44,6 @@
             </dxr:RibbonControl>
             <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom" />
             <Grid>
-                <dxmvvm:Interaction.Behaviors>
-                    <dxmvvm:LayoutSerializationService />
-                </dxmvvm:Interaction.Behaviors>
                 <dxlc:LayoutControl x:Name="layoutControl" Orientation="Vertical" >
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Orientation="Vertical" dxlc:LayoutControl.AllowVerticalSizing="False" Height="150">
                         <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="PROJECT_DashboardGrid" Style="{StaticResource WrapperGridTemplate}">
