@@ -24,7 +24,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>29</ApplicationRevision>
+    <ApplicationRevision>30</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -363,6 +363,7 @@
     <Compile Include="Common\ViewModel\Reporting\SummaryManufacturer.cs" />
     <Compile Include="Common\Attributes\ProjectionPropertyAttribute.cs" />
     <Compile Include="Common\ViewModel\Settings\XMLSettings.cs" />
+    <Compile Include="EntityFramework\Annotations\INDIRECT_TYPE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\AREA.cs" />
     <Compile Include="EntityFramework\BluePrintsData\BASELINE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\BASELINE_ITEM.cs" />
@@ -374,6 +375,7 @@
     <Compile Include="EntityFramework\BluePrintsData\DOCTYPE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\ESTIMATION.cs" />
     <Compile Include="EntityFramework\BluePrintsData\ESTIMATION_ITEM.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\INDIRECT_TYPE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PHASE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROGRESS.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROGRESS_ITEM.cs" />
@@ -1043,6 +1045,7 @@
     <Compile Include="ViewModels\COMMODITY\AddCOMMODITYViewModel.cs" />
     <Compile Include="ViewModels\ESTIMATION\ESTIMATIONCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATION_ITEM\ESTIMATION_ITEMSViewModelWrapper.cs" />
+    <Compile Include="ViewModels\INDIRECT_TYPE\INDIRECT_TYPECollectionViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\SelectDetailUSERSViewModel.cs" />
@@ -1115,6 +1118,9 @@
     </Compile>
     <Compile Include="Views\COMMODITY\AddCOMMODITYView.xaml.cs">
       <DependentUpon>AddCOMMODITYView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\INDIRECT_TYPE\INDIRECT_TYPECollectionView.xaml.cs">
+      <DependentUpon>INDIRECT_TYPECollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\NavigationTreeViewPanel.xaml.cs">
       <DependentUpon>NavigationTreeViewPanel.xaml</DependentUpon>
@@ -1339,6 +1345,10 @@
     <Page Include="Views\COMMODITY\AddCOMMODITYView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\INDIRECT_TYPE\INDIRECT_TYPECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\NavigationTreeViewPanel.xaml">
       <Generator>MSBuild:Compile</Generator>

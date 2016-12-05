@@ -201,4 +201,7 @@
   <data name="WORKPACK_InternalNameChange" xml:space="preserve">
     <value>Do you wish to change the internal name too?</value>
   </data>
+  <data name="CommodityCode_NoDepartment" xml:space="preserve">
+    <value>Please add departments before adding commodity code</value>
+  </data>
 </root>

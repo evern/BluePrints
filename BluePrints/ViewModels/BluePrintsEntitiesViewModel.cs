@@ -74,6 +74,7 @@ namespace BluePrints.ViewModels
             TreeViewProperty USERCollectionModuleTreeProperty = new TreeViewProperty() { Id = "USERCollectionView", ParentId = DATACategoryTreeProperty.Id, Image = TreeViewImage };
             TreeViewProperty ROLECollectionModuleTreeProperty = new TreeViewProperty() { Id = "ROLECollectionView", ParentId = DATACategoryTreeProperty.Id, Image = TreeViewImage };
             TreeViewProperty COMMODITY_CODECategoryTreeProperty = new TreeViewProperty() { Id = "COMMODITY_CODECategoryView", ParentId = DATACategoryTreeProperty.Id, Image = CategoryViewImage, IsExpanded = true };
+            TreeViewProperty INDIRECT_TYPEModuleTreeProperty = new TreeViewProperty() { Id = "INDIRECT_TYPECollectionView", ParentId = COMMODITY_CODECategoryTreeProperty.Id, Image = TreeViewImage };
             TreeViewProperty DIRECTCOMMODITY_CODEModuleTreeProperty = new TreeViewProperty() { Id = "DIRECTCOMMODITY_CODECollectionView", ParentId = COMMODITY_CODECategoryTreeProperty.Id, Image = TreeViewImage };
             TreeViewProperty INDIRECTCOMMODITY_CODEModuleTreeProperty = new TreeViewProperty() { Id = "INDIRECTCOMMODITY_CODECollectionView", ParentId = COMMODITY_CODECategoryTreeProperty.Id, Image = TreeViewImage };
             TreeViewProperty DESIGNCOMMODITY_CODEModuleTreeProperty = new TreeViewProperty() { Id = "DESIGNCOMMODITY_CODECollectionView", ParentId = COMMODITY_CODECategoryTreeProperty.Id, Image = TreeViewImage };
@@ -116,6 +117,7 @@ namespace BluePrints.ViewModels
             if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))
             {
                 BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("COMMODITY_CODE", "COMMODITY_CODECategoryView", TablesGroup, null, null, COMMODITY_CODECategoryTreeProperty));
+                BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("INDIRECT_TYPE", "INDIRECT_TYPECollectionView", TablesGroup, null, null, INDIRECT_TYPEModuleTreeProperty));
                 BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("DIRECT", "COMMODITY_CODECollectionView", TablesGroup, null, CommodityCodeType.Direct, DIRECTCOMMODITY_CODEModuleTreeProperty));
                 BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("INDIRECT", "COMMODITY_CODECollectionView", TablesGroup, null, CommodityCodeType.Indirect, INDIRECTCOMMODITY_CODEModuleTreeProperty));
                 BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("DESIGN", "COMMODITY_CODECollectionView", TablesGroup, null, CommodityCodeType.Design, DESIGNCOMMODITY_CODEModuleTreeProperty));

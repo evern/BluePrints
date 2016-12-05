@@ -74,6 +74,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((ESTIMATION x) => x.GUID); }
         }
 
+        IRepository<INDIRECT_TYPE, Guid> IBluePrintsEntitiesUnitOfWork.INDIRECT_TYPES
+        {
+            get { return GetRepository((INDIRECT_TYPE x) => x.GUID); }
+        }
+
         IRepository<PHASE, Guid> IBluePrintsEntitiesUnitOfWork.PHASES
         {
             get { return GetRepository((PHASE x) => x.GUID); }

@@ -62,9 +62,19 @@
                             <dxg:TreeListColumn FieldName="CODE" />
                             <dxg:TreeListColumn Header="FULLCODE" FieldName="FULLCODE" ReadOnly="True" />
                             <dxg:TreeListColumn FieldName="NAME" />
-                            <dxg:TreeListColumn Header="DISCIPLINE" FieldName="GUID_DISCIPLINE" >
+                            <dxg:TreeListColumn Header="DEPARTMENT" FieldName="GUID_DEPARTMENT" ReadOnly="True">
                                 <dxg:TreeListColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.LookUpDISCIPLINES.Entities, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn Header="DISCIPLINE" FieldName="GUID_DISCIPLINE" ReadOnly="True">
+                                <dxg:TreeListColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn Header="INDIRECT TYPE" FieldName="GUID_INDIRECTTYPE" ReadOnly="True">
+                                <dxg:TreeListColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.INDIRECT_TYPECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
                                 </dxg:TreeListColumn.EditSettings>
                             </dxg:TreeListColumn>
                             <dxg:TreeListColumn FieldName="TYPE" />
@@ -89,8 +99,8 @@
                                     <dxmvvm:EventToCommand EventName="CustomUnboundColumnData" Command="{Binding CustomUnboundColumnDataCommand}" PassEventArgsToCommand="True" />
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:TreeListView.RowCellMenuCustomizations>
-                                    <dxb:BarButtonItem Content="Insert Before" Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Command="{Binding View.DataContext.AddCommodityCodeRowBeforeCommand}" />
-                                    <dxb:BarButtonItem Content="Insert After" Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Command="{Binding View.DataContext.AddCommodityCodeRowAfterCommand}" />
+                                    <dxb:BarButtonItem Content="Insert Before" Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Command="{Binding DataContext.AddCommodityCodeRowBeforeCommand, ElementName=userControl}" />
+                                    <dxb:BarButtonItem Content="Insert After" Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Command="{Binding DataContext.AddCommodityCodeRowAfterCommand, ElementName=userControl}" />
                                     <dxb:BarButtonItem Content="Delete" Command="{Binding View.DataContext.BulkDeleteCommand}" CommandParameter="{Binding View.DataContext.SelectedEntities}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                 </dxg:TreeListView.RowCellMenuCustomizations>
                             </dxg:TreeListView>

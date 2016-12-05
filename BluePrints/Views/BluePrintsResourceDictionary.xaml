@@ -202,6 +202,15 @@
     <collections:ArrayList x:Key="DEPARTMENTColumns">
         <dxg:GridColumn FieldName="CODE" />
         <dxg:GridColumn FieldName="NAME" />
+        <dxg:GridColumn FieldName="ISDESIGNCOMMODITY" Header="DESIGN COMMODITY">
+            <dxg:GridColumn.EditSettings>
+                <dxe:CheckEditSettings />
+            </dxg:GridColumn.EditSettings>
+        </dxg:GridColumn>
+    </collections:ArrayList>
+    <collections:ArrayList x:Key="INDIRECT_TYPEColumns">
+        <dxg:GridColumn FieldName="CODE" />
+        <dxg:GridColumn FieldName="NAME" />
     </collections:ArrayList>
     <collections:ArrayList x:Key="DISCIPLINEColumns">
         <dxg:GridColumn FieldName="CODE" />

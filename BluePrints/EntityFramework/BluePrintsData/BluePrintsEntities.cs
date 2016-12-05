@@ -33,6 +33,7 @@ namespace BluePrints.Data
         public virtual DbSet<DOCTYPE> DOCTYPE { get; set; }
         public virtual DbSet<ESTIMATION> ESTIMATION { get; set; }
         public virtual DbSet<ESTIMATION_ITEM> ESTIMATION_ITEM { get; set; }
+        public virtual DbSet<INDIRECT_TYPE> INDIRECT_TYPE { get; set; }
         public virtual DbSet<PHASE> PHASE { get; set; }
         public virtual DbSet<PROGRESS> PROGRESS { get; set; }
         public virtual DbSet<PROGRESS_ITEM> PROGRESS_ITEM { get; set; }
@@ -128,7 +129,6 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_DDEPARTMENT)
                 .WillCascadeOnDelete(false);
 
-
             modelBuilder.Entity<DEPARTMENT>()
                 .HasMany(e => e.COMMODITY_CODE)
                 .WithOptional(e => e.DEPARTMENT)
@@ -185,6 +185,12 @@ namespace BluePrints.Data
                 .HasMany(e => e.ESTIMATION_ITEM)
                 .WithRequired(e => e.ESTIMATION)
                 .HasForeignKey(e => e.GUID_ESTIMATION)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<INDIRECT_TYPE>()
+                .HasMany(e => e.COMMODITY_CODE)
+                .WithOptional(e => e.INDIRECT_TYPE)
+                .HasForeignKey(e => e.GUID_INDIRECTTYPE)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PHASE>()

@@ -1,4 +1,4 @@
-namespace BluePrints.Data
+﻿namespace BluePrints.Data
 {
     using System;
     using System.Collections.Generic;
@@ -6,16 +6,12 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("DEPARTMENT")]
-    public partial class DEPARTMENT
+    [Table("INDIRECT_TYPE")]
+    public partial class INDIRECT_TYPE
     {
-        public DEPARTMENT()
+        public INDIRECT_TYPE()
         {
-            BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
             COMMODITY_CODE = new HashSet<COMMODITY_CODE>();
-            DOCTYPE = new HashSet<DOCTYPE>();
-            RATE = new HashSet<RATE>();
-            WORKPACK = new HashSet<WORKPACK>();
         }
 
         [Key]
@@ -30,8 +26,6 @@ namespace BluePrints.Data
         [StringLength(100)]
         public string NAME { get; set; }
 
-        public bool ISDESIGNCOMMODITY { get; set; }
-
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }
@@ -44,14 +38,7 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
 
         public virtual ICollection<COMMODITY_CODE> COMMODITY_CODE { get; set; }
-
-        public virtual ICollection<DOCTYPE> DOCTYPE { get; set; }
-
-        public virtual ICollection<RATE> RATE { get; set; }
-
-        public virtual ICollection<WORKPACK> WORKPACK { get; set; }
     }
 }

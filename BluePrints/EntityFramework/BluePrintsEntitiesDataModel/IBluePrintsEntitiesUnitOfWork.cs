@@ -68,6 +68,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<ESTIMATION, Guid> ESTIMATIONS { get; }
 
         /// <summary>
+        /// The INDIRECT_TYPE entities repository.
+        /// </summary>
+        IRepository<INDIRECT_TYPE, Guid> INDIRECT_TYPES { get; }
+
+        /// <summary>
         /// The PHASE entities repository.
         /// </summary>
         IRepository<PHASE, Guid> PHASES { get; }

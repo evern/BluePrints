@@ -24,6 +24,8 @@ using System.Data.Entity.Spatial;
 
         public Guid? GUID_DEPARTMENT { get; set; }
 
+        public Guid? GUID_INDIRECTTYPE { get; set; }
+
         [Required]
         public CommodityCodeType COMMODITYCODETYPE { get; set; }
 
@@ -72,5 +74,7 @@ using System.Data.Entity.Spatial;
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 
         public virtual DEPARTMENT DEPARTMENT { get; set; }
+
+        public virtual INDIRECT_TYPE INDIRECT_TYPE { get; set; }
     }
 }
