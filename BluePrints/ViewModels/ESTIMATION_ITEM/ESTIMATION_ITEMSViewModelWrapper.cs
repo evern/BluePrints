@@ -27,6 +27,7 @@ using System.IO;
 using DevExpress.Xpf.Printing;
 using DevExpress.Xpf.Editors;
 using DevExpress.Xpf.Editors.Settings;
+using DevExpress.Xpf.Grid.TreeList;
 
 namespace BluePrints.ViewModels
 {
@@ -183,6 +184,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATION_ITEMProjection> entities)
         {
+            MainViewModel.EntitiesBeforeDeletionCallBack = this.EntitiesBeforeDeletion;
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = this.ApplyProjectionPropertiesToEntity;
             MainViewModel.OnEntitySavedCallBack = this.OnEntitiesSavedCallBack;
             MainViewModel.SetParentViewModel(this);
@@ -193,7 +195,6 @@ namespace BluePrints.ViewModels
         {
             if (sender == MainViewModel)
                 return;
-
 
             if (loadESTIMATION != null && changedType == typeof(ESTIMATION) && loadESTIMATION.GUID.ToString() == key.ToString() ||
                 loadPROJECT != null && changedType == typeof(PROJECT) && loadPROJECT.GUID.ToString() == key.ToString() ||
@@ -248,14 +249,49 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
+        private void EntitiesBeforeDeletion(IEnumerable<ESTIMATION_ITEMProjection> entities)
+        {
+            List<ESTIMATION_ITEMProjection> childrenEntities = new List<ESTIMATION_ITEMProjection>();
+            foreach (var entity in entities)
+            {
+                var childrenEntitiesInTotal = RecurseFindChildren(entity, MainViewModel.Entities);
+                List<ESTIMATION_ITEMProjection> childrenEntitiesNotInDeletionCollection = new List<ESTIMATION_ITEMProjection>();
+                foreach (var childrenEntityInTotal in childrenEntitiesInTotal)
+                {
+                    if (!entities.Any(x => x.GUID == childrenEntityInTotal.GUID))
+                        childrenEntitiesNotInDeletionCollection.Add(childrenEntityInTotal);
+                }
+
+                childrenEntities = childrenEntities.Concat(childrenEntitiesNotInDeletionCollection).ToList();
+            }
+
+            //can't use bulk delete here due to stack overflow
+            foreach (var childrenEntity in childrenEntities)
+            {
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(childrenEntity, null, null, null, EntityMessageType.Deleted);
+                MainViewModel.Delete(childrenEntity);
+            }
+        }
+
+        public static IEnumerable<ESTIMATION_ITEMProjection> RecurseFindChildren(ESTIMATION_ITEMProjection parentEntity, IEnumerable<ESTIMATION_ITEMProjection> entities)
+        {
+            foreach (ESTIMATION_ITEMProjection entity in entities)
+            {
+                if (entity.GUID_PARENT == parentEntity.GUID_ORIGINAL)
+                {
+                    yield return entity;
+
+                    foreach (ESTIMATION_ITEMProjection entityChild in RecurseFindChildren(entity, entities))
+                        yield return entityChild;
+                }
+            }
+        }
+
         /// <summary>
         /// Influence column(s) when changes happens in other column
         /// </summary>
-        public void CellValueChanging(CellValueChangedEventArgs e)
+        public void CellValueChanging(TreeListCellValueChangedEventArgs e)
         {
-            if (e.RowHandle != GridControl.NewItemRowHandle)
-                return;
-
             ESTIMATION_ITEMProjection activeESTIMATION_ITEM = (ESTIMATION_ITEMProjection)e.Row;
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ESTIMATION_ITEMProjection().ESTIMATION_ITEM) + "." + BindableBase.GetPropertyName(() => new ESTIMATION_ITEM().GUID_COMMODITY))
             {
@@ -269,7 +305,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public void dragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.GridDropEventArgs e)
+        public void dragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.TreeListDropEventArgs e)
         {
             foreach (TreeListNode obj in e.DraggedRows)
             {
@@ -296,34 +332,135 @@ namespace BluePrints.ViewModels
                     COMMODITY_CODE droppedCOMMODITY_CODE = obj.Content as COMMODITY_CODE;
                     if(droppedCOMMODITY_CODE != null)
                     {
-                        COMMODITY existingCOMMODITY = COMMODITYCollection.FirstOrDefault(x => x.GUID == droppedCOMMODITY_CODE.GUID);
-                        if(existingCOMMODITY == null)
-                        {
-                            COMMODITY newCOMMODITY = new COMMODITY();
-                            newCOMMODITY.GUID_COMMODITYCODE = droppedCOMMODITY_CODE.GUID;
-                            newCOMMODITY.GUID_PROJECT = loadPROJECT.GUID;
-                            newCOMMODITY.CREATED = DateTime.Now;
-                            ((CollectionViewModel<COMMODITY, COMMODITY, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<COMMODITY>()).Save(newCOMMODITY);
-
-                            ESTIMATION_ITEMProjection newESTIMATION_ITEM = new ESTIMATION_ITEMProjection();
-                            newESTIMATION_ITEM.ESTIMATION_ITEM.GUID_COMMODITY = newCOMMODITY.GUID;
-
-                            string errorMessage = string.Empty;
-                            if (!MainViewModel.IsValidEntity(newESTIMATION_ITEM, ref errorMessage))
-                            {
-                                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage(errorMessage)));
-                            }
-                            else
-                            {
-                                MainViewModel.EntitiesUndoRedoManager.AddUndo(newESTIMATION_ITEM, null, null, null, EntityMessageType.Added);
-                                MainViewModel.Save(newESTIMATION_ITEM);
-                            }
-                        }
+                        AddEstimationItem(droppedCOMMODITY_CODE);
                     }
                 }
             }
 
             e.Handled = true;
+        }
+
+        public void AddEstimationItem(COMMODITY_CODE droppedCOMMODITY_CODE)
+        {
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            CollectionViewModel<COMMODITY, COMMODITY, Guid, IBluePrintsEntitiesUnitOfWork> COMMODITYViewModel = (CollectionViewModel<COMMODITY, COMMODITY, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<COMMODITY>();
+            IEnumerable<COMMODITY> COMMODITYCollection = loaderCollection.GetCollection<COMMODITY>();
+
+            ESTIMATION_ITEMProjection addESTIMATION_ITEM = new ESTIMATION_ITEMProjection();
+            COMMODITY findCOMMODITY = COMMODITYCollection.FirstOrDefault(x => x.GUID_COMMODITYCODE == droppedCOMMODITY_CODE.GUID);
+            Guid findCOMMODITYGuid;
+            if (findCOMMODITY == null)
+            {
+                findCOMMODITYGuid = AddCommodityCode(droppedCOMMODITY_CODE);
+                addESTIMATION_ITEM.ESTIMATION_ITEM.GUID_COMMODITY = findCOMMODITYGuid;
+            }
+            else
+            {
+                findCOMMODITYGuid = findCOMMODITY.GUID;
+                addESTIMATION_ITEM.ESTIMATION_ITEM.GUID_COMMODITY = findCOMMODITY.GUID;
+            }
+
+            addESTIMATION_ITEM.ESTIMATION_ITEM.GUID_ESTIMATION = loadESTIMATION.GUID;
+            addESTIMATION_ITEM.ESTIMATION_ITEM.CREATED = DateTime.Now;
+
+            findCOMMODITY = COMMODITYCollection.First(x => x.GUID == findCOMMODITYGuid);
+
+            ESTIMATION_ITEMProjection parentESTIMATION_ITEM = FindParentESTIMATION_ITEM(droppedCOMMODITY_CODE.GUID);
+            addESTIMATION_ITEM.ESTIMATION_ITEM.GUID_PARENT = parentESTIMATION_ITEM == null ? Guid.Empty : parentESTIMATION_ITEM.GUID;
+            string errorMessage = string.Empty;
+
+            if (MainViewModel.IsValidEntity(addESTIMATION_ITEM, ref errorMessage))
+            {
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(addESTIMATION_ITEM, null, null, null, EntityMessageType.Added);
+                MainViewModel.Save(addESTIMATION_ITEM);
+            }
+
+            IEnumerable<COMMODITY_CODE> childrenCOMMODITY_CODES = COMMODITY_CODESViewModelWrapper.RecurseFindChildren(droppedCOMMODITY_CODE, loaderCollection.GetCollection<COMMODITY_CODE>());
+            foreach (COMMODITY_CODE childrenCOMMODITY_CODE in childrenCOMMODITY_CODES)
+            {
+                ESTIMATION_ITEMProjection childrenESTIMATION_ITEM = new ESTIMATION_ITEMProjection();
+                COMMODITY findCommodity = COMMODITYCollection.First(x => x.GUID_COMMODITYCODE == childrenCOMMODITY_CODE.GUID);
+                childrenESTIMATION_ITEM.ESTIMATION_ITEM.GUID_ESTIMATION = loadESTIMATION.GUID;
+                childrenESTIMATION_ITEM.ESTIMATION_ITEM.GUID_COMMODITY = findCommodity.GUID;
+                ESTIMATION_ITEMProjection parentEstimation_Item = FindParentESTIMATION_ITEM(childrenCOMMODITY_CODE.GUID_PARENT);
+                childrenESTIMATION_ITEM.ESTIMATION_ITEM.GUID_PARENT = parentEstimation_Item == null ? Guid.Empty : parentEstimation_Item.GUID;
+                if (MainViewModel.IsValidEntity(childrenESTIMATION_ITEM, ref errorMessage))
+                {
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(childrenESTIMATION_ITEM, null, null, null, EntityMessageType.Added);
+                    MainViewModel.Save(childrenESTIMATION_ITEM);
+                }
+                else
+                {
+                    ESTIMATION_ITEMProjection existingEstimation_Item = MainViewModel.Entities.FirstOrDefault(x => x.GUID_COMMODITY == findCommodity.GUID);
+                    if(existingEstimation_Item != null)
+                    {
+                        Guid oldValue = existingEstimation_Item.ESTIMATION_ITEM.GUID_PARENT;
+                        //Move the existing entity into the hierarchy
+                        existingEstimation_Item.ESTIMATION_ITEM.GUID_PARENT = parentEstimation_Item == null ? Guid.Empty : parentEstimation_Item.GUID;
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(existingEstimation_Item, "ESTIMATION_ITEM.GUID_PARENT", oldValue, existingEstimation_Item.ESTIMATION_ITEM.GUID_PARENT, EntityMessageType.Changed);
+                        MainViewModel.Save(existingEstimation_Item);
+                    }
+                }
+            }
+
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        private ESTIMATION_ITEMProjection FindParentESTIMATION_ITEM(Guid COMMODITY_CODEParentGuid)
+        {
+            COMMODITY parentCOMMODITY_CODE = loaderCollection.GetCollection<COMMODITY>().FirstOrDefault(x => x.GUID_COMMODITYCODE == COMMODITY_CODEParentGuid);
+            if (parentCOMMODITY_CODE != null)
+            {
+                ESTIMATION_ITEMProjection parentESTIMATION_ITEM = MainViewModel.Entities.FirstOrDefault(x => x.ESTIMATION_ITEM.GUID_COMMODITY == parentCOMMODITY_CODE.GUID);
+                if (parentESTIMATION_ITEM != null)
+                    return parentESTIMATION_ITEM;
+            }
+
+            return null;
+        }
+
+        private Guid AddCommodityCode(COMMODITY_CODE droppedCOMMODITY_CODE)
+        {
+            CollectionViewModel<COMMODITY, COMMODITY, Guid, IBluePrintsEntitiesUnitOfWork> COMMODITYViewModel = (CollectionViewModel<COMMODITY, COMMODITY, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<COMMODITY>();
+            COMMODITY addCOMMODITY = new COMMODITY();
+            addCOMMODITY.GUID_COMMODITYCODE = droppedCOMMODITY_CODE.GUID;
+            addCOMMODITY.GUID_PROJECT = loadPROJECT.GUID;
+            addCOMMODITY.CREATED = DateTime.Now;
+            
+            COMMODITY_CODE parentCOMMODITY_CODE = loaderCollection.GetCollection<COMMODITY_CODE>().FirstOrDefault(x => x.GUID == addCOMMODITY.GUID_COMMODITYCODE);
+            IEnumerable<COMMODITY> COMMODITYCollection = loaderCollection.GetCollection<COMMODITY>();
+
+            COMMODITY parentCOMMODITY = COMMODITYCollection.FirstOrDefault(x => x.GUID_COMMODITYCODE == droppedCOMMODITY_CODE.GUID_PARENT);
+            addCOMMODITY.GUID_PARENT = parentCOMMODITY == null ? Guid.Empty : parentCOMMODITY.GUID;
+            COMMODITYViewModel.Save(addCOMMODITY);
+            Guid addCOMMODITYGuid = addCOMMODITY.GUID;
+
+            if (parentCOMMODITY_CODE != null)
+            {
+                IEnumerable<COMMODITY_CODE> childrenCOMMODITY_CODES = COMMODITY_CODESViewModelWrapper.RecurseFindChildren(parentCOMMODITY_CODE, loaderCollection.GetCollection<COMMODITY_CODE>());
+                foreach (COMMODITY_CODE childrenCOMMODITY_CODE in childrenCOMMODITY_CODES)
+                {
+                    COMMODITY existingCOMMODITY = COMMODITYCollection.FirstOrDefault(x => x.GUID_COMMODITYCODE == childrenCOMMODITY_CODE.GUID);
+                    if(existingCOMMODITY == null)
+                    {
+                        COMMODITY childrenCOMMODITY = new COMMODITY();
+                        childrenCOMMODITY.GUID_PROJECT = loadPROJECT.GUID;
+                        parentCOMMODITY = COMMODITYCollection.First(x => x.GUID_COMMODITYCODE == childrenCOMMODITY_CODE.GUID_PARENT);
+                        childrenCOMMODITY.GUID_PARENT = parentCOMMODITY == null ? Guid.Empty : parentCOMMODITY.GUID;
+                        childrenCOMMODITY.GUID_COMMODITYCODE = childrenCOMMODITY_CODE.GUID;
+
+                        COMMODITYViewModel.Save(childrenCOMMODITY);
+                    }
+                    else
+                    {
+                        //Move the existing COMMODITY into the hierarchy
+                        existingCOMMODITY.GUID_PARENT = parentCOMMODITY == null ? Guid.Empty : parentCOMMODITY.GUID;
+                        COMMODITYViewModel.Save(existingCOMMODITY);
+                    }
+                }
+            }
+
+            return addCOMMODITYGuid;
         }
         #endregion
 

@@ -27,12 +27,12 @@ namespace BluePrints.Views
 
         private void dragDropManager_Dropped(object sender, DevExpress.Xpf.Grid.DragDrop.TreeListDroppedEventArgs e)
         {
-            ((COMMODITY_CODESCollectionViewModel)this.DataContext).dragDropManager_Dropped(sender, e);
+            ((COMMODITY_CODESViewModelWrapper)this.DataContext).dragDropManager_Dropped(sender, e);
         }
 
         private void dragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.TreeListDropEventArgs e)
         {
-            ((COMMODITY_CODESCollectionViewModel)this.DataContext).dragDropManager_Drop(sender, e);
+            ((COMMODITY_CODESViewModelWrapper)this.DataContext).dragDropManager_Drop(sender, e);
         }
     }
 }

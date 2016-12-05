@@ -320,7 +320,7 @@ namespace BluePrints.ViewModels
             COMMODITY_CODE parentCOMMODITY_CODE = loaderCollection.GetCollection<COMMODITY_CODE>().FirstOrDefault(x => x.GUID == addCOMMODITY.COMMODITY.GUID_COMMODITYCODE);
             if (parentCOMMODITY_CODE != null)
             {
-                IEnumerable<COMMODITY_CODE> childrenCOMMODITY_CODES = COMMODITY_CODESCollectionViewModel.RecurseFindChildren(parentCOMMODITY_CODE, loaderCollection.GetCollection<COMMODITY_CODE>());
+                IEnumerable<COMMODITY_CODE> childrenCOMMODITY_CODES = COMMODITY_CODESViewModelWrapper.RecurseFindChildren(parentCOMMODITY_CODE, loaderCollection.GetCollection<COMMODITY_CODE>());
                 foreach (COMMODITY_CODE childrenCOMMODITY_CODE in childrenCOMMODITY_CODES)
                 {
                     COMMODITYProjection childrenCOMMODITY = new COMMODITYProjection();

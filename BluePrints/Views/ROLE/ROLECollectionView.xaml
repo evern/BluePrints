@@ -62,7 +62,7 @@
                 <Grid>
                     <dxlc:LayoutControl Name="LayoutControlRoot" Orientation="Horizontal">
                         <dxlc:LayoutGroup Name="LayoutGroupGrid" DataContext="{Binding ROLECollection}" View="Group" Header="Edit Value" Orientation="Horizontal" dxlc:LayoutControl.AllowVerticalSizing="True">
-                            <dxg:TreeListControl Name="treeListControl" Style="{StaticResource DefaultTreeTemplate}">
+                            <dxg:TreeListControl Name="treeListControl" Style="{StaticResource WrapperTreeTemplate}">
                                 <dxg:TreeListControl.Columns>
                                     <dxg:TreeListColumn FieldName="NAME" />
                                     <dxg:TreeListColumn FieldName="SORTORDER" Visible="False" />

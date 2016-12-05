@@ -13,7 +13,7 @@ namespace BluePrints.Views
             InitializeComponent();
         }
 
-        private void dragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.GridDropEventArgs e)
+        private void dragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.TreeListDropEventArgs e)
         {
             ((ESTIMATION_ITEMSViewModelWrapper)this.DataContext).dragDropManager_Drop(sender, e);
         }

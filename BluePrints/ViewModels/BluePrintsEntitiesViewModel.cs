@@ -73,7 +73,10 @@ namespace BluePrints.ViewModels
             TreeViewProperty UOMCollectionModuleTreeProperty = new TreeViewProperty() { Id = "UOMCollectionView", ParentId = DATACategoryTreeProperty.Id, Image = TreeViewImage };
             TreeViewProperty USERCollectionModuleTreeProperty = new TreeViewProperty() { Id = "USERCollectionView", ParentId = DATACategoryTreeProperty.Id, Image = TreeViewImage };
             TreeViewProperty ROLECollectionModuleTreeProperty = new TreeViewProperty() { Id = "ROLECollectionView", ParentId = DATACategoryTreeProperty.Id, Image = TreeViewImage };
-            TreeViewProperty COMMODITY_CODECollectionModuleTreeProperty = new TreeViewProperty() { Id = "COMMODITY_CODECollectionView", ParentId = DATACategoryTreeProperty.Id, Image = TreeViewImage };
+            TreeViewProperty COMMODITY_CODECategoryTreeProperty = new TreeViewProperty() { Id = "COMMODITY_CODECategoryView", ParentId = DATACategoryTreeProperty.Id, Image = CategoryViewImage, IsExpanded = true };
+            TreeViewProperty DIRECTCOMMODITY_CODEModuleTreeProperty = new TreeViewProperty() { Id = "DIRECTCOMMODITY_CODECollectionView", ParentId = COMMODITY_CODECategoryTreeProperty.Id, Image = TreeViewImage };
+            TreeViewProperty INDIRECTCOMMODITY_CODEModuleTreeProperty = new TreeViewProperty() { Id = "INDIRECTCOMMODITY_CODECollectionView", ParentId = COMMODITY_CODECategoryTreeProperty.Id, Image = TreeViewImage };
+            TreeViewProperty DESIGNCOMMODITY_CODEModuleTreeProperty = new TreeViewProperty() { Id = "DESIGNCOMMODITY_CODECollectionView", ParentId = COMMODITY_CODECategoryTreeProperty.Id, Image = TreeViewImage };
 
             List<BluePrintsEntitiesModuleDescription> BluePrintsEntitiesModuleDescriptions = new List<BluePrintsEntitiesModuleDescription>();
             if (LoginCredentials.hasPermission(PermissionResources.ViewDashboard))
@@ -111,7 +114,12 @@ namespace BluePrints.ViewModels
                 BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("ROLE", "ROLECollectionView", TablesGroup, null, null, ROLECollectionModuleTreeProperty));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))
-                BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("COMMODITY_CODE", "COMMODITY_CODECollectionView", TablesGroup, null, null, COMMODITY_CODECollectionModuleTreeProperty));
+            {
+                BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("COMMODITY_CODE", "COMMODITY_CODECategoryView", TablesGroup, null, null, COMMODITY_CODECategoryTreeProperty));
+                BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("DIRECT", "COMMODITY_CODECollectionView", TablesGroup, null, CommodityCodeType.Direct, DIRECTCOMMODITY_CODEModuleTreeProperty));
+                BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("INDIRECT", "COMMODITY_CODECollectionView", TablesGroup, null, CommodityCodeType.Indirect, INDIRECTCOMMODITY_CODEModuleTreeProperty));
+                BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("DESIGN", "COMMODITY_CODECollectionView", TablesGroup, null, CommodityCodeType.Design, DESIGNCOMMODITY_CODEModuleTreeProperty));
+            }
 
             return BluePrintsEntitiesModuleDescriptions.ToArray();
         }

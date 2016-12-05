@@ -128,6 +128,13 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_DDEPARTMENT)
                 .WillCascadeOnDelete(false);
 
+
+            modelBuilder.Entity<DEPARTMENT>()
+                .HasMany(e => e.COMMODITY_CODE)
+                .WithOptional(e => e.DEPARTMENT)
+                .HasForeignKey(e => e.GUID_DEPARTMENT)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<DISCIPLINE>()
                 .HasMany(e => e.BASELINE_ITEM)
                 .WithOptional(e => e.DISCIPLINE)
@@ -135,7 +142,7 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<DISCIPLINE>()
                 .HasMany(e => e.COMMODITY_CODE)
-                .WithRequired(e => e.DISCIPLINE)
+                .WithOptional(e => e.DISCIPLINE)
                 .HasForeignKey(e => e.GUID_DISCIPLINE)
                 .WillCascadeOnDelete(false);
 
@@ -380,7 +387,7 @@ namespace BluePrints.Data
                             else
                             {
                                 entryKeyMember.CurrentValue = Guid.NewGuid();
-                                if (entityType.BaseType == typeof(BASELINE_ITEM))
+                                if (entityType.BaseType == typeof(BASELINE_ITEM) || entityType.BaseType == typeof(ESTIMATION_ITEM))
                                 {
                                     PropertyInfo OGPropertyInfo = entityType.GetProperty("GUID_ORIGINAL");
                                     if (OGPropertyInfo.GetValue(dbEntry.Entity).ToString() == Guid.Empty.ToString())

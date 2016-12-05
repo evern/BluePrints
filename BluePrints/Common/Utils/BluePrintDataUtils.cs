@@ -67,36 +67,22 @@ namespace BluePrints.Common.ViewModel.Utils
                 if(selectedAREA != null)
                     InternalNum += "-" + selectedAREA.INTERNAL_NUM;
                 if (selectedDOCTYPE != null)
-                    InternalNum += selectedDOCTYPE.CODE;
+                    InternalNum += "-" + selectedDOCTYPE.CODE;
                 if (selectedDISCIPLINE != null)
-                    InternalNum += selectedDISCIPLINE.CODE;
+                    InternalNum += "-" + selectedDISCIPLINE.CODE;
 
                 int internalNameCount = BASELINE_ITEMEntities.Where(x => x.GUID != excludeGUID).Count(x => x.BASELINE_ITEM.INTERNAL_NUM != null && x.BASELINE_ITEM.INTERNAL_NUM.Contains(InternalNum));
                 internalNameCount += 1;
-                InternalNum += internalNameCount.ToString();
 
-                return InternalNum;
-            }
-            else
-                return string.Empty;
-        }
+                string countString = string.Empty;
+                if (internalNameCount < 10)
+                    countString = "00" + internalNameCount.ToString();
+                else if (internalNameCount < 100)
+                    countString = "0" + internalNameCount.ToString();
+                else
+                    countString = internalNameCount.ToString();
 
-        /// <summary>
-        /// Generate internal number1 when all required fields are populated
-        /// </summary>
-        public static string BASELINEITEM_Generate_InternalNumber(PROJECT fromPROJECT, IEnumerable<BASELINE_ITEM> BASELINE_ITEMEntities, AREA selectedAREA, DISCIPLINE selectedDISCIPLINE, DOCTYPE selectedDOCTYPE)
-        {
-            if (selectedAREA != null && selectedDISCIPLINE != null && selectedDOCTYPE != null)
-            {
-                string InternalNum = fromPROJECT.NUMBER;
-                InternalNum += "-" + selectedAREA.INTERNAL_NUM;
-                InternalNum += selectedDOCTYPE.CODE;
-                InternalNum += selectedDISCIPLINE.CODE;
-
-                int InternalNameCount = BASELINE_ITEMEntities.Count(obj => obj.INTERNAL_NUM != null && obj.INTERNAL_NUM.Contains(InternalNum)) + 1;
-
-                InternalNum += InternalNameCount.ToString();
-
+                InternalNum += "-" + countString;
                 return InternalNum;
             }
             else
@@ -111,14 +97,22 @@ namespace BluePrints.Common.ViewModel.Utils
                 if (selectedAREA != null)
                     InternalNum += "-" + selectedAREA.INTERNAL_NUM;
                 if (selectedDOCTYPE != null)
-                    InternalNum += selectedDOCTYPE.CODE;
+                    InternalNum += "-" + selectedDOCTYPE.CODE;
                 if (selectedDISCIPLINE != null)
-                    InternalNum += selectedDISCIPLINE.CODE;
+                    InternalNum += "-" + selectedDISCIPLINE.CODE;
 
                 int internalNameCount = BASELINE_ITEMEntities.Where(x => x.GUID != excludeGUID).Count(x => x.INTERNAL_NUM != null && x.INTERNAL_NUM.Contains(InternalNum));
                 internalNameCount += 1;
-                InternalNum += internalNameCount.ToString();
 
+                string countString = string.Empty;
+                if (internalNameCount < 10)
+                    countString = "00" + internalNameCount.ToString();
+                else if (internalNameCount < 100)
+                    countString = "0" + internalNameCount.ToString();
+                else
+                    countString = internalNameCount.ToString();
+
+                InternalNum += countString;
                 return InternalNum;
             }
             else

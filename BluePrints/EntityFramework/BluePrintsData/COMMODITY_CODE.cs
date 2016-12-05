@@ -1,10 +1,11 @@
 namespace BluePrints.Data
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Data.Entity.Spatial;
+    using BluePrints.Common;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.Spatial;
 
     public partial class COMMODITY_CODE
     {
@@ -19,7 +20,12 @@ namespace BluePrints.Data
 
         public Guid GUID_PARENT { get; set; }
 
-        public Guid GUID_DISCIPLINE { get; set; }
+        public Guid? GUID_DISCIPLINE { get; set; }
+
+        public Guid? GUID_DEPARTMENT { get; set; }
+
+        [Required]
+        public CommodityCodeType COMMODITYCODETYPE { get; set; }
 
         [Required]
         [StringLength(100)]
@@ -64,5 +70,7 @@ namespace BluePrints.Data
         public virtual ICollection<COMMODITY> COMMODITY { get; set; }
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
+
+        public virtual DEPARTMENT DEPARTMENT { get; set; }
     }
 }

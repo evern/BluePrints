@@ -62,28 +62,28 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="ESTIMATION_ITEMSGrid" Style="{StaticResource WrapperGridTemplate}">
+                    <dxg:TreeListControl Name="treeListControl" Style="{StaticResource WrapperTreeTemplate}">
                         <dxmvvm:Interaction.Behaviors>
-                            <dxg:GridDragDropManager x:Name="dragDropManager" Drop="dragDropManager_Drop" />
+                            <dxg:TreeListDragDropManager x:Name="dragDropManager" Drop="dragDropManager_Drop" />
                         </dxmvvm:Interaction.Behaviors>
-                        <dxg:GridControl.Columns>
-                            <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="ESTIMATION_ITEM.GUID_SUPPLYWORKPACK" Header="SUPPLY WORKPACK" VisibleIndex="1">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1" ItemsSource="{Binding DataContext.SupplyWORKPACKCollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="INTERNAL_NAME2" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Name="colWORKPACKInternalName2" FieldName="ESTIMATION_ITEM.GUID_INSTALLWORKPACK" Header="INSTALL WORKPACK" VisibleIndex="2">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName2" ItemsSource="{Binding DataContext.InstallWORKPACKCollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="INTERNAL_NAME2" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Name="colAREA" FieldName="ESTIMATION_ITEM.GUID_AREA" Header="AREA" VisibleIndex="20" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="INTERNAL_NUM" ValueMember="GUID"/>
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ESTIMATION_ITEM.GUID_COMMODITY" Header="COMMODITY" VisibleIndex="30">
-                                <dxg:GridColumn.EditSettings>
+                        <dxg:TreeListControl.Columns>
+                            <dxg:TreeListColumn Name="colWORKPACKInternalName1" FieldName="ESTIMATION_ITEM.GUID_SUPPLYWORKPACK" Header="SUPPLY WORKPACK" VisibleIndex="1">
+                                <dxg:TreeListColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1" ItemsSource="{Binding DataContext.SupplyWORKPACKCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NAME2" ValueMember="GUID" />
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn Name="colWORKPACKInternalName2" FieldName="ESTIMATION_ITEM.GUID_INSTALLWORKPACK" Header="INSTALL WORKPACK" VisibleIndex="2">
+                                <dxg:TreeListColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName2" ItemsSource="{Binding DataContext.InstallWORKPACKCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NAME2" ValueMember="GUID" />
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn Name="colAREA" FieldName="ESTIMATION_ITEM.GUID_AREA" Header="AREA" VisibleIndex="20" >
+                                <dxg:TreeListColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID"/>
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn FieldName="ESTIMATION_ITEM.GUID_COMMODITY" Header="COMMODITY" VisibleIndex="30">
+                                <dxg:TreeListColumn.EditSettings>
                                     <dxg:LookUpEditSettings ItemsSource="{Binding DataContext.COMMODITYCollection, ElementName=userControl}" PopupWidth="800" AutoPopulateColumns="False" DisplayMember="ITEM_DESC" ValueMember="GUID">
                                         <dxg:LookUpEditSettings.PopupContentTemplate>
                                             <ControlTemplate TargetType="ContentControl">
@@ -127,140 +127,131 @@
                                             </ControlTemplate>
                                         </dxg:LookUpEditSettings.PopupContentTemplate>
                                     </dxg:LookUpEditSettings>
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Name="colDISCIPLINE" FieldName="ESTIMATION_ITEM.GUID_DISCIPLINE" Header="DISCIPLINE" VisibleIndex="40" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID"/>
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Name="colCOMMENTS" FieldName="ESTIMATION_ITEM.COMMENTS" Header="COMMENTS" VisibleIndex="50"/>
-                            <dxg:GridColumn Name="colCOMMODITYCODE" FieldName="GUID_COMMODITYCODE" Header="NAME" ReadOnly="True" AllowEditing="False" VisibleIndex="60" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID"/>
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="TYPE" FieldName="GUID_COMMODITYCODE" ReadOnly="True" AllowEditing="False" VisibleIndex="70" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="TYPE" ValueMember="GUID"/>
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="SPEC" FieldName="GUID_COMMODITYCODE" ReadOnly="True" AllowEditing="False" VisibleIndex="80" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="SPEC" ValueMember="GUID"/>
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="DESCRIPTION" FieldName="GUID_COMMODITYCODE" ReadOnly="True" AllowEditing="False" VisibleIndex="90" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="DESCRIPTION" ValueMember="GUID"/>
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="NOTES" FieldName="GUID_COMMODITY" ReadOnly="True" AllowEditing="False" VisibleIndex="100" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.COMMODITYCollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="ITEM_DESC" ValueMember="GUID"/>
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="FULLCODE" FieldName="GUID_COMMODITYCODE" ReadOnly="True" AllowEditing="False" VisibleIndex="110" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="FULLCODE" ValueMember="GUID"/>
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Name="colESTIMATED_QUANTITY" FieldName="ESTIMATION_ITEM.ESTIMATED_QUANTITY" Header="ESTIMATED_QUANTITY" VisibleIndex="120" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Name="colVAR_QUANTITY" FieldName="ESTIMATION_ITEM.VAR_QUANTITY" Header="VARIANCE_QUANTITY" ReadOnly="True" VisibleIndex="130" />
-                            <dxg:GridColumn FieldName="ESTIMATION_ITEM.TOTAL_QUANTITY" Header="TOTAL_QUANTITY" ReadOnly="True" VisibleIndex="131" />
-                            <dxg:GridColumn Header="UOM" FieldName="GUID_COMMODITYCODE" ReadOnly="True" AllowEditing="False" VisibleIndex="140" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="UOM" ValueMember="GUID"/>
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ESTIMATION_ITEM.SUPPLY_RATE" Header="SUPPLY RATE" ReadOnly="True" VisibleIndex="150" >
-                                <dxg:GridColumn.EditSettings>
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn Name="colDISCIPLINE" FieldName="ESTIMATION_ITEM.GUID_DISCIPLINE" Header="DISCIPLINE" VisibleIndex="40" >
+                                <dxg:TreeListColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn Name="colCOMMENTS" FieldName="ESTIMATION_ITEM.COMMENTS" Header="COMMENTS" VisibleIndex="50"/>
+                            <dxg:TreeListColumn Name="colCOMMODITYCODE" FieldName="GUID_COMMODITYCODE" Header="NAME" ReadOnly="True" AllowEditing="False" VisibleIndex="60" >
+                                <dxg:TreeListColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn Header="TYPE" FieldName="GUID_COMMODITYCODE" ReadOnly="True" AllowEditing="False" VisibleIndex="70" >
+                                <dxg:TreeListColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="TYPE" ValueMember="GUID"/>
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn Header="SPEC" FieldName="GUID_COMMODITYCODE" ReadOnly="True" AllowEditing="False" VisibleIndex="80" >
+                                <dxg:TreeListColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="SPEC" ValueMember="GUID"/>
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn Header="DESCRIPTION" FieldName="GUID_COMMODITYCODE" ReadOnly="True" AllowEditing="False" VisibleIndex="90" >
+                                <dxg:TreeListColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="DESCRIPTION" ValueMember="GUID"/>
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn Header="NOTES" FieldName="GUID_COMMODITY" ReadOnly="True" AllowEditing="False" VisibleIndex="100" >
+                                <dxg:TreeListColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.COMMODITYCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="ITEM_DESC" ValueMember="GUID"/>
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn Header="FULLCODE" FieldName="GUID_COMMODITYCODE" ReadOnly="True" AllowEditing="False" VisibleIndex="110" >
+                                <dxg:TreeListColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="FULLCODE" ValueMember="GUID"/>
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn Name="colESTIMATED_QUANTITY" FieldName="ESTIMATION_ITEM.ESTIMATED_QUANTITY" Header="ESTIMATED_QUANTITY" VisibleIndex="120" >
+                                <dxg:TreeListColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n2" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.ISREADONLY, Converter={StaticResource BooleanNegationConverter}}"/>
+                                    </DataTemplate>
+                                </dxg:TreeListColumn.CellTemplate>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn Name="colVAR_QUANTITY" FieldName="ESTIMATION_ITEM.VAR_QUANTITY" Header="VARIANCE_QUANTITY" ReadOnly="True" VisibleIndex="130" />
+                            <dxg:TreeListColumn FieldName="ESTIMATION_ITEM.TOTAL_QUANTITY" Header="TOTAL_QUANTITY" ReadOnly="True" VisibleIndex="131" />
+                            <dxg:TreeListColumn Header="UOM" FieldName="GUID_COMMODITYCODE" ReadOnly="True" AllowEditing="False" VisibleIndex="140" >
+                                <dxg:TreeListColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="UOM" ValueMember="GUID"/>
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn FieldName="ESTIMATION_ITEM.SUPPLY_RATE" Header="SUPPLY RATE" ReadOnly="True" VisibleIndex="150" >
+                                <dxg:TreeListColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ESTIMATION_ITEM.SUPPLY_COST" Header="SUPPLY COST" ReadOnly="True" VisibleIndex="160" >
-                                <dxg:GridColumn.EditSettings>
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn FieldName="ESTIMATION_ITEM.SUPPLY_COST" Header="SUPPLY COST" ReadOnly="True" VisibleIndex="160" >
+                                <dxg:TreeListColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ESTIMATION_ITEM.INSTALL_HOURS" Header="INSTALL HOURS" ReadOnly="True" VisibleIndex="170" >
-                                <dxg:GridColumn.EditSettings>
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn FieldName="ESTIMATION_ITEM.INSTALL_HOURS" Header="INSTALL HOURS" ReadOnly="True" VisibleIndex="170" >
+                                <dxg:TreeListColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ITEMRATE" Header="INSTALL RATE" ReadOnly="True" VisibleIndex="180" >
-                                <dxg:GridColumn.EditSettings>
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn FieldName="ITEMRATE" Header="INSTALL RATE" ReadOnly="True" VisibleIndex="180" >
+                                <dxg:TreeListColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="INSTALL_COST" Header="INSTALL COST" ReadOnly="True" VisibleIndex="190" >
-                                <dxg:GridColumn.EditSettings>
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn FieldName="INSTALL_COST" Header="INSTALL COST" ReadOnly="True" VisibleIndex="190" >
+                                <dxg:TreeListColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ESTIMATION_ITEM.FREIGHT_RATE" Header="FREIGHT RATE" ReadOnly="True" VisibleIndex="200" >
-                                <dxg:GridColumn.EditSettings>
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn FieldName="ESTIMATION_ITEM.FREIGHT_RATE" Header="FREIGHT RATE" ReadOnly="True" VisibleIndex="200" >
+                                <dxg:TreeListColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ESTIMATION_ITEM.FREIGHT_COST" Header="FREIGHT COST" ReadOnly="True" VisibleIndex="210" >
-                                <dxg:GridColumn.EditSettings>
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn FieldName="ESTIMATION_ITEM.FREIGHT_COST" Header="FREIGHT COST" ReadOnly="True" VisibleIndex="210" >
+                                <dxg:TreeListColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="SUB_TOTAL" Header="SUB_TOTAL" ReadOnly="True" VisibleIndex="220" >
-                                <dxg:GridColumn.EditSettings>
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn FieldName="SUB_TOTAL" Header="SUB_TOTAL" ReadOnly="True" VisibleIndex="220" >
+                                <dxg:TreeListColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="TOTAL_COST" Header="TOTAL_COST" ReadOnly="True" VisibleIndex="230" >
-                                <dxg:GridColumn.EditSettings>
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn FieldName="TOTAL_COST" Header="TOTAL_COST" ReadOnly="True" VisibleIndex="230" >
+                                <dxg:TreeListColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                        </dxg:GridControl.Columns>
-                        <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem FieldName="SUB_TOTAL" ShowInColumn="SUB_TOTAL" SummaryType="Sum" DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="TOTAL_COST" ShowInColumn="TOTAL_COST" SummaryType="Sum" DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="ESTIMATION_ITEM.FREIGHT_COST" ShowInColumn="ESTIMATION_ITEM.FREIGHT_COST" SummaryType="Sum" DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="INSTALL_COST" ShowInColumn="INSTALL_COST" SummaryType="Sum" DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="ESTIMATION_ITEM.SUPPLY_COST" ShowInColumn="ESTIMATION_ITEM.SUPPLY_COST" SummaryType="Sum" DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="ESTIMATION_ITEM.COMMENTS" Alignment="Right" SummaryType="Count" DisplayFormat="Total {0} Records" />
-                            <dxg:GridSummaryItem FieldName="ESTIMATION_ITEM.ESTIMATED_QUANTITY" SummaryType="Sum" ShowInColumn="ESTIMATION_ITEM.ESTIMATED_QUANTITY" DisplayFormat="Total: {0}" />
-                            <dxg:GridSummaryItem FieldName="TOTAL_COSTS" SummaryType="Sum" ShowInColumn="TOTAL_COSTS" DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="ESTIMATION_ITEM.VAR_QUANTITY" SummaryType="Sum" ShowInColumn="ESTIMATION_ITEM.VAR_QUANTITY" DisplayFormat="Total: {0:n}" />
-                        </dxg:GridControl.GroupSummary>
-                        <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem FieldName="SUB_TOTAL" ShowInColumn="SUB_TOTAL" SummaryType="Sum" DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="TOTAL_COST" ShowInColumn="TOTAL_COST" SummaryType="Sum" DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="ESTIMATION_ITEM.FREIGHT_COST" ShowInColumn="ESTIMATION_ITEM.FREIGHT_COST" SummaryType="Sum" DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="INSTALL_COST" ShowInColumn="INSTALL_COST" SummaryType="Sum" DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="ESTIMATION_ITEM.SUPPLY_COST" ShowInColumn="ESTIMATION_ITEM.SUPPLY_COST" SummaryType="Sum" DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="ESTIMATION_ITEM.COMMENTS" Alignment="Right" SummaryType="Count" DisplayFormat="Total {0} Records" />
-                            <dxg:GridSummaryItem FieldName="ESTIMATION_ITEM.ESTIMATED_QUANTITY" SummaryType="Sum" ShowInColumn="ESTIMATION_ITEM.ESTIMATED_QUANTITY" DisplayFormat="Total: {0}" />
-                            <dxg:GridSummaryItem FieldName="TOTAL_COSTS" SummaryType="Sum" ShowInColumn="TOTAL_COSTS" DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="ESTIMATION_ITEM.VAR_QUANTITY" SummaryType="Sum" ShowInColumn="ESTIMATION_ITEM.VAR_QUANTITY" DisplayFormat="Total: {0:n}" />
-                        </dxg:GridControl.TotalSummary>
-                        <dxg:GridControl.View>
-                            <dxg:TableView Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" ShowTotalSummary="True" ShowFixedTotalSummary="True" GroupSummaryDisplayMode="AlignByColumns" >
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                        </dxg:TreeListControl.Columns>
+                        <dxg:TreeListControl.TotalSummary>
+                            <dxg:TreeListSummaryItem FieldName="SUB_TOTAL" ShowInColumn="SUB_TOTAL" SummaryType="Sum" DisplayFormat="Total: {0:c2}" />
+                            <dxg:TreeListSummaryItem FieldName="TOTAL_COST" ShowInColumn="TOTAL_COST" SummaryType="Sum" DisplayFormat="Total: {0:c2}" />
+                            <dxg:TreeListSummaryItem FieldName="ESTIMATION_ITEM.FREIGHT_COST" ShowInColumn="ESTIMATION_ITEM.FREIGHT_COST" SummaryType="Sum" DisplayFormat="Total: {0:c2}" />
+                            <dxg:TreeListSummaryItem FieldName="INSTALL_COST" ShowInColumn="INSTALL_COST" SummaryType="Sum" DisplayFormat="Total: {0:c2}" />
+                            <dxg:TreeListSummaryItem FieldName="ESTIMATION_ITEM.SUPPLY_COST" ShowInColumn="ESTIMATION_ITEM.SUPPLY_COST" SummaryType="Sum" DisplayFormat="Total: {0:c2}" />
+                            <dxg:TreeListSummaryItem FieldName="ESTIMATION_ITEM.COMMENTS" Alignment="Right" SummaryType="Count" DisplayFormat="Total {0} Records" />
+                            <dxg:TreeListSummaryItem FieldName="ESTIMATION_ITEM.ESTIMATED_QUANTITY" SummaryType="Sum" ShowInColumn="ESTIMATION_ITEM.ESTIMATED_QUANTITY" DisplayFormat="Total: {0}" />
+                            <dxg:TreeListSummaryItem FieldName="TOTAL_COSTS" SummaryType="Sum" ShowInColumn="TOTAL_COSTS" DisplayFormat="Total: {0:c2}" />
+                            <dxg:TreeListSummaryItem FieldName="ESTIMATION_ITEM.VAR_QUANTITY" SummaryType="Sum" ShowInColumn="ESTIMATION_ITEM.VAR_QUANTITY" DisplayFormat="Total: {0:n}" />
+                        </dxg:TreeListControl.TotalSummary>
+                        <dxg:TreeListControl.View>
+                            <dxg:TreeListView Name="tableView" ShowTotalSummary="True" ShowFixedTotalSummary="True" ExpandStateFieldName="ISEXPANDED" ParentFieldName="GUID_PARENT" KeyFieldName="GUID_ORIGINAL" >
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="CellValueChanging" />
                                 </dxmvvm:Interaction.Behaviors>
-                                <dxg:TableView.RowCellMenuCustomizations>
+                                <dxg:TreeListView.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Bulk Edit" Command="{Binding View.DataContext.BulkColumnEditCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
                                     <dxb:BarButtonItem Name="contextMenuPopulate" Content="Populate" Glyph="{dx:DXImageOffice2013 Image=PictureShapeFillColor_16x16.png}" Command="{Binding DataContext.AutoPopulateCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                     <dxb:BarButtonItem Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" Command="{Binding View.DataContext.FillUpCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                     <dxb:BarButtonItem Content="Fill Down" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" Command="{Binding View.DataContext.FillDownCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                     <dxb:BarButtonItem Content="Delete" Command="{Binding View.DataContext.BulkDeleteCommand}" CommandParameter="{Binding View.DataContext.SelectedEntities}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                     <dxb:BarButtonItem Content="Refresh" Command="{Binding View.DataContext.RefreshCommand}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                </dxg:TableView.RowCellMenuCustomizations>
-                            </dxg:TableView>
-                        </dxg:GridControl.View>
-                    </dxg:GridControl>
+                                </dxg:TreeListView.RowCellMenuCustomizations>
+                            </dxg:TreeListView>
+                        </dxg:TreeListControl.View>
+                    </dxg:TreeListControl>
                 </Grid>
             </DockPanel>
         </Grid>

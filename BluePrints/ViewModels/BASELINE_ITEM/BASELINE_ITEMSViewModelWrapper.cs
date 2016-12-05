@@ -390,7 +390,7 @@ namespace BluePrints.ViewModels
                        entity.BASELINE_ITEM.GUID_DOCTYPE == Guid.Empty || entity.BASELINE_ITEM.GUID_AREA == Guid.Empty)
                         continue;
 
-                    WORKPACK findWORKPACK = WORKPACKCollection.FirstOrDefault(x => x.GUID_DDEPARTMENT == entity.BASELINE_ITEM.GUID_DEPARTMENT && x.GUID_DDISCIPLINE == entity.BASELINE_ITEM.GUID_DISCIPLINE);
+                    WORKPACK findWORKPACK = WORKPACKCollection.FirstOrDefault(x => x.GUID_DAREA == entity.BASELINE_ITEM.GUID_AREA && x.GUID_DDOCTYPE == entity.BASELINE_ITEM.GUID_DOCTYPE && x.GUID_DAREA == entity.BASELINE_ITEM.GUID_AREA);
                     if (findWORKPACK == null)
                     {
                         WORKPACK newWORKPACK = new WORKPACK();
@@ -408,7 +408,10 @@ namespace BluePrints.ViewModels
 
                         newWORKPACK.INTERNAL_NAME1 = BluePrintDataUtils.WORKPACK_Generate_InternalNumber1(loadPROJECT, newWORKPACK, WORKPACKCollection, loaderCollection.GetViewModel<AREA>(), loaderCollection.GetViewModel<DISCIPLINE>(), loaderCollection.GetViewModel<DOCTYPE>());
                         newWORKPACK.INTERNAL_NAME2 = BluePrintDataUtils.WORKPACK_Generate_InternalNumber2(loadPROJECT, newWORKPACK, WORKPACKCollection, loaderCollection.GetViewModel<AREA>(), loaderCollection.GetViewModel<DISCIPLINE>(), loaderCollection.GetViewModel<PHASE>());
-                       
+
+                        if (newWORKPACK.INTERNAL_NAME1 == string.Empty && newWORKPACK.INTERNAL_NAME2 == string.Empty)
+                            return;
+
                         newWORKPACK.STARTDATE = DateTime.Now;
                         newWORKPACK.ENDDATE = BluePrintDataUtils.WORKPACK_Calculate_EndDate(newWORKPACK.STARTDATE, loadPROJECT);
                         DateTime reviewStartDate = newWORKPACK.STARTDATE;

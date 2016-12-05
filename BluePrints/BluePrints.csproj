@@ -24,7 +24,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>24</ApplicationRevision>
+    <ApplicationRevision>29</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -60,6 +60,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>true</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>BluePrint Logo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DevExpress.Charts.v16.1.Core, Version=16.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
@@ -1050,7 +1053,7 @@
     <Compile Include="ViewModels\BluePrintsEntitiesViewModel.cs" />
     <Compile Include="ViewModels\COMMODITY\COMMODITYCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\COMMODITY\COMMODITYViewModel.cs" />
-    <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODECollectionViewModel.cs" />
+    <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODEViewModelWrapper.cs" />
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODEViewModel.cs" />
     <Compile Include="ViewModels\DEPARTMENT\DEPARTMENTCollectionViewModel.cs" />
     <Compile Include="ViewModels\DEPARTMENT\DEPARTMENTViewModel.cs" />
@@ -4264,6 +4267,9 @@
       <IncludeHash>False</IncludeHash>
       <FileType>Satellite</FileType>
     </PublishFile>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="BluePrint Logo.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

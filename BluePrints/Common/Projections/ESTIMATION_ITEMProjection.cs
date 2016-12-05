@@ -25,6 +25,32 @@ namespace BluePrints.Common.Projections
         [Key]
         public Guid GUID { get; set; }
 
+        public Guid GUID_ORIGINAL
+        {
+            get
+            {
+                if (ESTIMATION_ITEM == null || ESTIMATION_ITEM.GUID_ORIGINAL == null)
+                    return Guid.Empty;
+                else
+                    return (Guid)ESTIMATION_ITEM.GUID_ORIGINAL;
+            }
+        }
+
+        public Guid GUID_PARENT
+        {
+            get
+            {
+                if (ESTIMATION_ITEM == null || ESTIMATION_ITEM.GUID_PARENT == null)
+                    return Guid.Empty;
+                else
+                    return (Guid)ESTIMATION_ITEM.GUID_PARENT;
+            }
+        }
+
+        public bool ISREADONLY { get; set; }
+
+        public bool ISEXPANDED { get; set; }
+
         public Guid GUID_COMMODITY
         {
             get
@@ -46,10 +72,8 @@ namespace BluePrints.Common.Projections
                     return Guid.Empty;
                 else if (ESTIMATION_ITEM.COMMODITY == null)
                     return Guid.Empty;
-                else if (ESTIMATION_ITEM.COMMODITY.COMMODITY_CODE == null)
-                    return Guid.Empty;
                 else
-                    return ESTIMATION_ITEM.COMMODITY.COMMODITY_CODE.GUID;
+                    return ESTIMATION_ITEM.COMMODITY.GUID_COMMODITYCODE;
             }
         }
 
@@ -114,7 +138,9 @@ namespace BluePrints.Common.Projections
             return contextESTIMATION_ITEMS.ToArray().AsQueryable().Select(x => new ESTIMATION_ITEMProjection() { GUID = x.GUID, ESTIMATION_ITEM = x, 
                                                                                                                  RATE = RATES.FirstOrDefault(y => y.GUID_DEPARTMENT == DEPARTMENT.GUID && y.GUID_DISCIPLINE == x.GUID_DISCIPLINE),
                                                                                                                  ESTIMATION_MARGIN = ESTIMATION.MARGIN,
-                                                                                                                 ESTIMATION_CONTINGENCY = ESTIMATION.CONTINGENCY
+                                                                                                                 ESTIMATION_CONTINGENCY = ESTIMATION.CONTINGENCY,
+                                                                                                                 ISEXPANDED = true,
+                                                                                                                 ISREADONLY = contextESTIMATION_ITEMS.Any(y => y.GUID_PARENT == x.GUID_ORIGINAL)
 
             });
         }

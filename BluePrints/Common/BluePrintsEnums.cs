@@ -178,4 +178,12 @@ namespace BluePrints.Common
         Internal,
         External
     }
+
+    public enum CommodityCodeType
+    {
+        Direct = 0,
+        Design = 1,
+        Indirect = 2,
+        Overhead = 3
+    }
 }

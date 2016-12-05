@@ -19,6 +19,7 @@ namespace BluePrints.Common.Projections
 
         [Key]
         public Guid GUID { get; set; }
+
         public COMMODITY COMMODITY { get; set; }
 
         public Guid GUID_PARENT
