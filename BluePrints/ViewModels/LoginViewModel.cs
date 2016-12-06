@@ -1,4 +1,5 @@
-﻿using BluePrints.Common;
+﻿using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common;
 using BluePrints.Common.Helpers;
 using BluePrints.Common.ViewModel;
 using BluePrints.Data;
@@ -27,13 +28,12 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new LoginViewModel());
         }
 
-        USERCollectionViewModel USERS { get; set; }
+        IEnumerable<USER> USERS { get; set; }
         protected LoginViewModel()
         {
-            USERS = USERCollectionViewModel.Create();
-            USERS.Entities.ToList();
+            USERS = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork().USERS.AsEnumerable();
             UserName = XMLHelpers.GetSettings_Username();
-            Application.Current.Dispatcher.BeginInvoke(new Action(() => EVERNPCLogin()));
+            //Application.Current.Dispatcher.BeginInvoke(new Action(() => EVERNPCLogin()));
         }
 
 
@@ -56,7 +56,7 @@ namespace BluePrints.ViewModels
                 if (UserName == CommonResources.AdminUsername)
                     LoginCredentials.CurrentUser = new USER() { NAME = CommonResources.AdminUsername };
                 else
-                    LoginCredentials.CurrentUser = USERS.Entities.FirstOrDefault(x => x.NAME == UserName);
+                    LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME == UserName);
 
                 ShowMainWindow();
                 if (HideControlCallBack != null)
@@ -73,7 +73,7 @@ namespace BluePrints.ViewModels
 
         private bool UserAuthenticate()
         {
-            USER user = USERS.Entities.FirstOrDefault(x => x.NAME == UserName);
+            USER user = USERS.FirstOrDefault(x => x.NAME == UserName);
             if (user == null)
             {
                 ShowError(false, "Username not found");

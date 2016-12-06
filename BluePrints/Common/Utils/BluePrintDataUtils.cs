@@ -122,7 +122,7 @@ namespace BluePrints.Common.ViewModel.Utils
         /// <summary>
         /// Generate internal number1 when all required fields are populated
         /// </summary>
-        public static string WORKPACK_Generate_InternalNumber1(PROJECT fromPROJECT, WORKPACK fromWORKPACK, IEnumerable<WORKPACK> WORKPACKEntities, IEntitiesViewModel<AREA> lookUpAREA, IEntitiesViewModel<DISCIPLINE> lookUpDISCIPLINE, IEntitiesViewModel<DOCTYPE> lookUpDOCTYPE)
+        public static string WORKPACK_Generate_InternalNumber1(PROJECT fromPROJECT, WORKPACK fromWORKPACK, IEnumerable<WORKPACK> WORKPACKEntities, IEnumerable<AREA> lookUpAREA, IEnumerable<DISCIPLINE> lookUpDISCIPLINE, IEnumerable<DOCTYPE> lookUpDOCTYPE)
         {
             AREA findAREA;
             DISCIPLINE findDISCIPLINE;
@@ -130,9 +130,9 @@ namespace BluePrints.Common.ViewModel.Utils
 
             if(fromWORKPACK.AREA == null || fromWORKPACK.DISCIPLINE == null || fromWORKPACK.DOCTYPE == null)
             {
-                findAREA = lookUpAREA.Entities.FirstOrDefault(area => area.GUID == fromWORKPACK.GUID_DAREA);
-                findDISCIPLINE = lookUpDISCIPLINE.Entities.FirstOrDefault(discipline => discipline.GUID == fromWORKPACK.GUID_DDISCIPLINE);
-                findDOCTYPE = lookUpDOCTYPE.Entities.FirstOrDefault(doctype => doctype.GUID == fromWORKPACK.GUID_DDOCTYPE);
+                findAREA = lookUpAREA.FirstOrDefault(area => area.GUID == fromWORKPACK.GUID_DAREA);
+                findDISCIPLINE = lookUpDISCIPLINE.FirstOrDefault(discipline => discipline.GUID == fromWORKPACK.GUID_DDISCIPLINE);
+                findDOCTYPE = lookUpDOCTYPE.FirstOrDefault(doctype => doctype.GUID == fromWORKPACK.GUID_DDOCTYPE);
             }
             else
             {
@@ -161,7 +161,7 @@ namespace BluePrints.Common.ViewModel.Utils
         /// <summary>
         /// Generate internal number2 when all required fields are populated
         /// </summary>
-        public static string WORKPACK_Generate_InternalNumber2(PROJECT fromPROJECT, WORKPACK fromWORKPACK, IEnumerable<WORKPACK> WORKPACKEntities, IEntitiesViewModel<AREA> lookUpAREA, IEntitiesViewModel<DISCIPLINE> lookUpDISCIPLINE, IEntitiesViewModel<PHASE> lookUpPHASE)
+        public static string WORKPACK_Generate_InternalNumber2(PROJECT fromPROJECT, WORKPACK fromWORKPACK, IEnumerable<WORKPACK> WORKPACKEntities, IEnumerable<AREA> lookUpAREA, IEnumerable<DISCIPLINE> lookUpDISCIPLINE, IEnumerable<PHASE> lookUpPHASE)
         {
             AREA findAREA;
             DISCIPLINE findDISCIPLINE;
@@ -169,9 +169,9 @@ namespace BluePrints.Common.ViewModel.Utils
 
             if (fromWORKPACK.AREA == null || fromWORKPACK.DISCIPLINE == null || fromWORKPACK.AREA == null)
             {
-                findAREA = lookUpAREA.Entities.FirstOrDefault(area => area.GUID == fromWORKPACK.GUID_DAREA);
-                findPHASE = lookUpPHASE.Entities.FirstOrDefault(phase => phase.GUID == fromWORKPACK.GUID_DPHASE);
-                findDISCIPLINE = lookUpDISCIPLINE.Entities.FirstOrDefault(discipline => discipline.GUID == fromWORKPACK.GUID_DDISCIPLINE);
+                findAREA = lookUpAREA.FirstOrDefault(area => area.GUID == fromWORKPACK.GUID_DAREA);
+                findPHASE = lookUpPHASE.FirstOrDefault(phase => phase.GUID == fromWORKPACK.GUID_DPHASE);
+                findDISCIPLINE = lookUpDISCIPLINE.FirstOrDefault(discipline => discipline.GUID == fromWORKPACK.GUID_DDISCIPLINE);
             }
             else
             {

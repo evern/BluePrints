@@ -44,6 +44,8 @@
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding RefreshCommand}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
                                 <dxb:BarButtonItem Content="Redo" Command="{Binding RedoCommand}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
+                                <dxb:BarButtonItem Content="Save Layout" Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" Glyph="{dx:DXImage Image=Save_16x16.png}" />
+                                <dxb:BarButtonItem Content="Reset Layout" Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -59,33 +61,33 @@
                             <dxg:TreeListDragDropManager x:Name="dragDropManager" Dropped="dragDropManager_Dropped" Drop="dragDropManager_Drop" />
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:TreeListControl.Columns>
-                            <dxg:TreeListColumn FieldName="CODE" />
-                            <dxg:TreeListColumn Header="FULLCODE" FieldName="FULLCODE" ReadOnly="True" />
-                            <dxg:TreeListColumn FieldName="NAME" />
-                            <dxg:TreeListColumn Header="DEPARTMENT" FieldName="GUID_DEPARTMENT" ReadOnly="True">
+                            <dxg:TreeListColumn FieldName="CODE" VisibleIndex="10" />
+                            <dxg:TreeListColumn Header="FULLCODE" FieldName="FULLCODE" ReadOnly="True" VisibleIndex="20" />
+                            <dxg:TreeListColumn FieldName="NAME" VisibleIndex="30" />
+                            <dxg:TreeListColumn Name="colDEPARTMENT" Header="DEPARTMENT" FieldName="GUID_DEPARTMENT" Visible="False" ReadOnly="True" VisibleIndex="40">
                                 <dxg:TreeListColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
                                 </dxg:TreeListColumn.EditSettings>
                             </dxg:TreeListColumn>
-                            <dxg:TreeListColumn Header="DISCIPLINE" FieldName="GUID_DISCIPLINE" ReadOnly="True">
+                            <dxg:TreeListColumn Name="colDISCIPLINE" Header="DISCIPLINE" FieldName="GUID_DISCIPLINE" Visible="False" ReadOnly="True" VisibleIndex="50">
                                 <dxg:TreeListColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
                                 </dxg:TreeListColumn.EditSettings>
                             </dxg:TreeListColumn>
-                            <dxg:TreeListColumn Header="INDIRECT TYPE" FieldName="GUID_INDIRECTTYPE" ReadOnly="True">
+                            <dxg:TreeListColumn Name="colINDIRECT_TYPE" Header="INDIRECT TYPE" FieldName="GUID_INDIRECTTYPE" Visible="False"  ReadOnly="True" VisibleIndex="60">
                                 <dxg:TreeListColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.INDIRECT_TYPECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
                                 </dxg:TreeListColumn.EditSettings>
                             </dxg:TreeListColumn>
-                            <dxg:TreeListColumn FieldName="TYPE" />
-                            <dxg:TreeListColumn FieldName="SPEC" />
-                            <dxg:TreeListColumn FieldName="DESCRIPTION" />
-                            <dxg:TreeListColumn FieldName="UOM" >
+                            <dxg:TreeListColumn FieldName="TYPE" VisibleIndex="70" />
+                            <dxg:TreeListColumn FieldName="SPEC" VisibleIndex="80" />
+                            <dxg:TreeListColumn FieldName="DESCRIPTION" VisibleIndex="90" />
+                            <dxg:TreeListColumn FieldName="UOM" VisibleIndex="100" >
                                 <dxg:TreeListColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.LookUpUOMS.Entities, ElementName=userControl}" IsTextEditable="False" DisplayMember="UOM1" ValueMember="UOM1" />
                                 </dxg:TreeListColumn.EditSettings>
                             </dxg:TreeListColumn>
-                            <dxg:TreeListColumn FieldName="SORTORDER" />
+                            <dxg:TreeListColumn FieldName="SORTORDER" VisibleIndex="110" />
                         </dxg:TreeListControl.Columns>
                         <dxg:TreeListControl.View>
                             <dxg:TreeListView x:Name="treeListView" AllowSorting="True" ExpandStateFieldName="ISEXPANDED" ParentFieldName="GUID_PARENT" KeyFieldName="GUID"  >

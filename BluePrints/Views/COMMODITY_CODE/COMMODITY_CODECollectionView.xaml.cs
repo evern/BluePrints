@@ -17,6 +17,24 @@ namespace BluePrints.Views
             sortTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
             sortTimer.Tick += sortTimer_Tick;
             sortTimer.Start();
+            ((COMMODITY_CODESViewModelWrapper)this.DataContext).ShowDISCIPLINE = this.ShowDISCIPLINE;
+            ((COMMODITY_CODESViewModelWrapper)this.DataContext).ShowDEPARTMENT = this.ShowDEPARTMENT;
+            ((COMMODITY_CODESViewModelWrapper)this.DataContext).ShowINDIRECT_TYPE = this.ShowINDIRECT_TYPE;
+        }
+
+        public void ShowDISCIPLINE()
+        {
+            colDISCIPLINE.Visible = true;
+        }
+
+        public void ShowDEPARTMENT()
+        {
+            colDEPARTMENT.Visible = true;
+        }
+
+        public void ShowINDIRECT_TYPE()
+        {
+            colINDIRECT_TYPE.Visible = true;
         }
 
         void sortTimer_Tick(object sender, EventArgs e)

@@ -126,13 +126,15 @@ namespace BluePrints.Common.ViewModel
             Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection
             ) : base(unitOfWorkFactory, getRepositoryFunc, projection)
         {
-            Messenger.Default.Register<CloseAllMessage>(this, m =>
-            {
-                if (m.ShouldProcess(this))
-                {
-                    SaveLayout();
-                }
-            });
+            //BluePrints Modification Start
+            //Messenger.Default.Register<CloseAllMessage>(this, m =>
+            //{
+            //    if (m.ShouldProcess(this))
+            //    {
+            //        SaveLayout();
+            //    }
+            //});
+            //BluePrints Modification End
         }
 
         /// <summary>

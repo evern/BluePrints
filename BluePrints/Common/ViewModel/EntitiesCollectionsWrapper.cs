@@ -182,8 +182,6 @@ namespace BluePrints.Common.ViewModel
 
         void IDocumentContent.OnDestroy()
         {
-            this.SaveLayout();
-
             if (mainEntityLoader != null)
                 mainEntityLoader.OnDestroy();
 
@@ -205,10 +203,18 @@ namespace BluePrints.Common.ViewModel
 
         protected IMessageBoxService MessageBoxService { get { return this.GetRequiredService<IMessageBoxService>(); } }
         protected ILayoutSerializationService LayoutSerializationService { get { return this.GetService<ILayoutSerializationService>(); } }
-        void SaveLayout()
+        public void SaveLayout()
         {
             PersistentLayoutHelper.TrySerializeLayout(LayoutSerializationService, ViewName);
             PersistentLayoutHelper.SaveLayout();
+        }
+
+        public void ResetLayout()
+        {
+            if (MessageBoxService.ShowMessage(CommonResources.Confirmation_ResetLayout, CommonResources.Confirmation_Caption, MessageButton.YesNo) != MessageResult.Yes)
+                return;
+
+            PersistentLayoutHelper.ResetLayout(ViewName);
         }
     }
 

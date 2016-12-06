@@ -23,7 +23,7 @@ namespace BluePrints.ViewModels
     public class BASELINECollectionViewModelWrapper : CollectionViewModelsWrapper<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork, CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>>, ISupportCustomDocumentTypeNameAndParameter
     {
         /// <summary>
-        /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.
+        /// Creates a new instance of BASELINECollectionViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
         public static BASELINECollectionViewModelWrapper Create(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
@@ -32,8 +32,8 @@ namespace BluePrints.ViewModels
         }
 
         /// <summary>
-        /// Initializes a new instance of the PROJECTViewModel class.
-        /// This constructor is declared protected to avoid undesired instantiation of the PROJECTViewModel type without the POCO proxy factory.
+        /// Initializes a new instance of the BASELINECollectionViewModelWrapper class.
+        /// This constructor is declared protected to avoid undesired instantiation of the BASELINECollectionViewModelWrapper type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
         protected BASELINECollectionViewModelWrapper(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)

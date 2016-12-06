@@ -219,7 +219,7 @@
     <collections:ArrayList x:Key="DOCTYPEColumns">
         <dxg:GridColumn Header="DEPARTMENT" FieldName="GUID_DDEPARTMENT">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpDEPARTMENTS.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
+                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn FieldName="CODE" />
@@ -238,12 +238,12 @@
     <collections:ArrayList x:Key="RATEColumns">
         <dxg:GridColumn Header="DEPARTMENT" FieldName="GUID_DEPARTMENT" DataContext="{Binding DataContext, ElementName=userControl}" >
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpDEPARTMENTS.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
+                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn Header="DISCIPLINE" FieldName="GUID_DISCIPLINE" DataContext="{Binding DataContext, ElementName=userControl}" >
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpDISCIPLINES.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
+                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn FieldName="RATE1" Header="RATE">
@@ -335,142 +335,30 @@
         </dxg:GridColumn>
         <!--<dxg:GridColumn FieldName="UNBOUND_MODBASELINE" Header="MODIFIED BASELINE" UnboundType="Boolean" AllowEditing="False" DisplayTemplate="{StaticResource Button_MODBASELINE_ASSIGN}" EditTemplate="{StaticResource Button_MODBASELINE_ASSIGN}"/>-->
     </collections:ArrayList>
-    <collections:ArrayList x:Key="BASELINEITEMColumns">
-        <dxg:GridColumn FieldName="BASELINE_ITEM.GUID_WORKPACK" Header="WORKPACK" DataContext="{Binding DataContext, ElementName=userControl}" >
-            <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpWORKPACKS.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="{Binding WORKPACKDisplayMember, Mode=OneWay}" ValueMember="GUID"/>
-            </dxg:GridColumn.EditSettings>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="GUID_PHASE" Header="PHASE" DataContext="{Binding DataContext, ElementName=userControl}" >
-            <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpPHASES.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID"/>
-            </dxg:GridColumn.EditSettings>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="GUID_AREA" Header="AREA" DataContext="{Binding DataContext, ElementName=userControl}">
-            <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpAREAS.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID"/>
-            </dxg:GridColumn.EditSettings>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="GUID_DOCTYPE" Header="DOCTYPE" DataContext="{Binding DataContext, ElementName=userControl}" >
-            <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpDOCTYPES.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
-            </dxg:GridColumn.EditSettings>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="GUID_DISCIPLINE" Header="DISCIPLINE" DataContext="{Binding DataContext, ElementName=userControl}" >
-            <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpDISCIPLINES.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
-            </dxg:GridColumn.EditSettings>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="GUID_DEPARTMENT" Header="DEPARTMENT" DataContext="{Binding DataContext, ElementName=userControl}" >
-            <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpDEPARTMENTS.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
-            </dxg:GridColumn.EditSettings>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="INTERNAL_NUM" />
-        <dxg:GridColumn FieldName="CLIENT_NUM" />
-        <dxg:GridColumn FieldName="REVISION_NUMBER" />
-        <dxg:GridColumn FieldName="DELIVERABLE_TYPE" >
-            <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DeliverableType}}"/>
-            </dxg:GridColumn.EditSettings>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="PRIMARY_TITLE" />
-        <dxg:GridColumn FieldName="SECONDARY_TITLE" />
-        <dxg:GridColumn FieldName="COMMENTS" />
-        <dxg:GridColumn FieldName="ESTIMATED_HOURS" >
-            <dxg:GridColumn.EditSettings>
-                <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
-            </dxg:GridColumn.EditSettings>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="DC_HOURS" ReadOnly="True" />
-        <dxg:GridColumn FieldName="TOTAL_COSTS" Header="COSTS" UnboundType="Decimal" AllowSearchPanel="False" >
-            <dxg:GridColumn.CellTemplate>
-                <DataTemplate>
-                    <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True" MaskType="Numeric"  Mask="c" />
-                </DataTemplate>
-            </dxg:GridColumn.CellTemplate>
-        </dxg:GridColumn>
-    </collections:ArrayList>
-    <collections:ArrayList x:Key="BASELINEITEMSJoinRATESColumns">
-        <dxg:GridColumn FieldName="BASELINE_ITEM.GUID_WORKPACK" Header="WORKPACK" DataContext="{Binding DataContext, ElementName=userControl}" >
-            <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpWORKPACKS.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="{Binding WORKPACKDisplayMember, Mode=OneWay}" ValueMember="GUID"/>
-            </dxg:GridColumn.EditSettings>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="BASELINE_ITEM.GUID_PHASE" Header="PHASE" DataContext="{Binding DataContext, ElementName=userControl}" >
-            <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpPHASES.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID"/>
-            </dxg:GridColumn.EditSettings>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="BASELINE_ITEM.GUID_AREA" Header="AREA" DataContext="{Binding DataContext, ElementName=userControl}">
-            <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpAREAS.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID"/>
-            </dxg:GridColumn.EditSettings>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="BASELINE_ITEM.GUID_DOCTYPE" Header="DOCTYPE" DataContext="{Binding DataContext, ElementName=userControl}" >
-            <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpDOCTYPES.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
-            </dxg:GridColumn.EditSettings>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="BASELINE_ITEM.GUID_DISCIPLINE" Header="DISCIPLINE" DataContext="{Binding DataContext, ElementName=userControl}" >
-            <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpDISCIPLINES.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
-            </dxg:GridColumn.EditSettings>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="BASELINE_ITEM.GUID_DEPARTMENT" Header="DEPARTMENT" DataContext="{Binding DataContext, ElementName=userControl}" >
-            <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpDEPARTMENTS.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
-            </dxg:GridColumn.EditSettings>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="BASELINE_ITEM.INTERNAL_NUM" Header="INTERNAL_NUM" />
-        <dxg:GridColumn FieldName="BASELINE_ITEM.CLIENT_NUM" Header="CLIENT_NUM" />
-        <dxg:GridColumn FieldName="BASELINE_ITEM.REVISION_NUMBER" Header="REVISION_NUMBER" />
-        <dxg:GridColumn FieldName="BASELINE_ITEM.DELIVERABLE_TYPE" Header="DELIVERABLE_TYPE" >
-            <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DeliverableType}}"/>
-            </dxg:GridColumn.EditSettings>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="BASELINE_ITEM.PRIMARY_TITLE" Header="PRIMARY_TITLE" />
-        <dxg:GridColumn FieldName="BASELINE_ITEM.SECONDARY_TITLE" Header="SECONDARY_TITLE" />
-        <dxg:GridColumn FieldName="BASELINE_ITEM.COMMENTS" Header="COMMENTS" />
-        <dxg:GridColumn FieldName="BASELINE_ITEM.ESTIMATED_HOURS" Header="ESTIMATED_HOURS" >
-            <dxg:GridColumn.EditSettings>
-                <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
-            </dxg:GridColumn.EditSettings>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="BASELINE_ITEM.DC_HOURS" ReadOnly="True" Header="DC_HOURS" />
-        <dxg:GridColumn FieldName="TOTAL_COSTS" Header="COSTS" UnboundType="Decimal" AllowSearchPanel="False" >
-            <dxg:GridColumn.CellTemplate>
-                <DataTemplate>
-                    <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True" MaskType="Numeric"  Mask="c" />
-                </DataTemplate>
-            </dxg:GridColumn.CellTemplate>
-        </dxg:GridColumn>
-    </collections:ArrayList>
     <collections:ArrayList x:Key="WORKPACKColumns">
         <dxg:GridColumn Header="PHASE" FieldName="GUID_DPHASE" DataContext="{Binding DataContext, ElementName=userControl}">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpPHASES.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID"/>
+                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID"/>
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn Header="AREA" FieldName="GUID_DAREA" DataContext="{Binding DataContext, ElementName=userControl}">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpAREAS.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID"/>
+                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID"/>
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn Header="DOCTYPE" FieldName="GUID_DDOCTYPE" DataContext="{Binding DataContext, ElementName=userControl}" >
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpDOCTYPES.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
+                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn Header="DISCIPLINE" FieldName="GUID_DDISCIPLINE" DataContext="{Binding DataContext, ElementName=userControl}" >
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpDISCIPLINES.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
+                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn Header="DEPARTMENT" FieldName="GUID_DDEPARTMENT" DataContext="{Binding DataContext, ElementName=userControl}" >
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding LookUpDEPARTMENTS.Entities}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
+                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn FieldName="INTERNAL_NAME1" />
@@ -539,97 +427,7 @@
                 <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProgressStatus}}"/>
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <!--<dxg:GridColumn FieldName="P6PROGRESS_NAME" />-->
         <dxg:GridColumn FieldName="COMMENTS" />
-        <!--<dxg:GridColumn FieldName="P6PROGRESS_NAME" />-->
-    </collections:ArrayList>
-    <collections:ArrayList x:Key="PROGRESSITEMColumns">
-        <dxg:GridColumn FieldName="BASELINE_ITEM.GUID_WORKPACK" Header="WORKPACK" ReadOnly="True" IsEnabled="False">
-            <dxg:GridColumn.CellTemplate>
-                <DataTemplate>
-                    <dxe:ComboBoxEdit Name="PART_Editor" ItemsSource="{Binding DataContext.LookUpWORKPACKS.Entities, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="{Binding DataContext.WORKPACKDisplayMember, Mode=OneWay, ElementName=userControl}" ValueMember="GUID" />
-                </DataTemplate>
-            </dxg:GridColumn.CellTemplate>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="BASELINE_ITEM.PHASE.INTERNAL_NUM" Header="PHASE" ReadOnly="True" IsEnabled="False" />
-        <dxg:GridColumn FieldName="BASELINE_ITEM.AREA.INTERNAL_NUM" Header="AREA" ReadOnly="True" IsEnabled="False" />
-        <dxg:GridColumn FieldName="BASELINE_ITEM.DOCTYPE.NAME" Header="DOCTYPE" ReadOnly="True" IsEnabled="False" />
-        <dxg:GridColumn FieldName="BASELINE_ITEM.DISCIPLINE.NAME" Header="DISCIPLINE" ReadOnly="True" IsEnabled="False" />
-        <dxg:GridColumn FieldName="BASELINE_ITEM.DEPARTMENT.NAME" Header="DEPARTMENT" ReadOnly="True" IsEnabled="False" />
-        <dxg:GridColumn FieldName="BASELINE_ITEM.INTERNAL_NUM" Header="INTERNAL NUM" ReadOnly="True" IsEnabled="False" />
-        <dxg:GridColumn FieldName="BASELINE_ITEM.CLIENT_NUM" Header="CLIENT NUM" ReadOnly="True" IsEnabled="False" />
-        <dxg:GridColumn FieldName="BASELINE_ITEM.REVISION_NUMBER" Header="REVISION NUM" ReadOnly="True" IsEnabled="False" />
-        <dxg:GridColumn FieldName="BASELINE_ITEM.DELIVERABLE_TYPE" Header="TYPE" ReadOnly="True" IsEnabled="False" />
-        <dxg:GridColumn FieldName="BASELINE_ITEM.PRIMARY_TITLE" Header="PRIMARY TITLE" ReadOnly="True" IsEnabled="False" />
-        <dxg:GridColumn FieldName="BASELINE_ITEM.SECONDARY_TITLE" Header="SECONDARY TITLE" ReadOnly="True" IsEnabled="False"/>
-        <dxg:GridColumn FieldName="BASELINE_ITEM.COMMENTS" Header="COMMENTS" />
-        <dxg:GridColumn FieldName="CurrentPercentage" Header="CURRENT %" AllowEditing="True" >
-            <dxg:GridColumn.CellTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="3"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Image Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}" ToolTip="No progress" Grid.Column="1">
-                            <Image.Visibility>
-                                <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
-                                    <MultiBinding.ConverterParameter>
-                                        <sys:Boolean>False</sys:Boolean>
-                                    </MultiBinding.ConverterParameter>
-                                    <Binding ElementName="PART_Editor" Path="MinValue" />
-                                    <Binding ElementName="PART_Editor" Path="EditValue" />
-                                </MultiBinding>
-                            </Image.Visibility>
-                        </Image>
-                        <Image Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}" ToolTip="Max progress" Grid.Column="1">
-                            <Image.Visibility>
-                                <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
-                                    <MultiBinding.ConverterParameter>
-                                        <sys:Boolean>False</sys:Boolean>
-                                    </MultiBinding.ConverterParameter>
-                                    <Binding ElementName="PART_Editor" Path="MaxValue" />
-                                    <Binding ElementName="PART_Editor" Path="EditValue" />
-                                </MultiBinding>
-                            </Image.Visibility>
-                        </Image>
-                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="p2" MaskUseAsDisplayFormat="True" Increment="0.01" MaxValue="{Binding RowData.Row.MaxPercentage}" MinValue="{Binding RowData.Row.MinPercentage}" Grid.Column="2"/>
-                    </Grid>
-                </DataTemplate>
-            </dxg:GridColumn.CellTemplate>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="BASELINE_ITEM.ESTIMATED_HOURS" Header="ESTIMATED HOURS" ReadOnly="True" IsEnabled="False" >
-            <dxg:GridColumn.EditSettings>
-                <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
-            </dxg:GridColumn.EditSettings>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="BASELINE_ITEM.DC_HOURS" Header="DC HOURS"  ReadOnly="True" IsEnabled="False" >
-            <dxg:GridColumn.EditSettings>
-                <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True"/>
-            </dxg:GridColumn.EditSettings>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="BASELINE_ITEM.TOTAL_COSTS" Header="TOTAL COSTS" ReadOnly="True" IsEnabled="False">
-            <dxg:GridColumn.CellTemplate>
-                <DataTemplate>
-                    <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True" MaskType="Numeric" Mask="c" />
-                </DataTemplate>
-            </dxg:GridColumn.CellTemplate>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="CURRENT_EARNED_COSTS" Header="CURRENT EARNED COSTS" ReadOnly="True" IsEnabled="False">
-            <dxg:GridColumn.CellTemplate>
-                <DataTemplate>
-                    <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True" MaskType="Numeric" Mask="c" />
-                </DataTemplate>
-            </dxg:GridColumn.CellTemplate>
-        </dxg:GridColumn>
-        <dxg:GridColumn FieldName="TOTAL_EARNED_COSTS" Header="TOTAL COSTS" ReadOnly="True" IsEnabled="False">
-            <dxg:GridColumn.CellTemplate>
-                <DataTemplate>
-                    <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True" MaskType="Numeric" Mask="c" />
-                </DataTemplate>
-            </dxg:GridColumn.CellTemplate>
-        </dxg:GridColumn>
     </collections:ArrayList>
     <collections:ArrayList x:Key="VARIATIONColumns">
         <dxg:GridColumn FieldName="NAME" VisibleIndex="10" />
@@ -664,7 +462,7 @@
         <dxg:GridColumn FieldName="DESCRIPTION" />
         <dxg:GridColumn Header="ROLE" FieldName="GUID_ROLE">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.LookUpROLES.Entities, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.ROLECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
     </collections:ArrayList>

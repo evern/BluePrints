@@ -1,0 +1,114 @@
+﻿<dx:DXWindow x:Class="BluePrints.Views.WORKPACKAssignmentView"
+             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" 
+             Height="550" Width="700" Title="Workpack's Activity Assignment" WindowStartupLocation="CenterScreen"
+             >
+    <dxlc:LayoutControl Orientation="Vertical">
+        <dxlc:LayoutGroup Name="LayoutGroupWorkpackSelection" View="GroupBox" Header="Current Workpack" Orientation="Vertical" >
+            <dxlc:LayoutItem Height="25" Label="Workpack:">
+                <dxe:ComboBoxEdit x:Name="cmbWorkpack" DisplayMember="WORKPACK.INTERNAL_NAME1"  SelectedItem="{Binding SelectedWORKPACK, Mode=TwoWay}" ItemsSource="{Binding WORKPACKSItemSource}" />
+            </dxlc:LayoutItem>
+            <dxlc:LayoutItem Height="25" Label="Activity:" IsRequired="True">
+                <dxg:LookUpEdit AutoPopulateColumns="False" x:Name="lookupActivity" SelectedItem="{Binding SelectedTASK, Mode=TwoWay}" DisplayMember="Description" ItemsSource="{Binding TASKSItemSource}" >
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxmvvm:EventToCommand EventName="EditValueChanging" Command="{Binding lookupActivity_EditValueChangingCommand}" PassEventArgsToCommand="True"/>
+                    </dxmvvm:Interaction.Behaviors>
+                    <dxg:LookUpEdit.PopupContentTemplate>
+                        <ControlTemplate TargetType="ContentControl" >
+                            <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False" >
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn IsSmart="True" AllowEditing="False" FieldName="Subject" />
+                                    <dxg:GridColumn IsSmart="True" AllowEditing="False" Width="500" FieldName="Description" />
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.View>
+                                    <dxg:TreeListView Name="treeListView1" TreeDerivationMode="Selfreference" KeyFieldName="task_id" ParentFieldName="ParentId"/>
+                                </dxg:GridControl.View>
+                            </dxg:GridControl>
+                        </ControlTemplate>
+                    </dxg:LookUpEdit.PopupContentTemplate>
+                </dxg:LookUpEdit>
+            </dxlc:LayoutItem>
+            <dxlc:LayoutGroup Orientation="Horizontal">
+                <dxlc:LayoutItem Height="25" Label="From Units:" IsRequired="True">
+                    <dxe:TextEdit IsReadOnly="True" EditValue="{Binding AssignmentLowValue, Mode=OneWay}" DisplayFormatString="n2"  />
+                </dxlc:LayoutItem>
+                <dxlc:LayoutItem Height="25" Label="To Units:" IsRequired="True">
+                    <dxe:SpinEdit EditValue="{Binding AssignmentHighValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinValue="{Binding AssignmentMinValue}" MaxValue="{Binding AssignmentMaxValue}" Increment="1" DisplayFormatString="n2" />
+                </dxlc:LayoutItem>
+                <dxlc:LayoutItem HorizontalAlignment="Right">
+                    <Button Height="25" x:Name="btnMaxUnits" Command="{Binding MaxUnitsCommand}" >
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{dx:DXImageOffice2013 Image=MoveUp_32x32.png}" />
+                            <TextBlock VerticalAlignment="Center" Text="Max" />
+                        </StackPanel>
+                    </Button>
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+            <dxlc:LayoutGroup>
+                <dxlc:LayoutItem HorizontalAlignment="Right">
+                    <Button x:Name="btnAddP6Activity" Command="{Binding AddAssignmentCommand}" >
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{dx:DXImageOffice2013 Image=Add_32x32.png}" />
+                            <TextBlock VerticalAlignment="Center" Text="Add" />
+                        </StackPanel>
+                    </Button>
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+            <dxlc:LayoutGroup View="GroupBox" Header="Assignments" Orientation="Horizontal" >
+                <dxlc:LayoutItem HorizontalAlignment="Left" Height="250">
+                    <dxg:GridControl x:Name="gridControlWORKPACK_ASSIGNMENTS" SelectionMode="Row" ShowBorder="False" SelectedItem="{Binding SelectedWORKPACK_ASSIGNMENT, Mode=TwoWay}" ItemsSource="{Binding SelectedWORKPACK.ObservableWORKPACK_ASSIGNMENTS}" >
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="P6 ID" FieldName="P6_ACTIVITYID" VisibleIndex="0" />
+                            <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="P6 Description" FieldName="P6_ACTIVITYID" VisibleIndex="1" Width="150">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding TASKSItemSource}" ValueMember="Subject" DisplayMember="Description" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="Low Value" FieldName="LOW_VALUE" VisibleIndex="2" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings DisplayFormat="n2" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="High Value" FieldName="HIGH_VALUE" VisibleIndex="3" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings DisplayFormat="n2" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                        </dxg:GridControl.Columns>
+                        <dxg:GridControl.View>
+                            <dxg:TableView x:Name="GridViewWorkpackAssignment" FocusedRow="{Binding SelectedWORKPACK_ASSIGNMENT, Mode=TwoWay}" NavigationStyle="Row" ShowGroupPanel="False" AutoWidth="False" AllowEditing="False" AllowSorting="False" />
+                        </dxg:GridControl.View>
+                    </dxg:GridControl>
+                </dxlc:LayoutItem>
+                <dxlc:LayoutGroup x:Name="assignmentNavigationLayoutGroup" HorizontalAlignment="Right" Orientation="Vertical">
+                    <dxlc:LayoutItem >
+                        <Button x:Name="btnPriorityUp" VerticalAlignment="Top" Width="40" Height="40" Padding="0, 0, 0, 0" Command="{Binding PriorityUpCommand}">
+                            <StackPanel>
+                                <Image Source="{dx:DXImageOffice2013 Image=Previous_32x32.png}" />
+                            </StackPanel>
+                        </Button>
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem >
+                        <Button x:Name="btnPriorityDown" VerticalAlignment="Top" Width="40" Height="40" Padding="0, 0, 0, 0" Command="{Binding PriorityDownCommand}">
+                            <StackPanel>
+                                <Image Source="{dx:DXImageOffice2013 Image=NavigateNext_32x32.png}" />
+                            </StackPanel>
+                        </Button>
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem >
+                        <Button x:Name="btnAssignmentDelete" VerticalAlignment="Top" Width="40" Height="40" Padding="0, 0, 0, 0" Command="{Binding DeleteAssignmentCommand}">
+                            <StackPanel>
+                                <Image Source="{dx:DXImageOffice2013 Image=DeleteFooter_32x32.png}" />
+                            </StackPanel>
+                        </Button>
+                    </dxlc:LayoutItem>
+                </dxlc:LayoutGroup>
+            </dxlc:LayoutGroup>
+        </dxlc:LayoutGroup>
+    </dxlc:LayoutControl>
+</dx:DXWindow>

@@ -51,11 +51,16 @@ namespace BluePrints.Common.ViewModel
             LayoutSettings.Default.Save();
         }
 
-        public static void ResetLayout()
+        public static void ResetLayout(string viewName)
         {
-            PersistentViewsLayout.Clear();
-            PersistentLogicalLayout = null;
-            SaveLayout();
+            PersistentLayoutHelper.PersistentViewsLayout[viewName] = string.Empty;
+            PersistentLayoutHelper.SaveLayout();
         }
+        //public static void ResetLayout()
+        //{
+        //    PersistentViewsLayout.Clear();
+        //    PersistentLogicalLayout = null;
+        //    SaveLayout();
+        //}
     }
 }

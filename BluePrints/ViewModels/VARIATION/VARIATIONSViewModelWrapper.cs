@@ -47,7 +47,8 @@ namespace BluePrints.ViewModels
 
         protected override void InitializeParameters(object parameter)
         {
-            this.loadPROJECT = bluePrintsUnitOfWorkFactory.CreateUnitOfWork().PROJECTS.First(x => x.GUID == (Guid)parameter);
+            EntitiesParameter<BluePrints.Data.PROJECT> PROJECTParameter = (EntitiesParameter<BluePrints.Data.PROJECT>)parameter;
+            this.loadPROJECT = PROJECTParameter.GetEntity();
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()

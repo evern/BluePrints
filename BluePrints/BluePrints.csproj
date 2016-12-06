@@ -24,7 +24,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>30</ApplicationRevision>
+    <ApplicationRevision>32</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -1034,10 +1034,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>PrintRibbonControllerResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\AREA\AREACollectionViewModel.cs" />
-    <Compile Include="ViewModels\AREA\AREAViewModel.cs" />
-    <Compile Include="ViewModels\AREA\PROJECTAREADetailsCollectionViewModel.cs" />
-    <Compile Include="ViewModels\BASELINE\BASELINECollectionViewModel.cs" />
+    <Compile Include="ViewModels\AREA\AREACollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSViewModelWrapper.cs" />
     <Compile Include="ViewModels\BulkEdit\BulkEditEnumsViewModel.cs" />
     <Compile Include="ViewModels\BulkEdit\BulkEditNumbersViewModel.cs" />
@@ -1045,65 +1042,34 @@
     <Compile Include="ViewModels\COMMODITY\AddCOMMODITYViewModel.cs" />
     <Compile Include="ViewModels\ESTIMATION\ESTIMATIONCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATION_ITEM\ESTIMATION_ITEMSViewModelWrapper.cs" />
-    <Compile Include="ViewModels\INDIRECT_TYPE\INDIRECT_TYPECollectionViewModel.cs" />
+    <Compile Include="ViewModels\INDIRECT_TYPE\INDIRECT_TYPECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\USER\SelectDetailUSERSViewModel.cs" />
+    <Compile Include="ViewModels\USER\USERSelectionViewModel.cs" />
     <Compile Include="ViewModels\WORKPACK_ASSIGNMENT\PROJECTWORKPACKAssignmentViewModel.cs" />
     <Compile Include="ViewModels\WORKPACK_ASSIGNMENT\PROJECTWORKPACKSMappingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE\BASELINECollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMViewModel.cs" />
     <Compile Include="ViewModels\BluePrintsEntitiesViewModel.cs" />
     <Compile Include="ViewModels\COMMODITY\COMMODITYCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\COMMODITY\COMMODITYViewModel.cs" />
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODEViewModelWrapper.cs" />
-    <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODEViewModel.cs" />
-    <Compile Include="ViewModels\DEPARTMENT\DEPARTMENTCollectionViewModel.cs" />
-    <Compile Include="ViewModels\DEPARTMENT\DEPARTMENTViewModel.cs" />
-    <Compile Include="ViewModels\DISCIPLINE\DISCIPLINECollectionViewModel.cs" />
-    <Compile Include="ViewModels\DISCIPLINE\DISCIPLINEViewModel.cs" />
-    <Compile Include="ViewModels\DOCTYPE\DOCTYPECollectionViewModel.cs" />
-    <Compile Include="ViewModels\DOCTYPE\DOCTYPEViewModel.cs" />
-    <Compile Include="ViewModels\ESTIMATION\ESTIMATIONViewModel.cs" />
-    <Compile Include="ViewModels\ESTIMATION_ITEM\ESTIMATION_ITEMViewModel.cs" />
-    <Compile Include="ViewModels\PHASE\PHASECollectionViewModel.cs" />
-    <Compile Include="ViewModels\PHASE\PHASEViewModel.cs" />
-    <Compile Include="ViewModels\PHASE\PROJECTPHASEDetailsCollectionViewModel.cs" />
-    <Compile Include="ViewModels\PROGRESS\PROGRESSCollectionViewModel.cs" />
+    <Compile Include="ViewModels\DEPARTMENT\DEPARTMENTCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\DISCIPLINE\DISCIPLINECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\DOCTYPE\DOCTYPECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PHASE\PHASECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\PROGRESS_ITEMSViewModelWrapper.cs" />
-    <Compile Include="ViewModels\PROGRESS\PROJECTPROGRESSDetailsCollectionViewModel.cs" />
-    <Compile Include="ViewModels\PROGRESS_ITEM\PROGRESS_ITEMViewModel.cs" />
-    <Compile Include="ViewModels\WORKPACK\PROJECTWORKPACKDashboardViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROGRESS\PROGRESSCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\WORKPACK\WORKPACKDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTDashboardViewModelWrapper.cs" />
-    <Compile Include="ViewModels\PROJECT\PROJECTCollectionViewModel.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTViewModelWrapper.cs" />
-    <Compile Include="ViewModels\PROJECT_REPORT\PROJECT_REPORTCollectionViewModel.cs" />
-    <Compile Include="ViewModels\PROJECT_REPORT\PROJECT_REPORTViewModel.cs" />
-    <Compile Include="ViewModels\RATE\PROJECTRATEDetailsCollectionViewModel.cs" />
-    <Compile Include="ViewModels\RATE\RATECollectionViewModel.cs" />
-    <Compile Include="ViewModels\RATE\RATEViewModel.cs" />
-    <Compile Include="ViewModels\REGISTER\REGISTERCollectionViewModel.cs" />
-    <Compile Include="ViewModels\REGISTER\REGISTERViewModel.cs" />
+    <Compile Include="ViewModels\RATE\RATECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\ROLE\ROLECollectionViewModel.cs" />
-    <Compile Include="ViewModels\ROLE\ROLEViewModel.cs" />
-    <Compile Include="ViewModels\ROLE_PERMISSION\ROLE_PERMISSIONViewModel.cs" />
     <Compile Include="ViewModels\SETTINGS_GLOBAL\SETTINGS_GLOBALCollectionViewModel.cs" />
     <Compile Include="ViewModels\SETTINGS_GLOBAL\SETTINGS_GLOBALViewModel.cs" />
-    <Compile Include="ViewModels\UOM\UOMCollectionViewModel.cs" />
-    <Compile Include="ViewModels\UOM\UOMViewModel.cs" />
+    <Compile Include="ViewModels\UOM\UOMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\USERCollectionViewModel.cs" />
-    <Compile Include="ViewModels\USER\USERViewModel.cs" />
     <Compile Include="ViewModels\VARIATION\VARIATIONSViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\VARIATION_ITEMSViewModelWrapper.cs" />
-    <Compile Include="ViewModels\VARIATION_ITEM\VARIATION_ITEMViewModel.cs" />
-    <Compile Include="ViewModels\WORKPACK\PROJECTWORKPACKDetailsCollectionViewModel.cs" />
-    <Compile Include="ViewModels\WORKPACK\WORKPACKCollectionViewModel.cs" />
-    <Compile Include="ViewModels\WORKPACK\WORKPACKViewModel.cs" />
-    <Compile Include="ViewModels\WORKPACK_ASSIGNMENT\WORKPACK_ASSIGNMENTCollectionViewModel.cs" />
-    <Compile Include="ViewModels\WORKPACK_ASSIGNMENT\WORKPACK_ASSIGNMENTViewModel.cs" />
-    <Compile Include="Views\AREA\AREACollectionView.xaml.cs">
-      <DependentUpon>AREACollectionView.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="ViewModels\WORKPACK\WORKPACKCollectionViewModelWrapper.cs" />
     <Compile Include="LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
@@ -1116,8 +1082,8 @@
     <Compile Include="Common\View\BulkEditStrings.xaml.cs">
       <DependentUpon>BulkEditStrings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\COMMODITY\AddCOMMODITYView.xaml.cs">
-      <DependentUpon>AddCOMMODITYView.xaml</DependentUpon>
+    <Compile Include="Views\COMMODITY\COMMODITYAdditionView.xaml.cs">
+      <DependentUpon>COMMODITYAdditionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\INDIRECT_TYPE\INDIRECT_TYPECollectionView.xaml.cs">
       <DependentUpon>INDIRECT_TYPECollectionView.xaml</DependentUpon>
@@ -1131,20 +1097,20 @@
     <Compile Include="Views\REPORTDesigner.Designer.cs">
       <DependentUpon>REPORTDesigner.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\USER\SelectDetailUSERSView.xaml.cs">
-      <DependentUpon>SelectDetailUSERSView.xaml</DependentUpon>
+    <Compile Include="Views\USER\USERSelectionView.xaml.cs">
+      <DependentUpon>USERSelectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\WORKPACK_ASSIGNMENT\PROJECTWORKPACKDetailsActivityAssignment.xaml.cs">
-      <DependentUpon>PROJECTWORKPACKDetailsActivityAssignment.xaml</DependentUpon>
+    <Compile Include="Views\WORKPACK_ASSIGNMENT\P6ACTIVITYAssignmentView.xaml.cs">
+      <DependentUpon>P6ACTIVITYAssignmentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\WORKPACK_ASSIGNMENT\PROJECTWORKPACKDetailsMappingViewHost.xaml.cs">
-      <DependentUpon>PROJECTWORKPACKDetailsMappingViewHost.xaml</DependentUpon>
+    <Compile Include="Views\WORKPACK_ASSIGNMENT\WORKPACKSchedulingViewHost.xaml.cs">
+      <DependentUpon>WORKPACKSchedulingViewHost.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\WORKPACK_ASSIGNMENT\PROJECTWORKPACKDetailsMappingView.cs">
+    <Compile Include="Views\WORKPACK_ASSIGNMENT\WORKPACKSchedulingView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\WORKPACK_ASSIGNMENT\PROJECTWORKPACKDetailsMappingView.Designer.cs">
-      <DependentUpon>PROJECTWORKPACKDetailsMappingView.cs</DependentUpon>
+    <Compile Include="Views\WORKPACK_ASSIGNMENT\WORKPACKSchedulingView.Designer.cs">
+      <DependentUpon>WORKPACKSchedulingView.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\WORKPACK_ASSIGNMENT\PROJECTWORKPACKDetailsMappingViewXMLVersion\PROJECTWORKPACKDetailsMappingView_Unused.xaml.cs">
       <DependentUpon>PROJECTWORKPACKDetailsMappingView_Unused.xaml</DependentUpon>
@@ -1152,23 +1118,20 @@
     <Compile Include="Views\BASELINE\BASELINECollectionView.xaml.cs">
       <DependentUpon>BASELINECollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\WORKPACK\PROJECTWORKPACKDashboardView.xaml.cs">
-      <DependentUpon>PROJECTWORKPACKDashboardView.xaml</DependentUpon>
+    <Compile Include="Views\WORKPACK\WORKPACKDashboardView.xaml.cs">
+      <DependentUpon>WORKPACKDashboardView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PROJECT\PROJECTDashboardCollectionView.xaml.cs">
-      <DependentUpon>PROJECTDashboardCollectionView.xaml</DependentUpon>
+    <Compile Include="Views\PROJECT\PROJECTDashboardView.xaml.cs">
+      <DependentUpon>PROJECTDashboardView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\RATE\PROJECTRATEDetailsCollectionView.xaml.cs">
-      <DependentUpon>PROJECTRATEDetailsCollectionView.xaml</DependentUpon>
+    <Compile Include="Views\RATE\RATECollectionView.xaml.cs">
+      <DependentUpon>RATECollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PHASE\PROJECTPHASEDetailsCollectionView.xaml.cs">
-      <DependentUpon>PROJECTPHASEDetailsCollectionView.xaml</DependentUpon>
+    <Compile Include="Views\PHASE\PHASECollectionView.xaml.cs">
+      <DependentUpon>PHASECollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\AREA\PROJECTAREADetailsCollectionView.xaml.cs">
-      <DependentUpon>PROJECTAREADetailsCollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\AREA\AREAView.xaml.cs">
-      <DependentUpon>AREAView.xaml</DependentUpon>
+    <Compile Include="Views\AREA\AREACollectionView.xaml.cs">
+      <DependentUpon>AREACollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMCollectionView.xaml.cs">
       <DependentUpon>BASELINE_ITEMCollectionView.xaml</DependentUpon>
@@ -1188,44 +1151,23 @@
     <Compile Include="Views\DEPARTMENT\DEPARTMENTCollectionView.xaml.cs">
       <DependentUpon>DEPARTMENTCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\DEPARTMENT\DEPARTMENTView.xaml.cs">
-      <DependentUpon>DEPARTMENTView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\DISCIPLINE\DISCIPLINECollectionView.xaml.cs">
       <DependentUpon>DISCIPLINECollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\DISCIPLINE\DISCIPLINEView.xaml.cs">
-      <DependentUpon>DISCIPLINEView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\DOCTYPE\DOCTYPECollectionView.xaml.cs">
       <DependentUpon>DOCTYPECollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\DOCTYPE\DOCTYPEView.xaml.cs">
-      <DependentUpon>DOCTYPEView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\ESTIMATION\ESTIMATIONCollectionView.xaml.cs">
       <DependentUpon>ESTIMATIONCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ESTIMATION\ESTIMATIONView.xaml.cs">
-      <DependentUpon>ESTIMATIONView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\ESTIMATION_ITEM\ESTIMATION_ITEMCollectionView.xaml.cs">
       <DependentUpon>ESTIMATION_ITEMCollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ESTIMATION_ITEM\ESTIMATION_ITEMView.xaml.cs">
-      <DependentUpon>ESTIMATION_ITEMView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\FilterTreeView.xaml.cs">
       <DependentUpon>FilterTreeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\NavigationTreeView.xaml.cs">
       <DependentUpon>NavigationTreeView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\PHASE\PHASECollectionView.xaml.cs">
-      <DependentUpon>PHASECollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\PHASE\PHASEView.xaml.cs">
-      <DependentUpon>PHASEView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROGRESS_ITEM\PROGRESS_ITEMCollectionView.xaml.cs">
       <DependentUpon>PROGRESS_ITEMCollectionView.xaml</DependentUpon>
@@ -1236,41 +1178,17 @@
     <Compile Include="Views\PROJECT\PROJECTView.xaml.cs">
       <DependentUpon>PROJECTView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PROGRESS\PROJECTPROGRESSDetailsCollectionView.xaml.cs">
-      <DependentUpon>PROJECTPROGRESSDetailsCollectionView.xaml</DependentUpon>
+    <Compile Include="Views\PROGRESS\PROGRESSCollectionView.xaml.cs">
+      <DependentUpon>PROGRESSCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\VARIATION\VARIATIONCollectionView.xaml.cs">
       <DependentUpon>VARIATIONCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\WORKPACK\PROJECTWORKPACKDetailsCollectionView.xaml.cs">
-      <DependentUpon>PROJECTWORKPACKDetailsCollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\PROJECT_REPORT\PROJECT_REPORTCollectionView.xaml.cs">
-      <DependentUpon>PROJECT_REPORTCollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\PROJECT_REPORT\PROJECT_REPORTView.xaml.cs">
-      <DependentUpon>PROJECT_REPORTView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\RATE\RATECollectionView.xaml.cs">
-      <DependentUpon>RATECollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\RATE\RATEView.xaml.cs">
-      <DependentUpon>RATEView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\REGISTER\REGISTERCollectionView.xaml.cs">
-      <DependentUpon>REGISTERCollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\REGISTER\REGISTERView.xaml.cs">
-      <DependentUpon>REGISTERView.xaml</DependentUpon>
+    <Compile Include="Views\WORKPACK\WORKPACKCollectionView.xaml.cs">
+      <DependentUpon>WORKPACKCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ROLE\ROLECollectionView.xaml.cs">
       <DependentUpon>ROLECollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ROLE\ROLEView.xaml.cs">
-      <DependentUpon>ROLEView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ROLE_PERMISSION\ROLE_PERMISSIONView.xaml.cs">
-      <DependentUpon>ROLE_PERMISSIONView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SETTINGS_GLOBAL\SETTINGS_GLOBALCollectionView.xaml.cs">
       <DependentUpon>SETTINGS_GLOBALCollectionView.xaml</DependentUpon>
@@ -1287,23 +1205,11 @@
     <Compile Include="Views\USER\USERCollectionView.xaml.cs">
       <DependentUpon>USERCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\USER\USERView.xaml.cs">
-      <DependentUpon>USERView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\VARIATION_ITEM\VARIATION_ITEMCollectionView.xaml.cs">
       <DependentUpon>VARIATION_ITEMCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\VARIATION_ITEM\VARIATION_ITEMView.xaml.cs">
-      <DependentUpon>VARIATION_ITEMView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\WORKPACK_ASSIGNMENT\PROJECTWORKPACKDetailsWorkpackAssignment.xaml.cs">
-      <DependentUpon>PROJECTWORKPACKDetailsWorkpackAssignment.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\WORKPACK\WORKPACKCollectionView.xaml.cs">
-      <DependentUpon>WORKPACKCollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\WORKPACK\WORKPACKView.xaml.cs">
-      <DependentUpon>WORKPACKView.xaml</DependentUpon>
+    <Compile Include="Views\WORKPACK_ASSIGNMENT\WORKPACKAssignmentView.xaml.cs">
+      <DependentUpon>WORKPACKAssignmentView.xaml</DependentUpon>
     </Compile>
     <Compile Include="XRDesignRibbonControllerResources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -1322,10 +1228,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\AREA\AREACollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="LoginWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1342,7 +1244,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\COMMODITY\AddCOMMODITYView.xaml">
+    <Page Include="Views\COMMODITY\COMMODITYAdditionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1354,15 +1256,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\USER\SelectDetailUSERSView.xaml">
+    <Page Include="Views\USER\USERSelectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\WORKPACK_ASSIGNMENT\PROJECTWORKPACKDetailsActivityAssignment.xaml">
+    <Page Include="Views\WORKPACK_ASSIGNMENT\P6ACTIVITYAssignmentView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\WORKPACK_ASSIGNMENT\PROJECTWORKPACKDetailsMappingViewHost.xaml">
+    <Page Include="Views\WORKPACK_ASSIGNMENT\WORKPACKSchedulingViewHost.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1374,29 +1276,25 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\WORKPACK\PROJECTWORKPACKDashboardView.xaml">
+    <Page Include="Views\WORKPACK\WORKPACKDashboardView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\PROJECT\PROJECTDashboardCollectionView.xaml">
+    <Page Include="Views\PROJECT\PROJECTDashboardView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\RATE\PROJECTRATEDetailsCollectionView.xaml">
+    <Page Include="Views\RATE\RATECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\PHASE\PROJECTPHASEDetailsCollectionView.xaml">
+    <Page Include="Views\PHASE\PHASECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\AREA\PROJECTAREADetailsCollectionView.xaml">
+    <Page Include="Views\AREA\AREACollectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\AREA\AREAView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\BASELINE_ITEM\BASELINE_ITEMCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -1426,15 +1324,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\DEPARTMENT\DEPARTMENTView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Views\DISCIPLINE\DISCIPLINECollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\DISCIPLINE\DISCIPLINEView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1442,23 +1332,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\DOCTYPE\DOCTYPEView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Views\ESTIMATION\ESTIMATIONCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\ESTIMATION\ESTIMATIONView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Views\ESTIMATION_ITEM\ESTIMATION_ITEMCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\ESTIMATION_ITEM\ESTIMATION_ITEMView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1469,14 +1347,6 @@
     <Page Include="Views\NavigationTreeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\PHASE\PHASECollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\PHASE\PHASEView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROGRESS_ITEM\PROGRESS_ITEMCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -1490,7 +1360,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\PROGRESS\PROJECTPROGRESSDetailsCollectionView.xaml">
+    <Page Include="Views\PROGRESS\PROGRESSCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1498,43 +1368,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\WORKPACK\PROJECTWORKPACKDetailsCollectionView.xaml">
+    <Page Include="Views\WORKPACK\WORKPACKCollectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\PROJECT_REPORT\PROJECT_REPORTCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\PROJECT_REPORT\PROJECT_REPORTView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\RATE\RATECollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\RATE\RATEView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\REGISTER\REGISTERCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\REGISTER\REGISTERView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ROLE\ROLECollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\ROLE\ROLEView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\ROLE_PERMISSION\ROLE_PERMISSIONView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1558,29 +1396,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\USER\USERView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Views\VARIATION_ITEM\VARIATION_ITEMCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\VARIATION_ITEM\VARIATION_ITEMView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\WORKPACK_ASSIGNMENT\PROJECTWORKPACKDetailsWorkpackAssignment.xaml">
+    <Page Include="Views\WORKPACK_ASSIGNMENT\WORKPACKAssignmentView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\WORKPACK\WORKPACKCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\WORKPACK\WORKPACKView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -1629,8 +1451,8 @@
     <EmbeddedResource Include="Views\REPORTDesigner.resx">
       <DependentUpon>REPORTDesigner.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\WORKPACK_ASSIGNMENT\PROJECTWORKPACKDetailsMappingView.resx">
-      <DependentUpon>PROJECTWORKPACKDetailsMappingView.cs</DependentUpon>
+    <EmbeddedResource Include="Views\WORKPACK_ASSIGNMENT\WORKPACKSchedulingView.resx">
+      <DependentUpon>WORKPACKSchedulingView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="XRDesignRibbonControllerResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -26,7 +26,6 @@ namespace BluePrints.Data
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid GUID { get; set; }
 
-        [Required]
         public Guid GUID_PROJECT { get; set; }
 
         public Guid? GUID_DPHASE { get; set; }
