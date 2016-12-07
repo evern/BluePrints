@@ -92,6 +92,7 @@ namespace BluePrints.Common.DataModel.EntityFramework
             {
                 values = new object[] { primaryKey };
             }
+
             return DbSet.Find(values);
         }
 

@@ -111,7 +111,7 @@ namespace BluePrints.Common.ViewModel
             IUnitOfWorkFactory<TMainEntityUnitOfWork> unitOfWorkFactory,
             Func<TMainEntityUnitOfWork, IRepository<TMainEntity, TMainEntityPrimaryKey>> getRepositoryFunc)
         {
-            mainEntityLoader = new EntitiesLoaderDescription<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork>(this, 0, unitOfWorkFactory, getRepositoryFunc, OnMainViewModelLoaded, OnEntitiesChanged, ConstructMainViewModelProjection);
+            mainEntityLoader = new EntitiesLoaderDescription<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork>(this, 0, unitOfWorkFactory, getRepositoryFunc, OnMainViewModelLoaded, OnAfterEntitiesChanged, ConstructMainViewModelProjection);
         }
 
         protected virtual Func<IRepositoryQuery<TMainEntity>, IQueryable<TMainProjectionEntity>> ConstructMainViewModelProjection()
@@ -131,7 +131,7 @@ namespace BluePrints.Common.ViewModel
             throw new NotImplementedException("Override this method to assign call backs and also notify the view.");
         }
 
-        protected virtual void OnEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        protected virtual void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
             throw new NotImplementedException("Override this method to reload or refresh the main view model.");
         }

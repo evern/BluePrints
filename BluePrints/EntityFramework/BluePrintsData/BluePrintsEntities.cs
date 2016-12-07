@@ -28,6 +28,7 @@ namespace BluePrints.Data
         public virtual DbSet<BASELINE_ITEM> BASELINE_ITEM { get; set; }
         public virtual DbSet<COMMODITY> COMMODITY { get; set; }
         public virtual DbSet<COMMODITY_CODE> COMMODITY_CODE { get; set; }
+        public virtual DbSet<COMMODITY_GROUP_DIRECT> COMMODITY_GROUP_DIRECT { get; set; }
         public virtual DbSet<DEPARTMENT> DEPARTMENT { get; set; }
         public virtual DbSet<DISCIPLINE> DISCIPLINE { get; set; }
         public virtual DbSet<DOCTYPE> DOCTYPE { get; set; }
@@ -106,6 +107,12 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_COMMODITYCODE)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<COMMODITY_CODE>()
+                .HasMany(e => e.COMMODITY_GROUP_DIRECT)
+                .WithOptional(e => e.COMMODITY_CODE)
+                .HasForeignKey(e => e.GUID_COMMODITYCODE)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<DEPARTMENT>()
                 .HasMany(e => e.BASELINE_ITEM)
                 .WithOptional(e => e.DEPARTMENT)
@@ -148,6 +155,11 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<DISCIPLINE>()
                 .HasMany(e => e.ESTIMATION_ITEM)
+                .WithOptional(e => e.DISCIPLINE)
+                .HasForeignKey(e => e.GUID_DISCIPLINE);
+
+            modelBuilder.Entity<DISCIPLINE>()
+                .HasMany(e => e.COMMODITY_GROUP_DIRECT)
                 .WithOptional(e => e.DISCIPLINE)
                 .HasForeignKey(e => e.GUID_DISCIPLINE);
 
@@ -287,6 +299,12 @@ namespace BluePrints.Data
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.WORKPACK)
                 .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.COMMODITY_GROUP_DIRECT)
+                .WithOptional(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
 

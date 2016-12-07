@@ -471,7 +471,7 @@ namespace BluePrints.Common.ViewModel
                 treeListExistingRowAddUndoAndSavePostCallBack(e);
         }
 
-        public Action<TProjection> NewProjectionInitializeCallBack;
+        public Action<RowEventArgs, TProjection> NewProjectionInitializeCallBack;
         /// <summary>
         /// Remembers an entity added for undoing
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the AddUndoCommand property that can be used as a binding source in views.
@@ -483,7 +483,7 @@ namespace BluePrints.Common.ViewModel
                 TProjection projection = (TProjection)e.Row;
 
                 if (NewProjectionInitializeCallBack != null)
-                    NewProjectionInitializeCallBack(projection);
+                    NewProjectionInitializeCallBack(e, projection);
 
                 //TEntity entity = CreateNewEntity((TProjection)e.Row);
                 //InitializeEntity(entity);

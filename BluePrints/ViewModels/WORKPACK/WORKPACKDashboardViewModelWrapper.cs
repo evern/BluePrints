@@ -96,9 +96,9 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        protected override void OnEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
-
+            return;
         }
         #endregion
 

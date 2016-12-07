@@ -85,6 +85,7 @@ namespace BluePrints.Common.ViewModel
                 Messenger.Default.Unregister(this);
             }
 
+
             public TProjection FindLocalProjectionByKey(TPrimaryKey primaryKey)
             {
                 var primaryKeyEqualsExpression = RepositoryExtensions.GetProjectionPrimaryKeyEqualsExpression<TEntity, TProjection, TPrimaryKey>(Repository, primaryKey);
@@ -108,8 +109,12 @@ namespace BluePrints.Common.ViewModel
                 if (!owner.IsLoaded)
                     return;
 
+                bool continueOnMessage = true;
                 if (owner.OnBeforeEntitiesChangedCallBack != null)
-                    owner.OnBeforeEntitiesChangedCallBack(message.PrimaryKey);
+                    continueOnMessage = owner.OnBeforeEntitiesChangedCallBack(message.PrimaryKey, typeof(TEntity), message.MessageType, message.Sender);
+
+                if (!continueOnMessage)
+                    return;
 
                 switch (message.MessageType)
                 {
@@ -124,8 +129,8 @@ namespace BluePrints.Common.ViewModel
                         break;
                 }
 
-                if (owner.OnEntitiesChangedCallBack != null)
-                    owner.OnEntitiesChangedCallBack(message.PrimaryKey, typeof(TEntity), message.MessageType, message.Sender);
+                if (owner.OnAfterEntitiesChangedCallBack != null)
+                    owner.OnAfterEntitiesChangedCallBack(message.PrimaryKey, typeof(TEntity), message.MessageType, message.Sender);
             }
 
             void OnEntityAdded(TPrimaryKey primaryKey)
@@ -355,8 +360,8 @@ namespace BluePrints.Common.ViewModel
         void IDocumentContent.OnDestroy()
         {
             OnEntitiesLoadedCallBack = null;
-            OnEntitiesChangedCallBack = null;
             OnBeforeEntitiesChangedCallBack = null;
+            OnAfterEntitiesChangedCallBack = null;
             OnDestroy();
         }
 
@@ -375,8 +380,8 @@ namespace BluePrints.Common.ViewModel
 
         //BluePrints Customization Start
         public Action<IEnumerable<TProjection>> OnEntitiesLoadedCallBack { get; set; }
-        public Action<object, Type, EntityMessageType, object> OnEntitiesChangedCallBack { get; set; }
-        public Action<object> OnBeforeEntitiesChangedCallBack { get; set; }
+        public Func<object, Type, EntityMessageType, object, bool> OnBeforeEntitiesChangedCallBack { get; set; }
+        public Action<object, Type, EntityMessageType, object> OnAfterEntitiesChangedCallBack { get; set; }
         public bool IsPersistentView { get; set; }
         //BluePrints Customization End
     }
@@ -402,8 +407,8 @@ namespace BluePrints.Common.ViewModel
         bool IsPersistentView { get; set; }
         //BluePrints Customization Start
         Action<IEnumerable<TEntity>> OnEntitiesLoadedCallBack { get; set; }
-        Action<object, Type, EntityMessageType, object> OnEntitiesChangedCallBack { get; set; }
-        Action<object> OnBeforeEntitiesChangedCallBack { get; set; }
+        Func<object, Type, EntityMessageType, object, bool> OnBeforeEntitiesChangedCallBack { get; set; }
+        Action<object, Type, EntityMessageType, object> OnAfterEntitiesChangedCallBack { get; set; }
         //BluePrints Customization End
     }
 }

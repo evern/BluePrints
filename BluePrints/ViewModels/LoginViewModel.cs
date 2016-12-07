@@ -33,7 +33,7 @@ namespace BluePrints.ViewModels
         {
             USERS = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork().USERS.AsEnumerable();
             UserName = XMLHelpers.GetSettings_Username();
-            //Application.Current.Dispatcher.BeginInvoke(new Action(() => EVERNPCLogin()));
+            Application.Current.Dispatcher.BeginInvoke(new Action(() => EVERNPCLogin()));
         }
 
 
