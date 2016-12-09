@@ -430,7 +430,7 @@ namespace BluePrints.Common.ViewModel
 
         protected virtual void OnSelectedEntitiesChanged() { }
 
-        public Action<TProjection, CellValueChangedEventArgs> ExistingProjectionEditCallBack;
+        public Action<TProjection, CellValueChangedEventArgs> ExistingRowAddUndoAndSaveCallBack;
         /// <summary>
         /// Remembers an entity property old value for undoing
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the AddUndoCommand property that can be used as a binding source in views.
@@ -442,8 +442,8 @@ namespace BluePrints.Common.ViewModel
                 TProjection projection = (TProjection)e.Row;
 
                 EntitiesUndoRedoManager.PauseActionId();
-                if (ExistingProjectionEditCallBack != null)
-                    ExistingProjectionEditCallBack(projection, e);
+                if (ExistingRowAddUndoAndSaveCallBack != null)
+                    ExistingRowAddUndoAndSaveCallBack(projection, e);
 
                 EntitiesUndoRedoManager.AddUndo(projection, e.Column.FieldName, e.OldValue, e.Value, EntityMessageType.Changed);
                 EntitiesUndoRedoManager.UnpauseActionId();
@@ -471,7 +471,7 @@ namespace BluePrints.Common.ViewModel
                 treeListExistingRowAddUndoAndSavePostCallBack(e);
         }
 
-        public Action<RowEventArgs, TProjection> NewProjectionInitializeCallBack;
+        public Func<RowEventArgs, TProjection, bool> NewRowAddUndoAndSaveCallBack;
         /// <summary>
         /// Remembers an entity added for undoing
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the AddUndoCommand property that can be used as a binding source in views.
@@ -482,8 +482,9 @@ namespace BluePrints.Common.ViewModel
             {
                 TProjection projection = (TProjection)e.Row;
 
-                if (NewProjectionInitializeCallBack != null)
-                    NewProjectionInitializeCallBack(e, projection);
+                if (NewRowAddUndoAndSaveCallBack != null)
+                    if (!NewRowAddUndoAndSaveCallBack(e, projection))
+                        return;
 
                 //TEntity entity = CreateNewEntity((TProjection)e.Row);
                 //InitializeEntity(entity);

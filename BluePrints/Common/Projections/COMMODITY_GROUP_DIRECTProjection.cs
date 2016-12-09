@@ -1,4 +1,6 @@
 ﻿using BluePrints.Data;
+using BluePrints.Data.Helpers;
+using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -28,7 +30,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                return COMMODITY_GROUP.GUID_COMMODITYCODE == null;
+                return COMMODITY_GROUP.GUID_COMMODITYCODE != null;
             }
         }
     }

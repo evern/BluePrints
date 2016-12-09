@@ -204,4 +204,7 @@
   <data name="CommodityCode_NoDepartment" xml:space="preserve">
     <value>Please add departments before adding commodity code</value>
   </data>
+  <data name="CommodityGroup_CannotAddChild" xml:space="preserve">
+    <value>Cannot add commodity under commodity</value>
+  </data>
 </root>

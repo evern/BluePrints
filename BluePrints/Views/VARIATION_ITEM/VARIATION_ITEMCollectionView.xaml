@@ -194,7 +194,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS" Header="ESTIMATED HOURS" ReadOnly="True" IsEnabled="False" >
+                            <dxg:GridColumn FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS" Header="TOTAL HOURS" ReadOnly="True" IsEnabled="False" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
@@ -206,7 +206,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="BASELINE_ITEMJoinRATE.TOTAL_COSTS" ReadOnly="True" Header="COSTS" AllowSearchPanel="False" >
+                            <dxg:GridColumn FieldName="TOTAL_COST" ReadOnly="True" Header="COSTS" AllowSearchPanel="False" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True" MaskType="Numeric"  Mask="c" />
@@ -231,14 +231,20 @@
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
-                        <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
-                        </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem SummaryType="Count" />
+                            <dxg:GridSummaryItem FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS" SummaryType="SUM" ShowInColumn="BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="VARIATION_ITEM.VARIATION_UNITS" SummaryType="SUM" ShowInColumn="VARIATION_ITEM.VARIATION_UNITS" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="TOTAL_COST" SummaryType="SUM" ShowInColumn="TOTAL_COST" DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.GroupSummary>
+                        <dxg:GridControl.TotalSummary>
+                            <dxg:GridSummaryItem FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS" SummaryType="SUM" ShowInColumn="BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="VARIATION_ITEM.VARIATION_UNITS" SummaryType="SUM" ShowInColumn="VARIATION_ITEM.VARIATION_UNITS" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="TOTAL_COST" SummaryType="SUM" ShowInColumn="TOTAL_COST" DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem SummaryType="Count" />
+                        </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
-                            <dxg:TableView Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" >
+                            <dxg:TableView Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" ShowTotalSummary="True" ShowFixedTotalSummary="True" GroupSummaryDisplayMode="AlignByColumns">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="CellValueChanging" />
                                     <dxmvvm:EventToCommand Command="{Binding DataContext.ShownEditorCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="ShownEditor" />

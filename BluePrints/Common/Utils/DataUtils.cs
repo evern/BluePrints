@@ -31,7 +31,7 @@ namespace BluePrints.Data.Helpers
 
     public static class DataUtils
     {
-        public static void ShallowCopy(object copyObject, object objectToCopy, bool copyVirtualProperties = false)
+        public static object ShallowCopy(object copyObject, object objectToCopy, bool copyVirtualProperties = false)
         {
             IEnumerable<PropertyInfo> objectToCopyProperties = objectToCopy.GetType().GetProperties().Where(p => (copyVirtualProperties == true || !p.GetGetMethod().IsVirtual) && !p.GetCustomAttributes().Any(attr => attr.GetType() == typeof(ProjectionPropertyAttribute)));
             foreach(var objectToCopyProperty in objectToCopyProperties)
@@ -44,6 +44,8 @@ namespace BluePrints.Data.Helpers
                 
                 copyObjectProperty.SetValue(copyObject, objectToCopyValue);
             }
+
+            return copyObject;
         }
 
         public static PropertyInfo GetKeyPropertyInfo(Type type)

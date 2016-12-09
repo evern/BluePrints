@@ -106,6 +106,15 @@ namespace BluePrints.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot add commodity under commodity.
+        /// </summary>
+        internal static string CommodityGroup_CannotAddChild {
+            get {
+                return ResourceManager.GetString("CommodityGroup_CannotAddChild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Confirmation.
         /// </summary>
         internal static string Confirmation_Caption {

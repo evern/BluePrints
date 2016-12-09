@@ -272,20 +272,19 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-        //private bool MainEntityBulkPreSave(IEnumerable<PROGRESS_ITEMProjection> entities)
-        //{
-        //    foreach (var entity in entities)
-        //    {
-        //        MainEntityPreSave(entity);
-        //    }
-
-        //    return false;
-        //}
-
         bool MainEntityPreSave(PROGRESS_ITEMProjection projectionEntity)
         {
-            CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESS_ITEMSCollectionViewModel = (CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROGRESS_ITEM>();
-            PROGRESS_ITEM savePROGRESS_ITEM = projectionEntity.PROGRESS_ITEMCurrent;
+
+            PROGRESS_ITEM findPROGRESS_ITEM = PROGRESS_ITEMSCollectionViewModel.Entities.FirstOrDefault(x => x.GUID_ORIBASEITEM == projectionEntity.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL && x.EARNED_DATE == loadPROGRESS.DATA_DATE);
+            PROGRESS_ITEM savePROGRESS_ITEM;
+            if (findPROGRESS_ITEM == null)
+                savePROGRESS_ITEM = projectionEntity.PROGRESS_ITEMCurrent;
+            else
+            {
+                savePROGRESS_ITEM = findPROGRESS_ITEM;
+                savePROGRESS_ITEM.EARNED_UNITS = projectionEntity.PROGRESS_ITEMCurrent.EARNED_UNITS;
+            }
+
             savePROGRESS_ITEM.EARNED_DATE = loadPROGRESS.DATA_DATE;
             savePROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
             savePROGRESS_ITEM.GUID_ORIBASEITEM = projectionEntity.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL;
@@ -293,8 +292,9 @@ namespace BluePrints.ViewModels
             if (savePROGRESS_ITEM.CREATED.Date.Year == 1)
                 savePROGRESS_ITEM.CREATED = DateTime.Now;
 
-            savePROGRESS_ITEM = projectionEntity.PROGRESS_ITEMCurrent;
             PROGRESS_ITEMSCollectionViewModel.Save(savePROGRESS_ITEM);
+            projectionEntity.PROGRESS_ITEMCurrent = savePROGRESS_ITEM;
+
             return false;
         }
 
@@ -337,6 +337,17 @@ namespace BluePrints.ViewModels
                     return BindableBase.GetPropertyName(() => new WORKPACK().INTERNAL_NAME1);
                 else
                     return BindableBase.GetPropertyName(() => new WORKPACK().INTERNAL_NAME2);
+            }
+        }
+
+        public CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESS_ITEMSCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROGRESS_ITEM>();
             }
         }
 
@@ -436,9 +447,6 @@ namespace BluePrints.ViewModels
             }
 
             delayedPROGRESSSavingDispatcher.Start();
-            //CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESSCollectionViewModel = (CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROGRESS>();
-            //PROGRESSCollectionViewModel.Save(loadPROGRESS);
-            //this.RaisePropertyChanged(x => x.DataDate);
         }
 
         PROJECTWORKPACKSMappingViewModelWrapper WORKPACK_DashboardViewModel;

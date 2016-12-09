@@ -64,6 +64,14 @@ namespace BluePrints.Common.Projections
         {
             get { return !ISLOCKED && VARIATION_ITEM.ACTION != VariationAction.Add; }
         }
+
+        public decimal TOTAL_COST
+        {
+            get
+            {
+                return (BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS + VARIATION_ITEM.VARIATION_UNITS) * BASELINE_ITEMJoinRATE.ITEMRATE;
+            }
+        }
     }
 
     public static class VARIATION_ITEMProjectionQuery

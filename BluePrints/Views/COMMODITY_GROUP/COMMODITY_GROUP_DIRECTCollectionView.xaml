@@ -70,12 +70,12 @@
                             <dxg:GridDragDropManager x:Name="dragDropManager" Drop="dragDropManager_Drop" />
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="COMMODITY_GROUP.GUID_COMMODITYCODE" Header="COMMODITY_CODE" VisibleIndex="0" >
+                            <dxg:GridColumn FieldName="COMMODITY_GROUP.DESCRIPTION" Header="DESCRIPTION" VisibleIndex="0"/>
+                            <dxg:GridColumn FieldName="COMMODITY_GROUP.GUID_COMMODITYCODE" Header="COMMODITY_CODE" VisibleIndex="5" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="FULLCODE" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="COMMODITY_GROUP.DESCRIPTION" Header="DESCRIPTION" VisibleIndex="8"/>
                             <dxg:GridColumn FieldName="COMMODITY_GROUP.RATE_SUPPLY" Header="SUPPLY RATE" VisibleIndex="10" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
@@ -102,36 +102,36 @@
                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding CHILD_COMMODITY_GROUP}">
                                 <dxg:GridControl Name="gridControlChild" SelectedItems="{Binding SelectedEntities, Mode=TwoWay}" >
                                     <dxg:GridControl.Columns>
-                                        <dxg:GridColumn FieldName="COMMODITY_GROUP.GUID_COMMODITYCODE" Header="COMMODITY_CODE" VisibleIndex="0" >
+                                        <dxg:GridColumn FieldName="COMMODITY_GROUP.DESCRIPTION" Header="DESCRIPTION" VisibleIndex="0"/>
+                                        <dxg:GridColumn FieldName="COMMODITY_GROUP.GUID_COMMODITYCODE" Header="COMMODITY_CODE" VisibleIndex="5" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="FULLCODE" ValueMember="GUID" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="COMMODITY_GROUP.DESCRIPTION" Header="DESCRIPTION" VisibleIndex="8"/>
                                         <dxg:GridColumn FieldName="COMMODITY_GROUP.RATE_SUPPLY" Header="SUPPLY RATE" VisibleIndex="10" >
                                             <dxg:GridColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.ISQUANTIFIABLE, Converter={StaticResource BooleanNegationConverter}}"/>
+                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.ISQUANTIFIABLE}"/>
                                                 </DataTemplate>
                                             </dxg:GridColumn.CellTemplate>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="COMMODITY_GROUP.HOURS_INSTALL" Header="INSTALL HOURS" VisibleIndex="20" >
                                             <dxg:GridColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.ISQUANTIFIABLE, Converter={StaticResource BooleanNegationConverter}}" />
+                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.ISQUANTIFIABLE}" />
                                                 </DataTemplate>
                                             </dxg:GridColumn.CellTemplate>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="COMMODITY_GROUP.RATE_FREIGHT" Header="FREIGHT RATE" VisibleIndex="30" >
                                             <dxg:GridColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.ISQUANTIFIABLE, Converter={StaticResource BooleanNegationConverter}}" />
+                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.ISQUANTIFIABLE}" />
                                                 </DataTemplate>
                                             </dxg:GridColumn.CellTemplate>
                                         </dxg:GridColumn>
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView Name="tableView1" Style="{StaticResource DefaultTableViewTemplate}" />
+                                        <dxg:TableView Name="tableView1" Style="{StaticResource ChildTableViewTemplate}" />
                                     </dxg:GridControl.View>
                                 </dxg:GridControl>
                             </dxg:DataControlDetailDescriptor>
