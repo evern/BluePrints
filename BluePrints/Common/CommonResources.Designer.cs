@@ -115,6 +115,33 @@ namespace BluePrints.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot change WBS into commodity.
+        /// </summary>
+        internal static string CommodityGroup_CannotAssignCommodity {
+            get {
+                return ResourceManager.GetString("CommodityGroup_CannotAssignCommodity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot assign commodity code under another commodity code.
+        /// </summary>
+        internal static string CommodityGroup_CannotSelectParent {
+            get {
+                return ResourceManager.GetString("CommodityGroup_CannotSelectParent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Commodity code is required.
+        /// </summary>
+        internal static string CommodityGroup_MustSelectCommodity {
+            get {
+                return ResourceManager.GetString("CommodityGroup_MustSelectCommodity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Confirmation.
         /// </summary>
         internal static string Confirmation_Caption {

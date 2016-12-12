@@ -109,6 +109,15 @@ namespace BluePrints.Data.Helpers
             return null;
         }
 
+        public static IEnumerable<string> GetRequiredPropertyStringsForProjection(Type type)
+        {
+            RequiredAttributes TypeSpecificRequiredAttribute = (RequiredAttributes)Attribute.GetCustomAttribute(type, typeof(RequiredAttributes), false);
+            if (TypeSpecificRequiredAttribute != null)
+                return TypeSpecificRequiredAttribute.ColumnNames;
+
+            return null;
+        }
+
         public static IEnumerable<string> GetRequiredPropertyStrings(Type type)
         {
             List<string> requiredPropertyStrings = new List<string>();

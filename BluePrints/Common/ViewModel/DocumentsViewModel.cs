@@ -221,7 +221,7 @@ namespace BluePrints.Common.ViewModel
         /// <param name="module">A navigation list entry specifying a document what to be opened.</param>
         public void Navigate()
         {
-            if (IsLoaded && !documentChanging && !this.SelectedModule.DocumentId.ToString().ToUpper().Contains("CATEGORYVIEW"))
+            if (IsLoaded && !documentChanging && this.SelectedModule != null && !this.SelectedModule.DocumentId.ToString().ToUpper().Contains("CATEGORYVIEW"))
                 NavigateCore(this.SelectedModule);
         }
 

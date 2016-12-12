@@ -36,6 +36,9 @@ namespace BluePrints.Data
         [StringLength(1000)]
         public string ITEM_DESC { get; set; }
 
+        [StringLength(50)]
+        public string UOM { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

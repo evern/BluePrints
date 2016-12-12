@@ -177,7 +177,7 @@ namespace BluePrints.ViewModels
         #region ISupportCustomDocumentTypeNameAndParameter
         public string GetCustomDocumentTypeName()
         {
-            return "PROJECTWORKPACKDashboardView";
+            return "WORKPACKDashboardView";
         }
 
         public object GetCustomDocumentParameter()

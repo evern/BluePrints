@@ -12,6 +12,9 @@ namespace BluePrints.Data
     [ConstraintAttributes("GUID_PROJECT, GUID_COMMODITYCODE")]
     public partial class COMMODITY_GROUP_DIRECT
     {
-
+        public bool ISQUANTIFIABLE
+        {
+            get { return this.GUID_COMMODITYCODE != null; }
+        }
     }
 }

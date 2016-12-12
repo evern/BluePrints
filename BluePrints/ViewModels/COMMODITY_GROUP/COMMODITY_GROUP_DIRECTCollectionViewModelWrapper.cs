@@ -18,6 +18,8 @@ using BluePrints.Views;
 using DevExpress.Xpf.Grid;
 using System.Collections.ObjectModel;
 using System.Windows.Threading;
+using System.Windows.Input;
+using System.Windows;
 
 namespace BluePrints.ViewModels
 {
@@ -98,7 +100,8 @@ namespace BluePrints.ViewModels
 
         Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
         {
-            return query => getLastChildrenCOMMODITY_CODE(query);
+            //return query => getLastChildrenCOMMODITY_CODE(query);
+            return query => query.Where(x => x.COMMODITYCODETYPE == CommodityCodeType.Direct);
         }
 
         public IQueryable<COMMODITY_CODE> getLastChildrenCOMMODITY_CODE(IQueryable<COMMODITY_CODE> COMMODITY_CODE)
@@ -129,6 +132,8 @@ namespace BluePrints.ViewModels
             MainViewModel.OnBeforeEntitiesChangedCallBack = OnBeforeEntitiesChanged;
             MainViewModel.NewRowAddUndoAndSaveCallBack = NewRowAddUndoAndSave;
             MainViewModel.OnEntitySavedCallBack = OnEntitiesSavedCallBack;
+            MainViewModel.AdditionalValidateCellCallBack = AdditionalCellValidation;
+            MainViewModel.AdditionalValidateRowCallBack = AdditionalRowValidation;
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = this.ApplyProjectionPropertiesToEntity;
 
             MainViewModel.SetParentViewModel(this);
@@ -202,6 +207,9 @@ namespace BluePrints.ViewModels
                 {
                     IEnumerable<COMMODITY_GROUP_DIRECTProjection> flatDisplayEntities = displayEntities.Concat(displayEntities.SelectMany(x => x.CHILD_COMMODITY_GROUP));
                     COMMODITY_GROUP_DIRECTProjection changedEntity = flatDisplayEntities.First(x => x.GUID == (Guid)key);
+                    COMMODITY_GROUP_DIRECTProjection actualEntity = MainViewModel.Entities.First(x => x.GUID == (Guid)key);
+                    DataUtils.ShallowCopy(changedEntity.COMMODITY_GROUP, actualEntity.COMMODITY_GROUP);
+                    
                     changedEntity.RaisePropertiesChanged();
                     IsChangedFromBackEnd = false;
                 }
@@ -254,13 +262,64 @@ namespace BluePrints.ViewModels
             return true;
         }
 
+        public bool AdditionalRowValidation(GridRowValidationEventArgs e)
+        {
+            var gridControl = (GridControl)e.Source;
+            var masterGrid = gridControl.GetMasterGrid();
+
+            if (masterGrid != null)
+            {
+                COMMODITY_GROUP_DIRECTProjection editingCOMMODITY_GROUP = (COMMODITY_GROUP_DIRECTProjection)e.Row;
+                if(editingCOMMODITY_GROUP.COMMODITY_GROUP.GUID_COMMODITYCODE == null)
+                {
+                    e.IsValid = false;
+                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                    e.ErrorContent = CommonResources.CommodityGroup_MustSelectCommodity;
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool AdditionalCellValidation(GridCellValidationEventArgs e)
+        {
+            if(e.Column.FieldName == "COMMODITY_GROUP.GUID_COMMODITYCODE")
+            {
+                COMMODITY_GROUP_DIRECTProjection editingCOMMODITY_GROUP = (COMMODITY_GROUP_DIRECTProjection)e.Row;
+                if(editingCOMMODITY_GROUP.CHILD_COMMODITY_GROUP != null && editingCOMMODITY_GROUP.CHILD_COMMODITY_GROUP.Count > 0)
+                {
+                    e.IsValid = false;
+                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                    e.ErrorContent = CommonResources.CommodityGroup_CannotAssignCommodity;
+                    return false;
+                }
+
+                //Avoid user from selecting WBS COMMODITY_CODE
+                COMMODITY_CODE newCOMMODITY_CODE = COMMODITY_CODECollection.First(x => x.GUID == (Guid)e.Value);
+                if(COMMODITY_CODECollection.Any(x => x.GUID_PARENT == newCOMMODITY_CODE.GUID))
+                {
+                    e.IsValid = false;
+                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                    e.ErrorContent = CommonResources.CommodityGroup_CannotSelectParent;
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public Action Redraw;
         bool IsChangedFromBackEnd;
         public void ExistingChildrenRowAddUndoAndSave(CellValueChangedEventArgs e)
         {
-            if (e.RowHandle == GridControl.NewItemRowHandle)
-                return;
-
             COMMODITY_GROUP_DIRECTProjection editedCOMMODITY = (COMMODITY_GROUP_DIRECTProjection)e.Row;
+            if (e.RowHandle == GridControl.NewItemRowHandle)
+            {
+                editedCOMMODITY.COMMODITY_GROUP.RaisePropertyChanged(x => x.ISQUANTIFIABLE);
+                return;
+            }
+
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
             MainViewModel.EntitiesUndoRedoManager.AddUndo(editedCOMMODITY, e.Column.FieldName, e.OldValue, e.Value, EntityMessageType.Changed);
             COMMODITY_GROUP_DIRECTProjection parentCOMMODITY = SumParentEditValue(editedCOMMODITY, e.Column.FieldName, e.Value);
@@ -343,6 +402,8 @@ namespace BluePrints.ViewModels
         {
             //Undo manager is paused in bulk deletion and will be unpaused in bulk deletion too
             List<COMMODITY_GROUP_DIRECTProjection> childrenEntities = new List<COMMODITY_GROUP_DIRECTProjection>();
+            List<COMMODITY_GROUP_DIRECTProjection> parentEntitiesNotInList = new List<COMMODITY_GROUP_DIRECTProjection>();
+
             foreach (var entity in entities)
             {
                 var childrenEntitiesInTotal = entity.CHILD_COMMODITY_GROUP;
@@ -351,6 +412,17 @@ namespace BluePrints.ViewModels
                 {
                     if (!entities.Any(x => x.GUID == childrenEntityInTotal.GUID))
                         childrenEntitiesNotInDeletionCollection.Add(childrenEntityInTotal);
+                }
+
+                COMMODITY_GROUP_DIRECTProjection parentEntity = null;
+                if (entity.COMMODITY_GROUP.GUID_PARENT != Guid.Empty)
+                {
+                    parentEntity = MainViewModel.Entities.FirstOrDefault(x => x.GUID == entity.COMMODITY_GROUP.GUID_PARENT);
+                    if(parentEntity != null)
+                    {
+                        if (!entities.Any(x => x.GUID == parentEntity.GUID))
+                            parentEntitiesNotInList.Add(parentEntity);
+                    }
                 }
 
                 childrenEntities = childrenEntities.Concat(childrenEntitiesNotInDeletionCollection).ToList();
@@ -362,6 +434,31 @@ namespace BluePrints.ViewModels
                 MainViewModel.EntitiesUndoRedoManager.AddUndo(childrenEntity, null, null, null, EntityMessageType.Deleted);
                 MainViewModel.Delete(childrenEntity);
             }
+
+            foreach (var entity in parentEntitiesNotInList)
+            {
+                RecalculateParentValues(entity, entities.Concat(childrenEntities));
+                IsChangedFromBackEnd = true;
+                MainViewModel.Save(entity);
+            }
+        }
+
+        private void RecalculateParentValues(COMMODITY_GROUP_DIRECTProjection parentCOMMODITY, IEnumerable<COMMODITY_GROUP_DIRECTProjection> excludedCOMMODITY)
+        {
+            decimal newValue = -1;
+            decimal? oldValue = null;
+            newValue = MainViewModel.Entities.Where(x => !excludedCOMMODITY.Any(y => y.GUID == x.GUID)).Where(x => x.COMMODITY_GROUP.GUID_PARENT == parentCOMMODITY.GUID && x.COMMODITY_GROUP.RATE_FREIGHT != null).Sum(x => (decimal)x.COMMODITY_GROUP.RATE_FREIGHT);
+            oldValue = parentCOMMODITY.COMMODITY_GROUP.RATE_FREIGHT;
+            parentCOMMODITY.COMMODITY_GROUP.RATE_FREIGHT = newValue;
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(parentCOMMODITY, "COMMODITY_GROUP.RATE_FREIGHT", oldValue, newValue, EntityMessageType.Changed);
+            newValue = MainViewModel.Entities.Where(x => !excludedCOMMODITY.Any(y => y.GUID == x.GUID)).Where(x => x.COMMODITY_GROUP.GUID_PARENT == parentCOMMODITY.GUID && x.COMMODITY_GROUP.RATE_SUPPLY != null).Sum(x => (decimal)x.COMMODITY_GROUP.RATE_SUPPLY);
+            oldValue = parentCOMMODITY.COMMODITY_GROUP.RATE_SUPPLY;
+            parentCOMMODITY.COMMODITY_GROUP.RATE_SUPPLY = newValue;
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(parentCOMMODITY, "COMMODITY_GROUP.RATE_SUPPLY", oldValue, newValue, EntityMessageType.Changed);
+            newValue = MainViewModel.Entities.Where(x => !excludedCOMMODITY.Any(y => y.GUID == x.GUID)).Where(x => x.COMMODITY_GROUP.GUID_PARENT == parentCOMMODITY.GUID && x.COMMODITY_GROUP.HOURS_INSTALL != null).Sum(x => (decimal)x.COMMODITY_GROUP.HOURS_INSTALL);
+            oldValue = parentCOMMODITY.COMMODITY_GROUP.HOURS_INSTALL;
+            parentCOMMODITY.COMMODITY_GROUP.HOURS_INSTALL = newValue;
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(parentCOMMODITY, "COMMODITY_GROUP.HOURS_INSTALL", oldValue, newValue, EntityMessageType.Changed);
         }
 
         public void dragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.GridDropEventArgs e)
@@ -411,18 +508,20 @@ namespace BluePrints.ViewModels
                     foreach(COMMODITY_GROUP_DIRECTProjection parentCOMMODITY_GROUP_DIRECT in parentCOMMODITY_GROUP_DIRECTS)
                     {
                         COMMODITY_GROUP_DIRECTProjection parentCOMMODITY_GROUP_DIRECTPOCO = ViewModelSource.Create(() => new COMMODITY_GROUP_DIRECTProjection());
-                        DataUtils.ShallowCopy(parentCOMMODITY_GROUP_DIRECTPOCO, parentCOMMODITY_GROUP_DIRECT);
+                        parentCOMMODITY_GROUP_DIRECTPOCO.GUID = parentCOMMODITY_GROUP_DIRECT.GUID;
+                        DataUtils.ShallowCopy(parentCOMMODITY_GROUP_DIRECTPOCO.COMMODITY_GROUP, parentCOMMODITY_GROUP_DIRECT.COMMODITY_GROUP);
                         displayEntities.Add(parentCOMMODITY_GROUP_DIRECTPOCO);
                     }
-                    
+
                     //displayEntities = new ObservableCollection<COMMODITY_GROUP_DIRECTProjection>(parentCOMMODITY_GROUP_DIRECTS);
                     foreach (COMMODITY_GROUP_DIRECTProjection displayEntity in displayEntities)
                     {
                         IEnumerable<COMMODITY_GROUP_DIRECTProjection> childrenCOMMODITY_GROUP_DIRECTS = childCOMMODITY_GROUP_DIRECTS.Where(y => y.COMMODITY_GROUP.GUID_PARENT == displayEntity.GUID);
-                        foreach(COMMODITY_GROUP_DIRECTProjection childrenCOMMODITY_GROUP_DIRECT in childrenCOMMODITY_GROUP_DIRECTS)
+                        foreach (COMMODITY_GROUP_DIRECTProjection childrenCOMMODITY_GROUP_DIRECT in childrenCOMMODITY_GROUP_DIRECTS)
                         {
                             COMMODITY_GROUP_DIRECTProjection childrenCOMMODITY_GROUP_DIRECTPOCO = ViewModelSource.Create(() => new COMMODITY_GROUP_DIRECTProjection());
-                            DataUtils.ShallowCopy(childrenCOMMODITY_GROUP_DIRECTPOCO, childrenCOMMODITY_GROUP_DIRECT);
+                            childrenCOMMODITY_GROUP_DIRECTPOCO.GUID = childrenCOMMODITY_GROUP_DIRECT.GUID;
+                            DataUtils.ShallowCopy(childrenCOMMODITY_GROUP_DIRECTPOCO.COMMODITY_GROUP, childrenCOMMODITY_GROUP_DIRECT.COMMODITY_GROUP);
                             displayEntity.CHILD_COMMODITY_GROUP.Add(childrenCOMMODITY_GROUP_DIRECTPOCO);
                         }
                     }
@@ -446,6 +545,7 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.Refresh();
             displayEntities = null;
+
             this.RaisePropertyChanged(x => x.DisplayEntities);
         }
         #endregion
@@ -486,7 +586,13 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
+        //public bool IsCOMMODITY_CODENotSelectable(COMMODITY_CODE selectingCOMMODITY_CODE)
+        //{
+        //    if (selectingCOMMODITY_CODE == null)
+        //        return true;
 
+        //    return COMMODITY_CODECollection.Any(x => x.GUID_PARENT == selectingCOMMODITY_CODE.GUID);
+        //}
         #endregion
     }
 }

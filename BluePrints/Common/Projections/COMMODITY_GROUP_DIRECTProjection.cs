@@ -1,4 +1,5 @@
 ﻿using BluePrints.Data;
+using BluePrints.Data.Attributes;
 using BluePrints.Data.Helpers;
 using DevExpress.Mvvm.POCO;
 using System;
@@ -12,27 +13,22 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
+    [ConstraintAttributes("COMMODITY_GROUP.GUID_PARENT, COMMODITY_GROUP.GUID_COMMODITYCODE")]
+    [RequiredAttributes("COMMODITY_GROUP.DESCRIPTION")]
     public class COMMODITY_GROUP_DIRECTProjection
     {
         public COMMODITY_GROUP_DIRECTProjection()
         {
-            COMMODITY_GROUP = new COMMODITY_GROUP_DIRECT();
+            COMMODITY_GROUP = ViewModelSource.Create(() => new COMMODITY_GROUP_DIRECT());
             CHILD_COMMODITY_GROUP = new ObservableCollection<COMMODITY_GROUP_DIRECTProjection>();
         }
 
+        [Key]
         public Guid GUID { get; set; }
 
         public COMMODITY_GROUP_DIRECT COMMODITY_GROUP { get; set; }
 
         public ObservableCollection<COMMODITY_GROUP_DIRECTProjection> CHILD_COMMODITY_GROUP { get; set; }
-
-        public bool ISQUANTIFIABLE
-        {
-            get
-            {
-                return COMMODITY_GROUP.GUID_COMMODITYCODE != null;
-            }
-        }
     }
 
     public static class COMMODITY_GROUP_DIRECTProjectionQueries

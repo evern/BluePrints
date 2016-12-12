@@ -207,4 +207,13 @@
   <data name="CommodityGroup_CannotAddChild" xml:space="preserve">
     <value>Cannot add commodity under commodity</value>
   </data>
+  <data name="CommodityGroup_CannotSelectParent" xml:space="preserve">
+    <value>Cannot assign commodity code under another commodity code</value>
+  </data>
+  <data name="CommodityGroup_CannotAssignCommodity" xml:space="preserve">
+    <value>Cannot change WBS into commodity</value>
+  </data>
+  <data name="CommodityGroup_MustSelectCommodity" xml:space="preserve">
+    <value>Commodity code is required</value>
+  </data>
 </root>

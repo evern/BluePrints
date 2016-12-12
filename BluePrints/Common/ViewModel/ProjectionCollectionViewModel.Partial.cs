@@ -319,6 +319,9 @@ namespace BluePrints.Common.ViewModel
         /// <returns>Returns true if no other entity contains similar constraint member values</returns>
         private bool IsConstraintExistsInOtherEntities(TProjection entity, string entityConstraint, IEnumerable<string> constraintMemberPropertyStrings, ref string constraintErrorMessage)
         {
+            if (entityConstraint == string.Empty)
+                return true;
+
             PropertyInfo keyPropertyInfo = DataUtils.GetKeyPropertyInfo(typeof(TProjection));
             object exclusionKeyValue = null;
             if (keyPropertyInfo != null)
@@ -341,7 +344,7 @@ namespace BluePrints.Common.ViewModel
                         otherEntityConcatenatedConstraints += constraintMemberPropertyValue.ToString();
                 }
 
-                if (otherEntityConcatenatedConstraints == entityConstraint)
+                if (otherEntityConcatenatedConstraints != string.Empty && otherEntityConcatenatedConstraints == entityConstraint)
                 {
                     constraintErrorMessage = constraintErrorMessage.Substring(0, constraintErrorMessage.Length - 5);
                     constraintErrorMessage = constraintErrorMessage.Replace("GUID_", "");
@@ -360,9 +363,13 @@ namespace BluePrints.Common.ViewModel
         /// <returns></returns>
         private bool isRequiredAttributesHasValue(TProjection entity, ref string errorMessage)
         {
-            IEnumerable<string> requiredPropertyStrings = DataUtils.GetRequiredPropertyStrings(typeof(TProjection));
-            string requiredPropertyNames = string.Empty;
+            IEnumerable<string> requiredPropertyStrings;
+            if(typeof(TProjection) == typeof(TEntity))
+                requiredPropertyStrings = DataUtils.GetRequiredPropertyStrings(typeof(TProjection));
+            else
+                requiredPropertyStrings = DataUtils.GetRequiredPropertyStringsForProjection(typeof(TProjection));
 
+            string requiredPropertyNames = string.Empty;
             if (requiredPropertyStrings.Count() == 0)
                 return true;
             else
@@ -500,6 +507,7 @@ namespace BluePrints.Common.ViewModel
             base.OnBeforeEntitySaved(entity);
         }
 
+        public Func<GridCellValidationEventArgs, bool> AdditionalValidateCellCallBack;
         /// <summary>
         /// Validate any row within the binded datagrid
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the ValidateRowCommand property that can be used as a binding source in views.
@@ -514,8 +522,12 @@ namespace BluePrints.Common.ViewModel
                 e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
                 e.ErrorContent = constraintName + " is not unique";
             }
+
+            if (AdditionalValidateCellCallBack != null)
+                AdditionalValidateCellCallBack(e);
         }
 
+        public Func<GridRowValidationEventArgs, bool> AdditionalValidateRowCallBack;
         public virtual void ValidateRow(GridRowValidationEventArgs e)
         {
             string errorMessage = string.Empty;
@@ -525,6 +537,9 @@ namespace BluePrints.Common.ViewModel
                 e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
                 e.ErrorContent = errorMessage;
             }
+
+            if (AdditionalValidateRowCallBack != null)
+                AdditionalValidateRowCallBack(e);
         }
         #endregion
 
