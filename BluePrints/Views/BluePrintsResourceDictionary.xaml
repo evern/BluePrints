@@ -76,6 +76,7 @@
                         <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}" EventName="ValidateCell" />
                         <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}" EventName="ValidateRow" />
                         <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard"/>
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ShownEditorCommand}" EventName="ShownEditor" />
                         <!--<dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}"  />-->
                         <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}"  />
                         <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}"  />

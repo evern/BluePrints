@@ -109,10 +109,10 @@
                 </dxr:RibbonPage>
             </dxr:RibbonDefaultPageCategory>
         </dxr:RibbonControl>
-        <dxdo:DockLayoutManager dx:DXSerializer.Enabled="False" BorderThickness="0" Name="dockLayoutManager" MDIMergeStyle="WhenChildActivated">
-            <dxdo:LayoutGroup Orientation="Horizontal" ItemHeight="*">
-                <dxdo:LayoutGroup>
-                    <dxdo:LayoutPanel AllowClose="False" AllowFloat="False" ShowPinButton="False" ShowBorder="False" ShowCaption="False" MaxWidth="300" ItemWidth="Auto" Visibility="{Binding NavigationPaneVisibility, Converter={StaticResource NavigationPaneVisibilityConverter}}">
+        <dxdo:DockLayoutManager dx:DXSerializer.Enabled="False" BorderThickness="0" Margin="0" Padding="0" Name="dockLayoutManager" MDIMergeStyle="WhenChildActivated">
+            <dxdo:LayoutGroup Orientation="Horizontal" ItemHeight="*" BorderThickness="0" Margin="0" Padding="0">
+                <dxdo:LayoutGroup BorderThickness="0" Margin="0" Padding="0">
+                    <dxdo:LayoutPanel BorderThickness="0" AllowClose="False" AllowFloat="False" ShowPinButton="False" ShowBorder="False" ShowCaption="False" MaxWidth="300" ItemWidth="Auto" Visibility="{Binding NavigationPaneVisibility, Converter={StaticResource NavigationPaneVisibilityConverter}}">
                         <dxn:NavBarControl x:Name="navBarControl" ItemsSource="{Binding Modules}" Compact="False" SelectedGroup="{Binding SelectedModule, Mode=OneTime}">
                             <dxn:NavBarControl.Resources>
                                 <Style x:Key="collapsedNavPaneItemsStyle" TargetType="{x:Type dxn:NavBarItem}">
@@ -212,7 +212,7 @@
                             </dx:DXTabControl.View>
                         </dx:DXTabControl>
                     </dxdo:LayoutPanel>-->
-                    <dxdo:DocumentGroup x:Name="documentGroup">
+                    <dxdo:DocumentGroup x:Name="documentGroup" BorderThickness="0" Margin="0" Padding="0">
                         <dxmvvm:Interaction.Behaviors>
                             <dxdo:TabbedDocumentUIService />
                         </dxmvvm:Interaction.Behaviors>

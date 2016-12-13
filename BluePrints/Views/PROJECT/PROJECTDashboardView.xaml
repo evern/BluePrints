@@ -52,12 +52,12 @@
                         <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
-                <dxlc:LayoutControl Orientation="Vertical">
+                <dxlc:LayoutControl Orientation="Vertical" >
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical" dxlc:LayoutControl.AllowVerticalSizing="True">
-                        <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="PROJECT_DashboardGrid" Style="{StaticResource WrapperGridTemplate}">
+                        <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="PROJECT_DashboardGrid" Style="{StaticResource WrapperGridTemplate}" >
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding DataContext.EditCommand, ElementName=userControl}" EventName="MouseDoubleClick" MarkRoutedEventsAsHandled="True">
                                     <dxmvvm:EventToCommand.EventArgsConverter>

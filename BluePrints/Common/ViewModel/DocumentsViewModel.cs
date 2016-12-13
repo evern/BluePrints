@@ -9,6 +9,8 @@ using DevExpress.Mvvm.DataAnnotations;
 using BluePrints.Common.Utils;
 using BluePrints.Common.DataModel;
 using BluePrints.ViewModels;
+using System.Windows;
+using System.Windows.Data;
 
 namespace BluePrints.Common.ViewModel
 {
@@ -21,7 +23,6 @@ namespace BluePrints.Common.ViewModel
         where TModule : ModuleDescription<TModule>
         where TUnitOfWork : IUnitOfWork
     {
-
         const string ViewLayoutName = "DocumentViewModel";
 
         protected readonly IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory;
@@ -33,11 +34,12 @@ namespace BluePrints.Common.ViewModel
         protected DocumentsViewModel(IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory)
         {
             this.unitOfWorkFactory = unitOfWorkFactory;
-            Modules = CreateModules().ToArray();
-
-            foreach (var module in Modules)
-                Messenger.Default.Register<NavigateMessage<TModule>>(this, module, x => Show(x.Token));
-            Messenger.Default.Register<DestroyOrphanedDocumentsMessage>(this, x => DestroyOrphanedDocuments());
+            Modules = new RangeObservableCollection<TModule>();
+            Modules.AddRange(CreateModules());
+            
+            //foreach (var module in Modules)
+            //    Messenger.Default.Register<NavigateMessage<TModule>>(this, module, x => Show(x.Token));
+            //Messenger.Default.Register<DestroyOrphanedDocumentsMessage>(this, x => DestroyOrphanedDocuments());
         }
 
         void DestroyOrphanedDocuments()
@@ -52,13 +54,13 @@ namespace BluePrints.Common.ViewModel
 
         public void AddModules(IEnumerable<TModule> modules)
         {
-            Modules = Modules.Concat(modules).ToArray();
+            Modules.AddRange(modules);
         }
 
         /// <summary>
         /// Navigation list that represents a collection of module descriptions.
         /// </summary>
-        public TModule[] Modules { get; private set; }
+        public RangeObservableCollection<TModule> Modules { get; private set; }
 
         /// <summary>
         /// A currently selected navigation list entry. This property is writable. When this property is assigned a new value, it triggers the navigating to the corresponding document.

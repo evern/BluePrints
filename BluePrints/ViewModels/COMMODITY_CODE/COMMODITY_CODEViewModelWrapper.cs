@@ -51,7 +51,7 @@ namespace BluePrints.ViewModels
             CommodityCodeType receiveParameter = (CommodityCodeType)parameter;
             this.loadCommodityCodeType = receiveParameter;
             delayedCOMMODITY_CODEPopulateDispatcher = new DispatcherTimer();
-            delayedCOMMODITY_CODEPopulateDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
+            delayedCOMMODITY_CODEPopulateDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
             delayedCOMMODITY_CODEPopulateDispatcher.Tick += delayedCOMMODITY_CODEPopulateDispatcher_Tick;
         }
 
@@ -167,12 +167,15 @@ namespace BluePrints.ViewModels
             {
                 foreach(INDIRECT_TYPE populateINDIRECT_TYPE in INDIRECT_TYPECollection)
                 {
-                    COMMODITY_CODE newCOMMODITY_CODE = new COMMODITY_CODE();
-                    newCOMMODITY_CODE.CODE = populateINDIRECT_TYPE.CODE;
-                    newCOMMODITY_CODE.FULLCODE = populateINDIRECT_TYPE.CODE;
-                    newCOMMODITY_CODE.NAME = populateINDIRECT_TYPE.NAME;
-                    newCOMMODITY_CODE.GUID_INDIRECTTYPE = populateINDIRECT_TYPE.GUID;
-                    MainViewModel.Save(newCOMMODITY_CODE);
+                    if (!MainViewModel.Entities.Any(x => x.GUID_PARENT == Guid.Empty && x.GUID_INDIRECTTYPE == populateINDIRECT_TYPE.GUID))
+                    {
+                        COMMODITY_CODE newCOMMODITY_CODE = new COMMODITY_CODE();
+                        newCOMMODITY_CODE.CODE = populateINDIRECT_TYPE.CODE;
+                        newCOMMODITY_CODE.FULLCODE = populateINDIRECT_TYPE.CODE;
+                        newCOMMODITY_CODE.NAME = populateINDIRECT_TYPE.NAME;
+                        newCOMMODITY_CODE.GUID_INDIRECTTYPE = populateINDIRECT_TYPE.GUID;
+                        MainViewModel.Save(newCOMMODITY_CODE);
+                    }
                 }
             }
         }

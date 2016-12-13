@@ -40,7 +40,7 @@
             </TreeViewItem.ItemTemplate>
         </TreeViewItem>
     </TreeView>-->
-    <dxg:TreeListControl MaxHeight="2000" MaxWidth="2000" dx:DXSerializer.SerializationID="NavigationTree" ItemsSource="{Binding Modules}" SelectedItem="{Binding SelectedModule, Mode=TwoWay}" BorderThickness="0" Background="Transparent" Foreground="{Binding Parent.Foreground, RelativeSource={RelativeSource Self}}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+    <dxg:TreeListControl x:Name="TreeListControl" MaxHeight="2000" MaxWidth="2000" dx:DXSerializer.SerializationID="NavigationTree" ItemsSource="{Binding Modules}" SelectedItem="{Binding SelectedModule}" BorderThickness="0" Background="Transparent" Foreground="{Binding Parent.Foreground, RelativeSource={RelativeSource Self}}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
         <dxg:TreeListControl.Columns>
             <dxg:TreeListColumn Header="Title" FieldName="ModuleTitle" VisibleIndex="0" Width="*" />
         </dxg:TreeListControl.Columns>

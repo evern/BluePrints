@@ -19,7 +19,6 @@ namespace BluePrints.Common.Projections
         public ESTIMATION_ITEMProjection()
         {
             ESTIMATION_ITEM = new ESTIMATION_ITEM();
-            ESTIMATION_ITEM.COMMODITY = new COMMODITY();
         }
 
         [Key]
@@ -55,12 +54,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (ESTIMATION_ITEM == null)
                     return Guid.Empty;
-                else if (ESTIMATION_ITEM.COMMODITY == null)
-                    return Guid.Empty;
-                else
-                    return ESTIMATION_ITEM.GUID_COMMODITY;
             }
         }
 
@@ -68,12 +62,8 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (ESTIMATION_ITEM == null)
                     return Guid.Empty;
-                else if (ESTIMATION_ITEM.COMMODITY == null)
-                    return Guid.Empty;
-                else
-                    return ESTIMATION_ITEM.COMMODITY.GUID_COMMODITYCODE;
+
             }
         }
 

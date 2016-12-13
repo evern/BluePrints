@@ -172,7 +172,6 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-
         protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
             if (changedType == typeof(COMMODITY_GROUP_DIRECT))
@@ -595,24 +594,40 @@ namespace BluePrints.ViewModels
                 {
                     newCOMMODITY_GROUP_DIRECT.COMMODITY_GROUP.GUID_COMMODITYCODE = droppedCOMMODITY_CODE.GUID;
 
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(newCOMMODITY_GROUP_DIRECT, null, null, null, EntityMessageType.Added);
-                    Save(newCOMMODITY_GROUP_DIRECT);
+                    string errorMessage = string.Empty;
+                    if(MainViewModel.IsValidEntity(newCOMMODITY_GROUP_DIRECT, ref errorMessage))
+                    {
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(newCOMMODITY_GROUP_DIRECT, null, null, null, EntityMessageType.Added);
+                        Save(newCOMMODITY_GROUP_DIRECT);
+                    }
+                    else
+                        MessageBoxService.ShowMessage(errorMessage + " is not unique");
                 }
                 else
                 {
                     if (targetCOMMODITY_GROUP.COMMODITY_GROUP.GUID_COMMODITYCODE != null)
+                    {
+                        MessageBoxService.ShowMessage(CommonResources.CommodityGroup_CannotAssignCommodity);
                         continue;
+                    }
 
                     newCOMMODITY_GROUP_DIRECT.COMMODITY_GROUP.GUID_PARENT = targetCOMMODITY_GROUP.GUID;
                     newCOMMODITY_GROUP_DIRECT.COMMODITY_GROUP.GUID_COMMODITYCODE = droppedCOMMODITY_CODE.GUID;
 
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(newCOMMODITY_GROUP_DIRECT, null, null, null, EntityMessageType.Added);
-                    Save(newCOMMODITY_GROUP_DIRECT);
+                    string errorMessage = string.Empty;
+                    if (MainViewModel.IsValidEntity(newCOMMODITY_GROUP_DIRECT, ref errorMessage))
+                    {
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(newCOMMODITY_GROUP_DIRECT, null, null, null, EntityMessageType.Added);
+                        Save(newCOMMODITY_GROUP_DIRECT);
+                    }
+                    else
+                        MessageBoxService.ShowMessage(errorMessage + " is not unique");
                 }
             }
 
             e.Handled = true;
         }
+
         //public bool IsCOMMODITY_CODENotSelectable(COMMODITY_CODE selectingCOMMODITY_CODE)
         //{
         //    if (selectingCOMMODITY_CODE == null)

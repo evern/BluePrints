@@ -39,11 +39,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((BASELINE x) => x.GUID); }
         }
 
-        IRepository<COMMODITY, Guid> IBluePrintsEntitiesUnitOfWork.COMMODITIES
-        {
-            get { return GetRepository((COMMODITY x) => x.GUID); }
-        }
-
         IRepository<COMMODITY_CODE, Guid> IBluePrintsEntitiesUnitOfWork.COMMODITY_CODES
         {
             get { return GetRepository((COMMODITY_CODE x) => x.GUID); }

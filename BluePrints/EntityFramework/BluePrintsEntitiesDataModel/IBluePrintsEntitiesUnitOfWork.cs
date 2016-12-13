@@ -33,11 +33,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<BASELINE, Guid> BASELINES { get; }
 
         /// <summary>
-        /// The COMMODITY entities repository.
-        /// </summary>
-        IRepository<COMMODITY, Guid> COMMODITIES { get; }
-
-        /// <summary>
         /// The COMMODITY_CODES entities repository.
         /// </summary>
         IRepository<COMMODITY_CODE, Guid> COMMODITY_CODES { get; }

@@ -26,7 +26,6 @@ namespace BluePrints.Data
         public virtual DbSet<AREA> AREA { get; set; }
         public virtual DbSet<BASELINE> BASELINE { get; set; }
         public virtual DbSet<BASELINE_ITEM> BASELINE_ITEM { get; set; }
-        public virtual DbSet<COMMODITY> COMMODITY { get; set; }
         public virtual DbSet<COMMODITY_CODE> COMMODITY_CODE { get; set; }
         public virtual DbSet<COMMODITY_GROUP_DIRECT> COMMODITY_GROUP_DIRECT { get; set; }
         public virtual DbSet<DEPARTMENT> DEPARTMENT { get; set; }
@@ -94,18 +93,6 @@ namespace BluePrints.Data
                 .HasMany(e => e.VARIATION1)
                 .WithOptional(e => e.TOBASELINE)
                 .HasForeignKey(e => e.GUID_ORIBASELINE);
-
-            modelBuilder.Entity<COMMODITY>()
-                .HasMany(e => e.ESTIMATION_ITEM)
-                .WithRequired(e => e.COMMODITY)
-                .HasForeignKey(e => e.GUID_COMMODITY)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<COMMODITY_CODE>()
-                .HasMany(e => e.COMMODITY)
-                .WithRequired(e => e.COMMODITY_CODE)
-                .HasForeignKey(e => e.GUID_COMMODITYCODE)
-                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<COMMODITY_CODE>()
                 .HasMany(e => e.COMMODITY_GROUP_DIRECT)
@@ -245,12 +232,6 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.BASELINE)
-                .WithRequired(e => e.PROJECT)
-                .HasForeignKey(e => e.GUID_PROJECT)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.COMMODITY)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);

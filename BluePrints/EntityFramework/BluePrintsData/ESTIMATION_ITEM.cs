@@ -55,8 +55,6 @@ namespace BluePrints.Data
 
         public virtual AREA AREA { get; set; }
 
-        public virtual COMMODITY COMMODITY { get; set; }
-
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 
         public virtual ESTIMATION ESTIMATION { get; set; }

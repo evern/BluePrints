@@ -9,6 +9,9 @@ namespace BluePrints.Data
 
     public partial class COMMODITY_CODE
     {
-
+        public override string ToString()
+        {
+            return this.FULLCODE;
+        }
     }
 }

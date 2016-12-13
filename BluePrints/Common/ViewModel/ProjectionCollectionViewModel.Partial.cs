@@ -27,6 +27,7 @@ using BluePrints.ViewModels;
 using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace BluePrints.Common.ViewModel
 {
@@ -60,7 +61,6 @@ namespace BluePrints.Common.ViewModel
         {
             return ViewModelSource.Create(() => new CollectionViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork>(unitOfWorkFactory, getRepositoryFunc, projection, null, null, false));
         }
-
 
         /// <summary>
         /// Initializes a new instance of the CollectionViewModel class.
@@ -423,6 +423,34 @@ namespace BluePrints.Common.ViewModel
         #endregion
 
         #region Views
+
+        TextEdit textEditor;
+        public void ShownEditor(EditorEventArgs e)
+        {
+            var view = e.Source as TableView;
+            if (view == null)
+                return;
+
+            textEditor = view.ActiveEditor as TextEdit;
+            if (textEditor == null)
+                return;
+
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                textEditor.SelectionStart = textEditor.Text.Length;
+                textEditor.SelectionLength = 0;
+            }), DispatcherPriority.Loaded);
+        }
+
+        void delayedShownEditorDispatcher_Tick(object sender, EventArgs e)
+        {
+            delayedShownEditorDispatcher.Stop();
+            if (textEditor == null)
+                return;
+
+        }
+
+
         public void ShowPopUp(object sender)
         {
             var editor = sender as GridControl;

@@ -29,6 +29,11 @@ namespace BluePrints.Common.Projections
         public COMMODITY_GROUP_DIRECT COMMODITY_GROUP { get; set; }
 
         public ObservableCollection<COMMODITY_GROUP_DIRECTProjection> CHILD_COMMODITY_GROUP { get; set; }
+
+        public override string ToString()
+        {
+            return COMMODITY_GROUP.DESCRIPTION;
+        }
     }
 
     public static class COMMODITY_GROUP_DIRECTProjectionQueries

@@ -11,7 +11,6 @@ using System.Data.Entity.Spatial;
     {
         public COMMODITY_CODE()
         {
-            COMMODITY = new HashSet<COMMODITY>();
             COMMODITY_GROUP_DIRECT = new HashSet<COMMODITY_GROUP_DIRECT>();
         }
 
@@ -69,8 +68,6 @@ using System.Data.Entity.Spatial;
         public DateTime? DELETED { get; set; }
 
         public Guid? DELETEDBY { get; set; }
-
-        public virtual ICollection<COMMODITY> COMMODITY { get; set; }
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 

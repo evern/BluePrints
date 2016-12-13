@@ -139,7 +139,7 @@
                             <dxg:GridSummaryItem FieldName="BASELINE_ITEM.DC_HOURS" SummaryType="Sum" ShowInColumn="BASELINE_ITEM.DC_HOURS" DisplayFormat="Total: {0:n}" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
-                            <dxg:TableView Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" ShowGridMenu="tableView_ShowGridMenu" ShowTotalSummary="True" ShowFixedTotalSummary="True" GroupSummaryDisplayMode="AlignByColumns" >
+                            <dxg:TableView Name="tableView"  Style="{StaticResource DefaultTableViewTemplate}" ShowGridMenu="tableView_ShowGridMenu" ShowTotalSummary="True" ShowFixedTotalSummary="True" GroupSummaryDisplayMode="AlignByColumns" >
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="CellValueChanging" />
                                 </dxmvvm:Interaction.Behaviors>

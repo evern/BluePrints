@@ -14,7 +14,6 @@ namespace BluePrints.Data
         {
             AREA = new HashSet<AREA>();
             BASELINE = new HashSet<BASELINE>();
-            COMMODITY = new HashSet<COMMODITY>();
             ESTIMATION = new HashSet<ESTIMATION>();
             PHASE = new HashSet<PHASE>();
             PROGRESS = new HashSet<PROGRESS>();
@@ -71,8 +70,6 @@ namespace BluePrints.Data
         public virtual ICollection<AREA> AREA { get; set; }
 
         public virtual ICollection<BASELINE> BASELINE { get; set; }
-
-        public virtual ICollection<COMMODITY> COMMODITY { get; set; }
 
         public virtual ICollection<ESTIMATION> ESTIMATION { get; set; }
 

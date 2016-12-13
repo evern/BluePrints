@@ -3,8 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
         xmlns:views="clr-namespace:BluePrints.Views"
-        Title="BluePrints" Height="350" Width="525" WindowState="Maximized" Icon="Common/Images/Logo.ico" SnapsToDevicePixels="True">
-    <Grid>
-        <views:BluePrintsEntitiesView />
-    </Grid>
+        Title="BluePrints" Height="350" Width="525" BorderThickness="0" Margin="0" Padding="0" WindowState="Maximized" Icon="Common/Images/Logo.ico" SnapsToDevicePixels="True">
+    <views:BluePrintsEntitiesView Margin="-3,0,-3,-3" />
 </dx:DXWindow>
