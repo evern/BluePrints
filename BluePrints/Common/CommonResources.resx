@@ -216,4 +216,10 @@
   <data name="CommodityGroup_MustSelectCommodity" xml:space="preserve">
     <value>Commodity code is required</value>
   </data>
+  <data name="CommodityCodeGroup_New" xml:space="preserve">
+    <value>New Item</value>
+  </data>
+  <data name="CommodityCode_NewCommodity" xml:space="preserve">
+    <value>New Commodity</value>
+  </data>
 </root>

@@ -239,7 +239,7 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-        public bool NewRowAddUndoAndSave(RowEventArgs e, COMMODITY_GROUP_DIRECTProjection projectionEntity)
+        private bool NewRowAddUndoAndSave(RowEventArgs e, COMMODITY_GROUP_DIRECTProjection projectionEntity)
         {
             var gridView = (GridViewBase)e.Source;
             var grid = gridView.Grid;
@@ -262,7 +262,7 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public bool AdditionalRowValidation(GridRowValidationEventArgs e)
+        private bool AdditionalRowValidation(GridRowValidationEventArgs e)
         {
             var gridControl = (GridControl)e.Source;
             var masterGrid = gridControl.GetMasterGrid();
@@ -282,7 +282,7 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public bool AdditionalCellValidation(GridCellValidationEventArgs e)
+        private bool AdditionalCellValidation(GridCellValidationEventArgs e)
         {
             if(e.Column.FieldName == "COMMODITY_GROUP.GUID_COMMODITYCODE")
             {
@@ -309,9 +309,7 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public Action Redraw;
-        bool IsChangedFromBackEnd;
-        public void ExistingChildrenRowAddUndoAndSave(CellValueChangedEventArgs e)
+        private void ExistingChildrenRowAddUndoAndSave(CellValueChangedEventArgs e)
         {
             COMMODITY_GROUP_DIRECTProjection editedCOMMODITY = (COMMODITY_GROUP_DIRECTProjection)e.Row;
             if (e.RowHandle == GridControl.NewItemRowHandle)
@@ -325,13 +323,99 @@ namespace BluePrints.ViewModels
             COMMODITY_GROUP_DIRECTProjection parentCOMMODITY = SumParentEditValue(editedCOMMODITY, e.Column.FieldName, e.Value);
             if (parentCOMMODITY != null)
             {
-                IsChangedFromBackEnd = true;
-                MainViewModel.Save(parentCOMMODITY);
+                Save(parentCOMMODITY);
             }
 
             MainViewModel.Save(editedCOMMODITY);
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }
+
+        private void ApplyProjectionPropertiesToEntity(COMMODITY_GROUP_DIRECTProjection projectionEntity, COMMODITY_GROUP_DIRECT entity)
+        {
+            if(loadPROJECT != null)
+                projectionEntity.COMMODITY_GROUP.GUID_PROJECT = loadPROJECT.GUID;
+
+            DataUtils.ShallowCopy(entity, projectionEntity.COMMODITY_GROUP);
+            //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
+            if (entity.CREATED.Date.Year == 1)
+                projectionEntity.COMMODITY_GROUP.CREATED = DateTime.Now;
+
+            entity.CREATED = projectionEntity.COMMODITY_GROUP.CREATED;
+        }
+
+        private void OnEntitiesSavedCallBack(Guid primaryKey, COMMODITY_GROUP_DIRECTProjection projectionEntity, COMMODITY_GROUP_DIRECT entity, bool isNewEntity)
+        {
+            projectionEntity.COMMODITY_GROUP.GUID = entity.GUID;
+        }
+
+        //Remove children before parent deletion
+        private void EntitiesBeforeDeletion(IEnumerable<COMMODITY_GROUP_DIRECTProjection> entities)
+        {
+            //Undo manager is paused in bulk deletion and will be unpaused in bulk deletion too
+            List<COMMODITY_GROUP_DIRECTProjection> childrenEntities = new List<COMMODITY_GROUP_DIRECTProjection>();
+            List<COMMODITY_GROUP_DIRECTProjection> parentEntitiesNotInList = new List<COMMODITY_GROUP_DIRECTProjection>();
+
+            foreach (var entity in entities)
+            {
+                var childrenEntitiesInTotal = entity.CHILD_COMMODITY_GROUP;
+                List<COMMODITY_GROUP_DIRECTProjection> childrenEntitiesNotInDeletionCollection = new List<COMMODITY_GROUP_DIRECTProjection>();
+                foreach (var childrenEntityInTotal in childrenEntitiesInTotal)
+                {
+                    if (!entities.Any(x => x.GUID == childrenEntityInTotal.GUID))
+                        childrenEntitiesNotInDeletionCollection.Add(childrenEntityInTotal);
+                }
+
+                COMMODITY_GROUP_DIRECTProjection parentEntity = null;
+                if (entity.COMMODITY_GROUP.GUID_PARENT != Guid.Empty)
+                {
+                    parentEntity = MainViewModel.Entities.FirstOrDefault(x => x.GUID == entity.COMMODITY_GROUP.GUID_PARENT);
+                    if(parentEntity != null)
+                    {
+                        if (!entities.Any(x => x.GUID == parentEntity.GUID))
+                            parentEntitiesNotInList.Add(parentEntity);
+                    }
+                }
+
+                childrenEntities = childrenEntities.Concat(childrenEntitiesNotInDeletionCollection).ToList();
+            }
+
+            //can't use bulk delete here due to stack overflow
+            foreach (var childrenEntity in childrenEntities)
+            {
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(childrenEntity, null, null, null, EntityMessageType.Deleted);
+                MainViewModel.Delete(childrenEntity);
+            }
+
+            foreach (var entity in parentEntitiesNotInList)
+            {
+                RecalculateParentValues(entity, entities.Concat(childrenEntities));
+                Save(entity);
+            }
+        }
+
+        private void RecalculateParentValues(COMMODITY_GROUP_DIRECTProjection parentCOMMODITY, IEnumerable<COMMODITY_GROUP_DIRECTProjection> excludedCOMMODITY)
+        {
+            decimal newValue = -1;
+            decimal? oldValue = null;
+            newValue = MainViewModel.Entities.Where(x => !excludedCOMMODITY.Any(y => y.GUID == x.GUID)).Where(x => x.COMMODITY_GROUP.GUID_PARENT == parentCOMMODITY.GUID && x.COMMODITY_GROUP.RATE_FREIGHT != null).Sum(x => (decimal)x.COMMODITY_GROUP.RATE_FREIGHT);
+            oldValue = parentCOMMODITY.COMMODITY_GROUP.RATE_FREIGHT;
+            parentCOMMODITY.COMMODITY_GROUP.RATE_FREIGHT = newValue;
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(parentCOMMODITY, "COMMODITY_GROUP.RATE_FREIGHT", oldValue, newValue, EntityMessageType.Changed);
+            newValue = MainViewModel.Entities.Where(x => !excludedCOMMODITY.Any(y => y.GUID == x.GUID)).Where(x => x.COMMODITY_GROUP.GUID_PARENT == parentCOMMODITY.GUID && x.COMMODITY_GROUP.RATE_SUPPLY != null).Sum(x => (decimal)x.COMMODITY_GROUP.RATE_SUPPLY);
+            oldValue = parentCOMMODITY.COMMODITY_GROUP.RATE_SUPPLY;
+            parentCOMMODITY.COMMODITY_GROUP.RATE_SUPPLY = newValue;
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(parentCOMMODITY, "COMMODITY_GROUP.RATE_SUPPLY", oldValue, newValue, EntityMessageType.Changed);
+            newValue = MainViewModel.Entities.Where(x => !excludedCOMMODITY.Any(y => y.GUID == x.GUID)).Where(x => x.COMMODITY_GROUP.GUID_PARENT == parentCOMMODITY.GUID && x.COMMODITY_GROUP.HOURS_INSTALL != null).Sum(x => (decimal)x.COMMODITY_GROUP.HOURS_INSTALL);
+            oldValue = parentCOMMODITY.COMMODITY_GROUP.HOURS_INSTALL;
+            parentCOMMODITY.COMMODITY_GROUP.HOURS_INSTALL = newValue;
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(parentCOMMODITY, "COMMODITY_GROUP.HOURS_INSTALL", oldValue, newValue, EntityMessageType.Changed);
+        }
+        #endregion
+        #endregion
+
+        #region Local Methods
+        public Action Redraw;
+        private bool IsChangedFromBackEnd;
 
         private COMMODITY_GROUP_DIRECTProjection SumParentEditValue(COMMODITY_GROUP_DIRECTProjection childCOMMODITY, string fieldName, object newEditValue)
         {
@@ -379,105 +463,11 @@ namespace BluePrints.ViewModels
             return null;
         }
 
-        public void ApplyProjectionPropertiesToEntity(COMMODITY_GROUP_DIRECTProjection projectionEntity, COMMODITY_GROUP_DIRECT entity)
+        private void Save(COMMODITY_GROUP_DIRECTProjection newCOMMODITY_GROUP)
         {
-            if(loadPROJECT != null)
-                projectionEntity.COMMODITY_GROUP.GUID_PROJECT = loadPROJECT.GUID;
-
-            DataUtils.ShallowCopy(entity, projectionEntity.COMMODITY_GROUP);
-            //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
-            if (entity.CREATED.Date.Year == 1)
-                projectionEntity.COMMODITY_GROUP.CREATED = DateTime.Now;
-
-            entity.CREATED = projectionEntity.COMMODITY_GROUP.CREATED;
+            IsChangedFromBackEnd = true;
+            MainViewModel.Save(newCOMMODITY_GROUP);
         }
-
-        public void OnEntitiesSavedCallBack(Guid primaryKey, COMMODITY_GROUP_DIRECTProjection projectionEntity, COMMODITY_GROUP_DIRECT entity, bool isNewEntity)
-        {
-            projectionEntity.COMMODITY_GROUP.GUID = entity.GUID;
-        }
-
-        //Remove children before parent deletion
-        private void EntitiesBeforeDeletion(IEnumerable<COMMODITY_GROUP_DIRECTProjection> entities)
-        {
-            //Undo manager is paused in bulk deletion and will be unpaused in bulk deletion too
-            List<COMMODITY_GROUP_DIRECTProjection> childrenEntities = new List<COMMODITY_GROUP_DIRECTProjection>();
-            List<COMMODITY_GROUP_DIRECTProjection> parentEntitiesNotInList = new List<COMMODITY_GROUP_DIRECTProjection>();
-
-            foreach (var entity in entities)
-            {
-                var childrenEntitiesInTotal = entity.CHILD_COMMODITY_GROUP;
-                List<COMMODITY_GROUP_DIRECTProjection> childrenEntitiesNotInDeletionCollection = new List<COMMODITY_GROUP_DIRECTProjection>();
-                foreach (var childrenEntityInTotal in childrenEntitiesInTotal)
-                {
-                    if (!entities.Any(x => x.GUID == childrenEntityInTotal.GUID))
-                        childrenEntitiesNotInDeletionCollection.Add(childrenEntityInTotal);
-                }
-
-                COMMODITY_GROUP_DIRECTProjection parentEntity = null;
-                if (entity.COMMODITY_GROUP.GUID_PARENT != Guid.Empty)
-                {
-                    parentEntity = MainViewModel.Entities.FirstOrDefault(x => x.GUID == entity.COMMODITY_GROUP.GUID_PARENT);
-                    if(parentEntity != null)
-                    {
-                        if (!entities.Any(x => x.GUID == parentEntity.GUID))
-                            parentEntitiesNotInList.Add(parentEntity);
-                    }
-                }
-
-                childrenEntities = childrenEntities.Concat(childrenEntitiesNotInDeletionCollection).ToList();
-            }
-
-            //can't use bulk delete here due to stack overflow
-            foreach (var childrenEntity in childrenEntities)
-            {
-                MainViewModel.EntitiesUndoRedoManager.AddUndo(childrenEntity, null, null, null, EntityMessageType.Deleted);
-                MainViewModel.Delete(childrenEntity);
-            }
-
-            foreach (var entity in parentEntitiesNotInList)
-            {
-                RecalculateParentValues(entity, entities.Concat(childrenEntities));
-                IsChangedFromBackEnd = true;
-                MainViewModel.Save(entity);
-            }
-        }
-
-        private void RecalculateParentValues(COMMODITY_GROUP_DIRECTProjection parentCOMMODITY, IEnumerable<COMMODITY_GROUP_DIRECTProjection> excludedCOMMODITY)
-        {
-            decimal newValue = -1;
-            decimal? oldValue = null;
-            newValue = MainViewModel.Entities.Where(x => !excludedCOMMODITY.Any(y => y.GUID == x.GUID)).Where(x => x.COMMODITY_GROUP.GUID_PARENT == parentCOMMODITY.GUID && x.COMMODITY_GROUP.RATE_FREIGHT != null).Sum(x => (decimal)x.COMMODITY_GROUP.RATE_FREIGHT);
-            oldValue = parentCOMMODITY.COMMODITY_GROUP.RATE_FREIGHT;
-            parentCOMMODITY.COMMODITY_GROUP.RATE_FREIGHT = newValue;
-            MainViewModel.EntitiesUndoRedoManager.AddUndo(parentCOMMODITY, "COMMODITY_GROUP.RATE_FREIGHT", oldValue, newValue, EntityMessageType.Changed);
-            newValue = MainViewModel.Entities.Where(x => !excludedCOMMODITY.Any(y => y.GUID == x.GUID)).Where(x => x.COMMODITY_GROUP.GUID_PARENT == parentCOMMODITY.GUID && x.COMMODITY_GROUP.RATE_SUPPLY != null).Sum(x => (decimal)x.COMMODITY_GROUP.RATE_SUPPLY);
-            oldValue = parentCOMMODITY.COMMODITY_GROUP.RATE_SUPPLY;
-            parentCOMMODITY.COMMODITY_GROUP.RATE_SUPPLY = newValue;
-            MainViewModel.EntitiesUndoRedoManager.AddUndo(parentCOMMODITY, "COMMODITY_GROUP.RATE_SUPPLY", oldValue, newValue, EntityMessageType.Changed);
-            newValue = MainViewModel.Entities.Where(x => !excludedCOMMODITY.Any(y => y.GUID == x.GUID)).Where(x => x.COMMODITY_GROUP.GUID_PARENT == parentCOMMODITY.GUID && x.COMMODITY_GROUP.HOURS_INSTALL != null).Sum(x => (decimal)x.COMMODITY_GROUP.HOURS_INSTALL);
-            oldValue = parentCOMMODITY.COMMODITY_GROUP.HOURS_INSTALL;
-            parentCOMMODITY.COMMODITY_GROUP.HOURS_INSTALL = newValue;
-            MainViewModel.EntitiesUndoRedoManager.AddUndo(parentCOMMODITY, "COMMODITY_GROUP.HOURS_INSTALL", oldValue, newValue, EntityMessageType.Changed);
-        }
-
-        public void dragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.GridDropEventArgs e)
-        {
-            //foreach (var obj in e.DraggedRows)
-            //{
-            //    COMMODITY_CODE droppedCOMMODITY_CODE = obj as COMMODITY_CODE;
-            //    if (droppedCOMMODITY_CODE == null)
-            //        continue;
-
-            //    COMMODITY_GROUP_DIRECT newCOMMODITY_GROUP_DIRECT = new COMMODITY_GROUP_DIRECT();
-            //    newCOMMODITY_GROUP_DIRECT.GUID_COMMODITYCODE = droppedCOMMODITY_CODE.GUID;
-            //    newCOMMODITY_GROUP_DIRECT.COMMODITY_CODE = droppedCOMMODITY_CODE;
-            //    AddCOMMODITY_GROUP_DIRECT(newCOMMODITY_GROUP_DIRECT);
-            //}
-
-            //e.Handled = true;
-        }
-        #endregion
         #endregion
 
         #region View Properties
@@ -586,6 +576,43 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
+        public void dragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.GridDropEventArgs e)
+        {
+            foreach (var obj in e.DraggedRows)
+            {
+                TreeListNode droppedNode = obj as TreeListNode;
+                if (droppedNode == null)
+                    continue;
+
+                COMMODITY_CODE droppedCOMMODITY_CODE = droppedNode.Content as COMMODITY_CODE;
+                if (droppedCOMMODITY_CODE == null || droppedCOMMODITY_CODE.COMMODITYCODETYPE != CommodityCodeType.Direct)
+                    continue;
+
+                COMMODITY_GROUP_DIRECTProjection targetCOMMODITY_GROUP = e.TargetRow as COMMODITY_GROUP_DIRECTProjection;
+                COMMODITY_GROUP_DIRECTProjection newCOMMODITY_GROUP_DIRECT = new COMMODITY_GROUP_DIRECTProjection();
+                newCOMMODITY_GROUP_DIRECT.COMMODITY_GROUP.DESCRIPTION = CommonResources.CommodityCodeGroup_New;
+                if (targetCOMMODITY_GROUP == null)
+                {
+                    newCOMMODITY_GROUP_DIRECT.COMMODITY_GROUP.GUID_COMMODITYCODE = droppedCOMMODITY_CODE.GUID;
+
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(newCOMMODITY_GROUP_DIRECT, null, null, null, EntityMessageType.Added);
+                    Save(newCOMMODITY_GROUP_DIRECT);
+                }
+                else
+                {
+                    if (targetCOMMODITY_GROUP.COMMODITY_GROUP.GUID_COMMODITYCODE != null)
+                        continue;
+
+                    newCOMMODITY_GROUP_DIRECT.COMMODITY_GROUP.GUID_PARENT = targetCOMMODITY_GROUP.GUID;
+                    newCOMMODITY_GROUP_DIRECT.COMMODITY_GROUP.GUID_COMMODITYCODE = droppedCOMMODITY_CODE.GUID;
+
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(newCOMMODITY_GROUP_DIRECT, null, null, null, EntityMessageType.Added);
+                    Save(newCOMMODITY_GROUP_DIRECT);
+                }
+            }
+
+            e.Handled = true;
+        }
         //public bool IsCOMMODITY_CODENotSelectable(COMMODITY_CODE selectingCOMMODITY_CODE)
         //{
         //    if (selectingCOMMODITY_CODE == null)

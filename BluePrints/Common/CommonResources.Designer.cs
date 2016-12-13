@@ -88,6 +88,15 @@ namespace BluePrints.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New Commodity.
+        /// </summary>
+        internal static string CommodityCode_NewCommodity {
+            get {
+                return ResourceManager.GetString("CommodityCode_NewCommodity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please add departments before adding commodity code.
         /// </summary>
         internal static string CommodityCode_NoDepartment {
@@ -102,6 +111,15 @@ namespace BluePrints.Common {
         internal static string CommodityCode_NoDiscipline {
             get {
                 return ResourceManager.GetString("CommodityCode_NoDiscipline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New Item.
+        /// </summary>
+        internal static string CommodityCodeGroup_New {
+            get {
+                return ResourceManager.GetString("CommodityCodeGroup_New", resourceCulture);
             }
         }
         

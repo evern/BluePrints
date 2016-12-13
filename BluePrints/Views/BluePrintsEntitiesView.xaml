@@ -7,6 +7,7 @@
         xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+        xmlns:dxd="http://schemas.devexpress.com/winfx/2008/xaml/docking"
         xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
         xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
         xmlns:dxn="http://schemas.devexpress.com/winfx/2008/xaml/navbar"
@@ -86,9 +87,30 @@
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-    <Grid>
-        <dxdo:DockLayoutManager dx:DXSerializer.Enabled="False" BorderThickness="0" Name="dockLayoutManager">
-            <dxdo:LayoutGroup Orientation="Vertical" ItemHeight="*">
+    <DockPanel>
+        <dxr:RibbonControl x:Name="ribbonControl1" RibbonStyle="OfficeSlim" ApplicationButtonText="" DockPanel.Dock="Top" ToolbarShowMode="Hide" Visibility="{Binding RelativeSource={RelativeSource AncestorType=dx:DXTabControl}, Path=SelectedContainer.IsNew, Converter={dxmvvm:BooleanToVisibilityConverter Inverse=True}}" dx:DXSerializer.Enabled="False" ShowApplicationButton="False" AllowMinimizeRibbon="False" RibbonHeaderVisibility="Collapsed" AllowCustomization="False">
+            <dxr:RibbonControl.ApplicationButtonOfficeSlimStyle>
+                <Style TargetType="dxr:RibbonApplicationButtonControl">
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                    <Setter Property="VerticalAlignment" Value="Bottom" />
+                    <Setter Property="Margin" Value="1,1,1,1" />
+                    <Setter Property="Padding" Value="1,1,1,1" />
+                </Style>
+            </dxr:RibbonControl.ApplicationButtonOfficeSlimStyle>
+            <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
+                <dxr:RibbonPage Caption="Home" MergeOrder="1">
+                    <dxr:RibbonPageGroup Caption="Appearance" MergeOrder="1002">
+                        <dxr:RibbonGalleryBarItem Glyph="{dx:DXImage Image=Colors_16x16.png}" LargeGlyph="{dx:DXImage Image=Colors_32x32.png}" >
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxr:RibbonGalleryItemThemeSelectorBehavior/>
+                            </dxmvvm:Interaction.Behaviors>
+                        </dxr:RibbonGalleryBarItem>
+                    </dxr:RibbonPageGroup>
+                </dxr:RibbonPage>
+            </dxr:RibbonDefaultPageCategory>
+        </dxr:RibbonControl>
+        <dxdo:DockLayoutManager dx:DXSerializer.Enabled="False" BorderThickness="0" Name="dockLayoutManager" MDIMergeStyle="WhenChildActivated">
+            <dxdo:LayoutGroup Orientation="Horizontal" ItemHeight="*">
                 <dxdo:LayoutGroup>
                     <dxdo:LayoutPanel AllowClose="False" AllowFloat="False" ShowPinButton="False" ShowBorder="False" ShowCaption="False" MaxWidth="300" ItemWidth="Auto" Visibility="{Binding NavigationPaneVisibility, Converter={StaticResource NavigationPaneVisibilityConverter}}">
                         <dxn:NavBarControl x:Name="navBarControl" ItemsSource="{Binding Modules}" Compact="False" SelectedGroup="{Binding SelectedModule, Mode=OneTime}">
@@ -104,28 +126,12 @@
                             <dxn:NavBarControl.ItemTemplate>
                                 <DataTemplate>
                                     <ContentControl>
-                                        <!--<dxn:NavBarGroup Header="{Binding ModuleTitle}" DisplaySource="Content"
-                                                                     DisplayMode="Text"
-                                                                     NavigationPaneVisible="True" NavPaneShowMode="All"
-                                                                     CollapsedNavPaneItemsSource="{Binding NavigationTreeViewModel.Modules}"
-                                                                     CollapsedNavPaneItemsStyle="{StaticResource collapsedNavPaneItemsStyle}"
-                                                                     CollapsedNavPaneSelectedItem="{Binding NavigationTreeViewModel.SelectedItem}">
-                                            <dxn:NavBarGroup.CollapsedNavPaneItemsTemplate>
-                                                <DataTemplate>
-                                                    <ContentControl>
-                                                        <dxn:NavBarItem Content="{Binding DisplayTitle}"/>
-                                                    </ContentControl>
-                                                </DataTemplate>
-                                            </dxn:NavBarGroup.CollapsedNavPaneItemsTemplate>
-                                            <dxn:NavBarGroup.Content>
-                                                <view:NavigationTreeViewPanel DataContext="{Binding NavigationTreeViewModel}" />
-                                            </dxn:NavBarGroup.Content>
-                                        </dxn:NavBarGroup>-->
                                         <dxn:NavBarGroup Header="{Binding ModuleTitle}" 
                                                                      DisplaySource="Content"
                                                                      DisplayMode="Text"
                                                                      NavigationPaneVisible="True" 
                                                                      NavPaneShowMode="Items"
+                                                                     GroupScrollMode="None"
                                                                      CollapsedNavPaneItemsStyle="{StaticResource collapsedNavPaneItemsStyle}">
                                             <dxn:NavBarGroup.CollapsedNavPaneItemsTemplate>
                                                 <DataTemplate>
@@ -146,7 +152,7 @@
                             </dxn:NavBarControl.View>
                         </dxn:NavBarControl>
                     </dxdo:LayoutPanel>
-                    <dxdo:LayoutPanel AllowClose="False" AllowFloat="False" ShowPinButton="False" ShowBorder="False" ShowCaption="False">
+                    <!--<dxdo:LayoutPanel AllowClose="False" AllowFloat="False" ShowPinButton="False" ShowBorder="False" ShowCaption="False">
                         <dx:DXTabControl x:Name="tabControl" Padding="0,-1,0,0" TabContentCacheMode="CacheAllTabs" dx:DXSerializer.Enabled="True">
                             <dx:DXTabControl.Resources>
                                 <Style TargetType="{x:Type dx:DXTabItem}">
@@ -182,7 +188,6 @@
                             <dx:DXTabControl.ControlBoxRightTemplate>
                                 <DataTemplate>
                                     <dxb:ToolBarControl BackgroundTemplate="{x:Null}" GlyphSize="Small" ShowDragWidget="False" AllowCollapse="False" AllowCustomizationMenu="False" AllowHide="False" AllowQuickCustomization="False" AllowRename="False">
-                                        <dxb:BarButtonItem Content="Save All" Command="{Binding SaveAllCommand}" LargeGlyph="{dx:DXImage Image=SaveAll_32x32.png}" Glyph="{dx:DXImage Image=SaveAll_16x16.png}" />
                                         <dxb:BarSubItem Glyph="{dx:DXImage Image=Colors_16x16.png}" LargeGlyph="{dx:DXImage Image=Colors_32x32.png}">
                                             <dxmvvm:Interaction.Behaviors>
                                                 <dxb:BarSubItemThemeSelectorBehavior />
@@ -197,7 +202,6 @@
                                         <DataTemplate>
                                             <dx:DXTabItem Header="Navigation">
                                                 <view:NavigationTreeView DataContext="{Binding}" VerticalAlignment="Stretch" Margin="0,1,0,0" Padding="40" />
-                                                <!--<dxlc:TileLayoutControl ItemsSource="{Binding Modules}" ItemContainerStyle="{StaticResource speedDialTileStyle}" Orientation="Horizontal" AllowItemMoving="False" VerticalAlignment="Center" ItemSpace="25" Margin="0,1,0,0" Padding="40" />-->
                                             </dx:DXTabItem>
                                         </DataTemplate>
                                     </dx:TabbedWindowDocumentUIService.NewItemTemplate>
@@ -207,9 +211,14 @@
                                 <dx:TabControlStretchView MoveItemsWhenDragDrop="False" RemoveTabItemsOnHiding="True" DragDropMode="Full" HideButtonShowMode="InAllTabs" NewButtonShowMode="InTabPanel" CloseWindowOnSingleTabItemHiding="True" SingleTabItemHideMode="HideAndShowNewItem" />
                             </dx:DXTabControl.View>
                         </dx:DXTabControl>
-                    </dxdo:LayoutPanel>
+                    </dxdo:LayoutPanel>-->
+                    <dxdo:DocumentGroup x:Name="documentGroup">
+                        <dxmvvm:Interaction.Behaviors>
+                            <dxdo:TabbedDocumentUIService />
+                        </dxmvvm:Interaction.Behaviors>
+                    </dxdo:DocumentGroup>
                 </dxdo:LayoutGroup>
             </dxdo:LayoutGroup>
         </dxdo:DockLayoutManager>
-    </Grid>
+    </DockPanel>
 </UserControl>

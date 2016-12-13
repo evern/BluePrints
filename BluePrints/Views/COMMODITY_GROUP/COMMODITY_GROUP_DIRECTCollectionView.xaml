@@ -21,7 +21,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <converters:COMMODITYGROUPDetailVisibilityConverter x:Key="COMMODITYGROUPDetailVisibilityConverter"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>

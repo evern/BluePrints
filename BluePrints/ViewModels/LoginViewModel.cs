@@ -29,11 +29,22 @@ namespace BluePrints.ViewModels
         }
 
         IEnumerable<USER> USERS { get; set; }
+        DispatcherTimer delayedHideDispatcher;
         protected LoginViewModel()
         {
+            delayedHideDispatcher = new DispatcherTimer();
+            delayedHideDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
+            delayedHideDispatcher.Tick += delayedHideDispatcher_Tick;
             USERS = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork().USERS.AsEnumerable();
             UserName = XMLHelpers.GetSettings_Username();
             Application.Current.Dispatcher.BeginInvoke(new Action(() => EVERNPCLogin()));
+        }
+
+        void delayedHideDispatcher_Tick(object sender, EventArgs e)
+        {
+            delayedHideDispatcher.Stop();
+            if (HideControlCallBack != null)
+                HideControlCallBack();
         }
 
 
@@ -43,8 +54,7 @@ namespace BluePrints.ViewModels
             {
                 UserName = CommonResources.AdminUsername;
                 UserPassword = CommonResources.AdminPassword;
-                if (HideControlCallBack != null)
-                    HideControlCallBack();
+                delayedHideDispatcher.Start();
                 Login();
             }
         }
@@ -59,8 +69,7 @@ namespace BluePrints.ViewModels
                     LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME == UserName);
 
                 ShowMainWindow();
-                if (HideControlCallBack != null)
-                    HideControlCallBack();
+                delayedHideDispatcher.Start();
             }
             else
                 SetUsernamePasswordError();
