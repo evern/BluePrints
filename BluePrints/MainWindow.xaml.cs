@@ -1,4 +1,5 @@
-﻿using DevExpress.Xpf.Core;
+﻿using BluePrints.Common;
+using DevExpress.Xpf.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,7 @@ namespace BluePrints
         //public Action ShowLoginWindow { get; set; }
         protected override void OnClosed(EventArgs e)
         {
+            SignalR.Disconnect();
             base.OnClosed(e);
             System.Environment.Exit(1);
             //if (ShowLoginWindow != null)

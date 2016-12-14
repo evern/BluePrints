@@ -28,6 +28,7 @@ using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
+using BluePrints.Common.Helpers;
 
 namespace BluePrints.Common.ViewModel
 {
@@ -370,7 +371,7 @@ namespace BluePrints.Common.ViewModel
                 requiredPropertyStrings = DataUtils.GetRequiredPropertyStringsForProjection(typeof(TProjection));
 
             string requiredPropertyNames = string.Empty;
-            if (requiredPropertyStrings.Count() == 0)
+            if (requiredPropertyStrings == null || requiredPropertyStrings.Count() == 0)
                 return true;
             else
             {
@@ -441,15 +442,6 @@ namespace BluePrints.Common.ViewModel
                 textEditor.SelectionLength = 0;
             }), DispatcherPriority.Loaded);
         }
-
-        void delayedShownEditorDispatcher_Tick(object sender, EventArgs e)
-        {
-            delayedShownEditorDispatcher.Stop();
-            if (textEditor == null)
-                return;
-
-        }
-
 
         public void ShowPopUp(object sender)
         {
@@ -1405,6 +1397,7 @@ namespace BluePrints.Common.ViewModel
 
         protected virtual void OnEntityDeleted(TPrimaryKey primaryKey, TEntity entity)
         {
+            SignalR.HubSendMessage((typeof(TEntity)).ToString(), primaryKey.ToString(), EntityMessageType.Deleted.ToString(), this.ToString());
             Messenger.Default.Send(new EntityMessage<TEntity, TPrimaryKey>(primaryKey, EntityMessageType.Deleted, this));
         }
 
@@ -1437,6 +1430,7 @@ namespace BluePrints.Common.ViewModel
             if (OnEntitySavedCallBack != null)
                 OnEntitySavedCallBack(primaryKey, projectionEntity, entity, isNewEntity);
 
+            SignalR.HubSendMessage((typeof(TEntity)).ToString(), primaryKey.ToString(), isNewEntity ? EntityMessageType.Added.ToString() : EntityMessageType.Changed.ToString(), this.ToString());
             Messenger.Default.Send(new EntityMessage<TEntity, TPrimaryKey>(primaryKey, isNewEntity ? EntityMessageType.Added : EntityMessageType.Changed, this));
         }
 

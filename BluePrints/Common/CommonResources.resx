@@ -222,4 +222,10 @@
   <data name="CommodityCode_NewCommodity" xml:space="preserve">
     <value>New Commodity</value>
   </data>
+  <data name="SignalR_UnableToConnect" xml:space="preserve">
+    <value>Unable to connect to server: Start server before connecting clients.</value>
+  </data>
+  <data name="SignalR_CloseApplication" xml:space="preserve">
+    <value>Unable to connect to server: Application closed.</value>
+  </data>
 </root>

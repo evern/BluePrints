@@ -187,7 +187,7 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
-            if (sender == MainViewModel)
+            if (sender.ToString() == MainViewModel.ToString())
                 return;
 
             if (loadESTIMATION != null && changedType == typeof(ESTIMATION) && loadESTIMATION.GUID.ToString() == key.ToString() ||

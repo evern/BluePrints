@@ -11,6 +11,7 @@
     x:Class="BluePrints.Views.LoginWindow"
     Height="320" Width="550" WindowStartupLocation="CenterScreen" WindowStyle="None">
     <dxmvvm:Interaction.Behaviors>
+        <dx:DXMessageBoxService />
         <dxmvvm:EventToCommand EventName="KeyUp" Command="{Binding Window_KeyUpCommand}" PassEventArgsToCommand="True"/>
     </dxmvvm:Interaction.Behaviors>
     <dxlc:LayoutControl Orientation="Vertical" MinHeight="320" MaxHeight="320" MaxWidth="550" MinWidth="550">

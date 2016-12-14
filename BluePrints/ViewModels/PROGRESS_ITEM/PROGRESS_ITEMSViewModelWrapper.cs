@@ -241,7 +241,7 @@ namespace BluePrints.ViewModels
         protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
             //Map the changes from PROGRESS_ITEM to BASELINE_ITEM so undo/redo operation is valid
-            if (changedType == typeof(PROGRESS_ITEM))
+            if (sender.ToString() == PROGRESS_ITEMSCollectionViewModel.ToString() && changedType == typeof(PROGRESS_ITEM))
             {
                 PROGRESS_ITEMProjection mappedEntity = MainViewModel.Entities.FirstOrDefault(x => x.PROGRESS_ITEMCurrent != null && x.PROGRESS_ITEMCurrent.GUID.ToString() == key.ToString());
                 if(mappedEntity != null)

@@ -331,6 +331,24 @@ namespace BluePrints.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to connect to server: Application closed..
+        /// </summary>
+        internal static string SignalR_CloseApplication {
+            get {
+                return ResourceManager.GetString("SignalR_CloseApplication", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to connect to server: Start server before connecting clients..
+        /// </summary>
+        internal static string SignalR_UnableToConnect {
+            get {
+                return ResourceManager.GetString("SignalR_UnableToConnect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Warning.
         /// </summary>
         internal static string Warning_Caption {

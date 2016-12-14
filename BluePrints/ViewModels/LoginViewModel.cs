@@ -8,6 +8,7 @@ using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Editors.Helpers;
 using DevExpress.XtraEditors.DXErrorProvider;
 using System;
+using System.Net.Http;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Microsoft.AspNet.SignalR.Client;
+using DevExpress.Mvvm;
 
 namespace BluePrints.ViewModels
 {
@@ -68,12 +71,15 @@ namespace BluePrints.ViewModels
                 else
                     LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME == UserName);
 
+                SignalR.ConnectAsync();
                 ShowMainWindow();
                 delayedHideDispatcher.Start();
             }
             else
                 SetUsernamePasswordError();
         }
+
+        protected IMessageBoxService MessageBoxService { get { return this.GetRequiredService<IMessageBoxService>(); } }
 
         public void Exit()
         {

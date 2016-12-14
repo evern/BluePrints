@@ -217,7 +217,7 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            if (sender == MainViewModel || sender == this)
+            if (sender.ToString() == MainViewModel.ToString() || sender.ToString() == this.ToString())
                 return;
 
             if (loadPROJECT != null && changedType == typeof(PROJECT) && loadPROJECT.GUID.ToString() == key.ToString())
