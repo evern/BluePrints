@@ -124,9 +124,14 @@
                             <dxg:GridColumn FieldName="COMMODITY_GROUP.RATE_FREIGHT" Header="FREIGHT RATE" VisibleIndex="30" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.COMMODITY_GROUP.ISQUANTIFIABLE, UpdateSourceTrigger=PropertyChanged}" />
+                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True"  IsEnabled="{Binding RowData.Row.COMMODITY_GROUP.ISQUANTIFIABLE, UpdateSourceTrigger=PropertyChanged}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="COMMODITY_GROUP.GUID_DISCIPLINE" Header="DISCIPLINE" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" IsEnabled="{Binding RowData.Row.COMMODITY_GROUP.ISQUANTIFIABLE, UpdateSourceTrigger=PropertyChanged}"/>
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.DetailDescriptor>
