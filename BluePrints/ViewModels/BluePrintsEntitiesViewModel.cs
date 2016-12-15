@@ -113,8 +113,8 @@ namespace BluePrints.ViewModels
 
         protected override BluePrintsEntitiesModuleDescription[] CreateModules()
         {
-            ImageSource TreeViewImage = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v16.1;component/Images/Actions/Open_16x16.png"));
-            ImageSource CategoryViewImage = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v16.1;component/Images/Data/ManageDataSource_16x16.png"));
+            ImageSource TreeViewImage = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v16.2;component/Images/Actions/Open_16x16.png"));
+            ImageSource CategoryViewImage = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v16.2;component/Images/Data/ManageDataSource_16x16.png"));
             TreeViewProperty PROJECTDASHBOARDCollectionModuleTreeProperty = new TreeViewProperty() { Id = "PROJECTDashboardView", ParentId = 0, Image = TreeViewImage };
             TreeViewProperty PROJECTCollectionModuleTreeProperty = new TreeViewProperty() { Id = "PROJECTCollectionView", ParentId = 0, Image = TreeViewImage, IsExpanded = true };
             TreeViewProperty DATACategoryTreeProperty = new TreeViewProperty() { Id = "DATACategoryView", ParentId = 0, Image = CategoryViewImage, IsExpanded = false };
@@ -178,7 +178,7 @@ namespace BluePrints.ViewModels
         private IEnumerable<BluePrintsEntitiesModuleDescription> createPROJECTTree(PROJECT entity, bool createTree = false)
         {
             List<BluePrintsEntitiesModuleDescription> newModules = new List<BluePrintsEntitiesModuleDescription>();
-            ImageSource TreeViewImage = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v16.1;component/Images/Actions/Open_16x16.png"));
+            ImageSource TreeViewImage = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v16.2;component/Images/Actions/Open_16x16.png"));
             TreeViewProperty PROJECTCollectionModuleTreeProperty = new TreeViewProperty() { Id = "PROJECTCollectionView", ParentId = 0, Image = TreeViewImage, IsExpanded = true }; 
             TreeViewProperty PROJECTModuleTreeProperty = new TreeViewProperty() { Id = "PROJECTView" + entity.GUID, ParentId = PROJECTCollectionModuleTreeProperty.Id, IsExpanded = false, Image = TreeViewImage };
 

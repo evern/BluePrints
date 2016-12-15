@@ -66,57 +66,6 @@
         <Setter Property="ValueScaleType" Value="Numerical" />
         <Setter Property="dxc:XYDiagram2D.SeriesAxisY" Value="{Binding ElementName=secondaryAxisY}" />
     </Style>
-    <Style x:Key="DefaultTableViewTemplate" TargetType="{x:Type dxg:TableView}">
-        <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
-            <Setter.Value>
-                <DataTemplate>
-                    <ItemsControl>
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ExistingRowAddUndoAndSaveCommand}" EventName="CellValueChanged" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding NewRowAddUndoAndSaveCommand}" EventName="RowUpdated" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}" EventName="ValidateCell" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}" EventName="ValidateRow" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard"/>
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ShownEditorCommand}" EventName="ShownEditor" />
-                        <!--<dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}"  />-->
-                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}"  />
-                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}"  />
-                    </ItemsControl>
-                </DataTemplate>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="ShowFixedTotalSummary" Value="True" />
-        <Setter Property="NewItemRowPosition" Value="Top" />
-        <Setter Property="AllowPerPixelScrolling" Value="True" />
-        <Setter Property="ShowGroupedColumns" Value="True" />
-        <Setter Property="ShowSearchPanelMode" Value="Always" />
-        <Setter Property="SearchDelay" Value="0" />
-        <Setter Property="AllowScrollAnimation" Value="True" />
-    </Style>
-    <Style x:Key="ChildTableViewTemplate" TargetType="{x:Type dxg:TableView}">
-        <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
-            <Setter.Value>
-                <DataTemplate>
-                    <ItemsControl>
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding DataContext.ExistingChildrenRowAddUndoAndSaveCommand, ElementName=userControl}" EventName="CellValueChanged" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding NewRowAddUndoAndSaveCommand}" EventName="RowUpdated" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}" EventName="ValidateCell" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}" EventName="ValidateRow" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard"/>
-                        <!--<dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}"  />-->
-                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}"  />
-                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}"  />
-                    </ItemsControl>
-                </DataTemplate>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="ShowFixedTotalSummary" Value="False" />
-        <Setter Property="NewItemRowPosition" Value="Top" />
-        <Setter Property="AllowPerPixelScrolling" Value="True" />
-        <Setter Property="ShowGroupedColumns" Value="False" />
-        <Setter Property="ShowSearchPanelMode" Value="Never" />
-        <Setter Property="SearchDelay" Value="0" />
-        <Setter Property="AllowScrollAnimation" Value="True" />
-    </Style>
     <Style x:Key="DefaultGridTemplate" TargetType="{x:Type dxg:GridControl}">
         <Setter Property="ShowLoadingPanel" Value="{Binding IsLoading}" />
         <Setter Property="ItemsSource" Value="{Binding Entities}" />
@@ -166,6 +115,65 @@
         <Setter Property="SelectedItems" Value="{Binding SelectedEntities, Mode=TwoWay}" />
         <Setter Property="ShowBorder" Value="False" />
         <Setter Property="ShowLoadingPanel" Value="{Binding DataContext.IsLoading, ElementName=userControl}" />
+    </Style>
+    <Style x:Key="DefaultTableViewTemplate" TargetType="{x:Type dxg:TableView}">
+        <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <ItemsControl>
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ExistingRowAddUndoAndSaveCommand}" EventName="CellValueChanged" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding NewRowAddUndoAndSaveCommand}" EventName="RowUpdated" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}" EventName="ValidateCell" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}" EventName="ValidateRow" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard"/>
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ShownEditorCommand}" EventName="ShownEditor" />
+                        <!--<dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}"  />-->
+                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}"  />
+                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}"  />
+                    </ItemsControl>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ShowFixedTotalSummary" Value="True" />
+        <Setter Property="NewItemRowPosition" Value="Top" />
+        <Setter Property="AllowPerPixelScrolling" Value="True" />
+        <Setter Property="ShowGroupedColumns" Value="True" />
+        <Setter Property="ShowSearchPanelMode" Value="Always" />
+        <Setter Property="SearchDelay" Value="0" />
+        <Setter Property="AllowScrollAnimation" Value="True" />
+        <Setter Property="ShowAutoFilterRow" Value="True" />
+        <Setter Property="ShowCriteriaInAutoFilterRow" Value="True" />
+        <Setter Property="AllowRowFixing" Value="Both" />
+        <Setter Property="ShowFixRowButton" Value="RowHover" />
+    </Style>
+    <Style x:Key="ChildTableViewTemplate" TargetType="{x:Type dxg:TableView}">
+        <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <ItemsControl>
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding DataContext.ExistingChildrenRowAddUndoAndSaveCommand, ElementName=userControl}" EventName="CellValueChanged" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding NewRowAddUndoAndSaveCommand}" EventName="RowUpdated" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}" EventName="ValidateCell" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}" EventName="ValidateRow" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard"/>
+                        <!--<dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}"  />-->
+                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}"  />
+                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}"  />
+                    </ItemsControl>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ShowFixedTotalSummary" Value="False" />
+        <Setter Property="NewItemRowPosition" Value="Top" />
+        <Setter Property="AllowPerPixelScrolling" Value="True" />
+        <Setter Property="ShowGroupedColumns" Value="False" />
+        <Setter Property="ShowSearchPanelMode" Value="Never" />
+        <Setter Property="SearchDelay" Value="0" />
+        <Setter Property="AllowScrollAnimation" Value="True" />
+        <Setter Property="ShowAutoFilterRow" Value="True" />
+        <Setter Property="ShowCriteriaInAutoFilterRow" Value="True" />
+        <Setter Property="AllowRowFixing" Value="Both" />
+        <Setter Property="ShowFixRowButton" Value="RowHover" />
     </Style>
     <collections:ArrayList x:Key="PROJECTcolumns">
         <dxg:GridColumn Header="Number" FieldName="NUMBER" />
