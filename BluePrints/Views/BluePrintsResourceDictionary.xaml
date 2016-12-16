@@ -170,8 +170,6 @@
         <Setter Property="ShowSearchPanelMode" Value="Never" />
         <Setter Property="SearchDelay" Value="0" />
         <Setter Property="AllowScrollAnimation" Value="True" />
-        <Setter Property="ShowAutoFilterRow" Value="True" />
-        <Setter Property="ShowCriteriaInAutoFilterRow" Value="True" />
         <Setter Property="AllowRowFixing" Value="Both" />
         <Setter Property="ShowFixRowButton" Value="RowHover" />
     </Style>

@@ -24,7 +24,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>49</ApplicationRevision>
+    <ApplicationRevision>50</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -340,6 +340,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>PermissionResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Common\Projections\COMMODITY_GROUP_INDIRECTProjection.cs" />
     <Compile Include="Common\Projections\COMMODITY_GROUP_DIRECTProjection.cs" />
     <Compile Include="Common\Projections\ESTIMATION_ITEMProjection.cs" />
     <Compile Include="Common\Projections\BASELINE_ITEMProjection.cs" />
@@ -376,6 +377,7 @@
     <Compile Include="Common\ViewModel\Settings\XMLSettings.cs" />
     <Compile Include="EntityFramework\Annotations\BluePrintsEntities.cs" />
     <Compile Include="EntityFramework\Annotations\COMMODITY_GROUP_DIRECT.cs" />
+    <Compile Include="EntityFramework\Annotations\COMMODITY_GROUP_INDIRECT.cs" />
     <Compile Include="EntityFramework\Annotations\INDIRECT_TYPE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\AREA.cs" />
     <Compile Include="EntityFramework\BluePrintsData\BASELINE.cs" />
@@ -1052,6 +1054,7 @@
     <Compile Include="ViewModels\BulkEdit\BulkEditEnumsViewModel.cs" />
     <Compile Include="ViewModels\BulkEdit\BulkEditNumbersViewModel.cs" />
     <Compile Include="ViewModels\BulkEdit\BulkEditStringsViewModel.cs" />
+    <Compile Include="ViewModels\COMMODITY_GROUP\COMMODITY_GROUP_INDIRECTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\COMMODITY_GROUP\COMMODITY_GROUP_DIRECTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATION\ESTIMATIONCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATION_ITEM\ESTIMATION_ITEMSViewModelWrapper.cs" />
@@ -1093,6 +1096,9 @@
     </Compile>
     <Compile Include="Common\View\BulkEditStrings.xaml.cs">
       <DependentUpon>BulkEditStrings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\COMMODITY_GROUP\COMMODITY_GROUP_INDIRECTCollectionView.xaml.cs">
+      <DependentUpon>COMMODITY_GROUP_INDIRECTCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\COMMODITY_GROUP\COMMODITY_GROUP_DIRECTCollectionView.xaml.cs">
       <DependentUpon>COMMODITY_GROUP_DIRECTCollectionView.xaml</DependentUpon>
@@ -1252,6 +1258,10 @@
     <Page Include="Common\View\BulkEditStrings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\COMMODITY_GROUP\COMMODITY_GROUP_INDIRECTCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\COMMODITY_GROUP\COMMODITY_GROUP_DIRECTCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -15,20 +15,20 @@ namespace BluePrints.Common.Projections
 {
     [ConstraintAttributes("COMMODITY_GROUP.GUID_PARENT, COMMODITY_GROUP.GUID_COMMODITYCODE")]
     [RequiredAttributes("COMMODITY_GROUP.DESCRIPTION")]
-    public class COMMODITY_GROUP_DIRECTProjection
+    public class COMMODITY_GROUP_INDIRECTProjection
     {
-        public COMMODITY_GROUP_DIRECTProjection()
+        public COMMODITY_GROUP_INDIRECTProjection()
         {
-            COMMODITY_GROUP = ViewModelSource.Create(() => new COMMODITY_GROUP_DIRECT());
-            CHILD_COMMODITY_GROUP = new ObservableCollection<COMMODITY_GROUP_DIRECTProjection>();
+            COMMODITY_GROUP = ViewModelSource.Create(() => new COMMODITY_GROUP_INDIRECT());
+            CHILD_COMMODITY_GROUP = new ObservableCollection<COMMODITY_GROUP_INDIRECTProjection>();
         }
 
         [Key]
         public Guid GUID { get; set; }
 
-        public COMMODITY_GROUP_DIRECT COMMODITY_GROUP { get; set; }
+        public COMMODITY_GROUP_INDIRECT COMMODITY_GROUP { get; set; }
 
-        public ObservableCollection<COMMODITY_GROUP_DIRECTProjection> CHILD_COMMODITY_GROUP { get; set; }
+        public ObservableCollection<COMMODITY_GROUP_INDIRECTProjection> CHILD_COMMODITY_GROUP { get; set; }
 
         public RATE RATE { get; set; }
 
@@ -43,17 +43,17 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public decimal INSTALL_COSTS
+        public decimal OPERATOR_COSTS
         {
             get
             {
-                if (COMMODITY_GROUP == null || COMMODITY_GROUP.HOURS_INSTALL == null)
+                if (COMMODITY_GROUP == null || COMMODITY_GROUP.OPERATOR_RATE == null)
                     return 0;
 
                 if (RATE == null || RATE.RATE1 == null)
                     return 0;
 
-                return (decimal)COMMODITY_GROUP.HOURS_INSTALL * (decimal)RATE.RATE1;
+                return (decimal)COMMODITY_GROUP.OPERATOR_RATE;
             }
         }
 
@@ -63,12 +63,12 @@ namespace BluePrints.Common.Projections
         }
     }
 
-    public static class COMMODITY_GROUP_DIRECTProjectionQueries
+    public static class COMMODITY_GROUP_INDIRECTProjectionQueries
     {
-        public static IQueryable<COMMODITY_GROUP_DIRECTProjection> ConvertToProjectionCOMMODITY_GROUP_DIRECT(IQueryable<COMMODITY_GROUP_DIRECT> COMMODITY_GROUP_DIRECTS)
+        public static IQueryable<COMMODITY_GROUP_INDIRECTProjection> ConvertToProjectionCOMMODITY_GROUP_INDIRECT(IQueryable<COMMODITY_GROUP_INDIRECT> COMMODITY_GROUP_INDIRECTS)
         {
-            IEnumerable<COMMODITY_GROUP_DIRECT> allCOMMODITY_GROUP_DIRECTS = COMMODITY_GROUP_DIRECTS.ToArray().OrderBy(x => x.DESCRIPTION).AsEnumerable();
-            return allCOMMODITY_GROUP_DIRECTS.Select(x => new COMMODITY_GROUP_DIRECTProjection() { GUID = x.GUID, COMMODITY_GROUP = x }).AsQueryable();
+            IEnumerable<COMMODITY_GROUP_INDIRECT> allCOMMODITY_GROUP_INDIRECTS = COMMODITY_GROUP_INDIRECTS.ToArray().OrderBy(x => x.DESCRIPTION).AsEnumerable();
+            return allCOMMODITY_GROUP_INDIRECTS.Select(x => new COMMODITY_GROUP_INDIRECTProjection() { GUID = x.GUID, COMMODITY_GROUP = x }).AsQueryable();
         }
     }
 }

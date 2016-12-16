@@ -26,15 +26,15 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the COMMODITIES collection view model.
     /// </summary>
-    public partial class COMMODITY_GROUP_DIRECTCollectionViewModelWrapper : CollectionViewModelsWrapper<COMMODITY_GROUP_DIRECT, COMMODITY_GROUP_DIRECTProjection, Guid, IBluePrintsEntitiesUnitOfWork, CollectionViewModel<COMMODITY_GROUP_DIRECT, COMMODITY_GROUP_DIRECTProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
+    public partial class COMMODITY_GROUP_INDIRECTCollectionViewModelWrapper : CollectionViewModelsWrapper<COMMODITY_GROUP_DIRECT, COMMODITY_GROUP_DIRECTProjection, Guid, IBluePrintsEntitiesUnitOfWork, CollectionViewModel<COMMODITY_GROUP_DIRECT, COMMODITY_GROUP_DIRECTProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
         /// <summary>
         /// Creates a new instance of COMMODITY_GROUP_DIRECTCollectionViewModel as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static COMMODITY_GROUP_DIRECTCollectionViewModelWrapper Create(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        public static COMMODITY_GROUP_INDIRECTCollectionViewModelWrapper Create(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new COMMODITY_GROUP_DIRECTCollectionViewModelWrapper(unitOfWorkFactory));
+            return ViewModelSource.Create(() => new COMMODITY_GROUP_INDIRECTCollectionViewModelWrapper(unitOfWorkFactory));
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the COMMODITY_GROUP_DIRECTCollectionViewModel type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected COMMODITY_GROUP_DIRECTCollectionViewModelWrapper(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        protected COMMODITY_GROUP_INDIRECTCollectionViewModelWrapper(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
 
@@ -179,7 +179,7 @@ namespace BluePrints.ViewModels
                 if (MainViewModel == null)
                     return;
 
-                if (!IsChangedFromBackEnd && !MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation() && (sender.ToString() == MainViewModel.ToString() || sender.ToString() == this.ToString()))
+                if (!IsChangedFromBackEnd && !MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation() && (sender == MainViewModel || sender == this))
                     return;
 
                 if (messageType == EntityMessageType.Added)
@@ -575,26 +575,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
-        /// <summary>
-        /// Influence column(s) when changes happens in other column
-        /// </summary>
-        public void CellValueChanging(CellValueChangedEventArgs e)
-        {
-            if (e.RowHandle != GridControl.NewItemRowHandle)
-                return;
-
-            COMMODITY_GROUP_DIRECTProjection activeCOMMODITY_GROUP_DIRECT = (COMMODITY_GROUP_DIRECTProjection)e.Row;
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new COMMODITY_GROUP_DIRECTProjection().COMMODITY_GROUP) + "." + BindableBase.GetPropertyName(() => new COMMODITY_GROUP_DIRECT().GUID_COMMODITYCODE))
-            {
-                COMMODITY_CODE chosenCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(entity => entity.GUID == (Guid)e.Value);
-                if (chosenCOMMODITY_CODE != null)
-                {
-                    activeCOMMODITY_GROUP_DIRECT.COMMODITY_GROUP.GUID_DISCIPLINE = chosenCOMMODITY_CODE.GUID_DISCIPLINE;
-                    this.RaisePropertyChanged(x => x.DisplayEntities);
-                }
-            }
-        }
-
         public void dragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.GridDropEventArgs e)
         {
             foreach (var obj in e.DraggedRows)
