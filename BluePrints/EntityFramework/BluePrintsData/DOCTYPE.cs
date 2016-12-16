@@ -16,7 +16,6 @@ namespace BluePrints.Data
         }
 
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid GUID { get; set; }
 
         public Guid GUID_DDEPARTMENT { get; set; }

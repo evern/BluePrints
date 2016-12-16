@@ -30,6 +30,8 @@ namespace BluePrints
         protected override void OnClosed(EventArgs e)
         {
             SignalR.Disconnect();
+            LayoutSettings.Default.ThemeName = ApplicationThemeHelper.ApplicationThemeName;
+            LayoutSettings.Default.Save();
             base.OnClosed(e);
             System.Environment.Exit(1);
             //if (ShowLoginWindow != null)

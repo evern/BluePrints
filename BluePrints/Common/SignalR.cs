@@ -17,7 +17,7 @@ namespace BluePrints.Common
     {
 
         public static IHubProxy HubProxy { get; set; }
-        public const string ServerURI = "http://localhost:6060/signalr";
+        public const string ServerURI = "http://192.168.70.5:5050/signalr";
         public static HubConnection Connection { get; set; }
 
         public static async void ConnectAsync()

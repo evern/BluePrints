@@ -10,15 +10,7 @@ namespace BluePrints.Data
     [Table("PROGRESS")]
     public partial class PROGRESS
     {
-        public PROGRESS()
-        {
-            PROGRESS_ITEM = new HashSet<PROGRESS_ITEM>();
-            PROGRESS_START = DateTime.Now;
-            DATA_DATE = DateTime.Now;
-        }
-
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid GUID { get; set; }
 
         public Guid GUID_PROJECT { get; set; }

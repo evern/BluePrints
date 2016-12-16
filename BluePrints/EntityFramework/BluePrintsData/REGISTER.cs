@@ -10,7 +10,6 @@ namespace BluePrints.Data
     public partial class REGISTER
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid GUID { get; set; }
 
         public Guid GUID_PROJECT { get; set; }

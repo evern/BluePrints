@@ -9,6 +9,11 @@ namespace BluePrints.Data
 
     public partial class PROGRESS
     {
-
+        public PROGRESS()
+        {
+            PROGRESS_ITEM = new HashSet<PROGRESS_ITEM>();
+            PROGRESS_START = DateTime.Now;
+            DATA_DATE = DateTime.Now;
+        }
     }
 }

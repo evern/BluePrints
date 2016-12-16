@@ -9,7 +9,6 @@ namespace BluePrints.Data
     public partial class ROLE_PERMISSION
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid GUID { get; set; }
 
         public Guid GUID_ROLE { get; set; }

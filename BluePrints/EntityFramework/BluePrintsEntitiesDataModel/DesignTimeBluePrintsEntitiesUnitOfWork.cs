@@ -49,6 +49,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((COMMODITY_GROUP_DIRECT x) => x.GUID); }
         }
 
+        IRepository<COMMODITY_GROUP_INDIRECT, Guid> IBluePrintsEntitiesUnitOfWork.COMMODITY_GROUP_INDIRECT
+        {
+            get { return GetRepository((COMMODITY_GROUP_INDIRECT x) => x.GUID); }
+        }
+
         IRepository<DEPARTMENT, Guid> IBluePrintsEntitiesUnitOfWork.DEPARTMENTS
         {
             get { return GetRepository((DEPARTMENT x) => x.GUID); }

@@ -43,6 +43,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<COMMODITY_GROUP_DIRECT, Guid> COMMODITY_GROUP_DIRECT { get; }
 
         /// <summary>
+        /// The COMMODITY_GROUP_INDIRECT entities repository.
+        /// </summary>
+        IRepository<COMMODITY_GROUP_INDIRECT, Guid> COMMODITY_GROUP_INDIRECT { get; }
+
+        /// <summary>
         /// The DEPARTMENT entities repository.
         /// </summary>
         IRepository<DEPARTMENT, Guid> DEPARTMENTS { get; }

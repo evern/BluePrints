@@ -22,11 +22,9 @@ namespace BluePrints.Data
             RATE = new HashSet<RATE>();
             VARIATION = new HashSet<VARIATION>();
             WORKPACK = new HashSet<WORKPACK>();
-            COMMODITY_GROUP_DIRECT = new HashSet<COMMODITY_GROUP_DIRECT>();
         }
 
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid GUID { get; set; }
 
         [Required]
@@ -86,7 +84,5 @@ namespace BluePrints.Data
         public virtual ICollection<VARIATION> VARIATION { get; set; }
 
         public virtual ICollection<WORKPACK> WORKPACK { get; set; }
-
-        public virtual ICollection<COMMODITY_GROUP_DIRECT> COMMODITY_GROUP_DIRECT { get; set; }
     }
 }

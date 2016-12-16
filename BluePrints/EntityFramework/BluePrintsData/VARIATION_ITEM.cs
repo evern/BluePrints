@@ -10,7 +10,6 @@ namespace BluePrints.Data
     public partial class VARIATION_ITEM
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid GUID { get; set; }
 
         public Guid GUID_VARIATION { get; set; }

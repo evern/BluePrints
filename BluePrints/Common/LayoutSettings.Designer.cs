@@ -8,52 +8,54 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BluePrints.Common
-{
-
-
+namespace BluePrints.Common {
+    
+    
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
-    internal sealed partial class LayoutSettings : global::System.Configuration.ApplicationSettingsBase
-    {
-
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "12.0.0.0")]
+    internal sealed partial class LayoutSettings : global::System.Configuration.ApplicationSettingsBase {
+        
         private static LayoutSettings defaultInstance = ((LayoutSettings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new LayoutSettings())));
-
-        public static LayoutSettings Default
-        {
-            get
-            {
+        
+        public static LayoutSettings Default {
+            get {
                 return defaultInstance;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string LogicalLayout
-        {
-            get
-            {
+        public string LogicalLayout {
+            get {
                 return ((string)(this["LogicalLayout"]));
             }
-            set
-            {
+            set {
                 this["LogicalLayout"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ViewsLayout
-        {
-            get
-            {
+        public string ViewsLayout {
+            get {
                 return ((string)(this["ViewsLayout"]));
             }
-            set
-            {
+            set {
                 this["ViewsLayout"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ThemeName {
+            get {
+                return ((string)(this["ThemeName"]));
+            }
+            set {
+                this["ThemeName"] = value;
             }
         }
     }

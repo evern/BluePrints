@@ -9,7 +9,6 @@ namespace BluePrints.Data
     public partial class ESTIMATION_ITEM
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid GUID { get; set; }
 
         public Guid GUID_ORIGINAL { get; set; }
@@ -59,8 +58,8 @@ namespace BluePrints.Data
 
         public virtual ESTIMATION ESTIMATION { get; set; }
 
-        public virtual WORKPACK SUPPLYWORKPACK { get; set; }
+        public virtual WORKPACK WORKPACK { get; set; }
 
-        public virtual WORKPACK INSTALLWORKPACK { get; set; }
+        public virtual WORKPACK WORKPACK1 { get; set; }
     }
 }

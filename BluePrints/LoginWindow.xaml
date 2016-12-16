@@ -9,12 +9,12 @@
     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" 
     xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
     x:Class="BluePrints.Views.LoginWindow"
-    Height="320" Width="550" WindowStartupLocation="CenterScreen" WindowStyle="None">
+    Height="320" Width="600" WindowStartupLocation="CenterScreen" WindowStyle="None">
     <dxmvvm:Interaction.Behaviors>
         <dx:DXMessageBoxService />
         <dxmvvm:EventToCommand EventName="KeyUp" Command="{Binding Window_KeyUpCommand}" PassEventArgsToCommand="True"/>
     </dxmvvm:Interaction.Behaviors>
-    <dxlc:LayoutControl Orientation="Vertical" MinHeight="320" MaxHeight="320" MaxWidth="550" MinWidth="550">
+    <dxlc:LayoutControl Orientation="Vertical" MinHeight="320" MaxHeight="320" MaxWidth="600" MinWidth="550">
         <dxlc:LayoutGroup x:Name="LayoutGroupWorkpackSelection" View="Group" Orientation="Vertical" >
             <dxlc:LayoutItem x:Name="layoutItemLogo">
                 <dxe:ImageEdit Source="/BluePrints;component/Common/Images/PRIMERO.jpg" IsReadOnly="True" />

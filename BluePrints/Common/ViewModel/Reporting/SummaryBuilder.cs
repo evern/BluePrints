@@ -427,7 +427,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             foreach (VARIATION VARIATION in this.SummaryObject.VARIATIONS)
             {
                 DateTime? approvedDate = VARIATION.APPROVED;
-                if (VARIATION.GUID_PROJECT == SummaryObject.LivePROGRESS.GUID_PROJECT && approvedDate != null && VARIATION.TOBASELINE != null && VARIATION.FROMBASELINE != null)
+                if (VARIATION.GUID_PROJECT == SummaryObject.LivePROGRESS.GUID_PROJECT && approvedDate != null && VARIATION.BASELINE1 != null && VARIATION.BASELINE != null)
                 {
                     IEnumerable<BASELINE_ITEMProjection> contextBASELINE_ITEMS = this.SummaryObject.ReportableObjects.Select(x => x.BASELINE_ITEMJoinRATE);
 

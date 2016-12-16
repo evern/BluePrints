@@ -10,7 +10,6 @@ namespace BluePrints.Data
     public partial class UOM
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid GUID { get; set; }
 
         [Column("UOM")]

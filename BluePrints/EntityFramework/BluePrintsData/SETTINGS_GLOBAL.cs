@@ -9,7 +9,6 @@ namespace BluePrints.Data
     public partial class SETTINGS_GLOBAL
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid GUID { get; set; }
 
         public decimal REVIEW_PERCENTAGE { get; set; }

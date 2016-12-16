@@ -1,4 +1,4 @@
-﻿namespace BluePrints.Data
+namespace BluePrints.Data
 {
     using System;
     using System.Collections.Generic;
@@ -6,7 +6,6 @@
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("INDIRECT_TYPE")]
     public partial class INDIRECT_TYPE
     {
         public INDIRECT_TYPE()
@@ -15,7 +14,6 @@
         }
 
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid GUID { get; set; }
 
         [Required]
@@ -37,7 +35,6 @@
         public DateTime? DELETED { get; set; }
 
         public Guid? DELETEDBY { get; set; }
-
 
         public virtual ICollection<COMMODITY_CODE> COMMODITY_CODE { get; set; }
     }

@@ -9,7 +9,6 @@ namespace BluePrints.Data
     public partial class WORKPACK_ASSIGNMENT
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid GUID { get; set; }
 
         public bool ISMODIFIEDBASELINE { get; set; }

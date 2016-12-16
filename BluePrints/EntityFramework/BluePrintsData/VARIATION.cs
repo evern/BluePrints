@@ -1,11 +1,11 @@
 namespace BluePrints.Data
 {
     using BluePrints.Common;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.Spatial;
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
 
     [Table("VARIATION")]
     public partial class VARIATION
@@ -17,7 +17,6 @@ using System.Data.Entity.Spatial;
         }
 
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid GUID { get; set; }
 
         public Guid GUID_PROJECT { get; set; }
@@ -33,7 +32,6 @@ using System.Data.Entity.Spatial;
         [StringLength(500)]
         public string COMMENTS { get; set; }
 
-        [Required]
         public VariationType TYPE { get; set; }
 
         public DateTime? SUBMITTED { get; set; }
@@ -56,9 +54,9 @@ using System.Data.Entity.Spatial;
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual BASELINE FROMBASELINE { get; set; }
+        public virtual BASELINE BASELINE { get; set; }
 
-        public virtual BASELINE TOBASELINE { get; set; }
+        public virtual BASELINE BASELINE1 { get; set; }
 
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
 

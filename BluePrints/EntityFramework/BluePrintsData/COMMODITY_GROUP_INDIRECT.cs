@@ -6,25 +6,30 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("ROLE")]
-    public partial class ROLE
+    public partial class COMMODITY_GROUP_INDIRECT
     {
-        public ROLE()
-        {
-            ROLE_PERMISSION = new HashSet<ROLE_PERMISSION>();
-            USER = new HashSet<USER>();
-        }
-
         [Key]
         public Guid GUID { get; set; }
 
-        public Guid PARENTGUID { get; set; }
+        public Guid? GUID_PROJECT { get; set; }
+
+        public Guid? GUID_COMMODITYCODE { get; set; }
+
+        public Guid? GUID_PARENT { get; set; }
 
         [Required]
-        [StringLength(100)]
-        public string NAME { get; set; }
+        [StringLength(500)]
+        public string DESCRIPTION { get; set; }
 
-        public int SORTORDER { get; set; }
+        public DateTime? START { get; set; }
+
+        public DateTime? FINISH { get; set; }
+
+        public int? UNITS { get; set; }
+
+        public decimal? OPERATOR_RATE { get; set; }
+
+        public decimal? PLANT_RATE { get; set; }
 
         public DateTime CREATED { get; set; }
 
@@ -38,8 +43,6 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual ICollection<ROLE_PERMISSION> ROLE_PERMISSION { get; set; }
-
-        public virtual ICollection<USER> USER { get; set; }
+        public virtual COMMODITY_CODE COMMODITY_CODE { get; set; }
     }
 }

@@ -1,32 +1,31 @@
 namespace BluePrints.Data
 {
     using BluePrints.Common;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.Spatial;
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
 
     public partial class COMMODITY_CODE
     {
         public COMMODITY_CODE()
         {
             COMMODITY_GROUP_DIRECT = new HashSet<COMMODITY_GROUP_DIRECT>();
+            COMMODITY_GROUP_INDIRECT = new HashSet<COMMODITY_GROUP_INDIRECT>();
         }
 
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid GUID { get; set; }
 
         public Guid GUID_PARENT { get; set; }
 
-        public Guid? GUID_DISCIPLINE { get; set; }
-
         public Guid? GUID_DEPARTMENT { get; set; }
+
+        public Guid? GUID_DISCIPLINE { get; set; }
 
         public Guid? GUID_INDIRECTTYPE { get; set; }
 
-        [Required]
         public CommodityCodeType COMMODITYCODETYPE { get; set; }
 
         [Required]
@@ -69,12 +68,14 @@ using System.Data.Entity.Spatial;
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual DISCIPLINE DISCIPLINE { get; set; }
-
         public virtual DEPARTMENT DEPARTMENT { get; set; }
+
+        public virtual DISCIPLINE DISCIPLINE { get; set; }
 
         public virtual INDIRECT_TYPE INDIRECT_TYPE { get; set; }
 
         public virtual ICollection<COMMODITY_GROUP_DIRECT> COMMODITY_GROUP_DIRECT { get; set; }
+
+        public virtual ICollection<COMMODITY_GROUP_INDIRECT> COMMODITY_GROUP_INDIRECT { get; set; }
     }
 }

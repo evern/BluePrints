@@ -19,6 +19,7 @@ using BluePrints.Common.Projections;
 using BluePrints.Common;
 using System.Threading.Tasks;
 using System.Threading;
+using DevExpress.Xpf.Core;
 
 namespace BluePrints.ViewModels
 {
@@ -59,6 +60,14 @@ namespace BluePrints.ViewModels
         public override void OnLoaded(BluePrintsEntitiesModuleDescription module)
         {
             IsLoaded = true;
+            string themeName;
+            if (LayoutSettings.Default.ThemeName == string.Empty)
+                themeName = "Office2016Colorful";
+            else
+                themeName = LayoutSettings.Default.ThemeName;
+
+            ApplicationThemeHelper.ApplicationThemeName = themeName;
+
             if (LoginCredentials.hasPermission(PermissionResources.ViewDashboard))
             {
                 var dashboard = Modules.FirstOrDefault(x => x.DocumentType == "PROJECTDashboardView");

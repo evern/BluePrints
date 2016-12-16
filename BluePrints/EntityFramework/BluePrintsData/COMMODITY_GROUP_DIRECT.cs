@@ -9,12 +9,11 @@ namespace BluePrints.Data
     public partial class COMMODITY_GROUP_DIRECT
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid GUID { get; set; }
 
-        public Guid? GUID_COMMODITYCODE { get; set; }
-
         public Guid? GUID_PROJECT { get; set; }
+
+        public Guid? GUID_COMMODITYCODE { get; set; }
 
         public Guid? GUID_PARENT { get; set; }
 
@@ -49,6 +48,6 @@ namespace BluePrints.Data
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 
-        public virtual PROJECT PROJECT { get; set; }
+        public virtual PROGRESS_ITEM PROGRESS_ITEM { get; set; }
     }
 }
