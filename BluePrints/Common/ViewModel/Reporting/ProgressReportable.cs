@@ -409,7 +409,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (summary_cumulativeoriginal == null && ReportingDataDate != null)
+                if (summary_cumulativeoriginal == null && (Summary_CumulativeOriginalDataPoints != null && Summary_CumulativeOriginalDataPoints.Count > 0) && ReportingDataDate != null)
                     summary_cumulativeoriginal = ISupportProgressReportingExtensions.FindDataPointByDate(Summary_CumulativeOriginalDataPoints, ReportingDataDate.Date);
                 return summary_cumulativeoriginal;
             }

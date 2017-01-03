@@ -179,7 +179,7 @@
                                             <dxg:GridColumn Header="Transaction Date" FieldName="ProgressDate" VisibleIndex="90" />
                                         </dxg:GridControl.Columns>
                                         <dxg:GridControl.View>
-                                            <dxg:TableView Name="detailTableView" AllowEditing="False" Style="{StaticResource DefaultTableViewTemplate}" NewItemRowPosition="None" />
+                                            <dxg:TableView Name="detailTableView" AllowEditing="False" Style="{StaticResource ChildTableReadOnlyViewTemplate}" NewItemRowPosition="None" />
                                         </dxg:GridControl.View>
                                     </dxg:GridControl>
                                 </dxg:DataControlDetailDescriptor>

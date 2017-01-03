@@ -1,4 +1,5 @@
 ﻿using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common.DataModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.P6EntitiesDataModel;
@@ -34,10 +35,11 @@ namespace BluePrints.Common.Projections
 
     public static class PROJECT_DashboardQueries
     {
-        public static IQueryable<PROJECT_Dashboard> SummarizePROJECTDashboard(IQueryable<PROJECT> PROJECTS, Func<IQueryable<PROGRESS>> getLivePROGRESSESFunc, Func<IQueryable<BASELINE>> getLiveBASELINESFunc, Func<IQueryable<RATE>> getRATESFunc, Func<IQueryable<VARIATION>> getApprovedVARIATIONFunc = null, Action raisePropertyChanged = null, bool ignoreLiveStatus = false)
+        public static IQueryable<PROJECT_Dashboard> SummarizePROJECTDashboard(IQueryable<PROJECT> PROJECTS, Func<IQueryable<PROGRESS>> getLivePROGRESSESFunc, Func<IQueryable<PROGRESS_ITEM>> getLivePROGRESS_ITEMFunc, Func<IQueryable<BASELINE>> getLiveBASELINESFunc, Func<IQueryable<RATE>> getRATESFunc, Func<IQueryable<VARIATION>> getApprovedVARIATIONFunc = null, Action raisePropertyChanged = null, bool ignoreLiveStatus = false)
         {
             IEnumerable<BASELINE> LiveBASELINES = getLiveBASELINESFunc().ToArray().AsEnumerable();
             IEnumerable<PROGRESS> LivePROGRESSES = getLivePROGRESSESFunc().ToArray().AsEnumerable();
+
             IEnumerable<VARIATION> ApprovedVARIATIONS;
             if (getApprovedVARIATIONFunc != null)
                 ApprovedVARIATIONS = getApprovedVARIATIONFunc().ToArray().AsEnumerable();
@@ -62,10 +64,11 @@ namespace BluePrints.Common.Projections
                     continue;
 
                 PROGRESS currentPROJECTLivePROGRESS = LivePROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == localPROJECT.GUID);
+
                 if (currentPROJECTLivePROGRESS == null)
                     continue;
 
-                IQueryable<PROGRESS_ITEM> LivePROGRESS_ITEMS = currentPROJECTLivePROGRESS.PROGRESS_ITEM.AsQueryable();
+                IQueryable<PROGRESS_ITEM> LivePROGRESS_ITEMS = getLivePROGRESS_ITEMFunc().Where(x => x.PROGRESS.GUID == currentPROJECTLivePROGRESS.GUID).AsQueryable();
                 IQueryable<BASELINE_ITEM> LiveBASELINE_ITEMS = currentPROJECTLiveBASELINE.BASELINE_ITEM.AsQueryable();
                 IQueryable<RATE> RATESByProject = AllRATES.Where(x => x.GUID_PROJECT == localPROJECT.GUID).AsQueryable();
                 IEnumerable<VARIATION> ApprovedVARIATIONSByProject = ApprovedVARIATIONS.Where(x => x.GUID_PROJECT == localPROJECT.GUID).AsEnumerable();
