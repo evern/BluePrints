@@ -68,5 +68,10 @@ namespace BluePrints.Data
 
             return base.SaveChanges();
         }
+
+        public void Reload(object entity)
+        {
+            this.Entry(entity).Reload();
+        }
     }
 }

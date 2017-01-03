@@ -241,11 +241,15 @@ namespace BluePrints.ViewModels
         protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
             //Map the changes from PROGRESS_ITEM to BASELINE_ITEM so undo/redo operation is valid
-            if (sender.ToString() == PROGRESS_ITEMSCollectionViewModel.ToString() && changedType == typeof(PROGRESS_ITEM))
+            if ((sender != null && PROGRESS_ITEMSCollectionViewModel != null) && sender.ToString() == PROGRESS_ITEMSCollectionViewModel.ToString() && changedType == typeof(PROGRESS_ITEM))
             {
                 PROGRESS_ITEMProjection mappedEntity = MainViewModel.Entities.FirstOrDefault(x => x.PROGRESS_ITEMCurrent != null && x.PROGRESS_ITEMCurrent.GUID.ToString() == key.ToString());
                 if(mappedEntity != null)
                     mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(mappedEntity.GUID, EntityMessageType.Changed, this))));
+
+                if (MainViewModel != null)
+                    mainThreadDispatcher.BeginInvoke(new Action(() => this.InitializePROJECTSummary(MainViewModel.Entities)));
+
                 return;
             }
 
@@ -408,7 +412,7 @@ namespace BluePrints.ViewModels
         {
             delayedPROGRESSSavingDispatcher.Stop();
             CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESSCollectionViewModel = (CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROGRESS>();
-            PROGRESSCollectionViewModel.Save(loadPROGRESS);
+            mainThreadDispatcher.BeginInvoke(new Action(() => PROGRESSCollectionViewModel.Save(loadPROGRESS)));
             this.RaisePropertyChanged(x => x.DataDate);
         }
 

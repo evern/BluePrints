@@ -124,10 +124,16 @@
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnSchedulePercentage" Header="SCHEDULE %" FieldName="Summary_CumulativeOriginal.UnitsPercentage" ReadOnly="True" IsEnabled="False">
-                                    <dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn Name="columnSchedulePercentage" Header="SCHEDULE %" ReadOnly="True" IsEnabled="False" >
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:TextEdit EditValue="{Binding RowData.Row.Summary_CumulativeOriginal.UnitsPercentage, Mode=OneTime}" MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" ShowBorder="False" IsReadOnly="True" HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                    
+                                    <!--<dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn.EditSettings>-->
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnTotalEarnedPercentage" FieldName="TOTAL_EARNED_PERCENTAGE" Header="CURRENT %" AllowEditing="True" >
                                     <dxg:GridColumn.CellTemplate>

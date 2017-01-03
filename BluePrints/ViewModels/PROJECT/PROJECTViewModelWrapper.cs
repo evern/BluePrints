@@ -54,13 +54,14 @@ namespace BluePrints.ViewModels
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddEntitiesLoader<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>(1, bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, null, null, OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>(2, bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, null, null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(3, bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, null, null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<VARIATION, VARIATION, Guid, IBluePrintsEntitiesUnitOfWork>(4, bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc, null, null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>(5, bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
-            loaderCollection.AddEntitiesLoader<PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork>(6, bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
-            loaderCollection.AddEntitiesLoader<ESTIMATION, ESTIMATION, Guid, IBluePrintsEntitiesUnitOfWork>(7, bluePrintsUnitOfWorkFactory, x => x.ESTIMATIONS, ESTIMATIONProjectionFunc);
-            loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(8, bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
-            loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(9, bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
+            loaderCollection.AddEntitiesLoader<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>(3, bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc, null, null, OnAfterEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(4, bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, null, null, OnAfterEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<VARIATION, VARIATION, Guid, IBluePrintsEntitiesUnitOfWork>(5, bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc, null, null, OnAfterEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>(6, bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
+            loaderCollection.AddEntitiesLoader<PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork>(7, bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
+            loaderCollection.AddEntitiesLoader<ESTIMATION, ESTIMATION, Guid, IBluePrintsEntitiesUnitOfWork>(8, bluePrintsUnitOfWorkFactory, x => x.ESTIMATIONS, ESTIMATIONProjectionFunc);
+            loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(9, bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
+            loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(10, bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             
             InvokeEntitiesLoaderDescriptionLoading();
         }
@@ -73,6 +74,11 @@ namespace BluePrints.ViewModels
         Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
+        {
+            return query => query.Where(x => x.PROGRESS.STATUS == ProgressStatus.Live && x.PROGRESS.PROJECT.STATUS == ProjectStatus.Active);
         }
 
         Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
@@ -110,10 +116,11 @@ namespace BluePrints.ViewModels
         {
             Func<IQueryable<BASELINE>> getBASELINESFunc = loaderCollection.GetCollectionFunc<BASELINE>();
             Func<IQueryable<PROGRESS>> getPROGRESSESFunc = loaderCollection.GetCollectionFunc<PROGRESS>();
+            Func<IQueryable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc = loaderCollection.GetCollectionFunc<PROGRESS_ITEM>();
             Func<IQueryable<RATE>> getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
             Func<IQueryable<VARIATION>> getVARIATIONSFunc = loaderCollection.GetCollectionFunc<VARIATION>();
 
-            return query => PROJECT_DashboardQueries.SummarizePROJECTDashboard(query, getPROGRESSESFunc, getBASELINESFunc, getRATESFunc, getVARIATIONSFunc, () => this.RaisePropertyChanged(), true);
+            return query => PROJECT_DashboardQueries.SummarizePROJECTDashboard(query, getPROGRESSESFunc, getPROGRESS_ITEMSFunc, getBASELINESFunc, getRATESFunc, getVARIATIONSFunc, () => this.RaisePropertyChanged(), true);
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)
