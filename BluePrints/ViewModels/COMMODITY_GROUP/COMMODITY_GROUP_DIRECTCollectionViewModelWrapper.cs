@@ -308,7 +308,7 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        private void ExistingChildrenRowAddUndoAndSave(CellValueChangedEventArgs e)
+        public void ExistingChildrenRowAddUndoAndSave(CellValueChangedEventArgs e)
         {
             COMMODITY_GROUP_DIRECTProjection editedCOMMODITY = (COMMODITY_GROUP_DIRECTProjection)e.Row;
             if (e.RowHandle == GridControl.NewItemRowHandle)

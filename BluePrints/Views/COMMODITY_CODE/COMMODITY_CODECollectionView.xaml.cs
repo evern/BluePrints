@@ -20,6 +20,7 @@ namespace BluePrints.Views
             ((COMMODITY_CODESViewModelWrapper)this.DataContext).ShowDISCIPLINE = this.ShowDISCIPLINE;
             ((COMMODITY_CODESViewModelWrapper)this.DataContext).ShowDEPARTMENT = this.ShowDEPARTMENT;
             ((COMMODITY_CODESViewModelWrapper)this.DataContext).ShowINDIRECT_TYPE = this.ShowINDIRECT_TYPE;
+            ((COMMODITY_CODESViewModelWrapper)this.DataContext).ShowHOURSAWEEK = this.ShowHOURSAWEEK;
         }
 
         public void ShowDISCIPLINE()
@@ -35,6 +36,11 @@ namespace BluePrints.Views
         public void ShowINDIRECT_TYPE()
         {
             colINDIRECT_TYPE.Visible = true;
+        }
+
+        public void ShowHOURSAWEEK()
+        {
+            colHOURSAWEEK.Visible = true;
         }
 
         void sortTimer_Tick(object sender, EventArgs e)

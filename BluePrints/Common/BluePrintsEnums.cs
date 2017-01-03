@@ -186,4 +186,10 @@ namespace BluePrints.Common
         Indirect = 2,
         Overhead = 3
     }
+
+    public enum TimeGroup
+    {
+        Offsite = 40,
+        Site = 65,
+    }
 }

@@ -52,6 +52,8 @@ namespace BluePrints.Data
         [StringLength(50)]
         public string UOM { get; set; }
 
+        public TimeGroup? HOURSAWEEK { get; set; }
+
         public int SORTORDER { get; set; }
 
         public bool ISEXPANDED { get; set; }

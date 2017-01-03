@@ -111,7 +111,11 @@ namespace BluePrints.ViewModels
             else if (loadCommodityCodeType == CommodityCodeType.Direct)
                 mainThreadDispatcher.BeginInvoke(new Action(() => this.ShowDISCIPLINE()));
             else
+            {
                 mainThreadDispatcher.BeginInvoke(new Action(() => this.ShowINDIRECT_TYPE()));
+                mainThreadDispatcher.BeginInvoke(new Action(() => this.ShowHOURSAWEEK()));
+            }
+
 
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             mainThreadDispatcher.BeginInvoke(new Action(() => delayedCOMMODITY_CODEPopulateDispatcher.Start()));
@@ -251,6 +255,7 @@ namespace BluePrints.ViewModels
         public Action ShowDISCIPLINE;
         public Action ShowDEPARTMENT;
         public Action ShowINDIRECT_TYPE;
+        public Action ShowHOURSAWEEK;
 
         List<Guid> uniqueGUID_PARENTS; //stores dropping entity parent guid before it gets reassigned
         public void dragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.TreeListDropEventArgs e)

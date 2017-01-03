@@ -75,7 +75,18 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl Name="gridControl" ColumnsSource="{StaticResource USERColumns}" Style="{StaticResource WrapperGridTemplate}">
+                    <dxg:GridControl Name="gridControl" Style="{StaticResource WrapperGridTemplate}">
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn FieldName="NAME" />
+                            <dxg:GridColumn FieldName="DEPARTMENT" />
+                            <dxg:GridColumn FieldName="TITLE" />
+                            <dxg:GridColumn FieldName="DESCRIPTION" />
+                            <dxg:GridColumn Header="ROLE" FieldName="GUID_ROLE">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.ROLECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                        </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.TotalSummary>

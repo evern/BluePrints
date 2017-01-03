@@ -11,6 +11,7 @@
         xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
         xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
         xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+        xmlns:common="clr-namespace:BluePrints.Common"
         xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
         xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
         xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
@@ -77,6 +78,11 @@
                             <dxg:TreeListColumn Name="colINDIRECT_TYPE" Header="INDIRECT TYPE" FieldName="GUID_INDIRECTTYPE" Visible="False"  ReadOnly="True" VisibleIndex="60">
                                 <dxg:TreeListColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.INDIRECT_TYPECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
+                                </dxg:TreeListColumn.EditSettings>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn Name="colHOURSAWEEK" Header="TIME GROUP" FieldName="HOURSAWEEK" Visible="False" ReadOnly="False" VisibleIndex="65">
+                                <dxg:TreeListColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:TimeGroup}}"/>
                                 </dxg:TreeListColumn.EditSettings>
                             </dxg:TreeListColumn>
                             <dxg:TreeListColumn FieldName="TYPE" VisibleIndex="70" />
