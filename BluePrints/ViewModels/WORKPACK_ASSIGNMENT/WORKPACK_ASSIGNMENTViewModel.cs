@@ -16,15 +16,15 @@ using System.Threading.Tasks;
 
 namespace BluePrints.ViewModels
 {
-    public class PROJECTWORKPACKAssignmentViewModel : IDisposable
+    public class WORKPACK_ASSIGNMENTViewModel : IDisposable
     {
-        public static PROJECTWORKPACKAssignmentViewModel Create(IEnumerable<TASK_AppointmentInfo> ALLTASK_Appointments, IEnumerable<WORKPACK_Dashboard> WORKPACKS, CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACK_ASSIGNMENTSViewModel, bool IsModified, Appointment SelectedTASK_Appointment = null, WORKPACK_Dashboard SelectedWORKPACK = null)
+        public static WORKPACK_ASSIGNMENTViewModel Create(IEnumerable<TASK_AppointmentInfo> ALLTASK_Appointments, IEnumerable<WORKPACK_Dashboard> WORKPACKS, CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACK_ASSIGNMENTSViewModel, bool IsModified, Appointment SelectedTASK_Appointment = null, WORKPACK_Dashboard SelectedWORKPACK = null)
         {
-            return ViewModelSource.Create(() => new PROJECTWORKPACKAssignmentViewModel(ALLTASK_Appointments, WORKPACKS, WORKPACK_ASSIGNMENTSViewModel, IsModified, SelectedTASK_Appointment, SelectedWORKPACK));
+            return ViewModelSource.Create(() => new WORKPACK_ASSIGNMENTViewModel(ALLTASK_Appointments, WORKPACKS, WORKPACK_ASSIGNMENTSViewModel, IsModified, SelectedTASK_Appointment, SelectedWORKPACK));
         }
 
         bool IsModified { get; set; }
-        protected PROJECTWORKPACKAssignmentViewModel(IEnumerable<TASK_AppointmentInfo> ALLTASK_Appointments, IEnumerable<WORKPACK_Dashboard> WORKPACKS, CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACK_ASSIGNMENTSViewModel, bool IsModified, Appointment SelectedTASK_Appointment = null, WORKPACK_Dashboard SelectedWORKPACK = null)
+        protected WORKPACK_ASSIGNMENTViewModel(IEnumerable<TASK_AppointmentInfo> ALLTASK_Appointments, IEnumerable<WORKPACK_Dashboard> WORKPACKS, CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACK_ASSIGNMENTSViewModel, bool IsModified, Appointment SelectedTASK_Appointment = null, WORKPACK_Dashboard SelectedWORKPACK = null)
         {
             this.TASKSItemSource = ALLTASK_Appointments.ToArray().AsEnumerable();
             this.WORKPACKSItemSource = WORKPACKS;

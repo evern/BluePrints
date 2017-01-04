@@ -255,7 +255,7 @@ namespace BluePrints.ViewModels
             if (mappingSelectionType == BaselineMappingSelectionType.None)
                 return "BASELINE_ITEMCollectionView";
 
-            return "PROJECTWORKPACKDetailsMappingViewHost";
+            return "WORKPACKSchedulingViewHost";
         }
 
         public object GetCustomDocumentParameter()

@@ -35,7 +35,7 @@ namespace BluePrints.Views
         public WORKPACKSchedulingViewHost()
         {
             InitializeComponent();
-            ((PROJECTWORKPACKSMappingViewModelWrapper)this.DataContext).windowsFormHostViewInitialization = this.windowsFormHostViewInitialization;
+            ((WORKPACKSchedulingViewModelWrapper)this.DataContext).windowsFormHostViewInitialization = this.windowsFormHostViewInitialization;
         }
 
         public void windowsFormHostViewInitialization(Func<IQueryable<TASK>> getTASKsFunc, Func<IQueryable<PROJWBS>> getWBSSFunc,

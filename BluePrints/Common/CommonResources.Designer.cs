@@ -367,6 +367,15 @@ namespace BluePrints.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to P6 units populated.
+        /// </summary>
+        internal static string WORKPACK_ASSIGNMENT_P6WriteComplete {
+            get {
+                return ResourceManager.GetString("WORKPACK_ASSIGNMENT_P6WriteComplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Do you wish to change the internal name too?.
         /// </summary>
         internal static string WORKPACK_InternalNameChange {

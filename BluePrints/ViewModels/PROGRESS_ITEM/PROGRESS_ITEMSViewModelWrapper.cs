@@ -453,7 +453,7 @@ namespace BluePrints.ViewModels
             delayedPROGRESSSavingDispatcher.Start();
         }
 
-        PROJECTWORKPACKSMappingViewModelWrapper WORKPACK_DashboardViewModel;
+        WORKPACKSchedulingViewModelWrapper WORKPACK_DashboardViewModel;
         public bool CanPushToP6()
         {
             if (loadPROGRESS == null || loadPROGRESS.P6PROGRESS_NAME == string.Empty)
@@ -466,7 +466,7 @@ namespace BluePrints.ViewModels
         {
             if (WORKPACK_DashboardViewModel == null)
             {
-                WORKPACK_DashboardViewModel = PROJECTWORKPACKSMappingViewModelWrapper.Create();
+                WORKPACK_DashboardViewModel = WORKPACKSchedulingViewModelWrapper.Create();
                 WORKPACK_DashboardViewModel.OnPROJECTWORKPACKSMappingViewModelLoaded = this.OnPROJECTWORKPACKSMappingViewModelLoaded;
                 ISupportParameter ParameterObj = WORKPACK_DashboardViewModel as ISupportParameter;
                 ParameterObj.Parameter = new object[] { this.loadPROGRESS, null };

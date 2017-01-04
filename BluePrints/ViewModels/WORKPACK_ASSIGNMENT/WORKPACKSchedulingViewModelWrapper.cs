@@ -28,15 +28,15 @@ using BluePrints.P6EntitiesDataModel;
 
 namespace BluePrints.ViewModels
 {
-    public class PROJECTWORKPACKSMappingViewModelWrapper : CollectionViewModelsWrapper<WORKPACK, WORKPACK_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork, CollectionViewModel<WORKPACK, WORKPACK_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>>
+    public class WORKPACKSchedulingViewModelWrapper : CollectionViewModelsWrapper<WORKPACK, WORKPACK_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork, CollectionViewModel<WORKPACK, WORKPACK_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static PROJECTWORKPACKSMappingViewModelWrapper Create()
+        public static WORKPACKSchedulingViewModelWrapper Create()
         {
-            return ViewModelSource.Create(() => new PROJECTWORKPACKSMappingViewModelWrapper());
+            return ViewModelSource.Create(() => new WORKPACKSchedulingViewModelWrapper());
         }
 
         #region Used as Dependency Delegate
@@ -266,6 +266,55 @@ namespace BluePrints.ViewModels
             get
             {
                 return (CollectionViewModel<TASK, int, IP6EntitiesUnitOfWork>)loaderCollection.GetViewModel<TASK>();
+            }
+        }
+
+        public void PushToP6()
+        {
+            var IBluePrintsEntitiesUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            var IP6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+
+            string ProjectName;
+            if (mappingType == BaselineMappingSelectionType.Modified)
+                ProjectName = loadBASELINE.P6MODBASELINE_NAME;
+            else
+                ProjectName = loadBASELINE.P6BASELINE_NAME;
+
+            BluePrints.P6Data.PROJECT P6PROJECT = IP6EntitiesUnitOfWork.PROJECT.FirstOrDefault(x => x.proj_short_name == ProjectName && x.delete_date == null);
+            if (P6PROJECT != null)
+            {
+                IEnumerable<WORKPACK_ASSIGNMENT> currentPROJECTWORKPACK_ASSIGNMENTS = loadPROJECT.WORKPACK.Where(x => x.DELETED == null).SelectMany(x => x.WORKPACK_ASSIGNMENT.Where(y => y.DELETED == null && y.ISMODIFIEDBASELINE == (mappingType == BaselineMappingSelectionType.Modified))).ToArray().AsEnumerable();
+                IEnumerable<TASKRSRC> ExistingTaskResource = P6PROJECT.TASKRSRC.ToArray().AsEnumerable();
+                IEnumerable<TASK> P6Tasks = P6PROJECT.TASK.ToArray().AsEnumerable();
+                foreach (TASK Task in P6Tasks)
+                {
+                    Task.act_work_qty = 0;
+                    Task.remain_work_qty = 0;
+                    Task.target_work_qty = 0;
+                }
+
+                double taskrsrcCount = ExistingTaskResource.Count();
+                foreach (var TaskRsrc in ExistingTaskResource)
+                {
+                    IP6EntitiesUnitOfWork.TASKRSRC.Remove(TaskRsrc);
+                }
+
+                foreach (WORKPACK_ASSIGNMENT WORKPACK_ASSIGNMENT in currentPROJECTWORKPACK_ASSIGNMENTS)
+                {
+                    TASK existingTask = P6Tasks.FirstOrDefault(x => x.task_code == WORKPACK_ASSIGNMENT.P6_ACTIVITYID);
+
+                    if (existingTask != null)
+                    {
+                        decimal remainingValue = (WORKPACK_ASSIGNMENT.HIGH_VALUE - WORKPACK_ASSIGNMENT.LOW_VALUE) + 1;
+                        decimal remainingProductivity = (decimal)((existingTask.target_drtn_hr_cnt == null || existingTask.target_drtn_hr_cnt == 0) ? remainingValue : (remainingValue / existingTask.target_drtn_hr_cnt));
+
+                        existingTask.target_work_qty += remainingValue;
+                        existingTask.remain_work_qty += remainingValue;
+                    }
+                }
+
+                ((P6EntitiesUnitOfWork)IP6EntitiesUnitOfWork).Context.SaveChanges();
+                MessageBoxService.ShowMessage(CommonResources.WORKPACK_ASSIGNMENT_P6WriteComplete);
             }
         }
         #endregion

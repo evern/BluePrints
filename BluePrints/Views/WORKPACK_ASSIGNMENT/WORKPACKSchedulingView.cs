@@ -233,7 +233,8 @@ namespace BluePrints.Views
             if (schHitInfo.HitTest == SchedulerHitTest.AppointmentContent)
             {
                 Appointment dropAppointment = ((AppointmentViewInfo)schHitInfo.ViewInfo).Appointment;
-                WORKPACKAssignmentView view = new WORKPACKAssignmentView(TASK_WBSAppointments, WORKPACK_Dashboards, WORKPACK_ASSIGNMENTSViewModel, ISMODIFIED, dropAppointment);
+                P6ACTIVITYAssignmentView view = new P6ACTIVITYAssignmentView(TASK_WBSAppointments, WORKPACK_Dashboards, WORKPACK_ASSIGNMENTSViewModel, ISMODIFIED, dropAppointment);
+
                 view.ShowDialog();
                 view.Dispose();
 

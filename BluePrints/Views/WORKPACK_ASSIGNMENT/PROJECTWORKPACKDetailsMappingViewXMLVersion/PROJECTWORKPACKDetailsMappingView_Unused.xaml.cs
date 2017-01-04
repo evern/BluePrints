@@ -28,7 +28,7 @@ namespace BluePrints.Views
         public PROJECTWORKPACKDetailsMappingView_Unused()
         {
             InitializeComponent();
-            var viewModel = ((PROJECTWORKPACKSMappingViewModelWrapper)this.DataContext);
+            var viewModel = ((WORKPACKSchedulingViewModelWrapper)this.DataContext);
             //viewModel.GridWorkpack = this.gridControl;
             //viewModel.SchedulerActivities = this.scheduler;
             //PopulateSchedulerViewList(this.scheduler);

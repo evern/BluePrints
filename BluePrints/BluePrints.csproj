@@ -1062,8 +1062,8 @@
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\USERSelectionViewModel.cs" />
-    <Compile Include="ViewModels\WORKPACK_ASSIGNMENT\PROJECTWORKPACKAssignmentViewModel.cs" />
-    <Compile Include="ViewModels\WORKPACK_ASSIGNMENT\PROJECTWORKPACKSMappingViewModelWrapper.cs" />
+    <Compile Include="ViewModels\WORKPACK_ASSIGNMENT\WORKPACK_ASSIGNMENTViewModel.cs" />
+    <Compile Include="ViewModels\WORKPACK_ASSIGNMENT\WORKPACKSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE\BASELINECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BluePrintsEntitiesViewModel.cs" />
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODEViewModelWrapper.cs" />

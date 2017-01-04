@@ -36,8 +36,8 @@ namespace BluePrints.Views
             WORKPACK_Dashboard SelectedWORKPACK = null)
         {
             InitializeComponent();
-            this.DataContext = PROJECTWORKPACKAssignmentViewModel.Create(ALLTASK_Appointments, WORKPACKS, WORKPACK_ASSIGNMENTSViewModel, IsModified, SelectedTASK_Appointment, SelectedWORKPACK);
-            ((PROJECTWORKPACKAssignmentViewModel)this.DataContext).RefreshWORKPACK_ASSIGNMENTCallBack = this.RefreshWORKPACK_ASSIGNMENTCallBack;
+            this.DataContext = WORKPACK_ASSIGNMENTViewModel.Create(ALLTASK_Appointments, WORKPACKS, WORKPACK_ASSIGNMENTSViewModel, IsModified, SelectedTASK_Appointment, SelectedWORKPACK);
+            ((WORKPACK_ASSIGNMENTViewModel)this.DataContext).RefreshWORKPACK_ASSIGNMENTCallBack = this.RefreshWORKPACK_ASSIGNMENTCallBack;
         }
 
         public void RefreshWORKPACK_ASSIGNMENTCallBack()
@@ -47,7 +47,7 @@ namespace BluePrints.Views
 
         public void Dispose()
         {
-            ((PROJECTWORKPACKAssignmentViewModel)this.DataContext).Dispose();
+            ((WORKPACK_ASSIGNMENTViewModel)this.DataContext).Dispose();
         }
     }
 }

@@ -16,7 +16,7 @@
         xmlns:dxschi="http://schemas.devexpress.com/winfx/2008/xaml/scheduler/internal"
         xmlns:wfi="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
         xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
-        mc:Ignorable="d" d:DesignHeight="1200" d:DesignWidth="800" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTWORKPACKSMappingViewModelWrapper}">
+        mc:Ignorable="d" d:DesignHeight="1200" d:DesignWidth="800" DataContext="{dxmvvm:ViewModelSource viewmodel:WORKPACKSchedulingViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <dxsch:SchedulerUICommand x:Key="commands" />
@@ -41,7 +41,7 @@
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Home">
                             <dxr:RibbonPageGroup Caption="PROJECT Tasks">
-
+                                <dxb:BarButtonItem Content="Populate P6 Units" Command="{Binding DataContext.PushToP6Command, ElementName=userControl}" CommandParameter="{Binding SelectedEntity}" LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}" Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

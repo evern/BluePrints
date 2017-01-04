@@ -228,4 +228,7 @@
   <data name="SignalR_CloseApplication" xml:space="preserve">
     <value>Unable to connect to server: Application closed.</value>
   </data>
+  <data name="WORKPACK_ASSIGNMENT_P6WriteComplete" xml:space="preserve">
+    <value>P6 units populated</value>
+  </data>
 </root>
