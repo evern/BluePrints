@@ -139,6 +139,23 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region ISupportCustomDocumentTypeNameAndParameter
+        public bool CanEdit(PROGRESS entity)
+        {
+            if (MainViewModel == null || MainViewModel.SelectedEntity == null)
+                return false;
+
+            return true;
+        }
+
+        protected IDocumentManagerService DocumentManagerService { get { return this.GetService<IDocumentManagerService>(); } }
+        public void Edit(PROGRESS entity)
+        {
+            if (entity == null)
+                return;
+
+            DocumentManagerService.ShowExistingEntityDocument<PROGRESS_ITEM, Guid>(this, entity.GUID, string.Empty);
+        }
+
         public string GetCustomDocumentTypeName()
         {
             return "PROGRESS_ITEMCollectionView";

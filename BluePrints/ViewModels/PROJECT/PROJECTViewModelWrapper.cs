@@ -57,12 +57,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddEntitiesLoader<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>(3, bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc, null, null, OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(4, bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, null, null, OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<VARIATION, VARIATION, Guid, IBluePrintsEntitiesUnitOfWork>(5, bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc, null, null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>(6, bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
-            loaderCollection.AddEntitiesLoader<PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork>(7, bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
-            loaderCollection.AddEntitiesLoader<ESTIMATION, ESTIMATION, Guid, IBluePrintsEntitiesUnitOfWork>(8, bluePrintsUnitOfWorkFactory, x => x.ESTIMATIONS, ESTIMATIONProjectionFunc);
-            loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(9, bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
-            loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(10, bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
-            
+
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -78,7 +73,7 @@ namespace BluePrints.ViewModels
 
         Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
         {
-            return query => query.Where(x => x.PROGRESS.STATUS == ProgressStatus.Live && x.PROGRESS.PROJECT.STATUS == ProjectStatus.Active);
+            return query => query.Where(x => x.PROGRESS.STATUS == ProgressStatus.Live && x.PROGRESS.PROJECT.GUID == loadPROJECT.GUID);
         }
 
         Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
@@ -128,12 +123,6 @@ namespace BluePrints.ViewModels
             MainViewModel = (CollectionViewModel<PROJECT, PROJECT_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>)mainEntityLoader.GetViewModel();
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             MainViewModel.SetParentViewModel(this);
-            BASELINEViewModel.PreSave = this.BASELINEPreSave;
-            PROGRESSViewModel.PreSave = this.PROGRESSPreSave;
-            RATEViewModel.PreSave = this.RATEPreSave;
-            AREAViewModel.PreSave = this.AREAPreSave;
-            PHASEViewModel.PreSave = this.PHASEPreSave;
-            ESTIMATIONViewModel.PreSave = this.ESTIMATIONPreSave;
 
             base.OnMainViewModelLoaded(entities);
             return true;
@@ -144,50 +133,11 @@ namespace BluePrints.ViewModels
             if ((sender == MainViewModel && messageType != EntityMessageType.Added) || sender == this || changedType == typeof(PROJECT))
                 return;
 
-
             if (MainViewModel != null)
                 mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
             else
                 mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
         }
-
-        #region CallBacks
-        public bool BASELINEPreSave(BASELINE entity)
-        {
-            entity.GUID_PROJECT = this.loadPROJECT.GUID;
-            return true;
-        }
-
-        public bool PROGRESSPreSave(PROGRESS entity)
-        {
-            entity.GUID_PROJECT = this.loadPROJECT.GUID;
-            return true;
-        }
-
-        public bool RATEPreSave(RATE entity)
-        {
-            entity.GUID_PROJECT = this.loadPROJECT.GUID;
-            return true;
-        }
-
-        public bool AREAPreSave(AREA entity)
-        {
-            entity.GUID_PROJECT = this.loadPROJECT.GUID;
-            return true;
-        }
-
-        public bool PHASEPreSave(PHASE entity)
-        {
-            entity.GUID_PROJECT = this.loadPROJECT.GUID;
-            return true;
-        }
-
-        public bool ESTIMATIONPreSave(ESTIMATION entity)
-        {
-            entity.GUID_PROJECT = this.loadPROJECT.GUID;
-            return true;
-        }
-        #endregion
         #endregion
 
         #region View Behavior
@@ -203,58 +153,88 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
-        public CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork> BASELINEViewModel
+        BASELINECollectionViewModelWrapper baselineViewModel;
+        public BASELINECollectionViewModelWrapper BASELINEViewModel
         {
             get
             {
-                if (loaderCollection == null)
-                    return null;
+                if (baselineViewModel == null && this.loadPROJECT != null)
+                {
+                    baselineViewModel = BASELINECollectionViewModelWrapper.Create();
+                    baselineViewModel.SetParentViewModel(this);
+                    ISupportParameter baselineSupportParameterObj = baselineViewModel as ISupportParameter;
+                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(this.loadPROJECT);
+                }
 
-                return (CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<BASELINE>();
+                return baselineViewModel;
             }
         }
 
-        public CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESSViewModel
+        PROGRESSCollectionViewModelWrapper progressViewModel;
+        public PROGRESSCollectionViewModelWrapper PROGRESSViewModel
         {
             get
             {
-                if (loaderCollection == null)
-                    return null;
+                if (progressViewModel == null && this.loadPROJECT != null)
+                {
+                    progressViewModel = PROGRESSCollectionViewModelWrapper.Create();
+                    progressViewModel.SetParentViewModel(this);
+                    ISupportParameter baselineSupportParameterObj = progressViewModel as ISupportParameter;
+                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(this.loadPROJECT);
+                }
 
-                return (CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROGRESS>();
+                return progressViewModel;
             }
         }
 
-        public CollectionViewModel<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork> AREAViewModel
+        AREACollectionViewModelWrapper areaViewModel;
+        public AREACollectionViewModelWrapper AREAViewModel
         {
             get
             {
-                if (loaderCollection == null)
-                    return null;
+                if (areaViewModel == null && this.loadPROJECT != null)
+                {
+                    areaViewModel = AREACollectionViewModelWrapper.Create();
+                    areaViewModel.SetParentViewModel(this);
+                    ISupportParameter baselineSupportParameterObj = areaViewModel as ISupportParameter;
+                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(this.loadPROJECT);
+                }
 
-                return (CollectionViewModel<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<AREA>();
+                return areaViewModel;
             }
         }
 
-        public CollectionViewModel<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork> RATEViewModel
+        RATECollectionViewModelWrapper rateViewModel;
+        public RATECollectionViewModelWrapper RATEViewModel
         {
             get
             {
-                if (loaderCollection == null)
-                    return null;
+                if (rateViewModel == null && this.loadPROJECT != null)
+                {
+                    rateViewModel = RATECollectionViewModelWrapper.Create();
+                    rateViewModel.SetParentViewModel(this);
+                    ISupportParameter baselineSupportParameterObj = rateViewModel as ISupportParameter;
+                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(this.loadPROJECT);
+                }
 
-                return (CollectionViewModel<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<RATE>();
+                return rateViewModel;
             }
         }
 
-        public CollectionViewModel<PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork> PHASEViewModel
+        PHASECollectionViewModelWrapper phaseViewModel;
+        public PHASECollectionViewModelWrapper PHASEViewModel
         {
             get
             {
-                if (loaderCollection == null)
-                    return null;
+                if (phaseViewModel == null && this.loadPROJECT != null)
+                {
+                    phaseViewModel = PHASECollectionViewModelWrapper.Create();
+                    phaseViewModel.SetParentViewModel(this);
+                    ISupportParameter baselineSupportParameterObj = phaseViewModel as ISupportParameter;
+                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(this.loadPROJECT);
+                }
 
-                return (CollectionViewModel<PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PHASE>();
+                return phaseViewModel;
             }
         }
 
@@ -266,28 +246,6 @@ namespace BluePrints.ViewModels
                     return null;
 
                 return (CollectionViewModel<ESTIMATION, ESTIMATION, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<ESTIMATION>();
-            }
-        }
-
-        public IEnumerable<DEPARTMENT> DEPARTMENTCollection
-        {
-            get
-            {
-                var collection = GetEntities<DEPARTMENT>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.NAME);
-                return collection;
-            }
-        }
-
-        public IEnumerable<DISCIPLINE> DISCIPLINECollection
-        {
-            get
-            {
-                var collection = GetEntities<DISCIPLINE>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.NAME);
-                return collection;
             }
         }
 

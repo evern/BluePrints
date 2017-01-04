@@ -26,7 +26,7 @@
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
         <dx:DXMessageBoxService />
-        <dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />
+        <!--<dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />-->
         <dx:WindowedDocumentUIService YieldToParent="True" />
     </dxmvvm:Interaction.Behaviors>
     <Grid dx:DXSerializer.StoreLayoutMode="UI">
