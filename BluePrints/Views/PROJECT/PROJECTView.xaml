@@ -372,7 +372,7 @@
                                             <DataTemplate>
                                                 <dxlc:LayoutGroup Orientation="Horizontal">
                                                     <dxe:ComboBoxEdit x:Name="PART_Editor" IsTextEditable="True" AutoComplete="True" ItemsSource="{Binding View.DataContext.P6PROJECTSCollection}" DisplayMember="wbs_short_name" ValueMember="wbs_short_name"/>
-                                                    <Button Width="50" Command="{Binding View.DataContext.P6BASELINE_ASSIGNCommand}" IsEnabled="{Binding Path=RowData.Row.P6MODBASELINE_NAME, Converter={StaticResource StringToBoolConverter}, ConverterParameter=false, FallbackValue=false}">
+                                                    <Button Width="50" Command="{Binding View.DataContext.P6BASELINE_ASSIGNCommand}" CommandParameter="{Binding RowData.Row}" >
                                                         <StackPanel Orientation="Horizontal">
                                                             <Image Source="{dx:DXImageOffice2013 Image=Edit_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0"/>
                                                             <TextBlock VerticalAlignment="Center" />
@@ -387,7 +387,7 @@
                                             <DataTemplate>
                                                 <dxlc:LayoutGroup Orientation="Horizontal">
                                                     <dxe:ComboBoxEdit x:Name="PART_Editor" IsTextEditable="True" AutoComplete="True" ItemsSource="{Binding View.DataContext.P6PROJECTSCollection}" DisplayMember="wbs_short_name" ValueMember="wbs_short_name"/>
-                                                    <Button Width="50" Command="{Binding View.DataContext.P6MODBASELINE_ASSIGNCommand}" IsEnabled="{Binding Path=RowData.Row.P6MODBASELINE_NAME, Converter={StaticResource StringToBoolConverter}, ConverterParameter=false, FallbackValue=false}">
+                                                    <Button Width="50" Command="{Binding View.DataContext.P6MODBASELINE_ASSIGNCommand}" CommandParameter="{Binding RowData.Row}" >
                                                         <StackPanel Orientation="Horizontal">
                                                             <Image Source="{dx:DXImageOffice2013 Image=Edit_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0"/>
                                                             <TextBlock VerticalAlignment="Center" />
@@ -412,9 +412,6 @@
                                             <dxb:BarButtonItem Content="Fill Down" Glyph="{dx:DXImageOffice2013 Image=Download_16x16.png}" Command="{Binding View.DataContext.MainViewModel.FillDownCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                             <dxb:BarButtonItem Content="Delete" Command="{Binding View.DataContext.MainViewModel.BulkDeleteCommand}" CommandParameter="{Binding View.DataContext.MainViewModel.SelectedEntities}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                             <dxb:BarButtonItem Content="Refresh" Command="{Binding View.DataContext.MainViewModel.RefreshCommand}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                            <dxb:BarItemSeparator />
-                                            <dxb:BarButtonItem Content="Populate P6 Units" Command="{Binding View.DataContext.PushToP6_OriginalCommand}" LargeGlyph="{dx:DXImage Image=Export_32x32.png}" Glyph="{dx:DXImage Image=Export_16x16.png}" />
-                                            <dxb:BarButtonItem Content="Populate Modified P6 Units" Command="{Binding View.DataContext.PushToP6_ModifiedCommand}" LargeGlyph="{dx:DXImage Image=Export_32x32.png}" Glyph="{dx:DXImage Image=Export_16x16.png}" />
                                         </dxg:TableView.RowCellMenuCustomizations>
                                     </dxg:TableView>
                                 </dxg:GridControl.View>
