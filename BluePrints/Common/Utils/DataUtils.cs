@@ -109,6 +109,15 @@ namespace BluePrints.Data.Helpers
             return null;
         }
 
+        public static IEnumerable<string> GetBulkEditDisabledPropertyStrings(Type type)
+        {
+            BulkEditDisabledAttributes TypeSpecificConstraintAttribute = (BulkEditDisabledAttributes)Attribute.GetCustomAttribute(type, typeof(BulkEditDisabledAttributes), false);
+            if (TypeSpecificConstraintAttribute != null)
+                return TypeSpecificConstraintAttribute.ColumnNames;
+
+            return null;
+        }
+
         public static IEnumerable<string> GetRequiredPropertyStringsForProjection(Type type)
         {
             RequiredAttributes TypeSpecificRequiredAttribute = (RequiredAttributes)Attribute.GetCustomAttribute(type, typeof(RequiredAttributes), false);

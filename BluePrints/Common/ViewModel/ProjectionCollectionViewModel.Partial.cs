@@ -649,7 +649,11 @@ namespace BluePrints.Common.ViewModel
                 if(constraintString == null)
                     constraintString = DataUtils.GetConstraintPropertyStrings(SelectedEntity.GetType().BaseType);
 
-                if (constraintString != null && constraintString.Any(x => x == columnPropertyInfo.Name))
+                IEnumerable<string> bulkEditDisabledString = DataUtils.GetBulkEditDisabledPropertyStrings(SelectedEntity.GetType());
+                if (bulkEditDisabledString == null)
+                    bulkEditDisabledString = DataUtils.GetBulkEditDisabledPropertyStrings(SelectedEntity.GetType().BaseType);
+
+                if ((constraintString != null && constraintString.Any(x => x == columnPropertyInfo.Name)) || (bulkEditDisabledString != null && bulkEditDisabledString.Any(x => x == columnPropertyInfo.Name)))
                     return false;
                 else
                     return true;

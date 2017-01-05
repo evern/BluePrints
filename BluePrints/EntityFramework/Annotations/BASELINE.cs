@@ -9,6 +9,7 @@ namespace BluePrints.Data
     using System.Data.Entity.Spatial;
 
     [ConstraintAttributes("REVISION")]
+    [BulkEditDisabledAttributes("P6BASELINE_NAME, P6MODBASELINE_NAME")]
     public partial class BASELINE
     {
 

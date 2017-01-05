@@ -331,6 +331,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Common\ActiveDirectory.cs" />
+    <Compile Include="Common\Attributes\BulkEditDisabledAttributes.cs" />
     <Compile Include="Common\Attributes\RequiredAttributes.cs" />
     <Compile Include="Common\Helpers\EntitiesLoader.cs" />
     <Compile Include="Common\Helpers\XMLHelpers.cs" />
