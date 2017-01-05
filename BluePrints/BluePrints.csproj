@@ -341,9 +341,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>PermissionResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Common\Projections\COMMODITY_GROUP_INDIRECTProjection.cs" />
     <Compile Include="Common\Projections\COMMODITY_GROUP_DIRECTProjection.cs" />
-    <Compile Include="Common\Projections\ESTIMATION_ITEMProjection.cs" />
     <Compile Include="Common\Projections\BASELINE_ITEMProjection.cs" />
     <Compile Include="Common\Projections\PROGRESS_ITEMProjection.cs" />
     <Compile Include="Common\Projections\VARIATION_ITEMProjection.cs" />
@@ -386,12 +384,14 @@
     <Compile Include="EntityFramework\BluePrintsData\BluePrintsEntities.cs" />
     <Compile Include="EntityFramework\BluePrintsData\COMMODITY_CODE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\COMMODITY_GROUP_DIRECT.cs" />
-    <Compile Include="EntityFramework\BluePrintsData\COMMODITY_GROUP_INDIRECT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DEPARTMENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DISCIPLINE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DOCTYPE.cs" />
-    <Compile Include="EntityFramework\BluePrintsData\ESTIMATION.cs" />
-    <Compile Include="EntityFramework\BluePrintsData\ESTIMATION_ITEM.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\ESTIMATION_DIRECT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\ESTIMATION_DIRECT_ITEM.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\ESTIMATION_INDIRECT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\ESTIMATION_INDIRECT_ITEM.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\ESTIMATION_SETTING.cs" />
     <Compile Include="EntityFramework\BluePrintsData\INDIRECT_TYPE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PHASE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROGRESS.cs" />
@@ -403,6 +403,7 @@
     <Compile Include="EntityFramework\BluePrintsData\ROLE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\ROLE_PERMISSION.cs" />
     <Compile Include="EntityFramework\BluePrintsData\SETTINGS_GLOBAL.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\TIMEGROUP.cs" />
     <Compile Include="EntityFramework\BluePrintsData\UOM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\USER.cs" />
     <Compile Include="EntityFramework\BluePrintsData\VARIATION.cs" />
@@ -416,8 +417,6 @@
     <Compile Include="EntityFramework\Annotations\DEPARTMENT.cs" />
     <Compile Include="EntityFramework\Annotations\DISCIPLINE.cs" />
     <Compile Include="EntityFramework\Annotations\DOCTYPE.cs" />
-    <Compile Include="EntityFramework\Annotations\ESTIMATION.cs" />
-    <Compile Include="EntityFramework\Annotations\ESTIMATION_ITEM.cs" />
     <Compile Include="EntityFramework\Annotations\PHASE.cs" />
     <Compile Include="EntityFramework\Annotations\PROGRESS.cs" />
     <Compile Include="EntityFramework\Annotations\PROGRESS_ITEM.cs" />
@@ -1058,7 +1057,6 @@
     <Compile Include="ViewModels\COMMODITY_GROUP\COMMODITY_GROUP_INDIRECTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\COMMODITY_GROUP\COMMODITY_GROUP_DIRECTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATION\ESTIMATIONCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\ESTIMATION_ITEM\ESTIMATION_ITEMSViewModelWrapper.cs" />
     <Compile Include="ViewModels\INDIRECT_TYPE\INDIRECT_TYPECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTCollectionViewModelWrapper.cs" />
@@ -1175,9 +1173,6 @@
     </Compile>
     <Compile Include="Views\ESTIMATION\ESTIMATIONCollectionView.xaml.cs">
       <DependentUpon>ESTIMATIONCollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ESTIMATION_ITEM\ESTIMATION_ITEMCollectionView.xaml.cs">
-      <DependentUpon>ESTIMATION_ITEMCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\FilterTreeView.xaml.cs">
       <DependentUpon>FilterTreeView.xaml</DependentUpon>
@@ -1349,10 +1344,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ESTIMATION\ESTIMATIONCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\ESTIMATION_ITEM\ESTIMATION_ITEMCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1593,16 +1584,6 @@
       <IncludeHash>True</IncludeHash>
       <FileType>Assembly</FileType>
     </PublishFile>
-    <PublishFile Include="DevExpress.Mvvm.v16.2.DataModel">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>Assembly</FileType>
-    </PublishFile>
     <PublishFile Include="DevExpress.Office.v16.2.Core">
       <Visible>False</Visible>
       <Group>
@@ -1614,16 +1595,6 @@
       <FileType>Assembly</FileType>
     </PublishFile>
     <PublishFile Include="DevExpress.Pdf.v16.2.Core">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>Assembly</FileType>
-    </PublishFile>
-    <PublishFile Include="DevExpress.Pdf.v16.2.Drawing">
       <Visible>False</Visible>
       <Group>
       </Group>

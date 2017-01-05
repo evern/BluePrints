@@ -43,11 +43,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<COMMODITY_GROUP_DIRECT, Guid> COMMODITY_GROUP_DIRECT { get; }
 
         /// <summary>
-        /// The COMMODITY_GROUP_INDIRECT entities repository.
-        /// </summary>
-        IRepository<COMMODITY_GROUP_INDIRECT, Guid> COMMODITY_GROUP_INDIRECT { get; }
-
-        /// <summary>
         /// The DEPARTMENT entities repository.
         /// </summary>
         IRepository<DEPARTMENT, Guid> DEPARTMENTS { get; }
@@ -63,14 +58,24 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<DOCTYPE, Guid> DOCTYPES { get; }
 
         /// <summary>
-        /// The ESTIMATION_ITEMS entities repository.
+        /// The ESTIMATION_DIRECT entities repository.
         /// </summary>
-        IRepository<ESTIMATION_ITEM, Guid> ESTIMATION_ITEMS { get; }
+        IRepository<ESTIMATION_DIRECT, Guid> ESTIMATION_DIRECTS { get; }
 
         /// <summary>
-        /// The ESTIMATION entities repository.
+        /// The ESTIMATION_DIRECT_ITEM entities repository.
         /// </summary>
-        IRepository<ESTIMATION, Guid> ESTIMATIONS { get; }
+        IRepository<ESTIMATION_DIRECT_ITEM, Guid> ESTIMATION_DIRECT_ITEMS { get; }
+
+        /// <summary>
+        /// The ESTIMATION_INDIRECT entities repository.
+        /// </summary>
+        IRepository<ESTIMATION_INDIRECT, Guid> ESTIMATION_INDIRECTS { get; }
+
+        /// <summary>
+        /// The ESTIMATION_INDIRECT_ITEM entities repository.
+        /// </summary>
+        IRepository<ESTIMATION_INDIRECT_ITEM, Guid> ESTIMATION_INDIRECT_ITEMS { get; }
 
         /// <summary>
         /// The INDIRECT_TYPE entities repository.

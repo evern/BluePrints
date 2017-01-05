@@ -14,7 +14,7 @@ namespace BluePrints.Data
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
             COMMODITY_CODE = new HashSet<COMMODITY_CODE>();
             COMMODITY_GROUP_DIRECT = new HashSet<COMMODITY_GROUP_DIRECT>();
-            ESTIMATION_ITEM = new HashSet<ESTIMATION_ITEM>();
+            ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
             RATE = new HashSet<RATE>();
             WORKPACK = new HashSet<WORKPACK>();
         }
@@ -48,7 +48,7 @@ namespace BluePrints.Data
 
         public virtual ICollection<COMMODITY_GROUP_DIRECT> COMMODITY_GROUP_DIRECT { get; set; }
 
-        public virtual ICollection<ESTIMATION_ITEM> ESTIMATION_ITEM { get; set; }
+        public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
 
         public virtual ICollection<RATE> RATE { get; set; }
 

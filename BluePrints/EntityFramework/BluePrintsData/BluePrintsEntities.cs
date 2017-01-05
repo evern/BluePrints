@@ -17,12 +17,14 @@ namespace BluePrints.Data
         public virtual DbSet<BASELINE_ITEM> BASELINE_ITEM { get; set; }
         public virtual DbSet<COMMODITY_CODE> COMMODITY_CODE { get; set; }
         public virtual DbSet<COMMODITY_GROUP_DIRECT> COMMODITY_GROUP_DIRECT { get; set; }
-        public virtual DbSet<COMMODITY_GROUP_INDIRECT> COMMODITY_GROUP_INDIRECT { get; set; }
         public virtual DbSet<DEPARTMENT> DEPARTMENT { get; set; }
         public virtual DbSet<DISCIPLINE> DISCIPLINE { get; set; }
         public virtual DbSet<DOCTYPE> DOCTYPE { get; set; }
-        public virtual DbSet<ESTIMATION> ESTIMATION { get; set; }
-        public virtual DbSet<ESTIMATION_ITEM> ESTIMATION_ITEM { get; set; }
+        public virtual DbSet<ESTIMATION_DIRECT> ESTIMATION_DIRECT { get; set; }
+        public virtual DbSet<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
+        public virtual DbSet<ESTIMATION_INDIRECT> ESTIMATION_INDIRECT { get; set; }
+        public virtual DbSet<ESTIMATION_INDIRECT_ITEM> ESTIMATION_INDIRECT_ITEM { get; set; }
+        public virtual DbSet<ESTIMATION_SETTING> ESTIMATION_SETTING { get; set; }
         public virtual DbSet<INDIRECT_TYPE> INDIRECT_TYPE { get; set; }
         public virtual DbSet<PHASE> PHASE { get; set; }
         public virtual DbSet<PROGRESS> PROGRESS { get; set; }
@@ -34,6 +36,7 @@ namespace BluePrints.Data
         public virtual DbSet<ROLE> ROLE { get; set; }
         public virtual DbSet<ROLE_PERMISSION> ROLE_PERMISSION { get; set; }
         public virtual DbSet<SETTINGS_GLOBAL> SETTINGS_GLOBAL { get; set; }
+        public virtual DbSet<TIMEGROUP> TIMEGROUP { get; set; }
         public virtual DbSet<UOM> UOM { get; set; }
         public virtual DbSet<USER> USER { get; set; }
         public virtual DbSet<VARIATION> VARIATION { get; set; }
@@ -44,14 +47,13 @@ namespace BluePrints.Data
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             Database.SetInitializer<BluePrintsEntities>(null);
-
             modelBuilder.Entity<AREA>()
                 .HasMany(e => e.BASELINE_ITEM)
                 .WithOptional(e => e.AREA)
                 .HasForeignKey(e => e.GUID_AREA);
 
             modelBuilder.Entity<AREA>()
-                .HasMany(e => e.ESTIMATION_ITEM)
+                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
                 .WithOptional(e => e.AREA)
                 .HasForeignKey(e => e.GUID_AREA);
 
@@ -89,17 +91,16 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_COMMODITYCODE);
 
             modelBuilder.Entity<COMMODITY_CODE>()
-                .HasMany(e => e.COMMODITY_GROUP_INDIRECT)
-                .WithOptional(e => e.COMMODITY_CODE)
-                .HasForeignKey(e => e.GUID_COMMODITYCODE);
+                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
+                .WithRequired(e => e.COMMODITY_CODE)
+                .HasForeignKey(e => e.GUID_COMMODITYCODE)
+                .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<COMMODITY_GROUP_INDIRECT>()
-                .Property(e => e.OPERATOR_RATE)
-                .HasPrecision(5, 2);
-
-            modelBuilder.Entity<COMMODITY_GROUP_INDIRECT>()
-                .Property(e => e.PLANT_RATE)
-                .HasPrecision(5, 2);
+            modelBuilder.Entity<COMMODITY_CODE>()
+                .HasMany(e => e.ESTIMATION_INDIRECT_ITEM)
+                .WithRequired(e => e.COMMODITY_CODE)
+                .HasForeignKey(e => e.GUID_COMMODITYCODE)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<DEPARTMENT>()
                 .HasMany(e => e.BASELINE_ITEM)
@@ -145,7 +146,7 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_DISCIPLINE);
 
             modelBuilder.Entity<DISCIPLINE>()
-                .HasMany(e => e.ESTIMATION_ITEM)
+                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
                 .WithOptional(e => e.DISCIPLINE)
                 .HasForeignKey(e => e.GUID_DISCIPLINE);
 
@@ -170,19 +171,125 @@ namespace BluePrints.Data
                 .WithOptional(e => e.DOCTYPE)
                 .HasForeignKey(e => e.GUID_DDOCTYPE);
 
-            modelBuilder.Entity<ESTIMATION>()
+            modelBuilder.Entity<ESTIMATION_DIRECT>()
                 .Property(e => e.MARGIN)
                 .HasPrecision(9, 2);
 
-            modelBuilder.Entity<ESTIMATION>()
+            modelBuilder.Entity<ESTIMATION_DIRECT>()
                 .Property(e => e.CONTINGENCY)
                 .HasPrecision(9, 2);
 
-            modelBuilder.Entity<ESTIMATION>()
-                .HasMany(e => e.ESTIMATION_ITEM)
-                .WithRequired(e => e.ESTIMATION)
-                .HasForeignKey(e => e.GUID_ESTIMATION)
+            modelBuilder.Entity<ESTIMATION_DIRECT>()
+                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
+                .WithRequired(e => e.ESTIMATION_DIRECT)
+                .HasForeignKey(e => e.GUID_ESTIMATION_DIRECT)
                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<ESTIMATION_INDIRECT>()
+                .Property(e => e.MARGIN)
+                .HasPrecision(9, 2);
+
+            modelBuilder.Entity<ESTIMATION_INDIRECT>()
+                .Property(e => e.CONTINGENCY)
+                .HasPrecision(9, 2);
+
+            modelBuilder.Entity<ESTIMATION_INDIRECT>()
+                .HasMany(e => e.ESTIMATION_INDIRECT_ITEM)
+                .WithRequired(e => e.ESTIMATION_INDIRECT)
+                .HasForeignKey(e => e.GUID_ESTIMATION_INDIRECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<ESTIMATION_INDIRECT_ITEM>()
+                .Property(e => e.OPERATOR_RATE)
+                .HasPrecision(5, 2);
+
+            modelBuilder.Entity<ESTIMATION_INDIRECT_ITEM>()
+                .Property(e => e.PLANT_RATE)
+                .HasPrecision(5, 2);
+
+            modelBuilder.Entity<ESTIMATION_INDIRECT_ITEM>()
+                .Property(e => e.HOURSAWEEK)
+                .HasPrecision(5, 2);
+
+            modelBuilder.Entity<ESTIMATION_INDIRECT_ITEM>()
+                .Property(e => e.FREIGHT_FOOTPRINT)
+                .HasPrecision(5, 2);
+
+            modelBuilder.Entity<ESTIMATION_SETTING>()
+                .Property(e => e.COST_PER_FREIGHT)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<ESTIMATION_SETTING>()
+                .Property(e => e.ADD_FREIGHT_ALLOWANCE)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<ESTIMATION_SETTING>()
+                .Property(e => e.MAN_HOUR_PER_SHIFT)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<ESTIMATION_SETTING>()
+                .Property(e => e.AVERAGE_DAYS_PER_WEEK)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<ESTIMATION_SETTING>()
+                .Property(e => e.DIRECT_DAYS_ON_SITE)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<ESTIMATION_SETTING>()
+                .Property(e => e.INDIRECT_DAYS_ON_SITE)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<ESTIMATION_SETTING>()
+                .Property(e => e.DIRECT_DAYS_ON_RNR)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<ESTIMATION_SETTING>()
+                .Property(e => e.INDIRECT_DAYS_ON_RNR)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<ESTIMATION_SETTING>()
+                .Property(e => e.FLIGHT_COST)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<ESTIMATION_SETTING>()
+                .Property(e => e.ADDITIONAL_FLIGHT)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<ESTIMATION_SETTING>()
+                .Property(e => e.ONSITE_ACC_COST)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<ESTIMATION_SETTING>()
+                .Property(e => e.ONSITE_MAN_ACC_COST)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<ESTIMATION_SETTING>()
+                .Property(e => e.RNR_ACC_COST)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<ESTIMATION_SETTING>()
+                .Property(e => e.CONTRACT_VALUE)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<ESTIMATION_SETTING>()
+                .Property(e => e.DEFECTS_LIABILITY_PERIOD)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<ESTIMATION_SETTING>()
+                .Property(e => e.TENDER_COST)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<ESTIMATION_SETTING>()
+                .Property(e => e.SMALL_TOOLS_COST)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<ESTIMATION_SETTING>()
+                .Property(e => e.WEEKLY_SITE_HOURS)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<ESTIMATION_SETTING>()
+                .Property(e => e.WEEKLY_OFFSITE_HOURS)
+                .HasPrecision(10, 2);
 
             modelBuilder.Entity<INDIRECT_TYPE>()
                 .HasMany(e => e.COMMODITY_CODE)
@@ -239,7 +346,19 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.ESTIMATION)
+                .HasMany(e => e.ESTIMATION_DIRECT)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.ESTIMATION_INDIRECT)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.ESTIMATION_SETTING)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
@@ -312,6 +431,16 @@ namespace BluePrints.Data
                 .Property(e => e.REVIEW_PERIOD)
                 .HasPrecision(2, 0);
 
+            modelBuilder.Entity<TIMEGROUP>()
+                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
+                .WithOptional(e => e.TIMEGROUP)
+                .HasForeignKey(e => e.GUID_TIMEGROUP);
+
+            modelBuilder.Entity<TIMEGROUP>()
+                .HasMany(e => e.ESTIMATION_INDIRECT_ITEM)
+                .WithOptional(e => e.TIMEGROUP)
+                .HasForeignKey(e => e.GUID_TIMEGROUP);
+
             modelBuilder.Entity<VARIATION>()
                 .HasMany(e => e.BASELINE_ITEM)
                 .WithOptional(e => e.VARIATION)
@@ -327,16 +456,6 @@ namespace BluePrints.Data
                 .HasMany(e => e.BASELINE_ITEM)
                 .WithOptional(e => e.WORKPACK)
                 .HasForeignKey(e => e.GUID_WORKPACK);
-
-            modelBuilder.Entity<WORKPACK>()
-                .HasMany(e => e.ESTIMATION_ITEM)
-                .WithOptional(e => e.WORKPACK)
-                .HasForeignKey(e => e.GUID_INSTALLWORKPACK);
-
-            modelBuilder.Entity<WORKPACK>()
-                .HasMany(e => e.ESTIMATION_ITEM1)
-                .WithOptional(e => e.WORKPACK1)
-                .HasForeignKey(e => e.GUID_SUPPLYWORKPACK);
 
             modelBuilder.Entity<WORKPACK>()
                 .HasMany(e => e.WORKPACK_ASSIGNMENT)

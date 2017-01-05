@@ -80,10 +80,14 @@ namespace BluePrints.Common
                 ReceiveMessage<DISCIPLINE, Guid>(PrimaryKey, MessageType, sender);
             else if (entityName == typeof(DOCTYPE).ToString())
                 ReceiveMessage<DOCTYPE, Guid>(PrimaryKey, MessageType, sender);
-            else if (entityName == typeof(ESTIMATION_ITEM).ToString())
-                ReceiveMessage<ESTIMATION_ITEM, Guid>(PrimaryKey, MessageType, sender);
-            else if (entityName == typeof(ESTIMATION).ToString())
-                ReceiveMessage<ESTIMATION, Guid>(PrimaryKey, MessageType, sender);
+            else if (entityName == typeof(ESTIMATION_DIRECT_ITEM).ToString())
+                ReceiveMessage<ESTIMATION_DIRECT_ITEM, Guid>(PrimaryKey, MessageType, sender);
+            else if (entityName == typeof(ESTIMATION_DIRECT).ToString())
+                ReceiveMessage<ESTIMATION_DIRECT, Guid>(PrimaryKey, MessageType, sender);
+            else if (entityName == typeof(ESTIMATION_INDIRECT_ITEM).ToString())
+                ReceiveMessage<ESTIMATION_INDIRECT_ITEM, Guid>(PrimaryKey, MessageType, sender);
+            else if (entityName == typeof(ESTIMATION_INDIRECT).ToString())
+                ReceiveMessage<ESTIMATION_INDIRECT, Guid>(PrimaryKey, MessageType, sender);
             else if (entityName == typeof(INDIRECT_TYPE).ToString())
                 ReceiveMessage<INDIRECT_TYPE, Guid>(PrimaryKey, MessageType, sender);
             else if (entityName == typeof(PHASE).ToString())

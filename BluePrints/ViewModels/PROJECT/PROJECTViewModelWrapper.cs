@@ -96,11 +96,6 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        Func<IRepositoryQuery<ESTIMATION>, IQueryable<ESTIMATION>> ESTIMATIONProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
-        }
-
         protected override void OnAllEntitiesCollectionLoaded()
         {
             CreateMainViewModel(this.bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
@@ -235,17 +230,6 @@ namespace BluePrints.ViewModels
                 }
 
                 return phaseViewModel;
-            }
-        }
-
-        public CollectionViewModel<ESTIMATION, ESTIMATION, Guid, IBluePrintsEntitiesUnitOfWork> ESTIMATIONViewModel
-        {
-            get
-            {
-                if (loaderCollection == null)
-                    return null;
-
-                return (CollectionViewModel<ESTIMATION, ESTIMATION, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<ESTIMATION>();
             }
         }
 

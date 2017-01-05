@@ -6,30 +6,32 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class COMMODITY_GROUP_INDIRECT
+    public partial class ESTIMATION_INDIRECT_ITEM
     {
         [Key]
         public Guid GUID { get; set; }
 
-        public Guid? GUID_PROJECT { get; set; }
+        public Guid GUID_ORIGINAL { get; set; }
 
-        public Guid? GUID_COMMODITYCODE { get; set; }
+        public Guid GUID_ESTIMATION_INDIRECT { get; set; }
 
-        public Guid? GUID_PARENT { get; set; }
+        public Guid? GUID_TIMEGROUP { get; set; }
+
+        public Guid GUID_COMMODITYCODE { get; set; }
 
         [Required]
         [StringLength(500)]
         public string DESCRIPTION { get; set; }
 
-        public DateTime? START { get; set; }
-
-        public DateTime? FINISH { get; set; }
-
-        public int? UNITS { get; set; }
+        public int UNITS { get; set; }
 
         public decimal? OPERATOR_RATE { get; set; }
 
         public decimal? PLANT_RATE { get; set; }
+
+        public decimal? HOURSAWEEK { get; set; }
+
+        public decimal? FREIGHT_FOOTPRINT { get; set; }
 
         public DateTime CREATED { get; set; }
 
@@ -44,5 +46,9 @@ namespace BluePrints.Data
         public Guid? DELETEDBY { get; set; }
 
         public virtual COMMODITY_CODE COMMODITY_CODE { get; set; }
+
+        public virtual ESTIMATION_INDIRECT ESTIMATION_INDIRECT { get; set; }
+
+        public virtual TIMEGROUP TIMEGROUP { get; set; }
     }
 }

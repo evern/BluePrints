@@ -47,11 +47,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<COMMODITY_GROUP_DIRECT>(), (COMMODITY_GROUP_DIRECT x) => x.GUID); }
         }
 
-        IRepository<COMMODITY_GROUP_INDIRECT, Guid> IBluePrintsEntitiesUnitOfWork.COMMODITY_GROUP_INDIRECT
-        {
-            get { return GetRepository(x => x.Set<COMMODITY_GROUP_INDIRECT>(), (COMMODITY_GROUP_INDIRECT x) => x.GUID); }
-        }
-
         IRepository<DEPARTMENT, Guid> IBluePrintsEntitiesUnitOfWork.DEPARTMENTS
         {
             get { return GetRepository(x => x.Set<DEPARTMENT>(), (DEPARTMENT x) => x.GUID); }
@@ -67,14 +62,24 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<DOCTYPE>(), (DOCTYPE x) => x.GUID); }
         }
 
-        IRepository<ESTIMATION_ITEM, Guid> IBluePrintsEntitiesUnitOfWork.ESTIMATION_ITEMS
+        IRepository<ESTIMATION_DIRECT, Guid> IBluePrintsEntitiesUnitOfWork.ESTIMATION_DIRECTS
         {
-            get { return GetRepository(x => x.Set<ESTIMATION_ITEM>(), (ESTIMATION_ITEM x) => x.GUID); }
+            get { return GetRepository(x => x.Set<ESTIMATION_DIRECT>(), (ESTIMATION_DIRECT x) => x.GUID); }
         }
 
-        IRepository<ESTIMATION, Guid> IBluePrintsEntitiesUnitOfWork.ESTIMATIONS
+        IRepository<ESTIMATION_DIRECT_ITEM, Guid> IBluePrintsEntitiesUnitOfWork.ESTIMATION_DIRECT_ITEMS
         {
-            get { return GetRepository(x => x.Set<ESTIMATION>(), (ESTIMATION x) => x.GUID); }
+            get { return GetRepository(x => x.Set<ESTIMATION_DIRECT_ITEM>(), (ESTIMATION_DIRECT_ITEM x) => x.GUID); }
+        }
+
+        IRepository<ESTIMATION_INDIRECT, Guid> IBluePrintsEntitiesUnitOfWork.ESTIMATION_INDIRECTS
+        {
+            get { return GetRepository(x => x.Set<ESTIMATION_INDIRECT>(), (ESTIMATION_INDIRECT x) => x.GUID); }
+        }
+
+        IRepository<ESTIMATION_INDIRECT_ITEM, Guid> IBluePrintsEntitiesUnitOfWork.ESTIMATION_INDIRECT_ITEMS
+        {
+            get { return GetRepository(x => x.Set<ESTIMATION_INDIRECT_ITEM>(), (ESTIMATION_INDIRECT_ITEM x) => x.GUID); }
         }
 
         IRepository<INDIRECT_TYPE, Guid> IBluePrintsEntitiesUnitOfWork.INDIRECT_TYPES

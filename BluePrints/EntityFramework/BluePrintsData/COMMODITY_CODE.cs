@@ -12,7 +12,8 @@ namespace BluePrints.Data
         public COMMODITY_CODE()
         {
             COMMODITY_GROUP_DIRECT = new HashSet<COMMODITY_GROUP_DIRECT>();
-            COMMODITY_GROUP_INDIRECT = new HashSet<COMMODITY_GROUP_INDIRECT>();
+            ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
+            ESTIMATION_INDIRECT_ITEM = new HashSet<ESTIMATION_INDIRECT_ITEM>();
         }
 
         [Key]
@@ -52,8 +53,6 @@ namespace BluePrints.Data
         [StringLength(50)]
         public string UOM { get; set; }
 
-        public TimeGroup? HOURSAWEEK { get; set; }
-
         public int SORTORDER { get; set; }
 
         public bool ISEXPANDED { get; set; }
@@ -78,6 +77,8 @@ namespace BluePrints.Data
 
         public virtual ICollection<COMMODITY_GROUP_DIRECT> COMMODITY_GROUP_DIRECT { get; set; }
 
-        public virtual ICollection<COMMODITY_GROUP_INDIRECT> COMMODITY_GROUP_INDIRECT { get; set; }
+        public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
+
+        public virtual ICollection<ESTIMATION_INDIRECT_ITEM> ESTIMATION_INDIRECT_ITEM { get; set; }
     }
 }

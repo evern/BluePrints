@@ -69,10 +69,6 @@ namespace BluePrints.Data
 
         public virtual DOCTYPE DOCTYPE { get; set; }
 
-        public virtual ICollection<ESTIMATION_ITEM> ESTIMATION_ITEM { get; set; }
-
-        public virtual ICollection<ESTIMATION_ITEM> ESTIMATION_ITEM1 { get; set; }
-
         public virtual PHASE PHASE { get; set; }
 
         public virtual PROJECT PROJECT { get; set; }

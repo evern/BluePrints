@@ -52,7 +52,7 @@ namespace BluePrints.Data
                             else
                             {
                                 entryKeyMember.CurrentValue = Guid.NewGuid();
-                                if (entityType.BaseType == typeof(BASELINE_ITEM) || entityType.BaseType == typeof(ESTIMATION_ITEM))
+                                if (entityType.BaseType == typeof(BASELINE_ITEM) || entityType.BaseType == typeof(ESTIMATION_DIRECT_ITEM) || entityType.BaseType == typeof(ESTIMATION_INDIRECT_ITEM))
                                 {
                                     PropertyInfo OGPropertyInfo = entityType.GetProperty("GUID_ORIGINAL");
                                     if (OGPropertyInfo.GetValue(dbEntry.Entity).ToString() == Guid.Empty.ToString())

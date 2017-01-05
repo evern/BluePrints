@@ -7,12 +7,11 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("ESTIMATION")]
-    public partial class ESTIMATION
+    public partial class ESTIMATION_DIRECT
     {
-        public ESTIMATION()
+        public ESTIMATION_DIRECT()
         {
-            ESTIMATION_ITEM = new HashSet<ESTIMATION_ITEM>();
+            ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
         }
 
         [Key]
@@ -37,12 +36,6 @@ namespace BluePrints.Data
 
         public decimal CONTINGENCY { get; set; }
 
-        [StringLength(20)]
-        public string P6ESTIMATION_NAME { get; set; }
-
-        [StringLength(20)]
-        public string P6MODESTIMATION_NAME { get; set; }
-
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }
@@ -55,7 +48,7 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual ICollection<ESTIMATION_ITEM> ESTIMATION_ITEM { get; set; }
+        public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
 
         public virtual PROJECT PROJECT { get; set; }
     }

@@ -6,31 +6,27 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("AREA")]
-    public partial class AREA
+    [Table("TIMEGROUP")]
+    public partial class TIMEGROUP
     {
-        public AREA()
+        public TIMEGROUP()
         {
-            BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
             ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
-            WORKPACK = new HashSet<WORKPACK>();
+            ESTIMATION_INDIRECT_ITEM = new HashSet<ESTIMATION_INDIRECT_ITEM>();
         }
 
         [Key]
         public Guid GUID { get; set; }
 
-        public Guid GUID_PROJECT { get; set; }
-
         [Required]
-        [StringLength(100)]
-        public string INTERNAL_NUM { get; set; }
+        [StringLength(50)]
+        public string NAME { get; set; }
 
-        [StringLength(100)]
-        public string CLIENT_NUM { get; set; }
+        public DateTime START { get; set; }
 
-        [Required]
-        [StringLength(200)]
-        public string TITLE { get; set; }
+        public DateTime FINISH { get; set; }
+
+        public int TYPE { get; set; }
 
         public DateTime CREATED { get; set; }
 
@@ -44,12 +40,8 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual PROJECT PROJECT { get; set; }
-
-        public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
-
         public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
 
-        public virtual ICollection<WORKPACK> WORKPACK { get; set; }
+        public virtual ICollection<ESTIMATION_INDIRECT_ITEM> ESTIMATION_INDIRECT_ITEM { get; set; }
     }
 }
