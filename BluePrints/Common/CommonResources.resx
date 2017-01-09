@@ -231,4 +231,7 @@
   <data name="WORKPACK_ASSIGNMENT_P6WriteComplete" xml:space="preserve">
     <value>P6 units populated</value>
   </data>
+  <data name="Estimation_Item_Direct_ReadOnly" xml:space="preserve">
+    <value>&lt;&lt;Read Only&gt;&gt;</value>
+  </data>
 </root>

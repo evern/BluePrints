@@ -259,6 +259,14 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public decimal RemainingUnitsAfterDataDate
+        {
+            get
+            {
+                return this.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS - this.TOTAL_EARNED_UNITS;
+            }
+        }
+
         public decimal MinPercentage
         {
             get

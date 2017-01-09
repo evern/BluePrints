@@ -449,6 +449,58 @@
                                 </dxg:GridControl.View>
                             </dxg:GridControl>
                         </Grid>
+                        <Grid DataContext="{Binding DataContext.ESTIMATION_DIRECTViewModel, ElementName=userControl}" dxlc:LayoutControl.TabHeader="DIRECT ESTIMATE" >
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <dxb:ToolBarControl>
+                                <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Edit" Command="{Binding EditCommand}" CommandParameter="{Binding MainViewModel.SelectedEntity}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
+                                <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Delete" Command="{Binding MainViewModel.BulkDeleteCommand}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Refresh" Command="{Binding MainViewModel.RefreshCommand}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Undo" Command="{Binding MainViewModel.UndoCommand}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
+                                <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Redo" Command="{Binding MainViewModel.RedoCommand}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
+                            </dxb:ToolBarControl>
+                            <dxg:GridControl Name="gridControlEstimationDirect" dx:DXSerializer.SerializationID="ESTIMATION_DIRECTGrid" Style="{StaticResource NestedWrapperGridTemplate}" Grid.Row="1">
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn FieldName="NAME" />
+                                    <dxg:GridColumn FieldName="REVISION" />
+                                    <dxg:GridColumn FieldName="COMMENTS" />
+                                    <dxg:GridColumn FieldName="MARGIN">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:SpinEditSettings MaskType="Numeric" Mask="p2" MinValue="0" Increment="0.1" MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="CONTINGENCY" >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:SpinEditSettings MaskType="Numeric" Mask="p2" MinValue="0" Increment="0.1" MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="STATUS" >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:EstimationStatus}}"/>
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.TotalSummary>
+                                    <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
+                                </dxg:GridControl.TotalSummary>
+                                <dxg:GridControl.GroupSummary>
+                                    <dxg:GridSummaryItem SummaryType="Count" />
+                                </dxg:GridControl.GroupSummary>
+                                <dxg:GridControl.View>
+                                    <dxg:TableView Name="tableViewEstimateDirect" Style="{StaticResource NestedWrapperTableViewTemplate}" ShowGroupedColumns="False" ShowSearchPanelMode="Never" ShowGroupPanel="False">
+                                        <dxg:TableView.RowCellMenuCustomizations>
+                                            <dxb:BarButtonItem Content="Bulk Edit" Command="{Binding View.DataContext.MainViewModel.BulkColumnEditCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
+                                            <dxb:BarButtonItem Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" Command="{Binding View.DataContext.MainViewModel.FillUpCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                                            <dxb:BarButtonItem Content="Fill Down" Glyph="{dx:DXImageOffice2013 Image=Download_16x16.png}" Command="{Binding View.DataContext.MainViewModel.FillDownCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                                            <dxb:BarButtonItem Content="Delete" Command="{Binding View.DataContext.MainViewModel.BulkDeleteCommand}" CommandParameter="{Binding View.DataContext.MainViewModel.SelectedEntities}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                            <dxb:BarButtonItem Content="Refresh" Command="{Binding View.DataContext.MainViewModel.RefreshCommand}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                        </dxg:TableView.RowCellMenuCustomizations>
+                                    </dxg:TableView>
+                                </dxg:GridControl.View>
+                            </dxg:GridControl>
+                        </Grid>
                         <Grid DataContext="{Binding DataContext.PHASEViewModel, ElementName=userControl}" dxlc:LayoutControl.TabHeader="PHASES" >
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />

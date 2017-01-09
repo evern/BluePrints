@@ -63,7 +63,7 @@ namespace BluePrints.ViewModels
 
         Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => query.Where(x => x.STATUS == BaselineStatus.Live && x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
@@ -110,7 +110,7 @@ namespace BluePrints.ViewModels
             Func<IQueryable<RATE>> getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
             Func<IQueryable<VARIATION>> getVARIATIONSFunc = loaderCollection.GetCollectionFunc<VARIATION>();
 
-            return query => PROJECT_DashboardQueries.SummarizePROJECTDashboard(query, getPROGRESSESFunc, getPROGRESS_ITEMSFunc, getBASELINESFunc, getRATESFunc, getVARIATIONSFunc, () => this.RaisePropertyChanged(), true);
+            return query => PROJECT_DashboardQueries.SummarizePROJECTDashboard(query, getPROGRESSESFunc, getPROGRESS_ITEMSFunc, getBASELINESFunc, getRATESFunc, getVARIATIONSFunc, () => this.RaisePropertyChanged(), loadPROJECT.GUID);
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)
@@ -230,6 +230,23 @@ namespace BluePrints.ViewModels
                 }
 
                 return phaseViewModel;
+            }
+        }
+
+        ESTIMATION_DIRECTCollectionViewModelWrapper estimationDirectViewModel;
+        public ESTIMATION_DIRECTCollectionViewModelWrapper ESTIMATION_DIRECTViewModel
+        {
+            get
+            {
+                if (estimationDirectViewModel == null && this.loadPROJECT != null)
+                {
+                    estimationDirectViewModel = ESTIMATION_DIRECTCollectionViewModelWrapper.Create();
+                    estimationDirectViewModel.SetParentViewModel(this);
+                    ISupportParameter baselineSupportParameterObj = estimationDirectViewModel as ISupportParameter;
+                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(this.loadPROJECT);
+                }
+
+                return estimationDirectViewModel;
             }
         }
 

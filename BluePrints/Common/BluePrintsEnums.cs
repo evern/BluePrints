@@ -170,7 +170,8 @@ namespace BluePrints.Common
     {
         Design,
         Supply,
-        Install
+        Install,
+        Indirect
     }
 
     public enum VariationType

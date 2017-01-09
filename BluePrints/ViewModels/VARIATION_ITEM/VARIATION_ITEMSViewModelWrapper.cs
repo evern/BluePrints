@@ -626,9 +626,9 @@ namespace BluePrints.ViewModels
                         newWORKPACK.INTERNAL_NAME2 = BluePrintDataUtils.WORKPACK_Generate_InternalNumber2(loadPROJECT, newWORKPACK, WORKPACKCollection, AREACollection, DISCIPLINECollection, PHASECollection);
                        
                         newWORKPACK.STARTDATE = DateTime.Now;
-                        newWORKPACK.ENDDATE = BluePrintDataUtils.WORKPACK_Calculate_EndDate(newWORKPACK.STARTDATE, loadPROJECT);
-                        DateTime reviewStartDate = newWORKPACK.STARTDATE;
-                        DateTime reviewEndDate = newWORKPACK.ENDDATE;
+                        newWORKPACK.ENDDATE = BluePrintDataUtils.WORKPACK_Calculate_EndDate((DateTime)newWORKPACK.STARTDATE, loadPROJECT);
+                        DateTime reviewStartDate = (DateTime)newWORKPACK.STARTDATE;
+                        DateTime reviewEndDate = (DateTime)newWORKPACK.ENDDATE;
                         BluePrintDataUtils.WORKPACK_Calculate_ReviewPeriod(ref reviewStartDate, ref reviewEndDate, loadPROJECT, false);
                         newWORKPACK.REVIEWSTARTDATE = reviewStartDate;
                         newWORKPACK.REVIEWENDDATE = reviewEndDate;

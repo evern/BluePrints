@@ -15,6 +15,8 @@ namespace BluePrints.Data
 
         public Guid GUID_ESTIMATION_INDIRECT { get; set; }
 
+        public Guid? GUID_WORKPACK { get; set; }
+
         public Guid? GUID_TIMEGROUP { get; set; }
 
         public Guid GUID_COMMODITYCODE { get; set; }
@@ -50,5 +52,7 @@ namespace BluePrints.Data
         public virtual ESTIMATION_INDIRECT ESTIMATION_INDIRECT { get; set; }
 
         public virtual TIMEGROUP TIMEGROUP { get; set; }
+
+        public virtual WORKPACK WORKPACK { get; set; }
     }
 }

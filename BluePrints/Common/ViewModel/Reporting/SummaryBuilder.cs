@@ -273,7 +273,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 {
                     List<Period> workpackSuspensionPeriod = new List<Period>();
 
-                    workpackSuspensionPeriod.Add(new Period(currentWORKPACK.REVIEWSTARTDATE, currentWORKPACK.REVIEWENDDATE));
+                    workpackSuspensionPeriod.Add(new Period((DateTime)currentWORKPACK.REVIEWSTARTDATE, (DateTime)currentWORKPACK.REVIEWENDDATE));
 
                     decimal BaselineItemBaseUnits = currentBASELINE_ITEM.BASELINE_ITEM.ESTIMATED_HOURS;
                     decimal BaselineItemBaseCosts = currentBASELINE_ITEM.ESTIMATED_COSTS;
@@ -283,22 +283,22 @@ namespace BluePrints.Common.ViewModel.Reporting
                     List<ProgressInfo> plannedDataPoints;
                     if (fromOriginalBaseline) //if it's generating from original baseline ignore variation
                     {
-                        TimeSpan workingBaseTimeSpan = currentWORKPACK.ENDDATE - currentWORKPACK.STARTDATE;
-                        plannedDataPoints = ISupportProgressReportingExtensions.DataPointsGenerator(SummaryObject, workingBaseTimeSpan, BaselineItemBaseUnits, BaselineItemBaseCosts, currentWORKPACK.STARTDATE, currentBASELINE_ITEM.BASELINE_ITEM.GUID_ORIGINAL, this.CurrencyConversion, workpackSuspensionPeriod, BaselineItemTotalUnits, BaselineItemTotalCosts);
+                        TimeSpan workingBaseTimeSpan = (DateTime)currentWORKPACK.ENDDATE - (DateTime)currentWORKPACK.STARTDATE;
+                        plannedDataPoints = ISupportProgressReportingExtensions.DataPointsGenerator(SummaryObject, workingBaseTimeSpan, BaselineItemBaseUnits, BaselineItemBaseCosts, (DateTime)currentWORKPACK.STARTDATE, currentBASELINE_ITEM.BASELINE_ITEM.GUID_ORIGINAL, this.CurrencyConversion, workpackSuspensionPeriod, BaselineItemTotalUnits, BaselineItemTotalCosts);
                         ReportableObject.NonCumulative_OriginalDataPoints = new ObservableCollection<ProgressInfo>(plannedDataPoints);
                     }
                     else
                     {
-                        DateTime modifiedEndDateToUse = currentWORKPACK.ENDDATE;
+                        DateTime modifiedEndDateToUse = (DateTime)currentWORKPACK.ENDDATE;
                         if (currentWORKPACK.FORECASTENDDATE != null)
                             modifiedEndDateToUse = (DateTime)currentWORKPACK.FORECASTENDDATE;
 
-                        TimeSpan workingModifiedTimeSpan = modifiedEndDateToUse - currentWORKPACK.STARTDATE;
+                        TimeSpan workingModifiedTimeSpan = modifiedEndDateToUse - (DateTime)currentWORKPACK.STARTDATE;
                         if (currentWORKPACK.FORECASTSTARTDATE != null && ((DateTime)currentWORKPACK.FORECASTSTARTDATE) > currentWORKPACK.ENDDATE)
-                            workpackSuspensionPeriod.Add(new Period(currentWORKPACK.ENDDATE.AddDays(1), (DateTime)currentWORKPACK.FORECASTSTARTDATE));
+                            workpackSuspensionPeriod.Add(new Period(((DateTime)currentWORKPACK.ENDDATE).AddDays(1), (DateTime)currentWORKPACK.FORECASTSTARTDATE));
 
                         //Used to show sharktooth on variation
-                        plannedDataPoints = ISupportProgressReportingExtensions.DataPointsGenerator(SummaryObject, workingModifiedTimeSpan, BaselineItemBaseUnits, BaselineItemBaseCosts, currentWORKPACK.STARTDATE, currentBASELINE_ITEM.BASELINE_ITEM.GUID_ORIGINAL, this.CurrencyConversion, workpackSuspensionPeriod, null, null, ReportableObject.Cumulative_VariationAdjustments);
+                        plannedDataPoints = ISupportProgressReportingExtensions.DataPointsGenerator(SummaryObject, workingModifiedTimeSpan, BaselineItemBaseUnits, BaselineItemBaseCosts, (DateTime)currentWORKPACK.STARTDATE, currentBASELINE_ITEM.BASELINE_ITEM.GUID_ORIGINAL, this.CurrencyConversion, workpackSuspensionPeriod, null, null, ReportableObject.Cumulative_VariationAdjustments);
 
                         //Used to show normalized variation
                         //plannedDataPoints = DataPointsGenerator(WorkingPeriod, progressInterval, BaselineItemTotalUnits, BaselineItemTotalCosts, this.CurrencyConversion, baselineItem.WORKPACK.STARTDATE, firstAlignedDataDate, baselineItem.GUID_ORIGINAL);
@@ -518,7 +518,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             foreach (ReportableObject reportableObject in SummaryObject.ReportableObjects)
             {
                 //when remaining units is more than 0 continue calculation
-                if (reportableObject.FuturePROGRESS_ITEMS_UNITS > 0)
+                if (reportableObject.RemainingUnitsAfterDataDate > 0)
                 {
                     List<ProgressInfo> progressItemP6DataPoints;
                     if (reportableObject.isDataPointsGeneratedFromP6 && TryBuildP6DataPoints(this.PROGRESS_PROJECT, this.PROGRESS_TASKS, reportableObject, DataPointsType.Remaining, WorkpackAssignmentLoadType.Modified, out progressItemP6DataPoints))
@@ -532,7 +532,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         if (reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK.FORECASTSTARTDATE != null)
                             startDateToUse = (DateTime)reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK.FORECASTSTARTDATE;
                         else
-                            startDateToUse = reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK.STARTDATE;
+                            startDateToUse = (DateTime)reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK.STARTDATE;
 
                         //when workpack dates are later than data date use workpack dates but have a prorate value ready for first period
                         if (startDateToUse > SummaryObject.LivePROGRESS.DATA_DATE)
@@ -550,7 +550,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                         decimal currentEfficiency = (reportableObject.ActualProductivity / reportableObject.BaselineProductivity);
 
-                        reportableObject.NonCumulative_RemainingPlannedDataPoints = ISupportProgressReportingExtensions.RemainingDataPointsGenerator(SummaryObject, reportableObject, firstAlignedWeekEndingDataDate, exceptionPeriods, reportableObject.FuturePROGRESS_ITEMS_UNITS, reportableObject.BaselineProductivity, this.CurrencyConversion, firstPeriodProRate);
+                        reportableObject.NonCumulative_RemainingPlannedDataPoints = ISupportProgressReportingExtensions.RemainingDataPointsGenerator(SummaryObject, reportableObject, firstAlignedWeekEndingDataDate, exceptionPeriods, reportableObject.RemainingUnitsAfterDataDate, reportableObject.BaselineProductivity, this.CurrencyConversion, firstPeriodProRate);
 
                         //if there's a planned finish date based on baseline productivity, inflate periodic units/costs
                         DateTime? plannedLimitDate = (reportableObject.NonCumulative_RemainingPlannedDataPoints == null || reportableObject.NonCumulative_RemainingPlannedDataPoints.Count == 0) ? (DateTime?)null : reportableObject.NonCumulative_RemainingPlannedDataPoints.Last().ProgressDate;
@@ -558,7 +558,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         if (currentEfficiency < maxInefficiency)
                             currentEfficiency = maxInefficiency;
 
-                        decimal inflatedInefficientUnits = currentEfficiency > 0 ? (reportableObject.FuturePROGRESS_ITEMS_UNITS / currentEfficiency) : reportableObject.FuturePROGRESS_ITEMS_UNITS;
+                        decimal inflatedInefficientUnits = currentEfficiency > 0 ? (reportableObject.RemainingUnitsAfterDataDate / currentEfficiency) : reportableObject.RemainingUnitsAfterDataDate;
 
                         reportableObject.NonCumulative_RemainingCurrentDataPoints = ISupportProgressReportingExtensions.RemainingDataPointsGenerator(SummaryObject, reportableObject, firstAlignedWeekEndingDataDate, exceptionPeriods, inflatedInefficientUnits, reportableObject.ActualProductivity, this.CurrencyConversion, firstPeriodProRate, plannedLimitDate);
                     }
@@ -581,20 +581,19 @@ namespace BluePrints.Common.ViewModel.Reporting
             foreach (ReportableObject reportableItem in SummaryObject.ReportableObjects)
             {
                 //when remaining units is more than 0 continue calculation
-                if (reportableItem.FuturePROGRESS_ITEMS_UNITS > 0)
+                if (reportableItem.RemainingUnitsAfterDataDate > 0)
                     BuildReportableObjectProductivity(reportableItem, exceptionPeriods);
             }
         }
 
         private void BuildReportableObjectProductivity(ReportableObject reportableObject, List<Period> exceptionPeriods)
         {
-            decimal remainingUnitsAfterDataDate = reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS - reportableObject.TOTAL_EARNED_UNITS;
             //When productivity is below this threshold, escalate to workpack or project
             decimal minimumProductivityBeforeEscalating = 0.001M;
 
             //establish dates for productivity assessment
-            DateTime workpackStart = reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK.STARTDATE;
-            DateTime workpackEnd = reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK.ENDDATE;
+            DateTime workpackStart = (DateTime)reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK.STARTDATE;
+            DateTime workpackEnd = (DateTime)reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK.ENDDATE;
             DateTime? workpackForecastStart = reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK.FORECASTSTARTDATE;
             DateTime? workpackForecastEnd = reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK.FORECASTENDDATE;
 
@@ -641,13 +640,13 @@ namespace BluePrints.Common.ViewModel.Reporting
             decimal workpackBaseProductivity = 0;
             //not checking for progressItemWorkpack null because all progress item should have workpacks assigned if the user 
             decimal totalWorkpackBudgetedUnits = (currentWORKPACK == null || currentWORKPACK.BASELINE_ITEM == null) ? 0 : currentWORKPACK.BASELINE_ITEM.Sum(pItem => pItem.ESTIMATED_HOURS);
-            workpackBaseProductivity = ISupportProgressReportingExtensions.CalculatePlannedProductivity(assessmentPeriod, exceptionPeriods, remainingUnitsAfterDataDate);
+            workpackBaseProductivity = ISupportProgressReportingExtensions.CalculatePlannedProductivity(assessmentPeriod, exceptionPeriods, reportableObject.RemainingUnitsAfterDataDate);
 
             if (reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS == 0)
                 reportableObject.BaselineProductivity = workpackBaseProductivity;
             else
             {
-                reportableObject.BaselineProductivity = ISupportProgressReportingExtensions.CalculatePlannedProductivity(assessmentPeriod, exceptionPeriods, remainingUnitsAfterDataDate);
+                reportableObject.BaselineProductivity = ISupportProgressReportingExtensions.CalculatePlannedProductivity(assessmentPeriod, exceptionPeriods, reportableObject.RemainingUnitsAfterDataDate);
                 //apply normalized productivity for unusually low calculated productivity
                 if (reportableObject.BaselineProductivity < minimumProductivityBeforeEscalating)
                 {

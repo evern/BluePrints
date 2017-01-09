@@ -30,33 +30,6 @@ namespace BluePrints.Common.Projections
 
         public ObservableCollection<COMMODITY_GROUP_DIRECTProjection> CHILD_COMMODITY_GROUP { get; set; }
 
-        public RATE RATE { get; set; }
-
-        public decimal ITEMRATE
-        {
-            get
-            {
-                if (RATE == null || RATE.RATE1 == null)
-                    return 0;
-
-                return (decimal)RATE.RATE1;
-            }
-        }
-
-        public decimal INSTALL_COSTS
-        {
-            get
-            {
-                if (COMMODITY_GROUP == null || COMMODITY_GROUP.HOURS_INSTALL == null)
-                    return 0;
-
-                if (RATE == null || RATE.RATE1 == null)
-                    return 0;
-
-                return (decimal)COMMODITY_GROUP.HOURS_INSTALL * (decimal)RATE.RATE1;
-            }
-        }
-
         public override string ToString()
         {
             return COMMODITY_GROUP.DESCRIPTION;

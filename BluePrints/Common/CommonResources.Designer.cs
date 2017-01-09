@@ -250,6 +250,15 @@ namespace BluePrints.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;&lt;Read Only&gt;&gt;.
+        /// </summary>
+        internal static string Estimation_Item_Direct_ReadOnly {
+            get {
+                return ResourceManager.GetString("Estimation_Item_Direct_ReadOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DataService Request Error.
         /// </summary>
         internal static string Exception_DataServiceRequestErrorCaption {

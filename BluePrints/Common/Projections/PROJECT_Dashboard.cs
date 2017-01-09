@@ -35,7 +35,7 @@ namespace BluePrints.Common.Projections
 
     public static class PROJECT_DashboardQueries
     {
-        public static IQueryable<PROJECT_Dashboard> SummarizePROJECTDashboard(IQueryable<PROJECT> PROJECTS, Func<IQueryable<PROGRESS>> getLivePROGRESSESFunc, Func<IQueryable<PROGRESS_ITEM>> getLivePROGRESS_ITEMFunc, Func<IQueryable<BASELINE>> getLiveBASELINESFunc, Func<IQueryable<RATE>> getRATESFunc, Func<IQueryable<VARIATION>> getApprovedVARIATIONFunc = null, Action raisePropertyChanged = null, bool ignoreLiveStatus = false)
+        public static IQueryable<PROJECT_Dashboard> SummarizePROJECTDashboard(IQueryable<PROJECT> PROJECTS, Func<IQueryable<PROGRESS>> getLivePROGRESSESFunc, Func<IQueryable<PROGRESS_ITEM>> getLivePROGRESS_ITEMFunc, Func<IQueryable<BASELINE>> getLiveBASELINESFunc, Func<IQueryable<RATE>> getRATESFunc, Func<IQueryable<VARIATION>> getApprovedVARIATIONFunc = null, Action raisePropertyChanged = null, Guid? SinglePROJECTGuid = null)
         {
             IEnumerable<BASELINE> LiveBASELINES = getLiveBASELINESFunc().ToArray().AsEnumerable();
             IEnumerable<PROGRESS> LivePROGRESSES = getLivePROGRESSESFunc().ToArray().AsEnumerable();
@@ -48,8 +48,9 @@ namespace BluePrints.Common.Projections
             
             IEnumerable<RATE> AllRATES = getRATESFunc();
             IEnumerable<PROJECT> localPROJECTS;
-            if(ignoreLiveStatus)
-                localPROJECTS = PROJECTS.ToArray().AsEnumerable();
+
+            if(SinglePROJECTGuid != null)
+                localPROJECTS = PROJECTS.Where(x => x.GUID == SinglePROJECTGuid).ToArray().AsEnumerable(); //process only active PROJECTS
             else
                 localPROJECTS = PROJECTS.Where(x => x.STATUS == ProjectStatus.Active).ToArray().AsEnumerable(); //process only active PROJECTS
 

@@ -345,15 +345,12 @@ namespace BluePrints.ViewModels
                 newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle, "COMMODITYCollectionView", TablesGroup, null, new EntitiesParameter<PROJECT>(entity), COMMODITYModuleTreeProperty));
             }
 
-            //if (LoginCredentials.hasPermission(PermissionResources.ManageEstimation))
-            //{
-            //    //TreeViewProperty PROJECTESTIMATIONModuleTreeProperty = new TreeViewProperty() { Id = "ESTIMATIONCollectionView" + entity.NUMBER, ParentId = PROJECTModuleTreeProperty.Id, Image = TreeViewImage };
-            //    //moduleTitle = "[" + entity.NUMBER + "] ESTIMATIONS";
-            //    //moduleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle, "ESTIMATIONCollectionView", TablesGroup, null, new EntitiesParameter<PROJECT>(entity), PROJECTESTIMATIONModuleTreeProperty));
-            //    TreeViewProperty PROJECTLIVEESTIMATIONModuleTreeProperty = new TreeViewProperty() { Id = "LiveESTIMATIONView" + entity.NUMBER, ParentId = PROJECTModuleTreeProperty.Id, Image = TreeViewImage };
-            //    moduleTitle = "Estimation";
-            //    newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle, "ESTIMATION_ITEMCollectionView", TablesGroup, null, new OptionalEntitiesParameter<PROJECT, ESTIMATION>(entity, null), PROJECTLIVEESTIMATIONModuleTreeProperty));
-            //}
+            if (LoginCredentials.hasPermission(PermissionResources.ManageEstimation))
+            {
+                TreeViewProperty PROJECTLIVEESTIMATIONModuleTreeProperty = new TreeViewProperty() { Id = "LiveESTIMATIONDIRECTView" + entity.NUMBER, ParentId = PROJECTModuleTreeViewProperty.Id, Image = ModuleTreeProperty.TreeViewImage };
+                moduleTitle = "Estimation";
+                newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle, "ESTIMATION_DIRECT_ITEMCollectionView", TablesGroup, null, new OptionalEntitiesParameter<PROJECT, ESTIMATION_DIRECT>(entity, null), PROJECTLIVEESTIMATIONModuleTreeProperty));
+            }
 
             return newModules;
         }
