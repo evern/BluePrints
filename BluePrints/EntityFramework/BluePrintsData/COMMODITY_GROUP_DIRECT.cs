@@ -8,6 +8,11 @@ namespace BluePrints.Data
 
     public partial class COMMODITY_GROUP_DIRECT
     {
+        public COMMODITY_GROUP_DIRECT()
+        {
+            ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
+        }
+
         [Key]
         public Guid GUID { get; set; }
 
@@ -48,6 +53,8 @@ namespace BluePrints.Data
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 
-        public virtual PROGRESS_ITEM PROGRESS_ITEM { get; set; }
+        public virtual PROJECT PROJECT { get; set; }
+
+        public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
     }
 }

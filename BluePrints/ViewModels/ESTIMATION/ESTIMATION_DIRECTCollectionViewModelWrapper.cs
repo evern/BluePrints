@@ -14,6 +14,7 @@ using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -137,6 +138,7 @@ namespace BluePrints.ViewModels
                 return "ESTIMATION_DIRECTCollectionViewModelWrapper";
             }
         }
+
 
         public IEnumerable<BluePrints.P6Data.PROJWBS> P6PROJECTSCollection
         {

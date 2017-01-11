@@ -11,8 +11,6 @@ namespace BluePrints.Data
         [Key]
         public Guid GUID { get; set; }
 
-        public Guid GUID_ORIGINAL_PARENT { get; set; }
-
         public Guid GUID_ORIGINAL { get; set; }
 
         public Guid GUID_ESTIMATION_DIRECT { get; set; }
@@ -27,7 +25,8 @@ namespace BluePrints.Data
 
         public Guid? GUID_DISCIPLINE { get; set; }
 
-        public Guid GUID_COMMODITYCODE { get; set; }
+        [Required]
+        public Guid GUID_COMMODITY_GROUP_DIRECT { get; set; }
 
         public Guid? GUID_TIMEGROUP { get; set; }
 
@@ -56,11 +55,15 @@ namespace BluePrints.Data
 
         public virtual AREA AREA { get; set; }
 
-        public virtual COMMODITY_CODE COMMODITY_CODE { get; set; }
+        public virtual COMMODITY_GROUP_DIRECT COMMODITY_GROUP_DIRECT { get; set; }
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 
         public virtual ESTIMATION_DIRECT ESTIMATION_DIRECT { get; set; }
+
+        public virtual WORKPACK WORKPACK { get; set; }
+
+        public virtual WORKPACK WORKPACK1 { get; set; }
 
         public virtual TIMEGROUP TIMEGROUP { get; set; }
     }

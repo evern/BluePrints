@@ -273,7 +273,7 @@ namespace BluePrints.ViewModels
                 if (e.Column.FieldName == "STARTDATE")
                 {
                     startDate = (DateTime)e.Value;
-                    endDate = changingWORKPACK.ENDDATE;
+                    endDate = (DateTime)changingWORKPACK.ENDDATE;
                     if (endDate < startDate)
                     {
                         endDate = BluePrintDataUtils.WORKPACK_Calculate_EndDate(startDate, loadPROJECT);
@@ -283,7 +283,7 @@ namespace BluePrints.ViewModels
                 else
                 {
                     endDate = (DateTime)e.Value;
-                    startDate = changingWORKPACK.STARTDATE;
+                    startDate = (DateTime)changingWORKPACK.STARTDATE;
                     if (endDate < startDate)
                     {
                         startDate = BluePrintDataUtils.WORKPACK_Calculate_StartDate(endDate, loadPROJECT);

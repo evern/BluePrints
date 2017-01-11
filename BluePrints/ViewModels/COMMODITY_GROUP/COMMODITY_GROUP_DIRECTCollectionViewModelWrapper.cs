@@ -50,12 +50,17 @@ namespace BluePrints.ViewModels
         PROJECT loadPROJECT;
         bool isPROJECTSpecific;
         DispatcherTimer delayedRefresher;
+        DispatcherTimer delayedNotifier;
         IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void InitializeParameters(object parameter)
         {
             delayedRefresher = new DispatcherTimer();
             delayedRefresher.Interval = new TimeSpan(0, 0, 0, 0, 10);
             delayedRefresher.Tick += delayedRefresher_Tick;
+
+            delayedNotifier = new DispatcherTimer();
+            delayedNotifier.Interval = new TimeSpan(0, 0, 0, 0, 10);
+            delayedNotifier.Tick += delayedNotifier_Tick;
 
             if (parameter != null)
             {
@@ -172,50 +177,101 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        object delayedNotifier_key;
+        Type delayedNotifier_ChangedType;
+        EntityMessageType? delayedNotifier_MessageType;
+        object delayedNotifier_sender;
+
+        /// <summary>
+        /// Entities changed executed on main thread so that newest ViewModel entities is available
+        /// </summary>
+        private void DisplayEntities_OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
-            if (changedType == typeof(COMMODITY_GROUP_DIRECT))
+            mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.RefreshWithoutClearingUndoManager()));
+            delayedNotifier_key = key;
+            delayedNotifier_ChangedType = changedType;
+            delayedNotifier_MessageType = messageType;
+            delayedNotifier_sender = sender;
+
+            delayedNotifier.Start();
+        }
+
+        void delayedNotifier_Tick(object sender, EventArgs e)
+        {
+            delayedNotifier.Stop();
+            if (delayedNotifier_key == null || delayedNotifier_ChangedType == null || delayedNotifier_MessageType == null || delayedNotifier_sender == null)
+                return;
+
+            if (delayedNotifier_ChangedType == typeof(COMMODITY_GROUP_DIRECT))
             {
                 if (MainViewModel == null)
                     return;
 
-                if (!IsChangedFromBackEnd && !MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation() && (sender.ToString() == MainViewModel.ToString() || sender.ToString() == this.ToString()))
-                    return;
+                //if (!IsChangedFromBackEnd && !MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation() && (delayedNotifier_sender.ToString() == MainViewModel.ToString() || delayedNotifier_sender.ToString() == this.ToString()))
+                //    return;
 
-                if (messageType == EntityMessageType.Added)
-                {
-                    COMMODITY_GROUP_DIRECTProjection addedEntity = MainViewModel.Entities.First(x => x.GUID == (Guid)key);
-                    if (addedEntity.COMMODITY_GROUP.GUID_PARENT != null)
-                    {
-                        COMMODITY_GROUP_DIRECTProjection parentEntity = displayEntities.FirstOrDefault(x => x.GUID == addedEntity.COMMODITY_GROUP.GUID_PARENT);
-                        if (parentEntity != null)
-                        {
-                            COMMODITY_GROUP_DIRECTProjection addedEntityPOCO = ViewModelSource.Create(() => new COMMODITY_GROUP_DIRECTProjection());
-                            DataUtils.ShallowCopy(addedEntityPOCO, addedEntity);
-                            parentEntity.CHILD_COMMODITY_GROUP.Add(addedEntityPOCO);
-                        }
-                    }
-                    else
-                    {
-                        COMMODITY_GROUP_DIRECTProjection addedEntityPOCO = ViewModelSource.Create(() => new COMMODITY_GROUP_DIRECTProjection());
-                        DataUtils.ShallowCopy(addedEntityPOCO, addedEntity);
-                        displayEntities.Add(addedEntityPOCO);
-                    }
-                }
-                else if(messageType == EntityMessageType.Changed)
-                {
-                    IEnumerable<COMMODITY_GROUP_DIRECTProjection> flatDisplayEntities = displayEntities.Concat(displayEntities.SelectMany(x => x.CHILD_COMMODITY_GROUP));
-                    COMMODITY_GROUP_DIRECTProjection changedEntity = flatDisplayEntities.First(x => x.GUID == (Guid)key);
-                    COMMODITY_GROUP_DIRECTProjection actualEntity = MainViewModel.Entities.First(x => x.GUID == (Guid)key);
-                    DataUtils.ShallowCopy(changedEntity.COMMODITY_GROUP, actualEntity.COMMODITY_GROUP);
-                    
-                    changedEntity.RaisePropertiesChanged();
-                    IsChangedFromBackEnd = false;
-                }
+                //if (delayedNotifier_MessageType == EntityMessageType.Added)
+                //{
+                //    COMMODITY_GROUP_DIRECTProjection addedEntity = MainViewModel.Entities.First(x => x.GUID == (Guid)delayedNotifier_key);
+                //    if (addedEntity.COMMODITY_GROUP.GUID_PARENT != null)
+                //    {
+                //        COMMODITY_GROUP_DIRECTProjection parentEntity = displayEntities.FirstOrDefault(x => x.GUID == addedEntity.COMMODITY_GROUP.GUID_PARENT);
+                //        if (parentEntity != null)
+                //        {
+                //            COMMODITY_GROUP_DIRECTProjection addedEntityPOCO = ViewModelSource.Create(() => new COMMODITY_GROUP_DIRECTProjection());
+                //            DataUtils.ShallowCopy(addedEntityPOCO, addedEntity);
 
+                //            COMMODITY_GROUP_DIRECTProjection parentDisplayEntity = displayEntities.FirstOrDefault(x => x.GUID == (Guid)addedEntity.COMMODITY_GROUP.GUID_PARENT);
+                //            if (parentDisplayEntity != null)
+                //            {
+                //                COMMODITY_GROUP_DIRECTProjection childDisplayEntity = parentDisplayEntity.CHILD_COMMODITY_GROUP.FirstOrDefault(x => x.GUID == (Guid)delayedNotifier_key);
+                //                if (childDisplayEntity != null)
+                //                    parentDisplayEntity.CHILD_COMMODITY_GROUP.Remove(childDisplayEntity);
+                //            }
+
+                //            parentEntity.CHILD_COMMODITY_GROUP.Add(addedEntityPOCO);
+                //        }
+                //    }
+                //    else
+                //    {
+                //        COMMODITY_GROUP_DIRECTProjection addedEntityPOCO = ViewModelSource.Create(() => new COMMODITY_GROUP_DIRECTProjection());
+                //        DataUtils.ShallowCopy(addedEntityPOCO, addedEntity);
+
+                //        COMMODITY_GROUP_DIRECTProjection displayEntity = displayEntities.FirstOrDefault(x => x.GUID == (Guid)delayedNotifier_key);
+                //        if (displayEntity != null)
+                //            displayEntities.Remove(displayEntity);
+
+                //        displayEntities.Add(addedEntityPOCO);
+                //    }
+                //}
+                //else if (delayedNotifier_MessageType == EntityMessageType.Changed)
+                //{
+                //    IEnumerable<COMMODITY_GROUP_DIRECTProjection> flatDisplayEntities = displayEntities.Concat(displayEntities.SelectMany(x => x.CHILD_COMMODITY_GROUP));
+                //    COMMODITY_GROUP_DIRECTProjection changedEntity = flatDisplayEntities.FirstOrDefault(x => x.GUID == (Guid)delayedNotifier_key);
+                //    //changedEntity can be null if notification comes from a global commodity group view and current view is project specific
+                //    if (changedEntity != null)
+                //    {
+                //        COMMODITY_GROUP_DIRECTProjection actualEntity = MainViewModel.Entities.First(x => x.GUID == (Guid)delayedNotifier_key);
+                //        DataUtils.ShallowCopy(changedEntity.COMMODITY_GROUP, actualEntity.COMMODITY_GROUP);
+
+                //        changedEntity.RaisePropertiesChanged();
+                //    }
+                //}
+
+                displayEntities = null;
                 this.RaisePropertyChanged(x => x.DisplayEntities);
-                return;
             }
+
+            IsChangedFromBackEnd = false;
+            delayedNotifier_key = null;
+            delayedNotifier_ChangedType = null;
+            delayedNotifier_MessageType = null;
+            delayedNotifier_sender = null;
+        }
+
+        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        {
+            DisplayEntities_OnAfterEntitiesChanged(key, changedType, messageType, sender);
 
             if (sender.ToString() == MainViewModel.ToString() || sender.ToString() == this.ToString())
                 return;
@@ -462,7 +518,7 @@ namespace BluePrints.ViewModels
             return null;
         }
 
-        private void Save(COMMODITY_GROUP_DIRECTProjection newCOMMODITY_GROUP)
+        public void Save(COMMODITY_GROUP_DIRECTProjection newCOMMODITY_GROUP)
         {
             IsChangedFromBackEnd = true;
             MainViewModel.Save(newCOMMODITY_GROUP);

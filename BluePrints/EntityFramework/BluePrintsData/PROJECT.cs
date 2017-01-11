@@ -24,6 +24,7 @@ namespace BluePrints.Data
             RATE = new HashSet<RATE>();
             VARIATION = new HashSet<VARIATION>();
             WORKPACK = new HashSet<WORKPACK>();
+            COMMODITY_GROUP_DIRECT = new HashSet<COMMODITY_GROUP_DIRECT>();
         }
 
         [Key]
@@ -70,6 +71,8 @@ namespace BluePrints.Data
         public virtual ICollection<AREA> AREA { get; set; }
 
         public virtual ICollection<BASELINE> BASELINE { get; set; }
+
+        public virtual ICollection<COMMODITY_GROUP_DIRECT> COMMODITY_GROUP_DIRECT { get; set; }
 
         public virtual ICollection<ESTIMATION_DIRECT> ESTIMATION_DIRECT { get; set; }
 

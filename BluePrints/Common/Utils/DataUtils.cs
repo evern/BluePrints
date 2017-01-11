@@ -33,6 +33,9 @@ namespace BluePrints.Data.Helpers
     {
         public static object ShallowCopy(object copyObject, object objectToCopy, bool copyVirtualProperties = false)
         {
+            if (copyObject == null || objectToCopy == null)
+                return null;
+
             IEnumerable<PropertyInfo> objectToCopyProperties = objectToCopy.GetType().GetProperties().Where(p => (copyVirtualProperties == true || !p.GetGetMethod().IsVirtual) && !p.GetCustomAttributes().Any(attr => attr.GetType() == typeof(ProjectionPropertyAttribute)));
             foreach(var objectToCopyProperty in objectToCopyProperties)
             {

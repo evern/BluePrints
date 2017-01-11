@@ -31,10 +31,6 @@ namespace BluePrints.Data
 
         public int STATUS { get; set; }
 
-        public decimal MARGIN { get; set; }
-
-        public decimal CONTINGENCY { get; set; }
-
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

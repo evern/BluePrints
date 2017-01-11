@@ -12,7 +12,6 @@ namespace BluePrints.Data
         public COMMODITY_CODE()
         {
             COMMODITY_GROUP_DIRECT = new HashSet<COMMODITY_GROUP_DIRECT>();
-            ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
             ESTIMATION_INDIRECT_ITEM = new HashSet<ESTIMATION_INDIRECT_ITEM>();
         }
 
@@ -76,8 +75,6 @@ namespace BluePrints.Data
         public virtual INDIRECT_TYPE INDIRECT_TYPE { get; set; }
 
         public virtual ICollection<COMMODITY_GROUP_DIRECT> COMMODITY_GROUP_DIRECT { get; set; }
-
-        public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
 
         public virtual ICollection<ESTIMATION_INDIRECT_ITEM> ESTIMATION_INDIRECT_ITEM { get; set; }
     }

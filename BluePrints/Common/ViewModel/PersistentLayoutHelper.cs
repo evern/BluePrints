@@ -33,7 +33,14 @@ namespace BluePrints.Common.ViewModel
             string state = null;
             if (service != null && PersistentLayoutHelper.PersistentViewsLayout.TryGetValue(viewName, out state))
             {
-                service.Deserialize(state);
+                try
+                {
+                    service.Deserialize(state);
+                }
+                catch
+                {
+
+                }
             }
         }
 

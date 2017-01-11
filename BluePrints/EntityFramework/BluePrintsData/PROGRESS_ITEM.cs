@@ -8,11 +8,6 @@ namespace BluePrints.Data
 
     public partial class PROGRESS_ITEM
     {
-        public PROGRESS_ITEM()
-        {
-            COMMODITY_GROUP_DIRECT = new HashSet<COMMODITY_GROUP_DIRECT>();
-        }
-
         [Key]
         public Guid GUID { get; set; }
 
@@ -35,8 +30,6 @@ namespace BluePrints.Data
         public DateTime? DELETED { get; set; }
 
         public Guid? DELETEDBY { get; set; }
-
-        public virtual ICollection<COMMODITY_GROUP_DIRECT> COMMODITY_GROUP_DIRECT { get; set; }
 
         public virtual PROGRESS PROGRESS { get; set; }
     }

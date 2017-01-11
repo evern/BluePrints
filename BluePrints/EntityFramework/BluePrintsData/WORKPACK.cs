@@ -31,13 +31,13 @@ namespace BluePrints.Data
         [StringLength(200)]
         public string INTERNAL_NAME2 { get; set; }
 
-        public DateTime STARTDATE { get; set; }
+        public DateTime? STARTDATE { get; set; }
 
-        public DateTime ENDDATE { get; set; }
+        public DateTime? ENDDATE { get; set; }
 
-        public DateTime REVIEWSTARTDATE { get; set; }
+        public DateTime? REVIEWSTARTDATE { get; set; }
 
-        public DateTime REVIEWENDDATE { get; set; }
+        public DateTime? REVIEWENDDATE { get; set; }
 
         public DateTime? FORECASTSTARTDATE { get; set; }
 
@@ -68,6 +68,12 @@ namespace BluePrints.Data
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 
         public virtual DOCTYPE DOCTYPE { get; set; }
+
+        public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
+
+        public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM1 { get; set; }
+
+        public virtual ICollection<ESTIMATION_INDIRECT_ITEM> ESTIMATION_INDIRECT_ITEM { get; set; }
 
         public virtual PHASE PHASE { get; set; }
 
