@@ -25,7 +25,8 @@ namespace BluePrints.Data
 
         public Guid? GUID_DISCIPLINE { get; set; }
 
-        public Guid GUID_COMMODITYGROUP { get; set; }
+        [Required]
+        public Guid GUID_COMMODITY_GROUP_DIRECT { get; set; }
 
         public Guid? GUID_TIMEGROUP { get; set; }
 

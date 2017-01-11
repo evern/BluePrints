@@ -53,7 +53,7 @@ namespace BluePrints.Data
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 
-        public virtual PROGRESS_ITEM PROGRESS_ITEM { get; set; }
+        public virtual PROJECT PROJECT { get; set; }
 
         public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
     }

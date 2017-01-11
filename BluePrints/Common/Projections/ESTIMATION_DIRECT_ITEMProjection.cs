@@ -14,7 +14,8 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    [ConstraintAttributes("ESTIMATION_DIRECT_ITEM.GUID_COMMODITYGROUP")]
+    [ConstraintAttributes("ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT")]
+    [RequiredAttributes("ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT")]
     public class ESTIMATION_DIRECT_ITEMProjection
     {
         public ESTIMATION_DIRECT_ITEMProjection()
@@ -43,18 +44,45 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public decimal INSTALL_COSTS
+        public decimal TOTAL_INSTALL_COSTS
         {
             get
             {
-                if (ESTIMATION_DIRECT_ITEM == null || MANUAL_COMMODITY_GROUP_DIRECT == null)
+                if (ESTIMATION_DIRECT_ITEM == null || MANUAL_COMMODITY_GROUP_DIRECT == null || MANUAL_COMMODITY_GROUP_DIRECT.HOURS_INSTALL == null)
                     return 0;
 
                 if (RATE == null || RATE.RATE1 == null)
                     return 0;
 
-                return (decimal)MANUAL_COMMODITY_GROUP_DIRECT.HOURS_INSTALL * (decimal)RATE.RATE1;
+                return (decimal)MANUAL_COMMODITY_GROUP_DIRECT.HOURS_INSTALL * (decimal)RATE.RATE1 * ESTIMATION_DIRECT_ITEM.TOTAL_QUANTITY;
             }
+        }
+
+        public decimal TOTAL_FREIGHT_COSTS
+        {
+            get
+            {
+                if (ESTIMATION_DIRECT_ITEM == null || MANUAL_COMMODITY_GROUP_DIRECT == null || MANUAL_COMMODITY_GROUP_DIRECT.RATE_FREIGHT == null)
+                    return 0;
+
+                return (decimal)MANUAL_COMMODITY_GROUP_DIRECT.RATE_FREIGHT * ESTIMATION_DIRECT_ITEM.TOTAL_QUANTITY;
+            }
+        }
+
+        public decimal TOTAL_SUPPLY_COSTS
+        {
+            get
+            {
+                if (ESTIMATION_DIRECT_ITEM == null || MANUAL_COMMODITY_GROUP_DIRECT == null || MANUAL_COMMODITY_GROUP_DIRECT.RATE_SUPPLY == null)
+                    return 0;
+
+                return (decimal)MANUAL_COMMODITY_GROUP_DIRECT.RATE_SUPPLY * ESTIMATION_DIRECT_ITEM.TOTAL_QUANTITY;
+            }
+        }
+
+        public bool HAS_CHILDREN
+        {
+            get { return CHILD_ESTIMATION_DIRECT_ITEM.Count > 0; }
         }
     }
 

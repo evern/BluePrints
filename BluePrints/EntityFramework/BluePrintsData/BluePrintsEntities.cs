@@ -94,13 +94,13 @@ namespace BluePrints.Data
             modelBuilder.Entity<COMMODITY_CODE>()
                 .HasMany(e => e.ESTIMATION_INDIRECT_ITEM)
                 .WithRequired(e => e.COMMODITY_CODE)
-                .HasForeignKey(e => e.GUID_COMMODITYCODE)
+                .HasForeignKey(e => e.GUID_COMMODITY_CODE)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<COMMODITY_GROUP_DIRECT>()
                 .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
                 .WithRequired(e => e.COMMODITY_GROUP_DIRECT)
-                .HasForeignKey(e => e.GUID_COMMODITYGROUP)
+                .HasForeignKey(e => e.GUID_COMMODITY_GROUP_DIRECT)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<DEPARTMENT>()
@@ -301,9 +301,9 @@ namespace BluePrints.Data
                 .Property(e => e.EARNED_UNITS)
                 .HasPrecision(18, 4);
 
-            modelBuilder.Entity<PROGRESS_ITEM>()
+            modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.COMMODITY_GROUP_DIRECT)
-                .WithOptional(e => e.PROGRESS_ITEM)
+                .WithOptional(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT);
 
             modelBuilder.Entity<PROJECT>()

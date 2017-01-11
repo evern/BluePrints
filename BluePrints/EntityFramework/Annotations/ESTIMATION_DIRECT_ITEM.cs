@@ -8,6 +8,12 @@ namespace BluePrints.Data
 
     public partial class ESTIMATION_DIRECT_ITEM
     {
-
+        public decimal TOTAL_QUANTITY
+        {
+            get
+            {
+                return ESTIMATED_QUANTITY + VAR_QUANTITY;
+            }
+        }
     }
 }

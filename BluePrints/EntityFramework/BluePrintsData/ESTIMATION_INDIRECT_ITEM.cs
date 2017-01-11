@@ -19,7 +19,7 @@ namespace BluePrints.Data
 
         public Guid? GUID_TIMEGROUP { get; set; }
 
-        public Guid GUID_COMMODITYCODE { get; set; }
+        public Guid GUID_COMMODITY_CODE { get; set; }
 
         [Required]
         [StringLength(500)]

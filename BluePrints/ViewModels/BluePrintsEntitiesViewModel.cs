@@ -340,9 +340,9 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))
             {
-                TreeViewProperty COMMODITYModuleTreeProperty = new TreeViewProperty() { Id = "COMMODITYCollectionView" + entity.NUMBER, ParentId = PROJECTModuleTreeViewProperty.Id, Image = ModuleTreeProperty.TreeViewImage };
-                moduleTitle = "Commodities";
-                newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle, "COMMODITYCollectionView", TablesGroup, null, new EntitiesParameter<PROJECT>(entity), COMMODITYModuleTreeProperty));
+                TreeViewProperty PROJECTCOMMODITY_GROUP_DIRECTModuleTreeProperty = new TreeViewProperty() { Id = "COMMODITY_GROUP_DIRECTView" + entity.NUMBER, ParentId = PROJECTModuleTreeViewProperty.Id, Image = ModuleTreeProperty.TreeViewImage };
+                moduleTitle = "Commodity Group";
+                newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle, "COMMODITY_GROUP_DIRECTCollectionView", TablesGroup, null, new EntitiesParameter<PROJECT>(entity), PROJECTCOMMODITY_GROUP_DIRECTModuleTreeProperty));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageEstimation))
