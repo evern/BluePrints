@@ -153,26 +153,29 @@ namespace BluePrints.ViewModels
 
         public bool OnBeforeEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
-            if (changedType == typeof(COMMODITY_GROUP_DIRECT))
-            {
-                if (messageType == EntityMessageType.Deleted)
-                {
-                    IEnumerable<COMMODITY_GROUP_DIRECTProjection> flatDisplayEntities = displayEntities.Concat(displayEntities.SelectMany(x => x.CHILD_COMMODITY_GROUP));
-                    COMMODITY_GROUP_DIRECTProjection deletedEntity = flatDisplayEntities.First(x => x.GUID == (Guid)key);
-                    if (deletedEntity.COMMODITY_GROUP.GUID_PARENT != null)
-                    {
-                        COMMODITY_GROUP_DIRECTProjection parentEntity = displayEntities.FirstOrDefault(x => x.GUID == deletedEntity.COMMODITY_GROUP.GUID_PARENT);
-                        if (parentEntity != null)
-                        {
-                            parentEntity.CHILD_COMMODITY_GROUP.Remove(deletedEntity);
-                        }
-                    }
-                    else
-                        displayEntities.Remove(deletedEntity);
-                }
+            //if (changedType == typeof(COMMODITY_GROUP_DIRECT))
+            //{
+            //    if (messageType == EntityMessageType.Deleted)
+            //    {
+            //        IEnumerable<COMMODITY_GROUP_DIRECTProjection> flatDisplayEntities = displayEntities.Concat(displayEntities.SelectMany(x => x.CHILD_COMMODITY_GROUP));
+            //        COMMODITY_GROUP_DIRECTProjection deletedEntity = flatDisplayEntities.FirstOrDefault(x => x.GUID == (Guid)key);
+            //        if (deletedEntity != null)
+            //        {
+            //            if (deletedEntity.COMMODITY_GROUP.GUID_PARENT != null)
+            //            {
+            //                COMMODITY_GROUP_DIRECTProjection parentEntity = displayEntities.FirstOrDefault(x => x.GUID == deletedEntity.COMMODITY_GROUP.GUID_PARENT);
+            //                if (parentEntity != null)
+            //                {
+            //                    parentEntity.CHILD_COMMODITY_GROUP.Remove(deletedEntity);
+            //                }
+            //            }
+            //            else
+            //                displayEntities.Remove(deletedEntity);
+            //        }
+            //    }
 
-                this.RaisePropertyChanged(x => x.DisplayEntities);
-            }
+            //    this.RaisePropertyChanged(x => x.DisplayEntities);
+            //}
 
             return true;
         }

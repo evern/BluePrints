@@ -207,16 +207,16 @@ namespace BluePrints.ViewModels
 
         public bool OnBeforeEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
-            if (changedType == typeof(ESTIMATION_DIRECT_ITEM))
-            {
-                if (messageType == EntityMessageType.Deleted)
-                {
-                    ESTIMATION_DIRECT_ITEMProjection deletedEntity = displayEntities.First(x => x.GUID == (Guid)key);
-                    displayEntities.Remove(deletedEntity);
-                }
+            //if (changedType == typeof(ESTIMATION_DIRECT_ITEM))
+            //{
+            //    if (messageType == EntityMessageType.Deleted)
+            //    {
+            //        ESTIMATION_DIRECT_ITEMProjection deletedEntity = displayEntities.FirstOrDefault(x => x.GUID == (Guid)key);
+            //        displayEntities.Remove(deletedEntity);
+            //    }
 
-                this.RaisePropertyChanged(x => x.DisplayEntities);
-            }
+            //    this.RaisePropertyChanged(x => x.DisplayEntities);
+            //}
 
             return true;
         }
