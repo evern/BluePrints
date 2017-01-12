@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BluePrints.Common.Projections;
+using BluePrints.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +25,16 @@ namespace BluePrints.Views
         public ESTIMATION_DIRECT_ITEMCollectionView()
         {
             InitializeComponent();
+            ((ESTIMATION_DIRECT_ITEMSViewModelWrapper)this.DataContext).SetIsRowExpanded = this.SetIsRowExpanded;
+        }
+
+        public void SetIsRowExpanded(ESTIMATION_DIRECT_ITEMProjection row)
+        {
+            if (row == null)
+                return;
+
+            int rowHandle = gridControl.DataController.FindRowByRowValue(row);
+            gridControl.SetMasterRowExpanded(rowHandle, row.ISEXPANDED);
         }
     }
 }

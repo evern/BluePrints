@@ -17,6 +17,7 @@ namespace BluePrints.Views
         {
             InitializeComponent();
             ((COMMODITY_GROUP_DIRECTCollectionViewModelWrapper)this.DataContext).Redraw = this.Redraw;
+            ((COMMODITY_GROUP_DIRECTCollectionViewModelWrapper)this.DataContext).SetIsRowExpanded = this.SetIsRowExpanded;
         }
 
         private void dragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.GridDropEventArgs e)
@@ -27,6 +28,15 @@ namespace BluePrints.Views
         public void Redraw()
         {
             gridControl.RefreshData();
+        }
+
+        public void SetIsRowExpanded(COMMODITY_GROUP_DIRECTProjection row)
+        {
+            if (row == null)
+                return;
+
+            int rowHandle = gridControl.DataController.FindRowByRowValue(row);
+            gridControl.SetMasterRowExpanded(rowHandle, row.ISEXPANDED);
         }
 
         //private void treeListView1_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)

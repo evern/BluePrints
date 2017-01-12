@@ -14,6 +14,7 @@
         xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
         xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
         xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
+        xmlns:helper="clr-namespace:BluePrints.Common.Helpers"
         xmlns:converters="clr-namespace:BluePrints.Common.ViewModel.Converters"
         mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:COMMODITY_GROUP_DIRECTCollectionViewModelWrapper}">
     <UserControl.Resources>
@@ -66,9 +67,16 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl Name="gridControl" Style="{StaticResource WrapperGridTemplate}" ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}">
+                    <dxg:GridControl Name="gridControl" Style="{StaticResource WrapperGridTemplate}" 
+                                     dx:DXSerializer.SerializationID="COMMODITY_GROUP_DIRECTGrid" 
+                                     ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}"
+                                     CurrentItem="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}"
+                                     SelectedItems="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}"
+                    >
                         <dxmvvm:Interaction.Behaviors>
                             <dxg:GridDragDropManager x:Name="dragDropManager" Drop="dragDropManager_Drop" />
+                            <dxmvvm:EventToCommand Command="{Binding DataContext.MasterRowExpandedCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="MasterRowExpanded" />
+                            <dxmvvm:EventToCommand Command="{Binding DataContext.MasterRowCollapsedCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="MasterRowCollapsed" />
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn FieldName="COMMODITY_GROUP.DESCRIPTION" Header="DESCRIPTION" VisibleIndex="0"/>
@@ -138,7 +146,9 @@
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.DetailDescriptor>
                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding CHILD_COMMODITY_GROUP}">
-                                <dxg:GridControl Name="gridControlChild" SelectedItems="{Binding SelectedEntities, Mode=TwoWay}" >
+                                <dxg:GridControl Name="gridControlChild"                                      
+                                    CurrentItem="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}"
+                                    SelectedItems="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}">
                                     <dxg:GridControl.Columns>
                                         <dxg:GridColumn FieldName="COMMODITY_GROUP.DESCRIPTION" Header="DESCRIPTION" VisibleIndex="0"/>
                                         <dxg:GridColumn FieldName="COMMODITY_GROUP.GUID_COMMODITYCODE" Header="COMMODITY_CODE" VisibleIndex="5" >

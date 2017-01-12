@@ -27,6 +27,7 @@ using System.IO;
 using DevExpress.Xpf.Printing;
 using DevExpress.Xpf.Editors;
 using DevExpress.Xpf.Editors.Settings;
+using System.ComponentModel;
 
 namespace BluePrints.ViewModels
 {
@@ -58,27 +59,47 @@ namespace BluePrints.ViewModels
         #region Database Operations
         PROJECT loadPROJECT;
         ESTIMATION_DIRECT loadESTIMATION_DIRECT;
-        bool isQueryForLiveStatus;
-        DispatcherTimer delayedRefresher;
-        DispatcherTimer delayedNotifier;
-        private bool IsChangedFromBackEnd;
         IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
+        BackgroundWorker refreshBackgroundWorker;
+        BackgroundWorker displayEntitiesRefreshBackgroundWorker;
+        BackgroundWorker userStateRestoreBackgroundWorker;
+
+        public ESTIMATION_DIRECT_ITEMProjection SelectedEntity { get; set; }
+        ObservableCollection<ESTIMATION_DIRECT_ITEMProjection> selectedentities { get; set; }
+        public ObservableCollection<ESTIMATION_DIRECT_ITEMProjection> SelectedEntities
+        {
+            get { return selectedentities; }
+            set { selectedentities = value; }
+        }
+
+        Guid RestoreSelectedEntityGuid;
+        List<Guid> RestoreSelectedEntitiesGuids = new List<Guid>();
+        List<Guid> RestoreExpandedGuids = new List<Guid>();
         protected override void InitializeParameters(object parameter)
         {
-            delayedRefresher = new DispatcherTimer();
-            delayedRefresher.Interval = new TimeSpan(0, 0, 0, 0, 10);
-            delayedRefresher.Tick += delayedRefresher_Tick;
+            RestoreSelectedEntityGuid = Guid.Empty;
+            SelectedEntities = new ObservableCollection<ESTIMATION_DIRECT_ITEMProjection>();
+            userStateRestoreBackgroundWorker = new BackgroundWorker();
+            userStateRestoreBackgroundWorker.DoWork += userStateRestoreBackgroundWorker_DoWork;
+            userStateRestoreBackgroundWorker.WorkerSupportsCancellation = true;
 
-            delayedNotifier = new DispatcherTimer();
-            delayedNotifier.Interval = new TimeSpan(0, 0, 0, 0, 10);
-            delayedNotifier.Tick += delayedNotifier_Tick;
+            refreshBackgroundWorker = new BackgroundWorker();
+            refreshBackgroundWorker.DoWork += refreshBackgroundWorker_DoWork;
+            refreshBackgroundWorker.WorkerSupportsCancellation = true;
+
+            displayEntitiesRefreshBackgroundWorker = new BackgroundWorker();
+            displayEntitiesRefreshBackgroundWorker.DoWork += displayEntitiesRefreshBackgroundWorker_DoWork;
+            displayEntitiesRefreshBackgroundWorker.WorkerSupportsCancellation = true;
 
             OptionalEntitiesParameter<PROJECT, ESTIMATION_DIRECT> receiveParameter = (OptionalEntitiesParameter<PROJECT, ESTIMATION_DIRECT>)parameter;
             this.loadPROJECT = receiveParameter.GetFirstEntity();
             this.loadESTIMATION_DIRECT = receiveParameter.GetSecondEntity();
+        }
 
-            if (this.loadPROJECT != null)
-                isQueryForLiveStatus = true;
+        bool isQueryForLiveStatus
+        {
+            get { return this.loadPROJECT != null; }
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
@@ -187,158 +208,38 @@ namespace BluePrints.ViewModels
             return query => ESTIMATION_DIRECT_ITEMProjectionQueries.JoinRATESOnESTIMATION_DIRECT_ITEMS(query, getESTIMATION_DIRECTFunc, getDEPARTMENTSFunc, getRATESFunc);
         }
 
+        #region View Refresh
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATION_DIRECT_ITEMProjection> entities)
         {
             MainViewModel.CreateNewProjectionFromNewEntityCallBack = this.CreateNewProjectionFromNewEntityCallBack;
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = this.ApplyProjectionPropertiesToEntity;
             MainViewModel.OnEntitySavedCallBack = this.OnEntitiesSavedCallBack;
-            MainViewModel.OnBeforeEntitiesChangedCallBack = this.OnBeforeEntitiesChanged;
             MainViewModel.ExistingRowAddUndoAndSaveCallBack = this.ExistingProjectionEditCallBack;
 
             MainViewModel.SetParentViewModel(this);
-            delayedRefresher.Start();
+            refreshBackgroundWorker.RunWorkerAsync();
         }
 
-        void delayedRefresher_Tick(object sender, EventArgs e)
-        {
-            delayedRefresher.Stop();
-            this.RaisePropertiesChanged();
-        }
-
-        public bool OnBeforeEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
-        {
-            //if (changedType == typeof(ESTIMATION_DIRECT_ITEM))
-            //{
-            //    if (messageType == EntityMessageType.Deleted)
-            //    {
-            //        ESTIMATION_DIRECT_ITEMProjection deletedEntity = displayEntities.FirstOrDefault(x => x.GUID == (Guid)key);
-            //        displayEntities.Remove(deletedEntity);
-            //    }
-
-            //    this.RaisePropertyChanged(x => x.DisplayEntities);
-            //}
-
-            return true;
-        }
-
-        object delayedNotifier_key;
-        Type delayedNotifier_ChangedType;
-        EntityMessageType? delayedNotifier_MessageType;
-        object delayedNotifier_sender;
-
-        /// <summary>
-        /// Entities changed executed on main thread so that newest ViewModel entities is available
-        /// </summary>
-        private void DisplayEntities_OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
-        {
-            if (delayedNotifier_ChangedType == typeof(ESTIMATION_DIRECT_ITEM))
-                mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.RefreshWithoutClearingUndoManager()));
-
-            delayedNotifier_key = key;
-            delayedNotifier_ChangedType = changedType;
-            delayedNotifier_MessageType = messageType;
-            delayedNotifier_sender = sender;
-
-            delayedNotifier.Start();
-        }
-
-        void delayedNotifier_Tick(object sender, EventArgs e)
-        {
-            delayedNotifier.Stop();
-            if (delayedNotifier_key == null || delayedNotifier_ChangedType == null || delayedNotifier_MessageType == null || delayedNotifier_sender == null)
-                return;
-
-            //if (delayedNotifier_ChangedType == typeof(COMMODITY_GROUP_DIRECT))
-            //{
-            //    commodity_group_direct_DisplayCollection = null;
-            //    this.RaisePropertyChanged(x => x.COMMODITY_GROUP_DIRECT_DisplayCollection);
-
-            //    ESTIMATION_DIRECT_ITEMProjection changedEntity = DisplayEntities.FirstOrDefault(x => x.MANUAL_COMMODITY_GROUP_DIRECT != null && (x.MANUAL_COMMODITY_GROUP_DIRECT.GUID == (Guid)delayedNotifier_key || x.CHILD_ESTIMATION_DIRECT_ITEM.Any(y => y.MANUAL_COMMODITY_GROUP_DIRECT != null && y.MANUAL_COMMODITY_GROUP_DIRECT.GUID == (Guid)delayedNotifier_key)));
-            //    //the added commodity_group might be a children item, so find it's parent and see of it affects any estimation_direct_item
-            //    if(changedEntity == null)
-            //    {
-            //        COMMODITY_GROUP_DIRECT findCOMMODITY_GROUP_DIRECT = COMMODITY_GROUP_DIRECTCollection.FirstOrDefault(x => x.GUID == (Guid)delayedNotifier_key);
-            //        if (findCOMMODITY_GROUP_DIRECT != null)
-            //            changedEntity = DisplayEntities.FirstOrDefault(x => x.MANUAL_COMMODITY_GROUP_DIRECT != null && (x.MANUAL_COMMODITY_GROUP_DIRECT.GUID == findCOMMODITY_GROUP_DIRECT.GUID_PARENT));
-            //    }
-
-            //    //commodity group direct changes must affect at estimation direct item entity for changes to be necessary
-            //    if(changedEntity != null)
-            //    {
-            //        COMMODITY_GROUP_DIRECTProjection findCOMMODITY_GROUP_DIRECTProjection = COMMODITY_GROUP_DIRECT_DisplayCollection.FirstOrDefault(x => x.GUID == changedEntity.MANUAL_COMMODITY_GROUP_DIRECT.GUID);
-            //        changedEntity.MANUAL_COMMODITY_GROUP_DIRECT = ViewModelSource.Create(() => new COMMODITY_GROUP_DIRECT());
-            //        if (findCOMMODITY_GROUP_DIRECTProjection != null)
-            //        {
-            //            DataUtils.ShallowCopy(changedEntity.MANUAL_COMMODITY_GROUP_DIRECT, findCOMMODITY_GROUP_DIRECTProjection.COMMODITY_GROUP);
-            //            PopulateCOMMODITY_GROUP_DIRECTChildren(changedEntity, findCOMMODITY_GROUP_DIRECTProjection);
-            //        }
-
-            //        changedEntity.RaisePropertiesChanged();
-            //    }
-            //}
-            //else if (delayedNotifier_ChangedType == typeof(ESTIMATION_DIRECT_ITEM))
-            //{
-            //    if (MainViewModel == null)
-            //        return;
-
-            //    if (delayedNotifier_MessageType == EntityMessageType.Changed)
-            //    {
-            //        ESTIMATION_DIRECT_ITEMProjection changedEntity = DisplayEntities.First(x => x.GUID == (Guid)delayedNotifier_key);
-            //        ESTIMATION_DIRECT_ITEMProjection actualEntity = MainViewModel.Entities.First(x => x.GUID == (Guid)delayedNotifier_key);
-            //        DataUtils.ShallowCopy(changedEntity.ESTIMATION_DIRECT_ITEM, actualEntity.ESTIMATION_DIRECT_ITEM);
-            //        changedEntity.RATE = ViewModelSource.Create(() => new RATE());
-            //        DataUtils.ShallowCopy(changedEntity.RATE, actualEntity.RATE);
-
-            //        COMMODITY_GROUP_DIRECTProjection findCOMMODITY_GROUP_DIRECT = COMMODITY_GROUP_DIRECT_DisplayCollection.FirstOrDefault(x => x.GUID == changedEntity.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT);
-            //        if (findCOMMODITY_GROUP_DIRECT != null)
-            //        {
-            //            DataUtils.ShallowCopy(changedEntity.MANUAL_COMMODITY_GROUP_DIRECT, findCOMMODITY_GROUP_DIRECT.COMMODITY_GROUP);
-            //            PopulateCOMMODITY_GROUP_DIRECTChildren(changedEntity, findCOMMODITY_GROUP_DIRECT);
-            //        }
-
-            //        changedEntity.RaisePropertiesChanged();
-            //        IsChangedFromBackEnd = false;
-            //    }
-
-            //    if (!IsChangedFromBackEnd && !MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation() && (delayedNotifier_sender.ToString() == MainViewModel.ToString() || delayedNotifier_sender.ToString() == this.ToString()))
-            //        return;
-
-            //    //Added have to be checked because if this is processed an additional row will be added
-            //    if (delayedNotifier_MessageType == EntityMessageType.Added)
-            //    {
-            //        ESTIMATION_DIRECT_ITEMProjection addedEntity = MainViewModel.Entities.First(x => x.GUID == (Guid)delayedNotifier_key);
-
-            //        //when item is added through new row it is not POCO nor having child commodity code
-            //        ESTIMATION_DIRECT_ITEMProjection newRowAdditionEntity = displayEntities.FirstOrDefault(x => x.GUID == (Guid)delayedNotifier_key);
-            //        if (newRowAdditionEntity != null)
-            //            displayEntities.Remove(newRowAdditionEntity);
-
-            //        ESTIMATION_DIRECT_ITEMProjection estimation_direct_item_POCO = AddPOCODisplayEntity(addedEntity);
-
-            //        displayEntities.Add(estimation_direct_item_POCO);
-            //    }
-
-            //    this.RaisePropertyChanged(x => x.DisplayEntities);
-            //    return;
-            //}
-
-            if (delayedNotifier_ChangedType == typeof(ESTIMATION_DIRECT_ITEM) || delayedNotifier_ChangedType == typeof(COMMODITY_GROUP_DIRECT))
-            {
-                commodity_group_direct_DisplayCollection = null;
-                this.RaisePropertyChanged(x => x.COMMODITY_GROUP_DIRECT_DisplayCollection);
-                displayEntities = null;
-                this.RaisePropertyChanged(x => x.DisplayEntities);
-            }
-
-            delayedNotifier_key = null;
-            delayedNotifier_ChangedType = null;
-            delayedNotifier_MessageType = null;
-            delayedNotifier_sender = null;
-        }
-
+        List<Guid> SelectedEntitiesGuid = new List<Guid>();
         protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
-            DisplayEntities_OnAfterEntitiesChanged(key, changedType, messageType, sender);
+            if (changedType == typeof(COMMODITY_GROUP_DIRECT) || changedType == typeof(ESTIMATION_DIRECT_ITEM))
+            {
+                storeViewState();
+                
+                if (changedType == typeof(COMMODITY_GROUP_DIRECT))
+                    COMMODITY_GROUP_DIRECTCollectionViewModel.Refresh();
+                else
+                {
+                    if (sender.ToString() != MainViewModel.ToString())
+                        mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
+                    else
+                        mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.RefreshWithoutClearingUndoManager()));
+                }
+
+                if (!displayEntitiesRefreshBackgroundWorker.IsBusy)
+                    displayEntitiesRefreshBackgroundWorker.RunWorkerAsync();
+            }
 
             if (sender.ToString() == MainViewModel.ToString())
                 return;
@@ -368,6 +269,94 @@ namespace BluePrints.ViewModels
 
             return;
         }
+
+        void refreshBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            System.Threading.Thread.Sleep(500);
+            if (((BackgroundWorker)sender).CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
+        }
+
+        void displayEntitiesRefreshBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            System.Threading.Thread.Sleep(100);
+            if (((BackgroundWorker)sender).CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            displayEntities = null;
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DisplayEntities)));
+        }
+
+        void userStateRestoreBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            System.Threading.Thread.Sleep(1);
+            if (((BackgroundWorker)sender).CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.restoreViewState()));
+        }
+
+        void storeViewState()
+        {
+            RestoreSelectedEntityGuid = Guid.Empty;
+            RestoreSelectedEntitiesGuids.Clear();
+            RestoreExpandedGuids.Clear();
+
+            foreach (ESTIMATION_DIRECT_ITEMProjection selectedEntity in SelectedEntities)
+            {
+                RestoreSelectedEntitiesGuids.Add(new Guid(selectedEntity.GUID.ToString()));
+            }
+
+            foreach (ESTIMATION_DIRECT_ITEMProjection entity in DisplayEntities)
+            {
+                if (entity.ISEXPANDED)
+                    RestoreExpandedGuids.Add(entity.GUID);
+            }
+
+            if (SelectedEntity != null)
+                RestoreSelectedEntityGuid = SelectedEntity.GUID;
+        }
+
+        void restoreViewState()
+        {
+            IEnumerable<ESTIMATION_DIRECT_ITEMProjection> restoreSelectedEntities = DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.CHILD_ESTIMATION_DIRECT_ITEM)).Where(x => RestoreSelectedEntitiesGuids.Any(y => y == x.GUID));
+            SelectedEntities.Clear();
+            if (restoreSelectedEntities.Count() > 0)
+            {
+                foreach (ESTIMATION_DIRECT_ITEMProjection restoreSelectedEntity in restoreSelectedEntities)
+                {
+                    SelectedEntities.Add(restoreSelectedEntity);
+                }
+            }
+
+            foreach (Guid expandedGuid in RestoreExpandedGuids)
+            {
+                ESTIMATION_DIRECT_ITEMProjection restoreExpandedEntity = DisplayEntities.FirstOrDefault(x => x.GUID == expandedGuid);
+                if (restoreExpandedEntity != null)
+                {
+                    ExpandDisplayRow(restoreExpandedEntity);
+                }
+            }
+
+            if (RestoreSelectedEntityGuid != Guid.Empty)
+            {
+                ESTIMATION_DIRECT_ITEMProjection restoreSelectedEntity = DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.CHILD_ESTIMATION_DIRECT_ITEM)).FirstOrDefault(x => x.GUID == RestoreSelectedEntityGuid);
+                if (restoreSelectedEntity != null)
+                    SelectedEntity = restoreSelectedEntity;
+            }
+        }
+        #endregion
 
         #region Collection Call Backs
         //public void ExistingChildrenRowAddUndoAndSave(CellValueChangedEventArgs e)
@@ -527,6 +516,10 @@ namespace BluePrints.ViewModels
             }
         }
         #endregion
+        #endregion
+
+        #region Local Methods
+        public Action<ESTIMATION_DIRECT_ITEMProjection> SetIsRowExpanded;
         #endregion
 
         #region View Behavior
@@ -740,10 +733,22 @@ namespace BluePrints.ViewModels
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }
 
-        private void Save(ESTIMATION_DIRECT_ITEMProjection newESTIMATION_DIRECT_ITEM)
+
+        public void MasterRowExpanded(RowEventArgs e)
         {
-            IsChangedFromBackEnd = true;
-            MainViewModel.Save(newESTIMATION_DIRECT_ITEM);
+            ((ESTIMATION_DIRECT_ITEMProjection)e.Row).ISEXPANDED = true;
+        }
+
+        public void MasterRowCollapsed(RowEventArgs e)
+        {
+            ((ESTIMATION_DIRECT_ITEMProjection)e.Row).ISEXPANDED = false;
+        }
+
+        void ExpandDisplayRow(ESTIMATION_DIRECT_ITEMProjection row)
+        {
+            row.ISEXPANDED = true;
+            if (SetIsRowExpanded != null)
+                SetIsRowExpanded(row);
         }
         #endregion
 
@@ -787,6 +792,9 @@ namespace BluePrints.ViewModels
                         ESTIMATION_DIRECT_ITEMProjection estimation_direct_item_POCO = AddPOCODisplayEntity(estimation_direct_item);
                         displayEntities.Add(estimation_direct_item_POCO);
                     }
+
+                    if (!userStateRestoreBackgroundWorker.IsBusy)
+                        userStateRestoreBackgroundWorker.RunWorkerAsync();
                 }
 
                 return displayEntities;
@@ -953,23 +961,6 @@ namespace BluePrints.ViewModels
             //previewWindow.ShowDialog();
         }
 
-
-        void PopulateNavigationalProperties()
-        {
-            //foreach(ESTIMATION_DIRECT_ITEMProjection projection in MainViewModel.Entities)
-            //{
-            //    if(projection.ESTIMATION_DIRECT_ITEM.GUID_DISCIPLINE != null && projection.ESTIMATION_DIRECT_ITEM.DISCIPLINE == null)
-            //    {
-            //        projection.ESTIMATION_DIRECT_ITEM.DISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == projection.ESTIMATION_DIRECT_ITEM.GUID_DISCIPLINE);
-            //    }
-
-            //    if(projection.ESTIMATION_DIRECT_ITEM.GUID_AREA != null && projection.ESTIMATION_DIRECT_ITEM.AREA == null)
-            //    {
-            //        projection.ESTIMATION_DIRECT_ITEM.AREA = AREACollection.FirstOrDefault(x => x.GUID == projection.ESTIMATION_DIRECT_ITEM.GUID_AREA);
-            //    }
-            //}
-        }
-
         /// <summary>
         /// Add Entities into Display entities for ESTIMATION_DIRECT_ITEMProjection
         /// </summary>
@@ -1014,6 +1005,14 @@ namespace BluePrints.ViewModels
                     parentESTIMATION_DIRECT_ITEM.CHILD_ESTIMATION_DIRECT_ITEM.Add(childESTIMATION_DIRECT_ITEMPOCO);
                 }
             }
+        }
+
+        protected override void OnClose(CancelEventArgs e)
+        {
+            refreshBackgroundWorker.CancelAsync();
+            displayEntitiesRefreshBackgroundWorker.CancelAsync();
+            userStateRestoreBackgroundWorker.CancelAsync();
+            base.OnClose(e);
         }
         #endregion
     }

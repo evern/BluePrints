@@ -65,7 +65,16 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="ESTIMATION_DIRECT_ITEMSGrid" Style="{StaticResource WrapperGridTemplate}" ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}">
+                    <dxg:GridControl Name="gridControl" 
+                                     dx:DXSerializer.SerializationID="ESTIMATION_DIRECT_ITEMSGrid" 
+                                     ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}"
+                                     CurrentItem="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}"
+                                     SelectedItems="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}"
+                        >
+                        <dxmvvm:Interaction.Behaviors>
+                            <dxmvvm:EventToCommand Command="{Binding DataContext.MasterRowExpandedCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="MasterRowExpanded" />
+                            <dxmvvm:EventToCommand Command="{Binding DataContext.MasterRowCollapsedCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="MasterRowCollapsed" />
+                        </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Name="colSUPPLYWORKPACK" FieldName="ESTIMATION_DIRECT_ITEM.GUID_SUPPLYWORKPACK" Header="SUPPLY WORKPACK"  VisibleIndex="0">
                                 <dxg:GridColumn.EditSettings>
@@ -200,7 +209,9 @@
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.DetailDescriptor>
                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding CHILD_ESTIMATION_DIRECT_ITEM}">
-                                <dxg:GridControl Name="gridControlChild" >
+                                <dxg:GridControl Name="gridControlChild" 
+                                    CurrentItem="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}"
+                                    SelectedItems="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}">
                                     <dxg:GridControl.Columns>
                                         <dxg:GridColumn Name="colChildSUPPLYWORKPACK" FieldName="ESTIMATION_DIRECT_ITEM.GUID_SUPPLYWORKPACK" Header="SUPPLY WORKPACK" ReadOnly="True" VisibleIndex="0">
                                             <dxg:GridColumn.EditSettings>

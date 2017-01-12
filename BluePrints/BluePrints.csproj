@@ -333,6 +333,7 @@
     <Compile Include="Common\ActiveDirectory.cs" />
     <Compile Include="Common\Attributes\BulkEditDisabledAttributes.cs" />
     <Compile Include="Common\Attributes\RequiredAttributes.cs" />
+    <Compile Include="Common\Helpers\CustomMessageBoxService.cs" />
     <Compile Include="Common\Helpers\EntitiesLoader.cs" />
     <Compile Include="Common\Helpers\XMLHelpers.cs" />
     <Compile Include="Common\LoginCredentials.cs" />
@@ -1465,6 +1466,7 @@
     <EmbeddedResource Include="XRDesignRibbonControllerResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>XRDesignRibbonControllerResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="BluePrints_TemporaryKey.pfx" />
     <None Include="Common\LayoutSettings.settings">

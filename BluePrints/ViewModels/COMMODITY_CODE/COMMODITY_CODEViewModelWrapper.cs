@@ -116,7 +116,6 @@ namespace BluePrints.ViewModels
                 mainThreadDispatcher.BeginInvoke(new Action(() => this.ShowHOURSAWEEK()));
             }
 
-
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             mainThreadDispatcher.BeginInvoke(new Action(() => delayedCOMMODITY_CODEPopulateDispatcher.Start()));
         }

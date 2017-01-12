@@ -34,6 +34,8 @@ namespace BluePrints.Common.Projections
         {
             return COMMODITY_GROUP.DESCRIPTION;
         }
+
+        public bool ISEXPANDED { get; set; }
     }
 
     public static class COMMODITY_GROUP_DIRECTProjectionQueries

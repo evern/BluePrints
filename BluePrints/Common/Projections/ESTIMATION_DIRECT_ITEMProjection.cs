@@ -84,6 +84,8 @@ namespace BluePrints.Common.Projections
         {
             get { return CHILD_ESTIMATION_DIRECT_ITEM.Count > 0; }
         }
+
+        public bool ISEXPANDED { get; set; }
     }
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries
