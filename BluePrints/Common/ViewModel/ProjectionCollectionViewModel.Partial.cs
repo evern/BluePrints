@@ -161,6 +161,7 @@ namespace BluePrints.Common.ViewModel
         }
 
         public Action<TProjection> PropertyRedoAddCallBack;
+        public Action PropertyUndoRedoRefreshCallBack;
         /// <summary>
         /// Function to undo the entity changes
         /// Must be used in conjunction of EntitiesUndoManager
@@ -177,6 +178,9 @@ namespace BluePrints.Common.ViewModel
 
                 Save(entityProperty.ChangedEntity);
             }
+
+            if (PropertyUndoRedoRefreshCallBack != null)
+                PropertyUndoRedoRefreshCallBack();
         }
 
         /// <summary>
@@ -197,6 +201,9 @@ namespace BluePrints.Common.ViewModel
 
                 Save(entityProperty.ChangedEntity);
             }
+
+            if (PropertyUndoRedoRefreshCallBack != null)
+                PropertyUndoRedoRefreshCallBack();
         }
 
         /// <summary>
@@ -479,7 +486,8 @@ namespace BluePrints.Common.ViewModel
             }
         }
 
-        public Action<TreeListCellValueChangedEventArgs> treeListExistingRowAddUndoAndSavePostCallBack;
+        public Action<TreeListCellValueChangedEventArgs> TreeListExistingRowAddUndoAndSavePostCallBack;
+        public Action<TreeListCellValueChangedEventArgs> treeListExistingRowAddUndoAndSaveCallBack;
         /// <summary>
         /// Remembers an entity property old value for undoing
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the AddUndoCommand property that can be used as a binding source in views.
@@ -490,12 +498,14 @@ namespace BluePrints.Common.ViewModel
 
             EntitiesUndoRedoManager.PauseActionId();
             EntitiesUndoRedoManager.AddUndo(projection, e.Column.FieldName, e.OldValue, e.Value, EntityMessageType.Changed);
+            if (treeListExistingRowAddUndoAndSaveCallBack != null)
+                treeListExistingRowAddUndoAndSaveCallBack(e);
             EntitiesUndoRedoManager.UnpauseActionId();
 
             Save(projection);
 
-            if (treeListExistingRowAddUndoAndSavePostCallBack != null)
-                treeListExistingRowAddUndoAndSavePostCallBack(e);
+            if (TreeListExistingRowAddUndoAndSavePostCallBack != null)
+                TreeListExistingRowAddUndoAndSavePostCallBack(e);
         }
 
         public Func<RowEventArgs, TProjection, bool> NewRowAddUndoAndSaveCallBack;
@@ -517,6 +527,7 @@ namespace BluePrints.Common.ViewModel
                 //InitializeEntity(entity);
 
                 EntitiesUndoRedoManager.AddUndo(projection, null, null, null, EntityMessageType.Added);
+                EntitiesUndoRedoManager.UnpauseActionId();
                 Save(projection);
             }
         }
@@ -846,10 +857,12 @@ namespace BluePrints.Common.ViewModel
         public virtual void BulkSave(IEnumerable<TProjection> entities)
         {
             EntitiesUndoRedoManager.PauseActionId();
-            foreach(var entity in entities)
+
+            foreach (var entity in entities)
             {
                 Save(entity);
             }
+
             EntitiesUndoRedoManager.UnpauseActionId();
         }
         #endregion

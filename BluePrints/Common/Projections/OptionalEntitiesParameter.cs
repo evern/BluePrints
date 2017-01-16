@@ -56,9 +56,19 @@ namespace BluePrints.Common.Projections
         public override string ToString()
         {
             if (entity != null)
-                return entity.GetType().GetProperty("GUID").GetValue(entity).ToString();
+            {
+                if (entity.GetType() == typeof(Guid))
+                    return entity.GetType().GetProperty("GUID").GetValue(entity).ToString();
+                else
+                    return string.Empty;
+            }
             else if (secondEntity != null)
-                return secondEntity.GetType().GetProperty("GUID").GetValue(entity).ToString();
+            {
+                if (secondEntity.GetType() == typeof(Guid))
+                    return secondEntity.GetType().GetProperty("GUID").GetValue(entity).ToString();
+                else
+                    return string.Empty;
+            }
             else
                 return string.Empty;
         }

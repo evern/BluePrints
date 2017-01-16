@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -13,6 +14,8 @@ namespace BluePrints.Data
         public Guid GUID { get; set; }
 
         public Guid GUID_PROJECT { get; set; }
+
+        public CostGroup COST_GROUP { get; set; }
 
         public Guid GUID_DEPARTMENT { get; set; }
 

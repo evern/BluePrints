@@ -245,9 +245,9 @@ namespace BluePrints.ViewModels
             {
                 BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("Commodity Code", "COMMODITY_CODECategoryView", TablesGroup, null, null, ModuleTreeProperty.COMMODITY_CODECategoryTreeProperty));
                 BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("Indirect Type", "INDIRECT_TYPECollectionView", TablesGroup, null, null, ModuleTreeProperty.INDIRECT_TYPEModuleTreeProperty));
-                BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("Direct", "COMMODITY_CODECollectionView", TablesGroup, null, CommodityCodeType.Direct, ModuleTreeProperty.DIRECTCOMMODITY_CODEModuleTreeProperty));
-                BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("Indirect", "COMMODITY_CODECollectionView", TablesGroup, null, CommodityCodeType.Indirect, ModuleTreeProperty.INDIRECTCOMMODITY_CODEModuleTreeProperty));
-                BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("Design", "COMMODITY_CODECollectionView", TablesGroup, null, CommodityCodeType.Design, ModuleTreeProperty.DESIGNCOMMODITY_CODEModuleTreeProperty));
+                BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("Direct", "COMMODITY_CODECollectionView", TablesGroup, null, new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Direct)), ModuleTreeProperty.DIRECTCOMMODITY_CODEModuleTreeProperty));
+                BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("Indirect", "COMMODITY_CODECollectionView", TablesGroup, null, new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Indirect)), ModuleTreeProperty.INDIRECTCOMMODITY_CODEModuleTreeProperty));
+                BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("Design", "COMMODITY_CODECollectionView", TablesGroup, null, new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Design)), ModuleTreeProperty.DESIGNCOMMODITY_CODEModuleTreeProperty));
 
                 BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("Commodity Group", "COMMODITY_GROUPCategoryView", TablesGroup, null, null, ModuleTreeProperty.COMMODITY_GROUPCategoryTreeProperty));
                 BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("Direct", "COMMODITY_GROUP_DIRECTCollectionView", TablesGroup, null, null, ModuleTreeProperty.COMMODITY_GROUP_DIRECTModuleTreeProperty));
@@ -340,9 +340,9 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))
             {
-                TreeViewProperty PROJECTCOMMODITY_GROUP_DIRECTModuleTreeProperty = new TreeViewProperty() { Id = "COMMODITY_GROUP_DIRECTView" + entity.NUMBER, ParentId = PROJECTModuleTreeViewProperty.Id, Image = ModuleTreeProperty.TreeViewImage };
-                moduleTitle = "Commodity Group";
-                newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle, "COMMODITY_GROUP_DIRECTCollectionView", TablesGroup, null, new EntitiesParameter<PROJECT>(entity), PROJECTCOMMODITY_GROUP_DIRECTModuleTreeProperty));
+                TreeViewProperty PROJECTCOMMODITY_CODEModuleTreeProperty = new TreeViewProperty() { Id = "ProjectCOMMODITY_CODEView" + entity.NUMBER, ParentId = PROJECTModuleTreeViewProperty.Id, Image = ModuleTreeProperty.TreeViewImage };
+                moduleTitle = "Commodity Code";
+                newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle, "COMMODITY_CODECollectionView", TablesGroup, null, new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(entity, new CommodityCodeTypeClass(CommodityCodeType.Direct)), PROJECTCOMMODITY_CODEModuleTreeProperty));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageEstimation))

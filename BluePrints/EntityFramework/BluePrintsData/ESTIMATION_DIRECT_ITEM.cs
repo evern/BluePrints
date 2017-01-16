@@ -13,6 +13,8 @@ namespace BluePrints.Data
 
         public Guid GUID_ORIGINAL { get; set; }
 
+        public Guid? GUID_ORIGINAL_PARENT { get; set; }
+
         public Guid GUID_ESTIMATION_DIRECT { get; set; }
 
         public Guid? GUID_VARIATION { get; set; }
@@ -25,13 +27,23 @@ namespace BluePrints.Data
 
         public Guid? GUID_DISCIPLINE { get; set; }
 
-        [Required]
-        public Guid GUID_COMMODITY_GROUP_DIRECT { get; set; }
+        public Guid? GUID_COMMODITY_CODE { get; set; }
+
+        public Guid? GUID_COMMODITY_GROUP_DIRECT { get; set; }
 
         public Guid? GUID_TIMEGROUP { get; set; }
 
         [StringLength(1000)]
         public string COMMENTS { get; set; }
+
+        [Column(TypeName = "numeric")]
+        public decimal? RATE_SUPPLY { get; set; }
+
+        [Column(TypeName = "numeric")]
+        public decimal? HOURS_INSTALL { get; set; }
+
+        [Column(TypeName = "numeric")]
+        public decimal? RATE_FREIGHT { get; set; }
 
         public decimal ESTIMATED_QUANTITY { get; set; }
 
@@ -54,6 +66,8 @@ namespace BluePrints.Data
         public Guid? DELETEDBY { get; set; }
 
         public virtual AREA AREA { get; set; }
+
+        public virtual COMMODITY_CODE COMMODITY_CODE { get; set; }
 
         public virtual COMMODITY_GROUP_DIRECT COMMODITY_GROUP_DIRECT { get; set; }
 

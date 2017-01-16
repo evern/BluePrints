@@ -115,6 +115,15 @@ namespace BluePrints.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;Commodity_Code&gt;.
+        /// </summary>
+        internal static string CommodityCodeGroup_Generated {
+            get {
+                return ResourceManager.GetString("CommodityCodeGroup_Generated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New Item.
         /// </summary>
         internal static string CommodityCodeGroup_New {
@@ -142,7 +151,7 @@ namespace BluePrints.Common {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot assign commodity code under another commodity code.
+        ///   Looks up a localized string similar to Cannot assign parent commodity code.
         /// </summary>
         internal static string CommodityGroup_CannotSelectParent {
             get {

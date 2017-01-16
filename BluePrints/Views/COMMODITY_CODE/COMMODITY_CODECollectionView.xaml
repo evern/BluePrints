@@ -43,8 +43,8 @@
                                 <dxb:BarButtonItem Content="Insert After" Command="{Binding DataContext.AddCommodityCodeRowAfterCommand, ElementName=userControl}" LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" />
                                 <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"  LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding RefreshCommand}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
-                                <dxb:BarButtonItem Content="Redo" Command="{Binding RedoCommand}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
+                                <!--<dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
+                                <dxb:BarButtonItem Content="Redo" Command="{Binding RedoCommand}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />-->
                                 <dxb:BarButtonItem Content="Save Layout" Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" Glyph="{dx:DXImage Image=Save_16x16.png}" />
                                 <dxb:BarButtonItem Content="Reset Layout" Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
                             </dxr:RibbonPageGroup>
@@ -80,11 +80,6 @@
                                     <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.INDIRECT_TYPECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
                                 </dxg:TreeListColumn.EditSettings>
                             </dxg:TreeListColumn>
-                            <dxg:TreeListColumn Name="colHOURSAWEEK" Header="TIME GROUP" FieldName="HOURSAWEEK" Visible="False" ReadOnly="False" VisibleIndex="65">
-                                <dxg:TreeListColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:TimeGroup}}"/>
-                                </dxg:TreeListColumn.EditSettings>
-                            </dxg:TreeListColumn>
                             <dxg:TreeListColumn FieldName="TYPE" VisibleIndex="70" />
                             <dxg:TreeListColumn FieldName="SPEC" VisibleIndex="80" />
                             <dxg:TreeListColumn FieldName="DESCRIPTION" VisibleIndex="90" />
@@ -94,6 +89,34 @@
                                 </dxg:TreeListColumn.EditSettings>
                             </dxg:TreeListColumn>
                             <dxg:TreeListColumn FieldName="SORTORDER" VisibleIndex="110" />
+                            <dxg:TreeListColumn x:Name="colRATE_SUPPLY" FieldName="RATE_SUPPLY" Header="SUPPLY RATE" Visible="False" VisibleIndex="120" >
+                                <dxg:TreeListColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.ISQUANTIFIABLE, UpdateSourceTrigger=PropertyChanged }"/>
+                                    </DataTemplate>
+                                </dxg:TreeListColumn.CellTemplate>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn x:Name="colHOURS_INSTALL" FieldName="HOURS_INSTALL" Header="INSTALL HOURS" Visible="False" VisibleIndex="130" >
+                                <dxg:TreeListColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.ISQUANTIFIABLE, UpdateSourceTrigger=PropertyChanged}" />
+                                    </DataTemplate>
+                                </dxg:TreeListColumn.CellTemplate>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn x:Name="colRATE_FREIGHT" FieldName="RATE_FREIGHT" Header="FREIGHT RATE" Visible="False" VisibleIndex="140" >
+                                <dxg:TreeListColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True"  IsEnabled="{Binding RowData.Row.ISQUANTIFIABLE, UpdateSourceTrigger=PropertyChanged}" />
+                                    </DataTemplate>
+                                </dxg:TreeListColumn.CellTemplate>
+                            </dxg:TreeListColumn>
+                            <dxg:TreeListColumn x:Name="colRATE_PLANT" FieldName="RATE_PLANT" Header="PLANT RATE" Visible="False" VisibleIndex="150" >
+                                <dxg:TreeListColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True"  IsEnabled="{Binding RowData.Row.ISQUANTIFIABLE, UpdateSourceTrigger=PropertyChanged}" />
+                                    </DataTemplate>
+                                </dxg:TreeListColumn.CellTemplate>
+                            </dxg:TreeListColumn>
                         </dxg:TreeListControl.Columns>
                         <dxg:TreeListControl.View>
                             <dxg:TreeListView x:Name="treeListView" AllowSorting="True" ExpandStateFieldName="ISEXPANDED" ParentFieldName="GUID_PARENT" KeyFieldName="GUID"  >

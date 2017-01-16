@@ -16,8 +16,6 @@ namespace BluePrints.Data
         [Key]
         public Guid GUID { get; set; }
 
-        public Guid? GUID_PROJECT { get; set; }
-
         public Guid? GUID_COMMODITYCODE { get; set; }
 
         public Guid? GUID_PARENT { get; set; }
@@ -27,15 +25,6 @@ namespace BluePrints.Data
         [Required]
         [StringLength(500)]
         public string DESCRIPTION { get; set; }
-
-        [Column(TypeName = "numeric")]
-        public decimal? RATE_SUPPLY { get; set; }
-
-        [Column(TypeName = "numeric")]
-        public decimal? HOURS_INSTALL { get; set; }
-
-        [Column(TypeName = "numeric")]
-        public decimal? RATE_FREIGHT { get; set; }
 
         public DateTime CREATED { get; set; }
 
@@ -52,8 +41,6 @@ namespace BluePrints.Data
         public virtual COMMODITY_CODE COMMODITY_CODE { get; set; }
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
-
-        public virtual PROJECT PROJECT { get; set; }
 
         public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
     }

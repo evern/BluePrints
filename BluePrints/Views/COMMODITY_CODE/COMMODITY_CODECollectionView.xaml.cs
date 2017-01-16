@@ -20,7 +20,8 @@ namespace BluePrints.Views
             ((COMMODITY_CODESViewModelWrapper)this.DataContext).ShowDISCIPLINE = this.ShowDISCIPLINE;
             ((COMMODITY_CODESViewModelWrapper)this.DataContext).ShowDEPARTMENT = this.ShowDEPARTMENT;
             ((COMMODITY_CODESViewModelWrapper)this.DataContext).ShowINDIRECT_TYPE = this.ShowINDIRECT_TYPE;
-            ((COMMODITY_CODESViewModelWrapper)this.DataContext).ShowHOURSAWEEK = this.ShowHOURSAWEEK;
+            ((COMMODITY_CODESViewModelWrapper)this.DataContext).ShowDIRECT_RATES = this.ShowDIRECT_RATES;
+            ((COMMODITY_CODESViewModelWrapper)this.DataContext).ShowINDIRECT_RATES = this.ShowINDIRECT_RATES;
         }
 
         public void ShowDISCIPLINE()
@@ -38,9 +39,16 @@ namespace BluePrints.Views
             colINDIRECT_TYPE.Visible = true;
         }
 
-        public void ShowHOURSAWEEK()
+        public void ShowDIRECT_RATES()
         {
-            colHOURSAWEEK.Visible = true;
+            colRATE_SUPPLY.Visible = true;
+            colRATE_FREIGHT.Visible = true;
+            colHOURS_INSTALL.Visible = true;
+        }
+
+        public void ShowINDIRECT_RATES()
+        {
+            colRATE_PLANT.Visible = true;
         }
 
         void sortTimer_Tick(object sender, EventArgs e)

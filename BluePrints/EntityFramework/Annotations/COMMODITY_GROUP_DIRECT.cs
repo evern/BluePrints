@@ -9,12 +9,9 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [ConstraintAttributes("GUID_PROJECT, GUID_COMMODITYCODE")]
+    [ConstraintAttributes("GUID_PARENT, GUID_COMMODITYCODE")]
     public partial class COMMODITY_GROUP_DIRECT
     {
-        public bool ISQUANTIFIABLE
-        {
-            get { return this.GUID_COMMODITYCODE != null; }
-        }
+
     }
 }

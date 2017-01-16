@@ -21,13 +21,15 @@ namespace BluePrints.Data
 
         public Guid GUID_COMMODITY_CODE { get; set; }
 
+        public Guid? GUID_DISCIPLINE { get; set; }
+
+        public int? COST_GROUP { get; set; }
+
         [Required]
         [StringLength(500)]
         public string DESCRIPTION { get; set; }
 
         public int UNITS { get; set; }
-
-        public decimal? OPERATOR_RATE { get; set; }
 
         public decimal? PLANT_RATE { get; set; }
 

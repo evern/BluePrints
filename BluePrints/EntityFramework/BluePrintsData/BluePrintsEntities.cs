@@ -47,7 +47,6 @@ namespace BluePrints.Data
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             Database.SetInitializer<BluePrintsEntities>(null);
-            
             modelBuilder.Entity<AREA>()
                 .HasMany(e => e.BASELINE_ITEM)
                 .WithOptional(e => e.AREA)
@@ -92,6 +91,12 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_COMMODITYCODE);
 
             modelBuilder.Entity<COMMODITY_CODE>()
+                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
+                .WithRequired(e => e.COMMODITY_CODE)
+                .HasForeignKey(e => e.GUID_COMMODITY_CODE)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<COMMODITY_CODE>()
                 .HasMany(e => e.ESTIMATION_INDIRECT_ITEM)
                 .WithRequired(e => e.COMMODITY_CODE)
                 .HasForeignKey(e => e.GUID_COMMODITY_CODE)
@@ -99,9 +104,8 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<COMMODITY_GROUP_DIRECT>()
                 .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
-                .WithRequired(e => e.COMMODITY_GROUP_DIRECT)
-                .HasForeignKey(e => e.GUID_COMMODITY_GROUP_DIRECT)
-                .WillCascadeOnDelete(false);
+                .WithOptional(e => e.COMMODITY_GROUP_DIRECT)
+                .HasForeignKey(e => e.GUID_COMMODITY_GROUP_DIRECT);
 
             modelBuilder.Entity<DEPARTMENT>()
                 .HasMany(e => e.BASELINE_ITEM)
@@ -183,10 +187,6 @@ namespace BluePrints.Data
                 .WithRequired(e => e.ESTIMATION_INDIRECT)
                 .HasForeignKey(e => e.GUID_ESTIMATION_INDIRECT)
                 .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<ESTIMATION_INDIRECT_ITEM>()
-                .Property(e => e.OPERATOR_RATE)
-                .HasPrecision(5, 2);
 
             modelBuilder.Entity<ESTIMATION_INDIRECT_ITEM>()
                 .Property(e => e.PLANT_RATE)
@@ -302,11 +302,6 @@ namespace BluePrints.Data
                 .HasPrecision(18, 4);
 
             modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.COMMODITY_GROUP_DIRECT)
-                .WithOptional(e => e.PROJECT)
-                .HasForeignKey(e => e.GUID_PROJECT);
-
-            modelBuilder.Entity<PROJECT>()
                 .Property(e => e.CURRENCYCONVERSION)
                 .HasPrecision(10, 2);
 
@@ -329,6 +324,11 @@ namespace BluePrints.Data
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.COMMODITY_CODE)
+                .WithOptional(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT);
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.ESTIMATION_DIRECT)

@@ -180,6 +180,18 @@ namespace BluePrints.Common
         External
     }
 
+    /// <summary>
+    /// Used for optional parameter purpose
+    /// </summary>
+    public class CommodityCodeTypeClass
+    {
+        public CommodityCodeType commodityCodeType { get; set; }
+        public CommodityCodeTypeClass(CommodityCodeType commodityCodeType)
+        {
+            this.commodityCodeType = commodityCodeType;
+        }
+    }
+
     public enum CommodityCodeType
     {
         Direct = 0,
@@ -188,9 +200,9 @@ namespace BluePrints.Common
         Overhead = 3
     }
 
-    public enum TimeGroup
+    public enum CostGroup
     {
-        Offsite = 40,
-        Site = 65,
+        Offsite = 0,
+        Site = 1,
     }
 }

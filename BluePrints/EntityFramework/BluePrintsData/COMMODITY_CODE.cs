@@ -12,11 +12,14 @@ namespace BluePrints.Data
         public COMMODITY_CODE()
         {
             COMMODITY_GROUP_DIRECT = new HashSet<COMMODITY_GROUP_DIRECT>();
+            ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
             ESTIMATION_INDIRECT_ITEM = new HashSet<ESTIMATION_INDIRECT_ITEM>();
         }
 
         [Key]
         public Guid GUID { get; set; }
+
+        public Guid? GUID_PROJECT { get; set; }
 
         public Guid GUID_PARENT { get; set; }
 
@@ -56,6 +59,20 @@ namespace BluePrints.Data
 
         public bool ISEXPANDED { get; set; }
 
+        public bool ISQUANTIFIABLE { get; set; }
+
+        [Column(TypeName = "numeric")]
+        public decimal? RATE_SUPPLY { get; set; }
+
+        [Column(TypeName = "numeric")]
+        public decimal? HOURS_INSTALL { get; set; }
+
+        [Column(TypeName = "numeric")]
+        public decimal? RATE_FREIGHT { get; set; }
+
+        [Column(TypeName = "numeric")]
+        public decimal? RATE_PLANT { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }
@@ -68,6 +85,8 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
+        public virtual PROJECT PROJECT { get; set; }
+
         public virtual DEPARTMENT DEPARTMENT { get; set; }
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
@@ -75,6 +94,8 @@ namespace BluePrints.Data
         public virtual INDIRECT_TYPE INDIRECT_TYPE { get; set; }
 
         public virtual ICollection<COMMODITY_GROUP_DIRECT> COMMODITY_GROUP_DIRECT { get; set; }
+
+        public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
 
         public virtual ICollection<ESTIMATION_INDIRECT_ITEM> ESTIMATION_INDIRECT_ITEM { get; set; }
     }

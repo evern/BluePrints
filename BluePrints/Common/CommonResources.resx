@@ -208,7 +208,7 @@
     <value>Cannot add commodity under commodity</value>
   </data>
   <data name="CommodityGroup_CannotSelectParent" xml:space="preserve">
-    <value>Cannot assign commodity code under another commodity code</value>
+    <value>Cannot assign parent commodity code</value>
   </data>
   <data name="CommodityGroup_CannotAssignCommodity" xml:space="preserve">
     <value>Cannot change WBS into commodity</value>
@@ -236,5 +236,8 @@
   </data>
   <data name="Estimation_Item_Direct_AddCustomCommodityGroup" xml:space="preserve">
     <value>This will create custom project commodity group, do you want to continue?</value>
+  </data>
+  <data name="CommodityCodeGroup_Generated" xml:space="preserve">
+    <value>&lt;Commodity_Code&gt;</value>
   </data>
 </root>

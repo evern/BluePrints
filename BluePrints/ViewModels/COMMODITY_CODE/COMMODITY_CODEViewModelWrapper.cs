@@ -15,6 +15,8 @@ using BluePrints.Data.Helpers;
 using System.Collections.ObjectModel;
 using DevExpress.Xpf.Grid.TreeList;
 using System.Windows.Threading;
+using BluePrints.Common.Projections;
+using System.ComponentModel;
 
 namespace BluePrints.ViewModels
 {
@@ -44,12 +46,20 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
         CommodityCodeType loadCommodityCodeType;
+        PROJECT loadPROJECT;
         IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
+        BackgroundWorker refreshBackgroundWorker;
         protected override void InitializeParameters(object parameter)
         {
-            CommodityCodeType receiveParameter = (CommodityCodeType)parameter;
-            this.loadCommodityCodeType = receiveParameter;
+            refreshBackgroundWorker = new BackgroundWorker();
+            refreshBackgroundWorker.DoWork += refreshBackgroundWorker_DoWork;
+            refreshBackgroundWorker.WorkerSupportsCancellation = true;
+
+            OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass> receiveParameter = (OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>)parameter;
+            this.loadPROJECT = receiveParameter.GetFirstEntity();
+            CommodityCodeTypeClass loadCommodityCodeTypeClass = receiveParameter.GetSecondEntity();
+
+            this.loadCommodityCodeType = loadCommodityCodeTypeClass.commodityCodeType;
             delayedCOMMODITY_CODEPopulateDispatcher = new DispatcherTimer();
             delayedCOMMODITY_CODEPopulateDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
             delayedCOMMODITY_CODEPopulateDispatcher.Tick += delayedCOMMODITY_CODEPopulateDispatcher_Tick;
@@ -59,11 +69,39 @@ namespace BluePrints.ViewModels
         {
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(1, bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, null, null, isContinueLoadingAfterDEPARTMENT, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(2, bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES, null, null, isContinueLoadingAfterDISCIPLINE, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<INDIRECT_TYPE, INDIRECT_TYPE, Guid, IBluePrintsEntitiesUnitOfWork>(3, bluePrintsUnitOfWorkFactory, x => x.INDIRECT_TYPES, null, null, null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork>(4, bluePrintsUnitOfWorkFactory, x => x.UOMS, null, null, null, OnAfterEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(1, bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT, OnAfterEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(2, bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, null, null, isContinueLoadingAfterDEPARTMENT, OnAfterEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(3, bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES, null, null, isContinueLoadingAfterDISCIPLINE, OnAfterEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<INDIRECT_TYPE, INDIRECT_TYPE, Guid, IBluePrintsEntitiesUnitOfWork>(4, bluePrintsUnitOfWorkFactory, x => x.INDIRECT_TYPES, null, null, null, OnAfterEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork>(5, bluePrintsUnitOfWorkFactory, x => x.UOMS, null, null, null, OnAfterEntitiesChanged);
             InvokeEntitiesLoaderDescriptionLoading();
+        }
+
+        bool isPROJECTSpecific
+        {
+            get { return this.loadPROJECT != null; }
+        }
+
+        bool isContinueLoadingAfterPROJECT(IEnumerable<PROJECT> entities)
+        {
+            if (isPROJECTSpecific && entities.Count() == 0)
+            {
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed, "PROJECT"))));
+                return false;
+            }
+
+            if (isPROJECTSpecific)
+                this.loadPROJECT = entities.First();
+
+            return true;
+        }
+
+        Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
+        {
+            if (isPROJECTSpecific)
+                return query => query.Where(x => x.GUID == loadPROJECT.GUID);
+            else
+                return query => query.Where(x => x.GUID == Guid.Empty);
         }
 
         bool isContinueLoadingAfterDEPARTMENT(IEnumerable<DEPARTMENT> entities)
@@ -96,7 +134,10 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> ConstructMainViewModelProjection()
         {
-            return query => query.Where(x => x.COMMODITYCODETYPE == loadCommodityCodeType);
+            if (isPROJECTSpecific)
+                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.COMMODITYCODETYPE == loadCommodityCodeType);
+            else
+                return query => query.Where(x => x.GUID_PROJECT == null && x.COMMODITYCODETYPE == loadCommodityCodeType);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<COMMODITY_CODE> entities)
@@ -104,16 +145,20 @@ namespace BluePrints.ViewModels
             MainViewModel.EntitiesAfterDeletionCallBack = this.EntitiesAfterDeletion;
             MainViewModel.EntitiesBeforeDeletionCallBack = this.EntitiesBeforeDeletion;
             MainViewModel.OnBeforeEntitySavedCallBack = this.OnBeforeEntitiesSaved;
-            MainViewModel.treeListExistingRowAddUndoAndSavePostCallBack = this.TreelistExistingRowAddUndoAndSave;
+            MainViewModel.TreeListExistingRowAddUndoAndSavePostCallBack = this.PostTreeListExistingRowAddUndoAndSave;
+
             MainViewModel.SetParentViewModel(this);
             if (loadCommodityCodeType == CommodityCodeType.Design)
                 mainThreadDispatcher.BeginInvoke(new Action(() => this.ShowDEPARTMENT()));
             else if (loadCommodityCodeType == CommodityCodeType.Direct)
+            {
                 mainThreadDispatcher.BeginInvoke(new Action(() => this.ShowDISCIPLINE()));
+                mainThreadDispatcher.BeginInvoke(new Action(() => this.ShowDIRECT_RATES()));
+            }
             else
             {
                 mainThreadDispatcher.BeginInvoke(new Action(() => this.ShowINDIRECT_TYPE()));
-                mainThreadDispatcher.BeginInvoke(new Action(() => this.ShowHOURSAWEEK()));
+                mainThreadDispatcher.BeginInvoke(new Action(() => this.ShowINDIRECT_RATES()));
             }
 
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
@@ -122,6 +167,12 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
+            if (changedType == typeof(COMMODITY_CODE))
+            {
+                if (!refreshBackgroundWorker.IsBusy)
+                    refreshBackgroundWorker.RunWorkerAsync();
+            }
+
             if (sender.ToString() == MainViewModel.ToString())
                 return;
 
@@ -129,6 +180,18 @@ namespace BluePrints.ViewModels
                 mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
             else
                 mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
+        }
+
+        void refreshBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            System.Threading.Thread.Sleep(100);
+            if (((BackgroundWorker)sender).CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.RefreshWithoutClearingUndoManager()));
         }
 
         void delayedCOMMODITY_CODEPopulateDispatcher_Tick(object sender, EventArgs e)
@@ -153,16 +216,19 @@ namespace BluePrints.ViewModels
             }
             else if(loadCommodityCodeType == CommodityCodeType.Direct)
             {
-                foreach(DISCIPLINE populateDISCIPLINE in DISCIPLINECollection)
+                if(!isPROJECTSpecific)
                 {
-                    if (!MainViewModel.Entities.Any(x => x.GUID_PARENT == Guid.Empty && x.GUID_DISCIPLINE == populateDISCIPLINE.GUID))
+                    foreach (DISCIPLINE populateDISCIPLINE in DISCIPLINECollection)
                     {
-                        COMMODITY_CODE newCOMMODITY_CODE = new COMMODITY_CODE();
-                        newCOMMODITY_CODE.CODE = populateDISCIPLINE.CODE;
-                        newCOMMODITY_CODE.FULLCODE = populateDISCIPLINE.CODE;
-                        newCOMMODITY_CODE.NAME = populateDISCIPLINE.NAME;
-                        newCOMMODITY_CODE.GUID_DISCIPLINE = populateDISCIPLINE.GUID;
-                        MainViewModel.Save(newCOMMODITY_CODE);
+                        if (!MainViewModel.Entities.Any(x => x.GUID_PARENT == Guid.Empty && x.GUID_DISCIPLINE == populateDISCIPLINE.GUID))
+                        {
+                            COMMODITY_CODE newCOMMODITY_CODE = new COMMODITY_CODE();
+                            newCOMMODITY_CODE.CODE = populateDISCIPLINE.CODE;
+                            newCOMMODITY_CODE.FULLCODE = populateDISCIPLINE.CODE;
+                            newCOMMODITY_CODE.NAME = populateDISCIPLINE.NAME;
+                            newCOMMODITY_CODE.GUID_DISCIPLINE = populateDISCIPLINE.GUID;
+                            MainViewModel.Save(newCOMMODITY_CODE);
+                        }
                     }
                 }
             }
@@ -184,7 +250,7 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-        public void TreelistExistingRowAddUndoAndSave(TreeListCellValueChangedEventArgs e)
+        public void PostTreeListExistingRowAddUndoAndSave(TreeListCellValueChangedEventArgs e)
         {
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new COMMODITY_CODE().CODE))
             {
@@ -194,7 +260,8 @@ namespace BluePrints.ViewModels
                 AddUndoOnFULLCODEChanges(editedCOMMODITY_CODE);
                 RecurseRenameChildrenFULLCODE(editedCOMMODITY_CODE.GUID);
                 IEnumerable<COMMODITY_CODE> childrenCOMMODITY_CODES = RecurseFindChildren(editedCOMMODITY_CODE, MainViewModel.Entities);
-                MainViewModel.BulkSave(childrenCOMMODITY_CODES);
+                List<COMMODITY_CODE> childrenCOMMODITY_CODESList = new List<COMMODITY_CODE>(childrenCOMMODITY_CODES);
+                MainViewModel.BulkSave(childrenCOMMODITY_CODESList);
             }
         }
 
@@ -255,11 +322,16 @@ namespace BluePrints.ViewModels
         public Action ShowDEPARTMENT;
         public Action ShowINDIRECT_TYPE;
         public Action ShowHOURSAWEEK;
+        public Action ShowDIRECT_RATES;
+        public Action ShowINDIRECT_RATES;
 
+        Guid GUID_PARENTOldValue;
         List<Guid> uniqueGUID_PARENTS; //stores dropping entity parent guid before it gets reassigned
         public void dragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.TreeListDropEventArgs e)
         {
             uniqueGUID_PARENTS = new List<Guid>();
+            GUID_PARENTOldValue = Guid.Empty;
+
             if (e.TargetNode != null)
             {
                 MainViewModel.EntitiesUndoRedoManager.PauseActionId(); //save will unpause this
@@ -267,11 +339,9 @@ namespace BluePrints.ViewModels
                 {
                     COMMODITY_CODE editCommodityCode = (e.SourceManager.GetObject(obj) as COMMODITY_CODE);
 
-                    if (!uniqueGUID_PARENTS.Any(x => x == editCommodityCode.GUID_PARENT))
-                        uniqueGUID_PARENTS.Add(editCommodityCode.GUID_PARENT);
-
-                    COMMODITY_CODE targetCommodityCode = (e.TargetNode.Content as COMMODITY_CODE);
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(editCommodityCode, BindableBase.GetPropertyName(() => new COMMODITY_CODE().GUID_PARENT), editCommodityCode.GUID_PARENT, targetCommodityCode.GUID, EntityMessageType.Changed);
+                    GUID_PARENTOldValue = editCommodityCode.GUID_PARENT;
+                    if (!uniqueGUID_PARENTS.Any(x => x == GUID_PARENTOldValue))
+                        uniqueGUID_PARENTS.Add(GUID_PARENTOldValue);
                 }
             }
         }
@@ -305,12 +375,15 @@ namespace BluePrints.ViewModels
                         droppedCOMMODITY_CODE.GUID_DEPARTMENT = targetCommodityCode.GUID_DEPARTMENT;
 
                         droppedCOMMODITY_CODE.SORTORDER = maxTargetChildrenOrder;
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(droppedCOMMODITY_CODE, BindableBase.GetPropertyName(() => new COMMODITY_CODE().GUID_PARENT), GUID_PARENTOldValue, droppedCOMMODITY_CODE.GUID_PARENT, EntityMessageType.Changed);
                     }
 
                     newParentGuid = droppedCOMMODITY_CODE.GUID_PARENT;
                 }
 
-                uniqueGUID_PARENTS.Add(newParentGuid);
+                if (!uniqueGUID_PARENTS.Any(x => x == newParentGuid))
+                    uniqueGUID_PARENTS.Add(newParentGuid);
+
                 ReorderAndSave(uniqueGUID_PARENTS);
             }
         }
@@ -318,12 +391,14 @@ namespace BluePrints.ViewModels
         private IEnumerable<COMMODITY_CODE> ReorderAndSave(Guid guid_parent, bool dontSave = false)
         {
             IEnumerable<COMMODITY_CODE> childCommodityCodes = MainViewModel.Entities.Where(x => x.GUID_PARENT == guid_parent).OrderBy(x => x.SORTORDER).ToList();
+            List<COMMODITY_CODE> childCommodityCodesList = new List<COMMODITY_CODE>(childCommodityCodes);
+
             int commodityCodeOrderCount = 10;
-            foreach (COMMODITY_CODE childCommodityCode in childCommodityCodes)
+            foreach (COMMODITY_CODE childCommodityCode in childCommodityCodesList)
             {
                 if (childCommodityCode.SORTORDER != commodityCodeOrderCount)
                 {
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(childCommodityCode, BindableBase.GetPropertyName(() => new COMMODITY_CODE().SORTORDER), childCommodityCode.SORTORDER, commodityCodeOrderCount, EntityMessageType.Changed);
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(childCommodityCode, BindableBase.GetPropertyName(() => new COMMODITY_CODE().SORTORDER), Convert.ToInt32(Math.Round(Convert.ToDecimal(childCommodityCode.SORTORDER))), commodityCodeOrderCount, EntityMessageType.Changed);
                     childCommodityCode.SORTORDER = commodityCodeOrderCount;
                     int tryParseInt;
                     if (childCommodityCode.CODE == "temp")
@@ -332,15 +407,77 @@ namespace BluePrints.ViewModels
                         childCommodityCode.CODE = Int32.TryParse(childCommodityCode.CODE, out tryParseInt) ? AddUndoOnCODEChanges(childCommodityCode, GenerateOrderString(childCommodityCode.SORTORDER)) : childCommodityCode.CODE;
                 }
 
+                if(!MainViewModel.Entities.Any(x => x.GUID_PARENT == childCommodityCode.GUID))
+                {
+                    bool oldBoolValue = childCommodityCode.ISQUANTIFIABLE;
+                    bool newBoolValue = true;
+                    childCommodityCode.ISQUANTIFIABLE = newBoolValue;
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(childCommodityCode, BindableBase.GetPropertyName(() => new COMMODITY_CODE().ISQUANTIFIABLE), oldBoolValue, newBoolValue, EntityMessageType.Changed);
+                }
+                else
+                {
+                    bool oldBoolValue = childCommodityCode.ISQUANTIFIABLE;
+                    bool newBoolValue = false;
+                    childCommodityCode.ISQUANTIFIABLE = newBoolValue;
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(childCommodityCode, BindableBase.GetPropertyName(() => new COMMODITY_CODE().ISQUANTIFIABLE), oldBoolValue, newBoolValue, EntityMessageType.Changed);
+                }
+
                 commodityCodeOrderCount += 10;
             }
 
             RecurseRenameChildrenFULLCODE(guid_parent);
 
-            if (!dontSave)
-                MainViewModel.BulkSave(childCommodityCodes);
+            COMMODITY_CODE parentCOMMODITY_CODE = MainViewModel.Entities.FirstOrDefault(x => x.GUID == guid_parent);
+            if (parentCOMMODITY_CODE != null)
+            {
+                decimal? newValue = null;
+                decimal? oldValue = null;
 
-            return childCommodityCodes;
+                if (parentCOMMODITY_CODE.RATE_FREIGHT != null)
+                {
+                    oldValue = parentCOMMODITY_CODE.RATE_FREIGHT;
+                    parentCOMMODITY_CODE.RATE_FREIGHT = newValue;
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(parentCOMMODITY_CODE, BindableBase.GetPropertyName(() => new COMMODITY_CODE().RATE_FREIGHT), oldValue, newValue, EntityMessageType.Changed);
+                }
+
+                if (parentCOMMODITY_CODE.RATE_SUPPLY != null)
+                {
+                    oldValue = parentCOMMODITY_CODE.RATE_SUPPLY;
+                    parentCOMMODITY_CODE.RATE_SUPPLY = newValue;
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(parentCOMMODITY_CODE, BindableBase.GetPropertyName(() => new COMMODITY_CODE().RATE_SUPPLY), oldValue, newValue, EntityMessageType.Changed);
+                }
+
+                if (parentCOMMODITY_CODE.HOURS_INSTALL != null)
+                {
+                    oldValue = parentCOMMODITY_CODE.HOURS_INSTALL;
+                    parentCOMMODITY_CODE.HOURS_INSTALL = newValue;
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(parentCOMMODITY_CODE, BindableBase.GetPropertyName(() => new COMMODITY_CODE().HOURS_INSTALL), oldValue, newValue, EntityMessageType.Changed);
+                }
+
+                if (parentCOMMODITY_CODE.RATE_PLANT != null)
+                {
+                    oldValue = parentCOMMODITY_CODE.RATE_PLANT;
+                    parentCOMMODITY_CODE.RATE_PLANT = newValue;
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(parentCOMMODITY_CODE, BindableBase.GetPropertyName(() => new COMMODITY_CODE().RATE_PLANT), oldValue, newValue, EntityMessageType.Changed);
+                }
+
+                if(parentCOMMODITY_CODE.ISQUANTIFIABLE)
+                {
+                    bool oldBoolValue = parentCOMMODITY_CODE.ISQUANTIFIABLE;
+                    parentCOMMODITY_CODE.ISQUANTIFIABLE = false;
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(parentCOMMODITY_CODE, BindableBase.GetPropertyName(() => new COMMODITY_CODE().ISQUANTIFIABLE), oldBoolValue, false, EntityMessageType.Changed);
+                }
+
+                if(oldValue != null)
+                    childCommodityCodesList.Add(parentCOMMODITY_CODE);
+            }
+
+            if (!dontSave)
+            {
+                MainViewModel.BulkSave(childCommodityCodesList);
+            }
+
+            return childCommodityCodesList;
         }
 
         private void RecurseRenameChildrenFULLCODE(Guid guid_parent)

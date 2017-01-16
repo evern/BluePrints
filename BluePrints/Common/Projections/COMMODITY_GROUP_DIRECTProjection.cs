@@ -35,6 +35,11 @@ namespace BluePrints.Common.Projections
             return COMMODITY_GROUP.DESCRIPTION;
         }
 
+        public string ConcatenatedGUID
+        {
+            get { return COMMODITY_GROUP.GUID.ToString() + (COMMODITY_GROUP.GUID_COMMODITYCODE == null ? Guid.Empty.ToString() : COMMODITY_GROUP.GUID_COMMODITYCODE.ToString()); }
+        }
+
         public bool ISEXPANDED { get; set; }
     }
 
