@@ -508,7 +508,8 @@ namespace BluePrints.Common.ViewModel
                 TreeListExistingRowAddUndoAndSavePostCallBack(e);
         }
 
-        public Func<RowEventArgs, TProjection, bool> NewRowAddUndoAndSaveCallBack;
+        public Func<RowEventArgs, TProjection, bool> NewRowAddUndoAndBeforeSaveCallBack;
+        public Action<RowEventArgs, TProjection> NewRowAddUndoAndAfterSaveCallBack;
         /// <summary>
         /// Remembers an entity added for undoing
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the AddUndoCommand property that can be used as a binding source in views.
@@ -517,18 +518,25 @@ namespace BluePrints.Common.ViewModel
         {
             if (e.RowHandle == GridControl.NewItemRowHandle)
             {
+                EntitiesUndoRedoManager.PauseActionId();
+
                 TProjection projection = (TProjection)e.Row;
 
-                if (NewRowAddUndoAndSaveCallBack != null)
-                    if (!NewRowAddUndoAndSaveCallBack(e, projection))
+                if (NewRowAddUndoAndBeforeSaveCallBack != null)
+                    if (!NewRowAddUndoAndBeforeSaveCallBack(e, projection))
                         return;
 
                 //TEntity entity = CreateNewEntity((TProjection)e.Row);
                 //InitializeEntity(entity);
 
                 EntitiesUndoRedoManager.AddUndo(projection, null, null, null, EntityMessageType.Added);
-                EntitiesUndoRedoManager.UnpauseActionId();
+
                 Save(projection);
+
+                if (NewRowAddUndoAndAfterSaveCallBack != null)
+                    NewRowAddUndoAndAfterSaveCallBack(e, projection);
+
+                EntitiesUndoRedoManager.UnpauseActionId();
             }
         }
 

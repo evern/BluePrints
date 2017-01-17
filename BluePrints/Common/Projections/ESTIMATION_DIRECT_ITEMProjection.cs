@@ -61,7 +61,12 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public decimal ITEMRATE
+        public bool ISQUANTIFIABLE
+        {
+            get { return ESTIMATION_DIRECT_ITEM != null && ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE != null; }
+        }
+
+        public decimal RATE_INSTALL
         {
             get
             {
@@ -72,41 +77,41 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        //public decimal TOTAL_INSTALL_COSTS
-        //{
-        //    get
-        //    {
-        //        if (ESTIMATION_DIRECT_ITEM == null || MANUAL_COMMODITY_GROUP_DIRECT == null || MANUAL_COMMODITY_GROUP_DIRECT.HOURS_INSTALL == null)
-        //            return 0;
+        public decimal TOTAL_INSTALL_COSTS
+        {
+            get
+            {
+                if (ESTIMATION_DIRECT_ITEM == null || ESTIMATION_DIRECT_ITEM.HOURS_INSTALL == null)
+                    return 0;
 
-        //        if (RATE == null || RATE.RATE1 == null)
-        //            return 0;
+                if (RATE == null || RATE.RATE1 == null)
+                    return 0;
 
-        //        return (decimal)MANUAL_COMMODITY_GROUP_DIRECT.HOURS_INSTALL * (decimal)RATE.RATE1 * ESTIMATION_DIRECT_ITEM.TOTAL_QUANTITY;
-        //    }
-        //}
+                return (decimal)ESTIMATION_DIRECT_ITEM.HOURS_INSTALL * (decimal)RATE.RATE1 * ESTIMATION_DIRECT_ITEM.TOTAL_QUANTITY;
+            }
+        }
 
-        //public decimal TOTAL_FREIGHT_COSTS
-        //{
-        //    get
-        //    {
-        //        if (ESTIMATION_DIRECT_ITEM == null || MANUAL_COMMODITY_GROUP_DIRECT == null || MANUAL_COMMODITY_GROUP_DIRECT.RATE_FREIGHT == null)
-        //            return 0;
+        public decimal TOTAL_FREIGHT_COSTS
+        {
+            get
+            {
+                if (ESTIMATION_DIRECT_ITEM == null || ESTIMATION_DIRECT_ITEM.RATE_FREIGHT == null)
+                    return 0;
 
-        //        return (decimal)MANUAL_COMMODITY_GROUP_DIRECT.RATE_FREIGHT * ESTIMATION_DIRECT_ITEM.TOTAL_QUANTITY;
-        //    }
-        //}
+                return (decimal)ESTIMATION_DIRECT_ITEM.RATE_FREIGHT * ESTIMATION_DIRECT_ITEM.TOTAL_QUANTITY;
+            }
+        }
 
-        //public decimal TOTAL_SUPPLY_COSTS
-        //{
-        //    get
-        //    {
-        //        if (ESTIMATION_DIRECT_ITEM == null || MANUAL_COMMODITY_GROUP_DIRECT == null || MANUAL_COMMODITY_GROUP_DIRECT.RATE_SUPPLY == null)
-        //            return 0;
+        public decimal TOTAL_SUPPLY_COSTS
+        {
+            get
+            {
+                if (ESTIMATION_DIRECT_ITEM == null || ESTIMATION_DIRECT_ITEM.RATE_SUPPLY == null)
+                    return 0;
 
-        //        return (decimal)MANUAL_COMMODITY_GROUP_DIRECT.RATE_SUPPLY * ESTIMATION_DIRECT_ITEM.TOTAL_QUANTITY;
-        //    }
-        //}
+                return (decimal)ESTIMATION_DIRECT_ITEM.RATE_SUPPLY * ESTIMATION_DIRECT_ITEM.TOTAL_QUANTITY;
+            }
+        }
 
         public bool HAS_CHILDREN
         {

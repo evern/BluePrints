@@ -200,7 +200,7 @@ namespace BluePrints.ViewModels
             MainViewModel.ValidateFillDownCallBack = this.ValidateFillDownCallBack;
             MainViewModel.ValidateBulkEditCallBack = this.ValidateBulkEditCallBack;
             MainViewModel.CanBulkDeleteCallBack = this.CanBulkDeleteCallBack;
-            MainViewModel.NewRowAddUndoAndSaveCallBack = this.NewProjectionInitializeCallBack;
+            MainViewModel.NewRowAddUndoAndBeforeSaveCallBack = this.NewProjectionInitializeCallBack;
             MainViewModel.ExistingRowAddUndoAndSaveCallBack = this.ExistingProjectionEditCallBack;
             MainViewModel.PreSaveWithNewEntityDetection = this.MainEntityPreSaveWithNewEntityDetection;
             MainViewModel.PostSave = this.MainEntitySaveVariation;

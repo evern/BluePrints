@@ -121,7 +121,7 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<COMMODITY_GROUP_DIRECTProjection> entities)
         {
             MainViewModel.EntitiesBeforeDeletionCallBack = EntitiesBeforeDeletion;
-            MainViewModel.NewRowAddUndoAndSaveCallBack = NewRowAddUndoAndSave;
+            MainViewModel.NewRowAddUndoAndBeforeSaveCallBack = NewRowAddUndoAndSave;
             MainViewModel.OnEntitySavedCallBack = OnEntitiesSavedCallBack;
             MainViewModel.AdditionalValidateCellCallBack = AdditionalCellValidation;
             MainViewModel.AdditionalValidateRowCallBack = AdditionalRowValidation;
