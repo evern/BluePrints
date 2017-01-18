@@ -26,6 +26,8 @@ namespace BluePrints.Common.Projections
         [Key]
         public Guid GUID { get; set; }
 
+        public Guid? GUID_PROJECT { get; set; }
+
         public COMMODITY_GROUP_DIRECT COMMODITY_GROUP { get; set; }
 
         public ObservableCollection<COMMODITY_GROUP_DIRECTProjection> CHILD_COMMODITY_GROUP { get; set; }

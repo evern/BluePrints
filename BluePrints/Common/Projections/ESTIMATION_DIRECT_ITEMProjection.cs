@@ -63,7 +63,7 @@ namespace BluePrints.Common.Projections
 
         public bool ISQUANTIFIABLE
         {
-            get { return ESTIMATION_DIRECT_ITEM != null && ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE != null; }
+            get { return GUID != null && ESTIMATION_DIRECT_ITEM != null && ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE != null; }
         }
 
         public decimal RATE_INSTALL

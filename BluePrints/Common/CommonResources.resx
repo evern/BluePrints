@@ -231,13 +231,19 @@
   <data name="WORKPACK_ASSIGNMENT_P6WriteComplete" xml:space="preserve">
     <value>P6 units populated</value>
   </data>
-  <data name="Estimation_Item_Direct_ReadOnly" xml:space="preserve">
-    <value>&lt;&lt;Read Only&gt;&gt;</value>
-  </data>
   <data name="Estimation_Item_Direct_AddCustomCommodityGroup" xml:space="preserve">
-    <value>This will create custom project commodity group, do you want to continue?</value>
+    <value>This will create custom project commodity code, do you want to continue?</value>
   </data>
   <data name="CommodityCodeGroup_Generated" xml:space="preserve">
     <value>&lt;Commodity_Code&gt;</value>
+  </data>
+  <data name="Estimation_Item_Direct_EditOrAddNewCommodityCode" xml:space="preserve">
+    <value>Select yes to edit current project specific commodity code or no to add a new one</value>
+  </data>
+  <data name="Estimation_Item_Direct_EditCurrentOrOther" xml:space="preserve">
+    <value>Select yes to edit current project specific commodity code or no to edit others</value>
+  </data>
+  <data name="Estimation_Item_Direct_ProjectSpecificCommodityCodeCreated" xml:space="preserve">
+    <value>Project specific commodity code created</value>
   </data>
 </root>

@@ -44,6 +44,9 @@ namespace BluePrints.Data
         [StringLength(500)]
         public string DESCRIPTION { get; set; }
 
+        [StringLength(500)]
+        public string SOURCE_DESCRIPTION { get; set; }
+
         [Required]
         [StringLength(50)]
         public string CODE { get; set; }

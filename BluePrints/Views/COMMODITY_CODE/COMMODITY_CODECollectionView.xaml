@@ -83,6 +83,7 @@
                             <dxg:TreeListColumn FieldName="TYPE" VisibleIndex="70" />
                             <dxg:TreeListColumn FieldName="SPEC" VisibleIndex="80" />
                             <dxg:TreeListColumn FieldName="DESCRIPTION" VisibleIndex="90" />
+                            <dxg:TreeListColumn FieldName="SOURCE_DESCRIPTION" ReadOnly="True" AllowEditing="False" IsEnabled="False" VisibleIndex="95" />
                             <dxg:TreeListColumn FieldName="UOM" VisibleIndex="100" AllowEditing="True">
                                 <dxg:TreeListColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.UOMCollection, ElementName=userControl}" AutoComplete="True" DisplayMember="UOM1" ValueMember="UOM1" />

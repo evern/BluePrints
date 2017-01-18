@@ -259,7 +259,7 @@ namespace BluePrints.Common {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will create custom project commodity group, do you want to continue?.
+        ///   Looks up a localized string similar to This will create custom project commodity code, do you want to continue?.
         /// </summary>
         internal static string Estimation_Item_Direct_AddCustomCommodityGroup {
             get {
@@ -268,11 +268,29 @@ namespace BluePrints.Common {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;&lt;Read Only&gt;&gt;.
+        ///   Looks up a localized string similar to Select yes to edit current project specific commodity code or no to edit others.
         /// </summary>
-        internal static string Estimation_Item_Direct_ReadOnly {
+        internal static string Estimation_Item_Direct_EditCurrentOrOther {
             get {
-                return ResourceManager.GetString("Estimation_Item_Direct_ReadOnly", resourceCulture);
+                return ResourceManager.GetString("Estimation_Item_Direct_EditCurrentOrOther", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select yes to edit current project specific commodity code or no to add a new one.
+        /// </summary>
+        internal static string Estimation_Item_Direct_EditOrAddNewCommodityCode {
+            get {
+                return ResourceManager.GetString("Estimation_Item_Direct_EditOrAddNewCommodityCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project specific commodity code created.
+        /// </summary>
+        internal static string Estimation_Item_Direct_ProjectSpecificCommodityCodeCreated {
+            get {
+                return ResourceManager.GetString("Estimation_Item_Direct_ProjectSpecificCommodityCodeCreated", resourceCulture);
             }
         }
         

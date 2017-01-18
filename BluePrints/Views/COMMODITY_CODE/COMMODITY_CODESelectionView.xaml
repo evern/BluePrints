@@ -1,0 +1,78 @@
+﻿<UserControl 
+    x:Name="userControl"
+    x:Class="BluePrints.Views.COMMODITY_CODESelectionView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+    Height="100" Width="300"
+    >
+    <dxlc:LayoutControl Orientation="Vertical">
+        <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group"  Header="Edit Value" Orientation="Vertical" >
+            <dxlc:LayoutGroup Height="40" Name="LayoutGroupContent" View="Group" Orientation="Horizontal" >
+                <dxlc:LayoutItem Height="25" Label="Commodity Code:">
+                    <dxg:LookUpEdit
+                                                        Name="LookUpCOMMODITY_CODE"
+                                                        AutoComplete="True"
+                                                        ValueMember="GUID"
+                                                        DisplayMember="FULLCODE"
+                                                        IsTextEditable="true"
+                                                        PopupMinWidth="1000"
+                                                        AutoPopulateColumns="False"
+                                                        NullValueButtonPlacement="None"
+                                                        SelectedItem="{Binding SelectedItem, Mode=TwoWay}" 
+                                                        ItemsSource="{Binding SourceObjects}"
+                                                    >
+                        <dxg:LookUpEdit.PopupContentTemplate>
+                            <ControlTemplate TargetType="ContentControl" >
+                                <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False" SelectionMode="Row">
+                                    <dxg:GridControl.Columns>
+                                        <dxg:GridColumn FieldName="CODE" VisibleIndex="10" />
+                                        <dxg:GridColumn Header="FULLCODE" FieldName="FULLCODE" ReadOnly="True" VisibleIndex="20" />
+                                        <dxg:GridColumn FieldName="NAME" VisibleIndex="30" />
+                                        <dxg:GridColumn FieldName="TYPE" VisibleIndex="70" />
+                                        <dxg:GridColumn FieldName="SPEC" VisibleIndex="80" />
+                                        <dxg:GridColumn FieldName="GUID_DISCIPLINE" VisibleIndex="85" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:ComboBoxEditSettings ItemsSource="{Binding DisciplineObjects}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="DESCRIPTION" VisibleIndex="90" />
+                                        <dxg:GridColumn FieldName="SOURCE_DESCRIPTION" ReadOnly="True" AllowEditing="False" IsEnabled="False" VisibleIndex="95" />
+                                        <dxg:GridColumn x:Name="colRATE_SUPPLY" FieldName="RATE_SUPPLY" Header="SUPPLY RATE" VisibleIndex="120" >
+                                            <dxg:GridColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" IsEnabled="False"  />
+                                                </DataTemplate>
+                                            </dxg:GridColumn.CellTemplate>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn x:Name="colRATE_FREIGHT" FieldName="RATE_FREIGHT" Header="FREIGHT RATE" VisibleIndex="130" >
+                                            <dxg:GridColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True"  IsEnabled="False" />
+                                                </DataTemplate>
+                                            </dxg:GridColumn.CellTemplate>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn x:Name="colHOURS_INSTALL" FieldName="HOURS_INSTALL" Header="INSTALL HOURS"  VisibleIndex="140" >
+                                            <dxg:GridColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" IsEnabled="False" />
+                                                </DataTemplate>
+                                            </dxg:GridColumn.CellTemplate>
+                                        </dxg:GridColumn>
+                                    </dxg:GridControl.Columns>
+                                    <dxg:GridControl.View>
+                                        <dxg:TreeListView x:Name="treeListView1" AutoWidth="True" ShowAutoFilterRow="True" ShowSelectionRectangle="True" ShowFocusedRectangle="True" ShowSearchPanelMode="Always"  TreeDerivationMode="Selfreference" KeyFieldName="GUID" ParentFieldName="GUID_PARENT" />
+                                    </dxg:GridControl.View>
+                                </dxg:GridControl>
+                            </ControlTemplate>
+                        </dxg:LookUpEdit.PopupContentTemplate>
+                    </dxg:LookUpEdit>
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+            <dxlc:LayoutGroup Height="25" HorizontalAlignment="Right" Name="LayoutGroupButtons" View="Group"  Orientation="Horizontal" />
+        </dxlc:LayoutGroup>
+    </dxlc:LayoutControl>
+</UserControl>

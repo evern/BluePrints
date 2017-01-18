@@ -1057,6 +1057,7 @@
     <Compile Include="ViewModels\BulkEdit\BulkEditEnumsViewModel.cs" />
     <Compile Include="ViewModels\BulkEdit\BulkEditNumbersViewModel.cs" />
     <Compile Include="ViewModels\BulkEdit\BulkEditStringsViewModel.cs" />
+    <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODESelectionViewModel.cs" />
     <Compile Include="ViewModels\COMMODITY_GROUP\COMMODITY_GROUP_DIRECTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATION\ESTIMATION_DIRECT_ITEMSViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATION\ESTIMATION_DIRECTCollectionViewModelWrapper.cs" />
@@ -1098,6 +1099,9 @@
     </Compile>
     <Compile Include="Common\View\BulkEditStrings.xaml.cs">
       <DependentUpon>BulkEditStrings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\COMMODITY_CODE\COMMODITY_CODESelectionView.xaml.cs">
+      <DependentUpon>COMMODITY_CODESelectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\COMMODITY_GROUP\COMMODITY_GROUP_DIRECTCollectionView.xaml.cs">
       <DependentUpon>COMMODITY_GROUP_DIRECTCollectionView.xaml</DependentUpon>
@@ -1255,6 +1259,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Common\View\BulkEditStrings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\COMMODITY_CODE\COMMODITY_CODESelectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
