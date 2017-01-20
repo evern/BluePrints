@@ -45,7 +45,7 @@
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Home">
-                            <dxr:RibbonPageGroup Caption="BASELINE ITEM Tasks" >
+                            <dxr:RibbonPageGroup Caption="ESTIMATION ITEM Tasks" >
                                 <dxb:BarButtonItem Content="Delete" Command="{Binding DataContext.BulkDeleteCommand, ElementName=userControl}"  LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding RefreshCommand}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
@@ -70,6 +70,7 @@
                                      ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}"
                                      CurrentItem="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}"
                                      SelectedItems="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}"
+                                     SelectionMode="Row"
                         >
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand Command="{Binding DataContext.MasterRowExpandedCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="MasterRowExpanded" />
@@ -237,9 +238,62 @@
                                                     <dxe:ComboBoxEditSettings Name="PART_Editor_ChildInstallWORKPACK" ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Name="colChildCOMMODITY_CODE" FieldName="ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE" Header="COMMODITY_CODE" AllowSearchPanel="False" VisibleIndex="20" >
+                                            <dxg:GridColumn Name="colChildCOMMODITY_CODE" FieldName="COMMODITY_GROUP_CODE_SELECTION" Header="COMMODITY_CODE" AllowSearchPanel="False" VisibleIndex="20" >
                                                 <dxg:GridColumn.EditSettings>
-                                                    <dxe:ComboBoxEditSettings Name="PART_Editor_COMMODITYCODE" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" ValueMember="GUID" DisplayMember="FULLCODE" />
+                                                    <dxg:LookUpEditSettings
+                                                        Name="LookUpCOMMODITY_CODE"
+                                                        AutoComplete="True"
+                                                        ValueMember="ConcatenatedGUID"
+                                                        DisplayMember="COMMODITY_GROUP.DESCRIPTION"
+                                                        IsTextEditable="true"
+                                                        PopupMinWidth="1000"
+                                                        AutoPopulateColumns="False"
+                                                        NullValueButtonPlacement="None"
+                                                        ItemsSource="{Binding DataContext.COMMODITY_GROUP_DIRECT_NoWBSDisplayCollection, ElementName=userControl}" 
+                                                    >
+                                                        <dxg:LookUpEditSettings.PopupContentTemplate>
+                                                            <ControlTemplate TargetType="ContentControl" >
+                                                                <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False" SelectionMode="Row">
+                                                                    <dxg:GridControl.Columns>
+                                                                        <dxg:GridColumn FieldName="GUID_PROJECT" Header="PROJECT" AllowSearchPanel="True" VisibleIndex="1" >
+                                                                            <dxg:GridColumn.EditSettings>
+                                                                                <dxe:ComboBoxEditSettings Name="PART_Editor_PROJECT" ItemsSource="{Binding DataContext.PROJECTCollection, ElementName=userControl}" ValueMember="GUID" DisplayMember="NUMBER" />
+                                                                            </dxg:GridColumn.EditSettings>
+                                                                        </dxg:GridColumn>
+                                                                        <dxg:GridColumn FieldName="COMMODITY_GROUP.DESCRIPTION" Header="DESCRIPTION" AllowSearchPanel="True" VisibleIndex="2"/>
+                                                                        <dxg:GridColumn FieldName="COMMODITY_GROUP.GUID_COMMODITYCODE" Header="COMMODITY_CODE" AllowSearchPanel="True" VisibleIndex="5" >
+                                                                            <dxg:GridColumn.EditSettings>
+                                                                                <dxe:ComboBoxEditSettings Name="PART_Editor_COMMODITYCODE" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" ValueMember="GUID" DisplayMember="FULLCODE" />
+                                                                            </dxg:GridColumn.EditSettings>
+                                                                        </dxg:GridColumn>
+                                                                        <dxg:GridColumn FieldName="COMMODITY_GROUP.GUID_COMMODITYCODE" Header="SUPPLY RATE" AllowSearchPanel="False" VisibleIndex="10" >
+                                                                            <dxg:GridColumn.EditSettings>
+                                                                                <dxe:ComboBoxEditSettings Name="PART_Editor_SUPPLYRATE" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" ValueMember="GUID" DisplayMember="RATE_SUPPLY" />
+                                                                            </dxg:GridColumn.EditSettings>
+                                                                        </dxg:GridColumn>
+                                                                        <dxg:GridColumn FieldName="COMMODITY_GROUP.GUID_COMMODITYCODE" Header="INSTALL HOURS" AllowSearchPanel="False" VisibleIndex="20" >
+                                                                            <dxg:GridColumn.EditSettings>
+                                                                                <dxe:ComboBoxEditSettings Name="PART_Editor_HOURSINSTALL" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" ValueMember="GUID" DisplayMember="HOURS_INSTALL" />
+                                                                            </dxg:GridColumn.EditSettings>
+                                                                        </dxg:GridColumn>
+                                                                        <dxg:GridColumn FieldName="COMMODITY_GROUP.GUID_COMMODITYCODE" Header="FREIGHT RATE" AllowSearchPanel="False" VisibleIndex="30" >
+                                                                            <dxg:GridColumn.EditSettings>
+                                                                                <dxe:ComboBoxEditSettings Name="PART_Editor_RATEFREIGHT" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" ValueMember="GUID" DisplayMember="RATE_FREIGHT" />
+                                                                            </dxg:GridColumn.EditSettings>
+                                                                        </dxg:GridColumn>
+                                                                        <dxg:GridColumn FieldName="COMMODITY_GROUP.GUID_DISCIPLINE" Header="DISCIPLINE" AllowSearchPanel="False" VisibleIndex="40" >
+                                                                            <dxg:GridColumn.EditSettings>
+                                                                                <dxe:ComboBoxEditSettings Name="PART_Editor_DISCIPLINE" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" ValueMember="GUID" DisplayMember="NAME" />
+                                                                            </dxg:GridColumn.EditSettings>
+                                                                        </dxg:GridColumn>
+                                                                    </dxg:GridControl.Columns>
+                                                                    <dxg:GridControl.View>
+                                                                        <dxg:TreeListView x:Name="treeListView1" ShowAutoFilterRow="True" ShowSelectionRectangle="True" ShowFocusedRectangle="True" ShowSearchPanelMode="Always"  TreeDerivationMode="Selfreference" KeyFieldName="GUID" ParentFieldName="GUID_PARENT" />
+                                                                    </dxg:GridControl.View>
+                                                                </dxg:GridControl>
+                                                            </ControlTemplate>
+                                                        </dxg:LookUpEditSettings.PopupContentTemplate>
+                                                    </dxg:LookUpEditSettings>
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn Name="colChildlDISCIPLINE" FieldName="ESTIMATION_DIRECT_ITEM.GUID_DISCIPLINE" Header="DISCIPLINE" AllowSearchPanel="False" VisibleIndex="30" >
@@ -318,7 +372,7 @@
                                         </dxg:GridControlBand>
                                     </dxg:GridControl.Bands>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView Name="tableView1" Style="{StaticResource EstimationItemChildTableViewTemplate}" />
+                                        <dxg:TableView Name="tableView1" Style="{StaticResource DisplayEntitiesChildTableViewTemplate}" />
                                     </dxg:GridControl.View>
                                 </dxg:GridControl>
                             </dxg:DataControlDetailDescriptor>

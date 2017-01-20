@@ -45,7 +45,11 @@ namespace BluePrints.Data
         public string DESCRIPTION { get; set; }
 
         [StringLength(500)]
-        public string SOURCE_DESCRIPTION { get; set; }
+        public string COMMODITY_GROUP_DESC { get; set; }
+
+        public Guid? GUID_COMMODITY_GROUP_DIRECT { get; set; }
+
+        public int? COMMODITY_GROUP_DIRECT_ID { get; set; }
 
         [Required]
         [StringLength(50)]

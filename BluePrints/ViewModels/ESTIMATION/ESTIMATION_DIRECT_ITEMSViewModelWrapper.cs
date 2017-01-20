@@ -63,8 +63,10 @@ namespace BluePrints.ViewModels
 
         BackgroundWorker refreshBackgroundWorker;
         BackgroundWorker displayEntitiesRefreshBackgroundWorker;
+        BackgroundWorker userStateStoreBackgroundWorker;
         BackgroundWorker userStateRestoreBackgroundWorker;
 
+        public bool TryUsingProjectRates { get; set; }
         public ESTIMATION_DIRECT_ITEMProjection SelectedEntity { get; set; }
         ObservableCollection<ESTIMATION_DIRECT_ITEMProjection> selectedentities { get; set; }
         public ObservableCollection<ESTIMATION_DIRECT_ITEMProjection> SelectedEntities
@@ -83,6 +85,10 @@ namespace BluePrints.ViewModels
             userStateRestoreBackgroundWorker = new BackgroundWorker();
             userStateRestoreBackgroundWorker.DoWork += userStateRestoreBackgroundWorker_DoWork;
             userStateRestoreBackgroundWorker.WorkerSupportsCancellation = true;
+
+            userStateStoreBackgroundWorker = new BackgroundWorker();
+            userStateStoreBackgroundWorker.DoWork += userStateStoreBackgroundWorker_DoWork;
+            userStateStoreBackgroundWorker.WorkerSupportsCancellation = true;
 
             refreshBackgroundWorker = new BackgroundWorker();
             refreshBackgroundWorker.DoWork += refreshBackgroundWorker_DoWork;
@@ -209,42 +215,28 @@ namespace BluePrints.ViewModels
         }
 
         #region View Refresh
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATION_DIRECT_ITEMProjection> entities)
-        {
-            MainViewModel.CreateNewProjectionFromNewEntityCallBack = this.CreateNewProjectionFromNewEntityCallBack;
-            MainViewModel.ApplyProjectionPropertiesToEntityCallBack = this.ApplyProjectionPropertiesToEntity;
-            MainViewModel.OnEntitySavedCallBack = this.OnEntitiesSavedCallBack;
-            MainViewModel.ExistingRowAddUndoAndSaveCallBack = this.ExistingProjectionEditCallBack;
-            MainViewModel.NewRowAddUndoAndBeforeSaveCallBack = this.NewRowAddUndoAndBeforeSaveCallBack;
-            MainViewModel.NewRowAddUndoAndAfterSaveCallBack = this.NewRowAddUndoAndAfterSaveCallBack;
-            MainViewModel.EntitiesBeforeDeletionCallBack = this.EntitiesBeforeDeletion;
-            //MainViewModel.PostSave = this.PostSave;
-
-            MainViewModel.SetParentViewModel(this);
-            refreshBackgroundWorker.RunWorkerAsync();
-        }
-
         List<Guid> SelectedEntitiesGuid = new List<Guid>();
         protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
             if (changedType == typeof(COMMODITY_CODE) || changedType == typeof(COMMODITY_GROUP_DIRECT) || changedType == typeof(ESTIMATION_DIRECT_ITEM))
             {
-                storeViewState();
-
-                if (changedType == typeof(COMMODITY_GROUP_DIRECT))
-                    mainThreadDispatcher.BeginInvoke(new Action(() => COMMODITY_GROUP_DIRECTCollectionViewModel.Refresh()));
-                else if (changedType == typeof(COMMODITY_CODE))
-                    mainThreadDispatcher.BeginInvoke(new Action(() => COMMODITY_CODECollectionViewModel.Refresh()));
-                else
-                {
-                    if (sender.ToString() != MainViewModel.ToString())
-                        mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
-                    else
-                        mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.RefreshWithoutClearingUndoManager()));
-                }
-
                 if (!displayEntitiesRefreshBackgroundWorker.IsBusy)
+                {
+                    storeViewState();
+                    if (changedType == typeof(COMMODITY_GROUP_DIRECT))
+                        mainThreadDispatcher.BeginInvoke(new Action(() => COMMODITY_GROUP_DIRECTCollectionViewModel.Refresh()));
+                    else if (changedType == typeof(COMMODITY_CODE))
+                        mainThreadDispatcher.BeginInvoke(new Action(() => COMMODITY_CODECollectionViewModel.Refresh()));
+                    else
+                    {
+                        if (sender.ToString() != MainViewModel.ToString())
+                            mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
+                        else
+                            mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.RefreshWithoutClearingUndoManager()));
+                    }
+
                     displayEntitiesRefreshBackgroundWorker.RunWorkerAsync();
+                }
 
                 return;
             }
@@ -302,7 +294,21 @@ namespace BluePrints.ViewModels
             displayEntities = null;
             commodity_group_direct_DisplayCollection = null;
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.COMMODITY_GROUP_DIRECT_DisplayCollection)));
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.COMMODITY_GROUP_DIRECT_NoWBSDisplayCollection)));
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DisplayEntities)));
+        }
+
+        void userStateStoreBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            System.Threading.Thread.Sleep(10);
+            Type changedType = (Type)e.Argument;
+            if (((BackgroundWorker)sender).CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.storeViewState()));
         }
 
         void userStateRestoreBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -368,6 +374,20 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATION_DIRECT_ITEMProjection> entities)
+        {
+            MainViewModel.CreateNewProjectionFromNewEntityCallBack = this.CreateNewProjectionFromNewEntityCallBack;
+            MainViewModel.ApplyProjectionPropertiesToEntityCallBack = this.ApplyProjectionPropertiesToEntity;
+            MainViewModel.OnEntitySavedCallBack = this.OnEntitiesSavedCallBack;
+            MainViewModel.ExistingRowAddUndoAndSaveCallBack = this.ExistingProjectionEditCallBack;
+            MainViewModel.NewRowAddUndoAndBeforeSaveCallBack = this.NewRowAddUndoAndBeforeSaveCallBack;
+            MainViewModel.NewRowAddUndoAndAfterSaveCallBack = this.NewRowAddUndoAndAfterSaveCallBack;
+            MainViewModel.EntitiesBeforeDeletionCallBack = this.EntitiesBeforeDeletion;
+            COMMODITY_CODEProjectSpecificViewModel.DisplayEntities.ToList();
+            MainViewModel.SetParentViewModel(this);
+            refreshBackgroundWorker.RunWorkerAsync();
+        }
+
         #region Collection Call Backs
         public void ApplyProjectionPropertiesToEntity(ESTIMATION_DIRECT_ITEMProjection projectionEntity, ESTIMATION_DIRECT_ITEM entity)
         {
@@ -400,7 +420,8 @@ namespace BluePrints.ViewModels
 
         public void ExistingProjectionEditCallBack(ESTIMATION_DIRECT_ITEMProjection projectionEntity, CellValueChangedEventArgs e)
         {
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().COMMODITY_GROUP_CODE_SELECTION))
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().COMMODITY_GROUP_CODE_SELECTION)
+             || e.Column.FieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_COMMODITY_CODE))
                 NewRowAndExistingAddUndoAndSave(projectionEntity);
             else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().ESTIMATED_QUANTITY))
                 MultiplyChildrenEntityRates(projectionEntity, (decimal)e.OldValue, (decimal)e.Value);
@@ -439,11 +460,11 @@ namespace BluePrints.ViewModels
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(childrenEntity, e.Column.FieldName, oldValue, newValue, EntityMessageType.Changed);
                     MainViewModel.Save(childrenEntity);
                 }
+
             }
             else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().RATE_FREIGHT)
             || e.Column.FieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().RATE_SUPPLY)
-            || e.Column.FieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().HOURS_INSTALL)
-            || e.Column.FieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_DISCIPLINE))
+            || e.Column.FieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().HOURS_INSTALL))
             {
                 Guid? newCOMMODITY_CODEGuid = AddProjectSpecificCOMMODITY_CODE(projectionEntity);
                 if (newCOMMODITY_CODEGuid != null)
@@ -461,7 +482,15 @@ namespace BluePrints.ViewModels
         {
             if (projectionEntity.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE != null)
             {
-                COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == projectionEntity.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE);
+                COMMODITY_CODE findCOMMODITY_CODE;
+                //if(TryUsingProjectRates)
+                //{
+                //    findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID_PROJECT == loadPROJECT.GUID && x.GUID == projectionEntity.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE);
+                //}
+
+                //else
+                    findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == projectionEntity.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE);
+                
                 if (findCOMMODITY_CODE != null)
                 {
                     object oldValue = projectionEntity.ESTIMATION_DIRECT_ITEM.ESTIMATED_QUANTITY;
@@ -522,208 +551,6 @@ namespace BluePrints.ViewModels
                 MainViewModel.EntitiesUndoRedoManager.AddUndo(childrenEntity, BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().ESTIMATED_QUANTITY), childOldValue, childNewValue, EntityMessageType.Changed);
                 MainViewModel.Save(childrenEntity);
             }
-        }
-
-        DevExpress.Mvvm.IDialogService BulkColumnEditDialogService { get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BulkColumnEditService"); } }
-
-        private Guid? AddProjectSpecificCOMMODITY_CODE(ESTIMATION_DIRECT_ITEMProjection editedProjectionEntity)
-        {
-            if (editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE == null)
-                return null;
-
-            COMMODITY_CODE currentCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == (Guid)editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE);
-            if(currentCOMMODITY_CODE != null)
-            {
-                if (currentCOMMODITY_CODE.GUID_PROJECT != null)
-                {
-                    if (MessageBoxService.ShowMessage(CommonResources.Estimation_Item_Direct_EditOrAddNewCommodityCode, CommonResources.Confirmation_Caption, MessageButton.YesNo) == MessageResult.Yes)
-                    {
-                        IEnumerable<COMMODITY_CODE> projectSpecific_COMMODITY_CODES = COMMODITY_CODECollection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.FULLCODE == currentCOMMODITY_CODE.FULLCODE);
-                        if (projectSpecific_COMMODITY_CODES.Count() > 1)
-                        {
-                            IEnumerable<COMMODITY_CODE> projectSpecific_COMMODITY_CODESExcludingCurrent = COMMODITY_CODECollection.Where(x => x.GUID != currentCOMMODITY_CODE.GUID && x.GUID_PROJECT == loadPROJECT.GUID && x.FULLCODE == currentCOMMODITY_CODE.FULLCODE);
-
-                            var commodity_codeSelectionViewModel = COMMODITY_CODESelectionViewModel.Create(projectSpecific_COMMODITY_CODES, currentCOMMODITY_CODE, DISCIPLINECollection);
-                            if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Select Item to edit", "COMMODITY_CODESelectionView", commodity_codeSelectionViewModel) == MessageResult.OK)
-                            {
-                                if (commodity_codeSelectionViewModel.SelectedItem != null)
-                                {
-                                    COMMODITY_CODE selectedCOMMODITY_CODE = (COMMODITY_CODE)commodity_codeSelectionViewModel.SelectedItem;
-                                    selectedCOMMODITY_CODE.RATE_FREIGHT = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.RATE_FREIGHT;
-                                    selectedCOMMODITY_CODE.RATE_SUPPLY = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.RATE_SUPPLY;
-                                    selectedCOMMODITY_CODE.HOURS_INSTALL = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.HOURS_INSTALL;
-                                    currentCOMMODITY_CODE.GUID_DISCIPLINE = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_DISCIPLINE;
-
-                                    COMMODITY_CODECollectionViewModel.Save(selectedCOMMODITY_CODE);
-                                    return selectedCOMMODITY_CODE.GUID;
-                                }
-                            }
-                            else
-                            {
-                                currentCOMMODITY_CODE.RATE_FREIGHT = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.RATE_FREIGHT;
-                                currentCOMMODITY_CODE.RATE_SUPPLY = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.RATE_SUPPLY;
-                                currentCOMMODITY_CODE.HOURS_INSTALL = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.HOURS_INSTALL;
-                                currentCOMMODITY_CODE.GUID_DISCIPLINE = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_DISCIPLINE;
-
-                                COMMODITY_CODECollectionViewModel.Save(currentCOMMODITY_CODE);
-                                return currentCOMMODITY_CODE.GUID;
-                            }
-                        }
-                        else
-                        {
-                            currentCOMMODITY_CODE.RATE_FREIGHT = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.RATE_FREIGHT;
-                            currentCOMMODITY_CODE.RATE_SUPPLY = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.RATE_SUPPLY;
-                            currentCOMMODITY_CODE.HOURS_INSTALL = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.HOURS_INSTALL;
-                            currentCOMMODITY_CODE.GUID_DISCIPLINE = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_DISCIPLINE;
-
-                            COMMODITY_CODECollectionViewModel.Save(currentCOMMODITY_CODE);
-                            return currentCOMMODITY_CODE.GUID;
-                        }
-                    }
-                    else
-                    {
-                        COMMODITY_CODE newCOMMODITY_CODE = new COMMODITY_CODE();
-                        DataUtils.ShallowCopy(newCOMMODITY_CODE, currentCOMMODITY_CODE);
-                        newCOMMODITY_CODE.GUID = Guid.Empty;
-                        newCOMMODITY_CODE.GUID_PROJECT = loadPROJECT.GUID;
-                        newCOMMODITY_CODE.GUID_PARENT = Guid.Empty;
-                        newCOMMODITY_CODE.RATE_FREIGHT = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.RATE_FREIGHT;
-                        newCOMMODITY_CODE.RATE_SUPPLY = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.RATE_SUPPLY;
-                        newCOMMODITY_CODE.HOURS_INSTALL = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.HOURS_INSTALL;
-                        newCOMMODITY_CODE.GUID_DISCIPLINE = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_DISCIPLINE;
-
-                        if (editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT != null)
-                        {
-                            ESTIMATION_DIRECT_ITEMProjection parentESTIMATION_DIRECT_ITEM = DisplayEntities.FirstOrDefault(x => x.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL == editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT);
-                            if (parentESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT != null)
-                            {
-                                COMMODITY_GROUP_DIRECT parentCOMMODITY_GROUP_DIRECT = COMMODITY_GROUP_DIRECTCollection.FirstOrDefault(x => x.GUID == parentESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT);
-                                if (parentCOMMODITY_GROUP_DIRECT != null)
-                                {
-                                    newCOMMODITY_CODE.SOURCE_DESCRIPTION = parentCOMMODITY_GROUP_DIRECT.DESCRIPTION;
-                                }
-                            }
-                        }
-
-                        COMMODITY_CODECollectionViewModel.Save(newCOMMODITY_CODE);
-                        return newCOMMODITY_CODE.GUID;
-                    }
-                }
-                else
-                {
-                    IEnumerable<COMMODITY_CODE> projectSpecific_COMMODITY_CODES = COMMODITY_CODECollection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.FULLCODE == currentCOMMODITY_CODE.FULLCODE);
-                    if (projectSpecific_COMMODITY_CODES.Count() > 0)
-                    {
-                        if (MessageBoxService.ShowMessage(CommonResources.Estimation_Item_Direct_EditOrAddNewCommodityCode, CommonResources.Confirmation_Caption, MessageButton.YesNo) == MessageResult.Yes)
-                        {
-                            IEnumerable<COMMODITY_CODE> projectSpecific_COMMODITY_CODESExcludingCurrent = COMMODITY_CODECollection.Where(x => x.GUID != currentCOMMODITY_CODE.GUID && x.GUID_PROJECT == loadPROJECT.GUID && x.FULLCODE == currentCOMMODITY_CODE.FULLCODE);
-
-                            var commodity_codeSelectionViewModel = COMMODITY_CODESelectionViewModel.Create(projectSpecific_COMMODITY_CODES, currentCOMMODITY_CODE, DISCIPLINECollection);
-                            if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Select Item to edit", "COMMODITY CODES", commodity_codeSelectionViewModel) == MessageResult.OK)
-                            {
-                                if (commodity_codeSelectionViewModel.SelectedItem != null)
-                                {
-                                    COMMODITY_CODE selectedCOMMODITY_CODE = (COMMODITY_CODE)commodity_codeSelectionViewModel.SelectedItem;
-                                    selectedCOMMODITY_CODE.RATE_FREIGHT = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.RATE_FREIGHT;
-                                    selectedCOMMODITY_CODE.RATE_SUPPLY = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.RATE_SUPPLY;
-                                    selectedCOMMODITY_CODE.HOURS_INSTALL = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.HOURS_INSTALL;
-                                    selectedCOMMODITY_CODE.GUID_DISCIPLINE = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_DISCIPLINE;
-
-                                    COMMODITY_CODECollectionViewModel.Save(selectedCOMMODITY_CODE);
-                                    return selectedCOMMODITY_CODE.GUID;
-                                }
-                            }
-                            else
-                            {
-                                COMMODITY_CODE newCOMMODITY_CODE = new COMMODITY_CODE();
-                                DataUtils.ShallowCopy(newCOMMODITY_CODE, currentCOMMODITY_CODE);
-                                newCOMMODITY_CODE.GUID = Guid.Empty;
-                                newCOMMODITY_CODE.GUID_PROJECT = loadPROJECT.GUID;
-                                newCOMMODITY_CODE.GUID_PARENT = Guid.Empty;
-                                newCOMMODITY_CODE.RATE_FREIGHT = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.RATE_FREIGHT;
-                                newCOMMODITY_CODE.RATE_SUPPLY = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.RATE_SUPPLY;
-                                newCOMMODITY_CODE.HOURS_INSTALL = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.HOURS_INSTALL;
-                                newCOMMODITY_CODE.GUID_DISCIPLINE = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_DISCIPLINE;
-
-                                if (editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT != null)
-                                {
-                                    ESTIMATION_DIRECT_ITEMProjection parentESTIMATION_DIRECT_ITEM = DisplayEntities.FirstOrDefault(x => x.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL == editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT);
-                                    if (parentESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT != null)
-                                    {
-                                        COMMODITY_GROUP_DIRECT parentCOMMODITY_GROUP_DIRECT = COMMODITY_GROUP_DIRECTCollection.FirstOrDefault(x => x.GUID == parentESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT);
-                                        if (parentCOMMODITY_GROUP_DIRECT != null)
-                                        {
-                                            newCOMMODITY_CODE.SOURCE_DESCRIPTION = parentCOMMODITY_GROUP_DIRECT.DESCRIPTION;
-                                        }
-                                    }
-                                }
-
-                                COMMODITY_CODECollectionViewModel.Save(newCOMMODITY_CODE);
-                                return newCOMMODITY_CODE.GUID;
-                            }
-                        }
-                        else
-                        {
-                            COMMODITY_CODE newCOMMODITY_CODE = new COMMODITY_CODE();
-                            DataUtils.ShallowCopy(newCOMMODITY_CODE, currentCOMMODITY_CODE);
-                            newCOMMODITY_CODE.GUID = Guid.Empty;
-                            newCOMMODITY_CODE.GUID_PROJECT = loadPROJECT.GUID;
-                            newCOMMODITY_CODE.GUID_PARENT = Guid.Empty;
-                            newCOMMODITY_CODE.RATE_FREIGHT = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.RATE_FREIGHT;
-                            newCOMMODITY_CODE.RATE_SUPPLY = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.RATE_SUPPLY;
-                            newCOMMODITY_CODE.HOURS_INSTALL = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.HOURS_INSTALL;
-                            newCOMMODITY_CODE.GUID_DISCIPLINE = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_DISCIPLINE;
-
-                            if (editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT != null)
-                            {
-                                ESTIMATION_DIRECT_ITEMProjection parentESTIMATION_DIRECT_ITEM = DisplayEntities.FirstOrDefault(x => x.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL == editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT);
-                                if (parentESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT != null)
-                                {
-                                    COMMODITY_GROUP_DIRECT parentCOMMODITY_GROUP_DIRECT = COMMODITY_GROUP_DIRECTCollection.FirstOrDefault(x => x.GUID == parentESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT);
-                                    if (parentCOMMODITY_GROUP_DIRECT != null)
-                                    {
-                                        newCOMMODITY_CODE.SOURCE_DESCRIPTION = parentCOMMODITY_GROUP_DIRECT.DESCRIPTION;
-                                    }
-                                }
-                            }
-
-                            COMMODITY_CODECollectionViewModel.Save(newCOMMODITY_CODE);
-                            return newCOMMODITY_CODE.GUID;
-                        }
-                    }
-                    else
-                    {
-                        COMMODITY_CODE newCOMMODITY_CODE = new COMMODITY_CODE();
-                        DataUtils.ShallowCopy(newCOMMODITY_CODE, currentCOMMODITY_CODE);
-                        newCOMMODITY_CODE.GUID = Guid.Empty;
-                        newCOMMODITY_CODE.GUID_PROJECT = loadPROJECT.GUID;
-                        newCOMMODITY_CODE.GUID_PARENT = Guid.Empty;
-                        newCOMMODITY_CODE.RATE_FREIGHT = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.RATE_FREIGHT;
-                        newCOMMODITY_CODE.RATE_SUPPLY = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.RATE_SUPPLY;
-                        newCOMMODITY_CODE.HOURS_INSTALL = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.HOURS_INSTALL;
-                        newCOMMODITY_CODE.GUID_DISCIPLINE = editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_DISCIPLINE;
-
-                        if (editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT != null)
-                        {
-                            ESTIMATION_DIRECT_ITEMProjection parentESTIMATION_DIRECT_ITEM = DisplayEntities.FirstOrDefault(x => x.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL == editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT);
-                            if (parentESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT != null)
-                            {
-                                COMMODITY_GROUP_DIRECT parentCOMMODITY_GROUP_DIRECT = COMMODITY_GROUP_DIRECTCollection.FirstOrDefault(x => x.GUID == parentESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT);
-                                if (parentCOMMODITY_GROUP_DIRECT != null)
-                                {
-                                    newCOMMODITY_CODE.SOURCE_DESCRIPTION = parentCOMMODITY_GROUP_DIRECT.DESCRIPTION;
-                                }
-                            }
-                        }
-
-                        COMMODITY_CODECollectionViewModel.Save(newCOMMODITY_CODE);
-                        MessageBoxService.ShowMessage(CommonResources.Estimation_Item_Direct_ProjectSpecificCommodityCodeCreated);
-                        return newCOMMODITY_CODE.GUID;
-                    }
-                }
-            }
-
-            return null;
         }
 
         //Remove children before parent deletion
@@ -813,6 +640,169 @@ namespace BluePrints.ViewModels
             }
         }
 
+
+        DevExpress.Mvvm.IDialogService BulkColumnEditDialogService { get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BulkColumnEditService"); } }
+
+        private Guid? AddProjectSpecificCOMMODITY_CODEGroup(ESTIMATION_DIRECT_ITEMProjection editedProjectionEntity)
+        {
+            if (editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT != null)
+            {
+                ESTIMATION_DIRECT_ITEMProjection parentESTIMATION_DIRECT_ITEM = MainViewModel.Entities.First(x => x.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL == editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT);
+                IEnumerable<COMMODITY_CODE_ProjectSpecificProjection> findAllCOMMODITY_GROUP = COMMODITY_CODEProjectSpecificViewModel.DisplayEntities.Where(x => x.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT == parentESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT);
+                //Check whether project specific commodity code group exists
+                if (findAllCOMMODITY_GROUP.Count() > 0)
+                {
+                    //no doubt there is only one commodity code grouping by that estimate original parent guid
+                    //asks user if they want to create new or edit existing group
+
+                    //if user wants to add
+                        //find parent estimate direct item
+                        //foreach parent estimate direct item children's commodity code add new group and project specific commodity code
+                    //else if user wants to edit
+                        //if (findAllCOMMODITY_GROUP.Count() > 1)
+                            //Present commodity group selection dialog
+                            //use selected commodity group
+                            //foreach children in commodity group cross reference children estimation direct item for rates
+                        //else
+                            //Find specific commodity group using the code below
+                            //COMMODITY_CODE_ProjectSpecificProjection findSpecificCOMMODITY_GROUP = COMMODITY_CODEProjectSpecificViewModel.DisplayEntities.FirstOrDefault(x => x.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT == parentESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT && x.COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID == parentESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.COMMODITY_GROUP_DIRECT_ID);
+                            //foreach children in commodity group cross reference children estimation direct item for rates
+                    //end if user wants to add
+                }
+                //when there are no project specific commodity code group
+                else
+                {
+                    //find parent estimate direct item
+                    //foreach parent estimate direct item children's commodity code add new group and project specific commodity code
+                }
+            }
+            //it is confirmed that current commodity code is standalone
+            else
+            {
+                //ask if user wants to add or edit existing
+                    //if user wants to add
+                        //create new standalone project specific commodity code
+                    //end if user wants to add
+                //else if user wants to edit
+                    //count number of project specific commodity code
+                    //if project specific commodity code more than 1
+                        //pop up dialog box for user to select standalone commodity code to edit
+                    //else if project specific commodity code is 1
+                        //edit current project specific commodity code
+                    //end if project specific commodity code more than 1
+                //end if user wants to edit
+            }
+
+            return Guid.Empty;
+        }
+
+        private Guid? AddProjectSpecificCOMMODITY_CODE(ESTIMATION_DIRECT_ITEMProjection editedProjectionEntity)
+        {
+            if (editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE == null)
+                return null;
+
+            COMMODITY_CODE currentCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == (Guid)editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE);
+            if (currentCOMMODITY_CODE != null)
+            {
+                if (currentCOMMODITY_CODE.GUID_PROJECT != null)
+                {
+                    if (MessageBoxService.ShowMessage(CommonResources.Estimation_Item_Direct_EditOrAddNewCommodityCode, CommonResources.Confirmation_Caption, MessageButton.YesNo) == MessageResult.Yes)
+                    {
+                        IEnumerable<COMMODITY_CODE> projectSpecific_COMMODITY_CODES = COMMODITY_CODECollection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.FULLCODE == currentCOMMODITY_CODE.FULLCODE);
+                        if (projectSpecific_COMMODITY_CODES.Count() > 1)
+                        {
+                            return MultipleProjectSpecificCommodityCodeSelection(currentCOMMODITY_CODE, projectSpecific_COMMODITY_CODES, editedProjectionEntity);
+                        }
+                        else
+                        {
+                            return UpdateAndSaveCOMMODITY_CODE(currentCOMMODITY_CODE, null, editedProjectionEntity, false);
+                        }
+                    }
+                    else
+                    {
+                        return UpdateAndSaveCOMMODITY_CODE(new COMMODITY_CODE(), currentCOMMODITY_CODE, editedProjectionEntity, true);
+                    }
+                }
+                else
+                {
+                    IEnumerable<COMMODITY_CODE> projectSpecific_COMMODITY_CODES = COMMODITY_CODECollection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.FULLCODE == currentCOMMODITY_CODE.FULLCODE);
+                    if (projectSpecific_COMMODITY_CODES.Count() > 0)
+                    {
+                        if (MessageBoxService.ShowMessage(CommonResources.Estimation_Item_Direct_EditOrAddNewCommodityCode, CommonResources.Confirmation_Caption, MessageButton.YesNo) == MessageResult.Yes)
+                        {
+                            return MultipleProjectSpecificCommodityCodeSelection(currentCOMMODITY_CODE, projectSpecific_COMMODITY_CODES, editedProjectionEntity);
+                        }
+                        else
+                        {
+                            return UpdateAndSaveCOMMODITY_CODE(new COMMODITY_CODE(), currentCOMMODITY_CODE, editedProjectionEntity, true);
+                        }
+                    }
+                    else
+                    {
+                        MessageBoxService.ShowMessage(CommonResources.Estimation_Item_Direct_ProjectSpecificCommodityCodeCreated);
+                        return UpdateAndSaveCOMMODITY_CODE(new COMMODITY_CODE(), currentCOMMODITY_CODE, editedProjectionEntity, true);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private Guid MultipleProjectSpecificCommodityCodeSelection(COMMODITY_CODE currentCOMMODITY_CODE, IEnumerable<COMMODITY_CODE> projectSpecific_COMMODITY_CODES, ESTIMATION_DIRECT_ITEMProjection ratesESTIMATION_DIRECT_ITEM)
+        {
+            IEnumerable<COMMODITY_CODE> projectSpecific_COMMODITY_CODESExcludingCurrent = COMMODITY_CODECollection.Where(x => x.GUID != currentCOMMODITY_CODE.GUID && x.GUID_PROJECT == loadPROJECT.GUID && x.FULLCODE == currentCOMMODITY_CODE.FULLCODE);
+            var commodity_codeSelectionViewModel = COMMODITY_CODESelectionViewModel.Create(projectSpecific_COMMODITY_CODES, currentCOMMODITY_CODE, DISCIPLINECollection);
+            if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Select Item to edit", "COMMODITY_CODESelectionView", commodity_codeSelectionViewModel) == MessageResult.OK)
+            {
+                if (commodity_codeSelectionViewModel.SelectedItem != null)
+                {
+                    return UpdateAndSaveCOMMODITY_CODE((COMMODITY_CODE)commodity_codeSelectionViewModel.SelectedItem, null, ratesESTIMATION_DIRECT_ITEM, false);
+                }
+            }
+            else
+            {
+                return UpdateAndSaveCOMMODITY_CODE(currentCOMMODITY_CODE, null, ratesESTIMATION_DIRECT_ITEM, false);
+            }
+
+            return Guid.Empty;
+        }
+
+        private Guid UpdateAndSaveCOMMODITY_CODE(COMMODITY_CODE newOrExistingCOMMODITY_CODE, COMMODITY_CODE creationCOMMODITY_CODE, ESTIMATION_DIRECT_ITEMProjection ratesESTIMATION_DIRECT_ITEM, bool populateSourceDescription)
+        {
+            if (creationCOMMODITY_CODE != null)
+            {
+                DataUtils.ShallowCopy(newOrExistingCOMMODITY_CODE, creationCOMMODITY_CODE);
+                newOrExistingCOMMODITY_CODE.GUID = Guid.Empty;
+                newOrExistingCOMMODITY_CODE.GUID_PROJECT = loadPROJECT.GUID;
+                newOrExistingCOMMODITY_CODE.GUID_PARENT = Guid.Empty;
+            }
+
+            newOrExistingCOMMODITY_CODE.RATE_FREIGHT = ratesESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.RATE_FREIGHT;
+            newOrExistingCOMMODITY_CODE.RATE_SUPPLY = ratesESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.RATE_SUPPLY;
+            newOrExistingCOMMODITY_CODE.HOURS_INSTALL = ratesESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.HOURS_INSTALL;
+
+            if (ratesESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT != null)
+            {
+                ESTIMATION_DIRECT_ITEMProjection parentESTIMATION_DIRECT_ITEM = DisplayEntities.FirstOrDefault(x => x.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL == ratesESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT);
+                if (parentESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT != null)
+                {
+                    COMMODITY_GROUP_DIRECT parentCOMMODITY_GROUP_DIRECT = COMMODITY_GROUP_DIRECTCollection.FirstOrDefault(x => x.GUID == parentESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT);
+                    string groupDescription = parentCOMMODITY_GROUP_DIRECT.DESCRIPTION;
+                    Guid groupGuid = parentCOMMODITY_GROUP_DIRECT.GUID;
+
+                    if (parentCOMMODITY_GROUP_DIRECT != null)
+                    {
+                        newOrExistingCOMMODITY_CODE.COMMODITY_GROUP_DESC = groupDescription;
+                        newOrExistingCOMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT = groupGuid;
+                        newOrExistingCOMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID = COMMODITY_CODEProjectSpecificViewModel.DisplayEntities.Count(x => x.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT == groupGuid && x.COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID != parentESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.COMMODITY_GROUP_DIRECT_ID);
+                    }
+                }
+            }
+
+            COMMODITY_CODECollectionViewModel.Save(newOrExistingCOMMODITY_CODE);
+            return newOrExistingCOMMODITY_CODE.GUID;
+        }
+
         protected override void OnClose(CancelEventArgs e)
         {
             refreshBackgroundWorker.CancelAsync();
@@ -849,7 +839,7 @@ namespace BluePrints.ViewModels
 
         public virtual bool CanBulkDelete()
         {
-            return MainViewModel != null && MainViewModel.Entities != null && MainViewModel.Entities.Count > 0 && !IsLoading && SelectedEntities.Count > 0;
+            return MainViewModel != null && MainViewModel.Entities != null && MainViewModel.Entities.Count > 0 && !IsLoading && SelectedEntities.Count > 0 && SelectedEntity.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT == null;
         }
 
         public void BulkDelete()
@@ -891,6 +881,23 @@ namespace BluePrints.ViewModels
                     return null;
 
                 return (CollectionViewModel<COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<COMMODITY_CODE>();
+            }
+        }
+
+        COMMODITY_CODEProjectSpecificViewModelWrapper commodity_codeProjectSpecificViewModel;
+        public COMMODITY_CODEProjectSpecificViewModelWrapper COMMODITY_CODEProjectSpecificViewModel
+        {
+            get
+            {
+                if (commodity_codeProjectSpecificViewModel == null && this.loadPROJECT != null)
+                {
+                    commodity_codeProjectSpecificViewModel = COMMODITY_CODEProjectSpecificViewModelWrapper.Create();
+                    commodity_codeProjectSpecificViewModel.SetParentViewModel(this);
+                    ISupportParameter baselineSupportParameterObj = commodity_codeProjectSpecificViewModel as ISupportParameter;
+                    baselineSupportParameterObj.Parameter = new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(this.loadPROJECT, new CommodityCodeTypeClass(CommodityCodeType.Direct));
+                }
+
+                return commodity_codeProjectSpecificViewModel;
             }
         }
 
@@ -1001,6 +1008,15 @@ namespace BluePrints.ViewModels
                 return commodity_group_direct_DisplayCollection;
             }
         }
+
+        public IEnumerable<COMMODITY_GROUP_DIRECTProjection> COMMODITY_GROUP_DIRECT_NoWBSDisplayCollection
+        {
+            get
+            {
+                return COMMODITY_GROUP_DIRECT_DisplayCollection.Where(x => x.COMMODITY_GROUP.GUID_COMMODITYCODE != null);
+            }
+        }
+
 
         public IEnumerable<PROJECT> PROJECTCollection
         {

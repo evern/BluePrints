@@ -239,7 +239,7 @@
         <!--<Setter Property="AllowRowFixing" Value="Both" />
         <Setter Property="ShowFixRowButton" Value="RowHover" />-->
     </Style>
-    <Style x:Key="EstimationItemChildTableViewTemplate" TargetType="{x:Type dxg:TableView}">
+    <Style x:Key="DisplayEntitiesChildTableViewTemplate" TargetType="{x:Type dxg:TableView}">
         <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
             <Setter.Value>
                 <DataTemplate>
@@ -248,7 +248,6 @@
                         <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding NewRowAddUndoAndSaveCommand}" EventName="RowUpdated" />
                         <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}" EventName="ValidateCell" />
                         <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}" EventName="ValidateRow" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard"/>
                         <!--<dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}"  />-->
                         <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}"  />
                         <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}"  />

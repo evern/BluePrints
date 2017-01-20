@@ -31,6 +31,8 @@ namespace BluePrints.Data
 
         public Guid? GUID_COMMODITY_GROUP_DIRECT { get; set; }
 
+        public int? COMMODITY_GROUP_DIRECT_ID { get; set; }
+
         public Guid? GUID_TIMEGROUP { get; set; }
 
         [StringLength(1000)]

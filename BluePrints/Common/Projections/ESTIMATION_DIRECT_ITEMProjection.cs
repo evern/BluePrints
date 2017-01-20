@@ -26,11 +26,10 @@ namespace BluePrints.Common.Projections
 
         [Key]
         public Guid GUID { get; set; }
+
         public ESTIMATION_DIRECT_ITEM ESTIMATION_DIRECT_ITEM { get; set; }
 
         public ObservableCollection<ESTIMATION_DIRECT_ITEMProjection> CHILD_ESTIMATION_DIRECT_ITEM { get; set; }
-
-        public COMMODITY_GROUP_DIRECT MANUAL_COMMODITY_GROUP_DIRECT { get; set; }
 
         public RATE RATE { get; set; }
 
