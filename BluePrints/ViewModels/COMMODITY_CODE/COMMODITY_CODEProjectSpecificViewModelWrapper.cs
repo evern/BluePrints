@@ -384,7 +384,20 @@ namespace BluePrints.ViewModels
         public void BulkDelete()
         {
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-            MainViewModel.BaseBulkDelete(this.SelectedEntities);
+            List<COMMODITY_CODE_ProjectSpecificProjection> deletingEntities = new List<COMMODITY_CODE_ProjectSpecificProjection>();
+            foreach(COMMODITY_CODE_ProjectSpecificProjection selectedEntity in selectedentities)
+            {
+                if (selectedEntity.GUID == Guid.Empty)
+                {
+                    foreach (COMMODITY_CODE_ProjectSpecificProjection childrenEntity in selectedEntity.CHILD_COMMODITY_CODES)
+                    {
+                        deletingEntities.Add(childrenEntity);
+                    }
+                }
+                else
+                    deletingEntities.Add(selectedEntity);
+            }
+            MainViewModel.BaseBulkDelete(deletingEntities);
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }
         #endregion
@@ -409,6 +422,8 @@ namespace BluePrints.ViewModels
                         COMMODITY_CODE_ProjectSpecificProjection projectionParentPOCO = ViewModelSource.Create(() => new COMMODITY_CODE_ProjectSpecificProjection());
                         projectionParentPOCO.GUID = Guid.Empty;
                         projectionParentPOCO.COMMODITY_CODE.FULLCODE = firstItemInGroup.COMMODITY_CODE.COMMODITY_GROUP_DESC;
+                        projectionParentPOCO.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT = firstItemInGroup.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT;
+                        projectionParentPOCO.COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID = firstItemInGroup.COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID;
                         projectionParentPOCO.ISGENERATED = true;
                         foreach(var item in group)
                         {
@@ -418,6 +433,10 @@ namespace BluePrints.ViewModels
                             projectionParentPOCO.CHILD_COMMODITY_CODES.Add(projectionChildPOCO);
                         }
 
+                        projectionParentPOCO.COMMODITY_CODE.RATE_SUPPLY = projectionParentPOCO.CHILD_COMMODITY_CODES.Where(x => x.COMMODITY_CODE.RATE_SUPPLY != null).Sum(x => x.COMMODITY_CODE.RATE_SUPPLY);
+                        projectionParentPOCO.COMMODITY_CODE.RATE_FREIGHT = projectionParentPOCO.CHILD_COMMODITY_CODES.Where(x => x.COMMODITY_CODE.RATE_FREIGHT != null).Sum(x => x.COMMODITY_CODE.RATE_FREIGHT);
+                        projectionParentPOCO.COMMODITY_CODE.RATE_PLANT = projectionParentPOCO.CHILD_COMMODITY_CODES.Where(x => x.COMMODITY_CODE.RATE_PLANT != null).Sum(x => x.COMMODITY_CODE.RATE_PLANT);
+                        projectionParentPOCO.COMMODITY_CODE.HOURS_INSTALL = projectionParentPOCO.CHILD_COMMODITY_CODES.Where(x => x.COMMODITY_CODE.HOURS_INSTALL != null).Sum(x => x.COMMODITY_CODE.HOURS_INSTALL);
                         displayEntities.Add(projectionParentPOCO);
                     }
 
@@ -428,7 +447,6 @@ namespace BluePrints.ViewModels
                         COMMODITY_CODE_ProjectSpecificProjection projectionPOCO = ViewModelSource.Create(() => new COMMODITY_CODE_ProjectSpecificProjection());
                         DataUtils.ShallowCopy(projectionPOCO.COMMODITY_CODE, COMMODITY_CODEProjection.COMMODITY_CODE);
                         projectionPOCO.GUID = COMMODITY_CODEProjection.GUID;
-
                         displayEntities.Add(projectionPOCO);
                     }
 

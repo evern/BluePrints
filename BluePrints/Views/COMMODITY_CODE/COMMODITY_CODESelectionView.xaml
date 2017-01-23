@@ -9,62 +9,117 @@
     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
     Height="100" Width="300"
     >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <dxlc:LayoutControl Orientation="Vertical">
         <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group"  Header="Edit Value" Orientation="Vertical" >
             <dxlc:LayoutGroup Height="40" Name="LayoutGroupContent" View="Group" Orientation="Horizontal" >
                 <dxlc:LayoutItem Height="25" Label="Commodity Code:">
                     <dxg:LookUpEdit
-                                                        Name="LookUpCOMMODITY_CODE"
-                                                        AutoComplete="True"
-                                                        ValueMember="GUID"
-                                                        DisplayMember="FULLCODE"
-                                                        IsTextEditable="true"
-                                                        PopupMinWidth="1000"
-                                                        AutoPopulateColumns="False"
-                                                        NullValueButtonPlacement="None"
-                                                        SelectedItem="{Binding SelectedItem, Mode=TwoWay}" 
-                                                        ItemsSource="{Binding SourceObjects}"
-                                                    >
+                            Name="LookUpCOMMODITY_CODE"
+                            AutoComplete="True"
+                            DisplayMember="COMMODITY_CODE.FULLCODE"
+                            IsTextEditable="true"
+                            PopupMinWidth="1000"
+                            AutoPopulateColumns="False"
+                            NullValueButtonPlacement="None"
+                            SelectedItem="{Binding SelectedItem, Mode=TwoWay}" 
+                            ItemsSource="{Binding SourceObjects}"
+                        >
                         <dxg:LookUpEdit.PopupContentTemplate>
                             <ControlTemplate TargetType="ContentControl" >
                                 <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False" SelectionMode="Row">
                                     <dxg:GridControl.Columns>
-                                        <dxg:GridColumn FieldName="CODE" VisibleIndex="10" />
-                                        <dxg:GridColumn Header="FULLCODE" FieldName="FULLCODE" ReadOnly="True" VisibleIndex="20" />
-                                        <dxg:GridColumn FieldName="NAME" VisibleIndex="30" />
-                                        <dxg:GridColumn FieldName="TYPE" VisibleIndex="70" />
-                                        <dxg:GridColumn FieldName="SPEC" VisibleIndex="80" />
-                                        <dxg:GridColumn FieldName="GUID_DISCIPLINE" VisibleIndex="85" >
+                                        <dxg:GridColumn FieldName="COMMODITY_CODE.FULLCODE" Header="FULLCODE" ReadOnly="True" VisibleIndex="10" />
+                                        <dxg:GridColumn FieldName="COMMODITY_CODE.GUID_DISCIPLINE" Header="DISCIPLINE" ReadOnly="True" VisibleIndex="20">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:ComboBoxEditSettings ItemsSource="{Binding DisciplineObjects}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
+                                                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="DESCRIPTION" VisibleIndex="90" />
-                                        <dxg:GridColumn FieldName="SOURCE_DESCRIPTION" ReadOnly="True" AllowEditing="False" IsEnabled="False" VisibleIndex="95" />
-                                        <dxg:GridColumn x:Name="colRATE_SUPPLY" FieldName="RATE_SUPPLY" Header="SUPPLY RATE" VisibleIndex="120" >
+                                        <dxg:GridColumn FieldName="COMMODITY_CODE.TYPE" Header="TYPE" VisibleIndex="30" />
+                                        <dxg:GridColumn FieldName="COMMODITY_CODE.SPEC" Header="SPEC" VisibleIndex="40" />
+                                        <dxg:GridColumn FieldName="COMMODITY_CODE.DESCRIPTION" Header="DESCRIPTION" VisibleIndex="50" />
+                                        <dxg:GridColumn FieldName="COMMODITY_CODE.RATE_SUPPLY" Header="SUPPLY RATE" VisibleIndex="70" >
                                             <dxg:GridColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" IsEnabled="False"  />
+                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" />
                                                 </DataTemplate>
                                             </dxg:GridColumn.CellTemplate>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn x:Name="colRATE_FREIGHT" FieldName="RATE_FREIGHT" Header="FREIGHT RATE" VisibleIndex="130" >
+                                        <dxg:GridColumn FieldName="COMMODITY_CODE.HOURS_INSTALL" Header="INSTALL HOURS" VisibleIndex="80" >
                                             <dxg:GridColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True"  IsEnabled="False" />
+                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
                                                 </DataTemplate>
                                             </dxg:GridColumn.CellTemplate>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn x:Name="colHOURS_INSTALL" FieldName="HOURS_INSTALL" Header="INSTALL HOURS"  VisibleIndex="140" >
+                                        <dxg:GridColumn FieldName="COMMODITY_CODE.RATE_FREIGHT" Header="FREIGHT RATE" VisibleIndex="90" >
                                             <dxg:GridColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" IsEnabled="False" />
+                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" />
+                                                </DataTemplate>
+                                            </dxg:GridColumn.CellTemplate>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="COMMODITY_CODE.RATE_PLANT" Header="PLANT RATE" VisibleIndex="100" >
+                                            <dxg:GridColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" />
                                                 </DataTemplate>
                                             </dxg:GridColumn.CellTemplate>
                                         </dxg:GridColumn>
                                     </dxg:GridControl.Columns>
+                                    <dxg:GridControl.DetailDescriptor>
+                                        <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding CHILD_COMMODITY_CODES}">
+                                            <dxg:GridControl x:Name="PART_GridControl1" ShowBorder="False" SelectionMode="Row">
+                                                <dxg:GridControl.Columns>
+                                                    <dxg:GridColumn FieldName="COMMODITY_CODE.FULLCODE" Header="FULLCODE" ReadOnly="True" VisibleIndex="10" />
+                                                    <dxg:GridColumn FieldName="COMMODITY_CODE.GUID_DISCIPLINE" Header="DISCIPLINE" ReadOnly="True" VisibleIndex="20">
+                                                        <dxg:GridColumn.EditSettings>
+                                                            <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
+                                                        </dxg:GridColumn.EditSettings>
+                                                    </dxg:GridColumn>
+                                                    <dxg:GridColumn FieldName="COMMODITY_CODE.TYPE" Header="TYPE" VisibleIndex="30" />
+                                                    <dxg:GridColumn FieldName="COMMODITY_CODE.SPEC" Header="SPEC" VisibleIndex="40" />
+                                                    <dxg:GridColumn FieldName="COMMODITY_CODE.DESCRIPTION" Header="DESCRIPTION" VisibleIndex="50" />
+                                                    <dxg:GridColumn FieldName="COMMODITY_CODE.RATE_SUPPLY" Header="SUPPLY RATE" VisibleIndex="70" >
+                                                        <dxg:GridColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" />
+                                                            </DataTemplate>
+                                                        </dxg:GridColumn.CellTemplate>
+                                                    </dxg:GridColumn>
+                                                    <dxg:GridColumn FieldName="COMMODITY_CODE.HOURS_INSTALL" Header="INSTALL HOURS" VisibleIndex="80" >
+                                                        <dxg:GridColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
+                                                            </DataTemplate>
+                                                        </dxg:GridColumn.CellTemplate>
+                                                    </dxg:GridColumn>
+                                                    <dxg:GridColumn FieldName="COMMODITY_CODE.RATE_FREIGHT" Header="FREIGHT RATE" VisibleIndex="90" >
+                                                        <dxg:GridColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" />
+                                                            </DataTemplate>
+                                                        </dxg:GridColumn.CellTemplate>
+                                                    </dxg:GridColumn>
+                                                    <dxg:GridColumn FieldName="COMMODITY_CODE.RATE_PLANT" Header="PLANT RATE" VisibleIndex="100" >
+                                                        <dxg:GridColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" />
+                                                            </DataTemplate>
+                                                        </dxg:GridColumn.CellTemplate>
+                                                    </dxg:GridColumn>
+                                                </dxg:GridControl.Columns>
+                                            </dxg:GridControl>
+                                        </dxg:DataControlDetailDescriptor>
+                                    </dxg:GridControl.DetailDescriptor>
                                     <dxg:GridControl.View>
-                                        <dxg:TreeListView x:Name="treeListView1" AutoWidth="True" ShowAutoFilterRow="True" ShowSelectionRectangle="True" ShowFocusedRectangle="True" ShowSearchPanelMode="Always"  TreeDerivationMode="Selfreference" KeyFieldName="GUID" ParentFieldName="GUID_PARENT" />
+                                        <dxg:TableView Name="tableView" />
                                     </dxg:GridControl.View>
                                 </dxg:GridControl>
                             </ControlTemplate>

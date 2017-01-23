@@ -464,7 +464,7 @@ namespace BluePrints.Common.ViewModel
 
         protected virtual void OnSelectedEntitiesChanged() { }
 
-        public Action<TProjection, CellValueChangedEventArgs> ExistingRowAddUndoAndSaveCallBack;
+        public Func<TProjection, CellValueChangedEventArgs, bool> ExistingRowAddUndoAndSaveCallBack;
         /// <summary>
         /// Remembers an entity property old value for undoing
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the AddUndoCommand property that can be used as a binding source in views.
@@ -477,7 +477,13 @@ namespace BluePrints.Common.ViewModel
 
                 EntitiesUndoRedoManager.PauseActionId();
                 if (ExistingRowAddUndoAndSaveCallBack != null)
-                    ExistingRowAddUndoAndSaveCallBack(projection, e);
+                {
+                    if(!ExistingRowAddUndoAndSaveCallBack(projection, e))
+                    {
+                        EntitiesUndoRedoManager.UnpauseActionId();
+                        return;
+                    }
+                }
 
                 EntitiesUndoRedoManager.AddUndo(projection, e.Column.FieldName, e.OldValue, e.Value, EntityMessageType.Changed);
                 EntitiesUndoRedoManager.UnpauseActionId();

@@ -1,4 +1,5 @@
-﻿using BluePrints.Data;
+﻿using BluePrints.Common.Projections;
+using BluePrints.Data;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
@@ -10,13 +11,13 @@ namespace BluePrints.ViewModels
 {
     public class COMMODITY_CODESelectionViewModel
     {
-        public static COMMODITY_CODESelectionViewModel Create(IEnumerable<COMMODITY_CODE> enumerableObjects, COMMODITY_CODE selectedItem, IEnumerable<DISCIPLINE> DisciplineLookup)
+        public static COMMODITY_CODESelectionViewModel Create(IEnumerable<COMMODITY_CODE_ProjectSpecificProjection> enumerableObjects, COMMODITY_CODE_ProjectSpecificProjection selectedItem, IEnumerable<DISCIPLINE> DisciplineLookup)
         {
             return ViewModelSource.Create(() => new COMMODITY_CODESelectionViewModel(enumerableObjects, selectedItem, DisciplineLookup));
         }
 
-        public IEnumerable<COMMODITY_CODE> SourceObjects { get; set; }
-        protected COMMODITY_CODESelectionViewModel(IEnumerable<COMMODITY_CODE> enumerableObjects, COMMODITY_CODE selectedItem, IEnumerable<DISCIPLINE> DisciplineLookup)
+        public IEnumerable<COMMODITY_CODE_ProjectSpecificProjection> SourceObjects { get; set; }
+        protected COMMODITY_CODESelectionViewModel(IEnumerable<COMMODITY_CODE_ProjectSpecificProjection> enumerableObjects, COMMODITY_CODE_ProjectSpecificProjection selectedItem, IEnumerable<DISCIPLINE> DisciplineLookup)
         {
             SourceObjects = enumerableObjects;
             this.selectedItem = selectedItem;
@@ -25,8 +26,8 @@ namespace BluePrints.ViewModels
 
         IEnumerable<DISCIPLINE> DisciplineObjects { get; set; }
 
-        COMMODITY_CODE selectedItem { get; set; }
-        public COMMODITY_CODE SelectedItem
+        COMMODITY_CODE_ProjectSpecificProjection selectedItem { get; set; }
+        public COMMODITY_CODE_ProjectSpecificProjection SelectedItem
         {
             get { return selectedItem; }
             set

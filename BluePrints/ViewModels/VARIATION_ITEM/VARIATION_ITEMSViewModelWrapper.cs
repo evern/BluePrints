@@ -316,13 +316,13 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public void ExistingProjectionEditCallBack(VARIATION_ITEMProjection projectionEntity, CellValueChangedEventArgs e)
+        public bool ExistingProjectionEditCallBack(VARIATION_ITEMProjection projectionEntity, CellValueChangedEventArgs e)
         {
             if (e.Column.FieldName != BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().VARIATION_ITEM) + "." + BindableBase.GetPropertyName(() => new VARIATION_ITEM().VARIATION_UNITS))
-                return;
+                return true;
 
             if (projectionEntity.VARIATION_ITEM.ACTION == VariationAction.Add)
-                return;
+                return true;
 
             VariationAction oldAction = projectionEntity.VARIATION_ITEM.ACTION;
 
@@ -333,6 +333,7 @@ namespace BluePrints.ViewModels
 
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
             MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity, BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().VARIATION_ITEM) + "." + BindableBase.GetPropertyName(() => new VARIATION_ITEM().ACTION), oldAction, projectionEntity.VARIATION_ITEM.ACTION, EntityMessageType.Changed);
+            return true;
         }
 
         bool MainEntityPreSaveWithNewEntityDetection(VARIATION_ITEMProjection projectionEntity, bool isNewEntity)
