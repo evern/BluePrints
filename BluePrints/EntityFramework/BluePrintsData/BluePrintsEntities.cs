@@ -15,8 +15,10 @@ namespace BluePrints.Data
         public virtual DbSet<AREA> AREA { get; set; }
         public virtual DbSet<BASELINE> BASELINE { get; set; }
         public virtual DbSet<BASELINE_ITEM> BASELINE_ITEM { get; set; }
+        public virtual DbSet<BASELINE_ITEM_WORK> BASELINE_ITEM_WORK { get; set; }
         public virtual DbSet<COMMODITY_CODE> COMMODITY_CODE { get; set; }
         public virtual DbSet<COMMODITY_GROUP_DIRECT> COMMODITY_GROUP_DIRECT { get; set; }
+        public virtual DbSet<DELIVERABLES_STATUS> DELIVERABLES_STATUS { get; set; }
         public virtual DbSet<DEPARTMENT> DEPARTMENT { get; set; }
         public virtual DbSet<DISCIPLINE> DISCIPLINE { get; set; }
         public virtual DbSet<DOCTYPE> DOCTYPE { get; set; }
@@ -85,6 +87,10 @@ namespace BluePrints.Data
                 .WithOptional(e => e.BASELINE1)
                 .HasForeignKey(e => e.GUID_ORIBASELINE);
 
+            modelBuilder.Entity<BASELINE_ITEM_WORK>()
+                .Property(e => e.WEIGHTING)
+                .HasPrecision(5, 2);
+
             modelBuilder.Entity<COMMODITY_CODE>()
                 .HasMany(e => e.COMMODITY_GROUP_DIRECT)
                 .WithOptional(e => e.COMMODITY_CODE)
@@ -92,9 +98,8 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<COMMODITY_CODE>()
                 .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
-                .WithRequired(e => e.COMMODITY_CODE)
-                .HasForeignKey(e => e.GUID_COMMODITY_CODE)
-                .WillCascadeOnDelete(false);
+                .WithOptional(e => e.COMMODITY_CODE)
+                .HasForeignKey(e => e.GUID_COMMODITY_CODE);
 
             modelBuilder.Entity<COMMODITY_CODE>()
                 .HasMany(e => e.ESTIMATION_INDIRECT_ITEM)
@@ -106,6 +111,15 @@ namespace BluePrints.Data
                 .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
                 .WithOptional(e => e.COMMODITY_GROUP_DIRECT)
                 .HasForeignKey(e => e.GUID_COMMODITY_GROUP_DIRECT);
+
+            modelBuilder.Entity<DELIVERABLES_STATUS>()
+                .Property(e => e.MAX_PERCENTAGE)
+                .HasPrecision(5, 2);
+
+            modelBuilder.Entity<DELIVERABLES_STATUS>()
+                .HasMany(e => e.BASELINE_ITEM)
+                .WithOptional(e => e.DELIVERABLES_STATUS)
+                .HasForeignKey(e => e.GUID_STATUS);
 
             modelBuilder.Entity<DEPARTMENT>()
                 .HasMany(e => e.BASELINE_ITEM)
@@ -425,6 +439,18 @@ namespace BluePrints.Data
                 .HasMany(e => e.ESTIMATION_INDIRECT_ITEM)
                 .WithOptional(e => e.TIMEGROUP)
                 .HasForeignKey(e => e.GUID_TIMEGROUP);
+
+            modelBuilder.Entity<USER>()
+                .HasMany(e => e.BASELINE_ITEM_WORK)
+                .WithRequired(e => e.USER)
+                .HasForeignKey(e => e.GUID_USER)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<USER>()
+                .HasMany(e => e.BASELINE_ITEM)
+                .WithRequired(e => e.USER)
+                .HasForeignKey(e => e.GUID_USER)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<VARIATION>()
                 .HasMany(e => e.BASELINE_ITEM)

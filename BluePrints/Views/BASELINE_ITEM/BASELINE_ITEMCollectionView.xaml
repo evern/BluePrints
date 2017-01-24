@@ -112,6 +112,16 @@
                             <dxg:GridColumn Name="colPRIMARY_TITLE" FieldName="BASELINE_ITEM.PRIMARY_TITLE" Header="PRIMARY_TITLE" />
                             <dxg:GridColumn Name="colSECONDARY_TITLE" FieldName="BASELINE_ITEM.SECONDARY_TITLE" Header="SECONDARY_TITLE" />
                             <dxg:GridColumn Name="colCOMMENTS" FieldName="BASELINE_ITEM.COMMENTS" Header="COMMENTS" />
+                            <dxg:GridColumn Name="colSTATUS" FieldName="BASELINE_ITEM.GUID_STATUS" Header="STATUS">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Name="colUSER" FieldName="BASELINE_ITEM.GUID_USER" Header="RESOURCE">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn Name="colESTIMATED_HOURS" FieldName="BASELINE_ITEM.ESTIMATED_HOURS" Header="ESTIMATED_HOURS" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />

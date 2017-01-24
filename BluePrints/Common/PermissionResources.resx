@@ -126,6 +126,9 @@
   <data name="ManageCommodity" xml:space="preserve">
     <value>Allow user to manage commodities</value>
   </data>
+  <data name="ManageDeliverableStatuses" xml:space="preserve">
+    <value>Allow user to manage deliverable statuses</value>
+  </data>
   <data name="ManageDepartment" xml:space="preserve">
     <value>Allow user to manage departments</value>
   </data>

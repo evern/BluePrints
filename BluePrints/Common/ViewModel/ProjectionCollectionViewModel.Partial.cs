@@ -309,7 +309,12 @@ namespace BluePrints.Common.ViewModel
                 {
                     string immediatePropertyString = constraintMemberPropertyString.Split('.').Last();
                     errorMessage += immediatePropertyString + " and ";
-                    currentEntityConcatenatedConstraints += constraintMemberPropertyValue.ToString();
+                    string constraintMemberPropertyStringFormat;
+                    if (constraintMemberPropertyValue.GetType() == typeof(decimal))
+                        constraintMemberPropertyStringFormat = ((decimal)constraintMemberPropertyValue).ToString("0.00");
+                    else
+                        constraintMemberPropertyStringFormat = constraintMemberPropertyValue.ToString();
+                    currentEntityConcatenatedConstraints += constraintMemberPropertyStringFormat;
                 }
             }
 
@@ -349,7 +354,15 @@ namespace BluePrints.Common.ViewModel
                 {
                     var constraintMemberPropertyValue = DataUtils.GetNestedValue(constraintMemberPropertyString, otherEntity);
                     if (constraintMemberPropertyValue != null)
-                        otherEntityConcatenatedConstraints += constraintMemberPropertyValue.ToString();
+                    {
+                        string constraintMemberPropertyStringFormat;
+                        if (constraintMemberPropertyValue.GetType() == typeof(decimal))
+                            constraintMemberPropertyStringFormat = ((decimal)constraintMemberPropertyValue).ToString("0.00");
+                        else
+                            constraintMemberPropertyStringFormat = constraintMemberPropertyValue.ToString();
+
+                        otherEntityConcatenatedConstraints += constraintMemberPropertyStringFormat;
+                    }
                 }
 
                 if (otherEntityConcatenatedConstraints != string.Empty && otherEntityConcatenatedConstraints == entityConstraint)

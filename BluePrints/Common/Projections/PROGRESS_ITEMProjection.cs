@@ -20,16 +20,32 @@ namespace BluePrints.Common.Projections
 
         }
 
+        public decimal MAX_PERCENTAGE_WITH_DELIVERABLE_STATUS_LIMIT
+        {
+            get
+            {
+                if (this.BASELINE_ITEMJoinRATE.DELIVERABLE_STATUS == null)
+                    return this.MaxPercentage;
+                else
+                {
+                    if (this.MaxPercentage < this.BASELINE_ITEMJoinRATE.DELIVERABLE_STATUS.MAX_PERCENTAGE)
+                        return this.MaxPercentage;
+                    else
+                        return this.BASELINE_ITEMJoinRATE.DELIVERABLE_STATUS.MAX_PERCENTAGE;
+                }
+            }
+
+        }
+
         public Guid GUID { get; set; }
     }
 
     public static class PROGRESS_ITEMProjectionQueries
     {
-        public static IQueryable<PROGRESS_ITEMProjection> JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(IQueryable<BASELINE_ITEM> BASELINE_ITEMS, Func<PROGRESS> getPROGRESSFunc, Func<BASELINE> getBASELINEFunc, Func<IQueryable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc, Func<IQueryable<RATE>> getRATESFunc, bool isBASELINEQueryProcessed = false)
+        public static IQueryable<PROGRESS_ITEMProjection> JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(IQueryable<BASELINE_ITEM> BASELINE_ITEMS, Func<PROGRESS> getPROGRESSFunc, Func<BASELINE> getBASELINEFunc, Func<IQueryable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc, Func<IQueryable<RATE>> getRATESFunc, Func<IQueryable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc = null, bool isBASELINEQueryProcessed = false)
         {
             BASELINE BASELINE = getBASELINEFunc();
             PROGRESS PROGRESS = getPROGRESSFunc();
-
             IQueryable<RATE> RATES = getRATESFunc();
 
             IQueryable<PROGRESS_ITEM> LoadPROGRESS_ITEMS;
@@ -40,9 +56,9 @@ namespace BluePrints.Common.Projections
 
             IQueryable<BASELINE_ITEMProjection> BASELINE_ITEMJoinRATES;
             if (PROGRESS == null)
-                BASELINE_ITEMJoinRATES = BASELINE_ITEMProjectionQueries.JoinRATESOnBASELINE_ITEMS(BASELINE_ITEMS.Where(x => x.GUID == Guid.Empty), getBASELINEFunc, getRATESFunc, true);
+                BASELINE_ITEMJoinRATES = BASELINE_ITEMProjectionQueries.JoinRATESOnBASELINE_ITEMS(BASELINE_ITEMS.Where(x => x.GUID == Guid.Empty), getBASELINEFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, true);
             else
-                BASELINE_ITEMJoinRATES = BASELINE_ITEMProjectionQueries.JoinRATESOnBASELINE_ITEMS(BASELINE_ITEMS, getBASELINEFunc, getRATESFunc, isBASELINEQueryProcessed);
+                BASELINE_ITEMJoinRATES = BASELINE_ITEMProjectionQueries.JoinRATESOnBASELINE_ITEMS(BASELINE_ITEMS, getBASELINEFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, isBASELINEQueryProcessed);
 
             DateTime reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
             return BASELINE_ITEMJoinRATES.ToArray().AsQueryable().Select(x => new PROGRESS_ITEMProjection() { GUID = x.GUID, BASELINE_ITEMJoinRATE = x, ReportingDataDate = reportingDate, PROGRESS_ITEMS = LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.BASELINE_ITEM.GUID_ORIGINAL).ToArray().AsEnumerable() });

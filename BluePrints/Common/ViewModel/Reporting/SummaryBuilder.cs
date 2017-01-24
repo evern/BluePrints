@@ -591,6 +591,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             //When productivity is below this threshold, escalate to workpack or project
             decimal minimumProductivityBeforeEscalating = 0.001M;
 
+            if (reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK == null)
+                return;
+
             //establish dates for productivity assessment
             DateTime workpackStart = (DateTime)reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK.STARTDATE;
             DateTime workpackEnd = (DateTime)reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK.ENDDATE;

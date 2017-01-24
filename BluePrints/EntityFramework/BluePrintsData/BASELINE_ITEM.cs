@@ -30,6 +30,10 @@ namespace BluePrints.Data
 
         public Guid? GUID_DOCTYPE { get; set; }
 
+        public Guid? GUID_STATUS { get; set; }
+
+        public Guid? GUID_USER { get; set; }
+
         [StringLength(200)]
         public string INTERNAL_NUM { get; set; }
 
@@ -73,6 +77,10 @@ namespace BluePrints.Data
         public virtual AREA AREA { get; set; }
 
         public virtual BASELINE BASELINE { get; set; }
+
+        public virtual DELIVERABLES_STATUS DELIVERABLES_STATUS { get; set; }
+
+        public virtual USER USER { get; set; }
 
         public virtual DEPARTMENT DEPARTMENT { get; set; }
 

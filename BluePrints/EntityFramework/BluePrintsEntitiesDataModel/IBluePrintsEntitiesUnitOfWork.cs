@@ -27,6 +27,12 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// </summary>
         IRepository<BASELINE_ITEM, Guid> BASELINE_ITEMS { get; }
 
+
+        /// <summary>
+        /// The BASELINE_ITEM_WORK entities repository.
+        /// </summary>
+        IRepository<BASELINE_ITEM_WORK, Guid> BASELINE_ITEM_WORKS { get; }
+
         /// <summary>
         /// The BASELINE entities repository.
         /// </summary>
@@ -46,6 +52,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The DEPARTMENT entities repository.
         /// </summary>
         IRepository<DEPARTMENT, Guid> DEPARTMENTS { get; }
+
+        /// <summary>
+        /// The DELIVERABLES_STATUS entities repository.
+        /// </summary>
+        IRepository<DELIVERABLES_STATUS, Guid> DELIVERABLES_STATUSES { get; }
 
         /// <summary>
         /// The DISCIPLINE entities repository.

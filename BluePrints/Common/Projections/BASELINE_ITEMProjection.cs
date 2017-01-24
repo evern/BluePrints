@@ -25,6 +25,7 @@ namespace BluePrints.Common.Projections
         public Guid GUID { get; set; }
         public BASELINE_ITEM BASELINE_ITEM { get; set; }
         public RATE RATE { get; set; }
+        public DELIVERABLES_STATUS DELIVERABLE_STATUS { get; set; }
         public decimal ITEMRATE
         {
             get
@@ -55,7 +56,7 @@ namespace BluePrints.Common.Projections
 
     public static class BASELINE_ITEMProjectionQueries
     {
-        public static IQueryable<BASELINE_ITEMProjection> JoinRATESOnBASELINE_ITEMS(IQueryable<BASELINE_ITEM> BASELINE_ITEMS, Func<BASELINE> getBASELINEFunc, Func<IQueryable<RATE>> getRATES_ByProjectFunc = null, bool isBASELINEQueryProcessed = false)
+        public static IQueryable<BASELINE_ITEMProjection> JoinRATESOnBASELINE_ITEMS(IQueryable<BASELINE_ITEM> BASELINE_ITEMS, Func<BASELINE> getBASELINEFunc, Func<IQueryable<RATE>> getRATES_ByProjectFunc = null, Func<IQueryable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc = null, bool isBASELINEQueryProcessed = false)
         {
             BASELINE BASELINE = getBASELINEFunc();
             IQueryable<BASELINE_ITEM> contextBASELINE_ITEMS;
@@ -69,9 +70,19 @@ namespace BluePrints.Common.Projections
                     contextBASELINE_ITEMS = BASELINE_ITEMS.Where(x => x.GUID_BASELINE == BASELINE.GUID);
             }
 
+            List<RATE> RATES;
+            if (getRATES_ByProjectFunc == null)
+                RATES = new List<RATE>();
+            else
+                RATES = new List<RATE>(getRATES_ByProjectFunc());
 
-            IQueryable<RATE> RATES = getRATES_ByProjectFunc();
-            return contextBASELINE_ITEMS.ToArray().AsQueryable().Select(x => new BASELINE_ITEMProjection() { GUID = x.GUID, BASELINE_ITEM = x, RATE = RATES.FirstOrDefault(y => y.GUID_DEPARTMENT == x.GUID_DEPARTMENT && y.GUID_DISCIPLINE == x.GUID_DISCIPLINE) });
+            List<DELIVERABLES_STATUS> DELIVERABLES_STATUSES;
+            if (getDELIVERABLES_STATUSESFunc == null)
+                DELIVERABLES_STATUSES = new List<DELIVERABLES_STATUS>();
+            else
+                DELIVERABLES_STATUSES = new List<DELIVERABLES_STATUS>(getDELIVERABLES_STATUSESFunc());
+
+            return contextBASELINE_ITEMS.ToArray().AsQueryable().Select(x => new BASELINE_ITEMProjection() { GUID = x.GUID, BASELINE_ITEM = x, DELIVERABLE_STATUS = x.GUID_STATUS == null ? null : DELIVERABLES_STATUSES.FirstOrDefault(z => z.GUID == x.GUID_STATUS), RATE = RATES.FirstOrDefault(y => y.GUID_DEPARTMENT == x.GUID_DEPARTMENT && y.GUID_DISCIPLINE == x.GUID_DISCIPLINE) });
         }
     }
 }

@@ -379,14 +379,17 @@
     <Compile Include="Common\ViewModel\Settings\XMLSettings.cs" />
     <Compile Include="EntityFramework\Annotations\BluePrintsEntities.cs" />
     <Compile Include="EntityFramework\Annotations\COMMODITY_GROUP_DIRECT.cs" />
+    <Compile Include="EntityFramework\Annotations\DELIVERABLES_STATUS.cs" />
     <Compile Include="EntityFramework\Annotations\ESTIMATION_DIRECT_ITEM.cs" />
     <Compile Include="EntityFramework\Annotations\INDIRECT_TYPE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\AREA.cs" />
     <Compile Include="EntityFramework\BluePrintsData\BASELINE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\BASELINE_ITEM.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\BASELINE_ITEM_WORK.cs" />
     <Compile Include="EntityFramework\BluePrintsData\BluePrintsEntities.cs" />
     <Compile Include="EntityFramework\BluePrintsData\COMMODITY_CODE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\COMMODITY_GROUP_DIRECT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\DELIVERABLES_STATUS.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DEPARTMENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DISCIPLINE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DOCTYPE.cs" />
@@ -1060,6 +1063,7 @@
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODESelectionViewModel.cs" />
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODEProjectSpecificViewModelWrapper.cs" />
     <Compile Include="ViewModels\COMMODITY_GROUP\COMMODITY_GROUP_DIRECTCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\DELIVERABLES_STATUS\DELIVERABLES_STATUSCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATION\ESTIMATION_DIRECT_ITEMSViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATION\ESTIMATION_DIRECTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\INDIRECT_TYPE\INDIRECT_TYPECollectionViewModelWrapper.cs" />
@@ -1109,6 +1113,9 @@
     </Compile>
     <Compile Include="Views\COMMODITY_GROUP\COMMODITY_GROUP_DIRECTCollectionView.xaml.cs">
       <DependentUpon>COMMODITY_GROUP_DIRECTCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DELIVERABLES_STATUS\DELIVERABLES_STATUSCollectionView.xaml.cs">
+      <DependentUpon>DELIVERABLES_STATUSCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ESTIMATION\ESTIMATION_DIRECT_ITEMCollectionView.xaml.cs">
       <DependentUpon>ESTIMATION_DIRECT_ITEMCollectionView.xaml</DependentUpon>
@@ -1275,6 +1282,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\COMMODITY_GROUP\COMMODITY_GROUP_DIRECTCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\DELIVERABLES_STATUS\DELIVERABLES_STATUSCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

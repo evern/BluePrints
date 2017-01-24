@@ -101,17 +101,15 @@ namespace BluePrints.Common.Projections
             foreach(PROJECT_Dashboard project in projects)
             {
                 summaryManufacturer.Manufacture(project.SummaryBuilder);
+                if (((BackgroundWorker)sender).CancellationPending)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+
                 if (raisePropertyChanged != null)
                     raisePropertyChanged();
             }
-
-            if (((BackgroundWorker)sender).CancellationPending)
-            {
-                e.Cancel = true;
-                return;
-            }
-            else
-                e.Result = raisePropertyChanged;
         }
 
         public static PROJECT_Dashboard SummarizeSinglePROJECTDashboard(PROJECT PROJECT, Func<PROGRESS> getPROGRESSFunc, Func<IQueryable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc, Func<IQueryable<BASELINE_ITEM>> getBASELINE_ITEMSFunc, Func<BASELINE> getBASELINEFunc, Func<IQueryable<RATE>> getRATESFunc)

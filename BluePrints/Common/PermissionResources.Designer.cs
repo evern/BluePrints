@@ -88,6 +88,15 @@ namespace BluePrints.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to manage deliverable statuses.
+        /// </summary>
+        internal static string ManageDeliverableStatuses {
+            get {
+                return ResourceManager.GetString("ManageDeliverableStatuses", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to manage departments.
         /// </summary>
         internal static string ManageDepartment {

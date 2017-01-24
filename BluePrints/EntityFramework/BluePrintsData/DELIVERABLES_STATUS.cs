@@ -1,37 +1,27 @@
 namespace BluePrints.Data
 {
+    using BluePrints.Data.Attributes;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("USER")]
-    public partial class USER
+    public partial class DELIVERABLES_STATUS
     {
-        public USER()
+        public DELIVERABLES_STATUS()
         {
-            BASELINE_ITEM_WORK = new HashSet<BASELINE_ITEM_WORK>();
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
         }
 
         [Key]
         public Guid GUID { get; set; }
 
-        public Guid? GUID_ROLE { get; set; }
-
         [Required]
-        [StringLength(100)]
+        [StringLength(500)]
         public string NAME { get; set; }
 
-        [StringLength(100)]
-        public string DEPARTMENT { get; set; }
-
-        [StringLength(100)]
-        public string TITLE { get; set; }
-
-        [StringLength(500)]
-        public string DESCRIPTION { get; set; }
+        public decimal MAX_PERCENTAGE { get; set; }
 
         public DateTime CREATED { get; set; }
 
@@ -45,10 +35,6 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual ICollection<BASELINE_ITEM_WORK> BASELINE_ITEM_WORK { get; set; }
-
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
-
-        public virtual ROLE ROLE { get; set; }
     }
 }

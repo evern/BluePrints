@@ -140,6 +140,11 @@ namespace BluePrints.ViewModels
                 get { return new TreeViewProperty() { Id = "DEPARTMENTCollectionView", ParentId = DATACategoryTreeProperty.Id, Image = TreeViewImage }; }   
             }
 
+            public static TreeViewProperty DELIVERABLES_STATUSCollectionModuleTreeProperty
+            {
+                get { return new TreeViewProperty() { Id = "DELIVERABLES_STATUSCollectionView", ParentId = DATACategoryTreeProperty.Id, Image = TreeViewImage }; }
+            }
+
             public static TreeViewProperty DISCIPLINECollectionModuleTreeProperty
             {
                 get { return new TreeViewProperty() { Id = "DISCIPLINECollectionView", ParentId = DATACategoryTreeProperty.Id, Image = TreeViewImage }; }
@@ -255,6 +260,9 @@ namespace BluePrints.ViewModels
 
             if(LoginCredentials.hasPermission(PermissionResources.ManageDepartment))
                 BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("Departments", "DEPARTMENTCollectionView", TablesGroup, null, null, ModuleTreeProperty.DEPARTMENTCollectionModuleTreeProperty));
+
+            if (LoginCredentials.hasPermission(PermissionResources.ManageDeliverableStatuses))
+                BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("Deliverable Statuses", "DELIVERABLES_STATUSCollectionView", TablesGroup, null, null, ModuleTreeProperty.DELIVERABLES_STATUSCollectionModuleTreeProperty));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageDiscipline))
                 BluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("Disciplines", "DISCIPLINECollectionView", TablesGroup, null, null, ModuleTreeProperty.DISCIPLINECollectionModuleTreeProperty));

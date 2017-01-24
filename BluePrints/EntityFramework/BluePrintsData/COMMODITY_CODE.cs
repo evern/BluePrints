@@ -92,13 +92,13 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual PROJECT PROJECT { get; set; }
-
         public virtual DEPARTMENT DEPARTMENT { get; set; }
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 
         public virtual INDIRECT_TYPE INDIRECT_TYPE { get; set; }
+
+        public virtual PROJECT PROJECT { get; set; }
 
         public virtual ICollection<COMMODITY_GROUP_DIRECT> COMMODITY_GROUP_DIRECT { get; set; }
 

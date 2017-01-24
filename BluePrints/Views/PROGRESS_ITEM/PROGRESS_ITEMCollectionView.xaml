@@ -107,9 +107,19 @@
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True"/>
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnRate" FieldName="BASELINE_ITEMJoinRATE.RATE.RATE1" Header="RATE"  ReadOnly="True" IsEnabled="False" >
+                                <dxg:GridColumn Name="columnRate" FieldName="BASELINE_ITEMJoinRATE.RATE.RATE1" Header="RATE" ReadOnly="True" IsEnabled="False" >
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True"/>
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Name="columnStatus" FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_STATUS" Header="STATUS">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Name="columnUser" FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_USER" Header="RESOURCE">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
@@ -162,7 +172,7 @@
                                                         </MultiBinding>
                                                     </Image.Visibility>
                                                 </Image>
-                                                <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" Increment="0.01" MaxValue="{Binding RowData.Row.MaxPercentage}" MinValue="{Binding RowData.Row.MinPercentage}" Grid.Column="2"/>
+                                                <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" Increment="0.01" MaxValue="{Binding RowData.Row.MAX_PERCENTAGE_WITH_DELIVERABLE_STATUS_LIMIT}" MinValue="{Binding RowData.Row.MinPercentage}" Grid.Column="2"/>
                                             </Grid>
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>

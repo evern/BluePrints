@@ -83,7 +83,9 @@ namespace BluePrints.ViewModels
             loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(6, bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddEntitiesLoader<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(7, bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddEntitiesLoader<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(8, bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, typeof(PROJECT), null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>(9, bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, typeof(BluePrints.Data.PROJECT));
+            loaderCollection.AddEntitiesLoader<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(9, bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
+            loaderCollection.AddEntitiesLoader<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(10, bluePrintsUnitOfWorkFactory, x => x.USERS);
+            loaderCollection.AddEntitiesLoader<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>(11, bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, typeof(BluePrints.Data.PROJECT));
             
             InvokeEntitiesLoaderDescriptionLoading();
         }
@@ -163,7 +165,8 @@ namespace BluePrints.ViewModels
         {
             Func<IQueryable<RATE>> getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
             Func<BASELINE> getBASELINEFunc = loaderCollection.GetObjectFunc<BASELINE>();
-            return query => BASELINE_ITEMProjectionQueries.JoinRATESOnBASELINE_ITEMS(query, getBASELINEFunc, getRATESFunc);
+            Func<IQueryable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc = loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
+            return query => BASELINE_ITEMProjectionQueries.JoinRATESOnBASELINE_ITEMS(query, getBASELINEFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProjection> entities)
@@ -526,6 +529,28 @@ namespace BluePrints.ViewModels
             get
             {
                 var collection = GetEntities<DISCIPLINE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
+        public IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection
+        {
+            get
+            {
+                var collection = GetEntities<DELIVERABLES_STATUS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.MAX_PERCENTAGE);
+                return collection;
+            }
+        }
+
+        public IEnumerable<USER> USERCollection
+        {
+            get
+            {
+                var collection = GetEntities<USER>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
                 return collection;
