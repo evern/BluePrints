@@ -20,20 +20,20 @@ namespace BluePrints.Views
     /// <summary>
     /// Interaction logic for ESTIMATION_DIRECT_ITEMCollectionView.xaml
     /// </summary>
-    public partial class COMMODITY_CODEProjectSpecificCollectionView : UserControl
+    public partial class COMMODITY_CODEMasterDetailCollectionView : UserControl
     {
-        public COMMODITY_CODEProjectSpecificCollectionView()
+        public COMMODITY_CODEMasterDetailCollectionView()
         {
             InitializeComponent();
-            ((COMMODITY_CODEProjectSpecificViewModelWrapper)this.DataContext).SetIsRowExpanded = this.SetIsRowExpanded;
-            ((COMMODITY_CODEProjectSpecificViewModelWrapper)this.DataContext).ShowDISCIPLINE = this.ShowDISCIPLINE;
-            ((COMMODITY_CODEProjectSpecificViewModelWrapper)this.DataContext).ShowDEPARTMENT = this.ShowDEPARTMENT;
-            ((COMMODITY_CODEProjectSpecificViewModelWrapper)this.DataContext).ShowINDIRECT_TYPE = this.ShowINDIRECT_TYPE;
-            ((COMMODITY_CODEProjectSpecificViewModelWrapper)this.DataContext).ShowDIRECT_RATES = this.ShowDIRECT_RATES;
-            ((COMMODITY_CODEProjectSpecificViewModelWrapper)this.DataContext).ShowINDIRECT_RATES = this.ShowINDIRECT_RATES;
+            ((COMMODITY_CODEMasterDetailViewModelWrapper)this.DataContext).SetIsRowExpanded = this.SetIsRowExpanded;
+            ((COMMODITY_CODEMasterDetailViewModelWrapper)this.DataContext).ShowDISCIPLINE = this.ShowDISCIPLINE;
+            ((COMMODITY_CODEMasterDetailViewModelWrapper)this.DataContext).ShowDEPARTMENT = this.ShowDEPARTMENT;
+            ((COMMODITY_CODEMasterDetailViewModelWrapper)this.DataContext).ShowINDIRECT_TYPE = this.ShowINDIRECT_TYPE;
+            ((COMMODITY_CODEMasterDetailViewModelWrapper)this.DataContext).ShowDIRECT_RATES = this.ShowDIRECT_RATES;
+            ((COMMODITY_CODEMasterDetailViewModelWrapper)this.DataContext).ShowINDIRECT_RATES = this.ShowINDIRECT_RATES;
         }
 
-        public void SetIsRowExpanded(COMMODITY_CODE_ProjectSpecificProjection row)
+        public void SetIsRowExpanded(COMMODITY_CODEMasterDetailProjection row)
         {
             if (row == null)
                 return;

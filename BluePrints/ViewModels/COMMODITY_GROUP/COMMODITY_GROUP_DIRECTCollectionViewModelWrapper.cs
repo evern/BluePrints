@@ -95,7 +95,7 @@ namespace BluePrints.ViewModels
 
         Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
         {
-            return query => query.Where(x => x.COMMODITYCODETYPE == CommodityCodeType.Direct);
+            return query => query.Where(x => x.COMMODITYCODETYPE == CommodityCodeType.Direct && x.GUID_PROJECT == null);
         }
 
         public IQueryable<COMMODITY_CODE> getLastChildrenCOMMODITY_CODE(IQueryable<COMMODITY_CODE> COMMODITY_CODE)

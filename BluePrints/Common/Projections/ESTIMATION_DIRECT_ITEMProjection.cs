@@ -37,25 +37,29 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT != null)
-                    return ((Guid)ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT).ToString() + Guid.Empty.ToString();
-                else
-                    return Guid.Empty.ToString() + ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE.ToString();
+                return (ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE == null ? Guid.Empty.ToString() : ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE.ToString()) + (ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT == null ? Guid.Empty.ToString() : ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT.ToString()) + ESTIMATION_DIRECT_ITEM.COMMODITY_GROUP_DIRECT_ID.ToString();
             }
             set
             {
-                string CommodityGroupGuidString = value.Substring(0, Guid.Empty.ToString().Length);
-                string CommodityCodeGuidString = value.Substring(Guid.Empty.ToString().Length, Guid.Empty.ToString().Length);
+                int guidLength = Guid.Empty.ToString().Length;
+                int doubleGuidLength = guidLength * 2;
 
-                if (CommodityGroupGuidString != Guid.Empty.ToString())
+                string CommodityCodeGuidString = value.Substring(0, guidLength);
+                string CommodityGroupGuidString = value.Substring(guidLength, guidLength);
+                string CommodityGroupIdString = value.Substring(doubleGuidLength, value.Length - doubleGuidLength);
+
+                if (CommodityCodeGuidString != Guid.Empty.ToString())
                 {
-                    ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE = null;
-                    ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT = new Guid(CommodityGroupGuidString);
+                    ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT = null;
+                    ESTIMATION_DIRECT_ITEM.COMMODITY_GROUP_DIRECT_ID = null;
+                    ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE = new Guid(CommodityCodeGuidString);
                 }
                 else
                 {
-                    ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT = null;
-                    ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE = new Guid(CommodityCodeGuidString);
+                    ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE = null;
+                    ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT = new Guid(CommodityGroupGuidString);
+                    if (CommodityGroupIdString != string.Empty)
+                        ESTIMATION_DIRECT_ITEM.COMMODITY_GROUP_DIRECT_ID = Int32.Parse(CommodityGroupIdString);
                 }
             }
         }

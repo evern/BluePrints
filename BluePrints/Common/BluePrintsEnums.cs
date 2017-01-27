@@ -205,4 +205,16 @@ namespace BluePrints.Common
         Offsite = 0,
         Site = 1,
     }
+
+    public enum COMMODITY_CODEProjectionType
+    {
+        [Display(Name = "Grouped Project Specific")]
+        ProjectSpecificGrouped,
+        [Display(Name = "Not Grouped Project Specific")]
+        ProjectSpecificNotGrouped,
+        [Display(Name = "Grouped Not Project Specific")]
+        GeneralGrouped,
+        [Display(Name = "Not Grouped Not Project Specific")]
+        GeneralNotGrouped
+    }
 }

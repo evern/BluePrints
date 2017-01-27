@@ -348,9 +348,9 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))
             {
-                TreeViewProperty PROJECTCOMMODITY_CODEModuleTreeProperty = new TreeViewProperty() { Id = "ProjectCOMMODITY_CODEView" + entity.NUMBER, ParentId = PROJECTModuleTreeViewProperty.Id, Image = ModuleTreeProperty.TreeViewImage };
+                TreeViewProperty PROJECTCOMMODITY_CODEModuleTreeProperty = new TreeViewProperty() { Id = "MasterDetailCOMMODITY_CODEView" + entity.NUMBER, ParentId = PROJECTModuleTreeViewProperty.Id, Image = ModuleTreeProperty.TreeViewImage };
                 moduleTitle = "Commodity Code";
-                newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle, "COMMODITY_CODEProjectSpecificCollectionView", TablesGroup, null, new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(entity, new CommodityCodeTypeClass(CommodityCodeType.Direct)), PROJECTCOMMODITY_CODEModuleTreeProperty));
+                newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle, "COMMODITY_CODEMasterDetailCollectionView", TablesGroup, null, new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(entity, new CommodityCodeTypeClass(CommodityCodeType.Direct)), PROJECTCOMMODITY_CODEModuleTreeProperty));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageEstimation))

@@ -1,5 +1,5 @@
 ﻿<UserControl x:Name="userControl" 
-        x:Class="BluePrints.Views.COMMODITY_CODEProjectSpecificCollectionView"
+        x:Class="BluePrints.Views.COMMODITY_CODEMasterDetailCollectionView"
         xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -14,7 +14,7 @@
         xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
         xmlns:common="clr-namespace:BluePrints.Common"
         xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
-        mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:COMMODITY_CODEProjectSpecificViewModelWrapper}">
+        mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:COMMODITY_CODEMasterDetailViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -47,6 +47,7 @@
                         <dxr:RibbonPage Caption="Home">
                             <dxr:RibbonPageGroup Caption="COMMODITY CODE ITEM Tasks" >
                                 <dxb:BarButtonItem Content="Delete" Command="{Binding DataContext.BulkDeleteCommand, ElementName=userControl}"  LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding RefreshCommand}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
                                 <dxb:BarButtonItem Content="Redo" Command="{Binding RedoCommand}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
@@ -74,7 +75,18 @@
                             <dxmvvm:EventToCommand Command="{Binding DataContext.MasterRowCollapsedCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="MasterRowCollapsed" />
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Columns>
+                            <dxg:GridColumn FieldName="COMMODITY_CODE.GUID_PROJECT" Header="PROJECT" VisibleIndex="10">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.PROJECTCollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="NUMBER" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="COMMODITY_CODE.FULLCODE" Header="FULLCODE" VisibleIndex="20" />
+                            <dxg:GridColumn FieldName="ProjectionType" ReadOnly="True" VisibleIndex="25" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:COMMODITY_CODEProjectionType}}"/>
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID" VisibleIndex="25" />
                             <dxg:GridColumn Name="colDEPARTMENT" Header="DEPARTMENT" FieldName="COMMODITY_CODE.GUID_DEPARTMENT" VisibleIndex="40">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
@@ -101,28 +113,28 @@
                             <dxg:GridColumn x:Name="colRATE_SUPPLY" FieldName="COMMODITY_CODE.RATE_SUPPLY" Header="SUPPLY RATE" VisibleIndex="120" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.ISQUANTIFIABLE, UpdateSourceTrigger=PropertyChanged }"/>
+                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.IsEditable, UpdateSourceTrigger=PropertyChanged }"/>
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn x:Name="colHOURS_INSTALL" FieldName="COMMODITY_CODE.HOURS_INSTALL" Header="INSTALL HOURS" VisibleIndex="130" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.ISQUANTIFIABLE, UpdateSourceTrigger=PropertyChanged}" />
+                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.IsEditable, UpdateSourceTrigger=PropertyChanged}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn x:Name="colRATE_FREIGHT" FieldName="COMMODITY_CODE.RATE_FREIGHT" Header="FREIGHT RATE" VisibleIndex="140" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True"  IsEnabled="{Binding RowData.Row.ISQUANTIFIABLE, UpdateSourceTrigger=PropertyChanged}" />
+                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True"  IsEnabled="{Binding RowData.Row.IsEditable, UpdateSourceTrigger=PropertyChanged}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn x:Name="colRATE_PLANT" FieldName="COMMODITY_CODE.RATE_PLANT" Header="PLANT RATE" VisibleIndex="150" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True"  IsEnabled="{Binding RowData.Row.ISQUANTIFIABLE, UpdateSourceTrigger=PropertyChanged}" />
+                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True"  IsEnabled="{Binding RowData.Row.IsEditable, UpdateSourceTrigger=PropertyChanged}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
@@ -149,10 +161,10 @@
                                                 <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.INDIRECT_TYPECollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="COMMODITY_CODE.TYPE" VisibleIndex="70" />
-                                        <dxg:GridColumn FieldName="COMMODITY_CODE.SPEC" VisibleIndex="80" />
-                                        <dxg:GridColumn FieldName="COMMODITY_CODE.DESCRIPTION" VisibleIndex="90" />
-                                        <dxg:GridColumn FieldName="COMMODITY_CODE.UOM" VisibleIndex="100" AllowEditing="True">
+                                        <dxg:GridColumn FieldName="COMMODITY_CODE.TYPE" Header="TYPE" VisibleIndex="70" />
+                                        <dxg:GridColumn FieldName="COMMODITY_CODE.SPEC" Header="SPEC" VisibleIndex="80" />
+                                        <dxg:GridColumn FieldName="COMMODITY_CODE.DESCRIPTION" Header="DESCRIPTION" VisibleIndex="90" />
+                                        <dxg:GridColumn FieldName="COMMODITY_CODE.UOM" Header="UOM" VisibleIndex="100" AllowEditing="True">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.UOMCollection, ElementName=userControl}" AutoComplete="True" DisplayMember="UOM1" ValueMember="UOM1" />
                                             </dxg:GridColumn.EditSettings>
@@ -160,28 +172,28 @@
                                         <dxg:GridColumn x:Name="colChildRATE_SUPPLY" FieldName="COMMODITY_CODE.RATE_SUPPLY" Header="SUPPLY RATE" VisibleIndex="120" >
                                             <dxg:GridColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.ISQUANTIFIABLE, UpdateSourceTrigger=PropertyChanged }"/>
+                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.IsEditable, UpdateSourceTrigger=PropertyChanged }"/>
                                                 </DataTemplate>
                                             </dxg:GridColumn.CellTemplate>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn x:Name="colChildHOURS_INSTALL" FieldName="COMMODITY_CODE.HOURS_INSTALL" Header="INSTALL HOURS" VisibleIndex="130" >
                                             <dxg:GridColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.ISQUANTIFIABLE, UpdateSourceTrigger=PropertyChanged}" />
+                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.IsEditable, UpdateSourceTrigger=PropertyChanged}" />
                                                 </DataTemplate>
                                             </dxg:GridColumn.CellTemplate>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn x:Name="colChildRATE_FREIGHT" FieldName="COMMODITY_CODE.RATE_FREIGHT" Header="FREIGHT RATE" VisibleIndex="140" >
                                             <dxg:GridColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True"  IsEnabled="{Binding RowData.Row.ISQUANTIFIABLE, UpdateSourceTrigger=PropertyChanged}" />
+                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True"  IsEnabled="{Binding RowData.Row.IsEditable, UpdateSourceTrigger=PropertyChanged}" />
                                                 </DataTemplate>
                                             </dxg:GridColumn.CellTemplate>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn x:Name="colChildRATE_PLANT" FieldName="COMMODITY_CODE.RATE_PLANT" Header="PLANT RATE" VisibleIndex="150" >
                                             <dxg:GridColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True"  IsEnabled="{Binding RowData.Row.ISQUANTIFIABLE, UpdateSourceTrigger=PropertyChanged}" />
+                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True"  IsEnabled="{Binding RowData.Row.IsEditable, UpdateSourceTrigger=PropertyChanged}" />
                                                 </DataTemplate>
                                             </dxg:GridColumn.CellTemplate>
                                         </dxg:GridColumn>
@@ -199,6 +211,7 @@
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:TableView.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Delete" Command="{Binding DataContext.BulkDeleteCommand, ElementName=userControl}" CommandParameter="{Binding View.DataContext.SelectedEntities}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+
                                     <dxb:BarButtonItem Content="Refresh" Command="{Binding View.DataContext.RefreshCommand}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
