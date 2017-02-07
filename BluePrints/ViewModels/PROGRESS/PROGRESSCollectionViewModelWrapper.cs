@@ -86,6 +86,7 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROGRESS> entities)
         {
             MainViewModel.OnBeforeEntitySavedCallBack = this.OnBeforeEntitySaved;
+            
             MainViewModel.SetParentViewModel(this);
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }

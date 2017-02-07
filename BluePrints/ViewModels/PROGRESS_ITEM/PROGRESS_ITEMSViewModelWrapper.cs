@@ -27,6 +27,7 @@ using System.ComponentModel;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
 using DevExpress.Data;
+using DevExpress.Xpf.Editors;
 
 namespace BluePrints.ViewModels
 {
@@ -182,7 +183,7 @@ namespace BluePrints.ViewModels
             Func<IQueryable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc = loaderCollection.GetCollectionFunc<PROGRESS_ITEM>();
             Func<IQueryable<RATE>> getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
             Func<IQueryable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc = loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
-            return query => PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(query, getPROGRESSFunc, getBASELINEFunc, getPROGRESS_ITEMSFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc);
+            return query => PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(query.OrderBy(x => x.INTERNAL_NUM), getPROGRESSFunc, getBASELINEFunc, getPROGRESS_ITEMSFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc);
         }
 
         PROJECTSummary currentPROJECTSummary;
@@ -193,6 +194,7 @@ namespace BluePrints.ViewModels
             MainViewModel.PreSave = this.MainEntityPreSave; //have to add this so that undo will have an effect on progress item
             //MainViewModel.BulkPreSave = this.MainEntityBulkPreSave;
             MainViewModel.ValidateFillDownCallBack = this.ValidateFillDownCallBack;
+            MainViewModel.BeforeShownEditor = this.BeforeShownEditor;
             MainViewModel.SetParentViewModel(this);
             mainThreadDispatcher.BeginInvoke(new Action(() => this.InitializePROJECTSummary(entities)));
         }
@@ -257,7 +259,7 @@ namespace BluePrints.ViewModels
             //    return;
             //}
 
-            if (sender == this || sender.ToString() == MainViewModel.ToString() || (PROGRESS_ITEMSCollectionViewModel != null && sender.ToString() == PROGRESS_ITEMSCollectionViewModel.ToString()))
+            if (sender == this || (MainViewModel != null && sender.ToString() == MainViewModel.ToString()) || (PROGRESS_ITEMSCollectionViewModel != null && sender.ToString() == PROGRESS_ITEMSCollectionViewModel.ToString()))
                 return;
 
             if (loadPROGRESS != null && changedType == typeof(PROGRESS) && loadPROGRESS.GUID.ToString() == key.ToString() ||
@@ -351,6 +353,32 @@ namespace BluePrints.ViewModels
             return true;
         }
         #endregion
+        #endregion
+
+        #region View Behavior
+        private bool BeforeShownEditor(EditorEventArgs e)
+        {
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().TOTAL_EARNED_PERCENTAGE))
+            {
+                var view = e.Source as TableView;
+                if (view == null)
+                    return false;
+
+                TextEdit textEditor = view.ActiveEditor as TextEdit;
+                if (textEditor == null)
+                    return false;
+
+                Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    textEditor.SelectionStart = 0;
+                    textEditor.SelectionLength = textEditor.Text.Length;
+                }), DispatcherPriority.Background);
+
+                return false;
+            }
+
+            return true;
+        }
         #endregion
 
         #region View Properties

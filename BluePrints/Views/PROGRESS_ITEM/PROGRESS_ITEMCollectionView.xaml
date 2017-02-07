@@ -172,7 +172,7 @@
                                                         </MultiBinding>
                                                     </Image.Visibility>
                                                 </Image>
-                                                <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" Increment="0.01" MaxValue="{Binding RowData.Row.MAX_PERCENTAGE_WITH_DELIVERABLE_STATUS_LIMIT}" MinValue="{Binding RowData.Row.MinPercentage}" Grid.Column="2"/>
+                                                <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="p0" MaskUseAsDisplayFormat="True" Increment="0.01" MaxValue="{Binding RowData.Row.MAX_PERCENTAGE_WITH_DELIVERABLE_STATUS_LIMIT}" MinValue="{Binding RowData.Row.MinPercentage}" Grid.Column="2"/>
                                             </Grid>
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>

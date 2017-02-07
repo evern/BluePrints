@@ -112,6 +112,9 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
+            if (!isAutoRefresh)
+                return;
+
             if ((sender == MainViewModel && messageType != EntityMessageType.Added) || sender == this || changedType == typeof(PROJECT))
                 return;
 
@@ -135,6 +138,13 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        bool isAutoRefresh { get; set; }
+        public bool IsAutoRefresh
+        {
+            get { return isAutoRefresh; }
+            set { isAutoRefresh = value; }
+        }
+
         public bool CanEditReport()
         {
             if (MainViewModel == null || MainViewModel.Entities.Count == 0)

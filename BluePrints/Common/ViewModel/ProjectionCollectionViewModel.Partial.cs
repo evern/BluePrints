@@ -444,15 +444,18 @@ namespace BluePrints.Common.ViewModel
         #endregion
 
         #region Views
-
-        TextEdit textEditor;
-        public void ShownEditor(EditorEventArgs e)
+        public Func<EditorEventArgs, bool> BeforeShownEditor;
+        public virtual void ShownEditor(EditorEventArgs e)
         {
+            if (BeforeShownEditor != null)
+                if (!BeforeShownEditor(e))
+                    return;
+
             var view = e.Source as TableView;
             if (view == null)
                 return;
 
-            textEditor = view.ActiveEditor as TextEdit;
+            TextEdit textEditor = view.ActiveEditor as TextEdit;
             if (textEditor == null)
                 return;
 
@@ -460,7 +463,7 @@ namespace BluePrints.Common.ViewModel
             {
                 textEditor.SelectionStart = textEditor.Text.Length;
                 textEditor.SelectionLength = 0;
-            }), DispatcherPriority.Loaded);
+            }), DispatcherPriority.Background);
         }
 
         public void ShowPopUp(object sender)

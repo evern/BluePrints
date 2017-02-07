@@ -114,12 +114,12 @@
                             <dxg:GridColumn Name="colCOMMENTS" FieldName="BASELINE_ITEM.COMMENTS" Header="COMMENTS" />
                             <dxg:GridColumn Name="colSTATUS" FieldName="BASELINE_ITEM.GUID_STATUS" Header="STATUS">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
+                                    <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox" ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Name="colUSER" FieldName="BASELINE_ITEM.GUID_USER" Header="RESOURCE">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
+                                    <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Name="colESTIMATED_HOURS" FieldName="BASELINE_ITEM.ESTIMATED_HOURS" Header="ESTIMATED_HOURS" >
