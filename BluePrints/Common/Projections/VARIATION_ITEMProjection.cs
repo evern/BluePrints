@@ -53,7 +53,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (PROGRESS_ITEMSBeforeReportingDate == null || BASELINE_ITEMJoinRATE == null || BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS == 0)
+                if (PROGRESS_ITEMSBeforeReportingDate == null || PROGRESS_ITEMCurrent == null || BASELINE_ITEMJoinRATE == null || BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS == 0)
                     return 0;
                 else
                     return -1 * (BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS - PROGRESS_ITEMCurrent.EARNED_UNITS - PastPROGRESS_ITEMS_UNITS);

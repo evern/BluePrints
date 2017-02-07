@@ -296,6 +296,7 @@ namespace BluePrints.ViewModels
                 DataUtils.ShallowCopy(newProjection.BASELINE_ITEM, selectedEntity.BASELINE_ITEM);
                 newProjection.BASELINE_ITEM.GUID = Guid.Empty;
                 newProjection.BASELINE_ITEM.GUID_ORIGINAL = Guid.Empty;
+                newProjection.BASELINE_ITEM.DC_HOURS = 0;
                 AREA selectedAREA = AREACollection.FirstOrDefault(x => x.GUID == newProjection.BASELINE_ITEM.GUID_AREA);
                 DISCIPLINE selectedDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == newProjection.BASELINE_ITEM.GUID_DISCIPLINE);
                 DOCTYPE selectedDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == newProjection.BASELINE_ITEM.GUID_DOCTYPE);
