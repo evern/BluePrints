@@ -1003,6 +1003,9 @@ namespace BluePrints.ViewModels
         {
             get
             {
+                if (COMMODITY_CODEMasterDetailViewModel == null)
+                    return null;
+
                 return COMMODITY_CODEMasterDetailViewModel.DisplayEntities;
             }
         }
@@ -1011,6 +1014,9 @@ namespace BluePrints.ViewModels
         {
             get
             {
+                if (COMMODITY_GROUP_MasterDetailDisplayCollection == null)
+                    return null;
+
                 return new ObservableCollection<COMMODITY_CODEMasterDetailProjection>(COMMODITY_GROUP_MasterDetailDisplayCollection.Where(x => x.ProjectionType == COMMODITY_CODEProjectionType.GeneralGrouped || x.ProjectionType == COMMODITY_CODEProjectionType.ProjectSpecificGrouped).SelectMany(x => x.CHILD_COMMODITY_CODES));
             }
         }

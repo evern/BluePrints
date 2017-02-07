@@ -25,7 +25,18 @@
         </dxmvvm:Interaction.Behaviors>
         <dxlc:LayoutControl Name="LayoutControlRoot" Orientation="Vertical">
             <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" >
-                <dxg:GridControl Name="gridControl" ColumnsSource="{StaticResource USERColumns}" Style="{StaticResource DefaultGridTemplate}">
+                <dxg:GridControl Name="gridControl" Style="{StaticResource DefaultGridTemplate}">
+                    <dxg:GridControl.Columns>
+                        <dxg:GridColumn FieldName="NAME" />
+                        <dxg:GridColumn FieldName="DEPARTMENT" />
+                        <dxg:GridColumn FieldName="TITLE" />
+                        <dxg:GridColumn FieldName="DESCRIPTION" />
+                        <dxg:GridColumn Header="ROLE" FieldName="GUID_ROLE">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.LookUpROLES.Entities, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                    </dxg:GridControl.Columns>
                     <dxg:GridControl.View>
                         <dxg:TableView Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" AllowEditing="False" NewItemRowPosition="None" />
                     </dxg:GridControl.View>

@@ -257,7 +257,7 @@ namespace BluePrints.ViewModels
             //    return;
             //}
 
-            if (sender == this || sender.ToString() == MainViewModel.ToString() || sender.ToString() == PROGRESS_ITEMSCollectionViewModel.ToString())
+            if (sender == this || sender.ToString() == MainViewModel.ToString() || (PROGRESS_ITEMSCollectionViewModel != null && sender.ToString() == PROGRESS_ITEMSCollectionViewModel.ToString()))
                 return;
 
             if (loadPROGRESS != null && changedType == typeof(PROGRESS) && loadPROGRESS.GUID.ToString() == key.ToString() ||
