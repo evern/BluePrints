@@ -25,6 +25,7 @@ namespace BluePrints.Data
             RATE = new HashSet<RATE>();
             VARIATION = new HashSet<VARIATION>();
             WORKPACK = new HashSet<WORKPACK>();
+            USELEGACYWORKPACK = true;
         }
 
         [Key]

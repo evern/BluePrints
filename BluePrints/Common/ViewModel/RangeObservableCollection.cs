@@ -90,7 +90,7 @@ namespace BluePrints.Common.ViewModel
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
-        private void RemoveRange(T[] list)
+        public void RemoveRange(T[] list)
         {
             if (list == null)
                 throw new ArgumentNullException("list");

@@ -1,4 +1,6 @@
 ﻿using BluePrints.Common;
+using BluePrints.ViewModels;
+using BluePrints.Views;
 using DevExpress.Xpf.Core;
 using System;
 using System.Collections.Generic;
@@ -32,6 +34,7 @@ namespace BluePrints
             SignalR.Disconnect();
             LayoutSettings.Default.ThemeName = ApplicationThemeHelper.ApplicationThemeName;
             LayoutSettings.Default.Save();
+            ((BluePrintsEntitiesViewModel)((BluePrintsEntitiesView)this.Content).DataContext).SaveLayout();
             base.OnClosed(e);
             System.Environment.Exit(1);
             //if (ShowLoginWindow != null)

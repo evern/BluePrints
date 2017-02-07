@@ -143,19 +143,6 @@ namespace BluePrints.Common.ViewModel
         }
 
         /// <summary>
-        /// Creates and shows a document which view is bound to PeekCollectionViewModel. The document is created and shown using a document manager service named "WorkspaceDocumentManagerService".
-        /// Since DocumentsViewModel is a POCO view model, an instance of this class will also expose the PinPeekCollectionViewCommand property that can be used as a binding source in views.
-        /// </summary>
-        /// <param name="module">A navigation list entry that is used as a PeekCollectionViewModel factory.</param>
-        public void PinPeekCollectionView(TModule module)
-        {
-            if (WorkspaceDocumentManagerService == null)
-                return;
-            IDocument document = WorkspaceDocumentManagerService.FindDocumentByIdOrCreate(module.DocumentType, x => CreatePinnedPeekCollectionDocument(module));
-            document.Show();
-        }
-
-        /// <summary>
         /// Finalizes the DocumentsViewModel initialization and opens the default document.
         /// Since DocumentsViewModel is a POCO view model, an instance of this class will also expose the OnLoadedCommand property that can be used as a binding source in views.
         /// </summary>
@@ -265,13 +252,6 @@ namespace BluePrints.Common.ViewModel
             return module.ModuleTitle;
         }
 
-        IDocument CreatePinnedPeekCollectionDocument(TModule module)
-        {
-            var document = WorkspaceDocumentManagerService.CreateDocument("PeekCollectionView", module.CreatePeekCollectionViewModel());
-            document.Title = module.ModuleTitle;
-            return document;
-        }
-
         protected Func<TModule, object> GetPeekCollectionViewModelFactory<TEntity, TPrimaryKey>(Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc) where TEntity : class
         {
             return module => PeekCollectionViewModel<TModule, TEntity, TPrimaryKey, TUnitOfWork>.Create(module, unitOfWorkFactory, getRepositoryFunc).SetParentViewModel(this);
@@ -319,9 +299,6 @@ namespace BluePrints.Common.ViewModel
     /// <typeparam name="TModule">A navigation list entry type.</typeparam>
     public abstract partial class ModuleDescription<TModule> where TModule : ModuleDescription<TModule>
     {
-        readonly Func<TModule, object> peekCollectionViewModelFactory;
-        object peekCollectionViewModel;
-
         /// <summary>
         /// Initializes a new instance of the ModuleDescription class.
         /// </summary>
@@ -329,12 +306,10 @@ namespace BluePrints.Common.ViewModel
         /// <param name="documentType">A string value that specifies the view type of corresponding document.</param>
         /// <param name="group">A navigation list entry group name.</param>
         /// <param name="peekCollectionViewModelFactory">An optional parameter that provides a function used to create a PeekCollectionViewModel that provides quick navigation between collection views.</param>
-        public ModuleDescription(string title, string documentType, string group, Func<TModule, object> peekCollectionViewModelFactory = null)
+        public ModuleDescription(string title, string documentType)
         {
             ModuleTitle = title;
-            ModuleGroup = group;
             DocumentType = documentType;
-            this.peekCollectionViewModelFactory = peekCollectionViewModelFactory;
         }
 
         /// <summary>
@@ -343,37 +318,9 @@ namespace BluePrints.Common.ViewModel
         public string ModuleTitle { get; private set; }
 
         /// <summary>
-        /// The navigation list entry group name.
-        /// </summary>
-        public string ModuleGroup { get; private set; }
-
-        /// <summary>
         /// Contains the corresponding document view type.
         /// </summary>
         public string DocumentType { get; private set; }
-
-        /// <summary>
-        /// A primary instance of corresponding PeekCollectionViewModel used to quick navigation between collection views.
-        /// </summary>
-        public object PeekCollectionViewModel
-        {
-            get
-            {
-                if (peekCollectionViewModelFactory == null)
-                    return null;
-                if (peekCollectionViewModel == null)
-                    peekCollectionViewModel = CreatePeekCollectionViewModel();
-                return peekCollectionViewModel;
-            }
-        }
-
-        /// <summary>
-        /// Creates and returns a new instance of the corresponding PeekCollectionViewModel that provides quick navigation between collection views.
-        /// </summary>
-        public object CreatePeekCollectionViewModel()
-        {
-            return peekCollectionViewModelFactory((TModule)this);
-        }
     }
 
     /// <summary>

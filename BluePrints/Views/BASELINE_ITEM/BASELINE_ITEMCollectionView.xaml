@@ -137,7 +137,7 @@
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem FieldName="BASELINE_ITEM.COMMENTS" SummaryType="Count" ShowInColumn="BASELINE_ITEM.COMMENTS" DisplayFormat="Total {0} Records" />
+                            <dxg:GridSummaryItem FieldName="BASELINE_ITEM.COMMENTS" SummaryType="Count" Alignment="Right" DisplayFormat="Total {0} Records" />
                             <dxg:GridSummaryItem FieldName="BASELINE_ITEM.ESTIMATED_HOURS" SummaryType="Sum" ShowInColumn="BASELINE_ITEM.ESTIMATED_HOURS" DisplayFormat="Total: {0}" />
                             <dxg:GridSummaryItem FieldName="TOTAL_COSTS" SummaryType="Sum" ShowInColumn="TOTAL_COSTS" DisplayFormat="Total: {0:c2}" />
                             <dxg:GridSummaryItem FieldName="BASELINE_ITEM.DC_HOURS" SummaryType="Sum" ShowInColumn="BASELINE_ITEM.DC_HOURS" DisplayFormat="Total: {0:n}" />

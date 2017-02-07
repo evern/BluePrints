@@ -12,6 +12,6 @@ namespace BluePrints.Data
     [ConstraintAttributes("NUMBER")]
     public partial class PROJECT
     {
-
+        
     }
 }

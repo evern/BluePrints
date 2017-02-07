@@ -87,138 +87,57 @@
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-    <DockPanel>
-        <dxr:RibbonControl x:Name="ribbonControl1" RibbonStyle="OfficeSlim" ApplicationButtonText="" DockPanel.Dock="Top" ToolbarShowMode="Hide" Visibility="{Binding RelativeSource={RelativeSource AncestorType=dx:DXTabControl}, Path=SelectedContainer.IsNew, Converter={dxmvvm:BooleanToVisibilityConverter Inverse=True}}" dx:DXSerializer.Enabled="False" ShowApplicationButton="False" AllowMinimizeRibbon="False" RibbonHeaderVisibility="Collapsed" AllowCustomization="False">
-            <dxr:RibbonControl.ApplicationButtonOfficeSlimStyle>
-                <Style TargetType="dxr:RibbonApplicationButtonControl">
-                    <Setter Property="HorizontalAlignment" Value="Left" />
-                    <Setter Property="VerticalAlignment" Value="Bottom" />
-                    <Setter Property="Margin" Value="1,1,1,1" />
-                    <Setter Property="Padding" Value="1,1,1,1" />
-                </Style>
-            </dxr:RibbonControl.ApplicationButtonOfficeSlimStyle>
-            <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                <dxr:RibbonPage Caption="Home" MergeOrder="1">
-                    <dxr:RibbonPageGroup Caption="Appearance" MergeOrder="1002">
-                        <dxr:RibbonGalleryBarItem Glyph="{dx:DXImage Image=Colors_16x16.png}" LargeGlyph="{dx:DXImage Image=Colors_32x32.png}" >
+    <Grid dx:DXSerializer.StoreLayoutMode="UI">
+        <dxmvvm:Interaction.Behaviors>
+            <dxmvvm:LayoutSerializationService />
+        </dxmvvm:Interaction.Behaviors>
+        <DockPanel>
+            <dxr:RibbonControl x:Name="ribbonControl1" RibbonStyle="OfficeSlim" ApplicationButtonText="" DockPanel.Dock="Top" ToolbarShowMode="Hide" Visibility="{Binding RelativeSource={RelativeSource AncestorType=dx:DXTabControl}, Path=SelectedContainer.IsNew, Converter={dxmvvm:BooleanToVisibilityConverter Inverse=True}}" dx:DXSerializer.Enabled="False" ShowApplicationButton="False" AllowMinimizeRibbon="False" RibbonHeaderVisibility="Collapsed" AllowCustomization="False">
+                <dxr:RibbonControl.ApplicationButtonOfficeSlimStyle>
+                    <Style TargetType="dxr:RibbonApplicationButtonControl">
+                        <Setter Property="HorizontalAlignment" Value="Left" />
+                        <Setter Property="VerticalAlignment" Value="Bottom" />
+                        <Setter Property="Margin" Value="1,1,1,1" />
+                        <Setter Property="Padding" Value="1,1,1,1" />
+                    </Style>
+                </dxr:RibbonControl.ApplicationButtonOfficeSlimStyle>
+                <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
+                    <dxr:RibbonPage Caption="Home" MergeOrder="1">
+                        <dxr:RibbonPageGroup Caption="Appearance" MergeOrder="1002">
+                            <dxr:RibbonGalleryBarItem Glyph="{dx:DXImage Image=Colors_16x16.png}" LargeGlyph="{dx:DXImage Image=Colors_32x32.png}" >
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxr:RibbonGalleryItemThemeSelectorBehavior/>
+                                </dxmvvm:Interaction.Behaviors>
+                            </dxr:RibbonGalleryBarItem>
+                        </dxr:RibbonPageGroup>
+                    </dxr:RibbonPage>
+                </dxr:RibbonDefaultPageCategory>
+            </dxr:RibbonControl>
+            <dxdo:DockLayoutManager dx:DXSerializer.Enabled="False" BorderThickness="0" Margin="0" Padding="0" Name="dockLayoutManager" MDIMergeStyle="WhenChildActivated">
+                <dxdo:LayoutGroup Orientation="Horizontal" ItemHeight="*" BorderThickness="0" Margin="0" Padding="0">
+                    <dxdo:LayoutGroup BorderThickness="0" Margin="0" Padding="0">
+                        <dxdo:LayoutPanel MaxWidth="300" ItemWidth="Auto" >
+                            <dxg:TreeListControl x:Name="TreeListControl" MaxHeight="2000" MaxWidth="2000" dx:DXSerializer.SerializationID="NavigationTree" ItemsSource="{Binding Modules}" SelectedItem="{Binding SelectedModule}" BorderThickness="0" Background="Transparent" Foreground="{Binding Parent.Foreground, RelativeSource={RelativeSource Self}}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                <dxg:TreeListControl.Columns>
+                                    <dxg:TreeListColumn Header="Title" FieldName="ModuleTitle" VisibleIndex="0" Width="*" />
+                                </dxg:TreeListControl.Columns>
+                                <dxg:TreeListControl.View>
+                                    <dxg:TreeListView x:Name="TreeListView" ShowHorizontalLines="False" ShowVerticalLines="False" TreeLineStyle="None" ShowColumnHeaders="False" ShowIndicator="False" ShowNodeImages="True" ExpandStateFieldName="TreeViewIsExpanded" ImageFieldName="TreeViewImage" AllowEditing="False" AllowSorting="False" ParentFieldName="TreeViewParentId" KeyFieldName="TreeViewId" >
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand EventName="MouseDoubleClick" Command="{Binding NavigateCommand}" />
+                                        </dxmvvm:Interaction.Behaviors>
+                                    </dxg:TreeListView>
+                                </dxg:TreeListControl.View>
+                            </dxg:TreeListControl>
+                        </dxdo:LayoutPanel>
+                        <dxdo:DocumentGroup x:Name="documentGroup" BorderThickness="0" Margin="0" Padding="0">
                             <dxmvvm:Interaction.Behaviors>
-                                <dxr:RibbonGalleryItemThemeSelectorBehavior/>
+                                <dxdo:TabbedDocumentUIService />
                             </dxmvvm:Interaction.Behaviors>
-                        </dxr:RibbonGalleryBarItem>
-                    </dxr:RibbonPageGroup>
-                </dxr:RibbonPage>
-            </dxr:RibbonDefaultPageCategory>
-        </dxr:RibbonControl>
-        <dxdo:DockLayoutManager dx:DXSerializer.Enabled="False" BorderThickness="0" Margin="0" Padding="0" Name="dockLayoutManager" MDIMergeStyle="WhenChildActivated">
-            <dxdo:LayoutGroup Orientation="Horizontal" ItemHeight="*" BorderThickness="0" Margin="0" Padding="0">
-                <dxdo:LayoutGroup BorderThickness="0" Margin="0" Padding="0">
-                    <dxdo:LayoutPanel BorderThickness="0" AllowClose="False" AllowFloat="False" ShowPinButton="False" ShowBorder="False" ShowCaption="False" MaxWidth="300" ItemWidth="Auto" Visibility="{Binding NavigationPaneVisibility, Converter={StaticResource NavigationPaneVisibilityConverter}}">
-                        <dxn:NavBarControl x:Name="navBarControl" ItemsSource="{Binding Modules}" Compact="False" SelectedGroup="{Binding SelectedModule, Mode=OneTime}">
-                            <dxn:NavBarControl.Resources>
-                                <Style x:Key="collapsedNavPaneItemsStyle" TargetType="{x:Type dxn:NavBarItem}">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="FontSettings" Value="{dxn:NavBarFontSettings FontWeight=Bold}"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </dxn:NavBarControl.Resources>
-                            <dxn:NavBarControl.ItemTemplate>
-                                <DataTemplate>
-                                    <ContentControl>
-                                        <dxn:NavBarGroup Header="{Binding ModuleTitle}" 
-                                                                     DisplaySource="Content"
-                                                                     DisplayMode="Text"
-                                                                     NavigationPaneVisible="True" 
-                                                                     NavPaneShowMode="Items"
-                                                                     GroupScrollMode="None"
-                                                                     CollapsedNavPaneItemsStyle="{StaticResource collapsedNavPaneItemsStyle}">
-                                            <dxn:NavBarGroup.CollapsedNavPaneItemsTemplate>
-                                                <DataTemplate>
-                                                    <ContentControl>
-                                                        <dxn:NavBarItem Content="{Binding ModuleTitle}"/>
-                                                    </ContentControl>
-                                                </DataTemplate>
-                                            </dxn:NavBarGroup.CollapsedNavPaneItemsTemplate>
-                                            <dxn:NavBarGroup.Content>
-                                                <view:NavigationTreeViewPanel Width="1000" DataContext="{Binding DataContext, ElementName=userControl}" />
-                                            </dxn:NavBarGroup.Content>
-                                        </dxn:NavBarGroup>
-                                    </ContentControl>
-                                </DataTemplate>
-                            </dxn:NavBarControl.ItemTemplate>
-                            <dxn:NavBarControl.View>
-                                <dxn:NavigationPaneView />
-                            </dxn:NavBarControl.View>
-                        </dxn:NavBarControl>
-                    </dxdo:LayoutPanel>
-                    <!--<dxdo:LayoutPanel AllowClose="False" AllowFloat="False" ShowPinButton="False" ShowBorder="False" ShowCaption="False">
-                        <dx:DXTabControl x:Name="tabControl" Padding="0,-1,0,0" TabContentCacheMode="CacheAllTabs" dx:DXSerializer.Enabled="True">
-                            <dx:DXTabControl.Resources>
-                                <Style TargetType="{x:Type dx:DXTabItem}">
-                                    <Setter Property="HeaderTemplate">
-                                        <Setter.Value>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding}" TextTrimming="CharacterEllipsis">
-                                                    <TextBlock.ToolTip>
-                                                        <ToolTip Content="{Binding}" />
-                                                    </TextBlock.ToolTip>
-                                                </TextBlock>
-                                            </DataTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </dx:DXTabControl.Resources>
-                            <dx:DXTabControl.ContentHeaderTemplate>
-                                <DataTemplate>
-                                    <dxr:RibbonControl Visibility="{Binding RelativeSource={RelativeSource AncestorType=dx:DXTabControl}, Path=SelectedContainer.IsNew, Converter={dxmvvm:BooleanToVisibilityConverter Inverse=True}}" dx:DXSerializer.Enabled="False" RibbonStyle="OfficeSlim" ShowApplicationButton="False" AllowMinimizeRibbon="False" RibbonHeaderVisibility="Collapsed" ToolbarShowMode="Hide" AllowCustomization="False">
-                                        <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                                            <dxr:RibbonPage>
-                                                <dxr:RibbonPageGroup />
-                                            </dxr:RibbonPage>
-                                        </dxr:RibbonDefaultPageCategory>
-                                    </dxr:RibbonControl>
-                                </DataTemplate>
-                            </dx:DXTabControl.ContentHeaderTemplate>
-                            <dx:DXTabControl.ContentFooterTemplate>
-                                <DataTemplate>
-                                    <dxr:RibbonStatusBarControl Visibility="{Binding RelativeSource={RelativeSource AncestorType=dx:DXTabControl}, Path=SelectedContainer.IsNew, Converter={dxmvvm:BooleanToVisibilityConverter Inverse=True}}" />
-                                </DataTemplate>
-                            </dx:DXTabControl.ContentFooterTemplate>
-                            <dx:DXTabControl.ControlBoxRightTemplate>
-                                <DataTemplate>
-                                    <dxb:ToolBarControl BackgroundTemplate="{x:Null}" GlyphSize="Small" ShowDragWidget="False" AllowCollapse="False" AllowCustomizationMenu="False" AllowHide="False" AllowQuickCustomization="False" AllowRename="False">
-                                        <dxb:BarSubItem Glyph="{dx:DXImage Image=Colors_16x16.png}" LargeGlyph="{dx:DXImage Image=Colors_32x32.png}">
-                                            <dxmvvm:Interaction.Behaviors>
-                                                <dxb:BarSubItemThemeSelectorBehavior />
-                                            </dxmvvm:Interaction.Behaviors>
-                                        </dxb:BarSubItem>
-                                    </dxb:ToolBarControl>
-                                </DataTemplate>
-                            </dx:DXTabControl.ControlBoxRightTemplate>
-                            <dxmvvm:Interaction.Behaviors>
-                                <dx:TabbedWindowDocumentUIService WindowClosingCommand="{Binding OnClosingCommand}">
-                                    <dx:TabbedWindowDocumentUIService.NewItemTemplate>
-                                        <DataTemplate>
-                                            <dx:DXTabItem Header="Navigation">
-                                                <view:NavigationTreeView DataContext="{Binding}" VerticalAlignment="Stretch" Margin="0,1,0,0" Padding="40" />
-                                            </dx:DXTabItem>
-                                        </DataTemplate>
-                                    </dx:TabbedWindowDocumentUIService.NewItemTemplate>
-                                </dx:TabbedWindowDocumentUIService>
-                            </dxmvvm:Interaction.Behaviors>
-                            <dx:DXTabControl.View>
-                                <dx:TabControlStretchView MoveItemsWhenDragDrop="False" RemoveTabItemsOnHiding="True" DragDropMode="Full" HideButtonShowMode="InAllTabs" NewButtonShowMode="InTabPanel" CloseWindowOnSingleTabItemHiding="True" SingleTabItemHideMode="HideAndShowNewItem" />
-                            </dx:DXTabControl.View>
-                        </dx:DXTabControl>
-                    </dxdo:LayoutPanel>-->
-                    <dxdo:DocumentGroup x:Name="documentGroup" BorderThickness="0" Margin="0" Padding="0">
-                        <dxmvvm:Interaction.Behaviors>
-                            <dxdo:TabbedDocumentUIService />
-                        </dxmvvm:Interaction.Behaviors>
-                    </dxdo:DocumentGroup>
+                        </dxdo:DocumentGroup>
+                    </dxdo:LayoutGroup>
                 </dxdo:LayoutGroup>
-            </dxdo:LayoutGroup>
-        </dxdo:DockLayoutManager>
-    </DockPanel>
+            </dxdo:DockLayoutManager>
+        </DockPanel>
+    </Grid>
 </UserControl>
