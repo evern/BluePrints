@@ -17,13 +17,15 @@ namespace BluePrints.Common.ViewModel.UndoRedo
         public Action<UndoRedoEntityInfo<TEntity>> FuncUndo { get; set; }
         public Action<UndoRedoEntityInfo<TEntity>> FuncRedo { get; set; }
 
-        public EntitiesUndoRedoManager(Action<UndoRedoEntityInfo<TEntity>> funcUndo, Action<UndoRedoEntityInfo<TEntity>> funcRedo)
+        public EntitiesUndoRedoManager(Action<UndoRedoEntityInfo<TEntity>> funcUndo,
+            Action<UndoRedoEntityInfo<TEntity>> funcRedo)
         {
             FuncUndo = funcUndo;
             FuncRedo = funcRedo;
         }
 
         #region Public Methods
+
         public void Clear()
         {
             UndoList.Clear();
@@ -57,9 +59,11 @@ namespace BluePrints.Common.ViewModel.UndoRedo
         /// <param name="newValue">New value of the property</param>
         /// <param name="actionId">Undo/Redo action id</param>
         /// <param name="messageType">Action to take when undoing/redoing</param>
-        public void AddUndo(TEntity changedEntity, string propertyName, object oldValue, object newValue, EntityMessageType messageType)
+        public void AddUndo(TEntity changedEntity, string propertyName, object oldValue, object newValue,
+            EntityMessageType messageType)
         {
-            UndoList.Add(new UndoRedoEntityInfo<TEntity>(changedEntity, propertyName, oldValue, newValue, ActionId, messageType));
+            UndoList.Add(new UndoRedoEntityInfo<TEntity>(changedEntity, propertyName, oldValue, newValue, ActionId,
+                messageType));
             RedoList.Clear();
         }
 
@@ -73,19 +77,19 @@ namespace BluePrints.Common.ViewModel.UndoRedo
             if (UndoList.Count > 0)
             {
                 // Extract the item from the undo list.
-                int undoActionId = UndoList.Last().ActionId;
+                var undoActionId = UndoList.Last().ActionId;
                 UndoRedoEntityInfo<TEntity> item;
 
-                for (int i = UndoList.Count - 1; i >= 0; i--)
+                for (var i = UndoList.Count - 1; i >= 0; i--)
                 {
                     item = UndoList.Last();
                     if (item.ActionId == undoActionId)
                     {
                         UndoList.RemoveAt(UndoList.Count - 1);
-                        List<UndoRedoEntityInfo<TEntity>> copyRedoList = RedoList.ToList();
+                        var copyRedoList = RedoList.ToList();
                         copyRedoList.Add(item);
                         // We need to copy the undo list here.
-                        List<UndoRedoEntityInfo<TEntity>> copyUndoList = UndoList.ToList();
+                        var copyUndoList = UndoList.ToList();
                         FuncUndo(item);
                         // Now repopulate the undo and redo lists.
                         UpdateRedoList(copyRedoList);
@@ -115,10 +119,10 @@ namespace BluePrints.Common.ViewModel.UndoRedo
             if (RedoList.Count > 0)
             {
                 // Extract the item from the redo list.
-                int redoActionId = RedoList.Last().ActionId;
+                var redoActionId = RedoList.Last().ActionId;
                 UndoRedoEntityInfo<TEntity> item;
 
-                for (int i = RedoList.Count - 1; i >= 0; i--)
+                for (var i = RedoList.Count - 1; i >= 0; i--)
                 {
                     item = RedoList.Last();
                     if (item.ActionId == redoActionId)
@@ -128,7 +132,7 @@ namespace BluePrints.Common.ViewModel.UndoRedo
                         // Here we need to copy the redo list out because
                         // we will clear the list when the Add is called and
                         // the Redo is cleared there.
-                        List<UndoRedoEntityInfo<TEntity>> redoList = RedoList.ToList();
+                        var redoList = RedoList.ToList();
                         //Redo actionId should be the same as undo action id
                         SetActionId(item.ActionId);
                         // Redo the last operation.
@@ -142,10 +146,12 @@ namespace BluePrints.Common.ViewModel.UndoRedo
             }
 
             _IsInUndoRedoOperation = false;
-        } 
+        }
+
         #endregion
 
         #region Private methods
+
         /// <summary>
         /// Refreshes the redo list with new entries
         /// </summary>
@@ -156,11 +162,12 @@ namespace BluePrints.Common.ViewModel.UndoRedo
             RedoList.AddRange(redoList);
         }
 
-        List<UndoRedoEntityInfo<TEntity>> _undoList;
+        private List<UndoRedoEntityInfo<TEntity>> _undoList;
+
         /// <summary>
         /// Get the undo list.
         /// </summary>
-        List<UndoRedoEntityInfo<TEntity>> UndoList
+        private List<UndoRedoEntityInfo<TEntity>> UndoList
         {
             get
             {
@@ -168,17 +175,15 @@ namespace BluePrints.Common.ViewModel.UndoRedo
                     _undoList = new List<UndoRedoEntityInfo<TEntity>>();
                 return _undoList;
             }
-            set
-            {
-                _undoList = value;
-            }
+            set { _undoList = value; }
         }
 
-        List<UndoRedoEntityInfo<TEntity>> _redoList;
+        private List<UndoRedoEntityInfo<TEntity>> _redoList;
+
         /// <summary>
         /// Get the redo list.
         /// </summary>
-        List<UndoRedoEntityInfo<TEntity>> RedoList
+        private List<UndoRedoEntityInfo<TEntity>> RedoList
         {
             get
             {
@@ -186,20 +191,20 @@ namespace BluePrints.Common.ViewModel.UndoRedo
                     _redoList = new List<UndoRedoEntityInfo<TEntity>>();
                 return _redoList;
             }
-            set
-            {
-                _redoList = value;
-            }
-        } 
+            set { _redoList = value; }
+        }
+
         #endregion
 
         #region Action Id
+
         //allows undo/redo operation to be tagged with incremental action id
-        int _ActionId = 0;
+        private int _ActionId = 0;
         //allows action id to be paused from increment for bulk operation
-        bool _PauseActionId;
+        private bool _PauseActionId;
         //remember not to increment actionId when undo manager is in undo/redo operation
-        bool _IsInUndoRedoOperation;
+        private bool _IsInUndoRedoOperation;
+
         /// <summary>
         /// Allows action id to be incremented everytime is is retrieved
         /// </summary>
@@ -258,6 +263,7 @@ namespace BluePrints.Common.ViewModel.UndoRedo
         {
             return _IsInUndoRedoOperation;
         }
+
         #endregion
     }
 }

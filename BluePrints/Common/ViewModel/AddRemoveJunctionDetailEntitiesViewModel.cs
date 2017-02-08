@@ -10,33 +10,54 @@ using BluePrints.Common.DataModel;
 
 namespace BluePrints.Common.ViewModel
 {
-    public class AddRemoveJunctionDetailEntitiesViewModel<TEntity, TPrimaryKey, TDetailEntity, TDetailPrimaryKey, TJunction, TJunctionPrimaryKey, TUnitOfWork> : AddRemoveDetailEntitiesViewModel<TEntity, TPrimaryKey, TDetailEntity, TDetailPrimaryKey, TUnitOfWork>
+    public class AddRemoveJunctionDetailEntitiesViewModel<TEntity, TPrimaryKey, TDetailEntity, TDetailPrimaryKey,
+        TJunction, TJunctionPrimaryKey, TUnitOfWork> :
+        AddRemoveDetailEntitiesViewModel<TEntity, TPrimaryKey, TDetailEntity, TDetailPrimaryKey, TUnitOfWork>
         where TEntity : class
         where TDetailEntity : class
         where TJunction : class, new()
         where TJunctionPrimaryKey : class
         where TUnitOfWork : IUnitOfWork
     {
-
-        public static AddRemoveJunctionDetailEntitiesViewModel<TEntity, TPrimaryKey, TDetailEntity, TDetailPrimaryKey, TJunction, TJunctionPrimaryKey, TUnitOfWork> CreateViewModel(
-            IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory,
-            Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
-            Func<TUnitOfWork, IRepository<TDetailEntity, TDetailPrimaryKey>> getDetailsRepositoryFunc,
-            Func<TUnitOfWork, IRepository<TJunction, TJunctionPrimaryKey>> getJunctionRepositoryFunc,
-            Expression<Func<TJunction, TPrimaryKey>> getEntityForeignKey,
-            Expression<Func<TJunction, TDetailPrimaryKey>> getDetailForeignKey,
-            TPrimaryKey id)
+        public static
+            AddRemoveJunctionDetailEntitiesViewModel
+            <TEntity, TPrimaryKey, TDetailEntity, TDetailPrimaryKey, TJunction, TJunctionPrimaryKey, TUnitOfWork>
+            CreateViewModel(
+                IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory,
+                Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
+                Func<TUnitOfWork, IRepository<TDetailEntity, TDetailPrimaryKey>> getDetailsRepositoryFunc,
+                Func<TUnitOfWork, IRepository<TJunction, TJunctionPrimaryKey>> getJunctionRepositoryFunc,
+                Expression<Func<TJunction, TPrimaryKey>> getEntityForeignKey,
+                Expression<Func<TJunction, TDetailPrimaryKey>> getDetailForeignKey,
+                TPrimaryKey id)
         {
-            return ViewModelSource.Create(() => new AddRemoveJunctionDetailEntitiesViewModel<TEntity, TPrimaryKey, TDetailEntity, TDetailPrimaryKey, TJunction, TJunctionPrimaryKey, TUnitOfWork>(unitOfWorkFactory, getRepositoryFunc, getDetailsRepositoryFunc, getJunctionRepositoryFunc, getEntityForeignKey, getDetailForeignKey, id));
+            return
+                ViewModelSource.Create(
+                    () =>
+                        new AddRemoveJunctionDetailEntitiesViewModel
+                        <TEntity, TPrimaryKey, TDetailEntity, TDetailPrimaryKey, TJunction, TJunctionPrimaryKey,
+                            TUnitOfWork>(unitOfWorkFactory, getRepositoryFunc, getDetailsRepositoryFunc,
+                            getJunctionRepositoryFunc, getEntityForeignKey, getDetailForeignKey, id));
         }
 
-        readonly Func<TUnitOfWork, IRepository<TJunction, TJunctionPrimaryKey>> getJunctionRepositoryFunc;
-        readonly Expression<Func<TJunction, TPrimaryKey>> getEntityForeignKey;
-        readonly Expression<Func<TJunction, TDetailPrimaryKey>> getDetailForeignKey;
+        private readonly Func<TUnitOfWork, IRepository<TJunction, TJunctionPrimaryKey>> getJunctionRepositoryFunc;
+        private readonly Expression<Func<TJunction, TPrimaryKey>> getEntityForeignKey;
+        private readonly Expression<Func<TJunction, TDetailPrimaryKey>> getDetailForeignKey;
 
-        IRepository<TDetailEntity, TDetailPrimaryKey> DetailsRepository { get { return getDetailsRepositoryFunc(UnitOfWork); } }
-        IRepository<TJunction, TJunctionPrimaryKey> JunctionRepository { get { return getJunctionRepositoryFunc(UnitOfWork); } }
-        public override bool IsCreateDetailButtonVisible { get { return false; } }
+        private IRepository<TDetailEntity, TDetailPrimaryKey> DetailsRepository
+        {
+            get { return getDetailsRepositoryFunc(UnitOfWork); }
+        }
+
+        private IRepository<TJunction, TJunctionPrimaryKey> JunctionRepository
+        {
+            get { return getJunctionRepositoryFunc(UnitOfWork); }
+        }
+
+        public override bool IsCreateDetailButtonVisible
+        {
+            get { return false; }
+        }
 
         public override ICollection<TDetailEntity> DetailEntities
         {
@@ -46,18 +67,20 @@ namespace BluePrints.Common.ViewModel
                     return Enumerable.Empty<TDetailEntity>().ToArray();
                 var entityPrimaryKey = Repository.GetPrimaryKey(Entity);
                 var junctions = JunctionRepository.Where(GetJunctionPredicate(entityPrimaryKey));
-                return junctions.Join(DetailsRepository, getDetailForeignKey, DetailsRepository.GetPrimaryKeyExpression, (j, d) => d).ToArray();
+                return
+                    junctions.Join(DetailsRepository, getDetailForeignKey, DetailsRepository.GetPrimaryKeyExpression,
+                        (j, d) => d).ToArray();
             }
         }
 
         protected AddRemoveJunctionDetailEntitiesViewModel(
-                IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory,
-                Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
-                Func<TUnitOfWork, IRepository<TDetailEntity, TDetailPrimaryKey>> getDetailsRepositoryFunc,
-                Func<TUnitOfWork, IRepository<TJunction, TJunctionPrimaryKey>> getJunctionRepositoryFunc,
-                Expression<Func<TJunction, TPrimaryKey>> getEntityForeignKey,
-                Expression<Func<TJunction, TDetailPrimaryKey>> getDetailForeignKey,
-                TPrimaryKey id)
+            IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory,
+            Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
+            Func<TUnitOfWork, IRepository<TDetailEntity, TDetailPrimaryKey>> getDetailsRepositoryFunc,
+            Func<TUnitOfWork, IRepository<TJunction, TJunctionPrimaryKey>> getJunctionRepositoryFunc,
+            Expression<Func<TJunction, TPrimaryKey>> getEntityForeignKey,
+            Expression<Func<TJunction, TDetailPrimaryKey>> getDetailForeignKey,
+            TPrimaryKey id)
             : base(unitOfWorkFactory, getRepositoryFunc, getDetailsRepositoryFunc, null, id)
         {
             this.getJunctionRepositoryFunc = getJunctionRepositoryFunc;
@@ -65,7 +88,7 @@ namespace BluePrints.Common.ViewModel
             this.getDetailForeignKey = getDetailForeignKey;
         }
 
-        Expression<Func<TJunction, bool>> GetJunctionPredicate(TPrimaryKey primaryKey)
+        private Expression<Func<TJunction, bool>> GetJunctionPredicate(TPrimaryKey primaryKey)
         {
             var param = Expression.Parameter(typeof(TJunction));
             var entityForeignKeyExpr = Expression.Property(param, ExpressionHelper.GetPropertyName(getEntityForeignKey));
@@ -73,7 +96,8 @@ namespace BluePrints.Common.ViewModel
             return Expression.Lambda<Func<TJunction, bool>>(expr, param);
         }
 
-        Expression<Func<TJunction, bool>> GetJunctionPredicate(TPrimaryKey primaryKey, TDetailPrimaryKey detailPrimaryKey)
+        private Expression<Func<TJunction, bool>> GetJunctionPredicate(TPrimaryKey primaryKey,
+            TDetailPrimaryKey detailPrimaryKey)
         {
             var param = Expression.Parameter(typeof(TJunction));
             var entityForeignKeyExpr = Expression.Property(param, ExpressionHelper.GetPropertyName(getEntityForeignKey));
@@ -88,7 +112,9 @@ namespace BluePrints.Common.ViewModel
         {
             var availableEntities = DetailsRepository.ToList().Except(DetailEntities).ToArray();
             var selectEntitiesViewModel = new SelectDetailEntitiesViewModel<TDetailEntity>(availableEntities);
-            if (DialogService.ShowDialog(MessageButton.OKCancel, CommonResources.AddRemoveDetailEntities_SelectObjects, selectEntitiesViewModel) == MessageResult.OK && selectEntitiesViewModel.SelectedEntities.Any())
+            if (
+                DialogService.ShowDialog(MessageButton.OKCancel, CommonResources.AddRemoveDetailEntities_SelectObjects,
+                    selectEntitiesViewModel) == MessageResult.OK && selectEntitiesViewModel.SelectedEntities.Any())
             {
                 foreach (var selectedEntity in selectEntitiesViewModel.SelectedEntities)
                 {
@@ -96,8 +122,10 @@ namespace BluePrints.Common.ViewModel
                     var entityKey = Repository.GetPrimaryKey(Entity);
                     var detailKey = DetailsRepository.GetPrimaryKey(selectedEntity);
                     var junctionType = typeof(TJunction);
-                    junctionType.GetProperty(ExpressionHelper.GetPropertyName(getEntityForeignKey)).SetValue(junction, entityKey, null);
-                    junctionType.GetProperty(ExpressionHelper.GetPropertyName(getDetailForeignKey)).SetValue(junction, detailKey, null);
+                    junctionType.GetProperty(ExpressionHelper.GetPropertyName(getEntityForeignKey))
+                        .SetValue(junction, entityKey, null);
+                    junctionType.GetProperty(ExpressionHelper.GetPropertyName(getDetailForeignKey))
+                        .SetValue(junction, detailKey, null);
                     JunctionRepository.Add(junction);
                 }
                 SaveChangesAndNotify(selectEntitiesViewModel.SelectedEntities);

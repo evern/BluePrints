@@ -8,6 +8,5 @@ namespace BluePrints.Data
 
     public partial class PROJECT_REPORT
     {
-
     }
 }

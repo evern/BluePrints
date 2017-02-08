@@ -5,13 +5,12 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
-    using BluePrints.Common;
+    using Common;
     using Attributes;
     using System.ComponentModel;
 
     [ConstraintAttributes("NUMBER")]
     public partial class PROJECT
     {
-        
     }
 }

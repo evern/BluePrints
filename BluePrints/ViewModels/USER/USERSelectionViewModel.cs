@@ -21,7 +21,8 @@ namespace BluePrints.ViewModels
         public ObservableCollection<USER> Entities { get; set; }
         public USER SelectedEntity { get; set; }
         public ObservableCollection<USER> SelectedEntities { get; set; }
-        IEnumerable<USER> ExistingUSERS { get; set; }
+        private IEnumerable<USER> ExistingUSERS { get; set; }
+
         protected USERSelectionViewModel(IEnumerable<USER> existingUSERS)
         {
             ExistingUSERS = existingUSERS;
@@ -33,12 +34,10 @@ namespace BluePrints.ViewModels
         private void Refresh()
         {
             IEnumerable<USER> activeDirectoryUSERS = ActiveDirectory.GetUSERS();
-            IEnumerable<USER> existingUSERS = ExistingUSERS;
-            foreach(var activeDirectoryUSER in activeDirectoryUSERS)
-            {
-                if(!existingUSERS.Any(x => x.NAME == activeDirectoryUSER.NAME))
+            var existingUSERS = ExistingUSERS;
+            foreach (var activeDirectoryUSER in activeDirectoryUSERS)
+                if (!existingUSERS.Any(x => x.NAME == activeDirectoryUSER.NAME))
                     Entities.Add(activeDirectoryUSER);
-            }
         }
     }
 }

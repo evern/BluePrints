@@ -17,21 +17,15 @@ namespace BluePrints.Data
         public void TreeCreated(DbCommandTreeInterceptionContext interceptionContext)
         {
             if (interceptionContext.OriginalResult.DataSpace != DataSpace.SSpace)
-            {
                 return;
-            }
 
             var queryCommand = interceptionContext.Result as DbQueryCommandTree;
             if (queryCommand != null)
-            {
                 interceptionContext.Result = HandleQueryCommand(queryCommand);
-            }
 
             var deleteCommand = interceptionContext.OriginalResult as DbDeleteCommandTree;
             if (deleteCommand != null)
-            {
                 interceptionContext.Result = HandleDeleteCommand(deleteCommand);
-            }
         }
 
         private static DbCommandTree HandleQueryCommand(DbQueryCommandTree queryCommand)
@@ -46,20 +40,20 @@ namespace BluePrints.Data
         private static DbCommandTree HandleDeleteCommand(DbDeleteCommandTree deleteCommand)
         {
             var setClauses = new List<DbModificationClause>();
-            var table = (EntityType)deleteCommand.Target.VariableType.EdmType;
+            var table = (EntityType) deleteCommand.Target.VariableType.EdmType;
 
             if (table.Properties.All(p => p.Name != DeletedColumnName))
-            {
                 return deleteCommand;
-            }
 
             DateTime? now = DateTime.Now;
             setClauses.Add(DbExpressionBuilder.SetClause(
-                deleteCommand.Target.VariableType.Variable(deleteCommand.Target.VariableName).Property(DeletedColumnName),
+                deleteCommand.Target.VariableType.Variable(deleteCommand.Target.VariableName)
+                    .Property(DeletedColumnName),
                 DbExpression.FromDateTime(now)));
 
             setClauses.Add(DbExpressionBuilder.SetClause(
-                deleteCommand.Target.VariableType.Variable(deleteCommand.Target.VariableName).Property(DeletedByColumnName),
+                deleteCommand.Target.VariableType.Variable(deleteCommand.Target.VariableName)
+                    .Property(DeletedByColumnName),
                 DbExpression.FromGuid(LoginCredentials.CurrentUserGuid())));
 
             return new DbUpdateCommandTree(
@@ -74,17 +68,15 @@ namespace BluePrints.Data
         {
             public override DbExpression Visit(DbScanExpression expression)
             {
-                var table = (EntityType)expression.Target.ElementType;
+                var table = (EntityType) expression.Target.ElementType;
                 if (table.Properties.All(p => p.Name != DeletedColumnName))
-                {
                     return base.Visit(expression);
-                }
 
                 var binding = expression.Bind();
                 return binding.Filter(
                     binding.VariableType
-                    .Variable(binding.VariableName)
-                    .Property(DeletedColumnName).IsNull());
+                        .Variable(binding.VariableName)
+                        .Property(DeletedColumnName).IsNull());
             }
         }
     }

@@ -20,7 +20,6 @@ namespace BluePrints.Data
 
     public partial class BluePrintsEntities : DbContext
     {
-
         /// <summary>
         /// Allow redo operation to undo deleted record
         /// If a record with generated GUID passes through it'll be formatted as a modified record
@@ -29,41 +28,46 @@ namespace BluePrints.Data
         /// <returns></returns>
         public override int SaveChanges()
         {
-            IEnumerable<System.Data.Entity.Infrastructure.DbEntityEntry> AddedDbEntries = ChangeTracker.Entries().Where(e => e.State == EntityState.Added);
+            var AddedDbEntries =
+                ChangeTracker.Entries().Where(e => e.State == EntityState.Added);
             if (AddedDbEntries.Count() > 0)
             {
-                Type entityType = AddedDbEntries.First().Entity.GetType();
-                PropertyInfo keyPropertyInfo = DataUtils.GetKeyPropertyInfo(entityType);
+                var entityType = AddedDbEntries.First().Entity.GetType();
+                var keyPropertyInfo = DataUtils.GetKeyPropertyInfo(entityType);
 
                 if (keyPropertyInfo != null)
-                {
                     foreach (var dbEntry in AddedDbEntries)
                     {
                         var entryKeyMember = dbEntry.Property(keyPropertyInfo.Name);
                         if (entryKeyMember.CurrentValue.GetType() == typeof(Guid))
                         {
-                            Guid entryKeyMemberValue = (Guid)entryKeyMember.CurrentValue;
+                            var entryKeyMemberValue = (Guid) entryKeyMember.CurrentValue;
 
                             //If key field already has generated guid it means that record should be modified, assuming redo operation have entity with null value in deleted field
                             //This will essentially undelete the record
                             if (entryKeyMemberValue != Guid.Empty)
+                            {
                                 dbEntry.State = EntityState.Modified;
+                            }
                             //Generate a new guid if record have an empty guid key field
                             else
                             {
                                 entryKeyMember.CurrentValue = Guid.NewGuid();
-                                if (entityType.BaseType == typeof(BASELINE_ITEM) || entityType.BaseType == typeof(ESTIMATION_DIRECT_ITEM) || entityType.BaseType == typeof(ESTIMATION_INDIRECT_ITEM))
+                                if (entityType.BaseType == typeof(BASELINE_ITEM) ||
+                                    entityType.BaseType == typeof(ESTIMATION_DIRECT_ITEM) ||
+                                    entityType.BaseType == typeof(ESTIMATION_INDIRECT_ITEM))
                                 {
-                                    PropertyInfo OGPropertyInfo = entityType.GetProperty("GUID_ORIGINAL");
+                                    var OGPropertyInfo = entityType.GetProperty("GUID_ORIGINAL");
                                     if (OGPropertyInfo.GetValue(dbEntry.Entity).ToString() == Guid.Empty.ToString())
                                         OGPropertyInfo.SetValue(dbEntry.Entity, entryKeyMember.CurrentValue);
                                 }
                             }
                         }
                         else
+                        {
                             break;
+                        }
                     }
-                }
             }
 
             return base.SaveChanges();
@@ -71,7 +75,7 @@ namespace BluePrints.Data
 
         public void Reload(object entity)
         {
-            this.Entry(entity).Reload();
+            Entry(entity).Reload();
         }
     }
 }

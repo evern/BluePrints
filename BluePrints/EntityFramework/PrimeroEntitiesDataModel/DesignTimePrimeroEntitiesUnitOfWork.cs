@@ -16,7 +16,6 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
     /// </summary>
     public class PrimeroEntitiesDesignTimeUnitOfWork : DesignTimeUnitOfWork, IPrimeroEntitiesUnitOfWork
     {
-
         /// <summary>
         /// Initializes a new instance of the PrimeroEntitiesDesignTimeUnitOfWork class.
         /// </summary>
@@ -51,7 +50,10 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
 
         IRepository<ANALYSIS_MATRIX, Tuple<int, int, string>> IPrimeroEntitiesUnitOfWork.ANALYSIS_MATRIX
         {
-            get { return GetRepository((ANALYSIS_MATRIX x) => Tuple.Create(x.CODE_SET_SEQNO, x.TRAN_SEQNO, x.TRAN_TYPE)); }
+            get
+            {
+                return GetRepository((ANALYSIS_MATRIX x) => Tuple.Create(x.CODE_SET_SEQNO, x.TRAN_SEQNO, x.TRAN_TYPE));
+            }
         }
 
         IRepository<ANALYSIS_TYPES, string> IPrimeroEntitiesUnitOfWork.ANALYSIS_TYPES
@@ -74,9 +76,16 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
             get { return GetRepository((AUDITOR_SAVEPROCS x) => Tuple.Create(x.BRANCHNO, x.SAVEID)); }
         }
 
-        IRepository<AUDITOR_SETTINGS, Tuple<int, string, int, int, int, int>> IPrimeroEntitiesUnitOfWork.AUDITOR_SETTINGS
+        IRepository<AUDITOR_SETTINGS, Tuple<int, string, int, int, int, int>> IPrimeroEntitiesUnitOfWork.
+            AUDITOR_SETTINGS
         {
-            get { return GetRepository((AUDITOR_SETTINGS x) => Tuple.Create(x.BRANCHNO, x.TERMINALID, x.APPLICATIONID, x.STAFFNO, x.CLASSID, x.EVENTID)); }
+            get
+            {
+                return
+                    GetRepository(
+                        (AUDITOR_SETTINGS x) =>
+                            Tuple.Create(x.BRANCHNO, x.TERMINALID, x.APPLICATIONID, x.STAFFNO, x.CLASSID, x.EVENTID));
+            }
         }
 
         IRepository<AUDITOR_TERMINALS, Tuple<int, string>> IPrimeroEntitiesUnitOfWork.AUDITOR_TERMINALS
@@ -211,7 +220,13 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
 
         IRepository<CAMPAIGN_WAVE_AUDIT, Tuple<int, int, int, DateTime>> IPrimeroEntitiesUnitOfWork.CAMPAIGN_WAVE_AUDIT
         {
-            get { return GetRepository((CAMPAIGN_WAVE_AUDIT x) => Tuple.Create(x.SEQNO, x.CAMPAIGN_WAVE_SEQNO, x.CONTACT_SEQNO, x.LOGDATETIME)); }
+            get
+            {
+                return
+                    GetRepository(
+                        (CAMPAIGN_WAVE_AUDIT x) =>
+                            Tuple.Create(x.SEQNO, x.CAMPAIGN_WAVE_SEQNO, x.CONTACT_SEQNO, x.LOGDATETIME));
+            }
         }
 
         IReadOnlyRepository<CAMPAIGN_WAVE_CONTACT_LISTS> IPrimeroEntitiesUnitOfWork.CAMPAIGN_WAVE_CONTACT_LISTS
@@ -246,12 +261,18 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
 
         IRepository<CHEQUE_GEN_INFO, Tuple<int, int, int, string>> IPrimeroEntitiesUnitOfWork.CHEQUE_GEN_INFO
         {
-            get { return GetRepository((CHEQUE_GEN_INFO x) => Tuple.Create(x.PPVERSION, x.CHQMIN, x.CHQMAX, x.USEMAILSHOT)); }
+            get
+            {
+                return GetRepository((CHEQUE_GEN_INFO x) => Tuple.Create(x.PPVERSION, x.CHQMIN, x.CHQMAX, x.USEMAILSHOT));
+            }
         }
 
         IRepository<CHEQUE_PRINT, Tuple<int, string, double, double>> IPrimeroEntitiesUnitOfWork.CHEQUE_PRINT
         {
-            get { return GetRepository((CHEQUE_PRINT x) => Tuple.Create(x.ChequeNo, x.InvNo, x.WHTAXRATE, x.WHTAXAMOUNT)); }
+            get
+            {
+                return GetRepository((CHEQUE_PRINT x) => Tuple.Create(x.ChequeNo, x.InvNo, x.WHTAXRATE, x.WHTAXAMOUNT));
+            }
         }
 
         IRepository<CHEQUE_PRINT_HDR, int> IPrimeroEntitiesUnitOfWork.CHEQUE_PRINT_HDR
@@ -666,7 +687,12 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
 
         IRepository<GL_CLOSING_STOCK, Tuple<int, int, int, int>> IPrimeroEntitiesUnitOfWork.GL_CLOSING_STOCK
         {
-            get { return GetRepository((GL_CLOSING_STOCK x) => Tuple.Create(x.BS_ACCNO, x.BS_SUBACCNO, x.BRANCHNO, x.PERIOD_SEQNO)); }
+            get
+            {
+                return
+                    GetRepository(
+                        (GL_CLOSING_STOCK x) => Tuple.Create(x.BS_ACCNO, x.BS_SUBACCNO, x.BRANCHNO, x.PERIOD_SEQNO));
+            }
         }
 
         IRepository<GL_CONT_HIST, int> IPrimeroEntitiesUnitOfWork.GL_CONT_HIST
@@ -1239,14 +1265,24 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
             get { return GetRepository((PROFILE_CONFLICT_SET x) => x.ID); }
         }
 
-        IRepository<PROFILE_CONFLICT_SET_MEMBERS, Tuple<int, string>> IPrimeroEntitiesUnitOfWork.PROFILE_CONFLICT_SET_MEMBERS
+        IRepository<PROFILE_CONFLICT_SET_MEMBERS, Tuple<int, string>> IPrimeroEntitiesUnitOfWork.
+            PROFILE_CONFLICT_SET_MEMBERS
         {
-            get { return GetRepository((PROFILE_CONFLICT_SET_MEMBERS x) => Tuple.Create(x.CONFLICTSETID, x.FIELDNAME)); }
+            get
+            {
+                return GetRepository((PROFILE_CONFLICT_SET_MEMBERS x) => Tuple.Create(x.CONFLICTSETID, x.FIELDNAME));
+            }
         }
 
-        IRepository<PROFILE_CONSTRAINT_VALUES, Tuple<int, string, string>> IPrimeroEntitiesUnitOfWork.PROFILE_CONSTRAINT_VALUES
+        IRepository<PROFILE_CONSTRAINT_VALUES, Tuple<int, string, string>> IPrimeroEntitiesUnitOfWork.
+            PROFILE_CONSTRAINT_VALUES
         {
-            get { return GetRepository((PROFILE_CONSTRAINT_VALUES x) => Tuple.Create(x.CONSTRAINTID, x.VALUETYPE, x.CONSTRAINTVALUE)); }
+            get
+            {
+                return
+                    GetRepository(
+                        (PROFILE_CONSTRAINT_VALUES x) => Tuple.Create(x.CONSTRAINTID, x.VALUETYPE, x.CONSTRAINTVALUE));
+            }
         }
 
         IRepository<PROFILE_CONSTRAINTS, int> IPrimeroEntitiesUnitOfWork.PROFILE_CONSTRAINTS
@@ -1561,7 +1597,10 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
 
         IRepository<SUPPLIER_STOCK_ITEMS, Tuple<string, string, int>> IPrimeroEntitiesUnitOfWork.SUPPLIER_STOCK_ITEMS
         {
-            get { return GetRepository((SUPPLIER_STOCK_ITEMS x) => Tuple.Create(x.STOCKCODE, x.SUPPLIERCODE, x.ACCNO)); }
+            get
+            {
+                return GetRepository((SUPPLIER_STOCK_ITEMS x) => Tuple.Create(x.STOCKCODE, x.SUPPLIERCODE, x.ACCNO));
+            }
         }
 
         IRepository<TASK_STATUSES, int> IPrimeroEntitiesUnitOfWork.TASK_STATUSES
@@ -1611,7 +1650,12 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
 
         IRepository<TAX_RETURN_TRANS, Tuple<string, string, int, string>> IPrimeroEntitiesUnitOfWork.TAX_RETURN_TRANS
         {
-            get { return GetRepository((TAX_RETURN_TRANS x) => Tuple.Create(x.TAXRETURNCODE, x.DRCR, x.TRANSTYPE, x.ALLOCATED)); }
+            get
+            {
+                return
+                    GetRepository(
+                        (TAX_RETURN_TRANS x) => Tuple.Create(x.TAXRETURNCODE, x.DRCR, x.TRANSTYPE, x.ALLOCATED));
+            }
         }
 
         IRepository<TERRITORYBUDGET, int> IPrimeroEntitiesUnitOfWork.TERRITORYBUDGET

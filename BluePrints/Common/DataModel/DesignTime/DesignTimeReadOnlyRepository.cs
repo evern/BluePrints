@@ -13,16 +13,16 @@ namespace BluePrints.Common.DataModel.DesignTime
     /// DesignTimeReadOnlyRepository provides only read-only operations against entities of a given type.
     /// </summary>
     /// <typeparam name="TEntity">A repository entity type.</typeparam>
-    public class DesignTimeReadOnlyRepository<TEntity> : DesignTimeRepositoryQuery<TEntity>, IReadOnlyRepository<TEntity>
+    public class DesignTimeReadOnlyRepository<TEntity> : DesignTimeRepositoryQuery<TEntity>,
+        IReadOnlyRepository<TEntity>
         where TEntity : class
     {
-
-        static IQueryable<TEntity> CreateSampleQueryable()
+        private static IQueryable<TEntity> CreateSampleQueryable()
         {
             return DesignTimeHelper.CreateDesignTimeObjects<TEntity>(2).AsQueryable();
         }
 
-        readonly DesignTimeUnitOfWork unitOfWork;
+        private readonly DesignTimeUnitOfWork unitOfWork;
 
         /// <summary>
         /// Initializes a new instance of DesignTimeReadOnlyRepository class.
@@ -35,10 +35,12 @@ namespace BluePrints.Common.DataModel.DesignTime
         }
 
         #region IReadOnlyRepository
+
         IUnitOfWork IReadOnlyRepository<TEntity>.UnitOfWork
         {
             get { return unitOfWork; }
         }
+
         #endregion
     }
 
@@ -48,13 +50,14 @@ namespace BluePrints.Common.DataModel.DesignTime
     /// <typeparam name="TEntity">An entity type.</typeparam>
     public class DesignTimeRepositoryQuery<TEntity> : RepositoryQueryBase<TEntity>, IRepositoryQuery<TEntity>
     {
-
         /// <summary>
         /// Initializes a new instance of the DesignTimeRepositoryQuery class.
         /// </summary>
         /// <param name="queryable">The IQueryable instance which will be used by DesignTimeRepositoryQuery to perform queries.</param>
         public DesignTimeRepositoryQuery(IQueryable<TEntity> queryable)
-            : base(() => queryable) { }
+            : base(() => queryable)
+        {
+        }
 
         IRepositoryQuery<TEntity> IRepositoryQuery<TEntity>.Include<TProperty>(Expression<Func<TEntity, TProperty>> path)
         {

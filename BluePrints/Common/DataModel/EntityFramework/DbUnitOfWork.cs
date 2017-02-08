@@ -15,8 +15,7 @@ namespace BluePrints.Common.DataModel.EntityFramework
     /// <typeparam name="TContext">DbContext type.</typeparam>
     public abstract class DbUnitOfWork<TContext> : UnitOfWorkBase, IUnitOfWork where TContext : DbContext
     {
-
-        readonly Lazy<TContext> context;
+        private readonly Lazy<TContext> context;
 
         public DbUnitOfWork(Func<TContext> contextFactory)
         {
@@ -26,7 +25,10 @@ namespace BluePrints.Common.DataModel.EntityFramework
         /// <summary>
         /// Instance of underlying DbContext.
         /// </summary>
-        public TContext Context { get { return context.Value; } }
+        public TContext Context
+        {
+            get { return context.Value; }
+        }
 
         void IUnitOfWork.SaveChanges()
         {
@@ -50,17 +52,22 @@ namespace BluePrints.Common.DataModel.EntityFramework
         }
 
         protected IRepository<TEntity, TPrimaryKey>
-            GetRepository<TEntity, TPrimaryKey>(Func<TContext, DbSet<TEntity>> dbSetAccessor, Expression<Func<TEntity, TPrimaryKey>> getPrimaryKeyExpression)
+            GetRepository<TEntity, TPrimaryKey>(Func<TContext, DbSet<TEntity>> dbSetAccessor,
+                Expression<Func<TEntity, TPrimaryKey>> getPrimaryKeyExpression)
             where TEntity : class
         {
-            return GetRepositoryCore<IRepository<TEntity, TPrimaryKey>, TEntity>(() => new DbRepository<TEntity, TPrimaryKey, TContext>(this, dbSetAccessor, getPrimaryKeyExpression));
+            return
+                GetRepositoryCore<IRepository<TEntity, TPrimaryKey>, TEntity>(
+                    () => new DbRepository<TEntity, TPrimaryKey, TContext>(this, dbSetAccessor, getPrimaryKeyExpression));
         }
 
         protected IReadOnlyRepository<TEntity>
             GetReadOnlyRepository<TEntity>(Func<TContext, DbSet<TEntity>> dbSetAccessor)
             where TEntity : class
         {
-            return GetRepositoryCore<IReadOnlyRepository<TEntity>, TEntity>(() => new DbReadOnlyRepository<TEntity, TContext>(this, dbSetAccessor));
+            return
+                GetRepositoryCore<IReadOnlyRepository<TEntity>, TEntity>(
+                    () => new DbReadOnlyRepository<TEntity, TContext>(this, dbSetAccessor));
         }
     }
 }

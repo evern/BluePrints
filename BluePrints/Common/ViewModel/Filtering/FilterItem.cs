@@ -10,21 +10,25 @@ namespace BluePrints.Common.ViewModel.Filtering
 {
     public class FilterItem
     {
-        public static FilterItem Create(int entitiesCount, string name, CriteriaOperator filterCriteria, string imageUri, bool showEntityCount)
+        public static FilterItem Create(int entitiesCount, string name, CriteriaOperator filterCriteria, string imageUri,
+            bool showEntityCount)
         {
-            return ViewModelSource.Create(() => new FilterItem(entitiesCount, name, filterCriteria, imageUri, showEntityCount));
+            return
+                ViewModelSource.Create(
+                    () => new FilterItem(entitiesCount, name, filterCriteria, imageUri, showEntityCount));
         }
 
-        protected FilterItem(int entitiesCount, string name, CriteriaOperator filterCriteria, string imageUri, bool showEntityCount)
+        protected FilterItem(int entitiesCount, string name, CriteriaOperator filterCriteria, string imageUri,
+            bool showEntityCount)
         {
-            this.Name = name;
-            this.FilterCriteria = filterCriteria;
-            this.ImageUri = imageUri;
-            this.ShowEntityCount = showEntityCount;
+            Name = name;
+            FilterCriteria = filterCriteria;
+            ImageUri = imageUri;
+            ShowEntityCount = showEntityCount;
             Update(entitiesCount);
         }
 
-        bool ShowEntityCount { get; set; }
+        private bool ShowEntityCount { get; set; }
 
         public virtual string Name { get; set; }
 
@@ -40,7 +44,7 @@ namespace BluePrints.Common.ViewModel.Filtering
 
         public void Update(int entitiesCount)
         {
-            this.EntitiesCount = entitiesCount;
+            EntitiesCount = entitiesCount;
             if (ShowEntityCount)
                 DisplayText = string.Format("{0} ({1})", Name, entitiesCount);
             else
@@ -49,11 +53,12 @@ namespace BluePrints.Common.ViewModel.Filtering
 
         public FilterItem Clone()
         {
-            return FilterItem.Create(EntitiesCount, Name, FilterCriteria, ImageUri, ShowEntityCount);
+            return Create(EntitiesCount, Name, FilterCriteria, ImageUri, ShowEntityCount);
         }
+
         public FilterItem Clone(string name, string imageUri)
         {
-            return FilterItem.Create(EntitiesCount, name, FilterCriteria, imageUri, ShowEntityCount);
+            return Create(EntitiesCount, name, FilterCriteria, imageUri, ShowEntityCount);
         }
 
         protected virtual void OnNameChanged()

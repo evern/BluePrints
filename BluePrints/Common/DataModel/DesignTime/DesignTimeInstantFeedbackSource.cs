@@ -14,10 +14,12 @@ using DevExpress.Data.Async.Helpers;
 
 namespace BluePrints.Common.DataModel.DesignTime
 {
-    class DesignTimeInstantFeedbackSource<TProjection, TPrimaryKey> : IInstantFeedbackSource<TProjection>
+    internal class DesignTimeInstantFeedbackSource<TProjection, TPrimaryKey> : IInstantFeedbackSource<TProjection>
         where TProjection : class
     {
-        void IInstantFeedbackSource<TProjection>.Refresh() { }
+        void IInstantFeedbackSource<TProjection>.Refresh()
+        {
+        }
 
         bool IInstantFeedbackSource<TProjection>.IsLoadedProxy(object threadSafeProxy)
         {
@@ -34,7 +36,8 @@ namespace BluePrints.Common.DataModel.DesignTime
             return DesignTimeHelper.CreateDesignTimeObjects<TProjection>(2).ToList();
         }
 
-        TProperty IInstantFeedbackSource<TProjection>.GetPropertyValue<TProperty>(object threadSafeProxy, Expression<Func<TProjection, TProperty>> propertyExpression)
+        TProperty IInstantFeedbackSource<TProjection>.GetPropertyValue<TProperty>(object threadSafeProxy,
+            Expression<Func<TProjection, TProperty>> propertyExpression)
         {
             return default(TProperty);
         }

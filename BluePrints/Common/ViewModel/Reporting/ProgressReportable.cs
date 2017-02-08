@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using DevExpress.Mvvm.POCO;
 using BluePrints.Common.Projections;
 using BluePrints.Data.Attributes;
+
 namespace BluePrints.Common.ViewModel.Reporting
 {
     public class PROJECTSummary : SummarizableObject
@@ -30,10 +31,12 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             if (Summary_CumulativeEarned != null && Summary_CumulativeActual != null)
             {
-                decimal totalEarnedCost = Summary_CumulativeEarned.Costs;
-                decimal totalActualCost = Summary_CumulativeActual.Costs;
+                var totalEarnedCost = Summary_CumulativeEarned.Costs;
+                var totalActualCost = Summary_CumulativeActual.Costs;
 
-                GrossProfit = (totalEarnedCost == 0 || totalActualCost == 0) ? 0 : (totalEarnedCost - totalActualCost) / totalEarnedCost;
+                GrossProfit = totalEarnedCost == 0 || totalActualCost == 0
+                    ? 0
+                    : (totalEarnedCost - totalActualCost) / totalEarnedCost;
             }
 
             decimal totalEarnedUOM = 0;
@@ -59,16 +62,22 @@ namespace BluePrints.Common.ViewModel.Reporting
                     totalPlannedUOM = Summary_CumulativePlanned.Units;
             }
 
-            EfficiencyRatio = (totalEarnedUOM == 0 || totalBurnedUOM == 0) ? 0 : ((totalEarnedUOM - totalBurnedUOM) / totalBurnedUOM);
-            ProgressRatio = (totalEarnedUOM == 0 || totalPlannedUOM == 0) ? 0 : ((totalEarnedUOM - totalPlannedUOM) / totalPlannedUOM);
+            EfficiencyRatio = totalEarnedUOM == 0 || totalBurnedUOM == 0
+                ? 0
+                : (totalEarnedUOM - totalBurnedUOM) / totalBurnedUOM;
+            ProgressRatio = totalEarnedUOM == 0 || totalPlannedUOM == 0
+                ? 0
+                : (totalEarnedUOM - totalPlannedUOM) / totalPlannedUOM;
         }
     }
 
     public abstract class SummarizableObject : ProgressReportable
     {
         #region Calculation Parameters
+
         public DateTime FirstAlignedDataDate { get; set; }
         public TimeSpan IntervalPeriod { get; set; }
+
         #endregion
 
         public IEnumerable<ReportableObject> ReportableObjects { get; set; }
@@ -79,27 +88,32 @@ namespace BluePrints.Common.ViewModel.Reporting
         public IBluePrintsEntitiesUnitOfWork BluePrintsUnitOfWork { get; set; }
         public IP6EntitiesUnitOfWork P6UnitOfWork { get; set; }
 
-        public virtual void RecalculateStats(bool isCosts) { }
+        public virtual void RecalculateStats(bool isCosts)
+        {
+        }
 
-        decimal? final_budgetedunits { get; set; }
+        private decimal? final_budgetedunits { get; set; }
+
         public decimal Final_BudgetedUnits
         {
-            get 
+            get
             {
                 if (final_budgetedunits == null)
                     if (ReportableObjects == null)
                         final_budgetedunits = 0;
                     else
-                        final_budgetedunits = ReportableObjects.Sum(x => x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS);
+                        final_budgetedunits =
+                            ReportableObjects.Sum(x => x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS);
 
-                return (decimal)final_budgetedunits;
+                return (decimal) final_budgetedunits;
             }
         }
 
-        decimal? final_budgetedcosts { get; set; }
+        private decimal? final_budgetedcosts { get; set; }
+
         public decimal Final_BudgetedCosts
         {
-            get 
+            get
             {
                 if (final_budgetedcosts == null)
                     if (ReportableObjects == null)
@@ -107,37 +121,40 @@ namespace BluePrints.Common.ViewModel.Reporting
                     else
                         final_budgetedcosts = ReportableObjects.Sum(x => x.BASELINE_ITEMJoinRATE.TOTAL_COSTS);
 
-                return (decimal)final_budgetedcosts;
+                return (decimal) final_budgetedcosts;
             }
         }
 
-        decimal? total_budgetedunits { get; set; }
+        private decimal? total_budgetedunits { get; set; }
+
         public decimal Total_BudgetedUnits
         {
-            get 
+            get
             {
                 if (total_budgetedunits == null)
                     if (ReportableObjects == null)
                         total_budgetedunits = 0;
                     else
-                        total_budgetedunits = ReportableObjects.Sum(x => x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS);
+                        total_budgetedunits =
+                            ReportableObjects.Sum(x => x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS);
 
-                return (decimal)total_budgetedunits;
+                return (decimal) total_budgetedunits;
             }
         }
 
-        decimal? total_budgetedcosts { get; set; }
+        private decimal? total_budgetedcosts { get; set; }
+
         public decimal Total_BudgetedCosts
         {
-            get 
+            get
             {
-                if(total_budgetedcosts == null)
+                if (total_budgetedcosts == null)
                     if (ReportableObjects == null)
                         total_budgetedcosts = 0;
                     else
                         total_budgetedcosts = ReportableObjects.Sum(x => x.BASELINE_ITEMJoinRATE.ESTIMATED_COSTS);
 
-                return (decimal)total_budgetedcosts;
+                return (decimal) total_budgetedcosts;
             }
         }
     }
@@ -146,18 +163,16 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         public BASELINE_ITEMProjection BASELINE_ITEMJoinRATE { get; set; }
 
-        IEnumerable<VARIATION_ITEM> VARIATION_ITEMS { get; set; }
+        private IEnumerable<VARIATION_ITEM> VARIATION_ITEMS { get; set; }
 
-        IEnumerable<PROGRESS_ITEM> progress_items;
+        private IEnumerable<PROGRESS_ITEM> progress_items;
+
         public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS
         {
-            get 
+            get { return progress_items; }
+            set
             {
-                return progress_items; 
-            }
-            set 
-            {
-                if(value == null)
+                if (value == null)
                 {
                     PROGRESS_ITEMcurrent = new PROGRESS_ITEM();
                     PROGRESS_ITEMSafterreportingdate = new List<PROGRESS_ITEM>();
@@ -167,57 +182,62 @@ namespace BluePrints.Common.ViewModel.Reporting
                 else
                 {
                     if (PROGRESS_ITEMcurrent == null)
-                        PROGRESS_ITEMcurrent = value.Where(y => y.GUID_ORIBASEITEM == BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL && y.EARNED_DATE == ReportingDataDate).OrderBy(x => x.EARNED_UNITS).FirstOrDefault();
+                        PROGRESS_ITEMcurrent =
+                            value.Where(
+                                y =>
+                                    y.GUID_ORIBASEITEM == BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL &&
+                                    y.EARNED_DATE == ReportingDataDate).OrderBy(x => x.EARNED_UNITS).FirstOrDefault();
                     if (PROGRESS_ITEMSafterreportingdate == null)
-                        PROGRESS_ITEMSafterreportingdate = value.Where(y => y.GUID_ORIBASEITEM == BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL && y.EARNED_DATE > ReportingDataDate).ToList();
+                        PROGRESS_ITEMSafterreportingdate =
+                            value.Where(
+                                y =>
+                                    y.GUID_ORIBASEITEM == BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL &&
+                                    y.EARNED_DATE > ReportingDataDate).ToList();
                     if (PROGRESS_ITEMSbeforereportingdate == null)
-                        PROGRESS_ITEMSbeforereportingdate = value.Where(y => y.GUID_ORIBASEITEM == BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL && y.EARNED_DATE < ReportingDataDate).ToList();
+                        PROGRESS_ITEMSbeforereportingdate =
+                            value.Where(
+                                y =>
+                                    y.GUID_ORIBASEITEM == BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL &&
+                                    y.EARNED_DATE < ReportingDataDate).ToList();
                     if (PROGRESS_ITEMSuptocurrentdate == null)
-                        PROGRESS_ITEMSuptocurrentdate = value.Where(y => y.GUID_ORIBASEITEM == BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL && y.EARNED_DATE <= ReportingDataDate).ToList();
+                        PROGRESS_ITEMSuptocurrentdate =
+                            value.Where(
+                                y =>
+                                    y.GUID_ORIBASEITEM == BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL &&
+                                    y.EARNED_DATE <= ReportingDataDate).ToList();
 
-                    progress_items = value; 
+                    progress_items = value;
                 }
             }
         }
 
-        PROGRESS_ITEM PROGRESS_ITEMcurrent;
+        private PROGRESS_ITEM PROGRESS_ITEMcurrent;
+
         public PROGRESS_ITEM PROGRESS_ITEMCurrent
         {
-            get
-            {
-                return PROGRESS_ITEMcurrent;
-            }
-            set
-            {
-                PROGRESS_ITEMcurrent = value;
-            }
+            get { return PROGRESS_ITEMcurrent; }
+            set { PROGRESS_ITEMcurrent = value; }
         }
 
-        List<PROGRESS_ITEM> PROGRESS_ITEMSafterreportingdate;
+        private List<PROGRESS_ITEM> PROGRESS_ITEMSafterreportingdate;
+
         public List<PROGRESS_ITEM> PROGRESS_ITEMSAfterReportingDate
         {
-            get
-            {
-                return PROGRESS_ITEMSafterreportingdate;
-            }
+            get { return PROGRESS_ITEMSafterreportingdate; }
         }
 
-        List<PROGRESS_ITEM> PROGRESS_ITEMSbeforereportingdate;
+        private List<PROGRESS_ITEM> PROGRESS_ITEMSbeforereportingdate;
+
         public List<PROGRESS_ITEM> PROGRESS_ITEMSBeforeReportingDate
         {
-            get
-            {
-                return PROGRESS_ITEMSbeforereportingdate;
-            }
+            get { return PROGRESS_ITEMSbeforereportingdate; }
         }
 
-        List<PROGRESS_ITEM> PROGRESS_ITEMSuptocurrentdate;
+        private List<PROGRESS_ITEM> PROGRESS_ITEMSuptocurrentdate;
+
         public List<PROGRESS_ITEM> PROGRESS_ITEMSUpToCurrentDate
         {
-            get
-            {
-                return PROGRESS_ITEMSuptocurrentdate;
-            }
+            get { return PROGRESS_ITEMSuptocurrentdate; }
         }
 
         public decimal VariationProductivity { get; set; }
@@ -225,53 +245,50 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal ActualProductivity { get; set; }
         public bool isDataPointsGeneratedFromP6 { get; set; }
 
-        decimal? pastPROGRESS_ITEMS_UNITS;
+        private decimal? pastPROGRESS_ITEMS_UNITS;
+
         public decimal PastPROGRESS_ITEMS_UNITS
         {
             get
             {
                 if (pastPROGRESS_ITEMS_UNITS == null)
-                {
-                    if (this.PROGRESS_ITEMSBeforeReportingDate == null)
+                    if (PROGRESS_ITEMSBeforeReportingDate == null)
                         pastPROGRESS_ITEMS_UNITS = 0;
                     else
-                        pastPROGRESS_ITEMS_UNITS = this.PROGRESS_ITEMSBeforeReportingDate.Sum(progress => progress.EARNED_UNITS);
-                }
+                        pastPROGRESS_ITEMS_UNITS =
+                            PROGRESS_ITEMSBeforeReportingDate.Sum(progress => progress.EARNED_UNITS);
 
-                return (decimal)pastPROGRESS_ITEMS_UNITS;
+                return (decimal) pastPROGRESS_ITEMS_UNITS;
             }
         }
 
-        decimal? futurePROGRESS_ITEMS_UNITS;
+        private decimal? futurePROGRESS_ITEMS_UNITS;
+
         public decimal FuturePROGRESS_ITEMS_UNITS
         {
             get
             {
                 if (futurePROGRESS_ITEMS_UNITS == null)
-                {
-                    if (this.PROGRESS_ITEMSAfterReportingDate == null)
+                    if (PROGRESS_ITEMSAfterReportingDate == null)
                         futurePROGRESS_ITEMS_UNITS = 0;
                     else
                         futurePROGRESS_ITEMS_UNITS = PROGRESS_ITEMSAfterReportingDate.Sum(x => x.EARNED_UNITS);
-                }
 
-                return (decimal)futurePROGRESS_ITEMS_UNITS;
+                return (decimal) futurePROGRESS_ITEMS_UNITS;
             }
         }
 
         public decimal RemainingUnitsAfterDataDate
         {
-            get
-            {
-                return this.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS - this.TOTAL_EARNED_UNITS;
-            }
+            get { return BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS - TOTAL_EARNED_UNITS; }
         }
 
         public decimal MinPercentage
         {
             get
             {
-                if (PROGRESS_ITEMSBeforeReportingDate == null || BASELINE_ITEMJoinRATE == null || BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS == 0)
+                if (PROGRESS_ITEMSBeforeReportingDate == null || BASELINE_ITEMJoinRATE == null ||
+                    BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS == 0)
                     return 0;
                 else
                     return PastPROGRESS_ITEMS_UNITS / BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
@@ -287,8 +304,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                 else if (PROGRESS_ITEMSBeforeReportingDate == null || BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS == 0)
                     return 1;
                 else
-                    return (BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS - FuturePROGRESS_ITEMS_UNITS) / BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
-
+                    return (BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS - FuturePROGRESS_ITEMS_UNITS) /
+                           BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
             }
         }
 
@@ -296,10 +313,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (this.BASELINE_ITEMJoinRATE == null || this.BASELINE_ITEMJoinRATE.BASELINE_ITEM == null || this.BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS == 0)
+                if (BASELINE_ITEMJoinRATE == null || BASELINE_ITEMJoinRATE.BASELINE_ITEM == null ||
+                    BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS == 0)
                     return 0;
 
-                return TOTAL_EARNED_UNITS / this.BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS;
+                return TOTAL_EARNED_UNITS / BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS;
             }
         }
 
@@ -307,10 +325,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (this.BASELINE_ITEMJoinRATE == null || this.BASELINE_ITEMJoinRATE.BASELINE_ITEM == null || this.BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS == 0)
+                if (BASELINE_ITEMJoinRATE == null || BASELINE_ITEMJoinRATE.BASELINE_ITEM == null ||
+                    BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS == 0)
                     return 0;
 
-                return TOTAL_EARNED_UNITS / this.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
+                return TOTAL_EARNED_UNITS / BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
             }
         }
 
@@ -318,10 +337,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (this.BASELINE_ITEMJoinRATE == null || this.PROGRESS_ITEMCurrent == null || this.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS == 0)
+                if (BASELINE_ITEMJoinRATE == null || PROGRESS_ITEMCurrent == null ||
+                    BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS == 0)
                     return 0;
 
-                return this.PROGRESS_ITEMCurrent.EARNED_UNITS / this.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
+                return PROGRESS_ITEMCurrent.EARNED_UNITS / BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
             }
         }
 
@@ -329,10 +349,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (this.PROGRESS_ITEMCurrent == null)
+                if (PROGRESS_ITEMCurrent == null)
                     return 0;
 
-                return this.PROGRESS_ITEMCurrent.EARNED_UNITS;
+                return PROGRESS_ITEMCurrent.EARNED_UNITS;
             }
         }
 
@@ -340,45 +360,49 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (this.PROGRESS_ITEMCurrent == null || this.BASELINE_ITEMJoinRATE == null || this.BASELINE_ITEMJoinRATE.RATE == null || this.BASELINE_ITEMJoinRATE.RATE.RATE1 == null)
+                if (PROGRESS_ITEMCurrent == null || BASELINE_ITEMJoinRATE == null ||
+                    BASELINE_ITEMJoinRATE.RATE == null || BASELINE_ITEMJoinRATE.RATE.RATE1 == null)
                     return 0;
 
-                return this.PROGRESS_ITEMCurrent.EARNED_UNITS * (decimal)this.BASELINE_ITEMJoinRATE.RATE.RATE1;
+                return PROGRESS_ITEMCurrent.EARNED_UNITS * (decimal) BASELINE_ITEMJoinRATE.RATE.RATE1;
             }
         }
 
 
-        decimal? total_earned_percentage;
+        private decimal? total_earned_percentage;
+
         public decimal TOTAL_EARNED_PERCENTAGE
         {
             get
             {
                 if (total_earned_percentage == null)
                 {
-                    decimal totalUnits = this.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
+                    var totalUnits = BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
                     if (totalUnits > 0)
                     {
-                        decimal earnedUnits = TOTAL_EARNED_UNITS;
+                        var earnedUnits = TOTAL_EARNED_UNITS;
                         total_earned_percentage = totalUnits == 0 ? 0 : earnedUnits / totalUnits;
                     }
                     else
+                    {
                         total_earned_percentage = 1;
+                    }
                 }
 
-                return (decimal)total_earned_percentage;
+                return (decimal) total_earned_percentage;
             }
             set
             {
-                decimal totalUnits = this.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
+                var totalUnits = BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
                 if (totalUnits > 0)
                 {
-                    decimal earnedUnits = value * this.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
+                    var earnedUnits = value * BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
                     earnedUnits -= PastPROGRESS_ITEMS_UNITS;
 
-                    if (this.PROGRESS_ITEMcurrent == null)
-                        this.PROGRESS_ITEMcurrent = new PROGRESS_ITEM();
+                    if (PROGRESS_ITEMcurrent == null)
+                        PROGRESS_ITEMcurrent = new PROGRESS_ITEM();
 
-                    this.PROGRESS_ITEMcurrent.EARNED_UNITS = earnedUnits;
+                    PROGRESS_ITEMcurrent.EARNED_UNITS = earnedUnits;
                 }
 
                 total_earned_percentage = value;
@@ -389,7 +413,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (this.PROGRESS_ITEMcurrent == null)
+                if (PROGRESS_ITEMcurrent == null)
                     return PastPROGRESS_ITEMS_UNITS;
 
                 return PROGRESS_ITEMcurrent.EARNED_UNITS + PastPROGRESS_ITEMS_UNITS;
@@ -400,10 +424,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (this.BASELINE_ITEMJoinRATE == null || this.BASELINE_ITEMJoinRATE.RATE == null)
+                if (BASELINE_ITEMJoinRATE == null || BASELINE_ITEMJoinRATE.RATE == null)
                     return 0;
 
-                return TOTAL_EARNED_UNITS * (decimal)this.BASELINE_ITEMJoinRATE.RATE.RATE1;
+                return TOTAL_EARNED_UNITS * (decimal) BASELINE_ITEMJoinRATE.RATE.RATE1;
             }
         }
     }
@@ -413,111 +437,141 @@ namespace BluePrints.Common.ViewModel.Reporting
         public DateTime ReportingDataDate { get; set; }
 
         private ProgressInfo summary_cumulativeoriginal;
+
         public ProgressInfo Summary_CumulativeOriginal
         {
             get
             {
-                if (summary_cumulativeoriginal == null && (Summary_CumulativeOriginalDataPoints != null && Summary_CumulativeOriginalDataPoints.Count > 0) && ReportingDataDate != null)
-                    summary_cumulativeoriginal = ISupportProgressReportingExtensions.FindDataPointByDate(Summary_CumulativeOriginalDataPoints, ReportingDataDate.Date);
+                if (summary_cumulativeoriginal == null && Summary_CumulativeOriginalDataPoints != null && Summary_CumulativeOriginalDataPoints.Count > 0 && ReportingDataDate != null)
+                    summary_cumulativeoriginal =
+                        ISupportProgressReportingExtensions.FindDataPointByDate(Summary_CumulativeOriginalDataPoints,
+                            ReportingDataDate.Date);
                 return summary_cumulativeoriginal;
             }
         }
 
         private ProgressInfo summary_cumulativeplanned;
+
         public ProgressInfo Summary_CumulativePlanned
         {
             get
             {
-                if (summary_cumulativeplanned == null && (Summary_CumulativePlannedDataPoints != null && Summary_CumulativePlannedDataPoints.Count > 0) && ReportingDataDate != null)
-                    summary_cumulativeplanned = ISupportProgressReportingExtensions.FindDataPointByDate(Summary_CumulativePlannedDataPoints, ReportingDataDate.Date);
+                if (summary_cumulativeplanned == null && Summary_CumulativePlannedDataPoints != null && Summary_CumulativePlannedDataPoints.Count > 0 && ReportingDataDate != null)
+                    summary_cumulativeplanned =
+                        ISupportProgressReportingExtensions.FindDataPointByDate(Summary_CumulativePlannedDataPoints,
+                            ReportingDataDate.Date);
                 return summary_cumulativeplanned;
             }
         }
 
         private ProgressInfo summary_cumulativeearned;
+
         public ProgressInfo Summary_CumulativeEarned
         {
             get
             {
-                if (summary_cumulativeearned == null && (Summary_CumulativeEarnedDataPoints != null && Summary_CumulativeEarnedDataPoints.Count > 0) && ReportingDataDate != null)
-                    summary_cumulativeearned = ISupportProgressReportingExtensions.FindDataPointByDate(Summary_CumulativeEarnedDataPoints, ReportingDataDate.Date);
+                if (summary_cumulativeearned == null && Summary_CumulativeEarnedDataPoints != null && Summary_CumulativeEarnedDataPoints.Count > 0 && ReportingDataDate != null)
+                    summary_cumulativeearned =
+                        ISupportProgressReportingExtensions.FindDataPointByDate(Summary_CumulativeEarnedDataPoints,
+                            ReportingDataDate.Date);
                 return summary_cumulativeearned;
             }
         }
 
         private ProgressInfo summary_cumulativeburned;
+
         public ProgressInfo Summary_CumulativeBurned
         {
             get
             {
-                if (summary_cumulativeburned == null && (Summary_CumulativeBurnedDataPoints != null && Summary_CumulativeBurnedDataPoints.Count > 0) && ReportingDataDate != null)
-                    summary_cumulativeburned = ISupportProgressReportingExtensions.FindDataPointByDate(Summary_CumulativeBurnedDataPoints, ReportingDataDate.Date);
+                if (summary_cumulativeburned == null && Summary_CumulativeBurnedDataPoints != null && Summary_CumulativeBurnedDataPoints.Count > 0 && ReportingDataDate != null)
+                    summary_cumulativeburned =
+                        ISupportProgressReportingExtensions.FindDataPointByDate(Summary_CumulativeBurnedDataPoints,
+                            ReportingDataDate.Date);
                 return summary_cumulativeburned;
             }
         }
 
         private ProgressInfo summary_cumulativeactual;
+
         public ProgressInfo Summary_CumulativeActual
         {
             get
             {
-                if (summary_cumulativeactual == null && (Summary_CumulativeActualDataPoints != null && Summary_CumulativeActualDataPoints.Count > 0) && ReportingDataDate != null)
-                    summary_cumulativeactual = ISupportProgressReportingExtensions.FindDataPointByDate(Summary_CumulativeActualDataPoints, ReportingDataDate.Date);
+                if (summary_cumulativeactual == null && Summary_CumulativeActualDataPoints != null && Summary_CumulativeActualDataPoints.Count > 0 && ReportingDataDate != null)
+                    summary_cumulativeactual =
+                        ISupportProgressReportingExtensions.FindDataPointByDate(Summary_CumulativeActualDataPoints,
+                            ReportingDataDate.Date);
                 return summary_cumulativeactual;
             }
         }
 
         private ProgressInfo summary_periodoriginal;
+
         public ProgressInfo Summary_PeriodOriginal
         {
             get
             {
                 if (summary_periodoriginal == null && ReportingDataDate != null)
-                    summary_periodoriginal = ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(Summary_CumulativeOriginalDataPoints, ReportingDataDate.Date);
+                    summary_periodoriginal =
+                        ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(
+                            Summary_CumulativeOriginalDataPoints, ReportingDataDate.Date);
                 return summary_periodoriginal;
             }
         }
 
         private ProgressInfo summary_periodplanned;
+
         public ProgressInfo Summary_PeriodPlanned
         {
             get
             {
-                if (summary_periodplanned == null && (Summary_CumulativePlannedDataPoints != null && Summary_CumulativePlannedDataPoints.Count > 0) && ReportingDataDate != null)
-                    summary_periodplanned = ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(Summary_CumulativePlannedDataPoints, ReportingDataDate.Date);
+                if (summary_periodplanned == null && Summary_CumulativePlannedDataPoints != null && Summary_CumulativePlannedDataPoints.Count > 0 && ReportingDataDate != null)
+                    summary_periodplanned =
+                        ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(
+                            Summary_CumulativePlannedDataPoints, ReportingDataDate.Date);
                 return summary_periodplanned;
             }
         }
 
         private ProgressInfo summary_periodearned;
+
         public ProgressInfo Summary_PeriodEarned
         {
             get
             {
-                if (summary_periodearned == null && (Summary_CumulativeEarnedDataPoints != null && Summary_CumulativeEarnedDataPoints.Count > 0) && ReportingDataDate != null)
-                    summary_periodearned = ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(Summary_CumulativeEarnedDataPoints, ReportingDataDate.Date);
+                if (summary_periodearned == null && Summary_CumulativeEarnedDataPoints != null && Summary_CumulativeEarnedDataPoints.Count > 0 && ReportingDataDate != null)
+                    summary_periodearned =
+                        ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(
+                            Summary_CumulativeEarnedDataPoints, ReportingDataDate.Date);
                 return summary_periodearned;
             }
         }
 
         private ProgressInfo summary_periodburned;
+
         public ProgressInfo Summary_PeriodBurned
         {
             get
             {
-                if (summary_periodburned == null && (Summary_CumulativeBurnedDataPoints != null && Summary_CumulativeBurnedDataPoints.Count > 0) && ReportingDataDate != null)
-                    summary_periodburned = ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(Summary_CumulativeBurnedDataPoints, ReportingDataDate.Date);
+                if (summary_periodburned == null && Summary_CumulativeBurnedDataPoints != null && Summary_CumulativeBurnedDataPoints.Count > 0 && ReportingDataDate != null)
+                    summary_periodburned =
+                        ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(
+                            Summary_CumulativeBurnedDataPoints, ReportingDataDate.Date);
                 return summary_periodburned;
             }
         }
 
         private ProgressInfo summary_periodactual;
+
         public ProgressInfo Summary_PeriodActual
         {
             get
             {
-                if (summary_periodactual == null && (Summary_CumulativeActualDataPoints != null && Summary_CumulativeActualDataPoints.Count > 0) && ReportingDataDate != null)
-                    summary_periodactual = ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(Summary_CumulativeActualDataPoints, ReportingDataDate.Date);
+                if (summary_periodactual == null && Summary_CumulativeActualDataPoints != null && Summary_CumulativeActualDataPoints.Count > 0 && ReportingDataDate != null)
+                    summary_periodactual =
+                        ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(
+                            Summary_CumulativeActualDataPoints, ReportingDataDate.Date);
                 return summary_periodactual;
             }
         }
@@ -525,7 +579,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <summary>
         /// Non cumulative variation points with date and baseline item original guid
         /// </summary>
-        private ObservableCollection<VariationAdjustment> noncumulative_variationadjustments = new ObservableCollection<VariationAdjustment>();
+        private ObservableCollection<VariationAdjustment> noncumulative_variationadjustments =
+            new ObservableCollection<VariationAdjustment>();
+
         public ObservableCollection<VariationAdjustment> NonCumulative_VariationAdjustments
         {
             get { return noncumulative_variationadjustments; }
@@ -535,7 +591,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <summary>
         /// Summary of the individual original for all baselineitem in the project
         /// </summary>
-        private ObservableCollection<ProgressInfo> noncumulative_originaldatapoints = new ObservableCollection<ProgressInfo>();
+        private ObservableCollection<ProgressInfo> noncumulative_originaldatapoints =
+            new ObservableCollection<ProgressInfo>();
+
         public ObservableCollection<ProgressInfo> NonCumulative_OriginalDataPoints
         {
             get { return noncumulative_originaldatapoints; }
@@ -545,7 +603,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <summary>
         /// Summary of the individual planned for all baselineitem in the project
         /// </summary>
-        private ObservableCollection<ProgressInfo> noncumulative_planneddatapoints = new ObservableCollection<ProgressInfo>();
+        private ObservableCollection<ProgressInfo> noncumulative_planneddatapoints =
+            new ObservableCollection<ProgressInfo>();
+
         public ObservableCollection<ProgressInfo> NonCumulative_PlannedDataPoints
         {
             get { return noncumulative_planneddatapoints; }
@@ -555,7 +615,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <summary>
         /// Summary of the individual earned for all baselineitem in the project
         /// </summary>
-        private ObservableCollection<ProgressInfo> noncumulative_earneddatapoints = new ObservableCollection<ProgressInfo>();
+        private ObservableCollection<ProgressInfo> noncumulative_earneddatapoints =
+            new ObservableCollection<ProgressInfo>();
+
         public ObservableCollection<ProgressInfo> NonCumulative_EarnedDataPoints
         {
             get { return noncumulative_earneddatapoints; }
@@ -565,7 +627,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <summary>
         /// Summary of the individual burned for all baselineitem in the project
         /// </summary>
-        private ObservableCollection<ProgressInfo> noncumulative_burneddatapoints = new ObservableCollection<ProgressInfo>();
+        private ObservableCollection<ProgressInfo> noncumulative_burneddatapoints =
+            new ObservableCollection<ProgressInfo>();
+
         public ObservableCollection<ProgressInfo> NonCumulative_BurnedDataPoints
         {
             get { return noncumulative_burneddatapoints; }
@@ -575,7 +639,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <summary>
         /// Summary of the individual actual for all baselineitem in the project
         /// </summary>
-        private ObservableCollection<ProgressInfo> noncumulative_actualdatapoints = new ObservableCollection<ProgressInfo>();
+        private ObservableCollection<ProgressInfo> noncumulative_actualdatapoints =
+            new ObservableCollection<ProgressInfo>();
+
         public ObservableCollection<ProgressInfo> NonCumulative_ActualDataPoints
         {
             get { return noncumulative_actualdatapoints; }
@@ -587,6 +653,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Summary of the burned for principal project
         /// </summary>
         private ObservableCollection<ProgressInfo> summary_burneddatapoints { get; set; }
+
         public ObservableCollection<ProgressInfo> Summary_CumulativeBurnedDataPoints
         {
             get { return summary_burneddatapoints; }
@@ -597,14 +664,14 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Summary of the burned by period for all baselineitem in the project
         /// </summary>
         private ObservableCollection<ProgressInfo> summary_periodburneddatapoints;
+
         public ObservableCollection<ProgressInfo> Summary_PeriodBurnedDataPoints
         {
             get
             {
-                if (summary_periodburneddatapoints == null && (summary_burneddatapoints != null && summary_burneddatapoints.Count > 0))
-                {
-                    summary_periodburneddatapoints = ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(summary_burneddatapoints);
-                }
+                if (summary_periodburneddatapoints == null && summary_burneddatapoints != null && summary_burneddatapoints.Count > 0)
+                    summary_periodburneddatapoints =
+                        ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(summary_burneddatapoints);
 
                 return summary_periodburneddatapoints;
             }
@@ -614,14 +681,14 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Summary of the actual by period for all baselineitem in the project
         /// </summary>
         private ObservableCollection<ProgressInfo> summary_periodactualdatapoints;
+
         public ObservableCollection<ProgressInfo> Summary_PeriodActualDataPoints
         {
             get
             {
-                if (summary_periodactualdatapoints == null && (summary_actualdatapoints != null && summary_actualdatapoints.Count > 0))
-                {
-                    summary_periodactualdatapoints = ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(summary_actualdatapoints);
-                }
+                if (summary_periodactualdatapoints == null && summary_actualdatapoints != null && summary_actualdatapoints.Count > 0)
+                    summary_periodactualdatapoints =
+                        ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(summary_actualdatapoints);
 
                 return summary_periodactualdatapoints;
             }
@@ -631,14 +698,14 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Summary of the earned by period for all baselineitem in the project
         /// </summary>
         private ObservableCollection<ProgressInfo> summary_periodearneddatapoints;
+
         public ObservableCollection<ProgressInfo> Summary_PeriodEarnedDataPoints
         {
             get
             {
-                if (summary_periodearneddatapoints == null && (summary_earneddatapoints != null && summary_earneddatapoints.Count > 0))
-                {
-                    summary_periodearneddatapoints = ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(summary_earneddatapoints);
-                }
+                if (summary_periodearneddatapoints == null && summary_earneddatapoints != null && summary_earneddatapoints.Count > 0)
+                    summary_periodearneddatapoints =
+                        ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(summary_earneddatapoints);
 
                 return summary_periodearneddatapoints;
             }
@@ -648,14 +715,15 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Summary of the original by period for all baselineitem in the project
         /// </summary>
         private ObservableCollection<ProgressInfo> summary_periodoriginaldatapoints;
+
         public ObservableCollection<ProgressInfo> Summary_PeriodOriginalDataPoints
         {
             get
             {
-                if (summary_periodoriginaldatapoints == null && (summary_originaldatapoints != null && summary_originaldatapoints.Count > 0))
-                {
-                    summary_periodoriginaldatapoints = ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(summary_originaldatapoints);
-                }
+                if (summary_periodoriginaldatapoints == null && summary_originaldatapoints != null && summary_originaldatapoints.Count > 0)
+                    summary_periodoriginaldatapoints =
+                        ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(
+                            summary_originaldatapoints);
 
                 return summary_periodoriginaldatapoints;
             }
@@ -665,14 +733,14 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Summary of the planned by period for all baselineitem in the project
         /// </summary>
         private ObservableCollection<ProgressInfo> summary_periodplanneddatapoints;
+
         public ObservableCollection<ProgressInfo> Summary_PeriodPlannedDataPoints
         {
             get
             {
-                if (summary_periodplanneddatapoints == null && (summary_planneddatapoints != null && summary_planneddatapoints.Count > 0))
-                {
-                    summary_periodplanneddatapoints = ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(summary_planneddatapoints);
-                }
+                if (summary_periodplanneddatapoints == null && summary_planneddatapoints != null && summary_planneddatapoints.Count > 0)
+                    summary_periodplanneddatapoints =
+                        ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(summary_planneddatapoints);
 
                 return summary_periodplanneddatapoints;
             }
@@ -682,6 +750,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Summary of the variation adjustment units by date
         /// </summary>
         private ObservableCollection<VariationAdjustment> cumulative_variationadjustments { get; set; }
+
         public ObservableCollection<VariationAdjustment> Cumulative_VariationAdjustments
         {
             get { return cumulative_variationadjustments; }
@@ -689,6 +758,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
 
         private ObservableCollection<ProgressInfo> summary_actualdatapoints { get; set; }
+
         public ObservableCollection<ProgressInfo> Summary_CumulativeActualDataPoints
         {
             get { return summary_actualdatapoints; }
@@ -700,6 +770,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Summary of the earned for all baselineitem in the project
         /// </summary>
         private ObservableCollection<ProgressInfo> summary_earneddatapoints { get; set; }
+
         public ObservableCollection<ProgressInfo> Summary_CumulativeEarnedDataPoints
         {
             get { return summary_earneddatapoints; }
@@ -710,6 +781,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Summary of the original for all baselineitem in the project
         /// </summary>
         private ObservableCollection<ProgressInfo> summary_originaldatapoints { get; set; }
+
         public ObservableCollection<ProgressInfo> Summary_CumulativeOriginalDataPoints
         {
             get { return summary_originaldatapoints; }
@@ -720,6 +792,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Summary of the planned for all baselineitem in the project
         /// </summary>
         private ObservableCollection<ProgressInfo> summary_planneddatapoints { get; set; }
+
         public ObservableCollection<ProgressInfo> Summary_CumulativePlannedDataPoints
         {
             get { return summary_planneddatapoints; }
@@ -729,7 +802,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <summary>
         /// Summary of the individual remaining based on original productivity in the project
         /// </summary>
-        private ObservableCollection<ProgressInfo> noncumulative_remainingoriginaldatapoints = new ObservableCollection<ProgressInfo>();
+        private ObservableCollection<ProgressInfo> noncumulative_remainingoriginaldatapoints =
+            new ObservableCollection<ProgressInfo>();
+
         public ObservableCollection<ProgressInfo> NonCumulative_RemainingOriginalDataPoints
         {
             get { return noncumulative_remainingoriginaldatapoints; }
@@ -739,7 +814,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <summary>
         /// Summary of the individual remaining based on planned productivity in the project
         /// </summary>
-        private ObservableCollection<ProgressInfo> noncumulative_remainingplanneddatapoints = new ObservableCollection<ProgressInfo>();
+        private ObservableCollection<ProgressInfo> noncumulative_remainingplanneddatapoints =
+            new ObservableCollection<ProgressInfo>();
+
         public ObservableCollection<ProgressInfo> NonCumulative_RemainingPlannedDataPoints
         {
             get { return noncumulative_remainingplanneddatapoints; }
@@ -749,7 +826,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <summary>
         /// Summary of the individual remaining based on current productivity in the project
         /// </summary>
-        private ObservableCollection<ProgressInfo> noncumulative_remainingcurrentdatapoints = new ObservableCollection<ProgressInfo>();
+        private ObservableCollection<ProgressInfo> noncumulative_remainingcurrentdatapoints =
+            new ObservableCollection<ProgressInfo>();
+
         public ObservableCollection<ProgressInfo> NonCumulative_RemainingCurrentDataPoints
         {
             get { return noncumulative_remainingcurrentdatapoints; }
@@ -759,7 +838,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <summary>
         /// Summary of the individual remaining based on variation productivity in the project
         /// </summary>
-        private ObservableCollection<ProgressInfo> noncumulative_remainingvariationdatapoints = new ObservableCollection<ProgressInfo>();
+        private ObservableCollection<ProgressInfo> noncumulative_remainingvariationdatapoints =
+            new ObservableCollection<ProgressInfo>();
+
         public ObservableCollection<ProgressInfo> NonCumulative_RemainingVariationDataPoints
         {
             get { return noncumulative_remainingvariationdatapoints; }
@@ -770,6 +851,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Summary of the datapoints based on original productivity in the project
         /// </summary>
         private ObservableCollection<ProgressInfo> summary_remainingoriginaldatapoints { get; set; }
+
         public ObservableCollection<ProgressInfo> Summary_CumulativeRemainingOriginalDataPoints
         {
             get { return summary_remainingoriginaldatapoints; }
@@ -780,6 +862,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Summary of the datapoints based on planned productivity in the project
         /// </summary>
         private ObservableCollection<ProgressInfo> summary_remainingplanneddatapoints { get; set; }
+
         public ObservableCollection<ProgressInfo> Summary_CumulativeRemainingPlannedDataPoints
         {
             get { return summary_remainingplanneddatapoints; }
@@ -790,6 +873,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Summary of the datapoints based on remaining productivity in the project
         /// </summary>
         private ObservableCollection<ProgressInfo> summary_remainingcurrentdatapoints { get; set; }
+
         public ObservableCollection<ProgressInfo> Summary_CumulativeRemainingCurrentDataPoints
         {
             get { return summary_remainingcurrentdatapoints; }
@@ -800,6 +884,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Summary of the datapoints based on variation productivity in the project
         /// </summary>
         private ObservableCollection<ProgressInfo> summary_remainingvariationdatapoints { get; set; }
+
         public ObservableCollection<ProgressInfo> Summary_CumulativeRemainingVariationDataPoints
         {
             get { return summary_remainingvariationdatapoints; }
@@ -810,14 +895,15 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Summary of the earned by period for all baselineitem in the project
         /// </summary>
         private ObservableCollection<ProgressInfo> summary_periodremainingvariationdatapoints;
+
         public ObservableCollection<ProgressInfo> Summary_PeriodRemainingVariationDataPoints
         {
             get
             {
                 if (summary_periodremainingvariationdatapoints == null && ReportingDataDate != null)
-                {
-                    summary_periodremainingvariationdatapoints = ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(summary_remainingvariationdatapoints, ReportingDataDate.Date);
-                }
+                    summary_periodremainingvariationdatapoints =
+                        ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(
+                            summary_remainingvariationdatapoints, ReportingDataDate.Date);
 
                 return summary_periodremainingvariationdatapoints;
             }
@@ -827,14 +913,15 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Summary of the original by period for all baselineitem in the project
         /// </summary>
         private ObservableCollection<ProgressInfo> summary_periodremainingoriginaldatapoints;
+
         public ObservableCollection<ProgressInfo> Summary_PeriodRemainingOriginalDataPoints
         {
             get
             {
                 if (summary_periodremainingoriginaldatapoints == null && ReportingDataDate != null)
-                {
-                    summary_periodremainingoriginaldatapoints = ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(summary_remainingoriginaldatapoints, ReportingDataDate.Date);
-                }
+                    summary_periodremainingoriginaldatapoints =
+                        ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(
+                            summary_remainingoriginaldatapoints, ReportingDataDate.Date);
 
                 return summary_periodremainingoriginaldatapoints;
             }
@@ -844,14 +931,15 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Summary of the planned by period for all baselineitem in the project
         /// </summary>
         private ObservableCollection<ProgressInfo> summary_periodremainingplanneddatapoints;
+
         public ObservableCollection<ProgressInfo> Summary_PeriodRemainingPlannedDataPoints
         {
             get
             {
                 if (summary_periodremainingplanneddatapoints == null && ReportingDataDate != null)
-                {
-                    summary_periodremainingplanneddatapoints = ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(summary_remainingplanneddatapoints, ReportingDataDate.Date);
-                }
+                    summary_periodremainingplanneddatapoints =
+                        ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(
+                            summary_remainingplanneddatapoints, ReportingDataDate.Date);
 
                 return summary_periodremainingplanneddatapoints;
             }
@@ -861,14 +949,15 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Summary of the current by period for all baselineitem in the project
         /// </summary>
         private ObservableCollection<ProgressInfo> summary_periodremainingcurrentdatapoints;
+
         public ObservableCollection<ProgressInfo> Summary_PeriodRemainingCurrentDataPoints
         {
             get
             {
                 if (summary_periodremainingcurrentdatapoints == null && ReportingDataDate != null)
-                {
-                    summary_periodremainingcurrentdatapoints = ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(summary_remainingcurrentdatapoints, ReportingDataDate.Date);
-                }
+                    summary_periodremainingcurrentdatapoints =
+                        ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(
+                            summary_remainingcurrentdatapoints, ReportingDataDate.Date);
 
                 return summary_periodremainingcurrentdatapoints;
             }

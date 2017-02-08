@@ -35,15 +35,19 @@ namespace BluePrints.Views
         public WORKPACKSchedulingViewHost()
         {
             InitializeComponent();
-            ((WORKPACKSchedulingViewModelWrapper)this.DataContext).windowsFormHostViewInitialization = this.windowsFormHostViewInitialization;
+            ((WORKPACKSchedulingViewModelWrapper) DataContext).windowsFormHostViewInitialization =
+                windowsFormHostViewInitialization;
         }
 
-        public void windowsFormHostViewInitialization(Func<IQueryable<TASK>> getTASKsFunc, Func<IQueryable<PROJWBS>> getWBSSFunc,
-            Func<IQueryable<WORKPACK_Dashboard>> getWORKPACK_DashboardFunc, 
-            CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACKS_ASSIGNMENTSViewModel, 
+        public void windowsFormHostViewInitialization(Func<IQueryable<TASK>> getTASKsFunc,
+            Func<IQueryable<PROJWBS>> getWBSSFunc,
+            Func<IQueryable<WORKPACK_Dashboard>> getWORKPACK_DashboardFunc,
+            CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
+                WORKPACKS_ASSIGNMENTSViewModel,
             bool IsModified)
         {
-            winFormHost.Child = new PROJECTWORKPACKDetailsMappingView(getTASKsFunc, getWBSSFunc, getWORKPACK_DashboardFunc, WORKPACKS_ASSIGNMENTSViewModel, IsModified);
+            winFormHost.Child = new PROJECTWORKPACKDetailsMappingView(getTASKsFunc, getWBSSFunc,
+                getWORKPACK_DashboardFunc, WORKPACKS_ASSIGNMENTSViewModel, IsModified);
         }
     }
 }

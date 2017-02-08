@@ -10,7 +10,6 @@ namespace BluePrints.PrimeroData
         public PrimeroEntities()
             : base("name=PrimeroEntities")
         {
-
         }
 
         public virtual DbSet<ADJUSTMENT_TYPES> ADJUSTMENT_TYPES { get; set; }

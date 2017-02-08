@@ -14,7 +14,6 @@ namespace BluePrints.Common.DataModel
     /// <typeparam name="TEntity">Repository entity type.</typeparam>
     public interface IReadOnlyRepository<TEntity> : IRepositoryQuery<TEntity> where TEntity : class
     {
-
         /// <summary>
         /// The owner unit of work.
         /// </summary>
@@ -27,7 +26,6 @@ namespace BluePrints.Common.DataModel
     /// <typeparam name="T">An entity type.</typeparam>
     public interface IRepositoryQuery<T> : IQueryable<T>
     {
-
         /// <summary>
         /// Specifies the related objects to include in the query results.
         /// </summary>
@@ -48,17 +46,42 @@ namespace BluePrints.Common.DataModel
     /// <typeparam name="T">An entity type.</typeparam>
     public abstract class RepositoryQueryBase<T> : IQueryable<T>
     {
-        readonly Lazy<IQueryable<T>> queryable;
-        protected IQueryable<T> Queryable { get { return queryable.Value; } }
+        private readonly Lazy<IQueryable<T>> queryable;
+
+        protected IQueryable<T> Queryable
+        {
+            get { return queryable.Value; }
+        }
+
         protected RepositoryQueryBase(Func<IQueryable<T>> getQueryable)
         {
-            this.queryable = new Lazy<IQueryable<T>>(getQueryable);
+            queryable = new Lazy<IQueryable<T>>(getQueryable);
         }
-        Type IQueryable.ElementType { get { return this.Queryable.ElementType; } }
-        Expression IQueryable.Expression { get { return this.Queryable.Expression; } }
-        IQueryProvider IQueryable.Provider { get { return this.Queryable.Provider; } }
-        IEnumerator IEnumerable.GetEnumerator() { return this.Queryable.GetEnumerator(); }
-        IEnumerator<T> IEnumerable<T>.GetEnumerator() { return this.Queryable.GetEnumerator(); }
+
+        Type IQueryable.ElementType
+        {
+            get { return Queryable.ElementType; }
+        }
+
+        Expression IQueryable.Expression
+        {
+            get { return Queryable.Expression; }
+        }
+
+        IQueryProvider IQueryable.Provider
+        {
+            get { return Queryable.Provider; }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return Queryable.GetEnumerator();
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return Queryable.GetEnumerator();
+        }
     }
 
     /// <summary>
@@ -74,7 +97,9 @@ namespace BluePrints.Common.DataModel
         /// <param name="repository">A repository.</param>
         /// <param name="predicate">A function to test each element for a condition.</param>
         /// <param name="projection">A LINQ function used to transform entities from repository entity type to projection entity type.</param>
-        public static IQueryable<TProjection> GetFilteredEntities<TEntity, TProjection>(this IReadOnlyRepository<TEntity> repository, Expression<Func<TEntity, bool>> predicate, Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection) where TEntity : class
+        public static IQueryable<TProjection> GetFilteredEntities<TEntity, TProjection>(
+            this IReadOnlyRepository<TEntity> repository, Expression<Func<TEntity, bool>> predicate,
+            Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection) where TEntity : class
         {
             return AppendToProjection(predicate, projection)(repository);
         }
@@ -87,14 +112,16 @@ namespace BluePrints.Common.DataModel
         /// <param name="predicate">A function to test each element for a condition.</param>
         /// <param name="projection">A LINQ function used to transform entities from repository entity type to projection entity type.</param>
         /// <returns></returns>
-        public static Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> AppendToProjection<TEntity, TProjection>(Expression<Func<TEntity, bool>> predicate, Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection) where TEntity : class
+        public static Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> AppendToProjection<TEntity, TProjection>(
+            Expression<Func<TEntity, bool>> predicate,
+            Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection) where TEntity : class
         {
             if (predicate == null && projection == null)
-                return q => (IQueryable<TProjection>)q;
+                return q => (IQueryable<TProjection>) q;
             if (predicate == null)
                 return projection;
             if (projection == null)
-                return q => (IQueryable<TProjection>)q.Where(predicate);
+                return q => (IQueryable<TProjection>) q.Where(predicate);
             return q => projection(q.Where(predicate));
         }
 
@@ -104,7 +131,8 @@ namespace BluePrints.Common.DataModel
         /// <typeparam name="TEntity">A repository entity type.</typeparam>
         /// <param name="repository">A repository.</param>
         /// <param name="predicate">A function to test each element for a condition.</param>
-        public static IQueryable<TEntity> GetFilteredEntities<TEntity>(this IReadOnlyRepository<TEntity> repository, Expression<Func<TEntity, bool>> predicate) where TEntity : class
+        public static IQueryable<TEntity> GetFilteredEntities<TEntity>(this IReadOnlyRepository<TEntity> repository,
+            Expression<Func<TEntity, bool>> predicate) where TEntity : class
         {
             return repository.GetFilteredEntities(predicate, x => x);
         }

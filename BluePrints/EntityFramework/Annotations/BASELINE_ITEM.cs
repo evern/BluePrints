@@ -1,7 +1,7 @@
 namespace BluePrints.Data
 {
-    using BluePrints.Common;
-    using BluePrints.Data.Attributes;
+    using Common;
+    using Attributes;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -13,10 +13,7 @@ namespace BluePrints.Data
     {
         public decimal TOTAL_HOURS
         {
-            get
-            {
-                return ESTIMATED_HOURS + DC_HOURS;
-            }
+            get { return ESTIMATED_HOURS + DC_HOURS; }
         }
     }
 }

@@ -8,7 +8,6 @@ namespace BluePrints.Common.DataModel
     /// </summary>
     public class DbException : Exception
     {
-
         /// <summary>
         /// Initializes a new instance of the DbRepository class.
         /// </summary>

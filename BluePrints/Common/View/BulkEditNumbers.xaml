@@ -9,18 +9,21 @@
              mc:Ignorable="d"
              d:DesignHeight="200" d:DesignWidth="300">
     <dxlc:LayoutControl Orientation="Vertical">
-        <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group"  Header="Edit Value" Orientation="Vertical" >
-            <dxlc:LayoutGroup Height="40" Name="LayoutGroupContent" View="Group" Orientation="Horizontal" >
+        <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
+            <dxlc:LayoutGroup Height="40" Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
                 <dxlc:LayoutItem Height="25" Label="Value:">
-                    <dxe:SpinEdit x:Name="txtContent" MinValue="0" Value="{Binding EditValue, Mode=TwoWay}"/>
+                    <dxe:SpinEdit x:Name="txtContent" MinValue="0" Value="{Binding EditValue, Mode=TwoWay}" />
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
-            <dxlc:LayoutGroup Name="LayoutGroupEnum" View="Group"  Header="Edit Value" Orientation="Vertical" >
+            <dxlc:LayoutGroup Name="LayoutGroupEnum" View="Group" Header="Edit Value" Orientation="Vertical">
                 <dxlc:LayoutItem Height="125" Label="Arithmetic:">
-                    <dxe:ListBoxEdit Name="list" SelectedItem="{Binding SelectedOperation, Mode=TwoWay}" StyleSettings="{dxe:RadioListBoxEditStyleSettings}" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Arithmetic}}" />
+                    <dxe:ListBoxEdit Name="list" SelectedItem="{Binding SelectedOperation, Mode=TwoWay}"
+                                     StyleSettings="{dxe:RadioListBoxEditStyleSettings}"
+                                     ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Arithmetic}}" />
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
-            <dxlc:LayoutGroup Height="25" HorizontalAlignment="Right" Name="LayoutGroupButtons" View="Group"  Orientation="Horizontal" />
+            <dxlc:LayoutGroup Height="25" HorizontalAlignment="Right" Name="LayoutGroupButtons" View="Group"
+                              Orientation="Horizontal" />
         </dxlc:LayoutGroup>
     </dxlc:LayoutControl>
 </UserControl>

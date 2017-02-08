@@ -16,9 +16,9 @@ using DevExpress.Xpf.Core.ServerMode;
 
 namespace BluePrints.Common.DataModel.EntityFramework
 {
-    class DbUnitOfWorkFactory<TUnitOfWork> : IUnitOfWorkFactory<TUnitOfWork> where TUnitOfWork : IUnitOfWork
+    internal class DbUnitOfWorkFactory<TUnitOfWork> : IUnitOfWorkFactory<TUnitOfWork> where TUnitOfWork : IUnitOfWork
     {
-        Func<TUnitOfWork> createUnitOfWork;
+        private Func<TUnitOfWork> createUnitOfWork;
 
         public DbUnitOfWorkFactory(Func<TUnitOfWork> createUnitOfWork)
         {
@@ -30,21 +30,25 @@ namespace BluePrints.Common.DataModel.EntityFramework
             return createUnitOfWork();
         }
 
-        IInstantFeedbackSource<TProjection> IUnitOfWorkFactory<TUnitOfWork>.CreateInstantFeedbackSource<TEntity, TProjection, TPrimaryKey>(
-            Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
-            Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection)
+        IInstantFeedbackSource<TProjection> IUnitOfWorkFactory<TUnitOfWork>.CreateInstantFeedbackSource
+            <TEntity, TProjection, TPrimaryKey>(
+                Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
+                Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection)
         {
-            var threadSafeProperties = new TypeInfoProxied(TypeDescriptor.GetProperties(typeof(TProjection)), null).UIDescriptors;
+            var threadSafeProperties =
+                new TypeInfoProxied(TypeDescriptor.GetProperties(typeof(TProjection)), null).UIDescriptors;
             if (projection == null)
-            {
                 projection = x => x as IQueryable<TProjection>;
-            }
-            var keyProperties = ExpressionHelper.GetKeyProperties(getRepositoryFunc(createUnitOfWork()).GetPrimaryKeyExpression);
+            var keyProperties =
+                ExpressionHelper.GetKeyProperties(getRepositoryFunc(createUnitOfWork()).GetPrimaryKeyExpression);
             var keyExpression = keyProperties.Select(p => p.Name).Aggregate((l, r) => l + ";" + r);
-            var source = new EntityInstantFeedbackSource((DevExpress.Data.Linq.GetQueryableEventArgs e) => e.QueryableSource = projection(getRepositoryFunc(createUnitOfWork())))
-            {
-                KeyExpression = keyExpression
-            };
+            var source =
+                new EntityInstantFeedbackSource(
+                    (DevExpress.Data.Linq.GetQueryableEventArgs e) =>
+                        e.QueryableSource = projection(getRepositoryFunc(createUnitOfWork())))
+                {
+                    KeyExpression = keyExpression
+                };
             return new InstantFeedbackSource<TProjection>(source, threadSafeProperties);
         }
     }

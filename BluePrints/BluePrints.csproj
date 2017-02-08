@@ -24,7 +24,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>66</ApplicationRevision>
+    <ApplicationRevision>67</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -336,8 +336,6 @@
     <Compile Include="Common\ActiveDirectory.cs" />
     <Compile Include="Common\Attributes\BulkEditDisabledAttributes.cs" />
     <Compile Include="Common\Attributes\RequiredAttributes.cs" />
-    <Compile Include="Common\DemoHelper.cs" />
-    <Compile Include="Common\DemoModule.cs" />
     <Compile Include="Common\Helpers\CustomMessageBoxService.cs" />
     <Compile Include="Common\Helpers\EntitiesLoader.cs" />
     <Compile Include="Common\Helpers\XMLHelpers.cs" />
@@ -371,8 +369,8 @@
       <DependentUpon>XtraReportPROGRESS_ITEMS.cs</DependentUpon>
     </Compile>
     <Compile Include="Common\SignalR.cs" />
-    <Compile Include="Common\SpellCheckerHelper.cs" />
-    <Compile Include="Common\SpellCheckerModule.cs" />
+    <Compile Include="Common\SpellCheck\SpellCheckerHelper.cs" />
+    <Compile Include="Common\SpellCheck\SpellCheckerModule.cs" />
     <Compile Include="Common\Utils\StringFormatUtils.cs" />
     <Compile Include="Common\ViewModel\DashboardCollectionViewModelWrapper.cs" />
     <Compile Include="Common\ViewModel\EntitiesCollectionsWrapper.cs" />

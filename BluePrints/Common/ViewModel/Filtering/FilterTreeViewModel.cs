@@ -14,27 +14,35 @@ using BluePrints.Data.Helpers;
 
 namespace BluePrints.Common.ViewModel.Filtering
 {
-    public class FilterTreeViewModel<TEntity, TFilterEntity, TPrimaryKey> : IFilterTreeViewModel 
+    public class FilterTreeViewModel<TEntity, TFilterEntity, TPrimaryKey> : IFilterTreeViewModel
         where TEntity : class
         where TFilterEntity : class
     {
         static FilterTreeViewModel()
         {
             var enums = typeof(ProjectType).Assembly.GetTypes().Where(t => t.IsEnum);
-            foreach (Type e in enums)
+            foreach (var e in enums)
                 EnumProcessingHelper.RegisterEnum(e);
         }
 
-        public static FilterTreeViewModel<TEntity, TFilterEntity, TPrimaryKey> Create(IFilterTreeModelPageSpecificSettings<TFilterEntity> settings, IQueryable<TEntity> entities, Action<object, Action> registerEntityChangedMessageHandler, bool createContextFilter = false)
+        public static FilterTreeViewModel<TEntity, TFilterEntity, TPrimaryKey> Create(
+            IFilterTreeModelPageSpecificSettings<TFilterEntity> settings, IQueryable<TEntity> entities,
+            Action<object, Action> registerEntityChangedMessageHandler, bool createContextFilter = false)
         {
-            return ViewModelSource.Create(() => new FilterTreeViewModel<TEntity, TFilterEntity, TPrimaryKey>(settings, entities, registerEntityChangedMessageHandler, createContextFilter));
+            return
+                ViewModelSource.Create(
+                    () =>
+                        new FilterTreeViewModel<TEntity, TFilterEntity, TPrimaryKey>(settings, entities,
+                            registerEntityChangedMessageHandler, createContextFilter));
         }
 
-        readonly IQueryable<TEntity> entities;
-        readonly IFilterTreeModelPageSpecificSettings<TFilterEntity> settings;
-        object viewModel;
+        private readonly IQueryable<TEntity> entities;
+        private readonly IFilterTreeModelPageSpecificSettings<TFilterEntity> settings;
+        private object viewModel;
 
-        protected FilterTreeViewModel(IFilterTreeModelPageSpecificSettings<TFilterEntity> settings, IQueryable<TEntity> entities, Action<object, Action> registerEntityChangedMessageHandler, bool createContextFilter = false)
+        protected FilterTreeViewModel(IFilterTreeModelPageSpecificSettings<TFilterEntity> settings,
+            IQueryable<TEntity> entities, Action<object, Action> registerEntityChangedMessageHandler,
+            bool createContextFilter = false)
         {
             this.settings = settings;
             this.entities = entities;
@@ -43,14 +51,15 @@ namespace BluePrints.Common.ViewModel.Filtering
             if (createContextFilter)
                 ContextFilters = CreateContextFilterItems();
             SelectedItem = StaticFilters.FirstOrDefault();
-            if(SelectedItem != null)
+            if (SelectedItem != null)
                 SelectedItem.IsSelected = true;
             registerEntityChangedMessageHandler(this, () => UpdateFilters());
             Messenger.Default.Register<CreateCustomFilterMessage<TEntity>>(this, message => CreateCustomFilter());
             UpdateFilters();
             StaticCategoryName = settings.StaticFiltersTitle;
             ContextCategoryName = typeof(TFilterEntity).Name;
-            CustomCategoryName = "CUSTOM FILTERS"; //Instead of putting it in xaml, use binding to ensure that code behind indeed exists to show anything in view
+            CustomCategoryName = "CUSTOM FILTERS";
+                //Instead of putting it in xaml, use binding to ensure that code behind indeed exists to show anything in view
         }
 
         public virtual ObservableCollection<FilterItem> StaticFilters { get; protected set; }
@@ -60,7 +69,8 @@ namespace BluePrints.Common.ViewModel.Filtering
         /// <summary>
         /// Private member to avoid SelectedItem getting overridded when module changes because of TreeView's TwoWay binding
         /// </summary>
-        FilterItem lastSelectedItem { get; set; }
+        private FilterItem lastSelectedItem { get; set; }
+
         public virtual FilterItem SelectedItem { get; set; }
 
         public virtual FilterItem ActiveFilterItem { get; set; }
@@ -68,9 +78,21 @@ namespace BluePrints.Common.ViewModel.Filtering
         public string StaticCategoryName { get; private set; }
         public string ContextCategoryName { get; private set; }
         public string CustomCategoryName { get; private set; }
-        public bool AllowStaticFilters { get { return StaticFilters != null && StaticFilters.Count > 0; } }
-        public bool AllowCustomFilters { get { return settings.CustomFilters != null; } }
-        public bool AllowContextFilters { get { return ContextFilters != null; } }
+
+        public bool AllowStaticFilters
+        {
+            get { return StaticFilters != null && StaticFilters.Count > 0; }
+        }
+
+        public bool AllowCustomFilters
+        {
+            get { return settings.CustomFilters != null; }
+        }
+
+        public bool AllowContextFilters
+        {
+            get { return ContextFilters != null; }
+        }
 
         public void DeleteCustomFilter(FilterItem filterItem)
         {
@@ -96,7 +118,7 @@ namespace BluePrints.Common.ViewModel.Filtering
 
         public void ModifyCustomFilter(FilterItem existing)
         {
-            FilterItem clone = existing.Clone();
+            var clone = existing.Clone();
             var filterViewModel = CreateCustomFilterViewModel(clone, true);
             ShowFilter(clone, filterViewModel, () =>
             {
@@ -115,7 +137,7 @@ namespace BluePrints.Common.ViewModel.Filtering
 
         public void CreateCustomFilter()
         {
-            FilterItem filterItem = CreateFilterItem(string.Empty, null, null, true);
+            var filterItem = CreateFilterItem(string.Empty, null, null, true);
             var filterViewModel = CreateCustomFilterViewModel(filterItem, true);
             ShowFilter(filterItem, filterViewModel, () => AddNewCustomFilter(filterItem));
         }
@@ -138,9 +160,10 @@ namespace BluePrints.Common.ViewModel.Filtering
             var viewModelContainer = viewModel as IFilterTreeViewModelContainer<TEntity, TFilterEntity, TPrimaryKey>;
             if (viewModelContainer != null)
                 viewModelContainer.FilterTreeViewModel = this;
-            if(selectedFilterName != null)
+            if (selectedFilterName != null)
             {
-                FilterItem contextFilterItem = ContextFilters.FirstOrDefault(x => x.Name == selectedFilterName.ToString());
+                var contextFilterItem =
+                    ContextFilters.FirstOrDefault(x => x.Name == selectedFilterName.ToString());
                 if (contextFilterItem != null)
                 {
                     SelectedItem = contextFilterItem;
@@ -151,70 +174,101 @@ namespace BluePrints.Common.ViewModel.Filtering
             UpdateFilterExpression();
         }
 
-        void UpdateFilterExpression()
+        private void UpdateFilterExpression()
         {
-            ISupportFiltering<TEntity> viewModel = this.viewModel as ISupportFiltering<TEntity>;
+            var viewModel = this.viewModel as ISupportFiltering<TEntity>;
             if (viewModel != null)
-                viewModel.FilterExpression = ActiveFilterItem == null ? null : GetWhereExpression(ActiveFilterItem.FilterCriteria);
+                viewModel.FilterExpression = ActiveFilterItem == null
+                    ? null
+                    : GetWhereExpression(ActiveFilterItem.FilterCriteria);
         }
 
-        ObservableCollection<FilterItem> CreateFilterItems(IEnumerable<FilterInfo> filters, bool showEntityCount)
+        private ObservableCollection<FilterItem> CreateFilterItems(IEnumerable<FilterInfo> filters, bool showEntityCount)
         {
             if (filters == null)
                 return new ObservableCollection<FilterItem>();
-            return new ObservableCollection<FilterItem>(filters.Select(x => CreateFilterItem(x.Name, CriteriaOperator.Parse(x.FilterCriteria), x.ImageUri, showEntityCount)));
+            return
+                new ObservableCollection<FilterItem>(
+                    filters.Select(
+                        x =>
+                            CreateFilterItem(x.Name, CriteriaOperator.Parse(x.FilterCriteria), x.ImageUri,
+                                showEntityCount)));
         }
 
-        ObservableCollection<FilterItem> CreateContextFilterItems()
+        private ObservableCollection<FilterItem> CreateContextFilterItems()
         {
-            PropertyInfo filterValuePropertyInfo = DataUtils.GetFilterValuePropertyInfo(typeof(TEntity));
-            PropertyInfo filterNamePropertyInfo = DataUtils.GetFilterNamePropertyInfo(typeof(TEntity));
+            var filterValuePropertyInfo = DataUtils.GetFilterValuePropertyInfo(typeof(TEntity));
+            var filterNamePropertyInfo = DataUtils.GetFilterNamePropertyInfo(typeof(TEntity));
 
             if (filterValuePropertyInfo == null || filterNamePropertyInfo == null)
                 return null;
 
-            PropertyInfo baseFilterNamePropertyInfo = filterNamePropertyInfo.PropertyType == typeof(string) ? null : DataUtils.GetFilterNamePropertyInfo(filterNamePropertyInfo.PropertyType);
-            PropertyInfo baseFilterKeyPropertyInfo = baseFilterNamePropertyInfo == null ? null : DataUtils.GetKeyPropertyInfo(typeof(TFilterEntity));
+            var baseFilterNamePropertyInfo = filterNamePropertyInfo.PropertyType == typeof(string)
+                ? null
+                : DataUtils.GetFilterNamePropertyInfo(filterNamePropertyInfo.PropertyType);
+            var baseFilterKeyPropertyInfo = baseFilterNamePropertyInfo == null
+                ? null
+                : DataUtils.GetKeyPropertyInfo(typeof(TFilterEntity));
 
-            if(filterNamePropertyInfo != null)
+            if (filterNamePropertyInfo != null)
             {
-                FilterInfoList filterInfos = new FilterInfoList();
+                var filterInfos = new FilterInfoList();
 
                 foreach (var filterEntity in settings.FilterEntities)
                 {
                     string filterValue;
-                    if (baseFilterNamePropertyInfo != null && baseFilterNamePropertyInfo.PropertyType == typeof(string) && baseFilterKeyPropertyInfo != null)
+                    if (baseFilterNamePropertyInfo != null && baseFilterNamePropertyInfo.PropertyType == typeof(string) &&
+                        baseFilterKeyPropertyInfo != null)
                     {
                         var currentBaseFilterNameValue = baseFilterNamePropertyInfo.GetValue(filterEntity);
                         filterValue = baseFilterKeyPropertyInfo.GetValue(filterEntity).ToString();
 
-                        string filterCriteria = "[" + filterValuePropertyInfo.Name + "] = '" + filterValue + "'";
-                        filterInfos.Add(new FilterInfo() { Name = (string)currentBaseFilterNameValue, FilterCriteria = filterCriteria, ImageUri = null });
+                        var filterCriteria = "[" + filterValuePropertyInfo.Name + "] = '" + filterValue + "'";
+                        filterInfos.Add(new FilterInfo()
+                        {
+                            Name = (string) currentBaseFilterNameValue,
+                            FilterCriteria = filterCriteria,
+                            ImageUri = null
+                        });
                     }
                     else if (filterNamePropertyInfo.PropertyType == typeof(string))
                     {
                         filterValue = filterValuePropertyInfo.GetValue(filterEntity).ToString();
-                        string filterCriteria = "[" + filterValuePropertyInfo.Name + "] = '" + filterValue + "'";
-                        filterInfos.Add(new FilterInfo() { Name = (string)filterNamePropertyInfo.GetValue(filterEntity), FilterCriteria = filterCriteria, ImageUri = null });
+                        var filterCriteria = "[" + filterValuePropertyInfo.Name + "] = '" + filterValue + "'";
+                        filterInfos.Add(new FilterInfo()
+                        {
+                            Name = (string) filterNamePropertyInfo.GetValue(filterEntity),
+                            FilterCriteria = filterCriteria,
+                            ImageUri = null
+                        });
                     }
                     else
+                    {
                         return null;
+                    }
                 }
 
                 return CreateFilterItems(filterInfos, true);
             }
             else
+            {
                 return null;
+            }
         }
 
 
-        const string NewFilterName = @"New Filter";
+        private const string NewFilterName = @"New Filter";
 
-        void AddNewCustomFilter(FilterItem filterItem)
+        private void AddNewCustomFilter(FilterItem filterItem)
         {
             if (string.IsNullOrEmpty(filterItem.Name))
             {
-                int prevIndex = CustomFilters.Select(fi => Regex.Match(fi.Name, NewFilterName + @" (?<index>\d+)")).Where(m => m.Success).Select(m => int.Parse(m.Groups["index"].Value)).DefaultIfEmpty(0).Max();
+                var prevIndex =
+                    CustomFilters.Select(fi => Regex.Match(fi.Name, NewFilterName + @" (?<index>\d+)"))
+                        .Where(m => m.Success)
+                        .Select(m => int.Parse(m.Groups["index"].Value))
+                        .DefaultIfEmpty(0)
+                        .Max();
                 filterItem.Name = NewFilterName + " " + (prevIndex + 1);
             }
             else
@@ -227,32 +281,40 @@ namespace BluePrints.Common.ViewModel.Filtering
             SaveCustomFilters();
         }
 
-        void SaveCustomFilters()
+        private void SaveCustomFilters()
         {
             settings.CustomFilters = SaveToSettings(CustomFilters);
             settings.SaveSettings();
         }
 
-        FilterInfoList SaveToSettings(ObservableCollection<FilterItem> filters)
+        private FilterInfoList SaveToSettings(ObservableCollection<FilterItem> filters)
         {
-            return new FilterInfoList(filters.Select(fi => new FilterInfo { Name = fi.Name, FilterCriteria = CriteriaOperator.ToString(fi.FilterCriteria) }));
+            return
+                new FilterInfoList(
+                    filters.Select(
+                        fi =>
+                            new FilterInfo
+                            {
+                                Name = fi.Name,
+                                FilterCriteria = CriteriaOperator.ToString(fi.FilterCriteria)
+                            }));
         }
 
-        void UpdateFilters()
+        private void UpdateFilters()
         {
             IEnumerable<FilterItem> updateFilters = CustomFilters;
             if (ContextFilters != null)
                 updateFilters.Concat(ContextFilters);
 
             foreach (var item in updateFilters)
-            {
                 item.Update(GetEntityCount(item.FilterCriteria));
-            }
         }
 
-        void ShowFilter(FilterItem filterItem, CustomFilterViewModel filterViewModel, Action onSave)
+        private void ShowFilter(FilterItem filterItem, CustomFilterViewModel filterViewModel, Action onSave)
         {
-            if (FilterDialogService.ShowDialog(MessageButton.OKCancel, "Create Custom Filter", "CustomFilterView", filterViewModel) != MessageResult.OK)
+            if (
+                FilterDialogService.ShowDialog(MessageButton.OKCancel, "Create Custom Filter", "CustomFilterView",
+                    filterViewModel) != MessageResult.OK)
                 return;
             filterItem.FilterCriteria = filterViewModel.FilterCriteria;
             filterItem.Name = filterViewModel.FilterName;
@@ -264,9 +326,10 @@ namespace BluePrints.Common.ViewModel.Filtering
             }
         }
 
-        CustomFilterViewModel CreateCustomFilterViewModel(FilterItem existing, bool save)
+        private CustomFilterViewModel CreateCustomFilterViewModel(FilterItem existing, bool save)
         {
-            var viewModel = CustomFilterViewModel.Create(typeof(TEntity), settings.HiddenFilterProperties, settings.AdditionalFilterProperties);
+            var viewModel = CustomFilterViewModel.Create(typeof(TEntity), settings.HiddenFilterProperties,
+                settings.AdditionalFilterProperties);
             viewModel.FilterCriteria = existing.FilterCriteria;
             viewModel.FilterName = existing.Name;
             viewModel.Save = save;
@@ -274,27 +337,30 @@ namespace BluePrints.Common.ViewModel.Filtering
             return viewModel;
         }
 
-        FilterItem CreateFilterItem(string name, CriteriaOperator filterCriteria, string imageUri, bool showEntityCount)
+        private FilterItem CreateFilterItem(string name, CriteriaOperator filterCriteria, string imageUri, bool showEntityCount)
         {
             return FilterItem.Create(GetEntityCount(filterCriteria), name, filterCriteria, imageUri, showEntityCount);
         }
 
-        int GetEntityCount(CriteriaOperator criteria)
+        private int GetEntityCount(CriteriaOperator criteria)
         {
             return entities.Where(GetWhereExpression(criteria)).Count();
         }
 
-        Expression<Func<TEntity, bool>> GetWhereExpression(CriteriaOperator criteria)
+        private Expression<Func<TEntity, bool>> GetWhereExpression(CriteriaOperator criteria)
         {
             return this.IsInDesignMode()
                 ? CriteriaOperatorToExpressionConverter.GetLinqToObjectsWhere<TEntity>(criteria)
                 : CriteriaOperatorToExpressionConverter.GetGenericWhere<TEntity>(criteria);
         }
 
-        IDialogService FilterDialogService { get { return this.GetRequiredService<IDialogService>("FilterDialogService"); } }
+        private IDialogService FilterDialogService
+        {
+            get { return this.GetRequiredService<IDialogService>("FilterDialogService"); }
+        }
     }
 
-    public interface IFilterTreeViewModelContainer<TEntity, TFilterEntity, TPrimaryKey> 
+    public interface IFilterTreeViewModelContainer<TEntity, TFilterEntity, TPrimaryKey>
         where TEntity : class
         where TFilterEntity : class
     {

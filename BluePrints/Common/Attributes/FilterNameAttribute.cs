@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Data.Attributes
 {
-    class FilterNameAttribute : Attribute
+    internal class FilterNameAttribute : Attribute
     {
     }
 }

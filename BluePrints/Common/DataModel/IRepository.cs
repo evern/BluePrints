@@ -17,7 +17,6 @@ namespace BluePrints.Common.DataModel
     /// <typeparam name="TPrimaryKey">An entity primary key type.</typeparam>
     public interface IRepository<TEntity, TPrimaryKey> : IReadOnlyRepository<TEntity> where TEntity : class
     {
-
         /// <summary>
         /// Finds an entity with the given primary key value. 
         /// If an entity with the given primary key value exists in the unit of work, then it is returned immediately without making a request to the store. 
@@ -31,7 +30,7 @@ namespace BluePrints.Common.DataModel
         /// Marks the given entity as Added such that it will be commited to the store when IUnitOfWork.SaveChanges is called.
         /// </summary>
         /// <param name="entity">The entity to add.</param>
-		void Add(TEntity entity);
+        void Add(TEntity entity);
 
         /// <summary>
         /// Marks the given entity as Deleted such that it will be deleted from the store when IUnitOfWork.SaveChanges is called. 
@@ -43,7 +42,7 @@ namespace BluePrints.Common.DataModel
         /// <summary>
         /// Creates a new instance of the entity type.
         /// </summary>
-		/// <param name="add">A flag determining if the newly created entity is added to the repository.</param>
+        /// <param name="add">A flag determining if the newly created entity is added to the repository.</param>
         TEntity Create(bool add = true);
 
         /// <summary>
@@ -104,9 +103,13 @@ namespace BluePrints.Common.DataModel
         /// <typeparam name="TPrimaryKey">An entity primary key type.</typeparam>
         /// <param name="repository">A repository.</param>
         /// <param name="primaryKey">A value to compare with the entity primary key.</param>
-        public static Expression<Func<TProjection, bool>> GetProjectionPrimaryKeyEqualsExpression<TEntity, TProjection, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository, TPrimaryKey primaryKey) where TEntity : class
+        public static Expression<Func<TProjection, bool>> GetProjectionPrimaryKeyEqualsExpression
+            <TEntity, TProjection, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository,
+                TPrimaryKey primaryKey) where TEntity : class
         {
-            return ExpressionHelper.GetKeyEqualsExpression<TEntity, TProjection, TPrimaryKey>(repository.GetPrimaryKeyExpression, primaryKey);
+            return
+                ExpressionHelper.GetKeyEqualsExpression<TEntity, TProjection, TPrimaryKey>(
+                    repository.GetPrimaryKeyExpression, primaryKey);
         }
 
         /// <summary>
@@ -117,21 +120,21 @@ namespace BluePrints.Common.DataModel
         /// <typeparam name="TPrimaryKey">An entity primary key type.</typeparam>
         /// <param name="repository">A repository.</param>
         /// <param name="projectionEntity">An entity.</param>
-        public static TPrimaryKey GetProjectionPrimaryKey<TEntity, TProjection, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository, TProjection projectionEntity) where TEntity : class
+        public static TPrimaryKey GetProjectionPrimaryKey<TEntity, TProjection, TPrimaryKey>(
+            this IRepository<TEntity, TPrimaryKey> repository, TProjection projectionEntity) where TEntity : class
         {
             return GetProjectionValue(projectionEntity,
                 (TEntity x) =>
                 {
                     if (repository.HasPrimaryKey(x))
-                    {
                         return repository.GetPrimaryKey(x);
-                    }
                     return default(TPrimaryKey);
                 },
                 (TProjection x) => GetProjectionKey(repository, x));
         }
 
-        static TPrimaryKey GetProjectionKey<TEntity, TProjection, TPrimaryKey>(IRepository<TEntity, TPrimaryKey> repository, TProjection projection) where TEntity : class
+        private static TPrimaryKey GetProjectionKey<TEntity, TProjection, TPrimaryKey>(
+            IRepository<TEntity, TPrimaryKey> repository, TProjection projection) where TEntity : class
         {
             var properties = ExpressionHelper.GetKeyProperties(repository.GetPrimaryKeyExpression);
             if (ExpressionHelper.IsTuple<TPrimaryKey>())
@@ -140,31 +143,36 @@ namespace BluePrints.Common.DataModel
                 return ExpressionHelper.MakeTuple<TPrimaryKey>(objects.ToArray());
             }
             var property = properties.Single();
-            return (TPrimaryKey)projection.GetType().GetProperty(property.Name).GetValue(projection, null);
+            return (TPrimaryKey) projection.GetType().GetProperty(property.Name).GetValue(projection, null);
         }
 
-        static void SetProjectionKey<TEntity, TProjection, TPrimaryKey>(IRepository<TEntity, TPrimaryKey> repository, TProjection projectionEntity, TPrimaryKey primaryKey) where TEntity : class
+        private static void SetProjectionKey<TEntity, TProjection, TPrimaryKey>(IRepository<TEntity, TPrimaryKey> repository,
+            TProjection projectionEntity, TPrimaryKey primaryKey) where TEntity : class
         {
             var properties = ExpressionHelper.GetKeyProperties(repository.GetPrimaryKeyExpression);
             var values = ExpressionHelper.GetKeyPropertyValues(primaryKey);
             if (properties.Count() != values.Count())
                 throw new Exception();
-            for (int i = 0; i < values.Count(); i++)
+            for (var i = 0; i < values.Count(); i++)
             {
                 var projectionProperty = typeof(TProjection).GetProperty(properties[i].Name);
                 projectionProperty.SetValue(projectionEntity, values[i], null);
             }
         }
 
-        public static Expression<Func<TProjection, TPrimaryKey>> GetSinglePropertyPrimaryKeyProjectionProperty<TEntity, TProjection, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository) where TEntity : class
+        public static Expression<Func<TProjection, TPrimaryKey>> GetSinglePropertyPrimaryKeyProjectionProperty
+            <TEntity, TProjection, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository) where TEntity : class
         {
             var properties = ExpressionHelper.GetKeyProperties(repository.GetPrimaryKeyExpression);
             var propertyName = properties.Single().Name;
             var parameter = Expression.Parameter(typeof(TProjection));
-            return Expression.Lambda<Func<TProjection, TPrimaryKey>>(Expression.Property(parameter, propertyName), parameter);
+            return Expression.Lambda<Func<TProjection, TPrimaryKey>>(Expression.Property(parameter, propertyName),
+                parameter);
         }
 
-        public static void VerifyProjection<TEntity, TProjection, TPrimaryKey>(IRepository<TEntity, TPrimaryKey> repository, Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection) where TEntity : class
+        public static void VerifyProjection<TEntity, TProjection, TPrimaryKey>(
+            IRepository<TEntity, TPrimaryKey> repository,
+            Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection) where TEntity : class
         {
             if (typeof(TProjection) != typeof(TEntity) && projection == null)
                 throw new ArgumentException("Projection should not be null when its type is different from TEntity.");
@@ -177,8 +185,10 @@ namespace BluePrints.Common.DataModel
             });
             if (projectionKeyPropertyCount != entityKeyProperties.Count())
             {
-                string tprojectionName = typeof(TProjection).Name;
-                string message = string.Format("Projection type {0} should have the same primary key as its corresponding entity", tprojectionName);
+                var tprojectionName = typeof(TProjection).Name;
+                var message =
+                    string.Format("Projection type {0} should have the same primary key as its corresponding entity",
+                        tprojectionName);
                 throw new ArgumentException(message, tprojectionName);
             }
         }
@@ -192,16 +202,14 @@ namespace BluePrints.Common.DataModel
         /// <param name="repository">A repository.</param>
         /// <param name="projectionEntity">A projection.</param>
         /// <param name="primaryKey">A new primary key value.</param>
-        public static void SetProjectionPrimaryKey<TEntity, TProjection, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository, TProjection projectionEntity, TPrimaryKey primaryKey) where TEntity : class
+        public static void SetProjectionPrimaryKey<TEntity, TProjection, TPrimaryKey>(
+            this IRepository<TEntity, TPrimaryKey> repository, TProjection projectionEntity, TPrimaryKey primaryKey)
+            where TEntity : class
         {
             if (IsProjection<TEntity, TProjection>(projectionEntity))
-            {
                 SetProjectionKey<TEntity, TProjection, TPrimaryKey>(repository, projectionEntity, primaryKey);
-            }
             else
-            {
                 repository.SetPrimaryKey(projectionEntity as TEntity, primaryKey);
-            }
         }
 
         /// <summary>
@@ -215,16 +223,19 @@ namespace BluePrints.Common.DataModel
         /// <param name="repository">A repository.</param>
         /// <param name="projectionEntity">A projection.</param>
         /// <param name="applyProjectionPropertiesToEntity">An action which applies the projection properties to the newly created entity.</param>		
-        public static TEntity FindExistingOrAddNewEntity<TEntity, TProjection, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository, TProjection projectionEntity, Action<TProjection, TEntity> applyProjectionPropertiesToEntity, out bool isNewEntity) where TEntity : class
+        public static TEntity FindExistingOrAddNewEntity<TEntity, TProjection, TPrimaryKey>(
+            this IRepository<TEntity, TPrimaryKey> repository, TProjection projectionEntity,
+            Action<TProjection, TEntity> applyProjectionPropertiesToEntity, out bool isNewEntity) where TEntity : class
         {
             isNewEntity = false;
-            bool projection = IsProjection<TEntity, TProjection>(projectionEntity);
+            var projection = IsProjection<TEntity, TProjection>(projectionEntity);
             //BluePrints Modification Start
-            TPrimaryKey projectionPrimaryKey = repository.GetProjectionPrimaryKey(projectionEntity);
-            bool isGuidEmpty = (projectionPrimaryKey.GetType() == typeof(Guid) && projectionPrimaryKey.ToString() == Guid.Empty.ToString());
+            var projectionPrimaryKey = repository.GetProjectionPrimaryKey(projectionEntity);
+            var isGuidEmpty = projectionPrimaryKey.GetType() == typeof(Guid) &&
+                               projectionPrimaryKey.ToString() == Guid.Empty.ToString();
             //BluePrints Modification End
             TEntity entity = null;
-            if(!isGuidEmpty)
+            if (!isGuidEmpty)
                 entity = repository.Find(projectionPrimaryKey);
 
             if (entity == null || isGuidEmpty)
@@ -241,9 +252,7 @@ namespace BluePrints.Common.DataModel
                 }
             }
             if (projection)
-            {
                 applyProjectionPropertiesToEntity(projectionEntity, entity);
-            }
             return entity;
         }
 
@@ -255,7 +264,8 @@ namespace BluePrints.Common.DataModel
         /// <typeparam name="TPrimaryKey">An entity primary key type.</typeparam>
         /// <param name="repository">A repository.</param>
         /// <param name="projectionEntity">An entity.</param>
-        public static bool IsDetached<TEntity, TProjection, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository, TProjection projectionEntity) where TEntity : class
+        public static bool IsDetached<TEntity, TProjection, TPrimaryKey>(
+            this IRepository<TEntity, TPrimaryKey> repository, TProjection projectionEntity) where TEntity : class
         {
             return GetProjectionValue(projectionEntity,
                 (TEntity x) => repository.GetState(x) == EntityState.Detached,
@@ -270,7 +280,8 @@ namespace BluePrints.Common.DataModel
         /// <typeparam name="TPrimaryKey">An entity primary key type.</typeparam>
         /// <param name="repository">A repository.</param>
         /// <param name="projectionEntity">An entity.</param>
-        public static bool ProjectionHasPrimaryKey<TEntity, TProjection, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository, TProjection projectionEntity) where TEntity : class
+        public static bool ProjectionHasPrimaryKey<TEntity, TProjection, TPrimaryKey>(
+            this IRepository<TEntity, TPrimaryKey> repository, TProjection projectionEntity) where TEntity : class
         {
             return GetProjectionValue(projectionEntity,
                 (TEntity x) => repository.HasPrimaryKey(x),
@@ -286,23 +297,34 @@ namespace BluePrints.Common.DataModel
         /// <param name="repository">A repository.</param>
         /// <param name="projection">A LINQ function used to transform entities from the repository entity type to the projection entity type.</param>
         /// <param name="primaryKey">A value to compare with the entity primary key.</param>
-        public static TProjection FindActualProjectionByKey<TEntity, TProjection, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository, Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection, TPrimaryKey primaryKey) where TEntity : class
+        public static TProjection FindActualProjectionByKey<TEntity, TProjection, TPrimaryKey>(
+            this IRepository<TEntity, TPrimaryKey> repository,
+            Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection, TPrimaryKey primaryKey)
+            where TEntity : class
         {
-            var primaryKeyEqualsExpression = GetProjectionPrimaryKeyEqualsExpression<TEntity, TProjection, TPrimaryKey>(repository, primaryKey);
-            var result = repository.GetFilteredEntities(null, projection).Where(primaryKeyEqualsExpression).Take(1).ToArray().FirstOrDefault(); //WCF incorrect FirstOrDefault implementation workaround
+            var primaryKeyEqualsExpression =
+                GetProjectionPrimaryKeyEqualsExpression<TEntity, TProjection, TPrimaryKey>(repository, primaryKey);
+            var result =
+                repository.GetFilteredEntities(null, projection)
+                    .Where(primaryKeyEqualsExpression)
+                    .Take(1)
+                    .ToArray()
+                    .FirstOrDefault(); //WCF incorrect FirstOrDefault implementation workaround
             return GetProjectionValue(result,
                 (TEntity x) => x != null ? repository.Reload(x) : null,
                 (TProjection x) => x);
         }
 
-        static TProjectionResult GetProjectionValue<TEntity, TProjection, TEntityResult, TProjectionResult>(TProjection value, Func<TEntity, TEntityResult> entityFunc, Func<TProjection, TProjectionResult> projectionFunc)
+        private static TProjectionResult GetProjectionValue<TEntity, TProjection, TEntityResult, TProjectionResult>(
+            TProjection value, Func<TEntity, TEntityResult> entityFunc,
+            Func<TProjection, TProjectionResult> projectionFunc)
         {
             if (typeof(TEntity) != typeof(TProjection) || typeof(TEntityResult) != typeof(TProjectionResult))
                 return projectionFunc(value);
-            return (TProjectionResult)(object)entityFunc((TEntity)(object)value);
+            return (TProjectionResult) (object) entityFunc((TEntity) (object) value);
         }
 
-        static bool IsProjection<TEntity, TProjection>(TProjection projection)
+        private static bool IsProjection<TEntity, TProjection>(TProjection projection)
         {
             return !(projection is TEntity);
         }

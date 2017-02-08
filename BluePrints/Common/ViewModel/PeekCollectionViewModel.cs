@@ -20,11 +20,11 @@ namespace BluePrints.Common.ViewModel
     /// <typeparam name="TEntity">An entity type.</typeparam>
     /// <typeparam name="TPrimaryKey">A primary key value type.</typeparam>
     /// <typeparam name="TUnitOfWork">A unit of work type.</typeparam>
-    public partial class PeekCollectionViewModel<TNavigationToken, TEntity, TPrimaryKey, TUnitOfWork> : CollectionViewModelBase<TEntity, TEntity, TPrimaryKey, TUnitOfWork>
+    public partial class PeekCollectionViewModel<TNavigationToken, TEntity, TPrimaryKey, TUnitOfWork> :
+        CollectionViewModelBase<TEntity, TEntity, TPrimaryKey, TUnitOfWork>
         where TEntity : class
         where TUnitOfWork : IUnitOfWork
     {
-
         /// <summary>
         /// Creates a new instance of PeekCollectionViewModel as a POCO view model.
         /// </summary>
@@ -38,11 +38,15 @@ namespace BluePrints.Common.ViewModel
             Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
             Func<IRepositoryQuery<TEntity>, IQueryable<TEntity>> projection = null)
         {
-            return ViewModelSource.Create(() => new PeekCollectionViewModel<TNavigationToken, TEntity, TPrimaryKey, TUnitOfWork>(navigationToken, unitOfWorkFactory, getRepositoryFunc, projection));
+            return
+                ViewModelSource.Create(
+                    () =>
+                        new PeekCollectionViewModel<TNavigationToken, TEntity, TPrimaryKey, TUnitOfWork>(
+                            navigationToken, unitOfWorkFactory, getRepositoryFunc, projection));
         }
 
-        TNavigationToken navigationToken;
-        TEntity pickedEntity;
+        private TNavigationToken navigationToken;
+        private TEntity pickedEntity;
 
         /// <summary>
         /// Initializes a new instance of the PeekCollectionViewModel class.
@@ -57,7 +61,7 @@ namespace BluePrints.Common.ViewModel
             IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory,
             Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
             Func<IRepositoryQuery<TEntity>, IQueryable<TEntity>> projection = null
-            ) : base(unitOfWorkFactory, getRepositoryFunc, projection, null, null, true)
+        ) : base(unitOfWorkFactory, getRepositoryFunc, projection, null, null, true)
         {
             this.navigationToken = navigationToken;
         }
@@ -91,7 +95,7 @@ namespace BluePrints.Common.ViewModel
             Messenger.Default.Register<SelectedEntityRequest>(this, x => SendSelectEntityMessage());
         }
 
-        void SendSelectEntityMessage()
+        private void SendSelectEntityMessage()
         {
             if (IsLoaded && pickedEntity != null)
                 Messenger.Default.Send(new SelectEntityMessage(CreateRepository().GetProjectionPrimaryKey(pickedEntity)));

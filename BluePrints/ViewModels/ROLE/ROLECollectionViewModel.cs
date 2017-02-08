@@ -24,12 +24,13 @@ namespace BluePrints.ViewModels
     {
         public ROLECollectionViewModel ROLECollection { get; set; }
         public ROLE_PERMISSIONSProjectionCollectionViewModel ROLE_PERMISSIONCollection { get; set; }
+
         public ROLECollectionViewModelWrapper Create()
         {
             return ViewModelSource.Create(() => new ROLECollectionViewModelWrapper());
         }
 
-        Guid GetROLE_KEYFunc()
+        private Guid GetROLE_KEYFunc()
         {
             if (ROLECollection.SelectedEntity == null)
                 return Guid.Empty;
@@ -37,17 +38,22 @@ namespace BluePrints.ViewModels
             return ROLECollection.SelectedEntity.GUID;
         }
 
-        DispatcherTimer selectFirstRoleDispatcher;
+        private DispatcherTimer selectFirstRoleDispatcher;
+
         protected ROLECollectionViewModelWrapper()
         {
             ROLECollection = ROLECollectionViewModel.Create();
             ROLECollection.SetParentViewModel(this);
-            ROLECollection.OnSelectedEntityChangedCallBack = this.OnSelectedEntityChangedCallBack;
-            ROLECollection.OnEntitiesLoadedCallBack = this.OnEntitiesLoaded;
+            ROLECollection.OnSelectedEntityChangedCallBack = OnSelectedEntityChangedCallBack;
+            ROLECollection.OnEntitiesLoadedCallBack = OnEntitiesLoaded;
 
-            ROLE_PERMISSIONCollection = ROLE_PERMISSIONSProjectionCollectionViewModel.Create(null, query => ROLE_PERMISSIONProjectionQueries.GetAssignedROLE_PERMISSIONByROLE(query, GetROLE_KEYFunc, GetStaticROLE_PERMISSIONS()));
-            ROLE_PERMISSIONCollection.ApplyProjectionPropertiesToEntityCallBack = this.ApplyProjectionPropertiesToEntityCallBack;
-            ROLE_PERMISSIONCollection.OnEntitiesLoadedCallBack = this.OnEntitiesLoaded;
+            ROLE_PERMISSIONCollection = ROLE_PERMISSIONSProjectionCollectionViewModel.Create(null,
+                query =>
+                    ROLE_PERMISSIONProjectionQueries.GetAssignedROLE_PERMISSIONByROLE(query, GetROLE_KEYFunc,
+                        GetStaticROLE_PERMISSIONS()));
+            ROLE_PERMISSIONCollection.ApplyProjectionPropertiesToEntityCallBack =
+                ApplyProjectionPropertiesToEntityCallBack;
+            ROLE_PERMISSIONCollection.OnEntitiesLoadedCallBack = OnEntitiesLoaded;
             ROLE_PERMISSIONCollection.IsPersistentView = true;
             ROLE_PERMISSIONCollection.SetParentViewModel(this);
             selectFirstRoleDispatcher = new DispatcherTimer();
@@ -62,7 +68,7 @@ namespace BluePrints.ViewModels
                 selectFirstRoleDispatcher.Start();
         }
 
-        void selectFirstRoleDispatcher_Tick(object sender, EventArgs e)
+        private void selectFirstRoleDispatcher_Tick(object sender, EventArgs e)
         {
             selectFirstRoleDispatcher.Stop();
             if (ROLECollection.Entities.Count > 0)
@@ -72,20 +78,19 @@ namespace BluePrints.ViewModels
             }
         }
 
-        int detailedEntitiesLoaded = 0;
+        private int detailedEntitiesLoaded = 0;
+
         public void dragDropManager_Dropped(object sender, DevExpress.Xpf.Grid.DragDrop.TreeListDroppedEventArgs e)
         {
             if (e.TargetNode != null)
                 foreach (TreeListNode obj in e.DraggedRows)
-                {
-                    ROLECollection.Save((ROLE)obj.Content);
-                }
+                    ROLECollection.Save((ROLE) obj.Content);
         }
 
         public void AssignPermission(CellValueChangedEventArgs e)
         {
-            ROLE_PERMISSIONInfo projection = (ROLE_PERMISSIONInfo)e.Row;
-            bool isChecked = (bool)e.Value;
+            var projection = (ROLE_PERMISSIONInfo) e.Row;
+            var isChecked = (bool) e.Value;
             projection.GUID_ROLE = ROLECollection.SelectedEntity.GUID;
             projection.ASSIGNED = isChecked;
             ROLE_PERMISSIONSave(projection);
@@ -97,7 +102,8 @@ namespace BluePrints.ViewModels
         /// <param name="projection">projection entity</param>
         public void ROLE_PERMISSIONSave(ROLE_PERMISSIONInfo projection)
         {
-            var actualEntity = ROLE_PERMISSIONCollection.Entities.FirstOrDefault(x => x.PERMISSION == projection.PERMISSION);
+            var actualEntity =
+                ROLE_PERMISSIONCollection.Entities.FirstOrDefault(x => x.PERMISSION == projection.PERMISSION);
             if (actualEntity != null)
                 DataUtils.ShallowCopy(actualEntity, projection);
             else
@@ -112,63 +118,82 @@ namespace BluePrints.ViewModels
             ROLE_PERMISSIONCollection.Refresh();
         }
 
-        public void ApplyProjectionPropertiesToEntityCallBack(ROLE_PERMISSIONInfo ROLEPERMISSIONInfo, ROLE_PERMISSION ROLEPERMISSION)
+        public void ApplyProjectionPropertiesToEntityCallBack(ROLE_PERMISSIONInfo ROLEPERMISSIONInfo,
+            ROLE_PERMISSION ROLEPERMISSION)
         {
             DataUtils.ShallowCopy(ROLEPERMISSION, ROLEPERMISSIONInfo, false);
         }
 
-        Dictionary<string, string> permissionLookUp;
+        private Dictionary<string, string> permissionLookUp;
+
         public Dictionary<string, string> PermissionLookUp
         {
-            get 
-            { 
-                if(permissionLookUp == null)
+            get
+            {
+                if (permissionLookUp == null)
                     permissionLookUp = LoginCredentials.GetPermissionLookUpInDictionary();
 
-                return permissionLookUp; 
+                return permissionLookUp;
             }
         }
 
         private IQueryable<ROLE_PERMISSION> GetStaticROLE_PERMISSIONS()
         {
-            ResourceSet resourceSet = PermissionResources.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
-            List<ROLE_PERMISSION> permissions = new List<ROLE_PERMISSION>();
+            var resourceSet = PermissionResources.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture,
+                true, true);
+            var permissions = new List<ROLE_PERMISSION>();
             foreach (System.Collections.DictionaryEntry permission in resourceSet)
-            {
-                permissions.Add(new ROLE_PERMISSION() { PERMISSION = permission.Key.ToString() });
-            }
+                permissions.Add(new ROLE_PERMISSION() {PERMISSION = permission.Key.ToString()});
 
             return permissions.AsQueryable();
         }
 
-        DevExpress.Mvvm.IDialogService AddRoleDialogService { get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("AddRoleDialogService"); } }
-        protected IMessageBoxService MessageBoxService { get { return this.GetRequiredService<IMessageBoxService>(); } }
+        private IDialogService AddRoleDialogService
+        {
+            get { return this.GetRequiredService<IDialogService>("AddRoleDialogService"); }
+        }
+
+        protected IMessageBoxService MessageBoxService
+        {
+            get { return this.GetRequiredService<IMessageBoxService>(); }
+        }
 
         public void AddRole(object button)
         {
-            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
+            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject) button) as GridMenuInfo;
 
-            string roleName = string.Empty;
+            var roleName = string.Empty;
             var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(roleName);
-            if (AddRoleDialogService.ShowDialog(MessageButton.OKCancel, "Add new role", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
+            if (
+                AddRoleDialogService.ShowDialog(MessageButton.OKCancel, "Add new role", "BulkEditStrings",
+                    bulkEditStringsViewModel) == MessageResult.OK)
             {
                 if (bulkEditStringsViewModel.EditValue != null)
-                    roleName = (string)bulkEditStringsViewModel.EditValue;
+                    roleName = (string) bulkEditStringsViewModel.EditValue;
 
-                ROLE newROLE = new ROLE() { NAME = roleName, SORTORDER = 0, PARENTGUID = Guid.Empty };
-                string errorMessage = string.Empty;
+                var newROLE = new ROLE() {NAME = roleName, SORTORDER = 0, PARENTGUID = Guid.Empty};
+                var errorMessage = string.Empty;
                 if (ROLECollection.IsValidEntity(newROLE, ref errorMessage))
                     ROLECollection.Save(newROLE);
                 else
-                    MessageBoxService.ShowMessage(errorMessage + " already exists", "Error", MessageButton.OK, MessageIcon.Error);
+                    MessageBoxService.ShowMessage(errorMessage + " already exists", "Error", MessageButton.OK,
+                        MessageIcon.Error);
             }
         }
 
         #region IDocumentContent
-        protected IDocumentOwner DocumentOwner { get; private set; }
-        object IDocumentContent.Title { get { return null; } }
 
-        protected virtual void OnClose(CancelEventArgs e) { }
+        protected IDocumentOwner DocumentOwner { get; private set; }
+
+        object IDocumentContent.Title
+        {
+            get { return null; }
+        }
+
+        protected virtual void OnClose(CancelEventArgs e)
+        {
+        }
+
         void IDocumentContent.OnClose(CancelEventArgs e)
         {
             OnClose(e);
@@ -185,6 +210,7 @@ namespace BluePrints.ViewModels
             get { return DocumentOwner; }
             set { DocumentOwner = value; }
         }
+
         #endregion
     }
 
@@ -193,12 +219,12 @@ namespace BluePrints.ViewModels
     /// </summary>
     public partial class ROLECollectionViewModel : CollectionViewModel<ROLE, Guid, IBluePrintsEntitiesUnitOfWork>
     {
-
         /// <summary>
         /// Creates a new instance of ROLECollectionViewModel as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static ROLECollectionViewModel Create(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        public static ROLECollectionViewModel Create(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
             return ViewModelSource.Create(() => new ROLECollectionViewModel(unitOfWorkFactory));
         }
@@ -214,27 +240,32 @@ namespace BluePrints.ViewModels
         }
 
         public Action<ROLE> OnSelectedEntityChangedCallBack;
+
         protected override void OnSelectedEntityChanged()
         {
             base.OnSelectedEntityChanged();
             if (OnSelectedEntityChangedCallBack != null)
-                OnSelectedEntityChangedCallBack(this.SelectedEntity);
+                OnSelectedEntityChangedCallBack(SelectedEntity);
         }
     }
 
     /// <summary>
     /// Represents the ROLE_PERMISSIONS collection view model.
     /// </summary>
-    public partial class ROLE_PERMISSIONSProjectionCollectionViewModel : CollectionViewModel<ROLE_PERMISSION, ROLE_PERMISSIONInfo, Guid, IBluePrintsEntitiesUnitOfWork>
+    public partial class ROLE_PERMISSIONSProjectionCollectionViewModel :
+        CollectionViewModel<ROLE_PERMISSION, ROLE_PERMISSIONInfo, Guid, IBluePrintsEntitiesUnitOfWork>
     {
-
         /// <summary>
         /// Creates a new instance of ROLE_PERMISSIONSCollectionViewModel as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static ROLE_PERMISSIONSProjectionCollectionViewModel Create(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null, Func<IRepositoryQuery<ROLE_PERMISSION>, IQueryable<ROLE_PERMISSIONInfo>> projection = null)
+        public static ROLE_PERMISSIONSProjectionCollectionViewModel Create(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null,
+            Func<IRepositoryQuery<ROLE_PERMISSION>, IQueryable<ROLE_PERMISSIONInfo>> projection = null)
         {
-            return ViewModelSource.Create(() => new ROLE_PERMISSIONSProjectionCollectionViewModel(unitOfWorkFactory, projection));
+            return
+                ViewModelSource.Create(
+                    () => new ROLE_PERMISSIONSProjectionCollectionViewModel(unitOfWorkFactory, projection));
         }
 
         /// <summary>
@@ -242,8 +273,12 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the ROLE_PERMISSIONSCollectionViewModel type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected ROLE_PERMISSIONSProjectionCollectionViewModel(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null, Func<IRepositoryQuery<ROLE_PERMISSION>, IQueryable<ROLE_PERMISSIONInfo>> projection = null)
-            : base(unitOfWorkFactory ?? BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(), x => x.ROLE_PERMISSIONS, projection)
+        protected ROLE_PERMISSIONSProjectionCollectionViewModel(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null,
+            Func<IRepositoryQuery<ROLE_PERMISSION>, IQueryable<ROLE_PERMISSIONInfo>> projection = null)
+            : base(
+                unitOfWorkFactory ?? BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(), x => x.ROLE_PERMISSIONS,
+                projection)
         {
         }
     }

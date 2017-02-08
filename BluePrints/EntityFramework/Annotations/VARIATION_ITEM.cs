@@ -1,6 +1,6 @@
 namespace BluePrints.Data
 {
-    using BluePrints.Common;
+    using Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -9,6 +9,5 @@ namespace BluePrints.Data
 
     public partial class VARIATION_ITEM
     {
-
     }
 }

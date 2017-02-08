@@ -39,8 +39,12 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         public static IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> GetUnitOfWorkFactory(bool isInDesignTime)
         {
             if (isInDesignTime)
-                return new DesignTimeUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork>(() => new BluePrintsEntitiesDesignTimeUnitOfWork());
-            return new DbUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork>(() => new BluePrintsEntitiesUnitOfWork(() => new BluePrintsEntities()));
+                return
+                    new DesignTimeUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork>(
+                        () => new BluePrintsEntitiesDesignTimeUnitOfWork());
+            return
+                new DbUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork>(
+                    () => new BluePrintsEntitiesUnitOfWork(() => new BluePrintsEntities()));
         }
     }
 }

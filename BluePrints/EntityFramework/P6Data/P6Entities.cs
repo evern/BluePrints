@@ -194,7 +194,7 @@ namespace BluePrints.P6Data
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            Database.SetInitializer<P6Entities>(null);   
+            Database.SetInitializer<P6Entities>(null);
 
             modelBuilder.Entity<ACCOUNT>()
                 .Property(e => e.acct_short_name)
@@ -4410,7 +4410,7 @@ namespace BluePrints.P6Data
             modelBuilder.Entity<TIMESHT>()
                 .HasMany(e => e.RSRCHOUR)
                 .WithRequired(e => e.TIMESHT)
-                .HasForeignKey(e => new { e.ts_id, e.rsrc_id })
+                .HasForeignKey(e => new {e.ts_id, e.rsrc_id})
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<TMPLCATG>()

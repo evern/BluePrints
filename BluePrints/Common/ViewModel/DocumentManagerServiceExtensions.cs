@@ -18,9 +18,12 @@ namespace BluePrints.Common.ViewModel
         /// <param name="documentManagerService">An instance of the IDocumentManager interface used to create and show the document.</param>
         /// <param name="parentViewModel">An object that is passed to the view model of the created view.</param>
         /// <param name="primaryKey">An entity primary key.</param>
-        public static IDocument ShowExistingEntityDocument<TEntity, TPrimaryKey>(this IDocumentManagerService documentManagerService, object parentViewModel, TPrimaryKey primaryKey, string title = "")
+        public static IDocument ShowExistingEntityDocument<TEntity, TPrimaryKey>(
+            this IDocumentManagerService documentManagerService, object parentViewModel, TPrimaryKey primaryKey,
+            string title = "")
         {
-            IDocument document = FindEntityDocument<TEntity, TPrimaryKey>(documentManagerService, primaryKey, title) ?? CreateDocument<TEntity>(documentManagerService, primaryKey, parentViewModel);
+            var document = FindEntityDocument<TEntity, TPrimaryKey>(documentManagerService, primaryKey, title) ??
+                                 CreateDocument<TEntity>(documentManagerService, primaryKey, parentViewModel);
             if (document != null)
                 document.Show();
             return document;
@@ -32,9 +35,11 @@ namespace BluePrints.Common.ViewModel
         /// <param name="documentManagerService">An instance of the IDocumentManager interface used to create and show the document.</param>
         /// <param name="parentViewModel">An object that is passed to the view model of the created view.</param>
         /// <param name="newEntityInitializer">An optional parameter that provides a function that initializes a new entity.</param>
-        public static void ShowNewEntityDocument<TEntity>(this IDocumentManagerService documentManagerService, object parentViewModel, Action<TEntity> newEntityInitializer = null)
+        public static void ShowNewEntityDocument<TEntity>(this IDocumentManagerService documentManagerService,
+            object parentViewModel, Action<TEntity> newEntityInitializer = null)
         {
-            IDocument document = CreateDocument<TEntity>(documentManagerService, newEntityInitializer ?? (x => DefaultEntityInitializer(x)), parentViewModel);
+            var document = CreateDocument<TEntity>(documentManagerService,
+                newEntityInitializer ?? (x => DefaultEntityInitializer(x)), parentViewModel);
             if (document != null)
                 document.Show();
         }
@@ -44,13 +49,13 @@ namespace BluePrints.Common.ViewModel
         /// </summary>
         /// <param name="documentManagerService">An instance of the IDocumentManager interface used to find a document.</param>
         /// <param name="primaryKey">An entity primary key.</param>
-        public static IDocument FindEntityDocument<TEntity, TPrimaryKey>(this IDocumentManagerService documentManagerService, TPrimaryKey primaryKey, string title = "")
+        public static IDocument FindEntityDocument<TEntity, TPrimaryKey>(
+            this IDocumentManagerService documentManagerService, TPrimaryKey primaryKey, string title = "")
         {
             if (documentManagerService == null)
                 return null;
-            foreach (IDocument document in documentManagerService.Documents)
-            {
-                if(title != string.Empty)
+            foreach (var document in documentManagerService.Documents)
+                if (title != string.Empty)
                 {
                     if (document.Title == null)
                         return null;
@@ -61,17 +66,20 @@ namespace BluePrints.Common.ViewModel
                 }
                 else
                 {
-                    ISingleObjectViewModel<TEntity, TPrimaryKey> entityViewModel = document.Content as ISingleObjectViewModel<TEntity, TPrimaryKey>;
-                    if (entityViewModel != null && object.Equals(entityViewModel.PrimaryKey, primaryKey))
+                    var entityViewModel =
+                        document.Content as ISingleObjectViewModel<TEntity, TPrimaryKey>;
+                    if (entityViewModel != null && Equals(entityViewModel.PrimaryKey, primaryKey))
                         return document;
                 }
-            }
             return null;
         }
 
-        static void DefaultEntityInitializer<TEntity>(TEntity entity) { }
+        private static void DefaultEntityInitializer<TEntity>(TEntity entity)
+        {
+        }
 
-        static IDocument CreateDocument<TEntity>(IDocumentManagerService documentManagerService, object parameter, object parentViewModel)
+        private static IDocument CreateDocument<TEntity>(IDocumentManagerService documentManagerService, object parameter,
+            object parentViewModel)
         {
             if (documentManagerService == null)
                 return null;
@@ -82,15 +90,20 @@ namespace BluePrints.Common.ViewModel
             var CustomDocumentTypeViewModel = parentViewModel as ISupportCustomDocumentTypeNameAndParameter;
             if (CustomDocumentTypeViewModel != null && CustomDocumentTypeViewModel.IsCustomModeEnabled())
             {
-                document = documentManagerService.CreateDocument(CustomDocumentTypeViewModel.GetCustomDocumentTypeName(), CustomDocumentTypeViewModel.GetCustomDocumentParameter(), parentViewModel);
+                document = documentManagerService.CreateDocument(
+                    CustomDocumentTypeViewModel.GetCustomDocumentTypeName(),
+                    CustomDocumentTypeViewModel.GetCustomDocumentParameter(), parentViewModel);
                 document.Title = CustomDocumentTypeViewModel.GetCustomDocumentTitle();
             }
             else
-                document = documentManagerService.CreateDocument(GetDocumentTypeName<TEntity>(), parameter, parentViewModel);
+            {
+                document = documentManagerService.CreateDocument(GetDocumentTypeName<TEntity>(), parameter,
+                    parentViewModel);
+            }
             //BluePrints Customization End
 
             document.Id = "_" + Guid.NewGuid().ToString().Replace('-', '_');
-            
+
             //BluePrints Customization Start
             document.DestroyOnClose = true;
             //BluePrints Customization End

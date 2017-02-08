@@ -28,7 +28,6 @@ namespace BluePrints.Common.DataModel
     /// <typeparam name="TUnitOfWork">A unit of work type.</typeparam>
     public interface IUnitOfWorkFactory<TUnitOfWork> where TUnitOfWork : IUnitOfWork
     {
-
         /// <summary>
         /// Creates a new unit of work.
         /// </summary>
@@ -37,7 +36,9 @@ namespace BluePrints.Common.DataModel
         /// <summary>
         /// Creates a new IInstantFeedbackSource instance.
         /// </summary>
-        IInstantFeedbackSource<TProjection> CreateInstantFeedbackSource<TEntity, TProjection, TPrimaryKey>(Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc, Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection)
+        IInstantFeedbackSource<TProjection> CreateInstantFeedbackSource<TEntity, TProjection, TPrimaryKey>(
+            Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
+            Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection)
             where TEntity : class, new()
             where TProjection : class;
     }
@@ -67,7 +68,8 @@ namespace BluePrints.Common.DataModel
         /// <param name="threadSafeProxy">A proxy object.</param>
         /// <param name="propertyExpression">An expression specifying the property which value is to be fetched.</param>
         /// <returns></returns>
-        TProperty GetPropertyValue<TProperty>(object threadSafeProxy, Expression<Func<TEntity, TProperty>> propertyExpression);
+        TProperty GetPropertyValue<TProperty>(object threadSafeProxy,
+            Expression<Func<TEntity, TProperty>> propertyExpression);
 
         /// <summary>
         /// Check if a proxy object is in the Loaded state.

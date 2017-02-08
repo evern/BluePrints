@@ -21,13 +21,18 @@ using System.Threading.Tasks;
 
 namespace BluePrints.ViewModels
 {
-    public class ESTIMATION_DIRECTCollectionViewModelWrapper : CollectionViewModelsWrapper<ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork, CollectionViewModel<ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork>>, ISupportCustomDocumentTypeNameAndParameter
+    public class ESTIMATION_DIRECTCollectionViewModelWrapper :
+        CollectionViewModelsWrapper
+        <ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork,
+            CollectionViewModel<ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork>>,
+        ISupportCustomDocumentTypeNameAndParameter
     {
         /// <summary>
         /// Creates a new instance of ESTIMATION_DIRECT_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static ESTIMATION_DIRECTCollectionViewModelWrapper Create(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        public static ESTIMATION_DIRECTCollectionViewModelWrapper Create(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
             return ViewModelSource.Create(() => new ESTIMATION_DIRECTCollectionViewModelWrapper(unitOfWorkFactory));
         }
@@ -37,122 +42,141 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the PROJECTViewModel type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected ESTIMATION_DIRECTCollectionViewModelWrapper(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        protected ESTIMATION_DIRECTCollectionViewModelWrapper(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
 
         #region Database Operations
-        BluePrints.Data.PROJECT loadPROJECT;
-        IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
+        private Data.PROJECT loadPROJECT;
+
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
+            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
+        private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory =
+            P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
         protected override void InitializeParameters(object parameter)
         {
-            EntitiesParameter<BluePrints.Data.PROJECT> PROJECTParameter = (EntitiesParameter<BluePrints.Data.PROJECT>)parameter;
-            this.loadPROJECT = PROJECTParameter.GetEntity();
+            var PROJECTParameter =
+                (EntitiesParameter<Data.PROJECT>) parameter;
+            loadPROJECT = PROJECTParameter.GetEntity();
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
         {
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddEntitiesLoader<BluePrints.Data.PROJECT, BluePrints.Data.PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0, bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT, OnAfterEntitiesChanged);
+            loaderCollection
+                .AddEntitiesLoader
+                <Data.PROJECT, Data.PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0,
+                    bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null,
+                    isContinueLoadingAfterPROJECT, OnAfterEntitiesChanged);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
-        bool isContinueLoadingAfterPROJECT(IEnumerable<BluePrints.Data.PROJECT> entities)
+        private bool isContinueLoadingAfterPROJECT(IEnumerable<Data.PROJECT> entities)
         {
             if (entities.Count() == 0)
             {
-                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed, "PROJECT"))));
+                mainThreadDispatcher.BeginInvoke(
+                    new Action(
+                        () =>
+                            MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed, "PROJECT"))));
                 return false;
             }
 
-            this.loadPROJECT = entities.First();
+            loadPROJECT = entities.First();
             return true;
         }
 
-        Func<IRepositoryQuery<BluePrints.Data.PROJECT>, IQueryable<BluePrints.Data.PROJECT>> PROJECTProjectionFunc()
+        private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
         {
-            return query => query.Where(x => x.GUID == this.loadPROJECT.GUID);
+            return query => query.Where(x => x.GUID == loadPROJECT.GUID);
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(this.bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoader.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<ESTIMATION_DIRECT>, IQueryable<ESTIMATION_DIRECT>> ConstructMainViewModelProjection()
+        protected override Func<IRepositoryQuery<ESTIMATION_DIRECT>, IQueryable<ESTIMATION_DIRECT>>
+            ConstructMainViewModelProjection()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATION_DIRECT> entities)
         {
-            MainViewModel.OnBeforeEntitySavedCallBack = this.OnBeforeEntitySaved;
+            MainViewModel.OnBeforeEntitySavedCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
 
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
+            object sender)
         {
             if (sender.ToString() == MainViewModel.ToString())
                 return;
 
-            if (loadPROJECT != null && changedType == typeof(BluePrints.Data.PROJECT) && loadPROJECT.GUID.ToString() == key.ToString())
-            {
+            if (loadPROJECT != null && changedType == typeof(Data.PROJECT) &&
+                loadPROJECT.GUID.ToString() == key.ToString())
                 if (messageType == EntityMessageType.Added)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Restored, StringFormatUtils.GetEntityNameByType(changedType)));
+                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Restored,
+                        StringFormatUtils.GetEntityNameByType(changedType)));
                 else if (messageType == EntityMessageType.Deleted)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed, StringFormatUtils.GetEntityNameByType(changedType)));
-            }
+                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed,
+                        StringFormatUtils.GetEntityNameByType(changedType)));
 
             if (loadPROJECT != null)
-            {
                 if (MainViewModel != null)
                     mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
                 else if (loadPROJECT != null)
                     mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
-            }
         }
 
         #region Collection Call Backs
+
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
         public void OnBeforeEntitySaved(ESTIMATION_DIRECT entity)
         {
-            entity.GUID_PROJECT = this.loadPROJECT.GUID;
+            entity.GUID_PROJECT = loadPROJECT.GUID;
         }
+
         #endregion
+
         #endregion
 
         #region View Properties
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
         protected override string ViewName
         {
-            get
-            {
-                return "ESTIMATION_DIRECTCollectionViewModelWrapper";
-            }
+            get { return "ESTIMATION_DIRECTCollectionViewModelWrapper"; }
         }
 
 
-        public IEnumerable<BluePrints.P6Data.PROJWBS> P6PROJECTSCollection
+        public IEnumerable<PROJWBS> P6PROJECTSCollection
         {
             get
             {
-                var collection = GetEntities<BluePrints.P6Data.PROJWBS>();
+                var collection = GetEntities<PROJWBS>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.wbs_short_name);
                 return collection;
             }
         }
+
         #endregion
 
         #region ISupportCustomDocumentTypeNameAndParameter
+
         public bool CanEdit(ESTIMATION_DIRECT entity)
         {
             if (MainViewModel == null || MainViewModel.SelectedEntity == null)
@@ -161,13 +185,18 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        protected IDocumentManagerService DocumentManagerService { get { return this.GetService<IDocumentManagerService>(); } }
+        protected IDocumentManagerService DocumentManagerService
+        {
+            get { return this.GetService<IDocumentManagerService>(); }
+        }
+
         public void Edit(ESTIMATION_DIRECT entity)
         {
             if (entity == null)
                 return;
 
-            DocumentManagerService.ShowExistingEntityDocument<ESTIMATION_DIRECT_ITEM, Guid>(this, entity.GUID, string.Empty);
+            DocumentManagerService.ShowExistingEntityDocument<ESTIMATION_DIRECT_ITEM, Guid>(this, entity.GUID,
+                string.Empty);
         }
 
         public string GetCustomDocumentTypeName()
@@ -177,7 +206,8 @@ namespace BluePrints.ViewModels
 
         public object GetCustomDocumentParameter()
         {
-            return new OptionalEntitiesParameter<BluePrints.Data.PROJECT, ESTIMATION_DIRECT>(null, MainViewModel.SelectedEntity);
+            return new OptionalEntitiesParameter<Data.PROJECT, ESTIMATION_DIRECT>(null,
+                MainViewModel.SelectedEntity);
         }
 
         public string GetCustomDocumentTitle()
@@ -189,6 +219,7 @@ namespace BluePrints.ViewModels
         {
             return true;
         }
+
         #endregion
     }
 }

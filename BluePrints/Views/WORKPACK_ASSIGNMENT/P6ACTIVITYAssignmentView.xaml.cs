@@ -27,12 +27,16 @@ namespace BluePrints.Views
     /// </summary>
     public partial class P6ACTIVITYAssignmentView : DXWindow, IDisposable
     {
-        public P6ACTIVITYAssignmentView(IEnumerable<TASK_AppointmentInfo> AllTASK_Appointments, IEnumerable<WORKPACK_Dashboard> WORKPACKS, 
-            CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACK_ASSIGNMENTSViewModel, bool IsModified, Appointment SelectedTASK_Appointment)
+        public P6ACTIVITYAssignmentView(IEnumerable<TASK_AppointmentInfo> AllTASK_Appointments,
+            IEnumerable<WORKPACK_Dashboard> WORKPACKS,
+            CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
+                WORKPACK_ASSIGNMENTSViewModel, bool IsModified, Appointment SelectedTASK_Appointment)
         {
             InitializeComponent();
-            this.DataContext = WORKPACK_ASSIGNMENTViewModel.Create(AllTASK_Appointments, WORKPACKS, WORKPACK_ASSIGNMENTSViewModel, IsModified, SelectedTASK_Appointment);
-            ((WORKPACK_ASSIGNMENTViewModel)this.DataContext).RefreshWORKPACK_ASSIGNMENTCallBack = this.RefreshWORKPACK_ASSIGNMENTCallBack;
+            DataContext = WORKPACK_ASSIGNMENTViewModel.Create(AllTASK_Appointments, WORKPACKS,
+                WORKPACK_ASSIGNMENTSViewModel, IsModified, SelectedTASK_Appointment);
+            ((WORKPACK_ASSIGNMENTViewModel) DataContext).RefreshWORKPACK_ASSIGNMENTCallBack =
+                RefreshWORKPACK_ASSIGNMENTCallBack;
         }
 
         public void RefreshWORKPACK_ASSIGNMENTCallBack()
@@ -42,7 +46,7 @@ namespace BluePrints.Views
 
         public void Dispose()
         {
-            ((WORKPACK_ASSIGNMENTViewModel)this.DataContext).Dispose();
+            ((WORKPACK_ASSIGNMENTViewModel) DataContext).Dispose();
         }
     }
 }

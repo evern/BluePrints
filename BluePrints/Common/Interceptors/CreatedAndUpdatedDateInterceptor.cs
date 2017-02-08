@@ -19,30 +19,27 @@ namespace BluePrints.Data
         public void TreeCreated(DbCommandTreeInterceptionContext interceptionContext)
         {
             if (interceptionContext.OriginalResult.DataSpace != DataSpace.SSpace)
-            {
                 return;
-            }
 
             var insertCommand = interceptionContext.Result as DbInsertCommandTree;
             if (insertCommand != null)
-            {
                 interceptionContext.Result = HandleInsertCommand(insertCommand);
-            }
 
             var updateCommand = interceptionContext.OriginalResult as DbUpdateCommandTree;
             if (updateCommand != null)
-            {
                 interceptionContext.Result = HandleUpdateCommand(updateCommand);
-            }
         }
 
         private static DbCommandTree HandleInsertCommand(DbInsertCommandTree insertCommand)
         {
-            DateTime now = DateTime.Now;
+            var now = DateTime.Now;
 
             var setClauses = insertCommand.SetClauses
                 .Select(clause => clause.UpdateIfMatch(CreatedColumnName, DbExpression.FromDateTime(now)))
-                .Select(clause => clause.UpdateIfMatch(CreatedByColumnName, DbExpression.FromGuid(LoginCredentials.CurrentUserGuid())))
+                .Select(
+                    clause =>
+                        clause.UpdateIfMatch(CreatedByColumnName,
+                            DbExpression.FromGuid(LoginCredentials.CurrentUserGuid())))
                 .ToList();
 
             return new DbInsertCommandTree(
@@ -59,7 +56,10 @@ namespace BluePrints.Data
 
             var setClauses = updateCommand.SetClauses
                 .Select(clause => clause.UpdateIfMatch(ModifiedColumnName, DbExpression.FromDateTime(now)))
-                .Select(clause => clause.UpdateIfMatch(ModifiedByColumnName, DbExpression.FromGuid(LoginCredentials.CurrentUserGuid())))
+                .Select(
+                    clause =>
+                        clause.UpdateIfMatch(ModifiedByColumnName,
+                            DbExpression.FromGuid(LoginCredentials.CurrentUserGuid())))
                 .ToList();
 
             //var setClauses = new List<DbModificationClause>();

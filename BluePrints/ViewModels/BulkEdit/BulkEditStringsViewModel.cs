@@ -15,6 +15,7 @@ namespace BluePrints.ViewModels
         }
 
         public string EditValue { get; set; }
+
         protected BulkEditStringsViewModel(string editString)
         {
             EditValue = editString;

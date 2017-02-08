@@ -9,7 +9,7 @@ namespace BluePrints.Common.Projections
     public class EntitiesParameter<TEntity>
         where TEntity : class
     {
-        TEntity entity;
+        private TEntity entity;
 
         public EntitiesParameter(TEntity entity)
         {
@@ -18,7 +18,7 @@ namespace BluePrints.Common.Projections
 
         public TEntity GetEntity()
         {
-            return this.entity;
+            return entity;
         }
 
         public override string ToString()
@@ -34,9 +34,9 @@ namespace BluePrints.Common.Projections
         where TEntity : class
         where TSecondEntity : class
     {
+        private TEntity entity;
+        private TSecondEntity secondEntity;
 
-        TEntity entity;
-        TSecondEntity secondEntity;
         public OptionalEntitiesParameter(TEntity entity, TSecondEntity secondEntity)
         {
             this.entity = entity;
@@ -45,30 +45,26 @@ namespace BluePrints.Common.Projections
 
         public TEntity GetFirstEntity()
         {
-            return this.entity;
+            return entity;
         }
 
         public TSecondEntity GetSecondEntity()
         {
-            return this.secondEntity;
+            return secondEntity;
         }
 
         public override string ToString()
         {
             if (entity != null)
-            {
                 if (entity.GetType() == typeof(Guid))
                     return entity.GetType().GetProperty("GUID").GetValue(entity).ToString();
                 else
                     return string.Empty;
-            }
             else if (secondEntity != null)
-            {
                 if (secondEntity.GetType() == typeof(Guid))
                     return secondEntity.GetType().GetProperty("GUID").GetValue(entity).ToString();
                 else
                     return string.Empty;
-            }
             else
                 return string.Empty;
         }

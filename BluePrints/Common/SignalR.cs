@@ -15,25 +15,24 @@ namespace BluePrints.Common
 {
     public static class SignalR
     {
-
         public static IHubProxy HubProxy { get; set; }
         public const string ServerURI = "http://192.168.70.5:5050/signalr";
         public static HubConnection Connection { get; set; }
 
         public static async void ConnectAsync()
         {
-            SignalR.Connection = new HubConnection(SignalR.ServerURI);
-            SignalR.HubProxy = SignalR.Connection.CreateHubProxy("MyHub");
+            Connection = new HubConnection(ServerURI);
+            HubProxy = Connection.CreateHubProxy("MyHub");
 
-            SignalR.HubProxy.On<string, string, string, string>("AddMessage", (entityName, key, messageType, sender) =>
+            HubProxy.On<string, string, string, string>("AddMessage", (entityName, key, messageType, sender) =>
                 Application.Current.Dispatcher.Invoke(
-                () => SignalR.HubReceiveMessage(entityName, key, messageType, sender)
+                    () => HubReceiveMessage(entityName, key, messageType, sender)
                 )
             );
 
             try
             {
-                await SignalR.Connection.Start();
+                await Connection.Start();
             }
             catch (HttpRequestException)
             {
@@ -44,7 +43,7 @@ namespace BluePrints.Common
 
         public static void Disconnect()
         {
-            if(Connection != null)
+            if (Connection != null)
             {
                 Connection.Stop();
                 Connection.Dispose();
@@ -53,16 +52,16 @@ namespace BluePrints.Common
 
         public static void HubSendMessage(string entityName, string key, string messageType, string sender)
         {
-            if (SignalR.Connection.State == ConnectionState.Connected)
+            if (Connection.State == ConnectionState.Connected)
                 HubProxy.Invoke("Send", entityName, key, messageType, sender, LoginCredentials.CurrentUser.NAME);
-            else if (SignalR.Connection.State == ConnectionState.Disconnected)
+            else if (Connection.State == ConnectionState.Disconnected)
                 ConnectAsync();
         }
 
         public static void HubReceiveMessage(string entityName, string key, string messageType, string sender)
         {
-            EntityMessageType MessageType = (EntityMessageType)Enum.Parse(typeof(EntityMessageType), messageType);
-            Guid PrimaryKey = new Guid(key);
+            var MessageType = (EntityMessageType) Enum.Parse(typeof(EntityMessageType), messageType);
+            var PrimaryKey = new Guid(key);
 
             if (entityName == typeof(AREA).ToString())
                 ReceiveMessage<AREA, Guid>(PrimaryKey, MessageType, sender);
@@ -125,7 +124,8 @@ namespace BluePrints.Common
         }
 
 
-        private static void ReceiveMessage<TEntity, TPrimaryKey>(TPrimaryKey primaryKey, EntityMessageType messageType, string sender)
+        private static void ReceiveMessage<TEntity, TPrimaryKey>(TPrimaryKey primaryKey, EntityMessageType messageType,
+            string sender)
             where TEntity : class
         {
             Messenger.Default.Send(new EntityMessage<TEntity, TPrimaryKey>(primaryKey, messageType, sender));

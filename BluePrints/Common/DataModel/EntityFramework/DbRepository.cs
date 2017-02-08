@@ -21,13 +21,13 @@ namespace BluePrints.Common.DataModel.EntityFramework
     /// <typeparam name="TEntity">Repository entity type.</typeparam>
     /// <typeparam name="TPrimaryKey">Entity primary key type.</typeparam>
     /// <typeparam name="TDbContext">DbContext type.</typeparam>
-    public class DbRepository<TEntity, TPrimaryKey, TDbContext> : DbReadOnlyRepository<TEntity, TDbContext>, IRepository<TEntity, TPrimaryKey>
+    public class DbRepository<TEntity, TPrimaryKey, TDbContext> : DbReadOnlyRepository<TEntity, TDbContext>,
+        IRepository<TEntity, TPrimaryKey>
         where TEntity : class
         where TDbContext : DbContext
     {
-
-        readonly Expression<Func<TEntity, TPrimaryKey>> getPrimaryKeyExpression;
-        readonly EntityTraits<TEntity, TPrimaryKey> entityTraits;
+        private readonly Expression<Func<TEntity, TPrimaryKey>> getPrimaryKeyExpression;
+        private readonly EntityTraits<TEntity, TPrimaryKey> entityTraits;
 
         /// <summary>
         /// Initializes a new instance of DbRepository class.
@@ -35,20 +35,19 @@ namespace BluePrints.Common.DataModel.EntityFramework
         /// <param name="unitOfWork">Owner unit of work that provides context for repository entities.</param>
         /// <param name="dbSetAccessor">Function that returns DbSet entities from Entity Framework DbContext.</param>
         /// <param name="getPrimaryKeyExpression">Lambda-expression that returns entity primary key.</param>
-        public DbRepository(DbUnitOfWork<TDbContext> unitOfWork, Func<TDbContext, DbSet<TEntity>> dbSetAccessor, Expression<Func<TEntity, TPrimaryKey>> getPrimaryKeyExpression)
+        public DbRepository(DbUnitOfWork<TDbContext> unitOfWork, Func<TDbContext, DbSet<TEntity>> dbSetAccessor,
+            Expression<Func<TEntity, TPrimaryKey>> getPrimaryKeyExpression)
             : base(unitOfWork, dbSetAccessor)
         {
             this.getPrimaryKeyExpression = getPrimaryKeyExpression;
-            this.entityTraits = ExpressionHelper.GetEntityTraits(this, getPrimaryKeyExpression);
+            entityTraits = ExpressionHelper.GetEntityTraits(this, getPrimaryKeyExpression);
         }
 
         protected virtual TEntity CreateCore(bool add = true)
         {
-            TEntity newEntity = DbSet.Create();
+            var newEntity = DbSet.Create();
             if (add)
-            {
                 DbSet.Add(newEntity);
-            }
             return newEntity;
         }
 
@@ -61,7 +60,7 @@ namespace BluePrints.Common.DataModel.EntityFramework
             return GetEntityState(Context.Entry(entity).State);
         }
 
-        static EntityState GetEntityState(System.Data.Entity.EntityState entityStates)
+        private static EntityState GetEntityState(System.Data.Entity.EntityState entityStates)
         {
             switch (entityStates)
             {
@@ -85,13 +84,9 @@ namespace BluePrints.Common.DataModel.EntityFramework
         {
             object[] values;
             if (ExpressionHelper.IsTuple<TPrimaryKey>())
-            {
                 values = ExpressionHelper.GetKeyPropertyValues(primaryKey);
-            }
             else
-            {
-                values = new object[] { primaryKey };
-            }
+                values = new object[] {primaryKey};
 
             return DbSet.Find(values);
         }
@@ -102,24 +97,23 @@ namespace BluePrints.Common.DataModel.EntityFramework
             {
                 //DbSet.Remove will clear nullable Guid value. So remember it and restore it later
                 var sourceProperties = typeof(TEntity)
-                        .GetProperties()
-                        .Where(p => p.CanRead && p.CanWrite &&
-                                    p.GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.Schema.NotMappedAttribute), true).Length == 0);
+                    .GetProperties()
+                    .Where(p => p.CanRead && p.CanWrite &&
+                                p.GetCustomAttributes(
+                                        typeof(System.ComponentModel.DataAnnotations.Schema.NotMappedAttribute), true)
+                                    .Length == 0);
                 var notVirtualProperties = sourceProperties.Where(p => !p.GetGetMethod().IsVirtual);
-                
-                List<KeyValuePair<PropertyInfo, Guid?>> recordKeys = new List<KeyValuePair<PropertyInfo, Guid?>>();
+
+                var recordKeys = new List<KeyValuePair<PropertyInfo, Guid?>>();
                 foreach (var nullableGUIDProperty in notVirtualProperties)
-                {
-                    if(nullableGUIDProperty.PropertyType == typeof(Guid?))
-                        recordKeys.Add(new KeyValuePair<PropertyInfo, Guid?>(nullableGUIDProperty, (Guid?)nullableGUIDProperty.GetValue(entity)));
-                }
+                    if (nullableGUIDProperty.PropertyType == typeof(Guid?))
+                        recordKeys.Add(new KeyValuePair<PropertyInfo, Guid?>(nullableGUIDProperty,
+                            (Guid?) nullableGUIDProperty.GetValue(entity)));
 
                 DbSet.Remove(entity);
 
-                foreach(var recordKey in recordKeys)
-                {
+                foreach (var recordKey in recordKeys)
                     recordKey.Key.SetValue(entity, recordKey.Value);
-                }
             }
             catch (DbEntityValidationException ex)
             {
@@ -136,6 +130,7 @@ namespace BluePrints.Common.DataModel.EntityFramework
             Context.Entry(entity).Reload();
             return FindCore(GetPrimaryKeyCore(entity));
         }
+
         protected virtual TPrimaryKey GetPrimaryKeyCore(TEntity entity)
         {
             return entityTraits.GetPrimaryKey(entity);
@@ -148,6 +143,7 @@ namespace BluePrints.Common.DataModel.EntityFramework
         }
 
         #region IRepository
+
         TEntity IRepository<TEntity, TPrimaryKey>.Find(TPrimaryKey primaryKey)
         {
             return FindCore(primaryKey);
@@ -185,7 +181,7 @@ namespace BluePrints.Common.DataModel.EntityFramework
 
         Expression<Func<TEntity, TPrimaryKey>> IRepository<TEntity, TPrimaryKey>.GetPrimaryKeyExpression
         {
-            get { return this.getPrimaryKeyExpression; }
+            get { return getPrimaryKeyExpression; }
         }
 
         void IRepository<TEntity, TPrimaryKey>.SetPrimaryKey(TEntity entity, TPrimaryKey primaryKey)
@@ -202,6 +198,7 @@ namespace BluePrints.Common.DataModel.EntityFramework
         {
             return entityTraits.HasPrimaryKey(entity);
         }
+
         #endregion
     }
 }

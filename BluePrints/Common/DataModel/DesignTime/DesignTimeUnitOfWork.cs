@@ -10,8 +10,9 @@ namespace BluePrints.Common.DataModel.DesignTime
     /// </summary>
     public class DesignTimeUnitOfWork : UnitOfWorkBase, IUnitOfWork
     {
-
-        void IUnitOfWork.SaveChanges() { }
+        void IUnitOfWork.SaveChanges()
+        {
+        }
 
         bool IUnitOfWork.HasChanges()
         {
@@ -22,14 +23,18 @@ namespace BluePrints.Common.DataModel.DesignTime
             GetRepository<TEntity, TPrimaryKey>(Expression<Func<TEntity, TPrimaryKey>> getPrimaryKeyExpression)
             where TEntity : class
         {
-            return GetRepositoryCore<IRepository<TEntity, TPrimaryKey>, TEntity>(() => new DesignTimeRepository<TEntity, TPrimaryKey>(this, getPrimaryKeyExpression));
+            return
+                GetRepositoryCore<IRepository<TEntity, TPrimaryKey>, TEntity>(
+                    () => new DesignTimeRepository<TEntity, TPrimaryKey>(this, getPrimaryKeyExpression));
         }
 
         protected IReadOnlyRepository<TEntity>
             GetReadOnlyRepository<TEntity>()
             where TEntity : class
         {
-            return GetRepositoryCore<IReadOnlyRepository<TEntity>, TEntity>(() => new DesignTimeReadOnlyRepository<TEntity>(this));
+            return
+                GetRepositoryCore<IReadOnlyRepository<TEntity>, TEntity>(
+                    () => new DesignTimeReadOnlyRepository<TEntity>(this));
         }
     }
 }

@@ -17,15 +17,21 @@ using System.Windows.Threading;
 
 namespace BluePrints.Common.ViewModel
 {
-    public abstract class CollectionViewModelsWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork, TMainViewModel> : ICollectionViewModelsWrapper, IDocumentContent, ISupportParameter
+    public abstract class CollectionViewModelsWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
+        TMainEntityUnitOfWork, TMainViewModel> : ICollectionViewModelsWrapper, IDocumentContent, ISupportParameter
         where TMainEntity : class
         where TMainProjectionEntity : class
         where TMainEntityUnitOfWork : IUnitOfWork
-        where TMainViewModel : CollectionViewModel<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork>
+        where TMainViewModel :
+        CollectionViewModel<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork>
     {
         protected bool isSubEntitiesAdded;
         protected EntitiesLoaderDescriptionCollection loaderCollection = null;
-        protected EntitiesLoaderDescription<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork> mainEntityLoader;
+
+        protected
+            EntitiesLoaderDescription<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork>
+            mainEntityLoader;
+
         public TMainViewModel MainViewModel { get; set; }
         protected Dispatcher mainThreadDispatcher = Application.Current.Dispatcher;
 
@@ -42,33 +48,36 @@ namespace BluePrints.Common.ViewModel
         /// <summary>
         /// Begins loading the collection of entities loader
         /// </summary>
-        void loadEntitiesCollectionOnMainThread()
+        private void loadEntitiesCollectionOnMainThread()
         {
-            IEnumerable<IEntitiesLoaderDescription> entitiesLoader = loaderCollection.Where(x => !x.isLoaded);
+            var entitiesLoader = loaderCollection.Where(x => !x.isLoaded);
             if (entitiesLoader == null || entitiesLoader.Count() == 0)
                 return;
 
-            int currentLoadOrder = entitiesLoader.Min(x => x.loadOrder);
-            IEntitiesLoaderDescription entitiesLoaderDescription = loaderCollection.First(x => x.loadOrder == currentLoadOrder);
+            var currentLoadOrder = entitiesLoader.Min(x => x.loadOrder);
+            var entitiesLoaderDescription =
+                loaderCollection.First(x => x.loadOrder == currentLoadOrder);
 
             if (entitiesLoaderDescription.dependencyType != null)
-            {
                 if (loaderCollection.IsEntitiesLoaderExists(entitiesLoaderDescription.dependencyType))
                 {
-                    IEntitiesLoaderDescription dependentEntitiesLoaderDescription = loaderCollection.GetLoader(entitiesLoaderDescription.dependencyType);
+                    var dependentEntitiesLoaderDescription =
+                        loaderCollection.GetLoader(entitiesLoaderDescription.dependencyType);
                     if (!dependentEntitiesLoaderDescription.isLoaded)
-                        throw new InvalidOperationException("Dependent entities loader is sequenced after the current entities loader.");
+                        throw new InvalidOperationException(
+                            "Dependent entities loader is sequenced after the current entities loader.");
                     else
                         entitiesLoaderDescription.CreateCollectionViewModel();
                 }
                 else
+                {
                     throw new InvalidOperationException("Dependent entities loader not added.");
-            }
+                }
             else
                 entitiesLoaderDescription.CreateCollectionViewModel();
         }
 
-        bool isAllEntitiesLoaded()
+        private bool isAllEntitiesLoaded()
         {
             if (loaderCollection == null)
                 return false;
@@ -94,7 +103,8 @@ namespace BluePrints.Common.ViewModel
 
         protected virtual void InitializeParameters(object parameter)
         {
-            throw new NotImplementedException("Override this method to initialize primary parameter attributes in inherited member.");
+            throw new NotImplementedException(
+                "Override this method to initialize primary parameter attributes in inherited member.");
         }
 
         public virtual void InitializeAndLoadEntitiesLoaderDescription()
@@ -111,17 +121,23 @@ namespace BluePrints.Common.ViewModel
             IUnitOfWorkFactory<TMainEntityUnitOfWork> unitOfWorkFactory,
             Func<TMainEntityUnitOfWork, IRepository<TMainEntity, TMainEntityPrimaryKey>> getRepositoryFunc)
         {
-            mainEntityLoader = new EntitiesLoaderDescription<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork>(this, 0, unitOfWorkFactory, getRepositoryFunc, OnMainViewModelLoaded, OnAfterEntitiesChanged, ConstructMainViewModelProjection);
+            mainEntityLoader =
+                new EntitiesLoaderDescription
+                    <TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork>(this, 0,
+                        unitOfWorkFactory, getRepositoryFunc, OnMainViewModelLoaded, OnAfterEntitiesChanged,
+                        ConstructMainViewModelProjection);
         }
 
-        protected virtual Func<IRepositoryQuery<TMainEntity>, IQueryable<TMainProjectionEntity>> ConstructMainViewModelProjection()
+        protected virtual Func<IRepositoryQuery<TMainEntity>, IQueryable<TMainProjectionEntity>>
+            ConstructMainViewModelProjection()
         {
-            throw new NotImplementedException("Override this method to define how main view model should be constructed.");
+            throw new NotImplementedException(
+                "Override this method to define how main view model should be constructed.");
         }
 
         protected virtual bool OnMainViewModelLoaded(IEnumerable<TMainProjectionEntity> entities)
         {
-            MainViewModel = (TMainViewModel)mainEntityLoader.GetViewModel();
+            MainViewModel = (TMainViewModel) mainEntityLoader.GetViewModel();
             AssignCallBacksAndRaisePropertyChange(entities);
             return true;
         }
@@ -131,37 +147,46 @@ namespace BluePrints.Common.ViewModel
             throw new NotImplementedException("Override this method to assign call backs and also notify the view.");
         }
 
-        protected virtual void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        protected virtual void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
+            object sender)
         {
             throw new NotImplementedException("Override this method to reload or refresh the main view model.");
         }
 
         #region ISupportParameter
+
         object ISupportParameter.Parameter
         {
             get { return null; }
             set { OnParameterChanged(value); }
         }
+
         #endregion
 
         #region SpellChecker
+
         public SpellCheckerModule spellCheckerModule { get; set; }
+
         public void Loaded()
         {
             spellCheckerModule = new SpellCheckerModule();
             spellCheckerModule.ApplySpellCheckMode(true);
         }
+
         #endregion
 
         #region IDocumentContent
+
         protected IDocumentOwner DocumentOwner { get; private set; }
-        object IDocumentContent.Title { get { return null; } }
+
+        object IDocumentContent.Title
+        {
+            get { return null; }
+        }
+
         protected virtual string ViewName
         {
-            get
-            {
-                throw new NotImplementedException("Override this method to specify the view name.");
-            }
+            get { throw new NotImplementedException("Override this method to specify the view name."); }
         }
 
         public virtual void OnLoaded()
@@ -183,7 +208,10 @@ namespace BluePrints.Common.ViewModel
             }
         }
 
-        protected virtual void OnClose(CancelEventArgs e) { }
+        protected virtual void OnClose(CancelEventArgs e)
+        {
+        }
+
         void IDocumentContent.OnClose(CancelEventArgs e)
         {
             OnClose(e);
@@ -197,10 +225,8 @@ namespace BluePrints.Common.ViewModel
             if (loaderCollection == null)
                 return;
 
-            foreach (IEntitiesLoaderDescription entityLoaderDescription in loaderCollection)
-            {
+            foreach (var entityLoaderDescription in loaderCollection)
                 entityLoaderDescription.OnDestroy();
-            }
         }
 
         IDocumentOwner IDocumentContent.DocumentOwner
@@ -208,10 +234,19 @@ namespace BluePrints.Common.ViewModel
             get { return DocumentOwner; }
             set { DocumentOwner = value; }
         }
+
         #endregion
 
-        protected IMessageBoxService MessageBoxService { get { return this.GetRequiredService<IMessageBoxService>(); } }
-        protected ILayoutSerializationService LayoutSerializationService { get { return this.GetService<ILayoutSerializationService>(); } }
+        protected IMessageBoxService MessageBoxService
+        {
+            get { return this.GetRequiredService<IMessageBoxService>(); }
+        }
+
+        protected ILayoutSerializationService LayoutSerializationService
+        {
+            get { return this.GetService<ILayoutSerializationService>(); }
+        }
+
         public void SaveLayout()
         {
             PersistentLayoutHelper.TrySerializeLayout(LayoutSerializationService, ViewName);
@@ -220,7 +255,9 @@ namespace BluePrints.Common.ViewModel
 
         public void ResetLayout()
         {
-            if (MessageBoxService.ShowMessage(CommonResources.Confirmation_ResetLayout, CommonResources.Confirmation_Caption, MessageButton.YesNo) != MessageResult.Yes)
+            if (
+                MessageBoxService.ShowMessage(CommonResources.Confirmation_ResetLayout,
+                    CommonResources.Confirmation_Caption, MessageButton.YesNo) != MessageResult.Yes)
                 return;
 
             PersistentLayoutHelper.ResetLayout(ViewName);

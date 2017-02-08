@@ -18,13 +18,15 @@ namespace BluePrints.ViewModels
 
         public IEnumerable<object> SourceObjects { get; set; }
         public string ComboBoxDisplayMember { get; set; }
+
         protected BulkEditEnumsViewModel(IEnumerable<object> enumerableObjects, string comboBoxDisplayMember)
         {
             SourceObjects = enumerableObjects;
             ComboBoxDisplayMember = comboBoxDisplayMember;
         }
 
-        object selectedItem { get; set; }
+        private object selectedItem { get; set; }
+
         public object SelectedItem
         {
             get { return selectedItem; }

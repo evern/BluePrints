@@ -16,7 +16,6 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
     /// </summary>
     public interface IPrimeroEntitiesUnitOfWork : IUnitOfWork
     {
-
         /// <summary>
         /// The ACCS_BALANCE entities repository.
         /// </summary>

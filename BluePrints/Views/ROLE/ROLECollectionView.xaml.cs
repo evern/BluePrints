@@ -16,7 +16,7 @@ namespace BluePrints.Views
 
         private void dragDropManager_Dropped(object sender, DevExpress.Xpf.Grid.DragDrop.TreeListDroppedEventArgs e)
         {
-            ((ROLECollectionViewModelWrapper)this.DataContext).dragDropManager_Dropped(sender, e);
+            ((ROLECollectionViewModelWrapper) DataContext).dragDropManager_Dropped(sender, e);
         }
     }
 }

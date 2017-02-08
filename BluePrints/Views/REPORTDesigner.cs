@@ -22,14 +22,17 @@ using BluePrints.Common.ViewModel;
 
 namespace BluePrints.Views
 {
-    public partial class REPORTDesigner : DevExpress.XtraEditors.XtraForm
+    public partial class REPORTDesigner : XtraForm
     {
-        XtraReport currentREPORT;
-        PROJECT currentPROJECT;
-        PROJECT_REPORT currentPROJECT_REPORT;
-        ReportType currentReportType;
-        CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork> collectionViewModel;
-        public REPORTDesigner(PROJECT currentPROJECT, CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork> collectionViewModel, ReportType currentReportType)
+        private XtraReport currentREPORT;
+        private PROJECT currentPROJECT;
+        private PROJECT_REPORT currentPROJECT_REPORT;
+        private ReportType currentReportType;
+        private CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork> collectionViewModel;
+
+        public REPORTDesigner(PROJECT currentPROJECT,
+            CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork> collectionViewModel,
+            ReportType currentReportType)
         {
             InitializeComponent();
             this.currentReportType = currentReportType;
@@ -39,9 +42,9 @@ namespace BluePrints.Views
             reportDesigner1.DesignPanelLoaded += new DesignerLoadedEventHandler(reportDesigner1_DesignPanelLoaded);
         }
 
-        void reportDesigner1_DesignPanelLoaded(object sender, DesignerLoadedEventArgs e)
+        private void reportDesigner1_DesignPanelLoaded(object sender, DesignerLoadedEventArgs e)
         {
-            XRDesignPanel panel = (XRDesignPanel)sender;
+            var panel = (XRDesignPanel) sender;
             panel.AddCommandHandler(new SaveCommandHandler(panel, SaveReport));
         }
 
@@ -58,7 +61,7 @@ namespace BluePrints.Views
             {
                 currentPROJECT_REPORT = collectionViewModel.Entities.First();
                 if (currentPROJECT_REPORT != null)
-                    using (StreamWriter sw = new StreamWriter(new MemoryStream()))
+                    using (var sw = new StreamWriter(new MemoryStream()))
                     {
                         sw.Write(currentPROJECT_REPORT.REPORT);
                         sw.Flush();
@@ -74,7 +77,7 @@ namespace BluePrints.Views
                 currentREPORT = new XtraReportPROGRESS_ITEMS();
                 reportDesigner1.OpenReport(currentREPORT);
             }
-            else if(currentReportType == ReportType.Baseline_Report)
+            else if (currentReportType == ReportType.Baseline_Report)
             {
                 currentREPORT = new XtraReportBASELINE_ITEMS();
                 reportDesigner1.OpenReport(currentREPORT);
@@ -87,17 +90,16 @@ namespace BluePrints.Views
                 return;
 
             // Save the report to a stream.
-            MemoryStream ms = new MemoryStream();
+            var ms = new MemoryStream();
             currentREPORT.SaveLayout(ms);
 
             // Prepare the stream for reading.
             ms.Position = 0;
             // Insert the report to a database.
-            using (StreamReader sr = new StreamReader(ms))
+            using (var sr = new StreamReader(ms))
             {
-
                 // Read the report from the stream to a string variable.
-                string reportString = sr.ReadToEnd();
+                var reportString = sr.ReadToEnd();
                 if (currentPROJECT_REPORT == null)
                 {
                     currentPROJECT_REPORT = new PROJECT_REPORT();
@@ -106,16 +108,20 @@ namespace BluePrints.Views
                     currentPROJECT_REPORT.REPORT = reportString;
                 }
                 else
+                {
                     currentPROJECT_REPORT.REPORT = reportString;
+                }
 
                 collectionViewModel.Save(currentPROJECT_REPORT);
             }
         }
 
-        public class SaveCommandHandler : DevExpress.XtraReports.UserDesigner.ICommandHandler
+        public class SaveCommandHandler : ICommandHandler
         {
-            XRDesignPanel panel;
+            private XRDesignPanel panel;
+
             public delegate void SaveCommandDelegate();
+
             public SaveCommandDelegate SaveDelegate;
 
             public SaveCommandHandler(XRDesignPanel panel, SaveCommandDelegate ReportSaveDelegate)
@@ -124,21 +130,21 @@ namespace BluePrints.Views
                 SaveDelegate = ReportSaveDelegate;
             }
 
-            public void HandleCommand(DevExpress.XtraReports.UserDesigner.ReportCommand command,
-            object[] args)
+            public void HandleCommand(ReportCommand command,
+                object[] args)
             {
                 // Save the report.
                 Save();
             }
 
-            public bool CanHandleCommand(DevExpress.XtraReports.UserDesigner.ReportCommand command,
-            ref bool useNextHandler)
+            public bool CanHandleCommand(ReportCommand command,
+                ref bool useNextHandler)
             {
                 useNextHandler = !(command == ReportCommand.SaveFile);
                 return !useNextHandler;
             }
 
-            void Save()
+            private void Save()
             {
                 // For instance:
                 if (SaveDelegate != null)

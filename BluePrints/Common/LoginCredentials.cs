@@ -24,7 +24,7 @@ namespace BluePrints.Common
             else if (CurrentUser.ROLE.ROLE_PERMISSION.Count == 0)
                 return false;
 
-            string permissionKey = PermissionDictionary.First(x => x.Value == permissionName).Key;
+            var permissionKey = PermissionDictionary.First(x => x.Value == permissionName).Key;
             return CurrentUser.ROLE.ROLE_PERMISSION.Any(x => x.PERMISSION == permissionKey);
         }
 
@@ -37,14 +37,14 @@ namespace BluePrints.Common
         }
 
         private static Dictionary<string, string> PermissionDictionary = GetPermissionLookUpInDictionary();
+
         public static Dictionary<string, string> GetPermissionLookUpInDictionary()
         {
-            Dictionary<string, string> returnPermissions = new Dictionary<string, string>();
-            ResourceSet resourceSet = PermissionResources.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
+            var returnPermissions = new Dictionary<string, string>();
+            var resourceSet = PermissionResources.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture,
+                true, true);
             foreach (System.Collections.DictionaryEntry permission in resourceSet)
-            {
                 returnPermissions.Add(permission.Key.ToString(), permission.Value.ToString());
-            }
 
             return returnPermissions;
         }

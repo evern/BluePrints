@@ -10,8 +10,7 @@ namespace BluePrints.Common.DataModel
     /// </summary>
     public class UnitOfWorkBase
     {
-
-        readonly Dictionary<Type, object> repositories = new Dictionary<Type, object>();
+        private readonly Dictionary<Type, object> repositories = new Dictionary<Type, object>();
 
         protected TRepository GetRepositoryCore<TRepository, TEntity>(Func<TRepository> createRepositoryFunc)
             where TRepository : IReadOnlyRepository<TEntity>
@@ -23,7 +22,7 @@ namespace BluePrints.Common.DataModel
                 result = createRepositoryFunc();
                 repositories[typeof(TEntity)] = result;
             }
-            return (TRepository)result;
+            return (TRepository) result;
         }
     }
 }

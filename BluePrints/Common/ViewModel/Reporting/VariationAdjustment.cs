@@ -12,6 +12,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal AdjustmentUnits { get; set; }
         public decimal AdjustmentRate { get; set; }
         public Guid BaselineItemGuid { get; set; }
+
         public decimal AdjustmentNativeCosts
         {
             get { return AdjustmentUnits * AdjustmentRate; }

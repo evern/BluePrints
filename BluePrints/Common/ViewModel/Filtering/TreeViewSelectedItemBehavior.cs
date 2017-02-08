@@ -20,7 +20,8 @@ namespace BluePrints.Common.ViewModel.Filtering
         }
 
         public static readonly DependencyProperty SelectedItemProperty =
-            DependencyProperty.Register("SelectedItem", typeof(object), typeof(TreeViewSelectedItemBehavior), new PropertyMetadata(null, (d, e) => ((TreeViewSelectedItemBehavior)d).OnSelectedItemChanged()));
+            DependencyProperty.Register("SelectedItem", typeof(object), typeof(TreeViewSelectedItemBehavior),
+                new PropertyMetadata(null, (d, e) => ((TreeViewSelectedItemBehavior) d).OnSelectedItemChanged()));
 
         #endregion
 
@@ -37,24 +38,30 @@ namespace BluePrints.Common.ViewModel.Filtering
             AssociatedObject.SelectedItemChanged -= OnTreeViewSelectedItemChanged;
         }
 
-        void OnTreeViewSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void OnTreeViewSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             if (e.NewValue is BluePrintsEntitiesModuleDescription)
                 SelectedItem = e.NewValue;
         }
 
-        void OnSelectedItemChanged()
+        private void OnSelectedItemChanged()
         {
             var selectedItem = GetAllItems().FirstOrDefault(x => x.DataContext == SelectedItem);
             if (selectedItem != null)
                 selectedItem.IsSelected = true;
         }
 
-        IEnumerable<TreeViewItem> GetAllItems()
+        private IEnumerable<TreeViewItem> GetAllItems()
         {
             if (AssociatedObject == null)
                 return Enumerable.Empty<TreeViewItem>();
-            return AssociatedObject.Items.Cast<TreeViewItem>().SelectMany(x => x.Items.Cast<object>().Select((y, i) => (TreeViewItem)x.ItemContainerGenerator.ContainerFromIndex(i)).Where(y => y != null));
+            return
+                AssociatedObject.Items.Cast<TreeViewItem>()
+                    .SelectMany(
+                        x =>
+                            x.Items.Cast<object>()
+                                .Select((y, i) => (TreeViewItem) x.ItemContainerGenerator.ContainerFromIndex(i))
+                                .Where(y => y != null));
         }
     }
 }

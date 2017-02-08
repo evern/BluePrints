@@ -15,7 +15,6 @@ namespace BluePrints.Data
     {
         public TASK_AppointmentInfo()
         {
-
         }
 
         public TASK_AppointmentInfo(TASK task)
@@ -23,11 +22,13 @@ namespace BluePrints.Data
             AllDay = false;
             task_id = task.task_id;
             Type = 0;
-            StartDate = (DateTime)task.target_start_date;
-            EndDate = (DateTime)task.target_end_date;
+            StartDate = (DateTime) task.target_start_date;
+            EndDate = (DateTime) task.target_end_date;
             Subject = task.task_code;
             Description = task.task_name;
-            Status = task.task_type.ToUpper().Contains("MILE") ? AppointmentActivityType.Milestone : AppointmentActivityType.Activity;
+            Status = task.task_type.ToUpper().Contains("MILE")
+                ? AppointmentActivityType.Milestone
+                : AppointmentActivityType.Activity;
             Label = 0;
             ResourceId = task.task_id;
             ParentId = task.wbs_id;
@@ -50,12 +51,14 @@ namespace BluePrints.Data
 
         private int ToRgb(System.Drawing.Color color)
         {
-            return color.B << 16 | color.G << 8 | color.R;
+            return (color.B << 16) | (color.G << 8) | color.R;
         }
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int task_id { get; set; } //task_id is required as per collection view model projection requirement to have same primary key as the primary entity
+        public int task_id { get; set; }
+
+        //task_id is required as per collection view model projection requirement to have same primary key as the primary entity
         public int? ParentId { get; set; }
         public int Type { get; set; }
         public DateTime StartDate { get; set; }

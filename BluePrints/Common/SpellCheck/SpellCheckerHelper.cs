@@ -28,23 +28,25 @@ namespace BluePrints.Common
 
         public static string GetPathToResource(string path, string name)
         {
-            return String.Format("{0}.{1}", path, name);
+            return string.Format("{0}.{1}", path, name);
         }
+
         public static Stream GetDataStream(string path, string name)
         {
-            string fullPath = DemoUtils.GetPathToResource(path, name);
-            if (!String.IsNullOrEmpty(fullPath))
+            var fullPath = GetPathToResource(path, name);
+            if (!string.IsNullOrEmpty(fullPath))
                 return Assembly.GetExecutingAssembly().GetManifestResourceStream(fullPath);
             return null;
         }
+
         public static void ShowDialog(string title, string text, FrameworkElement owner)
         {
-            TextBlock textBox = new TextBlock() { Text = text };
+            var textBox = new TextBlock() {Text = text};
             textBox.TextWrapping = TextWrapping.Wrap;
             textBox.VerticalAlignment = VerticalAlignment.Center;
             textBox.HorizontalAlignment = HorizontalAlignment.Center;
-            DialogControl dialogControl = new DialogControl() { DialogContent = textBox, UseContentIndents = true };
-            dialogControl.CancelButton.Visibility = System.Windows.Visibility.Collapsed;
+            var dialogControl = new DialogControl() {DialogContent = textBox, UseContentIndents = true};
+            dialogControl.CancelButton.Visibility = Visibility.Collapsed;
             FloatingContainer.ShowDialog(dialogControl, owner, Size.Empty, new FloatingContainerParameters()
             {
                 AllowSizing = false,
@@ -52,11 +54,12 @@ namespace BluePrints.Common
                 Title = title
             });
         }
+
         public static BitmapImage GetBitmapImage(string fileName)
         {
-            BitmapImage bmp = new BitmapImage();
+            var bmp = new BitmapImage();
             bmp.BeginInit();
-            bmp.StreamSource = DemoUtils.GetDataStream(DemoUtils.PathToDemoData, fileName);
+            bmp.StreamSource = GetDataStream(PathToDemoData, fileName);
             bmp.EndInit();
             return bmp;
         }
@@ -69,24 +72,33 @@ namespace BluePrints.Common
             spellChecker.Dictionaries.Add(GetDefaultDictionary());
             spellChecker.Dictionaries.Add(GetCustomDictionary());
         }
+
         public static void RegisterHunspellDictionaries(SpellChecker spellChecker)
         {
             spellChecker.Dictionaries.Add(CreateHunspellDictionaries(new CultureInfo("en-US")));
             spellChecker.Dictionaries.Add(CreateHunspellDictionaries(new CultureInfo("de-DE")));
             spellChecker.Dictionaries.Add(CreateHunspellDictionaries(new CultureInfo("ru-RU")));
         }
-        static HunspellDictionary CreateHunspellDictionaries(CultureInfo culture)
+
+        private static HunspellDictionary CreateHunspellDictionaries(CultureInfo culture)
         {
-            string[] parts = culture.Name.Split('-');
-            HunspellDictionary result = new HunspellDictionary();
-            string uriPath = String.Format("pack://application:,,,/BluePrints;component//Data/Dictionaries/{0}/", parts[0]);
-            Stream dictionaryStream = Application.GetResourceStream(new Uri(String.Format("{0}{1}_{2}.dic", uriPath, parts[0], parts[1]))).Stream;
-            Stream grammarStream = Application.GetResourceStream(new Uri(String.Format("{0}{1}_{2}.aff", uriPath, parts[0], parts[1]))).Stream;
+            var parts = culture.Name.Split('-');
+            var result = new HunspellDictionary();
+            var uriPath = string.Format("pack://application:,,,/BluePrints;component//Data/Dictionaries/{0}/",
+                parts[0]);
+            var dictionaryStream =
+                Application.GetResourceStream(new Uri(string.Format("{0}{1}_{2}.dic", uriPath, parts[0], parts[1])))
+                    .Stream;
+            var grammarStream =
+                Application.GetResourceStream(new Uri(string.Format("{0}{1}_{2}.aff", uriPath, parts[0], parts[1])))
+                    .Stream;
             try
             {
                 result.LoadFromStream(dictionaryStream, grammarStream);
             }
-            catch { }
+            catch
+            {
+            }
             finally
             {
                 dictionaryStream.Close();
@@ -95,12 +107,11 @@ namespace BluePrints.Common
             result.Culture = culture;
             return result;
         }
-        static Stream GetFileStream(InternalZipFileCollection files, string name)
+
+        private static Stream GetFileStream(InternalZipFileCollection files, string name)
         {
-            Stream stream = files.Find(delegate(InternalZipFile file)
-            {
-                return file.FileName.IndexOf(name) >= 0;
-            }).FileDataStream;
+            var stream =
+                files.Find(delegate(InternalZipFile file) { return file.FileName.IndexOf(name) >= 0; }).FileDataStream;
             try
             {
                 return CreateMemoryStream(stream);
@@ -110,29 +121,31 @@ namespace BluePrints.Common
                 stream.Close();
             }
         }
-        static Stream CreateMemoryStream(Stream stream)
+
+        private static Stream CreateMemoryStream(Stream stream)
         {
-            MemoryStream result = new MemoryStream();
-            for (; ; )
+            var result = new MemoryStream();
+            for (;;)
             {
-                int readedByte = stream.ReadByte();
+                var readedByte = stream.ReadByte();
                 if (readedByte < 0)
                     break;
-                result.WriteByte((byte)readedByte);
+                result.WriteByte((byte) readedByte);
             }
             result.Flush();
             result.Seek(0, SeekOrigin.Begin);
             return result;
         }
-        static ISpellCheckerDictionary GetDefaultDictionary()
+
+        private static ISpellCheckerDictionary GetDefaultDictionary()
         {
-            SpellCheckerISpellDictionary dic = new SpellCheckerISpellDictionary();
-            using (Stream stream = DemoUtils.GetDataStream(DemoUtils.PathToDictionaries, "default.zip"))
+            var dic = new SpellCheckerISpellDictionary();
+            using (var stream = DemoUtils.GetDataStream(DemoUtils.PathToDictionaries, "default.zip"))
             {
-                InternalZipFileCollection files = InternalZipArchive.Open(stream);
-                Stream dictionaryStream = GetFileStream(files, "american.xlg");
-                Stream grammarStream = GetFileStream(files, "english.aff");
-                Stream alphabetStream = DemoUtils.GetDataStream(DemoUtils.PathToDictionaries, "EnglishAlphabet.txt");
+                var files = InternalZipArchive.Open(stream);
+                var dictionaryStream = GetFileStream(files, "american.xlg");
+                var grammarStream = GetFileStream(files, "english.aff");
+                var alphabetStream = DemoUtils.GetDataStream(DemoUtils.PathToDictionaries, "EnglishAlphabet.txt");
                 try
                 {
                     dic.LoadFromStream(dictionaryStream, grammarStream, alphabetStream);
@@ -150,11 +163,12 @@ namespace BluePrints.Common
             dic.Culture = new CultureInfo("en-US");
             return dic;
         }
-        static ISpellCheckerDictionary GetCustomDictionary()
+
+        private static ISpellCheckerDictionary GetCustomDictionary()
         {
-            SpellCheckerCustomDictionary result = new SpellCheckerCustomDictionary();
-            Stream dictionaryStream = DemoUtils.GetDataStream(DemoUtils.PathToDictionaries, "CustomEnglish.dic");
-            Stream alphabetStream = DemoUtils.GetDataStream(DemoUtils.PathToDictionaries, "EnglishAlphabet.txt");
+            var result = new SpellCheckerCustomDictionary();
+            var dictionaryStream = DemoUtils.GetDataStream(DemoUtils.PathToDictionaries, "CustomEnglish.dic");
+            var alphabetStream = DemoUtils.GetDataStream(DemoUtils.PathToDictionaries, "EnglishAlphabet.txt");
             try
             {
                 result.Load(dictionaryStream, alphabetStream);

@@ -8,7 +8,6 @@ namespace BluePrints.Common.DataModel
     /// </summary>
     public enum EntityState
     {
-
         /// <summary>
         /// The object exists but is not being tracked. 
         /// An entity is in this state immediately after it has been created and before it is added to the unit of work. 

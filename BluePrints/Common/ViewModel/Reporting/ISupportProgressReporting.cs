@@ -19,6 +19,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     public interface ISupportProgressReporting
     {
         #region Summary Item Stats
+
         ProgressInfo Summary_CumulativeOriginal { get; }
 
         ProgressInfo Summary_CumulativePlanned { get; }
@@ -42,6 +43,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         #endregion
 
         #region Data Points Collection
+
         /// <summary>
         /// Non cumulative variation points with date and baseline item original guid
         /// </summary>

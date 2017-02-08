@@ -16,7 +16,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
     /// </summary>
     public class BluePrintsEntitiesUnitOfWork : DbUnitOfWork<BluePrintsEntities>, IBluePrintsEntitiesUnitOfWork
     {
-
         public BluePrintsEntitiesUnitOfWork(Func<BluePrintsEntities> contextFactory)
             : base(contextFactory)
         {
@@ -89,7 +88,10 @@ namespace BluePrints.BluePrintsEntitiesDataModel
 
         IRepository<ESTIMATION_INDIRECT_ITEM, Guid> IBluePrintsEntitiesUnitOfWork.ESTIMATION_INDIRECT_ITEMS
         {
-            get { return GetRepository(x => x.Set<ESTIMATION_INDIRECT_ITEM>(), (ESTIMATION_INDIRECT_ITEM x) => x.GUID); }
+            get
+            {
+                return GetRepository(x => x.Set<ESTIMATION_INDIRECT_ITEM>(), (ESTIMATION_INDIRECT_ITEM x) => x.GUID);
+            }
         }
 
         IRepository<INDIRECT_TYPE, Guid> IBluePrintsEntitiesUnitOfWork.INDIRECT_TYPES

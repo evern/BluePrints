@@ -20,13 +20,18 @@ using System.Threading.Tasks;
 
 namespace BluePrints.ViewModels
 {
-    public class BASELINECollectionViewModelWrapper : CollectionViewModelsWrapper<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork, CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>>, ISupportCustomDocumentTypeNameAndParameter
+    public class BASELINECollectionViewModelWrapper :
+        CollectionViewModelsWrapper
+        <BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork,
+            CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>>,
+        ISupportCustomDocumentTypeNameAndParameter
     {
         /// <summary>
         /// Creates a new instance of BASELINECollectionViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static BASELINECollectionViewModelWrapper Create(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        public static BASELINECollectionViewModelWrapper Create(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
             return ViewModelSource.Create(() => new BASELINECollectionViewModelWrapper(unitOfWorkFactory));
         }
@@ -36,57 +41,75 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the BASELINECollectionViewModelWrapper type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected BASELINECollectionViewModelWrapper(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        protected BASELINECollectionViewModelWrapper(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
 
         #region Database Operations
-        BluePrints.Data.PROJECT loadPROJECT;
-        IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
+        private Data.PROJECT loadPROJECT;
+
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
+            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
+        private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory =
+            P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
         protected override void InitializeParameters(object parameter)
         {
-            EntitiesParameter<BluePrints.Data.PROJECT> PROJECTParameter = (EntitiesParameter<BluePrints.Data.PROJECT>)parameter;
-            this.loadPROJECT = PROJECTParameter.GetEntity();
+            var PROJECTParameter =
+                (EntitiesParameter<Data.PROJECT>) parameter;
+            loadPROJECT = PROJECTParameter.GetEntity();
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
         {
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddEntitiesLoader<BluePrints.Data.PROJECT, BluePrints.Data.PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0, bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<BluePrints.P6Data.PROJWBS, BluePrints.P6Data.PROJWBS, int, IP6EntitiesUnitOfWork>(1, p6UnitOfWorkFactory, x => x.PROJWBS, P6PROJECTProjectionFunc);
+            loaderCollection
+                .AddEntitiesLoader
+                <Data.PROJECT, Data.PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0,
+                    bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null,
+                    isContinueLoadingAfterPROJECT, OnAfterEntitiesChanged);
+            loaderCollection
+                .AddEntitiesLoader<PROJWBS, PROJWBS, int, IP6EntitiesUnitOfWork>(1,
+                    p6UnitOfWorkFactory, x => x.PROJWBS, P6PROJECTProjectionFunc);
             //loaderCollection.AddEntitiesLoader<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>(2, bluePrintsUnitOfWorkFactory, x => x.WORKPACK_ASSIGNMENTS, WORKPACK_ASSIGNMENTProjectionFunc, typeof(BluePrints.Data.PROJECT));
             //loaderCollection.AddEntitiesLoader<TASKRSRC, TASKRSRC, Guid, IBluePrintsEntitiesUnitOfWork>(3, bluePrintsUnitOfWorkFactory, x => x.WORKPACK_ASSIGNMENTS, TASKRSRCProjectionFunc, typeof(BluePrints.P6Data.PROJECT));
             //loaderCollection.AddEntitiesLoader<TASK, TASK, Guid, IBluePrintsEntitiesUnitOfWork>(4, bluePrintsUnitOfWorkFactory, x => x.WORKPACK_ASSIGNMENTS, TASKProjectionFunc, typeof(BluePrints.P6Data.PROJECT));
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
-        bool isContinueLoadingAfterPROJECT(IEnumerable<BluePrints.Data.PROJECT> entities)
+        private bool isContinueLoadingAfterPROJECT(IEnumerable<Data.PROJECT> entities)
         {
             if (entities.Count() == 0)
             {
-                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed, "PROJECT"))));
+                mainThreadDispatcher.BeginInvoke(
+                    new Action(
+                        () =>
+                            MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed, "PROJECT"))));
                 return false;
             }
 
-            this.loadPROJECT = entities.First();
+            loadPROJECT = entities.First();
             return true;
         }
 
-        Func<IRepositoryQuery<BluePrints.Data.PROJECT>, IQueryable<BluePrints.Data.PROJECT>> PROJECTProjectionFunc()
+        private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
         {
-            return query => query.Where(x => x.GUID == this.loadPROJECT.GUID);
+            return query => query.Where(x => x.GUID == loadPROJECT.GUID);
         }
 
-        Func<IRepositoryQuery<BluePrints.P6Data.PROJWBS>, IQueryable<BluePrints.P6Data.PROJWBS>> P6PROJECTProjectionFunc()
+        private Func<IRepositoryQuery<PROJWBS>, IQueryable<PROJWBS>> P6PROJECTProjectionFunc
+            ()
         {
             return query => query.Where(x => x.proj_node_flag == "Y").OrderBy(proj => proj.wbs_short_name);
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(this.bluePrintsUnitOfWorkFactory, x => x.BASELINES);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINES);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoader.CreateCollectionViewModel()));
         }
 
@@ -97,69 +120,72 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE> entities)
         {
-            MainViewModel.OnBeforeEntitySavedCallBack = this.OnBeforeEntitySaved;
+            MainViewModel.OnBeforeEntitySavedCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
 
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
+            object sender)
         {
             if (sender.ToString() == MainViewModel.ToString())
                 return;
 
-            if (loadPROJECT != null && changedType == typeof(BluePrints.Data.PROJECT) && loadPROJECT.GUID.ToString() == key.ToString())
-            {
+            if (loadPROJECT != null && changedType == typeof(Data.PROJECT) &&
+                loadPROJECT.GUID.ToString() == key.ToString())
                 if (messageType == EntityMessageType.Added)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Restored, StringFormatUtils.GetEntityNameByType(changedType)));
+                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Restored,
+                        StringFormatUtils.GetEntityNameByType(changedType)));
                 else if (messageType == EntityMessageType.Deleted)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed, StringFormatUtils.GetEntityNameByType(changedType)));
-            }
+                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed,
+                        StringFormatUtils.GetEntityNameByType(changedType)));
 
             if (loadPROJECT != null)
-            {
                 if (MainViewModel != null)
                     mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
                 else if (loadPROJECT != null)
                     mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
-            }
         }
 
         #region Collection Call Backs
+
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
         public void OnBeforeEntitySaved(BASELINE entity)
         {
-            entity.GUID_PROJECT = this.loadPROJECT.GUID;
+            entity.GUID_PROJECT = loadPROJECT.GUID;
         }
+
         #endregion
+
         #endregion
 
         #region View Properties
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
         protected override string ViewName
         {
-            get
-            {
-                return "BASELINECollectionViewModelWrapper";
-            }
+            get { return "BASELINECollectionViewModelWrapper"; }
         }
 
-        public IEnumerable<BluePrints.P6Data.PROJWBS> P6PROJECTSCollection
+        public IEnumerable<PROJWBS> P6PROJECTSCollection
         {
             get
             {
-                var collection = GetEntities<BluePrints.P6Data.PROJWBS>();
+                var collection = GetEntities<PROJWBS>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.wbs_short_name);
                 return collection;
             }
         }
+
         #endregion
 
         #region ISupportCustomDocumentTypeNameAndParameter
+
         public bool CanEdit(BASELINE entity)
         {
             if (MainViewModel == null || MainViewModel.SelectedEntity == null)
@@ -168,7 +194,11 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        protected IDocumentManagerService DocumentManagerService { get { return this.GetService<IDocumentManagerService>(); } }
+        protected IDocumentManagerService DocumentManagerService
+        {
+            get { return this.GetService<IDocumentManagerService>(); }
+        }
+
         public void Edit(BASELINE entity)
         {
             if (entity == null)
@@ -177,10 +207,12 @@ namespace BluePrints.ViewModels
             DocumentManagerService.ShowExistingEntityDocument<BASELINE_ITEM, Guid>(this, entity.GUID, string.Empty);
         }
 
-        BaselineMappingSelectionType mappingSelectionType = new BaselineMappingSelectionType();
+        private BaselineMappingSelectionType mappingSelectionType = new BaselineMappingSelectionType();
+
         public bool CanP6BASELINE_ASSIGN(BASELINE assignEntity)
         {
-            return assignEntity != null && assignEntity.P6BASELINE_NAME != null && assignEntity.P6BASELINE_NAME != string.Empty;
+            return assignEntity != null && assignEntity.P6BASELINE_NAME != null &&
+                   assignEntity.P6BASELINE_NAME != string.Empty;
         }
 
         public void P6BASELINE_ASSIGN(BASELINE assignEntity)
@@ -192,7 +224,8 @@ namespace BluePrints.ViewModels
 
         public bool CanP6MODBASELINE_ASSIGN(BASELINE assignEntity)
         {
-            return assignEntity != null && assignEntity.P6MODBASELINE_NAME != null && assignEntity.P6MODBASELINE_NAME != string.Empty;
+            return assignEntity != null && assignEntity.P6MODBASELINE_NAME != null &&
+                   assignEntity.P6MODBASELINE_NAME != string.Empty;
         }
 
         public void P6MODBASELINE_ASSIGN(BASELINE assignEntity)
@@ -213,17 +246,20 @@ namespace BluePrints.ViewModels
         public object GetCustomDocumentParameter()
         {
             if (mappingSelectionType == BaselineMappingSelectionType.None)
-                return new OptionalEntitiesParameter<BluePrints.Data.PROJECT, BASELINE>(null, MainViewModel.SelectedEntity);
+                return new OptionalEntitiesParameter<Data.PROJECT, BASELINE>(null,
+                    MainViewModel.SelectedEntity);
 
-            return new object[] { MainViewModel.SelectedEntity, mappingSelectionType };
+            return new object[] {MainViewModel.SelectedEntity, mappingSelectionType};
         }
 
         public string GetCustomDocumentTitle()
         {
             if (mappingSelectionType == BaselineMappingSelectionType.Original)
-                return MainViewModel.SelectedEntity.NAME + " - " + MainViewModel.SelectedEntity.P6BASELINE_NAME + " Mapping";
+                return MainViewModel.SelectedEntity.NAME + " - " + MainViewModel.SelectedEntity.P6BASELINE_NAME +
+                       " Mapping";
             else if (mappingSelectionType == BaselineMappingSelectionType.Modified)
-                return MainViewModel.SelectedEntity.NAME + " - " + MainViewModel.SelectedEntity.P6MODBASELINE_NAME + " Mapping";
+                return MainViewModel.SelectedEntity.NAME + " - " + MainViewModel.SelectedEntity.P6MODBASELINE_NAME +
+                       " Mapping";
             else
                 return "[" + loadPROJECT.NUMBER + "] BASELINE";
         }
@@ -232,6 +268,7 @@ namespace BluePrints.ViewModels
         {
             return true;
         }
+
         #endregion
     }
 }

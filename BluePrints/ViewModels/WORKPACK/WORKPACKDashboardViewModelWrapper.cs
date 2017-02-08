@@ -26,7 +26,8 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the PROJECTS collection view model.
     /// </summary>
-    public class WORKPACKDashboardViewModelWrapper : DashboardViewModelWrapper<WORKPACK, WORKPACK_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>
+    public class WORKPACKDashboardViewModelWrapper :
+        DashboardViewModelWrapper<WORKPACK, WORKPACK_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of WORKPACK_ITEMSViewModelWrapper as a POCO view model.
@@ -46,72 +47,84 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operation
-        IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        PROJECT_Dashboard projectDashboard;
+
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
+            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
+        private PROJECT_Dashboard projectDashboard;
+
         protected override void InitializeParameters(object parameter)
         {
-            this.projectDashboard = (PROJECT_Dashboard)parameter;
+            projectDashboard = (PROJECT_Dashboard) parameter;
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
         {
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddEntitiesLoader<PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork>(1, bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
-            loaderCollection.AddEntitiesLoader<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>(2, bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
-            loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(3, bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
-            loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(4, bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
-            loaderCollection.AddEntitiesLoader<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(5, bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
-            
+            loaderCollection.AddEntitiesLoader<PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork>(1,
+                bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
+            loaderCollection.AddEntitiesLoader<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>(2,
+                bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
+            loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(3,
+                bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
+            loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(4,
+                bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
+            loaderCollection.AddEntitiesLoader<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(5,
+                bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
+
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(this.bluePrintsUnitOfWorkFactory, x => x.WORKPACKS);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoader.CreateCollectionViewModel()));
         }
 
-        Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
+        private Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == projectDashboard.PROJECT.GUID);
         }
 
-        Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
+        private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == projectDashboard.PROJECT.GUID);
         }
 
-        protected override Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK_Dashboard>> ConstructMainViewModelProjection()
+        protected override Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK_Dashboard>>
+            ConstructMainViewModelProjection()
         {
-            return query => WORKPACK_DashboardQueries.SummarizeWORKPACKDashboard(query, this.projectDashboard);
+            return query => WORKPACK_DashboardQueries.SummarizeWORKPACKDashboard(query, projectDashboard);
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<WORKPACK_Dashboard> entities)
         {
-            MainViewModel = (CollectionViewModel<WORKPACK, WORKPACK_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>)mainEntityLoader.GetViewModel();
+            MainViewModel =
+                (CollectionViewModel<WORKPACK, WORKPACK_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>)
+                mainEntityLoader.GetViewModel();
             MainViewModel.SetParentViewModel(this);
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             base.OnMainViewModelLoaded(entities);
             return true;
         }
 
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
+            object sender)
         {
             return;
         }
+
         #endregion
 
         #region View Properties
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
         protected override string ViewName
         {
-            get
-            {
-                return "WORKPACKDashboardViewModelWrapper";
-            }
+            get { return "WORKPACKDashboardViewModelWrapper"; }
         }
 
         public IEnumerable<PHASE> PHASECollection
@@ -168,6 +181,7 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
+
         #endregion
     }
 }

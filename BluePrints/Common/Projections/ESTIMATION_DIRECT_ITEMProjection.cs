@@ -37,16 +37,22 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                return (ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE == null ? Guid.Empty.ToString() : ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE.ToString()) + (ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT == null ? Guid.Empty.ToString() : ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT.ToString()) + ESTIMATION_DIRECT_ITEM.COMMODITY_GROUP_DIRECT_ID.ToString();
+                return (ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE == null
+                           ? Guid.Empty.ToString()
+                           : ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE.ToString()) +
+                       (ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT == null
+                           ? Guid.Empty.ToString()
+                           : ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT.ToString()) +
+                       ESTIMATION_DIRECT_ITEM.COMMODITY_GROUP_DIRECT_ID.ToString();
             }
             set
             {
-                int guidLength = Guid.Empty.ToString().Length;
-                int doubleGuidLength = guidLength * 2;
+                var guidLength = Guid.Empty.ToString().Length;
+                var doubleGuidLength = guidLength * 2;
 
-                string CommodityCodeGuidString = value.Substring(0, guidLength);
-                string CommodityGroupGuidString = value.Substring(guidLength, guidLength);
-                string CommodityGroupIdString = value.Substring(doubleGuidLength, value.Length - doubleGuidLength);
+                var CommodityCodeGuidString = value.Substring(0, guidLength);
+                var CommodityGroupGuidString = value.Substring(guidLength, guidLength);
+                var CommodityGroupIdString = value.Substring(doubleGuidLength, value.Length - doubleGuidLength);
 
                 if (CommodityCodeGuidString != Guid.Empty.ToString())
                 {
@@ -59,14 +65,18 @@ namespace BluePrints.Common.Projections
                     ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE = null;
                     ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT = new Guid(CommodityGroupGuidString);
                     if (CommodityGroupIdString != string.Empty)
-                        ESTIMATION_DIRECT_ITEM.COMMODITY_GROUP_DIRECT_ID = Int32.Parse(CommodityGroupIdString);
+                        ESTIMATION_DIRECT_ITEM.COMMODITY_GROUP_DIRECT_ID = int.Parse(CommodityGroupIdString);
                 }
             }
         }
 
         public bool ISQUANTIFIABLE
         {
-            get { return GUID != null && ESTIMATION_DIRECT_ITEM != null && ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE != null; }
+            get
+            {
+                return GUID != null && ESTIMATION_DIRECT_ITEM != null &&
+                       ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE != null;
+            }
         }
 
         public decimal RATE_INSTALL
@@ -76,7 +86,7 @@ namespace BluePrints.Common.Projections
                 if (RATE == null || RATE.RATE1 == null)
                     return 0;
 
-                return (decimal)RATE.RATE1;
+                return (decimal) RATE.RATE1;
             }
         }
 
@@ -90,7 +100,8 @@ namespace BluePrints.Common.Projections
                 if (RATE == null || RATE.RATE1 == null)
                     return 0;
 
-                return (decimal)ESTIMATION_DIRECT_ITEM.HOURS_INSTALL * (decimal)RATE.RATE1 * ESTIMATION_DIRECT_ITEM.TOTAL_QUANTITY;
+                return (decimal) ESTIMATION_DIRECT_ITEM.HOURS_INSTALL * (decimal) RATE.RATE1 *
+                       ESTIMATION_DIRECT_ITEM.TOTAL_QUANTITY;
             }
         }
 
@@ -101,7 +112,7 @@ namespace BluePrints.Common.Projections
                 if (ESTIMATION_DIRECT_ITEM == null || ESTIMATION_DIRECT_ITEM.RATE_FREIGHT == null)
                     return 0;
 
-                return (decimal)ESTIMATION_DIRECT_ITEM.RATE_FREIGHT * ESTIMATION_DIRECT_ITEM.TOTAL_QUANTITY;
+                return (decimal) ESTIMATION_DIRECT_ITEM.RATE_FREIGHT * ESTIMATION_DIRECT_ITEM.TOTAL_QUANTITY;
             }
         }
 
@@ -112,7 +123,7 @@ namespace BluePrints.Common.Projections
                 if (ESTIMATION_DIRECT_ITEM == null || ESTIMATION_DIRECT_ITEM.RATE_SUPPLY == null)
                     return 0;
 
-                return (decimal)ESTIMATION_DIRECT_ITEM.RATE_SUPPLY * ESTIMATION_DIRECT_ITEM.TOTAL_QUANTITY;
+                return (decimal) ESTIMATION_DIRECT_ITEM.RATE_SUPPLY * ESTIMATION_DIRECT_ITEM.TOTAL_QUANTITY;
             }
         }
 
@@ -126,31 +137,52 @@ namespace BluePrints.Common.Projections
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries
     {
-        public static IQueryable<ESTIMATION_DIRECT_ITEMProjection> JoinRATESOnESTIMATION_DIRECT_ITEMS(IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, Func<ESTIMATION_DIRECT> getESTIMATION_DIRECTFunc, Func<IQueryable<DEPARTMENT>> getDEPARTMENTFunc, Func<IQueryable<RATE>> getRATES_ByProjectFunc = null, bool isESTIMATION_DIRECTQueryProcessed = false)
+        public static IQueryable<ESTIMATION_DIRECT_ITEMProjection> JoinRATESOnESTIMATION_DIRECT_ITEMS(
+            IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, Func<ESTIMATION_DIRECT> getESTIMATION_DIRECTFunc,
+            Func<IQueryable<DEPARTMENT>> getDEPARTMENTFunc, Func<IQueryable<RATE>> getRATES_ByProjectFunc = null,
+            bool isESTIMATION_DIRECTQueryProcessed = false)
         {
-            ESTIMATION_DIRECT ESTIMATION_DIRECT = getESTIMATION_DIRECTFunc();
+            var ESTIMATION_DIRECT = getESTIMATION_DIRECTFunc();
             IQueryable<ESTIMATION_DIRECT_ITEM> contextESTIMATION_DIRECT_ITEMS;
             if (ESTIMATION_DIRECT == null)
+            {
                 contextESTIMATION_DIRECT_ITEMS = ESTIMATION_DIRECT_ITEMS.Where(x => x.GUID == Guid.Empty);
+            }
             else
             {
-                if(isESTIMATION_DIRECTQueryProcessed)
+                if (isESTIMATION_DIRECTQueryProcessed)
                     contextESTIMATION_DIRECT_ITEMS = ESTIMATION_DIRECT_ITEMS;
                 else
-                    contextESTIMATION_DIRECT_ITEMS = ESTIMATION_DIRECT_ITEMS.Where(x => x.GUID_ESTIMATION_DIRECT == ESTIMATION_DIRECT.GUID);
+                    contextESTIMATION_DIRECT_ITEMS =
+                        ESTIMATION_DIRECT_ITEMS.Where(x => x.GUID_ESTIMATION_DIRECT == ESTIMATION_DIRECT.GUID);
             }
 
 
-            IQueryable<RATE> RATES = getRATES_ByProjectFunc();
-            IQueryable<DEPARTMENT> DEPARTMENTS = getDEPARTMENTFunc();
-            DEPARTMENT constructionDEPARTMENT = DEPARTMENTS.FirstOrDefault(x => x.NAME.ToUpper() == CommonResources.DefaultConstructionDepartment);
+            var RATES = getRATES_ByProjectFunc();
+            var DEPARTMENTS = getDEPARTMENTFunc();
+            var constructionDEPARTMENT =
+                DEPARTMENTS.FirstOrDefault(x => x.NAME.ToUpper() == CommonResources.DefaultConstructionDepartment);
             Guid searchDEPARTMENTGuid;
             if (constructionDEPARTMENT == null)
                 searchDEPARTMENTGuid = Guid.Empty;
             else
                 searchDEPARTMENTGuid = constructionDEPARTMENT.GUID;
 
-            return contextESTIMATION_DIRECT_ITEMS.ToArray().AsQueryable().Select(x => new ESTIMATION_DIRECT_ITEMProjection() { GUID = x.GUID, ESTIMATION_DIRECT_ITEM = x, RATE = RATES.FirstOrDefault(y => y.GUID_DEPARTMENT == searchDEPARTMENTGuid && y.GUID_DISCIPLINE == x.GUID_DISCIPLINE) });
+            return
+                contextESTIMATION_DIRECT_ITEMS.ToArray()
+                    .AsQueryable()
+                    .Select(
+                        x =>
+                            new ESTIMATION_DIRECT_ITEMProjection()
+                            {
+                                GUID = x.GUID,
+                                ESTIMATION_DIRECT_ITEM = x,
+                                RATE =
+                                    RATES.FirstOrDefault(
+                                        y =>
+                                            y.GUID_DEPARTMENT == searchDEPARTMENTGuid &&
+                                            y.GUID_DISCIPLINE == x.GUID_DISCIPLINE)
+                            });
         }
     }
 }

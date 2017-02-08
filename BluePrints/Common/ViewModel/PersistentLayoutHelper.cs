@@ -15,15 +15,15 @@ namespace BluePrints.Common.ViewModel
             set { LayoutSettings.Default.LogicalLayout = value; }
         }
 
-        static Dictionary<string, string> persistentViewsLayout;
+        private static Dictionary<string, string> persistentViewsLayout;
+
         public static Dictionary<string, string> PersistentViewsLayout
         {
             get
             {
                 if (persistentViewsLayout == null)
-                {
-                    persistentViewsLayout = LogicalLayoutSerializationHelper.Deserialize(LayoutSettings.Default.ViewsLayout);
-                }
+                    persistentViewsLayout =
+                        LogicalLayoutSerializationHelper.Deserialize(LayoutSettings.Default.ViewsLayout);
                 return persistentViewsLayout;
             }
         }
@@ -31,25 +31,20 @@ namespace BluePrints.Common.ViewModel
         public static void TryDeserializeLayout(ILayoutSerializationService service, string viewName)
         {
             string state = null;
-            if (service != null && PersistentLayoutHelper.PersistentViewsLayout.TryGetValue(viewName, out state))
-            {
+            if (service != null && PersistentViewsLayout.TryGetValue(viewName, out state))
                 try
                 {
                     service.Deserialize(state);
                 }
                 catch
                 {
-
                 }
-            }
         }
 
         public static void TrySerializeLayout(ILayoutSerializationService service, string viewName)
         {
             if (service != null)
-            {
-                PersistentLayoutHelper.PersistentViewsLayout[viewName] = service.Serialize();
-            }
+                PersistentViewsLayout[viewName] = service.Serialize();
         }
 
         public static void SaveLayout()
@@ -60,9 +55,10 @@ namespace BluePrints.Common.ViewModel
 
         public static void ResetLayout(string viewName)
         {
-            PersistentLayoutHelper.PersistentViewsLayout[viewName] = string.Empty;
-            PersistentLayoutHelper.SaveLayout();
+            PersistentViewsLayout[viewName] = string.Empty;
+            SaveLayout();
         }
+
         //public static void ResetLayout()
         //{
         //    PersistentViewsLayout.Clear();

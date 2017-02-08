@@ -28,10 +28,10 @@ namespace BluePrints.Views
         {
             InitializeComponent();
             var viewModel = LoginViewModel.Create();
-            viewModel.ShowErrorCallBack = this.ShowErrorCallBack;
-            viewModel.HideControlCallBack = this.Hide;
-            viewModel.ShowControlCallBack = this.Show;
-            this.DataContext = viewModel;
+            viewModel.ShowErrorCallBack = ShowErrorCallBack;
+            viewModel.HideControlCallBack = Hide;
+            viewModel.ShowControlCallBack = Show;
+            DataContext = viewModel;
 
             if (txtUsername.Text == string.Empty)
                 txtUsername.Focus();
@@ -45,7 +45,7 @@ namespace BluePrints.Views
             if (errorMessage != null)
                 error = new BaseValidationError(errorMessage, null, ErrorType.Warning);
 
-            if(isPasswordField)
+            if (isPasswordField)
                 BaseEditHelper.SetValidationError(txtPassword, error);
             else
                 BaseEditHelper.SetValidationError(txtUsername, error);

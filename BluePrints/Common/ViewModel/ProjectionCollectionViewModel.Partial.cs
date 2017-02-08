@@ -41,7 +41,9 @@ namespace BluePrints.Common.ViewModel
     /// <typeparam name="TProjection">A projection entity type.</typeparam>
     /// <typeparam name="TPrimaryKey">A primary key value type.</typeparam>
     /// <typeparam name="TUnitOfWork">A unit of work type.</typeparam>
-    public partial class CollectionViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork> : CollectionViewModelBase<TEntity, TProjection, TPrimaryKey, TUnitOfWork>, ISupportUndoRedo<TProjection>, ISupportFiltering<TEntity>
+    public partial class CollectionViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork> :
+        CollectionViewModelBase<TEntity, TProjection, TPrimaryKey, TUnitOfWork>, ISupportUndoRedo<TProjection>,
+        ISupportFiltering<TEntity>
         where TEntity : class
         where TProjection : class
         where TUnitOfWork : IUnitOfWork
@@ -60,7 +62,11 @@ namespace BluePrints.Common.ViewModel
             Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
             Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection)
         {
-            return ViewModelSource.Create(() => new CollectionViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork>(unitOfWorkFactory, getRepositoryFunc, projection, null, null, false));
+            return
+                ViewModelSource.Create(
+                    () =>
+                        new CollectionViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork>(unitOfWorkFactory,
+                            getRepositoryFunc, projection, null, null, false));
         }
 
         /// <summary>
@@ -80,36 +86,43 @@ namespace BluePrints.Common.ViewModel
             Action<TEntity> newEntityInitializer = null,
             Func<bool> canCreateNewEntity = null,
             bool ignoreSelectEntityMessage = false
-            )
-            : base(unitOfWorkFactory, getRepositoryFunc, projection, newEntityInitializer, canCreateNewEntity, ignoreSelectEntityMessage)
+        )
+            : base(
+                unitOfWorkFactory, getRepositoryFunc, projection, newEntityInitializer, canCreateNewEntity,
+                ignoreSelectEntityMessage)
         {
             SelectedEntities = new ObservableCollection<TProjection>();
             SelectedEntities.CollectionChanged += SelectedEntities_CollectionChanged;
         }
 
         public Action OnSelectedEntitiesChangedCallBack;
-        protected virtual void SelectedEntities_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+
+        protected virtual void SelectedEntities_CollectionChanged(object sender,
+            System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (OnSelectedEntitiesChangedCallBack != null)
                 OnSelectedEntitiesChangedCallBack();
         }
 
         #region Selected Entities
+
         /// <summary>
         /// The selected entities.
         /// Since CollectionViewModel is a POCO view model, this property will raise INotifyPropertyChanged.PropertyEvent when modified so it can be used as a binding source in views.
         /// </summary>
-        ObservableCollection<TProjection> selectedentities { get; set; }
+        private ObservableCollection<TProjection> selectedentities { get; set; }
+
         public ObservableCollection<TProjection> SelectedEntities
         {
             get { return selectedentities; }
             set { selectedentities = value; }
         }
 
-        IEnumerable<TPrimaryKey> selectedEntitiesKey;
+        private IEnumerable<TPrimaryKey> selectedEntitiesKey;
+
         protected override void StoreSelectedEntitiesKey()
         {
-            selectedEntitiesKey = base.RetrieveLocalProjectionsEntitiesKey(this.SelectedEntities.AsEnumerable());
+            selectedEntitiesKey = RetrieveLocalProjectionsEntitiesKey(SelectedEntities.AsEnumerable());
         }
 
         protected override Action GetSelectedEntityCallback()
@@ -123,14 +136,14 @@ namespace BluePrints.Common.ViewModel
                 return;
 
             SelectedEntities.Clear();
-            foreach(TPrimaryKey entityKey in selectedEntitiesKey)
-            {
-                SelectedEntities.Add(base.FindLocalProjectionByKey(entityKey));
-            }
+            foreach (var entityKey in selectedEntitiesKey)
+                SelectedEntities.Add(FindLocalProjectionByKey(entityKey));
         }
+
         #endregion
 
         #region ISupportFiltering
+
         public void CreateCustomFilter()
         {
             Messenger.Default.Send(new CreateCustomFilterMessage<TEntity>());
@@ -145,10 +158,12 @@ namespace BluePrints.Common.ViewModel
         #endregion
 
         #region ISupportUndoRedo
+
         /// <summary>
         /// Manages all undo and redo operation
         /// </summary>
-        EntitiesUndoRedoManager<TProjection> entitiesundoredomanager { get; set; }
+        private EntitiesUndoRedoManager<TProjection> entitiesundoredomanager { get; set; }
+
         public EntitiesUndoRedoManager<TProjection> EntitiesUndoRedoManager
         {
             get
@@ -162,6 +177,7 @@ namespace BluePrints.Common.ViewModel
 
         public Action<TProjection> PropertyRedoAddCallBack;
         public Action PropertyUndoRedoRefreshCallBack;
+
         /// <summary>
         /// Function to undo the entity changes
         /// Must be used in conjunction of EntitiesUndoManager
@@ -170,11 +186,14 @@ namespace BluePrints.Common.ViewModel
         public virtual void PropertyUndo(UndoRedoEntityInfo<TProjection> entityProperty)
         {
             if (entityProperty.MessageType == EntityMessageType.Added)
+            {
                 Delete(entityProperty.ChangedEntity);
+            }
             else
             {
                 if (entityProperty.MessageType == EntityMessageType.Changed)
-                    DataUtils.SetNestedValue(entityProperty.PropertyName, entityProperty.ChangedEntity, entityProperty.OldValue);
+                    DataUtils.SetNestedValue(entityProperty.PropertyName, entityProperty.ChangedEntity,
+                        entityProperty.OldValue);
 
                 Save(entityProperty.ChangedEntity);
             }
@@ -191,11 +210,14 @@ namespace BluePrints.Common.ViewModel
         public virtual void PropertyRedo(UndoRedoEntityInfo<TProjection> entityProperty)
         {
             if (entityProperty.MessageType == EntityMessageType.Deleted)
+            {
                 Delete(entityProperty.ChangedEntity);
+            }
             else
             {
                 if (entityProperty.MessageType == EntityMessageType.Changed)
-                    DataUtils.SetNestedValue(entityProperty.PropertyName, entityProperty.ChangedEntity, entityProperty.NewValue);
+                    DataUtils.SetNestedValue(entityProperty.PropertyName, entityProperty.ChangedEntity,
+                        entityProperty.NewValue);
                 //if (entityProperty.MessageType == EntityMessageType.Added && PropertyRedoAddCallBack != null)
                 //    PropertyRedoAddCallBack(entityProperty.ChangedEntity);
 
@@ -240,10 +262,12 @@ namespace BluePrints.Common.ViewModel
         public void Redo()
         {
             EntitiesUndoRedoManager.Redo();
-        } 
+        }
+
         #endregion
 
         #region Data Operations
+
         /// <summary>
         /// Determine whether other entities in the collection shares any common combination of unique constraints
         /// </summary>
@@ -268,9 +292,11 @@ namespace BluePrints.Common.ViewModel
         /// <param name="newValue">New value of the current changing cell</param>
         /// <param name="errorMessage">Error message to notify the user of conflicting constraints</param>
         /// <returns>Returns true if no other entity contains similar constraint member values</returns>
-        public bool IsValidEntityCellValue(TProjection entity, string fieldName, object newValue, ref string errorMessage)
+        public bool IsValidEntityCellValue(TProjection entity, string fieldName, object newValue,
+            ref string errorMessage)
         {
-            return IsUniqueEntityConstraintValues(entity, ref errorMessage, new KeyValuePair<string, object>(fieldName, newValue));
+            return IsUniqueEntityConstraintValues(entity, ref errorMessage,
+                new KeyValuePair<string, object>(fieldName, newValue));
             //return IsUniqueEntityConstraintValues(entity, ref errorMessage);
         }
 
@@ -281,24 +307,30 @@ namespace BluePrints.Common.ViewModel
         /// <param name="errorMessage">Error message to be populated with entity member constraint field names</param>
         /// <param name="keyValuePairNewFieldValue">In some instance the new value isn't yet updated on the entity, so this provides other ways pass in the new value</param>
         /// <returns>Concatenated constraint value string</returns>
-        private bool IsUniqueEntityConstraintValues(TProjection entity, ref string errorMessage, KeyValuePair<string, object>? keyValuePairNewFieldValue = null)
+        private bool IsUniqueEntityConstraintValues(TProjection entity, ref string errorMessage,
+            KeyValuePair<string, object>? keyValuePairNewFieldValue = null)
         {
-            string currentEntityConcatenatedConstraints = string.Empty;
+            var currentEntityConcatenatedConstraints = string.Empty;
 
-            IEnumerable<string> constraintMemberPropertyStrings = DataUtils.GetConstraintPropertyStrings(typeof(TProjection));
+            var constraintMemberPropertyStrings =
+                DataUtils.GetConstraintPropertyStrings(typeof(TProjection));
             if (constraintMemberPropertyStrings == null)
                 return true;
-            else if (keyValuePairNewFieldValue != null && !constraintMemberPropertyStrings.Contains(((KeyValuePair<string, object>)keyValuePairNewFieldValue).Key))
+            else if (keyValuePairNewFieldValue != null &&
+                     !constraintMemberPropertyStrings.Contains(((KeyValuePair<string, object>) keyValuePairNewFieldValue).Key))
                 return true;
 
-            foreach (string constraintMemberPropertyString in constraintMemberPropertyStrings)
+            foreach (var constraintMemberPropertyString in constraintMemberPropertyStrings)
             {
                 object constraintMemberPropertyValue = null;
                 if (keyValuePairNewFieldValue == null)
+                {
                     constraintMemberPropertyValue = DataUtils.GetNestedValue(constraintMemberPropertyString, entity);
+                }
                 else
                 {
-                    KeyValuePair<string, object> keyValuePairForNewFieldValue = (KeyValuePair<string, object>)keyValuePairNewFieldValue;
+                    var keyValuePairForNewFieldValue =
+                        (KeyValuePair<string, object>) keyValuePairNewFieldValue;
                     if (constraintMemberPropertyString == keyValuePairForNewFieldValue.Key)
                         constraintMemberPropertyValue = keyValuePairForNewFieldValue.Value;
                     else
@@ -307,18 +339,19 @@ namespace BluePrints.Common.ViewModel
 
                 if (constraintMemberPropertyValue != null)
                 {
-                    string immediatePropertyString = constraintMemberPropertyString.Split('.').Last();
+                    var immediatePropertyString = constraintMemberPropertyString.Split('.').Last();
                     errorMessage += immediatePropertyString + " and ";
                     string constraintMemberPropertyStringFormat;
                     if (constraintMemberPropertyValue.GetType() == typeof(decimal))
-                        constraintMemberPropertyStringFormat = ((decimal)constraintMemberPropertyValue).ToString("0.00");
+                        constraintMemberPropertyStringFormat = ((decimal) constraintMemberPropertyValue).ToString("0.00");
                     else
                         constraintMemberPropertyStringFormat = constraintMemberPropertyValue.ToString();
                     currentEntityConcatenatedConstraints += constraintMemberPropertyStringFormat;
                 }
             }
 
-            return IsConstraintExistsInOtherEntities(entity, currentEntityConcatenatedConstraints, constraintMemberPropertyStrings, ref errorMessage);
+            return IsConstraintExistsInOtherEntities(entity, currentEntityConcatenatedConstraints,
+                constraintMemberPropertyStrings, ref errorMessage);
         }
 
 
@@ -330,12 +363,13 @@ namespace BluePrints.Common.ViewModel
         /// <param name="constraintMemberPropertyInfos">Constraint property infos</param>
         /// <param name="constraintErrorMessage">Error message to notify the user of conflicting constraints</param>
         /// <returns>Returns true if no other entity contains similar constraint member values</returns>
-        private bool IsConstraintExistsInOtherEntities(TProjection entity, string entityConstraint, IEnumerable<string> constraintMemberPropertyStrings, ref string constraintErrorMessage)
+        private bool IsConstraintExistsInOtherEntities(TProjection entity, string entityConstraint,
+            IEnumerable<string> constraintMemberPropertyStrings, ref string constraintErrorMessage)
         {
             if (entityConstraint == string.Empty)
                 return true;
 
-            PropertyInfo keyPropertyInfo = DataUtils.GetKeyPropertyInfo(typeof(TProjection));
+            var keyPropertyInfo = DataUtils.GetKeyPropertyInfo(typeof(TProjection));
             object exclusionKeyValue = null;
             if (keyPropertyInfo != null)
                 exclusionKeyValue = keyPropertyInfo.GetValue(entity);
@@ -349,15 +383,17 @@ namespace BluePrints.Common.ViewModel
                         continue;
                 }
 
-                string otherEntityConcatenatedConstraints = string.Empty;
+                var otherEntityConcatenatedConstraints = string.Empty;
                 foreach (var constraintMemberPropertyString in constraintMemberPropertyStrings)
                 {
-                    var constraintMemberPropertyValue = DataUtils.GetNestedValue(constraintMemberPropertyString, otherEntity);
+                    var constraintMemberPropertyValue = DataUtils.GetNestedValue(constraintMemberPropertyString,
+                        otherEntity);
                     if (constraintMemberPropertyValue != null)
                     {
                         string constraintMemberPropertyStringFormat;
                         if (constraintMemberPropertyValue.GetType() == typeof(decimal))
-                            constraintMemberPropertyStringFormat = ((decimal)constraintMemberPropertyValue).ToString("0.00");
+                            constraintMemberPropertyStringFormat =
+                                ((decimal) constraintMemberPropertyValue).ToString("0.00");
                         else
                             constraintMemberPropertyStringFormat = constraintMemberPropertyValue.ToString();
 
@@ -365,7 +401,8 @@ namespace BluePrints.Common.ViewModel
                     }
                 }
 
-                if (otherEntityConcatenatedConstraints != string.Empty && otherEntityConcatenatedConstraints == entityConstraint)
+                if (otherEntityConcatenatedConstraints != string.Empty &&
+                    otherEntityConcatenatedConstraints == entityConstraint)
                 {
                     constraintErrorMessage = constraintErrorMessage.Substring(0, constraintErrorMessage.Length - 5);
                     constraintErrorMessage = constraintErrorMessage.Replace("GUID_", "");
@@ -385,66 +422,90 @@ namespace BluePrints.Common.ViewModel
         private bool isRequiredAttributesHasValue(TProjection entity, ref string errorMessage)
         {
             IEnumerable<string> requiredPropertyStrings;
-            if(typeof(TProjection) == typeof(TEntity))
+            if (typeof(TProjection) == typeof(TEntity))
                 requiredPropertyStrings = DataUtils.GetRequiredPropertyStrings(typeof(TProjection));
             else
                 requiredPropertyStrings = DataUtils.GetRequiredPropertyStringsForProjection(typeof(TProjection));
 
-            string requiredPropertyNames = string.Empty;
+            var requiredPropertyNames = string.Empty;
             if (requiredPropertyStrings == null || requiredPropertyStrings.Count() == 0)
+            {
                 return true;
+            }
             else
             {
-                foreach(string requiredPropertyString in requiredPropertyStrings)
+                foreach (var requiredPropertyString in requiredPropertyStrings)
                 {
                     var requiredPropertyValue = DataUtils.GetNestedValue(requiredPropertyString, entity);
-                    if(requiredPropertyValue == null || requiredPropertyValue.ToString() == Guid.Empty.ToString())
+                    if (requiredPropertyValue == null || requiredPropertyValue.ToString() == Guid.Empty.ToString())
                         requiredPropertyNames += requiredPropertyString.Replace("GUID_", "").Split('.').Last() + ", ";
                 }
 
                 if (requiredPropertyNames != string.Empty)
                 {
-                    errorMessage = string.Format("{0} value missing", requiredPropertyNames.Substring(0, requiredPropertyNames.Length - 2));
+                    errorMessage = string.Format("{0} value missing",
+                        requiredPropertyNames.Substring(0, requiredPropertyNames.Length - 2));
                     return false;
                 }
                 else
+                {
                     return true;
+                }
             }
         }
+
         #endregion
 
         #region LookUpCollection
-        readonly Dictionary<string, IDocumentContent> lookUpViewModels = new Dictionary<string, IDocumentContent>();
 
-        protected IEntitiesViewModel<TLookUpEntity> GetLookUpEntitiesViewModel<TViewModel, TLookUpEntity, TLookUpEntityKey>(Expression<Func<TViewModel, IEntitiesViewModel<TLookUpEntity>>> propertyExpression, Func<TUnitOfWork, IRepository<TLookUpEntity, TLookUpEntityKey>> getRepositoryFunc, Func<IRepositoryQuery<TLookUpEntity>, IQueryable<TLookUpEntity>> projection = null) where TLookUpEntity : class
+        private readonly Dictionary<string, IDocumentContent> lookUpViewModels = new Dictionary<string, IDocumentContent>();
+
+        protected IEntitiesViewModel<TLookUpEntity> GetLookUpEntitiesViewModel
+            <TViewModel, TLookUpEntity, TLookUpEntityKey>(
+                Expression<Func<TViewModel, IEntitiesViewModel<TLookUpEntity>>> propertyExpression,
+                Func<TUnitOfWork, IRepository<TLookUpEntity, TLookUpEntityKey>> getRepositoryFunc,
+                Func<IRepositoryQuery<TLookUpEntity>, IQueryable<TLookUpEntity>> projection = null)
+            where TLookUpEntity : class
         {
             return GetLookUpProjectionsViewModel(propertyExpression, getRepositoryFunc, projection);
         }
 
-        protected virtual IEntitiesViewModel<TLookUpProjection> GetLookUpProjectionsViewModel<TViewModel, TLookUpEntity, TLookUpProjection, TLookUpEntityKey>(Expression<Func<TViewModel, IEntitiesViewModel<TLookUpProjection>>> propertyExpression, Func<TUnitOfWork, IRepository<TLookUpEntity, TLookUpEntityKey>> getRepositoryFunc, Func<IRepositoryQuery<TLookUpEntity>, IQueryable<TLookUpProjection>> projection)
+        protected virtual IEntitiesViewModel<TLookUpProjection> GetLookUpProjectionsViewModel
+            <TViewModel, TLookUpEntity, TLookUpProjection, TLookUpEntityKey>(
+                Expression<Func<TViewModel, IEntitiesViewModel<TLookUpProjection>>> propertyExpression,
+                Func<TUnitOfWork, IRepository<TLookUpEntity, TLookUpEntityKey>> getRepositoryFunc,
+                Func<IRepositoryQuery<TLookUpEntity>, IQueryable<TLookUpProjection>> projection)
             where TLookUpEntity : class
             where TLookUpProjection : class
         {
-            return GetEntitiesViewModelCore<IEntitiesViewModel<TLookUpProjection>, TLookUpProjection>(propertyExpression, () => LookUpEntitiesViewModel<TLookUpEntity, TLookUpProjection, TLookUpEntityKey, TUnitOfWork>.Create(this.unitOfWorkFactory, getRepositoryFunc, projection));
+            return GetEntitiesViewModelCore<IEntitiesViewModel<TLookUpProjection>, TLookUpProjection>(
+                propertyExpression,
+                () =>
+                    LookUpEntitiesViewModel<TLookUpEntity, TLookUpProjection, TLookUpEntityKey, TUnitOfWork>.Create(
+                        unitOfWorkFactory, getRepositoryFunc, projection));
         }
 
-        TViewModel GetEntitiesViewModelCore<TViewModel, TDetailEntity>(LambdaExpression propertyExpression, Func<TViewModel> createViewModelCallback)
+        private TViewModel GetEntitiesViewModelCore<TViewModel, TDetailEntity>(LambdaExpression propertyExpression,
+            Func<TViewModel> createViewModelCallback)
             where TViewModel : IDocumentContent
             where TDetailEntity : class
         {
             IDocumentContent result = null;
-            string propertyName = ExpressionHelper.GetPropertyName(propertyExpression);
+            var propertyName = ExpressionHelper.GetPropertyName(propertyExpression);
             if (!lookUpViewModels.TryGetValue(propertyName, out result))
             {
                 result = createViewModelCallback();
                 lookUpViewModels[propertyName] = result;
             }
-            return (TViewModel)result;
+            return (TViewModel) result;
         }
+
         #endregion
 
         #region Views
+
         public Func<EditorEventArgs, bool> BeforeShownEditor;
+
         public virtual void ShownEditor(EditorEventArgs e)
         {
             if (BeforeShownEditor != null)
@@ -455,7 +516,7 @@ namespace BluePrints.Common.ViewModel
             if (view == null)
                 return;
 
-            TextEdit textEditor = view.ActiveEditor as TextEdit;
+            var textEditor = view.ActiveEditor as TextEdit;
             if (textEditor == null)
                 return;
 
@@ -478,30 +539,32 @@ namespace BluePrints.Common.ViewModel
                 comboBoxEditor.ShowPopup();
         }
 
-        protected virtual void OnSelectedEntitiesChanged() { }
+        protected virtual void OnSelectedEntitiesChanged()
+        {
+        }
 
         public Func<TProjection, CellValueChangedEventArgs, bool> ExistingRowAddUndoAndSaveCallBack;
+
         /// <summary>
         /// Remembers an entity property old value for undoing
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the AddUndoCommand property that can be used as a binding source in views.
         /// </summary>
         public virtual void ExistingRowAddUndoAndSave(CellValueChangedEventArgs e)
         {
-            if (e.RowHandle != GridControl.NewItemRowHandle)
+            if (e.RowHandle != DataControlBase.NewItemRowHandle)
             {
-                TProjection projection = (TProjection)e.Row;
+                var projection = (TProjection) e.Row;
 
                 EntitiesUndoRedoManager.PauseActionId();
                 if (ExistingRowAddUndoAndSaveCallBack != null)
-                {
-                    if(!ExistingRowAddUndoAndSaveCallBack(projection, e))
+                    if (!ExistingRowAddUndoAndSaveCallBack(projection, e))
                     {
                         EntitiesUndoRedoManager.UnpauseActionId();
                         return;
                     }
-                }
 
-                EntitiesUndoRedoManager.AddUndo(projection, e.Column.FieldName, e.OldValue, e.Value, EntityMessageType.Changed);
+                EntitiesUndoRedoManager.AddUndo(projection, e.Column.FieldName, e.OldValue, e.Value,
+                    EntityMessageType.Changed);
                 EntitiesUndoRedoManager.UnpauseActionId();
 
                 Save(projection);
@@ -510,16 +573,18 @@ namespace BluePrints.Common.ViewModel
 
         public Action<TreeListCellValueChangedEventArgs> TreeListExistingRowAddUndoAndSavePostCallBack;
         public Action<TreeListCellValueChangedEventArgs> treeListExistingRowAddUndoAndSaveCallBack;
+
         /// <summary>
         /// Remembers an entity property old value for undoing
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the AddUndoCommand property that can be used as a binding source in views.
         /// </summary>
         public virtual void TreelistExistingRowAddUndoAndSave(TreeListCellValueChangedEventArgs e)
         {
-            TProjection projection = (TProjection)e.Row;
+            var projection = (TProjection) e.Row;
 
             EntitiesUndoRedoManager.PauseActionId();
-            EntitiesUndoRedoManager.AddUndo(projection, e.Column.FieldName, e.OldValue, e.Value, EntityMessageType.Changed);
+            EntitiesUndoRedoManager.AddUndo(projection, e.Column.FieldName, e.OldValue, e.Value,
+                EntityMessageType.Changed);
             if (treeListExistingRowAddUndoAndSaveCallBack != null)
                 treeListExistingRowAddUndoAndSaveCallBack(e);
             EntitiesUndoRedoManager.UnpauseActionId();
@@ -532,17 +597,18 @@ namespace BluePrints.Common.ViewModel
 
         public Func<RowEventArgs, TProjection, bool> NewRowAddUndoAndBeforeSaveCallBack;
         public Action<RowEventArgs, TProjection> NewRowAddUndoAndAfterSavedCallBack;
+
         /// <summary>
         /// Remembers an entity added for undoing
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the AddUndoCommand property that can be used as a binding source in views.
         /// </summary>
         public virtual void NewRowAddUndoAndSave(RowEventArgs e)
         {
-            if (e.RowHandle == GridControl.NewItemRowHandle)
+            if (e.RowHandle == DataControlBase.NewItemRowHandle)
             {
                 EntitiesUndoRedoManager.PauseActionId();
 
-                TProjection projection = (TProjection)e.Row;
+                var projection = (TProjection) e.Row;
 
                 if (NewRowAddUndoAndBeforeSaveCallBack != null)
                     if (!NewRowAddUndoAndBeforeSaveCallBack(e, projection))
@@ -569,6 +635,7 @@ namespace BluePrints.Common.ViewModel
         }
 
         public Func<GridCellValidationEventArgs, bool> AdditionalValidateCellCallBack;
+
         /// <summary>
         /// Validate any row within the binded datagrid
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the ValidateRowCommand property that can be used as a binding source in views.
@@ -576,8 +643,8 @@ namespace BluePrints.Common.ViewModel
         /// <param name="e"></param>
         public virtual void ValidateCell(GridCellValidationEventArgs e)
         {
-            string constraintName = string.Empty;
-            if (!IsValidEntityCellValue((TProjection)e.Row, e.Column.FieldName, e.Value, ref constraintName))
+            var constraintName = string.Empty;
+            if (!IsValidEntityCellValue((TProjection) e.Row, e.Column.FieldName, e.Value, ref constraintName))
             {
                 e.IsValid = false;
                 e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
@@ -589,10 +656,11 @@ namespace BluePrints.Common.ViewModel
         }
 
         public Func<GridRowValidationEventArgs, bool> AdditionalValidateRowCallBack;
+
         public virtual void ValidateRow(GridRowValidationEventArgs e)
         {
-            string errorMessage = string.Empty;
-            if (!IsValidEntity((TProjection)e.Row, ref errorMessage))
+            var errorMessage = string.Empty;
+            if (!IsValidEntity((TProjection) e.Row, ref errorMessage))
             {
                 e.IsValid = false;
                 e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
@@ -602,20 +670,23 @@ namespace BluePrints.Common.ViewModel
             if (AdditionalValidateRowCallBack != null)
                 AdditionalValidateRowCallBack(e);
         }
+
         #endregion
 
         #region Fill Down Convention
+
         public Func<IEnumerable<TProjection>, GridMenuInfo, bool> CanFillDownCallBack;
+
         public bool CanFillDown(object button)
         {
-            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
-            return Entities != null && Entities.Count > 1 && !IsLoading && (info != null && info.Column != null && !info.Column.ReadOnly) && (CanFillDownCallBack == null || CanFillDownCallBack(SelectedEntities, info));
+            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject) button) as GridMenuInfo;
+            return Entities != null && Entities.Count > 1 && !IsLoading && info != null && info.Column != null && !info.Column.ReadOnly && (CanFillDownCallBack == null || CanFillDownCallBack(SelectedEntities, info));
         }
 
         public bool CanFillUp(object button)
         {
-            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
-            return Entities != null && Entities.Count > 1 && !IsLoading && (info != null && info.Column != null && !info.Column.ReadOnly) && (CanFillDownCallBack == null || CanFillDownCallBack(SelectedEntities, info));
+            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject) button) as GridMenuInfo;
+            return Entities != null && Entities.Count > 1 && !IsLoading && info != null && info.Column != null && !info.Column.ReadOnly && (CanFillDownCallBack == null || CanFillDownCallBack(SelectedEntities, info));
         }
 
         public Func<TProjection, string, object, bool> ValidateFillDownCallBack;
@@ -633,23 +704,26 @@ namespace BluePrints.Common.ViewModel
 
         public void Fill(object button, bool isUp)
         {
-            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
+            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject) button) as GridMenuInfo;
             object ValueToFillDown;
 
-            if(isUp)
-                ValueToFillDown = DataUtils.GetNestedValue(info.Column.FieldName, SelectedEntities[selectedentities.Count - 1]);
+            if (isUp)
+                ValueToFillDown = DataUtils.GetNestedValue(info.Column.FieldName,
+                    SelectedEntities[selectedentities.Count - 1]);
             else
                 ValueToFillDown = DataUtils.GetNestedValue(info.Column.FieldName, SelectedEntities[0]);
 
             EntitiesUndoRedoManager.PauseActionId();
-            List<TProjection> SaveEntities = new List<TProjection>();
-            foreach (TProjection SelectedEntity in SelectedEntities)
+            var SaveEntities = new List<TProjection>();
+            foreach (var SelectedEntity in SelectedEntities)
             {
-                if (ValidateFillDownCallBack != null && !ValidateFillDownCallBack(SelectedEntity, info.Column.FieldName, ValueToFillDown))
+                if (ValidateFillDownCallBack != null &&
+                    !ValidateFillDownCallBack(SelectedEntity, info.Column.FieldName, ValueToFillDown))
                     continue;
 
                 var OldValue = DataUtils.GetNestedValue(info.Column.FieldName, SelectedEntity);
-                EntitiesUndoRedoManager.AddUndo(SelectedEntity, info.Column.FieldName, OldValue, ValueToFillDown, EntityMessageType.Changed);
+                EntitiesUndoRedoManager.AddUndo(SelectedEntity, info.Column.FieldName, OldValue, ValueToFillDown,
+                    EntityMessageType.Changed);
                 DataUtils.SetNestedValue(info.Column.FieldName, SelectedEntity, ValueToFillDown);
                 SaveEntities.Add(SelectedEntity);
             }
@@ -661,11 +735,14 @@ namespace BluePrints.Common.ViewModel
                 OnFillDownCompletedCallBack();
         }
 
-        DevExpress.Mvvm.IDialogService BulkColumnEditDialogService { get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BulkColumnEditService"); } }
+        private IDialogService BulkColumnEditDialogService
+        {
+            get { return this.GetRequiredService<IDialogService>("BulkColumnEditService"); }
+        }
 
         public bool CanBulkColumnEdit(object button)
         {
-            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
+            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject) button) as GridMenuInfo;
             if (info == null)
                 return false;
 
@@ -678,23 +755,26 @@ namespace BluePrints.Common.ViewModel
             if (SelectedEntities == null || SelectedEntities.Count < 2)
                 return false;
 
-            PropertyInfo columnPropertyInfo = DataUtils.GetNestedPropertyInfo(info.Column.FieldName, SelectedEntity);
-            if((columnPropertyInfo.PropertyType == typeof(Guid) || 
-                columnPropertyInfo.PropertyType == typeof(Guid?) || 
+            var columnPropertyInfo = DataUtils.GetNestedPropertyInfo(info.Column.FieldName, SelectedEntity);
+            if (columnPropertyInfo.PropertyType == typeof(Guid) ||
+                columnPropertyInfo.PropertyType == typeof(Guid?) ||
                 columnPropertyInfo.PropertyType.BaseType == typeof(Enum) ||
                 columnPropertyInfo.PropertyType == typeof(decimal) ||
                 columnPropertyInfo.PropertyType == typeof(decimal?) ||
-                columnPropertyInfo.PropertyType == typeof(string)))
+                columnPropertyInfo.PropertyType == typeof(string))
             {
-                IEnumerable<string> constraintString = DataUtils.GetConstraintPropertyStrings(SelectedEntity.GetType());
-                if(constraintString == null)
+                var constraintString = DataUtils.GetConstraintPropertyStrings(SelectedEntity.GetType());
+                if (constraintString == null)
                     constraintString = DataUtils.GetConstraintPropertyStrings(SelectedEntity.GetType().BaseType);
 
-                IEnumerable<string> bulkEditDisabledString = DataUtils.GetBulkEditDisabledPropertyStrings(SelectedEntity.GetType());
+                var bulkEditDisabledString =
+                    DataUtils.GetBulkEditDisabledPropertyStrings(SelectedEntity.GetType());
                 if (bulkEditDisabledString == null)
-                    bulkEditDisabledString = DataUtils.GetBulkEditDisabledPropertyStrings(SelectedEntity.GetType().BaseType);
+                    bulkEditDisabledString =
+                        DataUtils.GetBulkEditDisabledPropertyStrings(SelectedEntity.GetType().BaseType);
 
-                if ((constraintString != null && constraintString.Any(x => x == columnPropertyInfo.Name)) || (bulkEditDisabledString != null && bulkEditDisabledString.Any(x => x == columnPropertyInfo.Name)))
+                if (constraintString != null && constraintString.Any(x => x == columnPropertyInfo.Name) ||
+                    bulkEditDisabledString != null && bulkEditDisabledString.Any(x => x == columnPropertyInfo.Name))
                     return false;
                 else
                     return true;
@@ -704,107 +784,122 @@ namespace BluePrints.Common.ViewModel
         }
 
         public Func<TProjection, string, object, bool> ValidateBulkEditCallBack;
+
         public void BulkColumnEdit(object button)
         {
-            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
+            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject) button) as GridMenuInfo;
 
             object oldValue = null;
             object newValue = null;
-            List<TProjection> SaveEntities = new List<TProjection>();
-            Arithmetic operation = Arithmetic.None;
+            var SaveEntities = new List<TProjection>();
+            var operation = Arithmetic.None;
 
             EntitiesUndoRedoManager.PauseActionId();
             try
             {
-                PropertyInfo columnPropertyInfo = DataUtils.GetNestedPropertyInfo(info.Column.FieldName, SelectedEntity);
-                if (columnPropertyInfo.PropertyType == typeof(Guid) || columnPropertyInfo.PropertyType == typeof(Guid?) || columnPropertyInfo.PropertyType.BaseType == typeof(Enum))
+                var columnPropertyInfo = DataUtils.GetNestedPropertyInfo(info.Column.FieldName, SelectedEntity);
+                if (columnPropertyInfo.PropertyType == typeof(Guid) || columnPropertyInfo.PropertyType == typeof(Guid?) ||
+                    columnPropertyInfo.PropertyType.BaseType == typeof(Enum))
                 {
-                    ComboBoxEditSettings copyColumnEditSettings = info.Column.ActualEditSettings as ComboBoxEditSettings;
+                    var copyColumnEditSettings = info.Column.ActualEditSettings as ComboBoxEditSettings;
                     if (copyColumnEditSettings != null)
                     {
-                        var bulkEditEnumsViewModel = BulkEditEnumsViewModel.Create((IEnumerable<object>)copyColumnEditSettings.ItemsSource, copyColumnEditSettings.DisplayMember);
-                        if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Select Item to assign", "BulkEditEnums", bulkEditEnumsViewModel) == MessageResult.OK)
-                        {
+                        var bulkEditEnumsViewModel =
+                            BulkEditEnumsViewModel.Create((IEnumerable<object>) copyColumnEditSettings.ItemsSource,
+                                copyColumnEditSettings.DisplayMember);
+                        if (
+                            BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Select Item to assign",
+                                "BulkEditEnums", bulkEditEnumsViewModel) == MessageResult.OK)
                             if (bulkEditEnumsViewModel.SelectedItem != null)
-                            {
                                 if (columnPropertyInfo.PropertyType.BaseType == typeof(Enum))
                                 {
-                                    EnumMemberInfo selectedEnum = (EnumMemberInfo)bulkEditEnumsViewModel.SelectedItem;
+                                    var selectedEnum = (EnumMemberInfo) bulkEditEnumsViewModel.SelectedItem;
                                     newValue = Enum.Parse(columnPropertyInfo.PropertyType, selectedEnum.Id.ToString());
                                 }
                                 else
-                                    newValue = (Guid)bulkEditEnumsViewModel.SelectedItem.GetType().GetProperty("GUID").GetValue(bulkEditEnumsViewModel.SelectedItem);
-                            }
-                        }
+                                {
+                                    newValue =
+                                        (Guid)
+                                        bulkEditEnumsViewModel.SelectedItem.GetType()
+                                            .GetProperty("GUID")
+                                            .GetValue(bulkEditEnumsViewModel.SelectedItem);
+                                }
 
                         bulkEditEnumsViewModel = null;
                     }
                 }
-                else if (columnPropertyInfo.PropertyType == typeof(decimal) || columnPropertyInfo.PropertyType == typeof(decimal?))
+                else if (columnPropertyInfo.PropertyType == typeof(decimal) ||
+                         columnPropertyInfo.PropertyType == typeof(decimal?))
                 {
-                    decimal selectedEntityValue = (decimal)DataUtils.GetNestedValue(info.Column.FieldName, selectedentities.First());
+                    var selectedEntityValue =
+                        (decimal) DataUtils.GetNestedValue(info.Column.FieldName, selectedentities.First());
                     var bulkEditNumbersViewModel = BulkEditNumbersViewModel.Create(selectedEntityValue);
-                    if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Choose number and operation to assign", "BulkEditNumbers", bulkEditNumbersViewModel) == MessageResult.OK)
+                    if (
+                        BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel,
+                            "Choose number and operation to assign", "BulkEditNumbers", bulkEditNumbersViewModel) ==
+                        MessageResult.OK)
                     {
-                        newValue = (decimal)bulkEditNumbersViewModel.EditValue;
+                        newValue = (decimal) bulkEditNumbersViewModel.EditValue;
                         if (bulkEditNumbersViewModel.SelectedOperation != null)
                         {
-                            EnumMemberInfo selectedArithmeticEnum = bulkEditNumbersViewModel.SelectedOperation;
-                            operation = (Arithmetic)Enum.Parse(typeof(Arithmetic), selectedArithmeticEnum.Name);
+                            var selectedArithmeticEnum = bulkEditNumbersViewModel.SelectedOperation;
+                            operation = (Arithmetic) Enum.Parse(typeof(Arithmetic), selectedArithmeticEnum.Name);
                         }
                     }
                 }
                 else if (columnPropertyInfo.PropertyType == typeof(string))
                 {
-                    string selectedEntityValue = (string)DataUtils.GetNestedValue(info.Column.FieldName, selectedentities.First());
+                    var selectedEntityValue =
+                        (string) DataUtils.GetNestedValue(info.Column.FieldName, selectedentities.First());
                     var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(selectedEntityValue);
-                    if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Type in text for bulk edit", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
-                    {
+                    if (
+                        BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Type in text for bulk edit",
+                            "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
                         if (bulkEditStringsViewModel.EditValue != null)
-                            newValue = (string)bulkEditStringsViewModel.EditValue;
-                    }
+                            newValue = (string) bulkEditStringsViewModel.EditValue;
                 }
 
                 if (newValue != null)
-                {
-                    foreach (TProjection selectedProjection in SelectedEntities)
+                    foreach (var selectedProjection in SelectedEntities)
                     {
-                        if (ValidateBulkEditCallBack != null && !ValidateBulkEditCallBack(selectedProjection, info.Column.FieldName, newValue))
+                        if (ValidateBulkEditCallBack != null &&
+                            !ValidateBulkEditCallBack(selectedProjection, info.Column.FieldName, newValue))
                             continue;
 
                         if (newValue.GetType() == typeof(decimal) && operation != Arithmetic.None)
                         {
-                            decimal currentValue = (decimal)DataUtils.GetNestedValue(info.Column.FieldName, selectedProjection);
-                            decimal currentOldValue = currentValue;
+                            var currentValue =
+                                (decimal) DataUtils.GetNestedValue(info.Column.FieldName, selectedProjection);
+                            var currentOldValue = currentValue;
 
                             if (operation == Arithmetic.Add)
-                                currentValue = currentValue + (decimal)newValue;
+                                currentValue = currentValue + (decimal) newValue;
                             else if (operation == Arithmetic.Subtract)
-                                currentValue = currentValue - (decimal)newValue;
+                                currentValue = currentValue - (decimal) newValue;
                             else if (operation == Arithmetic.Multiply)
-                                currentValue = currentValue * (decimal)newValue;
-                            else if (operation == Arithmetic.Divide && ((Decimal)newValue) > 0)
-                                currentValue = currentValue / (decimal)newValue;
+                                currentValue = currentValue * (decimal) newValue;
+                            else if (operation == Arithmetic.Divide && (decimal) newValue > 0)
+                                currentValue = currentValue / (decimal) newValue;
 
                             DataUtils.SetNestedValue(info.Column.FieldName, selectedProjection, currentValue);
-                            EntitiesUndoRedoManager.AddUndo(selectedProjection, info.Column.FieldName, currentOldValue, currentValue, EntityMessageType.Changed);
+                            EntitiesUndoRedoManager.AddUndo(selectedProjection, info.Column.FieldName, currentOldValue,
+                                currentValue, EntityMessageType.Changed);
                         }
                         else
                         {
                             oldValue = DataUtils.GetNestedValue(info.Column.FieldName, selectedProjection);
                             DataUtils.SetNestedValue(info.Column.FieldName, selectedProjection, newValue);
-                            EntitiesUndoRedoManager.AddUndo(selectedProjection, info.Column.FieldName, oldValue, newValue, EntityMessageType.Changed);
+                            EntitiesUndoRedoManager.AddUndo(selectedProjection, info.Column.FieldName, oldValue,
+                                newValue, EntityMessageType.Changed);
                         }
 
                         SaveEntities.Add(selectedProjection);
                     }
-                }
 
                 BulkSave(SaveEntities);
             }
             catch
             {
-
             }
 
             EntitiesUndoRedoManager.UnpauseActionId();
@@ -812,13 +907,14 @@ namespace BluePrints.Common.ViewModel
 
         public void SetNestedValueWithUndo(TProjection entity, string propertyName, object newValue)
         {
-            object oldValue = DataUtils.GetNestedValue(propertyName, entity);
+            var oldValue = DataUtils.GetNestedValue(propertyName, entity);
             DataUtils.SetNestedValue(propertyName, entity, newValue);
             EntitiesUndoRedoManager.AddUndo(entity, propertyName, oldValue, newValue, EntityMessageType.Changed);
             this.RaisePropertyChanged(x => x.SelectedEntity);
         }
 
         public bool AllowEdit = true;
+
         public override void Edit(TProjection projectionEntity)
         {
             if (AllowEdit)
@@ -829,7 +925,7 @@ namespace BluePrints.Common.ViewModel
         public override void Refresh()
         {
             base.Refresh();
-            this.EntitiesUndoRedoManager.Clear();
+            EntitiesUndoRedoManager.Clear();
         }
 
         public void RefreshWithoutClearingUndoManager()
@@ -839,12 +935,13 @@ namespace BluePrints.Common.ViewModel
 
         public void Destroy()
         {
-            base.OnDestroy();
+            OnDestroy();
         }
 
         #endregion
 
         #region Bulk Operation
+
         public Func<IEnumerable<TProjection>, bool> CanBulkDeleteCallBack;
 
         /// <summary>
@@ -854,7 +951,8 @@ namespace BluePrints.Common.ViewModel
         /// <param name="projectionEntity">Entities to delete.</param>
         public virtual bool CanBulkDelete()
         {
-            return Entities != null && Entities.Count > 0 && !IsLoading && (CanBulkDeleteCallBack == null || CanBulkDeleteCallBack(selectedentities));
+            return Entities != null && Entities.Count > 0 && !IsLoading &&
+                   (CanBulkDeleteCallBack == null || CanBulkDeleteCallBack(selectedentities));
         }
 
         /// <summary>
@@ -875,7 +973,7 @@ namespace BluePrints.Common.ViewModel
         public virtual void BulkDelete()
         {
             EntitiesUndoRedoManager.PauseActionId();
-            BaseBulkDelete(this.selectedentities);
+            BaseBulkDelete(selectedentities);
             EntitiesUndoRedoManager.UnpauseActionId();
         }
 
@@ -889,37 +987,39 @@ namespace BluePrints.Common.ViewModel
             EntitiesUndoRedoManager.PauseActionId();
 
             foreach (var entity in entities)
-            {
                 Save(entity);
-            }
 
             EntitiesUndoRedoManager.UnpauseActionId();
         }
+
         #endregion
 
         #region Data Operations
+
         /// <summary>
         /// Converts clipboard text into entity values and saves to database
         /// </summary>
         /// <param name="e"></param>
         public virtual void PastingFromClipboard(PastingFromClipboardEventArgs e)
         {
-            String PasteString = Clipboard.GetText();
-            string[] RowData = PasteString.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            GridControl sourceGridControl = (GridControl)e.Source;
-            PropertyInfo[] entityProperties = typeof(TEntity).GetProperties();
-            DataViewBase gridView = sourceGridControl.View;
+            var PasteString = Clipboard.GetText();
+            var RowData = PasteString.Split(new char[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
+            var sourceGridControl = (GridControl) e.Source;
+            var entityProperties = typeof(TEntity).GetProperties();
+            var gridView = sourceGridControl.View;
 
             if (gridView.ActiveEditor == null && gridView.GetType() == typeof(TableView))
             {
-                TableView gridTableView = gridView as TableView;
-                foreach (string Row in RowData)
+                var gridTableView = gridView as TableView;
+                foreach (var Row in RowData)
                 {
-                    TEntity newEntity = CreateEntity();
+                    var newEntity = CreateEntity();
                     //have to do a callback here because TProjection is not new() constrained yet
                     TProjection projection;
                     if (newEntity is TProjection)
+                    {
                         projection = newEntity as TProjection;
+                    }
                     else
                     {
                         if (CreateNewProjectionFromNewEntityCallBack == null)
@@ -927,37 +1027,39 @@ namespace BluePrints.Common.ViewModel
                         projection = CreateNewProjectionFromNewEntity(newEntity);
                     }
 
-                    string[] ColumnStrings = Row.Split('\t');
-                    for (int i = 0; i < ColumnStrings.Count(); i++)
-                    {
+                    var ColumnStrings = Row.Split('\t');
+                    for (var i = 0; i < ColumnStrings.Count(); i++)
                         try
                         {
-                            GridColumn copyColumn = gridTableView.VisibleColumns[i];
+                            var copyColumn = gridTableView.VisibleColumns[i];
 
                             if (copyColumn.ReadOnly)
                                 continue;
 
-                            string columnName = copyColumn.FieldName;
-                            PropertyInfo columnPropertyInfo = DataUtils.GetNestedPropertyInfo(columnName, projection);
+                            var columnName = copyColumn.FieldName;
+                            var columnPropertyInfo = DataUtils.GetNestedPropertyInfo(columnName, projection);
                             if (columnPropertyInfo != null)
-                            {
-                                if (columnPropertyInfo.PropertyType == typeof(Guid?) || columnPropertyInfo.PropertyType == typeof(Guid))
+                                if (columnPropertyInfo.PropertyType == typeof(Guid?) ||
+                                    columnPropertyInfo.PropertyType == typeof(Guid))
                                 {
-                                    ComboBoxEditSettings copyColumnEditSettings = copyColumn.ActualEditSettings as ComboBoxEditSettings;
+                                    var copyColumnEditSettings =
+                                        copyColumn.ActualEditSettings as ComboBoxEditSettings;
                                     if (copyColumnEditSettings != null)
                                     {
-                                        string copyColumnValueMember = copyColumnEditSettings.ValueMember;
-                                        string copyColumnDisplayMember = copyColumnEditSettings.DisplayMember;
-                                        var copyColumnItemsSource = copyColumnEditSettings.ItemsSource as IEnumerable<object>;
+                                        var copyColumnValueMember = copyColumnEditSettings.ValueMember;
+                                        var copyColumnDisplayMember = copyColumnEditSettings.DisplayMember;
+                                        var copyColumnItemsSource =
+                                            copyColumnEditSettings.ItemsSource as IEnumerable<object>;
                                         Guid? itemValue = null;
                                         foreach (var copyColumnItem in copyColumnItemsSource)
                                         {
-                                            PropertyInfo itemDisplayMemberPropertyInfo = copyColumnItem.GetType().GetProperty(copyColumnDisplayMember);
-                                            PropertyInfo itemValueMemberPropertyInfo = copyColumnItem.GetType().GetProperty(copyColumnValueMember);
-                                            if (itemDisplayMemberPropertyInfo.GetValue(copyColumnItem).ToString() == ColumnStrings[i])
-                                            {
-                                                itemValue = (Guid)itemValueMemberPropertyInfo.GetValue(copyColumnItem);
-                                            }
+                                            var itemDisplayMemberPropertyInfo =
+                                                copyColumnItem.GetType().GetProperty(copyColumnDisplayMember);
+                                            var itemValueMemberPropertyInfo =
+                                                copyColumnItem.GetType().GetProperty(copyColumnValueMember);
+                                            if (itemDisplayMemberPropertyInfo.GetValue(copyColumnItem).ToString() ==
+                                                ColumnStrings[i])
+                                                itemValue = (Guid) itemValueMemberPropertyInfo.GetValue(copyColumnItem);
                                         }
 
                                         if (itemValue != null)
@@ -965,14 +1067,16 @@ namespace BluePrints.Common.ViewModel
                                         else
                                             continue;
                                     }
-                                    else if(ColumnStrings[i] != Guid.Empty.ToString())
+                                    else if (ColumnStrings[i] != Guid.Empty.ToString())
                                     {
-                                        Guid newGuid = new Guid(ColumnStrings[i]);
+                                        var newGuid = new Guid(ColumnStrings[i]);
                                         DataUtils.SetNestedValue(columnName, projection, newGuid);
                                     }
                                 }
                                 else if (columnPropertyInfo.PropertyType == typeof(string))
+                                {
                                     DataUtils.SetNestedValue(columnName, projection, ColumnStrings[i]);
+                                }
                                 else if (columnPropertyInfo.PropertyType.BaseType == typeof(Enum))
                                 {
                                     var enumValues = Enum.GetValues(columnPropertyInfo.PropertyType);
@@ -982,7 +1086,9 @@ namespace BluePrints.Common.ViewModel
                                         if (fieldInfo == null)
                                             return;
 
-                                        var descriptionAttributes = fieldInfo.GetCustomAttributes(typeof(DisplayAttribute), false) as DisplayAttribute[];
+                                        var descriptionAttributes =
+                                            fieldInfo.GetCustomAttributes(typeof(DisplayAttribute), false) as
+                                                DisplayAttribute[];
                                         if (descriptionAttributes == null || descriptionAttributes.Count() == 0)
                                             return;
 
@@ -994,14 +1100,18 @@ namespace BluePrints.Common.ViewModel
                                         }
                                     }
                                 }
-                                else if (columnPropertyInfo.PropertyType == typeof(decimal) || columnPropertyInfo.PropertyType == typeof(decimal?)
-                                    || columnPropertyInfo.PropertyType == typeof(int) || columnPropertyInfo.PropertyType == typeof(int?)
-                                    || columnPropertyInfo.PropertyType == typeof(double) || columnPropertyInfo.PropertyType == typeof(double?))
+                                else if (columnPropertyInfo.PropertyType == typeof(decimal) ||
+                                         columnPropertyInfo.PropertyType == typeof(decimal?)
+                                         || columnPropertyInfo.PropertyType == typeof(int) ||
+                                         columnPropertyInfo.PropertyType == typeof(int?)
+                                         || columnPropertyInfo.PropertyType == typeof(double) ||
+                                         columnPropertyInfo.PropertyType == typeof(double?))
                                 {
-                                    Regex rgx = new Regex("[^0-9a-z\\.]");
-                                    string cleanColumnString = rgx.Replace(ColumnStrings[i], "");
+                                    var rgx = new Regex("[^0-9a-z\\.]");
+                                    var cleanColumnString = rgx.Replace(ColumnStrings[i], "");
 
-                                    if (columnPropertyInfo.PropertyType == typeof(decimal) || columnPropertyInfo.PropertyType == typeof(decimal?))
+                                    if (columnPropertyInfo.PropertyType == typeof(decimal) ||
+                                        columnPropertyInfo.PropertyType == typeof(decimal?))
                                     {
                                         decimal getDecimal;
                                         if (decimal.TryParse(cleanColumnString, out getDecimal))
@@ -1012,9 +1122,12 @@ namespace BluePrints.Common.ViewModel
                                             DataUtils.SetNestedValue(columnName, projection, getDecimal);
                                         }
                                         else
+                                        {
                                             return;
+                                        }
                                     }
-                                    else if (columnPropertyInfo.PropertyType == typeof(int) || columnPropertyInfo.PropertyType == typeof(int?))
+                                    else if (columnPropertyInfo.PropertyType == typeof(int) ||
+                                             columnPropertyInfo.PropertyType == typeof(int?))
                                     {
                                         int getInt;
                                         if (int.TryParse(cleanColumnString, out getInt))
@@ -1022,7 +1135,8 @@ namespace BluePrints.Common.ViewModel
                                         else
                                             return;
                                     }
-                                    else if (columnPropertyInfo.PropertyType == typeof(double) || columnPropertyInfo.PropertyType == typeof(double?))
+                                    else if (columnPropertyInfo.PropertyType == typeof(double) ||
+                                             columnPropertyInfo.PropertyType == typeof(double?))
                                     {
                                         double getDouble;
                                         if (double.TryParse(cleanColumnString, out getDouble))
@@ -1033,12 +1147,17 @@ namespace BluePrints.Common.ViewModel
                                             DataUtils.SetNestedValue(columnName, projection, getDouble);
                                         }
                                         else
+                                        {
                                             return;
+                                        }
                                     }
                                     else
+                                    {
                                         return;
+                                    }
                                 }
-                                else if (columnPropertyInfo.PropertyType == typeof(DateTime?) || columnPropertyInfo.PropertyType == typeof(DateTime)) 
+                                else if (columnPropertyInfo.PropertyType == typeof(DateTime?) ||
+                                         columnPropertyInfo.PropertyType == typeof(DateTime))
                                 {
                                     DateTime getDateTime;
                                     if (DateTime.TryParse(ColumnStrings[i], out getDateTime))
@@ -1047,8 +1166,9 @@ namespace BluePrints.Common.ViewModel
                                         continue;
                                 }
                                 else
+                                {
                                     continue;
-                            }
+                                }
                             else
                                 continue;
                         }
@@ -1056,15 +1176,17 @@ namespace BluePrints.Common.ViewModel
                         {
                             return;
                         }
-                    }
 
-                    string errorMessage = "Duplicate exists on constraint field named: ";
+                    var errorMessage = "Duplicate exists on constraint field named: ";
                     if (IsValidEntity(projection, ref errorMessage))
+                    {
                         Save(projection);
+                    }
                     else
                     {
                         errorMessage += " , paste operation will be terminated";
-                        MessageBoxService.ShowMessage(errorMessage, CommonResources.Exception_UpdateErrorCaption, MessageButton.OK);
+                        MessageBoxService.ShowMessage(errorMessage, CommonResources.Exception_UpdateErrorCaption,
+                            MessageButton.OK);
                         break;
                     }
                 }
@@ -1072,15 +1194,18 @@ namespace BluePrints.Common.ViewModel
                 e.Handled = true;
             }
         }
+
         #endregion
 
         #region Interceptors
+
         protected override void AddUndoBeforeEntityDeleted(TProjection projection)
         {
-            if(!EntitiesUndoRedoManager.IsInUndoRedoOperation())
+            if (!EntitiesUndoRedoManager.IsInUndoRedoOperation())
                 EntitiesUndoRedoManager.AddUndo(projection, null, null, null, EntityMessageType.Deleted);
             base.AddUndoBeforeEntityDeleted(projection);
         }
+
         #endregion
     }
 
@@ -1093,16 +1218,24 @@ namespace BluePrints.Common.ViewModel
     /// <typeparam name="TProjection">A projection entity type.</typeparam>
     /// <typeparam name="TPrimaryKey">A primary key value type.</typeparam>
     /// <typeparam name="TUnitOfWork">A unit of work type.</typeparam>
-    public abstract class CollectionViewModelBase<TEntity, TProjection, TPrimaryKey, TUnitOfWork> : ReadOnlyCollectionViewModel<TEntity, TProjection, TUnitOfWork>, ISupportLogicalLayout
+    public abstract class CollectionViewModelBase<TEntity, TProjection, TPrimaryKey, TUnitOfWork> :
+        ReadOnlyCollectionViewModel<TEntity, TProjection, TUnitOfWork>, ISupportLogicalLayout
         where TEntity : class
         where TProjection : class
         where TUnitOfWork : IUnitOfWork
     {
+        private EntitiesChangeTracker<TPrimaryKey> ChangeTrackerWithKey
+        {
+            get { return (EntitiesChangeTracker<TPrimaryKey>) ChangeTracker; }
+        }
 
-        EntitiesChangeTracker<TPrimaryKey> ChangeTrackerWithKey { get { return (EntitiesChangeTracker<TPrimaryKey>)ChangeTracker; } }
-        readonly Action<TEntity> newEntityInitializer;
-        readonly Func<bool> canCreateNewEntity;
-        IRepository<TEntity, TPrimaryKey> Repository { get { return (IRepository<TEntity, TPrimaryKey>)ReadOnlyRepository; } }
+        private readonly Action<TEntity> newEntityInitializer;
+        private readonly Func<bool> canCreateNewEntity;
+
+        private IRepository<TEntity, TPrimaryKey> Repository
+        {
+            get { return (IRepository<TEntity, TPrimaryKey>) ReadOnlyRepository; }
+        }
 
         /// <summary>
         /// Initializes a new instance of the CollectionViewModelBase class.
@@ -1120,7 +1253,7 @@ namespace BluePrints.Common.ViewModel
             Action<TEntity> newEntityInitializer,
             Func<bool> canCreateNewEntity,
             bool ignoreSelectEntityMessage
-            )
+        )
             : base(unitOfWorkFactory, getRepositoryFunc, projection)
         {
             RepositoryExtensions.VerifyProjection(CreateRepository(), projection);
@@ -1144,8 +1277,8 @@ namespace BluePrints.Common.ViewModel
 
         public virtual TEntity InitializeEntity(TEntity entity)
         {
-            if (this.newEntityInitializer != null)
-                this.newEntityInitializer(entity);
+            if (newEntityInitializer != null)
+                newEntityInitializer(entity);
 
             return entity;
         }
@@ -1159,19 +1292,17 @@ namespace BluePrints.Common.ViewModel
         {
             if (Repository.IsDetached(projectionEntity))
                 return;
-            TPrimaryKey primaryKey = Repository.GetProjectionPrimaryKey(projectionEntity);
-            int index = Entities.IndexOf(projectionEntity);
+            var primaryKey = Repository.GetProjectionPrimaryKey(projectionEntity);
+            var index = Entities.IndexOf(projectionEntity);
             projectionEntity = ChangeTrackerWithKey.FindActualProjectionByKey(primaryKey);
             if (index >= 0)
-            {
                 if (projectionEntity == null)
                     Entities.RemoveAt(index);
                 else
                     Entities[index] = projectionEntity;
-            }
 
             //BluePrints Customization Start
-            string customTitle = string.Empty;
+            var customTitle = string.Empty;
             var viewModel = this as ISupportCustomDocumentTypeNameAndParameter;
             if (viewModel != null && viewModel.IsCustomModeEnabled())
                 customTitle = viewModel.GetCustomDocumentTitle();
@@ -1181,7 +1312,8 @@ namespace BluePrints.Common.ViewModel
             {
                 //BluePrints Customization Start
                 //DestroyDocument(DocumentManagerService.FindEntityDocument<TEntity, TPrimaryKey>(primaryKey));
-                DestroyDocument(DocumentManagerService.FindEntityDocument<TProjection, TPrimaryKey>(primaryKey, customTitle));
+                DestroyDocument(DocumentManagerService.FindEntityDocument<TProjection, TPrimaryKey>(primaryKey,
+                    customTitle));
                 //BluePrints Customization End
                 return;
             }
@@ -1203,6 +1335,7 @@ namespace BluePrints.Common.ViewModel
         public Action<TProjection> EntityBeforeDeletionCallBack;
         public Action<IEnumerable<TProjection>> EntitiesBeforeDeletionCallBack;
         public Action<IEnumerable<TEntity>> EntitiesAfterDeletionCallBack;
+
         /// <summary>
         /// Deletes a given entity from the repository and saves changes if confirmed by the user.
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the DeleteCommand property that can be used as a binding source in views.
@@ -1221,12 +1354,12 @@ namespace BluePrints.Common.ViewModel
 
                 if (EntityBeforeDeletionCallBack != null)
                     EntityBeforeDeletionCallBack(projectionEntity);
-                if(!IsPersistentView)
-                //BluePrints Customization End
+                if (!IsPersistentView)
+                    //BluePrints Customization End
                     Entities.Remove(projectionEntity);
 
-                TPrimaryKey primaryKey = Repository.GetProjectionPrimaryKey(projectionEntity);
-                TEntity entity = Repository.Find(primaryKey);
+                var primaryKey = Repository.GetProjectionPrimaryKey(projectionEntity);
+                var entity = Repository.Find(primaryKey);
                 if (entity != null)
                 {
                     OnBeforeEntityDeleted(primaryKey, entity);
@@ -1244,16 +1377,16 @@ namespace BluePrints.Common.ViewModel
 
         public virtual void BaseBulkDelete(IEnumerable<TProjection> projectionEntities)
         {
-            List<KeyValuePair<int, TProjection>> projectionEntitiesWithTag = new List<KeyValuePair<int, TProjection>>();
-            List<KeyValuePair<int, TEntity>> entitiesWithTag = new List<KeyValuePair<int, TEntity>>();
-            List<KeyValuePair<int, TPrimaryKey>> primaryKeysWithTag = new List<KeyValuePair<int, TPrimaryKey>>();
+            var projectionEntitiesWithTag = new List<KeyValuePair<int, TProjection>>();
+            var entitiesWithTag = new List<KeyValuePair<int, TEntity>>();
+            var primaryKeysWithTag = new List<KeyValuePair<int, TPrimaryKey>>();
 
-            List<TEntity> findOrAddNewEntities = new List<TEntity>();
-            List<TProjection> projectionEntitiesList = projectionEntities.ToList();
+            var findOrAddNewEntities = new List<TEntity>();
+            var projectionEntitiesList = projectionEntities.ToList();
             if (EntitiesBeforeDeletionCallBack != null)
                 EntitiesBeforeDeletionCallBack(projectionEntities);
 
-            for (int i = 0; i < projectionEntitiesList.Count; i++)
+            for (var i = 0; i < projectionEntitiesList.Count; i++)
             {
                 AddUndoBeforeEntityDeleted(projectionEntitiesList[i]);
 
@@ -1268,12 +1401,13 @@ namespace BluePrints.Common.ViewModel
             {
                 foreach (var projectionEntityWithTag in projectionEntitiesWithTag)
                 {
-                    TPrimaryKey primaryKey = Repository.GetProjectionPrimaryKey(projectionEntityWithTag.Value);
-                    TEntity entity = Repository.Find(primaryKey);
+                    var primaryKey = Repository.GetProjectionPrimaryKey(projectionEntityWithTag.Value);
+                    var entity = Repository.Find(primaryKey);
                     if (entity != null)
                     {
                         entitiesWithTag.Add(new KeyValuePair<int, TEntity>(projectionEntityWithTag.Key, entity));
-                        primaryKeysWithTag.Add(new KeyValuePair<int, TPrimaryKey>(projectionEntityWithTag.Key, primaryKey));
+                        primaryKeysWithTag.Add(new KeyValuePair<int, TPrimaryKey>(projectionEntityWithTag.Key,
+                            primaryKey));
                         OnBeforeEntityDeleted(primaryKey, entity);
                         Repository.Remove(entity);
                     }
@@ -1283,11 +1417,11 @@ namespace BluePrints.Common.ViewModel
 
                 foreach (var entityWithTag in entitiesWithTag)
                 {
-                    TPrimaryKey findPrimaryKey = primaryKeysWithTag.First(x => x.Key == entityWithTag.Key).Value;
+                    var findPrimaryKey = primaryKeysWithTag.First(x => x.Key == entityWithTag.Key).Value;
                     OnEntityDeleted(findPrimaryKey, entityWithTag.Value);
                 }
 
-                List<TEntity> entitiesDeleted = entitiesWithTag.Select(x => x.Value).ToList();
+                var entitiesDeleted = entitiesWithTag.Select(x => x.Value).ToList();
                 if (EntitiesAfterDeletionCallBack != null)
                     EntitiesAfterDeletionCallBack(entitiesDeleted);
             }
@@ -1310,11 +1444,15 @@ namespace BluePrints.Common.ViewModel
         /// <summary>
         /// The display name of TEntity to be used when presenting messages to the user.
         /// </summary>
-        public virtual string EntityDisplayName { get { return typeof(TEntity).Name; } }
+        public virtual string EntityDisplayName
+        {
+            get { return typeof(TEntity).Name; }
+        }
 
         public Func<TProjection, bool> PreSave;
         public Func<TProjection, bool, bool> PreSaveWithNewEntityDetection;
         public Action<TProjection, bool> PostSave;
+
         /// <summary>
         /// Saves the given entity.
         /// Since CollectionViewModelBase is a POCO view model, the instance of this class will also expose the SaveCommand property that can be used as a binding source in views.
@@ -1328,8 +1466,9 @@ namespace BluePrints.Common.ViewModel
                     return;
 
             bool isNewEntity;
-            var entity = Repository.FindExistingOrAddNewEntity(projectionEntity, (p, e) => { ApplyProjectionPropertiesToEntity(p, e); }, out isNewEntity);
-            
+            var entity = Repository.FindExistingOrAddNewEntity(projectionEntity,
+                (p, e) => { ApplyProjectionPropertiesToEntity(p, e); }, out isNewEntity);
+
             if (PreSaveWithNewEntityDetection != null)
                 if (!PreSaveWithNewEntityDetection(projectionEntity, isNewEntity))
                     return;
@@ -1353,27 +1492,27 @@ namespace BluePrints.Common.ViewModel
 
         public Func<IEnumerable<TProjection>, bool> BulkPreSave;
         public Action<IEnumerable<TProjection>> BulkPostSave;
+
         public virtual void BaseBulkSave(IEnumerable<TProjection> projectionEntities)
         {
             if (BulkPreSave != null)
                 if (!BulkPreSave(projectionEntities))
                     return;
 
-            List<KeyValuePair<int, TProjection>> projectionEntitiesWithTag = new List<KeyValuePair<int, TProjection>>();
-            List<KeyValuePair<int, TEntity>> entitiesWithTag = new List<KeyValuePair<int, TEntity>>();
-            List<KeyValuePair<int, bool>> isNewEntityWithTag = new List<KeyValuePair<int, bool>>();
+            var projectionEntitiesWithTag = new List<KeyValuePair<int, TProjection>>();
+            var entitiesWithTag = new List<KeyValuePair<int, TEntity>>();
+            var isNewEntityWithTag = new List<KeyValuePair<int, bool>>();
 
-            List<TEntity> findOrAddNewEntities = new List<TEntity>();
-            List<TProjection> projectionEntitiesList = projectionEntities.ToList();
-            for (int i = 0; i < projectionEntitiesList.Count; i++)
-            {
+            var findOrAddNewEntities = new List<TEntity>();
+            var projectionEntitiesList = projectionEntities.ToList();
+            for (var i = 0; i < projectionEntitiesList.Count; i++)
                 projectionEntitiesWithTag.Add(new KeyValuePair<int, TProjection>(i, projectionEntitiesList[i]));
-            }
 
             foreach (var projectionEntityWithTag in projectionEntitiesWithTag)
             {
                 bool isNewEntity;
-                var findOrAddNewEntity = Repository.FindExistingOrAddNewEntity(projectionEntityWithTag.Value, (p, e) => { ApplyProjectionPropertiesToEntity(p, e); }, out isNewEntity);
+                var findOrAddNewEntity = Repository.FindExistingOrAddNewEntity(projectionEntityWithTag.Value,
+                    (p, e) => { ApplyProjectionPropertiesToEntity(p, e); }, out isNewEntity);
                 entitiesWithTag.Add(new KeyValuePair<int, TEntity>(projectionEntityWithTag.Key, findOrAddNewEntity));
                 isNewEntityWithTag.Add(new KeyValuePair<int, bool>(projectionEntityWithTag.Key, isNewEntity));
                 OnBeforeEntitySaved(findOrAddNewEntity);
@@ -1387,7 +1526,7 @@ namespace BluePrints.Common.ViewModel
                 {
                     var primaryKey = Repository.GetPrimaryKey(entityWithTag.Value);
                     var projectionEntity = projectionEntitiesWithTag.First(x => x.Key == entityWithTag.Key).Value;
-                    bool isNewEntity = isNewEntityWithTag.First(x => x.Key == entityWithTag.Key).Value;
+                    var isNewEntity = isNewEntityWithTag.First(x => x.Key == entityWithTag.Key).Value;
                     Repository.SetProjectionPrimaryKey(projectionEntity, primaryKey);
                     OnEntitySaved(primaryKey, projectionEntity, entityWithTag.Value, isNewEntity);
                 }
@@ -1433,27 +1572,42 @@ namespace BluePrints.Common.ViewModel
                 DocumentOwner.Close(this);
         }
 
-        protected override string ViewName { get { return typeof(TEntity).Name + "CollectionView"; } }
+        protected override string ViewName
+        {
+            get { return typeof(TEntity).Name + "CollectionView"; }
+        }
 
-        protected IMessageBoxService MessageBoxService { get { return this.GetRequiredService<IMessageBoxService>(); } }
+        protected IMessageBoxService MessageBoxService
+        {
+            get { return this.GetRequiredService<IMessageBoxService>(); }
+        }
 
         public Func<IDocumentManagerService> OverrideGetDocumentManagerService { get; set; }
-        protected IDocumentManagerService DocumentManagerService { get { return this.GetService<IDocumentManagerService>(); } }
 
-        protected virtual void OnBeforeEntityDeleted(TPrimaryKey primaryKey, TEntity entity) { }
+        protected IDocumentManagerService DocumentManagerService
+        {
+            get { return this.GetService<IDocumentManagerService>(); }
+        }
+
+        protected virtual void OnBeforeEntityDeleted(TPrimaryKey primaryKey, TEntity entity)
+        {
+        }
 
         protected virtual void OnEntityDeleted(TPrimaryKey primaryKey, TEntity entity)
         {
-            SignalR.HubSendMessage((typeof(TEntity)).ToString(), primaryKey.ToString(), EntityMessageType.Deleted.ToString(), this.ToString());
+            SignalR.HubSendMessage(typeof(TEntity).ToString(), primaryKey.ToString(),
+                EntityMessageType.Deleted.ToString(), ToString());
             Messenger.Default.Send(new EntityMessage<TEntity, TPrimaryKey>(primaryKey, EntityMessageType.Deleted, this));
         }
 
-        protected IEnumerable<TPrimaryKey> RetrieveLocalProjectionsEntitiesKey(IEnumerable<TProjection> projectionEntities)
+        protected IEnumerable<TPrimaryKey> RetrieveLocalProjectionsEntitiesKey(
+            IEnumerable<TProjection> projectionEntities)
         {
-            List<TPrimaryKey> returningEntitiesKey = new List<TPrimaryKey>();
-            foreach (TProjection projectionEntity in projectionEntities)
+            var returningEntitiesKey = new List<TPrimaryKey>();
+            foreach (var projectionEntity in projectionEntities)
             {
-                bool primaryKeyAvailable = projectionEntity != null && Repository.ProjectionHasPrimaryKey(projectionEntity);
+                var primaryKeyAvailable = projectionEntity != null &&
+                                           Repository.ProjectionHasPrimaryKey(projectionEntity);
                 if (primaryKeyAvailable)
                     returningEntitiesKey.Add(Repository.GetProjectionPrimaryKey(projectionEntity));
             }
@@ -1472,13 +1626,17 @@ namespace BluePrints.Common.ViewModel
         }
 
         public Action<TPrimaryKey, TProjection, TEntity, bool> OnEntitySavedCallBack;
-        protected virtual void OnEntitySaved(TPrimaryKey primaryKey, TProjection projectionEntity, TEntity entity, bool isNewEntity)
+
+        protected virtual void OnEntitySaved(TPrimaryKey primaryKey, TProjection projectionEntity, TEntity entity,
+            bool isNewEntity)
         {
             if (OnEntitySavedCallBack != null)
                 OnEntitySavedCallBack(primaryKey, projectionEntity, entity, isNewEntity);
 
-            SignalR.HubSendMessage((typeof(TEntity)).ToString(), primaryKey.ToString(), isNewEntity ? EntityMessageType.Added.ToString() : EntityMessageType.Changed.ToString(), this.ToString());
-            Messenger.Default.Send(new EntityMessage<TEntity, TPrimaryKey>(primaryKey, isNewEntity ? EntityMessageType.Added : EntityMessageType.Changed, this));
+            SignalR.HubSendMessage(typeof(TEntity).ToString(), primaryKey.ToString(),
+                isNewEntity ? EntityMessageType.Added.ToString() : EntityMessageType.Changed.ToString(), ToString());
+            Messenger.Default.Send(new EntityMessage<TEntity, TPrimaryKey>(primaryKey,
+                isNewEntity ? EntityMessageType.Added : EntityMessageType.Changed, this));
         }
 
         protected virtual void ApplyProjectionPropertiesToEntity(TProjection projectionEntity, TEntity entity)
@@ -1486,7 +1644,8 @@ namespace BluePrints.Common.ViewModel
             if (ApplyProjectionPropertiesToEntityCallBack != null)
                 ApplyProjectionPropertiesToEntityCallBack(projectionEntity, entity);
             else
-                throw new NotImplementedException("Override this method in the collection view model class and apply projection properties to the entity so that it can be correctly saved by unit of work.");
+                throw new NotImplementedException(
+                    "Override this method in the collection view model class and apply projection properties to the entity so that it can be correctly saved by unit of work.");
         }
 
         protected override void OnSelectedEntityChanged()
@@ -1495,7 +1654,8 @@ namespace BluePrints.Common.ViewModel
             UpdateCommands();
         }
 
-        protected override void RestoreSelectedEntity(TProjection existingProjectionEntity, TProjection newProjectionEntity)
+        protected override void RestoreSelectedEntity(TProjection existingProjectionEntity,
+            TProjection newProjectionEntity)
         {
             base.RestoreSelectedEntity(existingProjectionEntity, newProjectionEntity);
             if (ReferenceEquals(SelectedEntity, existingProjectionEntity))
@@ -1510,7 +1670,7 @@ namespace BluePrints.Common.ViewModel
                 RequestSelectedEntity();
         }
 
-        void UpdateCommands()
+        private void UpdateCommands()
         {
             TProjection projectionEntity = null;
             this.RaiseCanExecuteChanged(x => x.Edit(projectionEntity));
@@ -1526,7 +1686,7 @@ namespace BluePrints.Common.ViewModel
 
         protected IRepository<TEntity, TPrimaryKey> CreateRepository()
         {
-            return (IRepository<TEntity, TPrimaryKey>)CreateReadOnlyRepository();
+            return (IRepository<TEntity, TPrimaryKey>) CreateReadOnlyRepository();
         }
 
         protected override IEntitiesChangeTracker CreateEntitiesChangeTracker()
@@ -1535,32 +1695,36 @@ namespace BluePrints.Common.ViewModel
         }
 
         #region SelectEntityMessage
+
         protected class SelectEntityMessage
         {
             public SelectEntityMessage(TPrimaryKey primaryKey)
             {
                 PrimaryKey = primaryKey;
             }
+
             public TPrimaryKey PrimaryKey { get; private set; }
         }
 
-        protected class SelectedEntityRequest { }
+        protected class SelectedEntityRequest
+        {
+        }
 
-        readonly bool ignoreSelectEntityMessage;
+        private readonly bool ignoreSelectEntityMessage;
 
-        void RegisterSelectEntityMessage()
+        private void RegisterSelectEntityMessage()
         {
             if (!ignoreSelectEntityMessage)
                 Messenger.Default.Register<SelectEntityMessage>(this, x => OnSelectEntityMessage(x));
         }
 
-        void RequestSelectedEntity()
+        private void RequestSelectedEntity()
         {
             if (!ignoreSelectEntityMessage)
                 Messenger.Default.Send(new SelectedEntityRequest());
         }
 
-        void OnSelectEntityMessage(SelectEntityMessage message)
+        private void OnSelectEntityMessage(SelectEntityMessage message)
         {
             if (!IsLoaded)
                 return;
@@ -1572,9 +1736,11 @@ namespace BluePrints.Common.ViewModel
             }
             SelectedEntity = projectionEntity;
         }
+
         #endregion
 
         #region ISupportLogicalLayout
+
         bool ISupportLogicalLayout.CanSerialize
         {
             get { return true; }
@@ -1589,13 +1755,20 @@ namespace BluePrints.Common.ViewModel
         {
             get { return null; }
         }
+
         #endregion
 
         #region BluePrints Customization
+
         public Action<TProjection, TEntity> ApplyProjectionPropertiesToEntityCallBack;
         public Func<TEntity, TProjection> CreateNewProjectionFromNewEntityCallBack;
-        protected virtual void AddUndoBeforeEntityDeleted(TProjection projectionEntity) { }
+
+        protected virtual void AddUndoBeforeEntityDeleted(TProjection projectionEntity)
+        {
+        }
+
         public Action<TEntity> OnBeforeEntitySavedCallBack;
+
         /// <summary>
         /// Custom method deviating from devexpress scaffolding to expose repository create function.
         /// </summary>
@@ -1613,7 +1786,8 @@ namespace BluePrints.Common.ViewModel
             if (CreateNewProjectionFromNewEntityCallBack != null)
                 return CreateNewProjectionFromNewEntityCallBack(entity);
             else
-                throw new NotImplementedException("Override this method in the collection view model class and apply projection properties to the entity so that it can be correctly saved by unit of work.");
+                throw new NotImplementedException(
+                    "Override this method in the collection view model class and apply projection properties to the entity so that it can be correctly saved by unit of work.");
         }
 
         protected virtual TEntity CreateNewEntity(TProjection projectionEntity)
@@ -1622,6 +1796,7 @@ namespace BluePrints.Common.ViewModel
             //ApplyProjectionPropertiesToEntity(projectionEntity, entity);
             return entity;
         }
+
         #endregion
     }
 }

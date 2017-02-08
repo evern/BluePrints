@@ -16,7 +16,6 @@ namespace BluePrints.P6EntitiesDataModel
     /// </summary>
     public class P6EntitiesDesignTimeUnitOfWork : DesignTimeUnitOfWork, IP6EntitiesUnitOfWork
     {
-
         /// <summary>
         /// Initializes a new instance of the P6EntitiesDesignTimeUnitOfWork class.
         /// </summary>
@@ -451,7 +450,12 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<RELITEMS, Tuple<int, int, int, int>> IP6EntitiesUnitOfWork.RELITEMS
         {
-            get { return GetRepository((RELITEMS x) => Tuple.Create(x.item_type_id, x.fk_id, x.related_item_type_id, x.related_fk_id)); }
+            get
+            {
+                return
+                    GetRepository(
+                        (RELITEMS x) => Tuple.Create(x.item_type_id, x.fk_id, x.related_item_type_id, x.related_fk_id));
+            }
         }
 
         IRepository<RFOLIO, int> IP6EntitiesUnitOfWork.RFOLIO
@@ -621,7 +625,12 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<SUMTASKSPREAD, Tuple<int, int, DateTime, DateTime, string>> IP6EntitiesUnitOfWork.SUMTASKSPREAD
         {
-            get { return GetRepository((SUMTASKSPREAD x) => Tuple.Create(x.proj_id, x.wbs_id, x.start_date, x.end_date, x.spread_type)); }
+            get
+            {
+                return
+                    GetRepository(
+                        (SUMTASKSPREAD x) => Tuple.Create(x.proj_id, x.wbs_id, x.start_date, x.end_date, x.spread_type));
+            }
         }
 
         IRepository<SUMTRSRC, int> IP6EntitiesUnitOfWork.SUMTRSRC
@@ -781,7 +790,11 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<UEVNTREG, Tuple<int, string, string, string>> IP6EntitiesUnitOfWork.UEVNTREG
         {
-            get { return GetRepository((UEVNTREG x) => Tuple.Create(x.user_id, x.app_name, x.operation_name, x.action_name)); }
+            get
+            {
+                return
+                    GetRepository((UEVNTREG x) => Tuple.Create(x.user_id, x.app_name, x.operation_name, x.action_name));
+            }
         }
 
         IRepository<UMEASURE, int> IP6EntitiesUnitOfWork.UMEASURE

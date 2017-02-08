@@ -16,12 +16,12 @@ namespace BluePrints.Common.ViewModel.Utils
         /// </summary>
         public static DateTime WORKPACK_Calculate_EndDate(DateTime startDate, PROJECT fromPROJECT)
         {
-            double periodPercentage = 1 - Convert.ToDouble(fromPROJECT.REVIEWPERCENTAGE);
-            double periodMultiplier = 1 / periodPercentage;
-            double reviewPeriod = Convert.ToDouble(fromPROJECT.REVIEWPERIOD);
-            TimeSpan period = TimeSpan.FromDays(reviewPeriod * periodMultiplier);
+            var periodPercentage = 1 - Convert.ToDouble(fromPROJECT.REVIEWPERCENTAGE);
+            var periodMultiplier = 1 / periodPercentage;
+            var reviewPeriod = Convert.ToDouble(fromPROJECT.REVIEWPERIOD);
+            var period = TimeSpan.FromDays(reviewPeriod * periodMultiplier);
 
-            DateTime EndDate = startDate.Date.AddDays(period.Days).AddSeconds(-1);
+            var EndDate = startDate.Date.AddDays(period.Days).AddSeconds(-1);
             return EndDate;
         }
 
@@ -30,12 +30,12 @@ namespace BluePrints.Common.ViewModel.Utils
         /// </summary>
         public static DateTime WORKPACK_Calculate_StartDate(DateTime endDate, PROJECT fromPROJECT)
         {
-            double periodPercentage = 1 - Convert.ToDouble(fromPROJECT.REVIEWPERCENTAGE);
-            double periodMultiplier = 1 / periodPercentage;
-            double reviewPeriod = Convert.ToDouble(fromPROJECT.REVIEWPERIOD);
-            TimeSpan period = TimeSpan.FromDays(reviewPeriod * periodMultiplier);
+            var periodPercentage = 1 - Convert.ToDouble(fromPROJECT.REVIEWPERCENTAGE);
+            var periodMultiplier = 1 / periodPercentage;
+            var reviewPeriod = Convert.ToDouble(fromPROJECT.REVIEWPERIOD);
+            var period = TimeSpan.FromDays(reviewPeriod * periodMultiplier);
 
-            DateTime StartDate = endDate.Date.AddDays(period.Days * -1);
+            var StartDate = endDate.Date.AddDays(period.Days * -1);
             return StartDate;
         }
 
@@ -43,15 +43,18 @@ namespace BluePrints.Common.ViewModel.Utils
         /// Calculate the review start date or end date
         /// </summary>
         /// <param name="getEndDate">whether to get end date else return start date</param>
-        public static void WORKPACK_Calculate_ReviewPeriod(ref DateTime StartDate, ref DateTime EndDate, PROJECT fromPROJECT, bool getEndDate)
+        public static void WORKPACK_Calculate_ReviewPeriod(ref DateTime StartDate, ref DateTime EndDate,
+            PROJECT fromPROJECT, bool getEndDate)
         {
-            TimeSpan timeDifference = EndDate.Date.Subtract(StartDate.Date);
-            double percentage = Convert.ToDouble(fromPROJECT.REVIEWPERCENTAGE);
-            TimeSpan timeDifferencePercent = TimeSpan.FromTicks(Convert.ToInt64(timeDifference.Ticks * fromPROJECT.REVIEWPERCENTAGE));
-            DateTime ReviewStartDate = StartDate.Date.Add(timeDifferencePercent);
+            var timeDifference = EndDate.Date.Subtract(StartDate.Date);
+            var percentage = Convert.ToDouble(fromPROJECT.REVIEWPERCENTAGE);
+            var timeDifferencePercent =
+                TimeSpan.FromTicks(Convert.ToInt64(timeDifference.Ticks * fromPROJECT.REVIEWPERCENTAGE));
+            var ReviewStartDate = StartDate.Date.Add(timeDifferencePercent);
 
             StartDate = ReviewStartDate.Date;
-            DateTime ReviewEndDate = ReviewStartDate.Date.AddDays(Convert.ToDouble(fromPROJECT.REVIEWPERIOD)).AddSeconds(-1);
+            var ReviewEndDate =
+                ReviewStartDate.Date.AddDays(Convert.ToDouble(fromPROJECT.REVIEWPERIOD)).AddSeconds(-1);
             EndDate = ReviewEndDate.Date;
         }
 
@@ -59,22 +62,29 @@ namespace BluePrints.Common.ViewModel.Utils
         /// <summary>
         /// Generate internal number1 when all required fields are populated
         /// </summary>
-        public static string BASELINEITEM_Generate_InternalNumber(PROJECT fromPROJECT, IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMEntities, AREA selectedAREA, DISCIPLINE selectedDISCIPLINE, DOCTYPE selectedDOCTYPE, Guid? excludeGUID = null)
+        public static string BASELINEITEM_Generate_InternalNumber(PROJECT fromPROJECT,
+            IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMEntities, AREA selectedAREA, DISCIPLINE selectedDISCIPLINE,
+            DOCTYPE selectedDOCTYPE, Guid? excludeGUID = null)
         {
             if (selectedAREA != null && selectedDISCIPLINE != null && selectedDOCTYPE != null)
             {
-                string InternalNum = fromPROJECT.NUMBER;
-                if(selectedAREA != null)
+                var InternalNum = fromPROJECT.NUMBER;
+                if (selectedAREA != null)
                     InternalNum += "-" + selectedAREA.INTERNAL_NUM;
                 if (selectedDOCTYPE != null)
                     InternalNum += "-" + selectedDOCTYPE.CODE;
                 if (selectedDISCIPLINE != null)
                     InternalNum += "-" + selectedDISCIPLINE.CODE;
 
-                int internalNameCount = BASELINE_ITEMEntities.Where(x => x.GUID != excludeGUID).Count(x => x.BASELINE_ITEM.INTERNAL_NUM != null && x.BASELINE_ITEM.INTERNAL_NUM.Contains(InternalNum));
+                var internalNameCount =
+                    BASELINE_ITEMEntities.Where(x => x.GUID != excludeGUID)
+                        .Count(
+                            x =>
+                                x.BASELINE_ITEM.INTERNAL_NUM != null &&
+                                x.BASELINE_ITEM.INTERNAL_NUM.Contains(InternalNum));
                 internalNameCount += 1;
 
-                string countString = string.Empty;
+                var countString = string.Empty;
                 if (internalNameCount < 10)
                     countString = "00" + internalNameCount.ToString();
                 else if (internalNameCount < 100)
@@ -86,14 +96,18 @@ namespace BluePrints.Common.ViewModel.Utils
                 return InternalNum;
             }
             else
+            {
                 return string.Empty;
+            }
         }
 
-        public static string BASELINEITEM_Generate_InternalNumber(PROJECT fromPROJECT, IEnumerable<BASELINE_ITEM> BASELINE_ITEMEntities, AREA selectedAREA, DISCIPLINE selectedDISCIPLINE, DOCTYPE selectedDOCTYPE, Guid? excludeGUID = null)
+        public static string BASELINEITEM_Generate_InternalNumber(PROJECT fromPROJECT,
+            IEnumerable<BASELINE_ITEM> BASELINE_ITEMEntities, AREA selectedAREA, DISCIPLINE selectedDISCIPLINE,
+            DOCTYPE selectedDOCTYPE, Guid? excludeGUID = null)
         {
             if (selectedAREA != null && selectedDISCIPLINE != null && selectedDOCTYPE != null)
             {
-                string InternalNum = fromPROJECT.NUMBER;
+                var InternalNum = fromPROJECT.NUMBER;
                 if (selectedAREA != null)
                     InternalNum += "-" + selectedAREA.INTERNAL_NUM;
                 if (selectedDOCTYPE != null)
@@ -101,10 +115,12 @@ namespace BluePrints.Common.ViewModel.Utils
                 if (selectedDISCIPLINE != null)
                     InternalNum += "-" + selectedDISCIPLINE.CODE;
 
-                int internalNameCount = BASELINE_ITEMEntities.Where(x => x.GUID != excludeGUID).Count(x => x.INTERNAL_NUM != null && x.INTERNAL_NUM.Contains(InternalNum));
+                var internalNameCount =
+                    BASELINE_ITEMEntities.Where(x => x.GUID != excludeGUID)
+                        .Count(x => x.INTERNAL_NUM != null && x.INTERNAL_NUM.Contains(InternalNum));
                 internalNameCount += 1;
 
-                string countString = string.Empty;
+                var countString = string.Empty;
                 if (internalNameCount < 10)
                     countString = "00" + internalNameCount.ToString();
                 else if (internalNameCount < 100)
@@ -116,22 +132,27 @@ namespace BluePrints.Common.ViewModel.Utils
                 return InternalNum;
             }
             else
+            {
                 return string.Empty;
+            }
         }
 
         /// <summary>
         /// Generate internal number1 when all required fields are populated
         /// </summary>
-        public static string WORKPACK_Generate_InternalNumber1(PROJECT fromPROJECT, WORKPACK fromWORKPACK, IEnumerable<WORKPACK> WORKPACKEntities, IEnumerable<AREA> lookUpAREA, IEnumerable<DISCIPLINE> lookUpDISCIPLINE, IEnumerable<DOCTYPE> lookUpDOCTYPE)
+        public static string WORKPACK_Generate_InternalNumber1(PROJECT fromPROJECT, WORKPACK fromWORKPACK,
+            IEnumerable<WORKPACK> WORKPACKEntities, IEnumerable<AREA> lookUpAREA,
+            IEnumerable<DISCIPLINE> lookUpDISCIPLINE, IEnumerable<DOCTYPE> lookUpDOCTYPE)
         {
             AREA findAREA;
             DISCIPLINE findDISCIPLINE;
             DOCTYPE findDOCTYPE;
 
-            if(fromWORKPACK.AREA == null || fromWORKPACK.DISCIPLINE == null || fromWORKPACK.DOCTYPE == null)
+            if (fromWORKPACK.AREA == null || fromWORKPACK.DISCIPLINE == null || fromWORKPACK.DOCTYPE == null)
             {
                 findAREA = lookUpAREA.FirstOrDefault(area => area.GUID == fromWORKPACK.GUID_DAREA);
-                findDISCIPLINE = lookUpDISCIPLINE.FirstOrDefault(discipline => discipline.GUID == fromWORKPACK.GUID_DDISCIPLINE);
+                findDISCIPLINE =
+                    lookUpDISCIPLINE.FirstOrDefault(discipline => discipline.GUID == fromWORKPACK.GUID_DDISCIPLINE);
                 findDOCTYPE = lookUpDOCTYPE.FirstOrDefault(doctype => doctype.GUID == fromWORKPACK.GUID_DDOCTYPE);
             }
             else
@@ -143,25 +164,31 @@ namespace BluePrints.Common.ViewModel.Utils
 
             if (findAREA != null && findDISCIPLINE != null && findDOCTYPE != null)
             {
-                string InternalName = fromPROJECT.NUMBER;
+                var InternalName = fromPROJECT.NUMBER;
                 InternalName += "-" + findAREA.INTERNAL_NUM;
                 InternalName += findDOCTYPE.CODE;
                 InternalName += findDISCIPLINE.CODE;
 
-                int InternalNameCount = WORKPACKEntities.Count(obj => obj.INTERNAL_NAME1 != null && obj.INTERNAL_NAME1.Contains(InternalName)) + 1;
+                var InternalNameCount =
+                    WORKPACKEntities.Count(
+                        obj => obj.INTERNAL_NAME1 != null && obj.INTERNAL_NAME1.Contains(InternalName)) + 1;
 
                 InternalName += InternalNameCount.ToString();
 
                 return InternalName;
             }
             else
+            {
                 return string.Empty;
+            }
         }
 
         /// <summary>
         /// Generate internal number2 when all required fields are populated
         /// </summary>
-        public static string WORKPACK_Generate_InternalNumber2(PROJECT fromPROJECT, WORKPACK fromWORKPACK, IEnumerable<WORKPACK> WORKPACKEntities, IEnumerable<AREA> lookUpAREA, IEnumerable<DISCIPLINE> lookUpDISCIPLINE, IEnumerable<PHASE> lookUpPHASE)
+        public static string WORKPACK_Generate_InternalNumber2(PROJECT fromPROJECT, WORKPACK fromWORKPACK,
+            IEnumerable<WORKPACK> WORKPACKEntities, IEnumerable<AREA> lookUpAREA,
+            IEnumerable<DISCIPLINE> lookUpDISCIPLINE, IEnumerable<PHASE> lookUpPHASE)
         {
             AREA findAREA;
             DISCIPLINE findDISCIPLINE;
@@ -171,7 +198,8 @@ namespace BluePrints.Common.ViewModel.Utils
             {
                 findAREA = lookUpAREA.FirstOrDefault(area => area.GUID == fromWORKPACK.GUID_DAREA);
                 findPHASE = lookUpPHASE.FirstOrDefault(phase => phase.GUID == fromWORKPACK.GUID_DPHASE);
-                findDISCIPLINE = lookUpDISCIPLINE.FirstOrDefault(discipline => discipline.GUID == fromWORKPACK.GUID_DDISCIPLINE);
+                findDISCIPLINE =
+                    lookUpDISCIPLINE.FirstOrDefault(discipline => discipline.GUID == fromWORKPACK.GUID_DDISCIPLINE);
             }
             else
             {
@@ -182,25 +210,31 @@ namespace BluePrints.Common.ViewModel.Utils
 
             if (findAREA != null && findDISCIPLINE != null && findPHASE != null)
             {
-                string InternalName = fromPROJECT.NUMBER;
+                var InternalName = fromPROJECT.NUMBER;
                 InternalName += "-" + findPHASE.INTERNAL_NUM;
                 InternalName += findAREA.INTERNAL_NUM;
                 InternalName += findDISCIPLINE.CODE;
 
-                int InternalNameCount = WORKPACKEntities.Count(obj => obj.INTERNAL_NAME2 != null && obj.INTERNAL_NAME2.Contains(InternalName)) + 1;
+                var InternalNameCount =
+                    WORKPACKEntities.Count(
+                        obj => obj.INTERNAL_NAME2 != null && obj.INTERNAL_NAME2.Contains(InternalName)) + 1;
 
                 InternalName += InternalNameCount.ToString();
 
                 return InternalName;
             }
             else
+            {
                 return string.Empty;
+            }
         }
 
         /// <summary>
         /// Generate internal number2 when all required fields are populated
         /// </summary>
-        public static string WORKPACK_Generate_InstallSupplyInternalNumber(PROJECT fromPROJECT, WORKPACK fromWORKPACK, IEnumerable<WORKPACK> WORKPACKEntities, IEntitiesViewModel<AREA> lookUpAREA, IEntitiesViewModel<DISCIPLINE> lookUpDISCIPLINE, IEntitiesViewModel<PHASE> lookUpPHASE, bool IsInstall)
+        public static string WORKPACK_Generate_InstallSupplyInternalNumber(PROJECT fromPROJECT, WORKPACK fromWORKPACK,
+            IEnumerable<WORKPACK> WORKPACKEntities, IEntitiesViewModel<AREA> lookUpAREA,
+            IEntitiesViewModel<DISCIPLINE> lookUpDISCIPLINE, IEntitiesViewModel<PHASE> lookUpPHASE, bool IsInstall)
         {
             AREA findAREA;
             DISCIPLINE findDISCIPLINE;
@@ -210,7 +244,9 @@ namespace BluePrints.Common.ViewModel.Utils
             {
                 findAREA = lookUpAREA.Entities.FirstOrDefault(area => area.GUID == fromWORKPACK.GUID_DAREA);
                 findPHASE = lookUpPHASE.Entities.FirstOrDefault(phase => phase.GUID == fromWORKPACK.GUID_DPHASE);
-                findDISCIPLINE = lookUpDISCIPLINE.Entities.FirstOrDefault(discipline => discipline.GUID == fromWORKPACK.GUID_DDISCIPLINE);
+                findDISCIPLINE =
+                    lookUpDISCIPLINE.Entities.FirstOrDefault(
+                        discipline => discipline.GUID == fromWORKPACK.GUID_DDISCIPLINE);
             }
             else
             {
@@ -221,12 +257,14 @@ namespace BluePrints.Common.ViewModel.Utils
 
             if (findAREA != null && findDISCIPLINE != null && findPHASE != null)
             {
-                string InternalName = fromPROJECT.NUMBER;
+                var InternalName = fromPROJECT.NUMBER;
                 InternalName += IsInstall == true ? "I" : "S";
                 InternalName += findAREA.INTERNAL_NUM;
                 InternalName += findDISCIPLINE.CODE;
 
-                int InternalNameCount = WORKPACKEntities.Count(obj => obj.INTERNAL_NAME2 != null && obj.INTERNAL_NAME2.Contains(InternalName)) + 1;
+                var InternalNameCount =
+                    WORKPACKEntities.Count(
+                        obj => obj.INTERNAL_NAME2 != null && obj.INTERNAL_NAME2.Contains(InternalName)) + 1;
 
                 if (InternalNameCount < 10)
                     InternalName += "0";
@@ -236,7 +274,9 @@ namespace BluePrints.Common.ViewModel.Utils
                 return InternalName;
             }
             else
+            {
                 return string.Empty;
+            }
         }
     }
 }

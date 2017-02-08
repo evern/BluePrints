@@ -1,7 +1,7 @@
 namespace BluePrints.Data
 {
-    using BluePrints.Data.Attributes;
-    using BluePrints.Data.Helpers;
+    using Attributes;
+    using Helpers;
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -12,6 +12,5 @@ namespace BluePrints.Data
     [ConstraintAttributes("GUID_PARENT, GUID_COMMODITYCODE")]
     public partial class COMMODITY_GROUP_DIRECT
     {
-
     }
 }

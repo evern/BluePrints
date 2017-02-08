@@ -43,7 +43,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public class BuildFullStatsIncludingPROGRESS_ITEMSummary
     {
-        BuildProjectStats buildProjectStats = new BuildProjectStats();
+        private BuildProjectStats buildProjectStats = new BuildProjectStats();
+
         public void Manufacture(SummaryBuilder summaryBuilder)
         {
             buildProjectStats.Build(summaryBuilder);

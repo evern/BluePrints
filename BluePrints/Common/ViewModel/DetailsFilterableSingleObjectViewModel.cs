@@ -11,7 +11,8 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel
 {
-    public class DetailsFilterableSingleObjectViewModel<TEntity, TFilterEntity, TPrimaryKey, TUnitOfWork> : SingleObjectViewModel<TEntity, TPrimaryKey, TUnitOfWork>, ISupportFiltering<TFilterEntity>
+    public class DetailsFilterableSingleObjectViewModel<TEntity, TFilterEntity, TPrimaryKey, TUnitOfWork> :
+        SingleObjectViewModel<TEntity, TPrimaryKey, TUnitOfWork>, ISupportFiltering<TFilterEntity>
         where TEntity : class
         where TFilterEntity : class
         where TUnitOfWork : IUnitOfWork
@@ -22,13 +23,21 @@ namespace BluePrints.Common.ViewModel
         /// <param name="unitOfWorkFactory">A factory used to create the unit of work instance.</param>
         /// <param name="getRepositoryFunc">A function that returns the repository representing entities of a given type.</param>
         /// <param name="getEntityDisplayNameFunc">An optional parameter that provides a function to obtain the display text for a given entity. If ommited, the primary key value is used as a display text.</param>
-        protected DetailsFilterableSingleObjectViewModel(IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory, Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc, Func<TEntity, object> getEntityDisplayNameFunc = null)
+        protected DetailsFilterableSingleObjectViewModel(IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory,
+            Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
+            Func<TEntity, object> getEntityDisplayNameFunc = null)
             : base(unitOfWorkFactory, getRepositoryFunc, getEntityDisplayNameFunc)
         {
-            FilterDetailsCollectionPropertyInfo = this.GetType().GetProperties().FirstOrDefault(prop => prop.PropertyType == typeof(CollectionViewModel<TFilterEntity, TPrimaryKey, TUnitOfWork>));
+            FilterDetailsCollectionPropertyInfo =
+                GetType()
+                    .GetProperties()
+                    .FirstOrDefault(
+                        prop =>
+                            prop.PropertyType == typeof(CollectionViewModel<TFilterEntity, TPrimaryKey, TUnitOfWork>));
         }
 
         #region ISupportFiltering
+
         public void CreateCustomFilter()
         {
             Messenger.Default.Send(new CreateCustomFilterMessage<TFilterEntity>());
@@ -46,7 +55,7 @@ namespace BluePrints.Common.ViewModel
         /// </summary>
         public virtual Expression<Func<TFilterEntity, bool>> FilterExpression { get; set; }
 
-        PropertyInfo FilterDetailsCollectionPropertyInfo { get; set; }
+        private PropertyInfo FilterDetailsCollectionPropertyInfo { get; set; }
 
         protected virtual void OnFilterExpressionChanged()
         {
@@ -55,8 +64,9 @@ namespace BluePrints.Common.ViewModel
 
             var viewModel = FilterDetailsCollectionPropertyInfo.GetValue(this) as ISupportFiltering<TFilterEntity>;
             if (viewModel != null)
-                viewModel.FilterExpression = this.FilterExpression;
+                viewModel.FilterExpression = FilterExpression;
         }
+
         #endregion
     }
 }

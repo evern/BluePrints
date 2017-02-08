@@ -15,22 +15,23 @@ namespace BluePrints.Common.DataModel.DesignTime
     /// </summary>
     /// <typeparam name="TEntity">A repository entity type.</typeparam>
     /// <typeparam name="TPrimaryKey">An entity primary key type.</typeparam>
-    public class DesignTimeRepository<TEntity, TPrimaryKey> : DesignTimeReadOnlyRepository<TEntity>, IRepository<TEntity, TPrimaryKey>
+    public class DesignTimeRepository<TEntity, TPrimaryKey> : DesignTimeReadOnlyRepository<TEntity>,
+        IRepository<TEntity, TPrimaryKey>
         where TEntity : class
     {
-
-        readonly Expression<Func<TEntity, TPrimaryKey>> getPrimaryKeyExpression;
-        readonly EntityTraits<TEntity, TPrimaryKey> entityTraits;
+        private readonly Expression<Func<TEntity, TPrimaryKey>> getPrimaryKeyExpression;
+        private readonly EntityTraits<TEntity, TPrimaryKey> entityTraits;
 
         /// <summary>
         /// Initializes a new instance of the DesignTimeRepository class.
         /// </summary>
         /// <param name="getPrimaryKeyExpression">A lambda-expression that returns the entity primary key.</param>
-        public DesignTimeRepository(DesignTimeUnitOfWork unitOfWork, Expression<Func<TEntity, TPrimaryKey>> getPrimaryKeyExpression)
+        public DesignTimeRepository(DesignTimeUnitOfWork unitOfWork,
+            Expression<Func<TEntity, TPrimaryKey>> getPrimaryKeyExpression)
             : base(unitOfWork)
         {
             this.getPrimaryKeyExpression = getPrimaryKeyExpression;
-            this.entityTraits = ExpressionHelper.GetEntityTraits(this, getPrimaryKeyExpression);
+            entityTraits = ExpressionHelper.GetEntityTraits(this, getPrimaryKeyExpression);
         }
 
         protected virtual TEntity CreateCore()
@@ -79,6 +80,7 @@ namespace BluePrints.Common.DataModel.DesignTime
         }
 
         #region IRepository
+
         TEntity IRepository<TEntity, TPrimaryKey>.Find(TPrimaryKey primaryKey)
         {
             return FindCore(primaryKey);
@@ -113,6 +115,7 @@ namespace BluePrints.Common.DataModel.DesignTime
         {
             return ReloadCore(entity);
         }
+
         Expression<Func<TEntity, TPrimaryKey>> IRepository<TEntity, TPrimaryKey>.GetPrimaryKeyExpression
         {
             get { return getPrimaryKeyExpression; }
@@ -132,6 +135,7 @@ namespace BluePrints.Common.DataModel.DesignTime
         {
             SetPrimaryKeyCore(entity, primaryKey);
         }
+
         #endregion
     }
 }

@@ -15,18 +15,23 @@ using BluePrints.Common.DataModel;
 
 namespace BluePrints.Common.ViewModel
 {
-    public partial class InstantFeedbackCollectionViewModel<TEntity, TPrimaryKey, TUnitOfWork> : InstantFeedbackCollectionViewModelBase<TEntity, TEntity, TPrimaryKey, TUnitOfWork>
+    public partial class InstantFeedbackCollectionViewModel<TEntity, TPrimaryKey, TUnitOfWork> :
+        InstantFeedbackCollectionViewModelBase<TEntity, TEntity, TPrimaryKey, TUnitOfWork>
         where TEntity : class, new()
         where TUnitOfWork : IUnitOfWork
     {
-
-        public static InstantFeedbackCollectionViewModel<TEntity, TPrimaryKey, TUnitOfWork> CreateInstantFeedbackCollectionViewModel(
-            IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory,
-            Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
-            Func<IRepositoryQuery<TEntity>, IQueryable<TEntity>> projection = null,
-            Func<bool> canCreateNewEntity = null)
+        public static InstantFeedbackCollectionViewModel<TEntity, TPrimaryKey, TUnitOfWork>
+            CreateInstantFeedbackCollectionViewModel(
+                IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory,
+                Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
+                Func<IRepositoryQuery<TEntity>, IQueryable<TEntity>> projection = null,
+                Func<bool> canCreateNewEntity = null)
         {
-            return ViewModelSource.Create(() => new InstantFeedbackCollectionViewModel<TEntity, TPrimaryKey, TUnitOfWork>(unitOfWorkFactory, getRepositoryFunc, projection, canCreateNewEntity));
+            return
+                ViewModelSource.Create(
+                    () =>
+                        new InstantFeedbackCollectionViewModel<TEntity, TPrimaryKey, TUnitOfWork>(unitOfWorkFactory,
+                            getRepositoryFunc, projection, canCreateNewEntity));
         }
 
         protected InstantFeedbackCollectionViewModel(
@@ -39,19 +44,24 @@ namespace BluePrints.Common.ViewModel
         }
     }
 
-    public partial class InstantFeedbackCollectionViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork> : InstantFeedbackCollectionViewModelBase<TEntity, TProjection, TPrimaryKey, TUnitOfWork>
+    public partial class InstantFeedbackCollectionViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork> :
+        InstantFeedbackCollectionViewModelBase<TEntity, TProjection, TPrimaryKey, TUnitOfWork>
         where TEntity : class, new()
         where TProjection : class
         where TUnitOfWork : IUnitOfWork
     {
-
-        public static InstantFeedbackCollectionViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork> CreateInstantFeedbackCollectionViewModel(
-            IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory,
-            Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
-            Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection,
-            Func<bool> canCreateNewEntity = null)
+        public static InstantFeedbackCollectionViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork>
+            CreateInstantFeedbackCollectionViewModel(
+                IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory,
+                Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
+                Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection,
+                Func<bool> canCreateNewEntity = null)
         {
-            return ViewModelSource.Create(() => new InstantFeedbackCollectionViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork>(unitOfWorkFactory, getRepositoryFunc, projection, canCreateNewEntity));
+            return
+                ViewModelSource.Create(
+                    () =>
+                        new InstantFeedbackCollectionViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork>(
+                            unitOfWorkFactory, getRepositoryFunc, projection, canCreateNewEntity));
         }
 
         protected InstantFeedbackCollectionViewModel(
@@ -64,22 +74,24 @@ namespace BluePrints.Common.ViewModel
         }
     }
 
-    public abstract class InstantFeedbackCollectionViewModelBase<TEntity, TProjection, TPrimaryKey, TUnitOfWork> : IDocumentContent, ISupportLogicalLayout
+    public abstract class InstantFeedbackCollectionViewModelBase<TEntity, TProjection, TPrimaryKey, TUnitOfWork> :
+        IDocumentContent, ISupportLogicalLayout
         where TEntity : class, new()
         where TProjection : class
         where TUnitOfWork : IUnitOfWork
     {
-
         #region inner classes
+
         public class InstantFeedbackSourceViewModel : IListSource
         {
-            public static InstantFeedbackSourceViewModel Create(Func<int> getCount, IInstantFeedbackSource<TProjection> source)
+            public static InstantFeedbackSourceViewModel Create(Func<int> getCount,
+                IInstantFeedbackSource<TProjection> source)
             {
                 return ViewModelSource.Create(() => new InstantFeedbackSourceViewModel(getCount, source));
             }
 
-            readonly Func<int> getCount;
-            readonly IInstantFeedbackSource<TProjection> source;
+            private readonly Func<int> getCount;
+            private readonly IInstantFeedbackSource<TProjection> source;
 
             protected InstantFeedbackSourceViewModel(Func<int> getCount, IInstantFeedbackSource<TProjection> source)
             {
@@ -87,7 +99,10 @@ namespace BluePrints.Common.ViewModel
                 this.source = source;
             }
 
-            public int Count { get { return getCount(); } }
+            public int Count
+            {
+                get { return getCount(); }
+            }
 
             public void Refresh()
             {
@@ -95,21 +110,25 @@ namespace BluePrints.Common.ViewModel
                 this.RaisePropertyChanged(x => x.Count);
             }
 
-            bool IListSource.ContainsListCollection { get { return source.ContainsListCollection; } }
+            bool IListSource.ContainsListCollection
+            {
+                get { return source.ContainsListCollection; }
+            }
 
             IList IListSource.GetList()
             {
                 return source.GetList();
             }
         }
+
         #endregion
 
         protected readonly IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory;
         protected readonly Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc;
         protected Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> Projection { get; private set; }
-        Func<bool> canCreateNewEntity;
-        readonly IRepository<TEntity, TPrimaryKey> helperRepository;
-        readonly IInstantFeedbackSource<TProjection> source;
+        private Func<bool> canCreateNewEntity;
+        private readonly IRepository<TEntity, TPrimaryKey> helperRepository;
+        private readonly IInstantFeedbackSource<TProjection> source;
 
         protected InstantFeedbackCollectionViewModelBase(
             IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory,
@@ -120,13 +139,13 @@ namespace BluePrints.Common.ViewModel
             this.unitOfWorkFactory = unitOfWorkFactory;
             this.canCreateNewEntity = canCreateNewEntity;
             this.getRepositoryFunc = getRepositoryFunc;
-            this.Projection = projection;
-            this.helperRepository = CreateRepository();
+            Projection = projection;
+            helperRepository = CreateRepository();
 
             RepositoryExtensions.VerifyProjection(helperRepository, projection);
 
-            this.source = unitOfWorkFactory.CreateInstantFeedbackSource(getRepositoryFunc, Projection);
-            this.Entities = InstantFeedbackSourceViewModel.Create(() => helperRepository.Count(), source);
+            source = unitOfWorkFactory.CreateInstantFeedbackSource(getRepositoryFunc, Projection);
+            Entities = InstantFeedbackSourceViewModel.Create(() => helperRepository.Count(), source);
 
             if (!this.IsInDesignMode())
                 OnInitializeInRuntime();
@@ -146,8 +165,8 @@ namespace BluePrints.Common.ViewModel
         {
             if (!source.IsLoadedProxy(threadSafeProxy))
                 return;
-            TPrimaryKey primaryKey = GetProxyPrimaryKey(threadSafeProxy);
-            TEntity entity = helperRepository.Find(primaryKey);
+            var primaryKey = GetProxyPrimaryKey(threadSafeProxy);
+            var entity = helperRepository.Find(primaryKey);
             if (entity == null)
             {
                 DestroyDocument(DocumentManagerService.FindEntityDocument<TEntity, TPrimaryKey>(primaryKey));
@@ -165,12 +184,14 @@ namespace BluePrints.Common.ViewModel
         {
             if (!source.IsLoadedProxy(threadSafeProxy))
                 return;
-            if (MessageBoxService.ShowMessage(string.Format(CommonResources.Confirmation_Delete, typeof(TEntity).Name), CommonResources.Confirmation_Caption, MessageButton.YesNo) != MessageResult.Yes)
+            if (
+                MessageBoxService.ShowMessage(string.Format(CommonResources.Confirmation_Delete, typeof(TEntity).Name),
+                    CommonResources.Confirmation_Caption, MessageButton.YesNo) != MessageResult.Yes)
                 return;
             try
             {
-                TPrimaryKey primaryKey = GetProxyPrimaryKey(threadSafeProxy);
-                TEntity entity = helperRepository.Find(primaryKey);
+                var primaryKey = GetProxyPrimaryKey(threadSafeProxy);
+                var entity = helperRepository.Find(primaryKey);
                 if (entity != null)
                 {
                     OnBeforeEntityDeleted(primaryKey, entity);
@@ -192,9 +213,15 @@ namespace BluePrints.Common.ViewModel
             return threadSafeProxy != null;
         }
 
-        protected ILayoutSerializationService LayoutSerializationService { get { return this.GetService<ILayoutSerializationService>(); } }
+        protected ILayoutSerializationService LayoutSerializationService
+        {
+            get { return this.GetService<ILayoutSerializationService>(); }
+        }
 
-        string ViewName { get { return typeof(TEntity).Name + "InstantFeedbackCollectionView"; } }
+        private string ViewName
+        {
+            get { return typeof(TEntity).Name + "InstantFeedbackCollectionView"; }
+        }
 
         [Display(AutoGenerateField = false)]
         public virtual void OnLoaded()
@@ -208,7 +235,7 @@ namespace BluePrints.Common.ViewModel
             SaveLayout();
         }
 
-        void SaveLayout()
+        private void SaveLayout()
         {
             PersistentLayoutHelper.TrySerializeLayout(LayoutSerializationService, ViewName);
         }
@@ -220,24 +247,37 @@ namespace BluePrints.Common.ViewModel
 
         protected TPrimaryKey GetProxyPrimaryKey(object threadSafeProxy)
         {
-            var expression = RepositoryExtensions.GetSinglePropertyPrimaryKeyProjectionProperty<TEntity, TProjection, TPrimaryKey>(helperRepository);
+            var expression =
+                RepositoryExtensions.GetSinglePropertyPrimaryKeyProjectionProperty<TEntity, TProjection, TPrimaryKey>(
+                    helperRepository);
             return GetProxyPropertyValue(threadSafeProxy, expression);
         }
 
-        protected TProperty GetProxyPropertyValue<TProperty>(object threadSafeProxy, Expression<Func<TProjection, TProperty>> propertyExpression)
+        protected TProperty GetProxyPropertyValue<TProperty>(object threadSafeProxy,
+            Expression<Func<TProjection, TProperty>> propertyExpression)
         {
             return source.GetPropertyValue(threadSafeProxy, propertyExpression);
         }
 
         protected virtual void OnEntityDeleted(TPrimaryKey primaryKey, TEntity entity)
         {
-            Messenger.Default.Send(new EntityMessage<TEntity, TPrimaryKey>(primaryKey, EntityMessageType.Deleted, string.Empty));
+            Messenger.Default.Send(new EntityMessage<TEntity, TPrimaryKey>(primaryKey, EntityMessageType.Deleted,
+                string.Empty));
         }
 
-        protected IMessageBoxService MessageBoxService { get { return this.GetRequiredService<IMessageBoxService>(); } }
-        protected IDocumentManagerService DocumentManagerService { get { return this.GetService<IDocumentManagerService>(); } }
+        protected IMessageBoxService MessageBoxService
+        {
+            get { return this.GetRequiredService<IMessageBoxService>(); }
+        }
 
-        protected virtual void OnBeforeEntityDeleted(TPrimaryKey primaryKey, TEntity entity) { }
+        protected IDocumentManagerService DocumentManagerService
+        {
+            get { return this.GetService<IDocumentManagerService>(); }
+        }
+
+        protected virtual void OnBeforeEntityDeleted(TPrimaryKey primaryKey, TEntity entity)
+        {
+        }
 
         protected void DestroyDocument(IDocument document)
         {
@@ -265,7 +305,7 @@ namespace BluePrints.Common.ViewModel
             Messenger.Default.Unregister(this);
         }
 
-        void OnMessage(EntityMessage<TEntity, TPrimaryKey> message)
+        private void OnMessage(EntityMessage<TEntity, TPrimaryKey> message)
         {
             Refresh();
         }
@@ -273,7 +313,11 @@ namespace BluePrints.Common.ViewModel
         protected IDocumentOwner DocumentOwner { get; private set; }
 
         #region IDocumentContent
-        object IDocumentContent.Title { get { return null; } }
+
+        object IDocumentContent.Title
+        {
+            get { return null; }
+        }
 
         void IDocumentContent.OnClose(CancelEventArgs e)
         {
@@ -290,9 +334,11 @@ namespace BluePrints.Common.ViewModel
             get { return DocumentOwner; }
             set { DocumentOwner = value; }
         }
+
         #endregion
 
         #region ISupportLogicalLayout
+
         bool ISupportLogicalLayout.CanSerialize
         {
             get { return true; }
@@ -307,6 +353,7 @@ namespace BluePrints.Common.ViewModel
         {
             get { return null; }
         }
+
         #endregion
     }
 }

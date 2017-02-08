@@ -16,7 +16,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
     /// </summary>
     public class BluePrintsEntitiesDesignTimeUnitOfWork : DesignTimeUnitOfWork, IBluePrintsEntitiesUnitOfWork
     {
-
         /// <summary>
         /// Initializes a new instance of the BluePrintsEntitiesDesignTimeUnitOfWork class.
         /// </summary>

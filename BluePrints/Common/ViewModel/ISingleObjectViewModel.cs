@@ -17,7 +17,6 @@ namespace BluePrints.Common.ViewModel
     /// <typeparam name="TPrimaryKey">An entity primary key type.</typeparam>
     public interface ISingleObjectViewModel<TEntity, TPrimaryKey>
     {
-
         /// <summary>
         /// The entity represented by a view model.
         /// </summary>

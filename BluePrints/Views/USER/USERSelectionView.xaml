@@ -3,14 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
-             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" 
-             xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" 
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
              xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
-             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" 
+             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" 
-             mc:Ignorable="d" 
+             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+             mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -24,7 +24,7 @@
             <dxmvvm:LayoutSerializationService />
         </dxmvvm:Interaction.Behaviors>
         <dxlc:LayoutControl Name="LayoutControlRoot" Orientation="Vertical">
-            <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" >
+            <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group">
                 <dxg:GridControl Name="gridControl" Style="{StaticResource DefaultGridTemplate}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn FieldName="NAME" />
@@ -33,12 +33,15 @@
                         <dxg:GridColumn FieldName="DESCRIPTION" />
                         <dxg:GridColumn Header="ROLE" FieldName="GUID_ROLE">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.LookUpROLES.Entities, ElementName=userControl}" IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
+                                <dxe:ComboBoxEditSettings
+                                    ItemsSource="{Binding DataContext.LookUpROLES.Entities, ElementName=userControl}"
+                                    IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.View>
-                        <dxg:TableView Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" AllowEditing="False" NewItemRowPosition="None" />
+                        <dxg:TableView Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
+                                       AllowEditing="False" NewItemRowPosition="None" />
                     </dxg:GridControl.View>
                 </dxg:GridControl>
             </dxlc:LayoutGroup>

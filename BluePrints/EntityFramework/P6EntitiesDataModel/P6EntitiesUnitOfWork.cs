@@ -78,7 +78,10 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<DASHUSER, Tuple<int, int>> IP6EntitiesUnitOfWork.DASHUSER
         {
-            get { return GetRepository(x => x.Set<DASHUSER>(), (DASHUSER x) => Tuple.Create(x.dashboard_id, x.user_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<DASHUSER>(), (DASHUSER x) => Tuple.Create(x.dashboard_id, x.user_id));
+            }
         }
 
         IRepository<DISCUSSION, int> IP6EntitiesUnitOfWork.DISCUSSION
@@ -88,7 +91,11 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<DISCUSSION_READ, Tuple<int, int>> IP6EntitiesUnitOfWork.DISCUSSION_READ
         {
-            get { return GetRepository(x => x.Set<DISCUSSION_READ>(), (DISCUSSION_READ x) => Tuple.Create(x.discussion_id, x.user_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<DISCUSSION_READ>(),
+                    (DISCUSSION_READ x) => Tuple.Create(x.discussion_id, x.user_id));
+            }
         }
 
         IRepository<DLTACCT, Tuple<int, int>> IP6EntitiesUnitOfWork.DLTACCT
@@ -98,7 +105,10 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<DLTACTV, Tuple<int, int>> IP6EntitiesUnitOfWork.DLTACTV
         {
-            get { return GetRepository(x => x.Set<DLTACTV>(), (DLTACTV x) => Tuple.Create(x.session_id, x.actv_code_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<DLTACTV>(), (DLTACTV x) => Tuple.Create(x.session_id, x.actv_code_id));
+            }
         }
 
         IRepository<DLTOBS, Tuple<int, int>> IP6EntitiesUnitOfWork.DLTOBS
@@ -188,7 +198,10 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<FORMPROJ, Tuple<int, int>> IP6EntitiesUnitOfWork.FORMPROJ
         {
-            get { return GetRepository(x => x.Set<FORMPROJ>(), (FORMPROJ x) => Tuple.Create(x.form_tmpl_id, x.proj_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<FORMPROJ>(), (FORMPROJ x) => Tuple.Create(x.form_tmpl_id, x.proj_id));
+            }
         }
 
         IRepository<FORMTMPL, int> IP6EntitiesUnitOfWork.FORMTMPL
@@ -213,7 +226,11 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<HQUERY, Tuple<int, int, int>> IP6EntitiesUnitOfWork.HQUERY
         {
-            get { return GetRepository(x => x.Set<HQUERY>(), (HQUERY x) => Tuple.Create(x.session_id, x.context_id, x.fk_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<HQUERY>(),
+                    (HQUERY x) => Tuple.Create(x.session_id, x.context_id, x.fk_id));
+            }
         }
 
         IRepository<ISSUHIST, int> IP6EntitiesUnitOfWork.ISSUHIST
@@ -293,7 +310,10 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<PCATUSER, Tuple<int, int>> IP6EntitiesUnitOfWork.PCATUSER
         {
-            get { return GetRepository(x => x.Set<PCATUSER>(), (PCATUSER x) => Tuple.Create(x.proj_catg_id, x.user_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<PCATUSER>(), (PCATUSER x) => Tuple.Create(x.proj_catg_id, x.user_id));
+            }
         }
 
         IRepository<PCATVAL, int> IP6EntitiesUnitOfWork.PCATVAL
@@ -323,7 +343,11 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<PRMQUEUE, Tuple<string, string, DateTime>> IP6EntitiesUnitOfWork.PRMQUEUE
         {
-            get { return GetRepository(x => x.Set<PRMQUEUE>(), (PRMQUEUE x) => Tuple.Create(x.queue_name, x.msg_key, x.enqueue_date)); }
+            get
+            {
+                return GetRepository(x => x.Set<PRMQUEUE>(),
+                    (PRMQUEUE x) => Tuple.Create(x.queue_name, x.msg_key, x.enqueue_date));
+            }
         }
 
         IRepository<PROCGROUP, int> IP6EntitiesUnitOfWork.PROCGROUP
@@ -373,7 +397,11 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<PROJPCAT, Tuple<int, int>> IP6EntitiesUnitOfWork.PROJPCAT
         {
-            get { return GetRepository(x => x.Set<PROJPCAT>(), (PROJPCAT x) => Tuple.Create(x.proj_id, x.proj_catg_type_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<PROJPCAT>(),
+                    (PROJPCAT x) => Tuple.Create(x.proj_id, x.proj_catg_type_id));
+            }
         }
 
         IRepository<PROJPROP, Tuple<int, string>> IP6EntitiesUnitOfWork.PROJPROP
@@ -433,7 +461,11 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<REFRDEL, Tuple<DateTime, string, string>> IP6EntitiesUnitOfWork.REFRDEL
         {
-            get { return GetRepository(x => x.Set<REFRDEL>(), (REFRDEL x) => Tuple.Create(x.delete_date, x.table_name, x.pk1)); }
+            get
+            {
+                return GetRepository(x => x.Set<REFRDEL>(),
+                    (REFRDEL x) => Tuple.Create(x.delete_date, x.table_name, x.pk1));
+            }
         }
 
         IRepository<REITTYPE, int> IP6EntitiesUnitOfWork.REITTYPE
@@ -448,7 +480,11 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<RELITEMS, Tuple<int, int, int, int>> IP6EntitiesUnitOfWork.RELITEMS
         {
-            get { return GetRepository(x => x.Set<RELITEMS>(), (RELITEMS x) => Tuple.Create(x.item_type_id, x.fk_id, x.related_item_type_id, x.related_fk_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<RELITEMS>(),
+                    (RELITEMS x) => Tuple.Create(x.item_type_id, x.fk_id, x.related_item_type_id, x.related_fk_id));
+            }
         }
 
         IRepository<RFOLIO, int> IP6EntitiesUnitOfWork.RFOLIO
@@ -518,7 +554,11 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<RSRCANDASH, Tuple<int, int>> IP6EntitiesUnitOfWork.RSRCANDASH
         {
-            get { return GetRepository(x => x.Set<RSRCANDASH>(), (RSRCANDASH x) => Tuple.Create(x.dashboard_id, x.rsrcan_view_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<RSRCANDASH>(),
+                    (RSRCANDASH x) => Tuple.Create(x.dashboard_id, x.rsrcan_view_id));
+            }
         }
 
         IRepository<RSRCANVIEW, int> IP6EntitiesUnitOfWork.RSRCANVIEW
@@ -548,7 +588,11 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<RSRCRCAT, Tuple<int, int>> IP6EntitiesUnitOfWork.RSRCRCAT
         {
-            get { return GetRepository(x => x.Set<RSRCRCAT>(), (RSRCRCAT x) => Tuple.Create(x.rsrc_id, x.rsrc_catg_type_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<RSRCRCAT>(),
+                    (RSRCRCAT x) => Tuple.Create(x.rsrc_id, x.rsrc_catg_type_id));
+            }
         }
 
         IRepository<RSRCROLE, Tuple<int, int>> IP6EntitiesUnitOfWork.RSRCROLE
@@ -573,22 +617,34 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<SCENPROJ, Tuple<int, int>> IP6EntitiesUnitOfWork.SCENPROJ
         {
-            get { return GetRepository(x => x.Set<SCENPROJ>(), (SCENPROJ x) => Tuple.Create(x.scenario_id, x.proj_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<SCENPROJ>(), (SCENPROJ x) => Tuple.Create(x.scenario_id, x.proj_id));
+            }
         }
 
         IRepository<SCENROLE, Tuple<int, int>> IP6EntitiesUnitOfWork.SCENROLE
         {
-            get { return GetRepository(x => x.Set<SCENROLE>(), (SCENROLE x) => Tuple.Create(x.scenario_id, x.role_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<SCENROLE>(), (SCENROLE x) => Tuple.Create(x.scenario_id, x.role_id));
+            }
         }
 
         IRepository<SCENUSER, Tuple<int, int>> IP6EntitiesUnitOfWork.SCENUSER
         {
-            get { return GetRepository(x => x.Set<SCENUSER>(), (SCENUSER x) => Tuple.Create(x.scenario_id, x.user_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<SCENUSER>(), (SCENUSER x) => Tuple.Create(x.scenario_id, x.user_id));
+            }
         }
 
         IRepository<SETTINGS, Tuple<string, string>> IP6EntitiesUnitOfWork.SETTINGS
         {
-            get { return GetRepository(x => x.Set<SETTINGS>(), (SETTINGS x) => Tuple.Create(x._namespace, x.setting_name)); }
+            get
+            {
+                return GetRepository(x => x.Set<SETTINGS>(), (SETTINGS x) => Tuple.Create(x._namespace, x.setting_name));
+            }
         }
 
         IRepository<SHIFT, int> IP6EntitiesUnitOfWork.SHIFT
@@ -608,7 +664,11 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<SUMPROJCOST, Tuple<int, int, int>> IP6EntitiesUnitOfWork.SUMPROJCOST
         {
-            get { return GetRepository(x => x.Set<SUMPROJCOST>(), (SUMPROJCOST x) => Tuple.Create(x.proj_id, x.wbs_id, x.cost_type_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<SUMPROJCOST>(),
+                    (SUMPROJCOST x) => Tuple.Create(x.proj_id, x.wbs_id, x.cost_type_id));
+            }
         }
 
         IRepository<SUMTASK, Tuple<int, int>> IP6EntitiesUnitOfWork.SUMTASK
@@ -618,7 +678,11 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<SUMTASKSPREAD, Tuple<int, int, DateTime, DateTime, string>> IP6EntitiesUnitOfWork.SUMTASKSPREAD
         {
-            get { return GetRepository(x => x.Set<SUMTASKSPREAD>(), (SUMTASKSPREAD x) => Tuple.Create(x.proj_id, x.wbs_id, x.start_date, x.end_date, x.spread_type)); }
+            get
+            {
+                return GetRepository(x => x.Set<SUMTASKSPREAD>(),
+                    (SUMTASKSPREAD x) => Tuple.Create(x.proj_id, x.wbs_id, x.start_date, x.end_date, x.spread_type));
+            }
         }
 
         IRepository<SUMTRSRC, int> IP6EntitiesUnitOfWork.SUMTRSRC
@@ -633,7 +697,11 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<TASKACTV, Tuple<int, int>> IP6EntitiesUnitOfWork.TASKACTV
         {
-            get { return GetRepository(x => x.Set<TASKACTV>(), (TASKACTV x) => Tuple.Create(x.task_id, x.actv_code_type_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<TASKACTV>(),
+                    (TASKACTV x) => Tuple.Create(x.task_id, x.actv_code_type_id));
+            }
         }
 
         IRepository<TASKDOC, int> IP6EntitiesUnitOfWork.TASKDOC
@@ -698,7 +766,10 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<TASKWKSP, Tuple<int, int>> IP6EntitiesUnitOfWork.TASKWKSP
         {
-            get { return GetRepository(x => x.Set<TASKWKSP>(), (TASKWKSP x) => Tuple.Create(x.workspace_id, x.task_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<TASKWKSP>(), (TASKWKSP x) => Tuple.Create(x.workspace_id, x.task_id));
+            }
         }
 
         IRepository<THRSPARM, int> IP6EntitiesUnitOfWork.THRSPARM
@@ -728,7 +799,10 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<TRSRCFIN, Tuple<int, int>> IP6EntitiesUnitOfWork.TRSRCFIN
         {
-            get { return GetRepository(x => x.Set<TRSRCFIN>(), (TRSRCFIN x) => Tuple.Create(x.fin_dates_id, x.taskrsrc_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<TRSRCFIN>(), (TRSRCFIN x) => Tuple.Create(x.fin_dates_id, x.taskrsrc_id));
+            }
         }
 
         IRepository<TRSRCSUM, int> IP6EntitiesUnitOfWork.TRSRCSUM
@@ -778,7 +852,11 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<UEVNTREG, Tuple<int, string, string, string>> IP6EntitiesUnitOfWork.UEVNTREG
         {
-            get { return GetRepository(x => x.Set<UEVNTREG>(), (UEVNTREG x) => Tuple.Create(x.user_id, x.app_name, x.operation_name, x.action_name)); }
+            get
+            {
+                return GetRepository(x => x.Set<UEVNTREG>(),
+                    (UEVNTREG x) => Tuple.Create(x.user_id, x.app_name, x.operation_name, x.action_name));
+            }
         }
 
         IRepository<UMEASURE, int> IP6EntitiesUnitOfWork.UMEASURE
@@ -823,12 +901,19 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<USERSET, Tuple<string, string, int>> IP6EntitiesUnitOfWork.USERSET
         {
-            get { return GetRepository(x => x.Set<USERSET>(), (USERSET x) => Tuple.Create(x._namespace, x.setting_name, x.user_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<USERSET>(),
+                    (USERSET x) => Tuple.Create(x._namespace, x.setting_name, x.user_id));
+            }
         }
 
         IRepository<USERWKSP, Tuple<int, int>> IP6EntitiesUnitOfWork.USERWKSP
         {
-            get { return GetRepository(x => x.Set<USERWKSP>(), (USERWKSP x) => Tuple.Create(x.user_id, x.workspace_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<USERWKSP>(), (USERWKSP x) => Tuple.Create(x.user_id, x.workspace_id));
+            }
         }
 
         IRepository<USESSION, int> IP6EntitiesUnitOfWork.USESSION
@@ -838,7 +923,11 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<USROPNVAL, Tuple<int, int, string>> IP6EntitiesUnitOfWork.USROPNVAL
         {
-            get { return GetRepository(x => x.Set<USROPNVAL>(), (USROPNVAL x) => Tuple.Create(x.user_open_id, x.pk_id, x.usropn_type)); }
+            get
+            {
+                return GetRepository(x => x.Set<USROPNVAL>(),
+                    (USROPNVAL x) => Tuple.Create(x.user_open_id, x.pk_id, x.usropn_type));
+            }
         }
 
         IRepository<VIEWPREF, int> IP6EntitiesUnitOfWork.VIEWPREF
@@ -853,17 +942,28 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<VWPREFDASH, Tuple<int, int>> IP6EntitiesUnitOfWork.VWPREFDASH
         {
-            get { return GetRepository(x => x.Set<VWPREFDASH>(), (VWPREFDASH x) => Tuple.Create(x.dashboard_id, x.view_pref_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<VWPREFDASH>(),
+                    (VWPREFDASH x) => Tuple.Create(x.dashboard_id, x.view_pref_id));
+            }
         }
 
         IRepository<VWPREFDATA, Tuple<int, string>> IP6EntitiesUnitOfWork.VWPREFDATA
         {
-            get { return GetRepository(x => x.Set<VWPREFDATA>(), (VWPREFDATA x) => Tuple.Create(x.view_pref_id, x.view_pref_key)); }
+            get
+            {
+                return GetRepository(x => x.Set<VWPREFDATA>(),
+                    (VWPREFDATA x) => Tuple.Create(x.view_pref_id, x.view_pref_key));
+            }
         }
 
         IRepository<VWPREFUSER, Tuple<int, int>> IP6EntitiesUnitOfWork.VWPREFUSER
         {
-            get { return GetRepository(x => x.Set<VWPREFUSER>(), (VWPREFUSER x) => Tuple.Create(x.view_pref_id, x.user_id)); }
+            get
+            {
+                return GetRepository(x => x.Set<VWPREFUSER>(), (VWPREFUSER x) => Tuple.Create(x.view_pref_id, x.user_id));
+            }
         }
 
         IRepository<WBRSCAT, int> IP6EntitiesUnitOfWork.WBRSCAT
@@ -888,7 +988,11 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<WBSRSRC_QTY, Tuple<int, DateTime, DateTime>> IP6EntitiesUnitOfWork.WBSRSRC_QTY
         {
-            get { return GetRepository(x => x.Set<WBSRSRC_QTY>(), (WBSRSRC_QTY x) => Tuple.Create(x.wbsrsrc_id, x.week_start, x.month_start)); }
+            get
+            {
+                return GetRepository(x => x.Set<WBSRSRC_QTY>(),
+                    (WBSRSRC_QTY x) => Tuple.Create(x.wbsrsrc_id, x.week_start, x.month_start));
+            }
         }
 
         IRepository<WBSSTEP, int> IP6EntitiesUnitOfWork.WBSSTEP
@@ -903,7 +1007,11 @@ namespace BluePrints.P6EntitiesDataModel
 
         IRepository<WKFLUSER, Tuple<int, int, int>> IP6EntitiesUnitOfWork.WKFLUSER
         {
-            get { return GetRepository(x => x.Set<WKFLUSER>(), (WKFLUSER x) => Tuple.Create(x.work_flow_id, x.user_id, x.stage_num)); }
+            get
+            {
+                return GetRepository(x => x.Set<WKFLUSER>(),
+                    (WKFLUSER x) => Tuple.Create(x.work_flow_id, x.user_id, x.stage_num));
+            }
         }
 
         IRepository<WORKFLOW, int> IP6EntitiesUnitOfWork.WORKFLOW

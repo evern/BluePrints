@@ -18,13 +18,17 @@ using BluePrints.Common.Helpers;
 
 namespace BluePrints.ViewModels
 {
-    public class UOMCollectionViewModelWrapper : CollectionViewModelsWrapper<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork, CollectionViewModel<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork>>
+    public class UOMCollectionViewModelWrapper :
+        CollectionViewModelsWrapper
+        <UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork,
+            CollectionViewModel<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
         /// <summary>
         /// Creates a new instance of UOMCollectionViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static UOMCollectionViewModelWrapper Create(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        public static UOMCollectionViewModelWrapper Create(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
             return ViewModelSource.Create(() => new UOMCollectionViewModelWrapper(unitOfWorkFactory));
         }
@@ -35,15 +39,18 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the UOMCollectionViewModelWrapper type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected UOMCollectionViewModelWrapper(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        protected UOMCollectionViewModelWrapper(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
 
         #region Database Operations
-        IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
+            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
         protected override void InitializeParameters(object parameter)
         {
-
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
@@ -55,7 +62,7 @@ namespace BluePrints.ViewModels
 
         protected override void OnAllEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(this.bluePrintsUnitOfWorkFactory, x => x.UOMS);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.UOMS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoader.CreateCollectionViewModel()));
         }
 
@@ -70,24 +77,25 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
 
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
+            object sender)
         {
             //Since this is a simple model, it will be handled natively
             return;
         }
+
         #endregion
 
         #region View Properties
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
         protected override string ViewName
         {
-            get
-            {
-                return "UOMCollectionViewModelWrapper";
-            }
+            get { return "UOMCollectionViewModelWrapper"; }
         }
+
         #endregion
     }
 }

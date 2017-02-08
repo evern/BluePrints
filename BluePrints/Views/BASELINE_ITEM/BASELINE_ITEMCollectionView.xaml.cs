@@ -14,8 +14,10 @@ namespace BluePrints.Views
         public BASELINE_ITEMCollectionView()
         {
             InitializeComponent();
-            ((BASELINE_ITEMSViewModelWrapper)this.DataContext).ShowWORKPACKInternalName1 = this.ShowWorkpackInternalName1;
-            ((BASELINE_ITEMSViewModelWrapper)this.DataContext).ShowWORKPACKInternalName2 = this.ShowWorkpackInternalName2;
+            ((BASELINE_ITEMSViewModelWrapper) DataContext).ShowWORKPACKInternalName1 =
+                ShowWorkpackInternalName1;
+            ((BASELINE_ITEMSViewModelWrapper) DataContext).ShowWORKPACKInternalName2 =
+                ShowWorkpackInternalName2;
         }
 
         public void ShowWorkpackInternalName1()
@@ -28,12 +30,12 @@ namespace BluePrints.Views
             colWORKPACKInternalName2.Visible = true;
         }
 
-        private void tableView_ShowGridMenu(object sender, DevExpress.Xpf.Grid.GridMenuEventArgs e)
+        private void tableView_ShowGridMenu(object sender, GridMenuEventArgs e)
         {
-            GridCellMenuInfo menuInfo = tableView.GridMenu.MenuInfo as GridCellMenuInfo;
+            var menuInfo = tableView.GridMenu.MenuInfo as GridCellMenuInfo;
             if (menuInfo != null && menuInfo.Row != null && menuInfo.Column != null)
             {
-                if (menuInfo.Row.ControllerVisibleIndex == GridControl.NewItemRowHandle)
+                if (menuInfo.Row.ControllerVisibleIndex == DataControlBase.NewItemRowHandle)
                 {
                     contextMenuDuplicate.IsEnabled = false;
                     contextMenuDuplicateMulti.IsEnabled = false;

@@ -1,7 +1,7 @@
 namespace BluePrints.Data
 {
-    using BluePrints.Common;
-    using BluePrints.Data.Attributes;
+    using Common;
+    using Attributes;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -12,6 +12,5 @@ namespace BluePrints.Data
     [BulkEditDisabledAttributes("P6BASELINE_NAME, P6MODBASELINE_NAME")]
     public partial class BASELINE
     {
-
     }
 }

@@ -25,7 +25,7 @@ namespace BluePrints.Views
         public ESTIMATION_DIRECT_ITEMCollectionView()
         {
             InitializeComponent();
-            ((ESTIMATION_DIRECT_ITEMSViewModelWrapper)this.DataContext).SetIsRowExpanded = this.SetIsRowExpanded;
+            ((ESTIMATION_DIRECT_ITEMSViewModelWrapper) DataContext).SetIsRowExpanded = SetIsRowExpanded;
         }
 
         public void SetIsRowExpanded(ESTIMATION_DIRECT_ITEMProjection row)
@@ -33,7 +33,7 @@ namespace BluePrints.Views
             if (row == null)
                 return;
 
-            int rowHandle = gridControl.DataController.FindRowByRowValue(row);
+            var rowHandle = gridControl.DataController.FindRowByRowValue(row);
             gridControl.SetMasterRowExpanded(rowHandle, row.ISEXPANDED);
         }
     }

@@ -9,7 +9,8 @@ namespace BluePrints.Views
 {
     public partial class COMMODITY_CODECollectionView : UserControl
     {
-        DispatcherTimer sortTimer;
+        private DispatcherTimer sortTimer;
+
         public COMMODITY_CODECollectionView()
         {
             InitializeComponent();
@@ -17,11 +18,11 @@ namespace BluePrints.Views
             sortTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
             sortTimer.Tick += sortTimer_Tick;
             sortTimer.Start();
-            ((COMMODITY_CODESViewModelWrapper)this.DataContext).ShowDISCIPLINE = this.ShowDISCIPLINE;
-            ((COMMODITY_CODESViewModelWrapper)this.DataContext).ShowDEPARTMENT = this.ShowDEPARTMENT;
-            ((COMMODITY_CODESViewModelWrapper)this.DataContext).ShowINDIRECT_TYPE = this.ShowINDIRECT_TYPE;
-            ((COMMODITY_CODESViewModelWrapper)this.DataContext).ShowDIRECT_RATES = this.ShowDIRECT_RATES;
-            ((COMMODITY_CODESViewModelWrapper)this.DataContext).ShowINDIRECT_RATES = this.ShowINDIRECT_RATES;
+            ((COMMODITY_CODESViewModelWrapper) DataContext).ShowDISCIPLINE = ShowDISCIPLINE;
+            ((COMMODITY_CODESViewModelWrapper) DataContext).ShowDEPARTMENT = ShowDEPARTMENT;
+            ((COMMODITY_CODESViewModelWrapper) DataContext).ShowINDIRECT_TYPE = ShowINDIRECT_TYPE;
+            ((COMMODITY_CODESViewModelWrapper) DataContext).ShowDIRECT_RATES = ShowDIRECT_RATES;
+            ((COMMODITY_CODESViewModelWrapper) DataContext).ShowINDIRECT_RATES = ShowINDIRECT_RATES;
         }
 
         public void ShowDISCIPLINE()
@@ -51,7 +52,7 @@ namespace BluePrints.Views
             colRATE_PLANT.Visible = true;
         }
 
-        void sortTimer_Tick(object sender, EventArgs e)
+        private void sortTimer_Tick(object sender, EventArgs e)
         {
             sortTimer.Stop();
             treeListControl.Columns["SORTORDER"].SortOrder = DevExpress.Data.ColumnSortOrder.Ascending;
@@ -59,12 +60,12 @@ namespace BluePrints.Views
 
         private void dragDropManager_Dropped(object sender, DevExpress.Xpf.Grid.DragDrop.TreeListDroppedEventArgs e)
         {
-            ((COMMODITY_CODESViewModelWrapper)this.DataContext).dragDropManager_Dropped(sender, e);
+            ((COMMODITY_CODESViewModelWrapper) DataContext).dragDropManager_Dropped(sender, e);
         }
 
         private void dragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.TreeListDropEventArgs e)
         {
-            ((COMMODITY_CODESViewModelWrapper)this.DataContext).dragDropManager_Drop(sender, e);
+            ((COMMODITY_CODESViewModelWrapper) DataContext).dragDropManager_Drop(sender, e);
         }
     }
 }

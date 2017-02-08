@@ -25,12 +25,12 @@ namespace BluePrints.Views
         public COMMODITY_CODEMasterDetailCollectionView()
         {
             InitializeComponent();
-            ((COMMODITY_CODEMasterDetailViewModelWrapper)this.DataContext).SetIsRowExpanded = this.SetIsRowExpanded;
-            ((COMMODITY_CODEMasterDetailViewModelWrapper)this.DataContext).ShowDISCIPLINE = this.ShowDISCIPLINE;
-            ((COMMODITY_CODEMasterDetailViewModelWrapper)this.DataContext).ShowDEPARTMENT = this.ShowDEPARTMENT;
-            ((COMMODITY_CODEMasterDetailViewModelWrapper)this.DataContext).ShowINDIRECT_TYPE = this.ShowINDIRECT_TYPE;
-            ((COMMODITY_CODEMasterDetailViewModelWrapper)this.DataContext).ShowDIRECT_RATES = this.ShowDIRECT_RATES;
-            ((COMMODITY_CODEMasterDetailViewModelWrapper)this.DataContext).ShowINDIRECT_RATES = this.ShowINDIRECT_RATES;
+            ((COMMODITY_CODEMasterDetailViewModelWrapper) DataContext).SetIsRowExpanded = SetIsRowExpanded;
+            ((COMMODITY_CODEMasterDetailViewModelWrapper) DataContext).ShowDISCIPLINE = ShowDISCIPLINE;
+            ((COMMODITY_CODEMasterDetailViewModelWrapper) DataContext).ShowDEPARTMENT = ShowDEPARTMENT;
+            ((COMMODITY_CODEMasterDetailViewModelWrapper) DataContext).ShowINDIRECT_TYPE = ShowINDIRECT_TYPE;
+            ((COMMODITY_CODEMasterDetailViewModelWrapper) DataContext).ShowDIRECT_RATES = ShowDIRECT_RATES;
+            ((COMMODITY_CODEMasterDetailViewModelWrapper) DataContext).ShowINDIRECT_RATES = ShowINDIRECT_RATES;
         }
 
         public void SetIsRowExpanded(COMMODITY_CODEMasterDetailProjection row)
@@ -38,7 +38,7 @@ namespace BluePrints.Views
             if (row == null)
                 return;
 
-            int rowHandle = gridControl.DataController.FindRowByRowValue(row);
+            var rowHandle = gridControl.DataController.FindRowByRowValue(row);
             gridControl.SetMasterRowExpanded(rowHandle, row.ISEXPANDED);
         }
 

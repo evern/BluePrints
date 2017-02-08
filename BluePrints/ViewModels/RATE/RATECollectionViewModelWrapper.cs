@@ -18,13 +18,17 @@ using BluePrints.Common.Helpers;
 
 namespace BluePrints.ViewModels
 {
-    public class RATECollectionViewModelWrapper : CollectionViewModelsWrapper<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork, CollectionViewModel<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>>
+    public class RATECollectionViewModelWrapper :
+        CollectionViewModelsWrapper
+        <RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork,
+            CollectionViewModel<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
         /// <summary>
         /// Creates a new instance of RATECollectionViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static RATECollectionViewModelWrapper Create(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        public static RATECollectionViewModelWrapper Create(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
             return ViewModelSource.Create(() => new RATECollectionViewModelWrapper(unitOfWorkFactory));
         }
@@ -35,48 +39,61 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the RATECollectionViewModelWrapper type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected RATECollectionViewModelWrapper(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        protected RATECollectionViewModelWrapper(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
 
         #region Database Operations
-        PROJECT loadPROJECT;
-        IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
+        private PROJECT loadPROJECT;
+
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
+            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
         protected override void InitializeParameters(object parameter)
         {
-            EntitiesParameter<PROJECT> PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
-            this.loadPROJECT = PROJECTParameter.GetEntity();
+            var PROJECTParameter = (EntitiesParameter<PROJECT>) parameter;
+            loadPROJECT = PROJECTParameter.GetEntity();
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
         {
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddEntitiesLoader<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0, bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(1, bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
-            loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(2, bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
+            loaderCollection.AddEntitiesLoader<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0,
+                bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT,
+                OnAfterEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(1,
+                bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
+            loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(2,
+                bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
-        bool isContinueLoadingAfterPROJECT(IEnumerable<PROJECT> entities)
+        private bool isContinueLoadingAfterPROJECT(IEnumerable<PROJECT> entities)
         {
             if (entities.Count() == 0)
             {
-                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed, "PROJECT"))));
+                mainThreadDispatcher.BeginInvoke(
+                    new Action(
+                        () =>
+                            MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed, "PROJECT"))));
                 return false;
             }
 
-            this.loadPROJECT = entities.First();
+            loadPROJECT = entities.First();
             return true;
         }
 
-        Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
+        private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
         {
-            return query => query.Where(x => x.GUID == this.loadPROJECT.GUID);
+            return query => query.Where(x => x.GUID == loadPROJECT.GUID);
         }
+
         protected override void OnAllEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(this.bluePrintsUnitOfWorkFactory, x => x.RATES);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.RATES);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoader.CreateCollectionViewModel()));
         }
 
@@ -87,54 +104,55 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<RATE> entities)
         {
-            MainViewModel.OnBeforeEntitySavedCallBack = this.OnBeforeEntitySaved;
+            MainViewModel.OnBeforeEntitySavedCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
 
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
+            object sender)
         {
             if (sender.ToString() == MainViewModel.ToString())
                 return;
 
-            if (loadPROJECT != null && changedType == typeof(BluePrints.Data.PROJECT) && loadPROJECT.GUID.ToString() == key.ToString())
-            {
+            if (loadPROJECT != null && changedType == typeof(PROJECT) &&
+                loadPROJECT.GUID.ToString() == key.ToString())
                 if (messageType == EntityMessageType.Added)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Restored, StringFormatUtils.GetEntityNameByType(changedType)));
+                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Restored,
+                        StringFormatUtils.GetEntityNameByType(changedType)));
                 else if (messageType == EntityMessageType.Deleted)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed, StringFormatUtils.GetEntityNameByType(changedType)));
-            }
+                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed,
+                        StringFormatUtils.GetEntityNameByType(changedType)));
 
             if (loadPROJECT != null)
-            {
                 if (MainViewModel != null)
                     mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
                 else if (loadPROJECT != null)
                     mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
-            }
         }
 
         #region Collection Call Backs
+
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
         public void OnBeforeEntitySaved(RATE entity)
         {
-            entity.GUID_PROJECT = this.loadPROJECT.GUID;
+            entity.GUID_PROJECT = loadPROJECT.GUID;
         }
+
         #endregion
+
         #endregion
 
         #region View Properties
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
         protected override string ViewName
         {
-            get
-            {
-                return "RATECollectionViewModelWrapper";
-            }
+            get { return "RATECollectionViewModelWrapper"; }
         }
 
         public IEnumerable<DEPARTMENT> DEPARTMENTCollection
@@ -158,6 +176,7 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
+
         #endregion
     }
 }

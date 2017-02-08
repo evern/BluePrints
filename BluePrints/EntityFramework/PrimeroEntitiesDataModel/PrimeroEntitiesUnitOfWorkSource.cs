@@ -37,8 +37,12 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
         public static IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> GetUnitOfWorkFactory(bool isInDesignTime)
         {
             if (isInDesignTime)
-                return new DesignTimeUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork>(() => new PrimeroEntitiesDesignTimeUnitOfWork());
-            return new DbUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork>(() => new PrimeroEntitiesUnitOfWork(() => new PrimeroEntities()));
+                return
+                    new DesignTimeUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork>(
+                        () => new PrimeroEntitiesDesignTimeUnitOfWork());
+            return
+                new DbUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork>(
+                    () => new PrimeroEntitiesUnitOfWork(() => new PrimeroEntities()));
         }
     }
 }

@@ -11,16 +11,23 @@ namespace BluePrints.Data.Helpers
 {
     public static class MorphUtils<TFromEntity, TToEntity>
     {
-        public static TToEntity ShallowCopy(TToEntity copyObject, TFromEntity objectToCopy, bool copyVirtualProperties = false)
+        public static TToEntity ShallowCopy(TToEntity copyObject, TFromEntity objectToCopy,
+            bool copyVirtualProperties = false)
         {
-            IEnumerable<PropertyInfo> objectToCopyProperties = objectToCopy.GetType().GetProperties().Where(p => (copyVirtualProperties == true || !p.GetGetMethod().IsVirtual) && !p.GetCustomAttributes().Any(attr => attr.GetType() == typeof(ProjectionPropertyAttribute)));
+            var objectToCopyProperties =
+                objectToCopy.GetType()
+                    .GetProperties()
+                    .Where(
+                        p =>
+                            (copyVirtualProperties == true || !p.GetGetMethod().IsVirtual) &&
+                            !p.GetCustomAttributes().Any(attr => attr.GetType() == typeof(ProjectionPropertyAttribute)));
             foreach (var objectToCopyProperty in objectToCopyProperties)
             {
                 if (!objectToCopyProperty.CanWrite || !objectToCopyProperty.CanRead)
                     continue;
 
                 var objectToCopyValue = objectToCopyProperty.GetValue(objectToCopy);
-                PropertyInfo copyObjectProperty = copyObject.GetType().GetProperty(objectToCopyProperty.Name);
+                var copyObjectProperty = copyObject.GetType().GetProperty(objectToCopyProperty.Name);
 
                 copyObjectProperty.SetValue(copyObject, objectToCopyValue);
             }
@@ -36,15 +43,21 @@ namespace BluePrints.Data.Helpers
             if (copyObject == null || objectToCopy == null)
                 return null;
 
-            IEnumerable<PropertyInfo> objectToCopyProperties = objectToCopy.GetType().GetProperties().Where(p => (copyVirtualProperties == true || !p.GetGetMethod().IsVirtual) && !p.GetCustomAttributes().Any(attr => attr.GetType() == typeof(ProjectionPropertyAttribute)));
-            foreach(var objectToCopyProperty in objectToCopyProperties)
+            var objectToCopyProperties =
+                objectToCopy.GetType()
+                    .GetProperties()
+                    .Where(
+                        p =>
+                            (copyVirtualProperties == true || !p.GetGetMethod().IsVirtual) &&
+                            !p.GetCustomAttributes().Any(attr => attr.GetType() == typeof(ProjectionPropertyAttribute)));
+            foreach (var objectToCopyProperty in objectToCopyProperties)
             {
                 if (!objectToCopyProperty.CanWrite || !objectToCopyProperty.CanRead)
                     continue;
 
                 var objectToCopyValue = objectToCopyProperty.GetValue(objectToCopy);
-                PropertyInfo copyObjectProperty = copyObject.GetType().GetProperty(objectToCopyProperty.Name);
-                
+                var copyObjectProperty = copyObject.GetType().GetProperty(objectToCopyProperty.Name);
+
                 copyObjectProperty.SetValue(copyObject, objectToCopyValue);
             }
 
@@ -55,7 +68,11 @@ namespace BluePrints.Data.Helpers
         {
             try
             {
-                PropertyInfo keyPropertyInfo = type.GetProperties().Single(property => property.GetCustomAttributes().Any(attr => attr.GetType() == typeof(KeyAttribute)));
+                var keyPropertyInfo =
+                    type.GetProperties()
+                        .Single(
+                            property =>
+                                property.GetCustomAttributes().Any(attr => attr.GetType() == typeof(KeyAttribute)));
                 return keyPropertyInfo;
             }
             catch
@@ -68,7 +85,13 @@ namespace BluePrints.Data.Helpers
         {
             try
             {
-                List<PropertyInfo> projectionPropertyInfos = type.GetProperties().Where(property => property.GetCustomAttributes().Any(attr => attr.GetType() == typeof(ProjectionPropertyAttribute))).ToList();
+                var projectionPropertyInfos =
+                    type.GetProperties()
+                        .Where(
+                            property =>
+                                property.GetCustomAttributes()
+                                    .Any(attr => attr.GetType() == typeof(ProjectionPropertyAttribute)))
+                        .ToList();
                 return projectionPropertyInfos;
             }
             catch
@@ -81,7 +104,12 @@ namespace BluePrints.Data.Helpers
         {
             try
             {
-                PropertyInfo filterPropertyInfo = type.GetProperties().Single(property => property.GetCustomAttributes().Any(attr => attr.GetType() == typeof(FilterNameAttribute)));
+                var filterPropertyInfo =
+                    type.GetProperties()
+                        .Single(
+                            property =>
+                                property.GetCustomAttributes()
+                                    .Any(attr => attr.GetType() == typeof(FilterNameAttribute)));
                 return filterPropertyInfo;
             }
             catch
@@ -94,7 +122,12 @@ namespace BluePrints.Data.Helpers
         {
             try
             {
-                PropertyInfo filterPropertyInfo = type.GetProperties().Single(property => property.GetCustomAttributes().Any(attr => attr.GetType() == typeof(FilterValueAttribute)));
+                var filterPropertyInfo =
+                    type.GetProperties()
+                        .Single(
+                            property =>
+                                property.GetCustomAttributes()
+                                    .Any(attr => attr.GetType() == typeof(FilterValueAttribute)));
                 return filterPropertyInfo;
             }
             catch
@@ -105,7 +138,8 @@ namespace BluePrints.Data.Helpers
 
         public static IEnumerable<string> GetConstraintPropertyStrings(Type type)
         {
-            ConstraintAttributes TypeSpecificConstraintAttribute = (ConstraintAttributes)Attribute.GetCustomAttribute(type, typeof(ConstraintAttributes), false);
+            var TypeSpecificConstraintAttribute =
+                (ConstraintAttributes) Attribute.GetCustomAttribute(type, typeof(ConstraintAttributes), false);
             if (TypeSpecificConstraintAttribute != null)
                 return TypeSpecificConstraintAttribute.ColumnNames;
 
@@ -114,7 +148,9 @@ namespace BluePrints.Data.Helpers
 
         public static IEnumerable<string> GetBulkEditDisabledPropertyStrings(Type type)
         {
-            BulkEditDisabledAttributes TypeSpecificConstraintAttribute = (BulkEditDisabledAttributes)Attribute.GetCustomAttribute(type, typeof(BulkEditDisabledAttributes), false);
+            var TypeSpecificConstraintAttribute =
+                (BulkEditDisabledAttributes)
+                Attribute.GetCustomAttribute(type, typeof(BulkEditDisabledAttributes), false);
             if (TypeSpecificConstraintAttribute != null)
                 return TypeSpecificConstraintAttribute.ColumnNames;
 
@@ -123,7 +159,8 @@ namespace BluePrints.Data.Helpers
 
         public static IEnumerable<string> GetRequiredPropertyStringsForProjection(Type type)
         {
-            RequiredAttributes TypeSpecificRequiredAttribute = (RequiredAttributes)Attribute.GetCustomAttribute(type, typeof(RequiredAttributes), false);
+            var TypeSpecificRequiredAttribute =
+                (RequiredAttributes) Attribute.GetCustomAttribute(type, typeof(RequiredAttributes), false);
             if (TypeSpecificRequiredAttribute != null)
                 return TypeSpecificRequiredAttribute.ColumnNames;
 
@@ -132,14 +169,14 @@ namespace BluePrints.Data.Helpers
 
         public static IEnumerable<string> GetRequiredPropertyStrings(Type type)
         {
-            List<string> requiredPropertyStrings = new List<string>();
-            PropertyInfo[] props = type.GetProperties();
-            foreach(PropertyInfo prop in props)
+            var requiredPropertyStrings = new List<string>();
+            var props = type.GetProperties();
+            foreach (var prop in props)
             {
-                object[] attrs = prop.GetCustomAttributes(true);
-                foreach (object attr in attrs)
+                var attrs = prop.GetCustomAttributes(true);
+                foreach (var attr in attrs)
                 {
-                    RequiredAttribute requiredAttr = attr as RequiredAttribute;
+                    var requiredAttr = attr as RequiredAttribute;
                     if (requiredAttr != null)
                         requiredPropertyStrings.Add(prop.Name);
                 }
@@ -157,12 +194,14 @@ namespace BluePrints.Data.Helpers
         /// <param name="value">Value to modify</param>
         public static void SetNestedValue(string propertyString, object parentInstance, object value)
         {
-            string[] propertyNames = propertyString.Split('.');
-            string firstPropertyName = propertyNames.First();
+            var propertyNames = propertyString.Split('.');
+            var firstPropertyName = propertyNames.First();
             var childInstance = parentInstance.GetType().GetProperty(firstPropertyName).GetValue(parentInstance);
 
             if (!propertyString.Contains("."))
+            {
                 parentInstance.GetType().GetProperty(firstPropertyName).SetValue(parentInstance, value);
+            }
             else
             {
                 propertyString = propertyString.Replace(firstPropertyName + ".", string.Empty);
@@ -177,12 +216,14 @@ namespace BluePrints.Data.Helpers
         /// <param name="parentInstance">Instance to get</param>
         public static object GetNestedValue(string propertyString, object parentInstance)
         {
-            string[] propertyNames = propertyString.Split('.');
-            string firstPropertyName = propertyNames.First();
+            var propertyNames = propertyString.Split('.');
+            var firstPropertyName = propertyNames.First();
             var childInstance = parentInstance.GetType().GetProperty(firstPropertyName).GetValue(parentInstance);
 
             if (!propertyString.Contains("."))
+            {
                 return parentInstance.GetType().GetProperty(firstPropertyName).GetValue(parentInstance);
+            }
             else
             {
                 propertyString = propertyString.Replace(firstPropertyName + ".", string.Empty);
@@ -192,12 +233,14 @@ namespace BluePrints.Data.Helpers
 
         public static PropertyInfo GetNestedPropertyInfo(string propertyString, object parentInstance)
         {
-            string[] propertyNames = propertyString.Split('.');
-            string firstPropertyName = propertyNames.First();
+            var propertyNames = propertyString.Split('.');
+            var firstPropertyName = propertyNames.First();
             var childInstance = parentInstance.GetType().GetProperty(firstPropertyName).GetValue(parentInstance);
 
             if (!propertyString.Contains("."))
+            {
                 return parentInstance.GetType().GetProperty(firstPropertyName);
+            }
             else
             {
                 propertyString = propertyString.Replace(firstPropertyName + ".", string.Empty);

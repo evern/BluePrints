@@ -8,14 +8,19 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <DockPanel Margin="12,12,12,0">
-        <dxe:TextEdit NullText="Enter a name for your custom filter..." DockPanel.Dock="Bottom" EditValue="{Binding FilterName}"/>
+        <dxe:TextEdit NullText="Enter a name for your custom filter..." DockPanel.Dock="Bottom"
+                      EditValue="{Binding FilterName}" />
         <StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Left" Margin="0,10">
-            <dxe:CheckEdit Content="Save for future use" EditValue="{Binding Save}"/>
+            <dxe:CheckEdit Content="Save for future use" EditValue="{Binding Save}" />
         </StackPanel>
-        <dxe:FilterControl x:Name="FilterControl" FilterCriteria="{Binding FilterCriteria, Mode=TwoWay}" MinWidth="500" MinHeight="200">
+        <dxe:FilterControl x:Name="FilterControl" FilterCriteria="{Binding FilterCriteria, Mode=TwoWay}" MinWidth="500"
+                           MinHeight="200">
             <dxmvvm:Interaction.Behaviors>
-                <dxmvvm:EventToCommand EventName="IsVisibleChanged" Command="{Binding ElementName=FilterControl, Path=ApplyFilterCommand}" />
-                <dxe:FilterControlColumnsBehavior ObjectType="{Binding EntityType}" UpperCasePropertyNames="True" HiddenProperties="{Binding HiddenProperties}" AdditionalProperties="{Binding AdditionalProperties, Converter={dxmvvm:EnumerableConverter {dxmvvm:ReflectionConverter}}}"/>
+                <dxmvvm:EventToCommand EventName="IsVisibleChanged"
+                                       Command="{Binding ElementName=FilterControl, Path=ApplyFilterCommand}" />
+                <dxe:FilterControlColumnsBehavior ObjectType="{Binding EntityType}" UpperCasePropertyNames="True"
+                                                  HiddenProperties="{Binding HiddenProperties}"
+                                                  AdditionalProperties="{Binding AdditionalProperties, Converter={dxmvvm:EnumerableConverter {dxmvvm:ReflectionConverter}}}" />
             </dxmvvm:Interaction.Behaviors>
         </dxe:FilterControl>
     </DockPanel>

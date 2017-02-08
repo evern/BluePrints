@@ -15,17 +15,16 @@ namespace BluePrints.Common.ViewModel.Converters
             if (value == DependencyProperty.UnsetValue || value == null)
                 return "##0 ";
 
-            string description = parameter.ToString();
+            var description = parameter.ToString();
             //null value checking for design mode
-            if ((decimal)value <= 1)
+            if ((decimal) value <= 1)
                 return "##0 " + description;
             else
-            {
                 return "##0 " + description + "s";
-            }
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
         {
             throw new NotImplementedException();
         }

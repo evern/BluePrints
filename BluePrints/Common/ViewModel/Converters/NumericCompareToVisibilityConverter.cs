@@ -8,12 +8,13 @@ using System.Windows.Data;
 
 namespace BluePrints.Common.ViewModel.Converters
 {
-    [ValueConversion(typeof(decimal), typeof(decimal), ParameterType=typeof(bool))]
+    [ValueConversion(typeof(decimal), typeof(decimal), ParameterType = typeof(bool))]
     public class NumericCompareToVisibilityConverter : IMultiValueConverter
     {
-        public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object[] values, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
         {
-            bool invert = bool.Parse(parameter.ToString());
+            var invert = bool.Parse(parameter.ToString());
             Visibility valueMatchedVisibility;
             Visibility valueUnmatchedVisibility;
             if (invert)
@@ -28,14 +29,12 @@ namespace BluePrints.Common.ViewModel.Converters
             }
 
             if (values[0] == DependencyProperty.UnsetValue && values[1] == DependencyProperty.UnsetValue)
-            {
                 return valueUnmatchedVisibility;
-            }
 
             try
             {
-                decimal Value1 = (decimal)values[0];
-                decimal Value2 = (decimal)values[1];
+                var Value1 = (decimal) values[0];
+                var Value2 = (decimal) values[1];
 
                 if (Value1 == Value2)
                     return valueMatchedVisibility;
@@ -48,7 +47,8 @@ namespace BluePrints.Common.ViewModel.Converters
             }
         }
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter,
+            System.Globalization.CultureInfo culture)
         {
             throw new NotImplementedException();
         }

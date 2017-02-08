@@ -14,31 +14,35 @@
                     xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters"
                     xmlns:common="clr-namespace:BluePrints.Common"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib"
-                    xmlns:collections="clr-namespace:System.Collections;assembly=mscorlib" xmlns:Views="clr-namespace:BluePrints.Views">
+                    xmlns:collections="clr-namespace:System.Collections;assembly=mscorlib"
+                    xmlns:Views="clr-namespace:BluePrints.Views">
     <converter:QuantityExpressionConverter x:Key="QuantityExpressionConverter" />
-    <dx:EmbeddedResourceImageConverter x:Key="EmbeddedResourceImageConverter"/>
-    <converter:NumericCompareToVisibilityConverter x:Key="NumericCompareToVisibilityConverter"/>
-    <converter:NumericCompareToBooleanConverter x:Key="NumericCompareToBooleanConverter"/>
+    <dx:EmbeddedResourceImageConverter x:Key="EmbeddedResourceImageConverter" />
+    <converter:NumericCompareToVisibilityConverter x:Key="NumericCompareToVisibilityConverter" />
+    <converter:NumericCompareToBooleanConverter x:Key="NumericCompareToBooleanConverter" />
     <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
     <converter:VariationActionToImageConverter x:Key="VariationActionToImageConverter" />
     <converter:VariationActionToStringConverter x:Key="VariationActionToStringConverter" />
     <dxmvvm:StringToBooleanConverter x:Key="StringToBoolConverter" />
-    <Style x:Key="GridCellVariationCancellation" TargetType="dxg:LightweightCellEditor" BasedOn="{StaticResource {dxgt:GridRowThemeKey ResourceKey=LightweightCellStyle}}">
+    <Style x:Key="GridCellVariationCancellation" TargetType="dxg:LightweightCellEditor"
+           BasedOn="{StaticResource {dxgt:GridRowThemeKey ResourceKey=LightweightCellStyle}}">
         <Setter Property="IsEnabled" Value="{Binding Path=RowData.Row.CANTOGGLECANCELLATION}" />
     </Style>
     <!-- Baseline Start -->
     <ControlTemplate x:Key="Button_BASELINE_ASSIGN">
-        <Button Command="{Binding DataContext.P6BASELINE_ASSIGNCommand, ElementName=userControl}" IsEnabled="{Binding Path=RowData.Row.P6BASELINE_NAME, Converter={StaticResource StringToBoolConverter}, ConverterParameter=false, FallbackValue=false}">
+        <Button Command="{Binding DataContext.P6BASELINE_ASSIGNCommand, ElementName=userControl}"
+                IsEnabled="{Binding Path=RowData.Row.P6BASELINE_NAME, Converter={StaticResource StringToBoolConverter}, ConverterParameter=false, FallbackValue=false}">
             <StackPanel Orientation="Horizontal">
-                <Image Source="{dx:DXImageOffice2013 Image=Edit_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0"/>
+                <Image Source="{dx:DXImageOffice2013 Image=Edit_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0" />
                 <TextBlock Text="Edit" VerticalAlignment="Center" />
             </StackPanel>
         </Button>
     </ControlTemplate>
     <ControlTemplate x:Key="Button_MODBASELINE_ASSIGN">
-        <Button Command="{Binding DataContext.P6MODBASELINE_ASSIGNCommand, ElementName=userControl}" IsEnabled="{Binding Path=RowData.Row.P6MODBASELINE_NAME, Converter={StaticResource StringToBoolConverter}, ConverterParameter=false, FallbackValue=false}">
+        <Button Command="{Binding DataContext.P6MODBASELINE_ASSIGNCommand, ElementName=userControl}"
+                IsEnabled="{Binding Path=RowData.Row.P6MODBASELINE_NAME, Converter={StaticResource StringToBoolConverter}, ConverterParameter=false, FallbackValue=false}">
             <StackPanel Orientation="Horizontal">
-                <Image Source="{dx:DXImageOffice2013 Image=Edit_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0"/>
+                <Image Source="{dx:DXImageOffice2013 Image=Edit_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0" />
                 <TextBlock Text="Edit" VerticalAlignment="Center" />
             </StackPanel>
         </Button>
@@ -104,15 +108,27 @@
             <Setter.Value>
                 <DataTemplate>
                     <ItemsControl>
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding MainViewModel.ExistingRowAddUndoAndSaveCommand}" EventName="CellValueChanged" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding MainViewModel.NewRowAddUndoAndSaveCommand}" EventName="RowUpdated" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding MainViewModel.ValidateCellCommand}" EventName="ValidateCell" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding MainViewModel.ValidateRowCommand}" EventName="ValidateRow" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding MainViewModel.PastingFromClipboardCommand}" EventName="PastingFromClipboard"/>
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding MainViewModel.ShownEditorCommand}" EventName="ShownEditor" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                               Command="{Binding MainViewModel.ExistingRowAddUndoAndSaveCommand}"
+                                               EventName="CellValueChanged" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                               Command="{Binding MainViewModel.NewRowAddUndoAndSaveCommand}"
+                                               EventName="RowUpdated" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                               Command="{Binding MainViewModel.ValidateCellCommand}"
+                                               EventName="ValidateCell" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                               Command="{Binding MainViewModel.ValidateRowCommand}"
+                                               EventName="ValidateRow" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                               Command="{Binding MainViewModel.PastingFromClipboardCommand}"
+                                               EventName="PastingFromClipboard" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                               Command="{Binding MainViewModel.ShownEditorCommand}"
+                                               EventName="ShownEditor" />
                         <!--<dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}"  />-->
-                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding MainViewModel.UndoCommand}"  />
-                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding MainViewModel.RedoCommand}"  />
+                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding MainViewModel.UndoCommand}" />
+                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding MainViewModel.RedoCommand}" />
                     </ItemsControl>
                 </DataTemplate>
             </Setter.Value>
@@ -140,13 +156,16 @@
         <Setter Property="AutoExpandAllGroups" Value="False" />
         <Setter Property="dxsc:SpellingSettings.CheckAsYouType" Value="True" />
         <Setter Property="dxsc:SpellingSettings.ShowSpellCheckMenu" Value="True" />
-        <Setter Property="dxsc:SpellingSettings.SpellChecker" Value="{Binding DataContext.spellCheckerModule.spellChecker, ElementName=userControl}" />
+        <Setter Property="dxsc:SpellingSettings.SpellChecker"
+                Value="{Binding DataContext.spellCheckerModule.spellChecker, ElementName=userControl}" />
         <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
             <Setter.Value>
                 <DataTemplate>
                     <ItemsControl>
-                        <dxmvvm:KeyToCommand Command="{Binding ShowPopUpCommand}" KeyGesture="Space" CommandParameter="{Binding ElementName=gridControl}"/>
-                        <dxmvvm:EventToCommand Command="{Binding DataContext.LoadedCommand, ElementName=userControl}" EventName="Loaded" />
+                        <dxmvvm:KeyToCommand Command="{Binding ShowPopUpCommand}" KeyGesture="Space"
+                                             CommandParameter="{Binding ElementName=gridControl}" />
+                        <dxmvvm:EventToCommand Command="{Binding DataContext.LoadedCommand, ElementName=userControl}"
+                                               EventName="Loaded" />
                     </ItemsControl>
                 </DataTemplate>
             </Setter.Value>
@@ -166,15 +185,23 @@
             <Setter.Value>
                 <DataTemplate>
                     <ItemsControl>
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ExistingRowAddUndoAndSaveCommand}" EventName="CellValueChanged" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding NewRowAddUndoAndSaveCommand}" EventName="RowUpdated" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}" EventName="ValidateCell" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}" EventName="ValidateRow" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard"/>
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ShownEditorCommand}" EventName="ShownEditor" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                               Command="{Binding ExistingRowAddUndoAndSaveCommand}"
+                                               EventName="CellValueChanged" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                               Command="{Binding NewRowAddUndoAndSaveCommand}" EventName="RowUpdated" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}"
+                                               EventName="ValidateCell" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}"
+                                               EventName="ValidateRow" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                               Command="{Binding PastingFromClipboardCommand}"
+                                               EventName="PastingFromClipboard" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ShownEditorCommand}"
+                                               EventName="ShownEditor" />
                         <!--<dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}"  />-->
-                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}"  />
-                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}"  />
+                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}" />
+                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}" />
                     </ItemsControl>
                 </DataTemplate>
             </Setter.Value>
@@ -196,15 +223,23 @@
             <Setter.Value>
                 <DataTemplate>
                     <ItemsControl>
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ExistingRowAddUndoAndSaveCommand}" EventName="CellValueChanged" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding NewRowAddUndoAndSaveCommand}" EventName="RowUpdated" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}" EventName="ValidateCell" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}" EventName="ValidateRow" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard"/>
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ShownEditorCommand}" EventName="ShownEditor" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                               Command="{Binding ExistingRowAddUndoAndSaveCommand}"
+                                               EventName="CellValueChanged" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                               Command="{Binding NewRowAddUndoAndSaveCommand}" EventName="RowUpdated" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}"
+                                               EventName="ValidateCell" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}"
+                                               EventName="ValidateRow" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                               Command="{Binding PastingFromClipboardCommand}"
+                                               EventName="PastingFromClipboard" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ShownEditorCommand}"
+                                               EventName="ShownEditor" />
                         <!--<dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}"  />-->
-                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}"  />
-                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}"  />
+                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}" />
+                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}" />
                     </ItemsControl>
                 </DataTemplate>
             </Setter.Value>
@@ -222,14 +257,21 @@
             <Setter.Value>
                 <DataTemplate>
                     <ItemsControl>
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding DataContext.ExistingChildrenRowAddUndoAndSaveCommand, ElementName=userControl}" EventName="CellValueChanged" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding NewRowAddUndoAndSaveCommand}" EventName="RowUpdated" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}" EventName="ValidateCell" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}" EventName="ValidateRow" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard"/>
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                               Command="{Binding DataContext.ExistingChildrenRowAddUndoAndSaveCommand, ElementName=userControl}"
+                                               EventName="CellValueChanged" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                               Command="{Binding NewRowAddUndoAndSaveCommand}" EventName="RowUpdated" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}"
+                                               EventName="ValidateCell" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}"
+                                               EventName="ValidateRow" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                               Command="{Binding PastingFromClipboardCommand}"
+                                               EventName="PastingFromClipboard" />
                         <!--<dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}"  />-->
-                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}"  />
-                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}"  />
+                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}" />
+                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}" />
                     </ItemsControl>
                 </DataTemplate>
             </Setter.Value>
@@ -249,13 +291,18 @@
             <Setter.Value>
                 <DataTemplate>
                     <ItemsControl>
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ExistingRowAddUndoAndSaveCommand}" EventName="CellValueChanged" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding NewRowAddUndoAndSaveCommand}" EventName="RowUpdated" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}" EventName="ValidateCell" />
-                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}" EventName="ValidateRow" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                               Command="{Binding ExistingRowAddUndoAndSaveCommand}"
+                                               EventName="CellValueChanged" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                               Command="{Binding NewRowAddUndoAndSaveCommand}" EventName="RowUpdated" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateCellCommand}"
+                                               EventName="ValidateCell" />
+                        <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ValidateRowCommand}"
+                                               EventName="ValidateRow" />
                         <!--<dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}"  />-->
-                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}"  />
-                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}"  />
+                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}" />
+                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}" />
                     </ItemsControl>
                 </DataTemplate>
             </Setter.Value>
@@ -276,22 +323,26 @@
         <dxg:GridColumn Header="Client" FieldName="CLIENT" />
         <dxg:GridColumn Header="Status" FieldName="STATUS">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectStatus}}"/>
+                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectStatus}}" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn Header="Contract Type" FieldName="CONTRACTTYPE" >
+        <dxg:GridColumn Header="Contract Type" FieldName="CONTRACTTYPE">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ContractType}}"/>
+                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ContractType}}" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn Header="Type" FieldName="TYPE">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectType}}"/>
+                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectType}}" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn Header="Design Manager" FieldName="DESIGNMANAGER">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DesignManager}}"/>
+                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DesignManager}}" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn Header="Legacy Workpack" FieldName="USELEGACYWORKPACK">
@@ -301,25 +352,27 @@
         </dxg:GridColumn>
         <dxg:GridColumn Header="Currency Conversion" FieldName="CURRENCYCONVERSION">
             <dxg:GridColumn.EditSettings>
-                <dxe:SpinEditSettings MinValue="0.1" x:Name="PART_Editor" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True" Increment="0.01" />
+                <dxe:SpinEditSettings MinValue="0.1" x:Name="PART_Editor" MaskType="Numeric" Mask="n2"
+                                      MaskUseAsDisplayFormat="True" Increment="0.01" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn Header="Review %" FieldName="REVIEWPERCENTAGE">
             <dxg:GridColumn.EditSettings>
-                <dxe:SpinEditSettings MaskType="Numeric" Mask="p2" MinValue="0" Increment="0.1" MaxValue="1" MaskUseAsDisplayFormat="True" />
+                <dxe:SpinEditSettings MaskType="Numeric" Mask="p2" MinValue="0" Increment="0.1" MaxValue="1"
+                                      MaskUseAsDisplayFormat="True" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn Header="Review Period" FieldName="REVIEWPERIOD">
             <dxg:GridColumn.CellTemplate>
                 <DataTemplate>
-                    <dxe:SpinEdit 
-						x:Name="PART_Editor"
-						MaskUseAsDisplayFormat="True" 
-						MaskType="Numeric" 
-						Increment="1" 
-						MinValue="0" 
-						MaxValue="99"
-						Mask="{Binding EditValue, ConverterParameter=Day, Converter={StaticResource QuantityExpressionConverter}, RelativeSource={RelativeSource Self}}" />
+                    <dxe:SpinEdit
+                        x:Name="PART_Editor"
+                        MaskUseAsDisplayFormat="True"
+                        MaskType="Numeric"
+                        Increment="1"
+                        MinValue="0"
+                        MaxValue="99"
+                        Mask="{Binding EditValue, ConverterParameter=Day, Converter={StaticResource QuantityExpressionConverter}, RelativeSource={RelativeSource Self}}" />
                 </DataTemplate>
             </dxg:GridColumn.CellTemplate>
         </dxg:GridColumn>
@@ -349,7 +402,9 @@
     <collections:ArrayList x:Key="DOCTYPEColumns">
         <dxg:GridColumn Header="DEPARTMENT" FieldName="GUID_DDEPARTMENT">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
+                <dxe:ComboBoxEditSettings
+                    ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}"
+                    IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn FieldName="CODE" />
@@ -366,24 +421,33 @@
         <dxg:GridColumn FieldName="TITLE" />
     </collections:ArrayList>
     <collections:ArrayList x:Key="RATEColumns">
-        <dxg:GridColumn Header="GROUP" FieldName="COST_GROUP" DataContext="{Binding DataContext, ElementName=userControl}" >
+        <dxg:GridColumn Header="GROUP" FieldName="COST_GROUP"
+                        DataContext="{Binding DataContext, ElementName=userControl}">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:CostGroup}}"/>
+                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:CostGroup}}" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn Header="DEPARTMENT" FieldName="GUID_DEPARTMENT" DataContext="{Binding DataContext, ElementName=userControl}" >
+        <dxg:GridColumn Header="DEPARTMENT" FieldName="GUID_DEPARTMENT"
+                        DataContext="{Binding DataContext, ElementName=userControl}">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
+                <dxe:ComboBoxEditSettings
+                    ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}"
+                    IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn Header="DISCIPLINE" FieldName="GUID_DISCIPLINE" DataContext="{Binding DataContext, ElementName=userControl}" >
+        <dxg:GridColumn Header="DISCIPLINE" FieldName="GUID_DISCIPLINE"
+                        DataContext="{Binding DataContext, ElementName=userControl}">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
+                <dxe:ComboBoxEditSettings
+                    ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
+                    IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn FieldName="RATE1" Header="RATE">
             <dxg:GridColumn.EditSettings>
-                <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True" Increment="10" />
+                <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True"
+                                      Increment="10" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
     </collections:ArrayList>
@@ -396,43 +460,48 @@
         <dxg:GridColumn FieldName="COMMENTS" />
         <dxg:GridColumn FieldName="ACTUAL_UNITS">
             <dxg:GridColumn.EditSettings>
-                <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" />
+                <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="10"
+                                      MaskUseAsDisplayFormat="True" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn FieldName="BUDGETED_UNITS" >
+        <dxg:GridColumn FieldName="BUDGETED_UNITS">
             <dxg:GridColumn.EditSettings>
-                <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="10" MaskUseAsDisplayFormat="True" />
+                <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="10"
+                                      MaskUseAsDisplayFormat="True" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn FieldName="ALLOW_EXCEED" >
+        <dxg:GridColumn FieldName="ALLOW_EXCEED">
             <dxg:GridColumn.EditSettings>
                 <dxe:CheckEditSettings />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn FieldName="STATUS" >
+        <dxg:GridColumn FieldName="STATUS">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:BaselineStatus}}"/>
+                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:BaselineStatus}}" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn FieldName="P6BASELINE_NAME" >
+        <dxg:GridColumn FieldName="P6BASELINE_NAME">
             <dxg:GridColumn.EditSettings>
                 <dxg:LookUpEditSettings
-                                        Name="LookUpBASELINE"
-                                        DisplayMember="wbs_short_name"
-                                        ValueMember="wbs_short_name"
-                                        PopupMinWidth="600"
-                                        AutoPopulateColumns="False"
-                                        NullValueButtonPlacement="Popup"
-                                    >
+                    Name="LookUpBASELINE"
+                    DisplayMember="wbs_short_name"
+                    ValueMember="wbs_short_name"
+                    PopupMinWidth="600"
+                    AutoPopulateColumns="False"
+                    NullValueButtonPlacement="Popup">
                     <dxg:LookUpEditSettings.PopupContentTemplate>
-                        <ControlTemplate TargetType="ContentControl" >
-                            <dxg:GridControl x:Name="PART_GridControlP6" ItemsSource="{Binding DataContext.P6PROJECTS, ElementName=userControl}" ShowBorder="False" SelectionMode="Row">
+                        <ControlTemplate TargetType="ContentControl">
+                            <dxg:GridControl x:Name="PART_GridControlP6"
+                                             ItemsSource="{Binding DataContext.P6PROJECTS, ElementName=userControl}"
+                                             ShowBorder="False" SelectionMode="Row">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn Header="Code" FieldName="wbs_short_name" AllowEditing="False" />
                                     <dxg:GridColumn Header="Name" Width="500" FieldName="wbs_name" AllowEditing="False" />
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.View>
-                                    <dxg:TreeListView Name="treeListView1" TreeDerivationMode="Selfreference" KeyFieldName="wbs_id" ParentFieldName="parent_wbs_id"/>
+                                    <dxg:TreeListView Name="treeListView1" TreeDerivationMode="Selfreference"
+                                                      KeyFieldName="wbs_id" ParentFieldName="parent_wbs_id" />
                                 </dxg:GridControl.View>
                             </dxg:GridControl>
                         </ControlTemplate>
@@ -441,26 +510,30 @@
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <!--<dxg:GridColumn FieldName="UNBOUND_ORIGINALBASELINE" Header="ORIGINAL BASELINE" UnboundType="Boolean" AllowEditing="False" DisplayTemplate="{StaticResource Button_BASELINE_ASSIGN}" EditTemplate="{StaticResource Button_BASELINE_ASSIGN}"/>-->
-        <dxg:GridColumn FieldName="P6MODBASELINE_NAME" >
+        <dxg:GridColumn FieldName="P6MODBASELINE_NAME">
             <dxg:GridColumn.EditSettings>
                 <dxg:LookUpEditSettings
-                                        Name="LookUpModBASELINE"
-                                        DisplayMember="wbs_short_name"
-                                        ValueMember="wbs_short_name"
-                                        IsTextEditable="True" AutoComplete="True"
-                                        PopupMinWidth="600"
-                                        AutoPopulateColumns="False"
-                                        NullValueButtonPlacement="Popup"
-                                    >
+                    Name="LookUpModBASELINE"
+                    DisplayMember="wbs_short_name"
+                    ValueMember="wbs_short_name"
+                    IsTextEditable="True" AutoComplete="True"
+                    PopupMinWidth="600"
+                    AutoPopulateColumns="False"
+                    NullValueButtonPlacement="Popup">
                     <dxg:LookUpEditSettings.PopupContentTemplate>
-                        <ControlTemplate TargetType="ContentControl" >
-                            <dxg:GridControl x:Name="PART_GridControlModP6" ItemsSource="{Binding DataContext.P6PROJECTS, ElementName=userControl}" ShowBorder="False" SelectionMode="Row">
+                        <ControlTemplate TargetType="ContentControl">
+                            <dxg:GridControl x:Name="PART_GridControlModP6"
+                                             ItemsSource="{Binding DataContext.P6PROJECTS, ElementName=userControl}"
+                                             ShowBorder="False" SelectionMode="Row">
                                 <dxg:GridControl.Columns>
-                                    <dxg:GridColumn IsSmart="True" Header="Code" FieldName="wbs_short_name" AllowEditing="False" />
-                                    <dxg:GridColumn IsSmart="True" Header="Name" Width="500" FieldName="wbs_name" AllowEditing="False" />
+                                    <dxg:GridColumn IsSmart="True" Header="Code" FieldName="wbs_short_name"
+                                                    AllowEditing="False" />
+                                    <dxg:GridColumn IsSmart="True" Header="Name" Width="500" FieldName="wbs_name"
+                                                    AllowEditing="False" />
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.View>
-                                    <dxg:TreeListView Name="treeListView1" TreeDerivationMode="Selfreference" KeyFieldName="wbs_id" ParentFieldName="parent_wbs_id"/>
+                                    <dxg:TreeListView Name="treeListView1" TreeDerivationMode="Selfreference"
+                                                      KeyFieldName="wbs_id" ParentFieldName="parent_wbs_id" />
                                 </dxg:GridControl.View>
                             </dxg:GridControl>
                         </ControlTemplate>
@@ -471,67 +544,83 @@
         <!--<dxg:GridColumn FieldName="UNBOUND_MODBASELINE" Header="MODIFIED BASELINE" UnboundType="Boolean" AllowEditing="False" DisplayTemplate="{StaticResource Button_MODBASELINE_ASSIGN}" EditTemplate="{StaticResource Button_MODBASELINE_ASSIGN}"/>-->
     </collections:ArrayList>
     <collections:ArrayList x:Key="WORKPACKColumns">
-        <dxg:GridColumn Header="PHASE" FieldName="GUID_DPHASE" DataContext="{Binding DataContext, ElementName=userControl}">
+        <dxg:GridColumn Header="PHASE" FieldName="GUID_DPHASE"
+                        DataContext="{Binding DataContext, ElementName=userControl}">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID"/>
+                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}"
+                                          IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM"
+                                          ValueMember="GUID" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn Header="AREA" FieldName="GUID_DAREA" DataContext="{Binding DataContext, ElementName=userControl}">
+        <dxg:GridColumn Header="AREA" FieldName="GUID_DAREA"
+                        DataContext="{Binding DataContext, ElementName=userControl}">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID"/>
+                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
+                                          IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM"
+                                          ValueMember="GUID" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn Header="DOCTYPE" FieldName="GUID_DDOCTYPE" DataContext="{Binding DataContext, ElementName=userControl}" >
+        <dxg:GridColumn Header="DOCTYPE" FieldName="GUID_DDOCTYPE"
+                        DataContext="{Binding DataContext, ElementName=userControl}">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
+                <dxe:ComboBoxEditSettings
+                    ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}"
+                    IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn Header="DISCIPLINE" FieldName="GUID_DDISCIPLINE" DataContext="{Binding DataContext, ElementName=userControl}" >
+        <dxg:GridColumn Header="DISCIPLINE" FieldName="GUID_DDISCIPLINE"
+                        DataContext="{Binding DataContext, ElementName=userControl}">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
+                <dxe:ComboBoxEditSettings
+                    ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
+                    IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn Header="DEPARTMENT" FieldName="GUID_DDEPARTMENT" DataContext="{Binding DataContext, ElementName=userControl}" >
+        <dxg:GridColumn Header="DEPARTMENT" FieldName="GUID_DDEPARTMENT"
+                        DataContext="{Binding DataContext, ElementName=userControl}">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID"/>
+                <dxe:ComboBoxEditSettings
+                    ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}"
+                    IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn FieldName="INTERNAL_NAME1" />
         <dxg:GridColumn FieldName="INTERNAL_NAME2" />
-        <dxg:GridColumn FieldName="STARTDATE" >
+        <dxg:GridColumn FieldName="STARTDATE">
             <dxg:GridColumn.EditSettings>
-                <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59"/>
+                <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn FieldName="ENDDATE" >
+        <dxg:GridColumn FieldName="ENDDATE">
             <dxg:GridColumn.EditSettings>
-                <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59"/>
+                <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn FieldName="REVIEWSTARTDATE" >
+        <dxg:GridColumn FieldName="REVIEWSTARTDATE">
             <dxg:GridColumn.EditSettings>
-                <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59"/>
+                <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn FieldName="REVIEWENDDATE" >
+        <dxg:GridColumn FieldName="REVIEWENDDATE">
             <dxg:GridColumn.EditSettings>
-                <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59"/>
+                <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn FieldName="FORECASTSTARTDATE" >
+        <dxg:GridColumn FieldName="FORECASTSTARTDATE">
             <dxg:GridColumn.EditSettings>
-                <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59"/>
+                <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn FieldName="FORECASTENDDATE" >
+        <dxg:GridColumn FieldName="FORECASTENDDATE">
             <dxg:GridColumn.EditSettings>
-                <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59"/>
+                <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn FieldName="AUTOGENERATED" ReadOnly="True" />
-        <dxg:GridColumn FieldName="TYPE" ReadOnly="True" >
+        <dxg:GridColumn FieldName="TYPE" ReadOnly="True">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:WorkpackType}}"/>
+                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:WorkpackType}}" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
     </collections:ArrayList>
@@ -539,27 +628,30 @@
         <dxg:GridColumn FieldName="NAME" />
         <dxg:GridColumn FieldName="PROGRESS_START">
             <dxg:GridColumn.EditSettings>
-                <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59"/>
+                <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn FieldName="DATA_DATE">
             <dxg:GridColumn.EditSettings>
-                <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59"/>
+                <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn FieldName="INTERVAL_COUNT" >
+        <dxg:GridColumn FieldName="INTERVAL_COUNT">
             <dxg:GridColumn.EditSettings>
-                <dxe:SpinEditSettings MaskType="Numeric" Mask="n0" MinValue="0" Increment="1" MaxValue="99" MaskUseAsDisplayFormat="True" />
+                <dxe:SpinEditSettings MaskType="Numeric" Mask="n0" MinValue="0" Increment="1" MaxValue="99"
+                                      MaskUseAsDisplayFormat="True" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn FieldName="INTERVAL_TYPE" >
+        <dxg:GridColumn FieldName="INTERVAL_TYPE">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProgressIntervalType}}"/>
+                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProgressIntervalType}}" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn FieldName="STATUS" >
+        <dxg:GridColumn FieldName="STATUS">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProgressStatus}}"/>
+                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProgressStatus}}" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn FieldName="COMMENTS" />
@@ -568,25 +660,34 @@
         <dxg:GridColumn FieldName="NAME" VisibleIndex="10" />
         <dxg:GridColumn FieldName="TYPE" VisibleIndex="20">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationType}}"/>
+                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationType}}" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn FieldName="COMMENTS" VisibleIndex="30" />
-        <dxg:GridColumn FieldName="CREATEDBY" ReadOnly="True" VisibleIndex="40" >
+        <dxg:GridColumn FieldName="CREATEDBY" ReadOnly="True" VisibleIndex="40">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}"
+                                          IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
+                                          ValueMember="GUID" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn FieldName="SUBMITTED" VisibleIndex="50" />
         <dxg:GridColumn FieldName="APPROVED" VisibleIndex="60" />
-        <dxg:GridColumn Header="FROM BASELINE" FieldName="GUID_ORIBASELINE" ReadOnly="True" AllowEditing="False" VisibleIndex="70">
+        <dxg:GridColumn Header="FROM BASELINE" FieldName="GUID_ORIBASELINE" ReadOnly="True" AllowEditing="False"
+                        VisibleIndex="70">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.BASELINECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="REVISION" ValueMember="GUID" />
+                <dxe:ComboBoxEditSettings
+                    ItemsSource="{Binding DataContext.BASELINECollection, ElementName=userControl}"
+                    IsTextEditable="True" AutoComplete="True" DisplayMember="REVISION" ValueMember="GUID" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
-        <dxg:GridColumn Header="TO BASELINE" FieldName="GUID_BASELINE" ReadOnly="True" AllowEditing="False" VisibleIndex="80" >
+        <dxg:GridColumn Header="TO BASELINE" FieldName="GUID_BASELINE" ReadOnly="True" AllowEditing="False"
+                        VisibleIndex="80">
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.BASELINECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="REVISION" ValueMember="GUID" />
+                <dxe:ComboBoxEditSettings
+                    ItemsSource="{Binding DataContext.BASELINECollection, ElementName=userControl}"
+                    IsTextEditable="True" AutoComplete="True" DisplayMember="REVISION" ValueMember="GUID" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
     </collections:ArrayList>

@@ -12,8 +12,10 @@ namespace BluePrints.Views
         public VARIATION_ITEMCollectionView()
         {
             InitializeComponent();
-            ((VARIATION_ITEMSViewModelWrapper)this.DataContext).ShowWORKPACKInternalName1 = this.ShowWorkpackInternalName1;
-            ((VARIATION_ITEMSViewModelWrapper)this.DataContext).ShowWORKPACKInternalName2 = this.ShowWorkpackInternalName2;
+            ((VARIATION_ITEMSViewModelWrapper) DataContext).ShowWORKPACKInternalName1 =
+                ShowWorkpackInternalName1;
+            ((VARIATION_ITEMSViewModelWrapper) DataContext).ShowWORKPACKInternalName2 =
+                ShowWorkpackInternalName2;
         }
 
         public void ShowWorkpackInternalName1()

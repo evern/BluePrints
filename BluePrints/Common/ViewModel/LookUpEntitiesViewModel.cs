@@ -17,12 +17,12 @@ namespace BluePrints.Common.ViewModel
     /// <typeparam name="TProjection">A projection entity type.</typeparam>
     /// <typeparam name="TPrimaryKey">A primary key value type.</typeparam>
     /// <typeparam name="TUnitOfWork">A unit of work type.</typeparam>
-    public class LookUpEntitiesViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork> : EntitiesViewModel<TEntity, TProjection, TUnitOfWork>, IDocumentContent
+    public class LookUpEntitiesViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork> :
+        EntitiesViewModel<TEntity, TProjection, TUnitOfWork>, IDocumentContent
         where TEntity : class
         where TProjection : class
         where TUnitOfWork : IUnitOfWork
     {
-
         /// <summary>
         /// Creates a new instance of LookUpEntitiesViewModel as a POCO view model.
         /// </summary>
@@ -34,7 +34,11 @@ namespace BluePrints.Common.ViewModel
             Func<TUnitOfWork, IReadOnlyRepository<TEntity>> getRepositoryFunc,
             Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection = null)
         {
-            return ViewModelSource.Create(() => new LookUpEntitiesViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork>(unitOfWorkFactory, getRepositoryFunc, projection));
+            return
+                ViewModelSource.Create(
+                    () =>
+                        new LookUpEntitiesViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork>(unitOfWorkFactory,
+                            getRepositoryFunc, projection));
         }
 
         /// <summary>
@@ -48,7 +52,7 @@ namespace BluePrints.Common.ViewModel
             IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory,
             Func<TUnitOfWork, IReadOnlyRepository<TEntity>> getRepositoryFunc,
             Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection
-            ) : base(unitOfWorkFactory, getRepositoryFunc, projection)
+        ) : base(unitOfWorkFactory, getRepositoryFunc, projection)
         {
         }
 

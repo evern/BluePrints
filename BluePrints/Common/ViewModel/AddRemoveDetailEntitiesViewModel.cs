@@ -10,30 +10,61 @@ using BluePrints.Common.DataModel;
 
 namespace BluePrints.Common.ViewModel
 {
-    public class AddRemoveDetailEntitiesViewModel<TEntity, TPrimaryKey, TDetailEntity, TDetailPrimaryKey, TUnitOfWork> : SingleObjectViewModelBase<TEntity, TPrimaryKey, TUnitOfWork>
+    public class AddRemoveDetailEntitiesViewModel<TEntity, TPrimaryKey, TDetailEntity, TDetailPrimaryKey, TUnitOfWork> :
+        SingleObjectViewModelBase<TEntity, TPrimaryKey, TUnitOfWork>
         where TEntity : class
         where TDetailEntity : class
         where TUnitOfWork : IUnitOfWork
     {
-
-        public static AddRemoveDetailEntitiesViewModel<TEntity, TPrimaryKey, TDetailEntity, TDetailPrimaryKey, TUnitOfWork> Create(IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory, Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc, Func<TUnitOfWork, IRepository<TDetailEntity, TDetailPrimaryKey>> getDetailsRepositoryFunc, Func<TEntity, ICollection<TDetailEntity>> getDetailsFunc, TPrimaryKey id)
+        public static
+            AddRemoveDetailEntitiesViewModel<TEntity, TPrimaryKey, TDetailEntity, TDetailPrimaryKey, TUnitOfWork> Create
+            (IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory,
+                Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
+                Func<TUnitOfWork, IRepository<TDetailEntity, TDetailPrimaryKey>> getDetailsRepositoryFunc,
+                Func<TEntity, ICollection<TDetailEntity>> getDetailsFunc, TPrimaryKey id)
         {
-            return ViewModelSource.Create(() => new AddRemoveDetailEntitiesViewModel<TEntity, TPrimaryKey, TDetailEntity, TDetailPrimaryKey, TUnitOfWork>(unitOfWorkFactory, getRepositoryFunc, getDetailsRepositoryFunc, getDetailsFunc, id));
+            return
+                ViewModelSource.Create(
+                    () =>
+                        new AddRemoveDetailEntitiesViewModel
+                            <TEntity, TPrimaryKey, TDetailEntity, TDetailPrimaryKey, TUnitOfWork>(unitOfWorkFactory,
+                                getRepositoryFunc, getDetailsRepositoryFunc, getDetailsFunc, id));
         }
 
         protected readonly Func<TUnitOfWork, IRepository<TDetailEntity, TDetailPrimaryKey>> getDetailsRepositoryFunc;
-        readonly Func<TEntity, ICollection<TDetailEntity>> getDetailsFunc;
+        private readonly Func<TEntity, ICollection<TDetailEntity>> getDetailsFunc;
 
-        protected IDialogService DialogService { get { return this.GetRequiredService<IDialogService>(); } }
-        protected IDocumentManagerService DocumentManagerService { get { return this.GetRequiredService<IDocumentManagerService>(); } }
+        protected IDialogService DialogService
+        {
+            get { return this.GetRequiredService<IDialogService>(); }
+        }
 
-        IRepository<TDetailEntity, TDetailPrimaryKey> DetailsRepository { get { return getDetailsRepositoryFunc(UnitOfWork); } }
+        protected IDocumentManagerService DocumentManagerService
+        {
+            get { return this.GetRequiredService<IDocumentManagerService>(); }
+        }
 
-        public virtual ICollection<TDetailEntity> DetailEntities { get { return Entity != null ? getDetailsFunc(Entity) : Enumerable.Empty<TDetailEntity>().ToArray(); } }
+        private IRepository<TDetailEntity, TDetailPrimaryKey> DetailsRepository
+        {
+            get { return getDetailsRepositoryFunc(UnitOfWork); }
+        }
+
+        public virtual ICollection<TDetailEntity> DetailEntities
+        {
+            get { return Entity != null ? getDetailsFunc(Entity) : Enumerable.Empty<TDetailEntity>().ToArray(); }
+        }
+
         public ObservableCollection<TDetailEntity> SelectedEntities { get; set; }
-        public virtual bool IsCreateDetailButtonVisible { get { return true; } }
 
-        protected AddRemoveDetailEntitiesViewModel(IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory, Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc, Func<TUnitOfWork, IRepository<TDetailEntity, TDetailPrimaryKey>> getDetailsRepositoryFunc, Func<TEntity, ICollection<TDetailEntity>> getDetailsFunc, TPrimaryKey id)
+        public virtual bool IsCreateDetailButtonVisible
+        {
+            get { return true; }
+        }
+
+        protected AddRemoveDetailEntitiesViewModel(IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory,
+            Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
+            Func<TUnitOfWork, IRepository<TDetailEntity, TDetailPrimaryKey>> getDetailsRepositoryFunc,
+            Func<TEntity, ICollection<TDetailEntity>> getDetailsFunc, TPrimaryKey id)
             : base(unitOfWorkFactory, getRepositoryFunc, null)
         {
             this.getDetailsRepositoryFunc = getDetailsRepositoryFunc;
@@ -54,7 +85,7 @@ namespace BluePrints.Common.ViewModel
                 if (detailEntity == null)
                     return;
                 DetailEntities.Add(detailEntity);
-                SaveChangesAndNotify(new TDetailEntity[] { detailEntity });
+                SaveChangesAndNotify(new TDetailEntity[] {detailEntity});
             });
         }
 
@@ -87,12 +118,12 @@ namespace BluePrints.Common.ViewModel
         {
             var availalbleEntities = DetailsRepository.ToList().Except(DetailEntities).ToArray();
             var selectEntitiesViewModel = new SelectDetailEntitiesViewModel<TDetailEntity>(availalbleEntities);
-            if (DialogService.ShowDialog(MessageButton.OKCancel, CommonResources.AddRemoveDetailEntities_SelectObjects, selectEntitiesViewModel) == MessageResult.OK && selectEntitiesViewModel.SelectedEntities.Any())
+            if (
+                DialogService.ShowDialog(MessageButton.OKCancel, CommonResources.AddRemoveDetailEntities_SelectObjects,
+                    selectEntitiesViewModel) == MessageResult.OK && selectEntitiesViewModel.SelectedEntities.Any())
             {
                 foreach (var selectedEntity in selectEntitiesViewModel.SelectedEntities)
-                {
                     DetailEntities.Add(selectedEntity);
-                }
                 SaveChangesAndNotify(selectEntitiesViewModel.SelectedEntities);
             }
         }
@@ -127,9 +158,9 @@ namespace BluePrints.Common.ViewModel
             {
                 UnitOfWork.SaveChanges();
                 foreach (var detailEntity in detailEntities)
-                {
-                    Messenger.Default.Send(new EntityMessage<TDetailEntity, TDetailPrimaryKey>(DetailsRepository.GetPrimaryKey(detailEntity), EntityMessageType.Changed));
-                }
+                    Messenger.Default.Send(
+                        new EntityMessage<TDetailEntity, TDetailPrimaryKey>(
+                            DetailsRepository.GetPrimaryKey(detailEntity), EntityMessageType.Changed));
                 Reload();
             }
             catch (DbException e)
@@ -138,9 +169,10 @@ namespace BluePrints.Common.ViewModel
             }
         }
 
-        void OnMessage(EntityMessage<TEntity, TPrimaryKey> message)
+        private void OnMessage(EntityMessage<TEntity, TPrimaryKey> message)
         {
-            if (message.MessageType == EntityMessageType.Changed && Entity != null && object.Equals(PrimaryKey, message.PrimaryKey))
+            if (message.MessageType == EntityMessageType.Changed && Entity != null &&
+                Equals(PrimaryKey, message.PrimaryKey))
                 Reload();
         }
 
@@ -150,6 +182,7 @@ namespace BluePrints.Common.ViewModel
             this.RaisePropertyChanged(x => x.DetailEntities);
         }
     }
+
     public class SelectDetailEntitiesViewModel<TEntity> where TEntity : class
     {
         public SelectDetailEntitiesViewModel(TEntity[] detailEntities)
@@ -157,6 +190,7 @@ namespace BluePrints.Common.ViewModel
             AvailableEntities = detailEntities;
             SelectedEntities = new List<TEntity>();
         }
+
         public TEntity[] AvailableEntities { get; private set; }
         public List<TEntity> SelectedEntities { get; set; }
     }

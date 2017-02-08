@@ -1,6 +1,6 @@
 namespace BluePrints.Data
 {
-    using BluePrints.Data.Helpers;
+    using Helpers;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -11,7 +11,7 @@ namespace BluePrints.Data
     {
         public override string ToString()
         {
-            return this.FULLCODE;
+            return FULLCODE;
         }
     }
 }

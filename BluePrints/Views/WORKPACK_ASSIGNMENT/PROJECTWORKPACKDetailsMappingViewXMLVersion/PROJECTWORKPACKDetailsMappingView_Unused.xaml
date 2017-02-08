@@ -1,36 +1,36 @@
-﻿<UserControl x:Name="userControl" 
-        x:Class="BluePrints.Views.PROJECTWORKPACKDetailsMappingView_Unused"
-        xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
-        xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
-        xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
-        xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
-        xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
-        xmlns:dxsch="http://schemas.devexpress.com/winfx/2008/xaml/scheduler"
-        xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-        xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
-        xmlns:dxschi="http://schemas.devexpress.com/winfx/2008/xaml/scheduler/internal"
-        xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
-        mc:Ignorable="d" d:DesignHeight="1200" d:DesignWidth="800" DataContext="{dxmvvm:ViewModelSource viewmodel:WORKPACKSchedulingViewModelWrapper}">
+﻿<UserControl x:Name="userControl"
+             x:Class="BluePrints.Views.PROJECTWORKPACKDetailsMappingView_Unused"
+             xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+             xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
+             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+             xmlns:dxsch="http://schemas.devexpress.com/winfx/2008/xaml/scheduler"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
+             xmlns:dxschi="http://schemas.devexpress.com/winfx/2008/xaml/scheduler/internal"
+             xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
+             mc:Ignorable="d" d:DesignHeight="1200" d:DesignWidth="800"
+             DataContext="{dxmvvm:ViewModelSource viewmodel:WORKPACKSchedulingViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <dxsch:SchedulerUICommand x:Key="commands" />
-            <dxsch:SchedulerControlStringIdConverter x:Key="stringIdConverter"/>
+            <dxsch:SchedulerControlStringIdConverter x:Key="stringIdConverter" />
             <Style x:Key="VerticalResourceHeaderStyle" TargetType="{x:Type dxschi:VisualResourceHeader}">
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type dxschi:VisualResourceHeader}">
                             <Grid>
                                 <dxschi:VerticalHeaderControl SnapsToDevicePixels="True"
-                                ResourceColor="{Binding ResourceHeader.Brushes.ResourceHeader}"
-                                Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
-                                dxschi:SchedulerItemsControl.ElementPosition="{Binding Path=(dxschi:SchedulerItemsControl.ElementPosition), RelativeSource={RelativeSource TemplatedParent}}"
-                            >
-                                </dxschi:VerticalHeaderControl>
+                                                              ResourceColor="{Binding ResourceHeader.Brushes.ResourceHeader}"
+                                                              Content="{TemplateBinding Content}"
+                                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                              dxschi:SchedulerItemsControl.ElementPosition="{Binding Path=(dxschi:SchedulerItemsControl.ElementPosition), RelativeSource={RelativeSource TemplatedParent}}" />
                             </Grid>
                         </ControlTemplate>
                     </Setter.Value>
@@ -38,11 +38,11 @@
                 <Setter Property="ContentTemplate">
                     <Setter.Value>
                         <DataTemplate>
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="4"
-                                FontSize="11"
-                                Foreground="Black"
-                                Text="{Binding ResourceCaption}"
-                                />
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" SnapsToDevicePixels="True"
+                                       Margin="4"
+                                       FontSize="11"
+                                       Foreground="Black"
+                                       Text="{Binding ResourceCaption}" />
                         </DataTemplate>
                     </Setter.Value>
                 </Setter>
@@ -60,67 +60,82 @@
     </dxmvvm:Interaction.Behaviors>
     <Grid x:Name="grid">
         <DockPanel>
-            <dxr:RibbonControl DataContext="{Binding DashboardCollection}" RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
+            <dxr:RibbonControl DataContext="{Binding DashboardCollection}" RibbonStyle="Office2010"
+                               DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
                 <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                     <dxr:RibbonPage Caption="Home">
-                        <dxr:RibbonPageGroup Caption="PROJECT Tasks">
-
-                        </dxr:RibbonPageGroup>
+                        <dxr:RibbonPageGroup Caption="PROJECT Tasks" />
                     </dxr:RibbonPage>
                 </dxr:RibbonDefaultPageCategory>
             </dxr:RibbonControl>
             <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
                 <dxr:RibbonStatusBarControl.LeftItems>
-                    <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                    <dxb:BarStaticItem
+                        Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
                 </dxr:RibbonStatusBarControl.LeftItems>
             </dxr:RibbonStatusBarControl>
             <dxlc:LayoutControl Orientation="Vertical">
                 <dxmvvm:Interaction.Behaviors>
                     <dxmvvm:LayoutSerializationService />
                 </dxmvvm:Interaction.Behaviors>
-                <dxlc:LayoutGroup Name="LayoutGroupSchedule" View="Group" Header="Schedule" Orientation="Horizontal" dxlc:LayoutControl.AllowVerticalSizing="True">
+                <dxlc:LayoutGroup Name="LayoutGroupSchedule" View="Group" Header="Schedule" Orientation="Horizontal"
+                                  dxlc:LayoutControl.AllowVerticalSizing="True">
                     <dxb:BarManager x:Name="barManager1" ToolbarGlyphSize="Small">
                         <dxb:BarManager.Bars>
-                            <dxb:Bar x:Name="barArrangeView" Caption="{Binding ConverterParameter=Caption_GroupArrangeView, Converter={StaticResource stringIdConverter}, Mode=OneTime, Source={StaticResource stringIdConverter}}">
+                            <dxb:Bar x:Name="barArrangeView"
+                                     Caption="{Binding ConverterParameter=Caption_GroupArrangeView, Converter={StaticResource stringIdConverter}, Mode=OneTime, Source={StaticResource stringIdConverter}}">
                                 <dxb:Bar.DockInfo>
-                                    <dxb:BarDockInfo ContainerType="Top"/>
+                                    <dxb:BarDockInfo ContainerType="Top" />
                                 </dxb:Bar.DockInfo>
                                 <dxb:Bar.ItemLinks>
-                                    <dxb:BarCheckItemLink BarItemName="biSwitchToDayView"/>
-                                    <dxb:BarCheckItemLink BarItemName="biSwitchToWorkWeekView"/>
-                                    <dxb:BarCheckItemLink BarItemName="biSwitchToWeekView"/>
-                                    <dxb:BarCheckItemLink BarItemName="biSwitchToFullWeekView"/>
-                                    <dxb:BarCheckItemLink BarItemName="biSwitchToMonthView"/>
-                                    <dxb:BarCheckItemLink BarItemName="biSwitchToTimelineView"/>
+                                    <dxb:BarCheckItemLink BarItemName="biSwitchToDayView" />
+                                    <dxb:BarCheckItemLink BarItemName="biSwitchToWorkWeekView" />
+                                    <dxb:BarCheckItemLink BarItemName="biSwitchToWeekView" />
+                                    <dxb:BarCheckItemLink BarItemName="biSwitchToFullWeekView" />
+                                    <dxb:BarCheckItemLink BarItemName="biSwitchToMonthView" />
+                                    <dxb:BarCheckItemLink BarItemName="biSwitchToTimelineView" />
                                 </dxb:Bar.ItemLinks>
                             </dxb:Bar>
-                            <dxb:Bar x:Name="barGroupBy" Caption="{Binding ConverterParameter=Caption_GroupGroupBy, Converter={StaticResource stringIdConverter}, Mode=OneTime, Source={StaticResource stringIdConverter}}">
+                            <dxb:Bar x:Name="barGroupBy"
+                                     Caption="{Binding ConverterParameter=Caption_GroupGroupBy, Converter={StaticResource stringIdConverter}, Mode=OneTime, Source={StaticResource stringIdConverter}}">
                                 <dxb:Bar.DockInfo>
-                                    <dxb:BarDockInfo ContainerType="Top"/>
+                                    <dxb:BarDockInfo ContainerType="Top" />
                                 </dxb:Bar.DockInfo>
                                 <dxb:Bar.ItemLinks>
-                                    <dxb:BarCheckItemLink BarItemName="biSwitchToGroupByNone"/>
-                                    <dxb:BarCheckItemLink BarItemName="biSwitchToGroupByDate"/>
-                                    <dxb:BarCheckItemLink BarItemName="biSwitchToGroupByResource"/>
+                                    <dxb:BarCheckItemLink BarItemName="biSwitchToGroupByNone" />
+                                    <dxb:BarCheckItemLink BarItemName="biSwitchToGroupByDate" />
+                                    <dxb:BarCheckItemLink BarItemName="biSwitchToGroupByResource" />
                                 </dxb:Bar.ItemLinks>
                             </dxb:Bar>
                         </dxb:BarManager.Bars>
                         <dxb:BarManager.Items>
-                            <dxb:BarCheckItem x:Name="biSwitchToDayView" Command="{Binding SwitchToDayView, Mode=OneTime, Source={StaticResource commands}}"/>
-                            <dxb:BarCheckItem x:Name="biSwitchToWorkWeekView" Command="{Binding SwitchToWorkWeekView, Mode=OneTime, Source={StaticResource commands}}"/>
-                            <dxb:BarCheckItem x:Name="biSwitchToWeekView" Command="{Binding SwitchToWeekView, Mode=OneTime, Source={StaticResource commands}}"/>
-                            <dxb:BarCheckItem x:Name="biSwitchToFullWeekView" Command="{Binding SwitchToFullWeekView, Mode=OneTime, Source={StaticResource commands}}"/>
-                            <dxb:BarCheckItem x:Name="biSwitchToMonthView" Command="{Binding SwitchToMonthView, Mode=OneTime, Source={StaticResource commands}}"/>
-                            <dxb:BarCheckItem x:Name="biSwitchToTimelineView" Command="{Binding SwitchToTimelineView, Mode=OneTime, Source={StaticResource commands}}"/>
-                            <dxb:BarCheckItem x:Name="biSwitchToGroupByNone" Command="{Binding SwitchToGroupByNone, Mode=OneTime, Source={StaticResource commands}}"/>
-                            <dxb:BarCheckItem x:Name="biSwitchToGroupByDate" Command="{Binding SwitchToGroupByDate, Mode=OneTime, Source={StaticResource commands}}"/>
-                            <dxb:BarCheckItem x:Name="biSwitchToGroupByResource" Command="{Binding SwitchToGroupByResource, Mode=OneTime, Source={StaticResource commands}}"/>
+                            <dxb:BarCheckItem x:Name="biSwitchToDayView"
+                                              Command="{Binding SwitchToDayView, Mode=OneTime, Source={StaticResource commands}}" />
+                            <dxb:BarCheckItem x:Name="biSwitchToWorkWeekView"
+                                              Command="{Binding SwitchToWorkWeekView, Mode=OneTime, Source={StaticResource commands}}" />
+                            <dxb:BarCheckItem x:Name="biSwitchToWeekView"
+                                              Command="{Binding SwitchToWeekView, Mode=OneTime, Source={StaticResource commands}}" />
+                            <dxb:BarCheckItem x:Name="biSwitchToFullWeekView"
+                                              Command="{Binding SwitchToFullWeekView, Mode=OneTime, Source={StaticResource commands}}" />
+                            <dxb:BarCheckItem x:Name="biSwitchToMonthView"
+                                              Command="{Binding SwitchToMonthView, Mode=OneTime, Source={StaticResource commands}}" />
+                            <dxb:BarCheckItem x:Name="biSwitchToTimelineView"
+                                              Command="{Binding SwitchToTimelineView, Mode=OneTime, Source={StaticResource commands}}" />
+                            <dxb:BarCheckItem x:Name="biSwitchToGroupByNone"
+                                              Command="{Binding SwitchToGroupByNone, Mode=OneTime, Source={StaticResource commands}}" />
+                            <dxb:BarCheckItem x:Name="biSwitchToGroupByDate"
+                                              Command="{Binding SwitchToGroupByDate, Mode=OneTime, Source={StaticResource commands}}" />
+                            <dxb:BarCheckItem x:Name="biSwitchToGroupByResource"
+                                              Command="{Binding SwitchToGroupByResource, Mode=OneTime, Source={StaticResource commands}}" />
                         </dxb:BarManager.Items>
-                        <dxsch:SchedulerControl x:Name="scheduler" Margin="6,6,6,0" GroupType="Resource" ActiveViewType="Timeline" BarManager="{Binding ElementName=barManager1, Mode=OneTime}">
+                        <dxsch:SchedulerControl x:Name="scheduler" Margin="6,6,6,0" GroupType="Resource"
+                                                ActiveViewType="Timeline"
+                                                BarManager="{Binding ElementName=barManager1, Mode=OneTime}">
                             <dxsch:SchedulerControl.Storage>
                                 <dxsch:SchedulerStorage EnableReminders="True">
                                     <dxsch:SchedulerStorage.AppointmentStorage>
-                                        <dxsch:AppointmentStorage DataSource="{Binding Appointments, Mode=OneWay}" ResourceSharing="True">
+                                        <dxsch:AppointmentStorage DataSource="{Binding Appointments, Mode=OneWay}"
+                                                                  ResourceSharing="True">
                                             <dxsch:AppointmentStorage.Mappings>
                                                 <dxsch:AppointmentMapping
                                                     Start="StartDate"
@@ -133,7 +148,7 @@
                                                     Status="Status"
                                                     RecurrenceInfo="RecurrenceInfo"
                                                     ReminderInfo="ReminderInfo"
-                                                    ResourceId="ResourceId"/>
+                                                    ResourceId="ResourceId" />
                                             </dxsch:AppointmentStorage.Mappings>
                                         </dxsch:AppointmentStorage>
                                     </dxsch:SchedulerStorage.AppointmentStorage>
@@ -142,45 +157,51 @@
                                             <dxsch:ResourceStorage.Mappings>
                                                 <dxsch:ResourceMapping
                                                     Id="wbs_id"
-                                                    Caption="wbs_name"
-                                                />
+                                                    Caption="wbs_name" />
                                             </dxsch:ResourceStorage.Mappings>
                                         </dxsch:ResourceStorage>
                                     </dxsch:SchedulerStorage.ResourceStorage>
                                 </dxsch:SchedulerStorage>
                             </dxsch:SchedulerControl.Storage>
                             <dxsch:SchedulerControl.DayView>
-                                <dxsch:DayView ResourcesPerPage="3"/>
+                                <dxsch:DayView ResourcesPerPage="3" />
                             </dxsch:SchedulerControl.DayView>
                             <dxsch:SchedulerControl.WorkWeekView>
-                                <dxsch:WorkWeekView ResourcesPerPage="3"/>
+                                <dxsch:WorkWeekView ResourcesPerPage="3" />
                             </dxsch:SchedulerControl.WorkWeekView>
                             <dxsch:SchedulerControl.WeekView>
-                                <dxsch:WeekView ResourcesPerPage="3" Enabled="False"/>
+                                <dxsch:WeekView ResourcesPerPage="3" Enabled="False" />
                             </dxsch:SchedulerControl.WeekView>
                             <dxsch:SchedulerControl.FullWeekView>
-                                <dxsch:FullWeekView Enabled="True" ResourcesPerPage="3"/>
+                                <dxsch:FullWeekView Enabled="True" ResourcesPerPage="3" />
                             </dxsch:SchedulerControl.FullWeekView>
                             <dxsch:SchedulerControl.MonthView>
-                                <dxsch:MonthView ResourcesPerPage="3"/>
+                                <dxsch:MonthView ResourcesPerPage="3" />
                             </dxsch:SchedulerControl.MonthView>
                             <dxsch:SchedulerControl.TimelineView>
-                                <dxsch:TimelineView ResourcesPerPage="8" VerticalResourceHeaderStyle="{StaticResource VerticalResourceHeaderStyle}" >
+                                <dxsch:TimelineView ResourcesPerPage="8"
+                                                    VerticalResourceHeaderStyle="{StaticResource VerticalResourceHeaderStyle}">
                                     <dxsch:TimelineView.AppointmentDisplayOptions>
-                                        <dxsch:SchedulerTimelineViewAppointmentDisplayOptions SnapToCellsMode="Never" AppointmentAutoHeight="True" StartTimeVisibility="Never" EndTimeVisibility="Never"/>
+                                        <dxsch:SchedulerTimelineViewAppointmentDisplayOptions SnapToCellsMode="Never"
+                                                                                              AppointmentAutoHeight="True"
+                                                                                              StartTimeVisibility="Never"
+                                                                                              EndTimeVisibility="Never" />
                                     </dxsch:TimelineView.AppointmentDisplayOptions>
                                 </dxsch:TimelineView>
                             </dxsch:SchedulerControl.TimelineView>
                         </dxsch:SchedulerControl>
                     </dxb:BarManager>
                 </dxlc:LayoutGroup>
-                <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical" dxlc:LayoutControl.AllowVerticalSizing="True">
+                <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical"
+                                  dxlc:LayoutControl.AllowVerticalSizing="True">
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl Name="gridControl" DataContext="{Binding DashboardCollection}" Style="{StaticResource DefaultGridTemplate}">
+                    <dxg:GridControl Name="gridControl" DataContext="{Binding DashboardCollection}"
+                                     Style="{StaticResource DefaultGridTemplate}">
                         <dxmvvm:Interaction.Behaviors>
-                            <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding EditCommand}" EventName="MouseDoubleClick" MarkRoutedEventsAsHandled="True">
+                            <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding EditCommand}"
+                                                   EventName="MouseDoubleClick" MarkRoutedEventsAsHandled="True">
                                 <dxmvvm:EventToCommand.EventArgsConverter>
                                     <dx:EventArgsToDataRowConverter />
                                 </dxmvvm:EventToCommand.EventArgsConverter>
@@ -194,52 +215,140 @@
                             <dxg:GridColumn Header="DEPARTMENT" FieldName="DEPARTMENT.NAME" VisibleIndex="40" />
                             <dxg:GridColumn FieldName="INTERNAL_NAME1" VisibleIndex="50" />
                             <dxg:GridColumn FieldName="INTERNAL_NAME2" VisibleIndex="60" />
-                            <dxg:GridColumn x:Name="colCumulativeBudget" Header="Total Units" FieldName="PROGRESS_ITEMInfos.Final_BudgetedUnits" ReadOnly="True" AllowEditing="False" VisibleIndex="70">
+                            <dxg:GridColumn x:Name="colCumulativeBudget" Header="Total Units"
+                                            FieldName="PROGRESS_ITEMInfos.Final_BudgetedUnits" ReadOnly="True"
+                                            AllowEditing="False" VisibleIndex="70">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Name="colCumulativeBudgetText" MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                    <dxe:TextEditSettings Name="colCumulativeBudgetText" MaskType="Numeric" Mask="n"
+                                                          MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem x:Name="groupSummaryBudgeted" ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativePlanned.Units" FieldName="PROGRESS_ITEMInfos.Summary_CumulativePlanned.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            <dxg:GridSummaryItem x:Name="groupSummaryCumulativeEarnedPercentage" ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativeEarned.UnitsPercentage" FieldName="PROGRESS_ITEMInfos.Summary_CumulativeEarned.UnitsPercentage" SummaryType="Custom" DisplayFormat="{}{0:p}" />
-                            <dxg:GridSummaryItem x:Name="groupSummaryPeriodEarnedPercentage" ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodEarned.UnitsPercentage" FieldName="PROGRESS_ITEMInfos.Summary_PeriodEarned.UnitsPercentage" SummaryType="Custom" DisplayFormat="{}{0:p}" />
-                            <dxg:GridSummaryItem x:Name="groupSummaryGrossProfit" FieldName="ProjectDashboard_GrossProfit" SummaryType="Custom" ShowInColumn="ProjectDashboard_GrossProfit" DisplayFormat="{}{0:p}" />
-                            <dxg:GridSummaryItem x:Name="groupSummaryEfficiencyRatio" FieldName="ProjectDashboard_EfficiencyRatio" SummaryType="Custom" DisplayFormat="{}{0:p}" />
-                            <dxg:GridSummaryItem x:Name="groupSummaryProgressRatio" FieldName="ProjectDashboard_ProgressRatio" SummaryType="Custom" DisplayFormat="{}{0:p}" />
-                            <dxg:GridSummaryItem x:Name="groupSummaryCumulativePlanned" ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativePlanned.ProgressDataPoint_Units" FieldName="PROGRESS_ITEMInfos.Summary_CumulativePlanned.ProgressDataPoint_Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            <dxg:GridSummaryItem x:Name="groupSummaryCumulativeEarned" ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativeEarned.ProgressDataPoint_Units" FieldName="PROGRESS_ITEMInfos.Summary_CumulativeEarned.ProgressDataPoint_Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            <dxg:GridSummaryItem x:Name="groupSummaryCumulativeBurned" ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativeBurned.ProgressDataPoint_Units" FieldName="PROGRESS_ITEMInfos.Summary_CumulativeBurned.ProgressDataPoint_Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            <dxg:GridSummaryItem x:Name="groupSummaryCumulativeActual" ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativeActual.ProgressDataPoint_Units" FieldName="PROGRESS_ITEMInfos.Summary_CumulativeActual.ProgressDataPoint_Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            <dxg:GridSummaryItem x:Name="groupSummaryPeriodPlanned" ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodPlanned.ProgressDataPoint_Units" FieldName="PROGRESS_ITEMInfos.Summary_PeriodPlanned.ProgressDataPoint_Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            <dxg:GridSummaryItem x:Name="groupSummaryPeriodEarned" ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodEarned.ProgressDataPoint_Units" FieldName="PROGRESS_ITEMInfos.Summary_PeriodEarned.ProgressDataPoint_Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            <dxg:GridSummaryItem x:Name="groupSummaryPeriodBurned" ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodBurned.ProgressDataPoint_Units" FieldName="PROGRESS_ITEMInfos.Summary_PeriodBurned.ProgressDataPoint_Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            <dxg:GridSummaryItem x:Name="groupSummaryPeriodActual" ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodActual.ProgressDataPoint_Units"  FieldName="PROGRESS_ITEMInfos.Summary_PeriodActual.ProgressDataPoint_Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                            <dxg:GridSummaryItem x:Name="groupSummaryBudgeted"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativePlanned.Units"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_CumulativePlanned.Units"
+                                                 SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                            <dxg:GridSummaryItem x:Name="groupSummaryCumulativeEarnedPercentage"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativeEarned.UnitsPercentage"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_CumulativeEarned.UnitsPercentage"
+                                                 SummaryType="Custom" DisplayFormat="{}{0:p}" />
+                            <dxg:GridSummaryItem x:Name="groupSummaryPeriodEarnedPercentage"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodEarned.UnitsPercentage"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_PeriodEarned.UnitsPercentage"
+                                                 SummaryType="Custom" DisplayFormat="{}{0:p}" />
+                            <dxg:GridSummaryItem x:Name="groupSummaryGrossProfit"
+                                                 FieldName="ProjectDashboard_GrossProfit" SummaryType="Custom"
+                                                 ShowInColumn="ProjectDashboard_GrossProfit" DisplayFormat="{}{0:p}" />
+                            <dxg:GridSummaryItem x:Name="groupSummaryEfficiencyRatio"
+                                                 FieldName="ProjectDashboard_EfficiencyRatio" SummaryType="Custom"
+                                                 DisplayFormat="{}{0:p}" />
+                            <dxg:GridSummaryItem x:Name="groupSummaryProgressRatio"
+                                                 FieldName="ProjectDashboard_ProgressRatio" SummaryType="Custom"
+                                                 DisplayFormat="{}{0:p}" />
+                            <dxg:GridSummaryItem x:Name="groupSummaryCumulativePlanned"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativePlanned.ProgressDataPoint_Units"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_CumulativePlanned.ProgressDataPoint_Units"
+                                                 SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                            <dxg:GridSummaryItem x:Name="groupSummaryCumulativeEarned"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativeEarned.ProgressDataPoint_Units"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_CumulativeEarned.ProgressDataPoint_Units"
+                                                 SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                            <dxg:GridSummaryItem x:Name="groupSummaryCumulativeBurned"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativeBurned.ProgressDataPoint_Units"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_CumulativeBurned.ProgressDataPoint_Units"
+                                                 SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                            <dxg:GridSummaryItem x:Name="groupSummaryCumulativeActual"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativeActual.ProgressDataPoint_Units"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_CumulativeActual.ProgressDataPoint_Units"
+                                                 SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                            <dxg:GridSummaryItem x:Name="groupSummaryPeriodPlanned"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodPlanned.ProgressDataPoint_Units"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_PeriodPlanned.ProgressDataPoint_Units"
+                                                 SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                            <dxg:GridSummaryItem x:Name="groupSummaryPeriodEarned"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodEarned.ProgressDataPoint_Units"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_PeriodEarned.ProgressDataPoint_Units"
+                                                 SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                            <dxg:GridSummaryItem x:Name="groupSummaryPeriodBurned"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodBurned.ProgressDataPoint_Units"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_PeriodBurned.ProgressDataPoint_Units"
+                                                 SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                            <dxg:GridSummaryItem x:Name="groupSummaryPeriodActual"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodActual.ProgressDataPoint_Units"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_PeriodActual.ProgressDataPoint_Units"
+                                                 SummaryType="Sum" DisplayFormat="{}{0:n}" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem x:Name="totalSummaryBudgeted" ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativePlanned.Units" FieldName="PROGRESS_ITEMInfos.Summary_CumulativePlanned.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            <dxg:GridSummaryItem x:Name="totalSummaryCumulativeEarnedPercentage" ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativeEarned.UnitsPercentage" FieldName="PROGRESS_ITEMInfos.Summary_CumulativeEarned.UnitsPercentage" SummaryType="Custom" DisplayFormat="{}{0:p}" />
-                            <dxg:GridSummaryItem x:Name="totalSummaryPeriodEarnedPercentage" ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodEarned.UnitsPercentage" FieldName="PROGRESS_ITEMInfos.Summary_PeriodEarned.UnitsPercentage" SummaryType="Custom" DisplayFormat="{}{0:p}" />
-                            <dxg:GridSummaryItem x:Name="totalSummaryGrossProfit" FieldName="ProjectDashboard_GrossProfit" SummaryType="Custom" DisplayFormat="{}{0:p}" />
-                            <dxg:GridSummaryItem x:Name="totalSummaryEfficiencyRatio" FieldName="ProjectDashboard_EfficiencyRatio" SummaryType="Custom" DisplayFormat="{}{0:p}" />
-                            <dxg:GridSummaryItem x:Name="totalSummaryProgressRatio" FieldName="ProjectDashboard_ProgressRatio" SummaryType="Custom" DisplayFormat="{}{0:p}" />
-                            <dxg:GridSummaryItem x:Name="totalSummaryCumulativePlanned" ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativePlanned.ProgressDataPoint_Units" FieldName="PROGRESS_ITEMInfos.Summary_CumulativePlanned.ProgressDataPoint_Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            <dxg:GridSummaryItem x:Name="totalSummaryCumulativeEarned" ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativeEarned.ProgressDataPoint_Units" FieldName="PROGRESS_ITEMInfos.Summary_CumulativeEarned.ProgressDataPoint_Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            <dxg:GridSummaryItem x:Name="totalSummaryCumulativeBurned" ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativeBurned.ProgressDataPoint_Units" FieldName="PROGRESS_ITEMInfos.Summary_CumulativeBurned.ProgressDataPoint_Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            <dxg:GridSummaryItem x:Name="totalSummaryCumulativeActual" ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativeActual.ProgressDataPoint_Units" FieldName="PROGRESS_ITEMInfos.Summary_CumulativeActual.ProgressDataPoint_Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            <dxg:GridSummaryItem x:Name="totalSummaryPeriodPlanned" ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodPlanned.ProgressDataPoint_Units" FieldName="PROGRESS_ITEMInfos.Summary_PeriodPlanned.ProgressDataPoint_Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            <dxg:GridSummaryItem x:Name="totalSummaryPeriodEarned" ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodEarned.ProgressDataPoint_Units" FieldName="PROGRESS_ITEMInfos.Summary_PeriodEarned.ProgressDataPoint_Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            <dxg:GridSummaryItem x:Name="totalSummaryPeriodBurned" ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodBurned.ProgressDataPoint_Units" FieldName="PROGRESS_ITEMInfos.Summary_PeriodBurned.ProgressDataPoint_Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            <dxg:GridSummaryItem x:Name="totalSummaryPeriodActual" ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodActual.ProgressDataPoint_Units" FieldName="PROGRESS_ITEMInfos.Summary_PeriodActual.ProgressDataPoint_Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                            <dxg:GridSummaryItem x:Name="totalSummaryBudgeted"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativePlanned.Units"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_CumulativePlanned.Units"
+                                                 SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                            <dxg:GridSummaryItem x:Name="totalSummaryCumulativeEarnedPercentage"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativeEarned.UnitsPercentage"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_CumulativeEarned.UnitsPercentage"
+                                                 SummaryType="Custom" DisplayFormat="{}{0:p}" />
+                            <dxg:GridSummaryItem x:Name="totalSummaryPeriodEarnedPercentage"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodEarned.UnitsPercentage"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_PeriodEarned.UnitsPercentage"
+                                                 SummaryType="Custom" DisplayFormat="{}{0:p}" />
+                            <dxg:GridSummaryItem x:Name="totalSummaryGrossProfit"
+                                                 FieldName="ProjectDashboard_GrossProfit" SummaryType="Custom"
+                                                 DisplayFormat="{}{0:p}" />
+                            <dxg:GridSummaryItem x:Name="totalSummaryEfficiencyRatio"
+                                                 FieldName="ProjectDashboard_EfficiencyRatio" SummaryType="Custom"
+                                                 DisplayFormat="{}{0:p}" />
+                            <dxg:GridSummaryItem x:Name="totalSummaryProgressRatio"
+                                                 FieldName="ProjectDashboard_ProgressRatio" SummaryType="Custom"
+                                                 DisplayFormat="{}{0:p}" />
+                            <dxg:GridSummaryItem x:Name="totalSummaryCumulativePlanned"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativePlanned.ProgressDataPoint_Units"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_CumulativePlanned.ProgressDataPoint_Units"
+                                                 SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                            <dxg:GridSummaryItem x:Name="totalSummaryCumulativeEarned"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativeEarned.ProgressDataPoint_Units"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_CumulativeEarned.ProgressDataPoint_Units"
+                                                 SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                            <dxg:GridSummaryItem x:Name="totalSummaryCumulativeBurned"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativeBurned.ProgressDataPoint_Units"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_CumulativeBurned.ProgressDataPoint_Units"
+                                                 SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                            <dxg:GridSummaryItem x:Name="totalSummaryCumulativeActual"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_CumulativeActual.ProgressDataPoint_Units"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_CumulativeActual.ProgressDataPoint_Units"
+                                                 SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                            <dxg:GridSummaryItem x:Name="totalSummaryPeriodPlanned"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodPlanned.ProgressDataPoint_Units"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_PeriodPlanned.ProgressDataPoint_Units"
+                                                 SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                            <dxg:GridSummaryItem x:Name="totalSummaryPeriodEarned"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodEarned.ProgressDataPoint_Units"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_PeriodEarned.ProgressDataPoint_Units"
+                                                 SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                            <dxg:GridSummaryItem x:Name="totalSummaryPeriodBurned"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodBurned.ProgressDataPoint_Units"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_PeriodBurned.ProgressDataPoint_Units"
+                                                 SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                            <dxg:GridSummaryItem x:Name="totalSummaryPeriodActual"
+                                                 ShowInColumn="PROGRESS_ITEMInfos.Summary_PeriodActual.ProgressDataPoint_Units"
+                                                 FieldName="PROGRESS_ITEMInfos.Summary_PeriodActual.ProgressDataPoint_Units"
+                                                 SummaryType="Sum" DisplayFormat="{}{0:n}" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
-                            <dxg:TableView Name="tableView" AllowEditing="False" Style="{StaticResource DefaultTableViewTemplate}" NewItemRowPosition="None">
+                            <dxg:TableView Name="tableView" AllowEditing="False"
+                                           Style="{StaticResource DefaultTableViewTemplate}" NewItemRowPosition="None">
                                 <dxmvvm:Interaction.Behaviors>
-                                    <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding DataContext.PreviewMouseDownCommand, ElementName=userControl}" Event="PreviewMouseDown" />
-                                    <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding DataContext.PreviewMouseMoveCommand, ElementName=userControl}" Event="PreviewMouseMove" />
+                                    <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                                           Command="{Binding DataContext.PreviewMouseDownCommand, ElementName=userControl}"
+                                                           Event="PreviewMouseDown" />
+                                    <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                                           Command="{Binding DataContext.PreviewMouseMoveCommand, ElementName=userControl}"
+                                                           Event="PreviewMouseMove" />
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:TableView.RowCellMenuCustomizations>
-                                    <dxb:BarButtonItem Content="Refresh" Command="{Binding View.DataContext.RefreshCommand}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Refresh"
+                                                       Command="{Binding View.DataContext.RefreshCommand}"
+                                                       Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>

@@ -12,8 +12,8 @@ namespace BluePrints.Data
             DbExpression value)
         {
             return clause.IsFor(property)
-                    ? DbExpressionBuilder.SetClause(clause.Property(), value)
-                    : clause;
+                ? DbExpressionBuilder.SetClause(clause.Property(), value)
+                : clause;
         }
 
         public static bool IsFor(
@@ -21,7 +21,7 @@ namespace BluePrints.Data
             string property)
         {
             return clause.HasPropertyExpression()
-                && clause.Property().Property.Name == property;
+                   && clause.Property().Property.Name == property;
         }
 
         public static DbPropertyExpression Property(
@@ -29,8 +29,8 @@ namespace BluePrints.Data
         {
             if (clause.HasPropertyExpression())
             {
-                var setClause = (DbSetClause)clause;
-                return (DbPropertyExpression)setClause.Property;
+                var setClause = (DbSetClause) clause;
+                return (DbPropertyExpression) setClause.Property;
             }
 
             var message =

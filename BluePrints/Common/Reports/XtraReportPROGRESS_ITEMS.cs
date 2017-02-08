@@ -9,23 +9,21 @@ using BluePrints.Common.ViewModel.Reporting;
 
 namespace BluePrints.Reports
 {
-    public partial class XtraReportPROGRESS_ITEMS : DevExpress.XtraReports.UI.XtraReport
+    public partial class XtraReportPROGRESS_ITEMS : XtraReport
     {
         public XtraReportPROGRESS_ITEMS()
         {
             InitializeComponent();
-            this.ParametersRequestSubmit += rptProgressItem_ParametersRequestSubmit;
+            ParametersRequestSubmit += rptProgressItem_ParametersRequestSubmit;
         }
 
-        void rptProgressItem_ParametersRequestSubmit(object sender, ParametersRequestEventArgs e)
+        private void rptProgressItem_ParametersRequestSubmit(object sender, ParametersRequestEventArgs e)
         {
-            string reportBy = "Units";
+            var reportBy = "Units";
 
-            foreach (ParameterInfo info in e.ParametersInformation)
-            {
+            foreach (var info in e.ParametersInformation)
                 if (info.Parameter.Name == "reportBy")
-                    reportBy = (string)info.Parameter.Value;
-            }
+                    reportBy = (string) info.Parameter.Value;
 
             xrDataSummaryCumulativeBurnedPercent.DataBindings.Clear();
             xrDataSummaryCumulativeEarnedPercent.DataBindings.Clear();
@@ -61,40 +59,63 @@ namespace BluePrints.Reports
             }
 
 
+            xrDataSummaryCumulativeBurnedPercent.DataBindings.Add(new XRBinding("Text", objectDataSource1,
+                "Summary_CumulativeBurned." + reportBy + "Percentage", "{0:0.00%}"));
+            xrDataSummaryCumulativeEarnedPercent.DataBindings.Add(new XRBinding("Text", objectDataSource1,
+                "Summary_CumulativeEarned." + reportBy + "Percentage", "{0:0.00%}"));
+            xrDataSummaryCumulativePlannedPercent.DataBindings.Add(new XRBinding("Text", objectDataSource1,
+                "Summary_CumulativePlanned." + reportBy + "Percentage", "{0:0.00%}"));
+            xrDataSummaryPeriodBurnedPercent.DataBindings.Add(new XRBinding("Text", objectDataSource1,
+                "Summary_PeriodBurned." + reportBy + "Percentage", "{0:0.00%}"));
+            xrDataSummaryPeriodEarnedPercent.DataBindings.Add(new XRBinding("Text", objectDataSource1,
+                "Summary_PeriodEarned." + reportBy + "Percentage", "{0:0.00%}"));
+            xrDataSummaryPeriodPlannedPercent.DataBindings.Add(new XRBinding("Text", objectDataSource1,
+                "Summary_PeriodPlanned." + reportBy + "Percentage", "{0:0.00%}"));
 
-            xrDataSummaryCumulativeBurnedPercent.DataBindings.Add(new XRBinding("Text", objectDataSource1, "Summary_CumulativeBurned." + reportBy + "Percentage", "{0:0.00%}"));
-            xrDataSummaryCumulativeEarnedPercent.DataBindings.Add(new XRBinding("Text", objectDataSource1, "Summary_CumulativeEarned." + reportBy + "Percentage", "{0:0.00%}"));
-            xrDataSummaryCumulativePlannedPercent.DataBindings.Add(new XRBinding("Text", objectDataSource1, "Summary_CumulativePlanned." + reportBy + "Percentage", "{0:0.00%}"));
-            xrDataSummaryPeriodBurnedPercent.DataBindings.Add(new XRBinding("Text", objectDataSource1, "Summary_PeriodBurned." + reportBy + "Percentage", "{0:0.00%}"));
-            xrDataSummaryPeriodEarnedPercent.DataBindings.Add(new XRBinding("Text", objectDataSource1, "Summary_PeriodEarned." + reportBy + "Percentage", "{0:0.00%}"));
-            xrDataSummaryPeriodPlannedPercent.DataBindings.Add(new XRBinding("Text", objectDataSource1, "Summary_PeriodPlanned." + reportBy + "Percentage", "{0:0.00%}"));
-
-            if(reportBy == "Units")
-                xrDataBaselineBudgeted.DataBindings.Add(new XRBinding("Text", objectDataSource1, "ReportableObjects.BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS", formatString));
+            if (reportBy == "Units")
+                xrDataBaselineBudgeted.DataBindings.Add(new XRBinding("Text", objectDataSource1,
+                    "ReportableObjects.BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS", formatString));
             else
-                xrDataBaselineBudgeted.DataBindings.Add(new XRBinding("Text", objectDataSource1, "ReportableObjects.BASELINE_ITEMJoinRATE.ESTIMATED_COSTS", formatString));
+                xrDataBaselineBudgeted.DataBindings.Add(new XRBinding("Text", objectDataSource1,
+                    "ReportableObjects.BASELINE_ITEMJoinRATE.ESTIMATED_COSTS", formatString));
 
-            xrDataCumulativePlannedUOM.DataBindings.Add(new XRBinding("Text", objectDataSource1, "ReportableObjects.Summary_CumulativeOriginal." + reportBy, formatString));
-            xrDataCumulativePlannedPercentage.DataBindings.Add(new XRBinding("Text", objectDataSource1, "ReportableObjects.Summary_CumulativeOriginal." + reportBy + "Percentage", "{0:0.00%}"));
+            xrDataCumulativePlannedUOM.DataBindings.Add(new XRBinding("Text", objectDataSource1,
+                "ReportableObjects.Summary_CumulativeOriginal." + reportBy, formatString));
+            xrDataCumulativePlannedPercentage.DataBindings.Add(new XRBinding("Text", objectDataSource1,
+                "ReportableObjects.Summary_CumulativeOriginal." + reportBy + "Percentage", "{0:0.00%}"));
 
-            xrDataCumulativeEarnedUOM.DataBindings.Add(new XRBinding("Text", objectDataSource1, "ReportableObjects.Summary_CumulativeEarned.Units", formatString));
-            xrDataCumulativeEarnedPercentage.DataBindings.Add(new XRBinding("Text", objectDataSource1, "ReportableObjects.Summary_CumulativeEarned." + reportBy + "Percentage", "{0:0.00%}"));
+            xrDataCumulativeEarnedUOM.DataBindings.Add(new XRBinding("Text", objectDataSource1,
+                "ReportableObjects.Summary_CumulativeEarned.Units", formatString));
+            xrDataCumulativeEarnedPercentage.DataBindings.Add(new XRBinding("Text", objectDataSource1,
+                "ReportableObjects.Summary_CumulativeEarned." + reportBy + "Percentage", "{0:0.00%}"));
 
-            xrDataPeriodPlannedUOM.DataBindings.Add(new XRBinding("Text", objectDataSource1, "ReportableObjects.Summary_PeriodPlanned.Units", formatString));
-            xrDataPeriodPlannedPercentage.DataBindings.Add(new XRBinding("Text", objectDataSource1, "ReportableObjects.Summary_PeriodPlanned." + reportBy + "Percentage", "{0:0.00%}"));
+            xrDataPeriodPlannedUOM.DataBindings.Add(new XRBinding("Text", objectDataSource1,
+                "ReportableObjects.Summary_PeriodPlanned.Units", formatString));
+            xrDataPeriodPlannedPercentage.DataBindings.Add(new XRBinding("Text", objectDataSource1,
+                "ReportableObjects.Summary_PeriodPlanned." + reportBy + "Percentage", "{0:0.00%}"));
 
-            xrDataPeriodCurrentUOM.DataBindings.Add(new XRBinding("Text", objectDataSource1, "ReportableObjects.Summary_PeriodEarned.Units", formatString));
-            xrDataPeriodCurrentPercentage.DataBindings.Add(new XRBinding("Text", objectDataSource1, "ReportableObjects.Summary_PeriodEarned." + reportBy + "Percentage", "{0:0.00%}"));
+            xrDataPeriodCurrentUOM.DataBindings.Add(new XRBinding("Text", objectDataSource1,
+                "ReportableObjects.Summary_PeriodEarned.Units", formatString));
+            xrDataPeriodCurrentPercentage.DataBindings.Add(new XRBinding("Text", objectDataSource1,
+                "ReportableObjects.Summary_PeriodEarned." + reportBy + "Percentage", "{0:0.00%}"));
 
-            this.xrChart1.Series["Planned"].ValueDataMembersSerializable = "Summary_CumulativePlannedDataPoints." + reportBy + "Percentage";
-            this.xrChart1.Series["Earned"].ValueDataMembersSerializable = "Summary_CumulativeEarnedDataPoints." + reportBy + "Percentage";
-            this.xrChart1.Series["Burned"].ValueDataMembersSerializable = "Summary_CumulativeBurnedDataPoints." + reportBy + "Percentage";
-            this.xrChart1.Series["Remaining"].ValueDataMembersSerializable = "Summary_CumulativeRemainingPlannedDataPoints." + reportBy + "Percentage";
+            xrChart1.Series["Planned"].ValueDataMembersSerializable = "Summary_CumulativePlannedDataPoints." +
+                                                                           reportBy + "Percentage";
+            xrChart1.Series["Earned"].ValueDataMembersSerializable = "Summary_CumulativeEarnedDataPoints." +
+                                                                          reportBy + "Percentage";
+            xrChart1.Series["Burned"].ValueDataMembersSerializable = "Summary_CumulativeBurnedDataPoints." +
+                                                                          reportBy + "Percentage";
+            xrChart1.Series["Remaining"].ValueDataMembersSerializable =
+                "Summary_CumulativeRemainingPlannedDataPoints." + reportBy + "Percentage";
 
-            this.xrChart1.Series["Period Planned"].ValueDataMembersSerializable = "Summary_PeriodPlannedDataPoints." + reportBy;
-            this.xrChart1.Series["Period Earned"].ValueDataMembersSerializable = "Summary_PeriodEarnedDataPoints." + reportBy;
-            this.xrChart1.Series["Period Burned"].ValueDataMembersSerializable = "Summary_PeriodBurnedDataPoints." + reportBy;
-            this.xrChart1.Series["Period Remaining"].ValueDataMembersSerializable = "Summary_PeriodRemainingPlannedDataPoints." + reportBy;
+            xrChart1.Series["Period Planned"].ValueDataMembersSerializable = "Summary_PeriodPlannedDataPoints." +
+                                                                                  reportBy;
+            xrChart1.Series["Period Earned"].ValueDataMembersSerializable = "Summary_PeriodEarnedDataPoints." +
+                                                                                 reportBy;
+            xrChart1.Series["Period Burned"].ValueDataMembersSerializable = "Summary_PeriodBurnedDataPoints." +
+                                                                                 reportBy;
+            xrChart1.Series["Period Remaining"].ValueDataMembersSerializable =
+                "Summary_PeriodRemainingPlannedDataPoints." + reportBy;
 
             //labels
             xrLblCumulativeEarnedUOM.Text = xrLblCumulativeEarnedUOM.Text.Replace(strReplaceFrom, strReplaceTo);
@@ -103,22 +124,36 @@ namespace BluePrints.Reports
             xrLblPeriodPlannedUOM.Text = xrLblPeriodPlannedUOM.Text.Replace(strReplaceFrom, strReplaceTo);
 
             //conditional formatting
-            this.ItemCumulativeEarnedEfficiency_Good.Condition = this.ItemCumulativeEarnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
-            this.ItemCumulativeEarnedEfficiency_Good.Condition = this.ItemCumulativeEarnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
-            this.ItemPeriodEarnedEfficiency_Good.Condition = this.ItemPeriodEarnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
-            this.SummaryPeriodBurnedEfficiency_Good.Condition = this.SummaryPeriodBurnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
-            this.SummaryCumulativeBurnedEfficiency_Good.Condition = this.SummaryCumulativeBurnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
-            this.SummaryCumulativeEarnedEfficiency_Good.Condition = this.SummaryCumulativeEarnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
-            this.SummaryPeriodEarnedEfficiency_Good.Condition = this.SummaryPeriodEarnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
-            this.ItemCumulativeEarnedEfficiency_Bad.Condition = this.ItemCumulativeEarnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
-            this.ItemPeriodEarnedEfficiency_Bad.Condition = this.ItemPeriodEarnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
-            this.SummaryPeriodBurnedEfficiency_Bad.Condition = this.SummaryPeriodBurnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
-            this.SummaryCumulativeBurnedEfficiency_Bad.Condition = this.SummaryCumulativeBurnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
-            this.SummaryCumulativeEarnedEfficiency_Bad.Condition = this.SummaryCumulativeEarnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
-            this.SummaryPeriodEarnedEfficiency_Bad.Condition = this.SummaryPeriodEarnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
+            ItemCumulativeEarnedEfficiency_Good.Condition =
+                ItemCumulativeEarnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
+            ItemCumulativeEarnedEfficiency_Good.Condition =
+                ItemCumulativeEarnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
+            ItemPeriodEarnedEfficiency_Good.Condition =
+                ItemPeriodEarnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
+            SummaryPeriodBurnedEfficiency_Good.Condition =
+                SummaryPeriodBurnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
+            SummaryCumulativeBurnedEfficiency_Good.Condition =
+                SummaryCumulativeBurnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
+            SummaryCumulativeEarnedEfficiency_Good.Condition =
+                SummaryCumulativeEarnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
+            SummaryPeriodEarnedEfficiency_Good.Condition =
+                SummaryPeriodEarnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
+            ItemCumulativeEarnedEfficiency_Bad.Condition =
+                ItemCumulativeEarnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
+            ItemPeriodEarnedEfficiency_Bad.Condition =
+                ItemPeriodEarnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
+            SummaryPeriodBurnedEfficiency_Bad.Condition =
+                SummaryPeriodBurnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
+            SummaryCumulativeBurnedEfficiency_Bad.Condition =
+                SummaryCumulativeBurnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
+            SummaryCumulativeEarnedEfficiency_Bad.Condition =
+                SummaryCumulativeEarnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
+            SummaryPeriodEarnedEfficiency_Bad.Condition =
+                SummaryPeriodEarnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
         }
 
-        SummarizableObject ReportData { get; set; }
+        private SummarizableObject ReportData { get; set; }
+
         public void AssignProperties(SummarizableObject reportData, string title)
         {
             ReportData = reportData;

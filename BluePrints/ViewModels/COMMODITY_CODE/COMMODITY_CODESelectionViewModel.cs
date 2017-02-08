@@ -11,22 +11,29 @@ namespace BluePrints.ViewModels
 {
     public class COMMODITY_CODESelectionViewModel
     {
-        public static COMMODITY_CODESelectionViewModel Create(IEnumerable<COMMODITY_CODEMasterDetailProjection> enumerableObjects, COMMODITY_CODEMasterDetailProjection selectedItem, IEnumerable<DISCIPLINE> DisciplineLookup)
+        public static COMMODITY_CODESelectionViewModel Create(
+            IEnumerable<COMMODITY_CODEMasterDetailProjection> enumerableObjects,
+            COMMODITY_CODEMasterDetailProjection selectedItem, IEnumerable<DISCIPLINE> DisciplineLookup)
         {
-            return ViewModelSource.Create(() => new COMMODITY_CODESelectionViewModel(enumerableObjects, selectedItem, DisciplineLookup));
+            return
+                ViewModelSource.Create(
+                    () => new COMMODITY_CODESelectionViewModel(enumerableObjects, selectedItem, DisciplineLookup));
         }
 
         public IEnumerable<COMMODITY_CODEMasterDetailProjection> SourceObjects { get; set; }
-        protected COMMODITY_CODESelectionViewModel(IEnumerable<COMMODITY_CODEMasterDetailProjection> enumerableObjects, COMMODITY_CODEMasterDetailProjection selectedItem, IEnumerable<DISCIPLINE> DisciplineLookup)
+
+        protected COMMODITY_CODESelectionViewModel(IEnumerable<COMMODITY_CODEMasterDetailProjection> enumerableObjects,
+            COMMODITY_CODEMasterDetailProjection selectedItem, IEnumerable<DISCIPLINE> DisciplineLookup)
         {
             SourceObjects = enumerableObjects;
             this.selectedItem = selectedItem;
-            this.DisciplineObjects = DisciplineLookup;
+            DisciplineObjects = DisciplineLookup;
         }
 
-        IEnumerable<DISCIPLINE> DisciplineObjects { get; set; }
+        private IEnumerable<DISCIPLINE> DisciplineObjects { get; set; }
 
-        COMMODITY_CODEMasterDetailProjection selectedItem { get; set; }
+        private COMMODITY_CODEMasterDetailProjection selectedItem { get; set; }
+
         public COMMODITY_CODEMasterDetailProjection SelectedItem
         {
             get { return selectedItem; }

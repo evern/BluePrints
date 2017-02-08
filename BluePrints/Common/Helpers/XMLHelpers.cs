@@ -16,14 +16,14 @@ namespace BluePrints.Common.Helpers
         /// </summary>
         public static string SettingsXMLFilePath(bool createDirectory)
         {
-            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
-            string userFilePath = Path.Combine(localAppData, CommonResources.XMLDefaultDirectory);
+            var userFilePath = Path.Combine(localAppData, CommonResources.XMLDefaultDirectory);
 
             if (!Directory.Exists(userFilePath) && createDirectory)
                 Directory.CreateDirectory(userFilePath);
 
-            string destFilePath = Path.Combine(userFilePath, CommonResources.XMLFilename);
+            var destFilePath = Path.Combine(userFilePath, CommonResources.XMLFilename);
 
             return destFilePath;
         }
@@ -34,38 +34,36 @@ namespace BluePrints.Common.Helpers
         /// <returns>Connection string</returns>
         public static void UpdateSettingsXML(XMLSettings defaultSetting)
         {
-            string xmlFilePath = SettingsXMLFilePath(true);
-            string settingsRootName = "Settings";
+            var xmlFilePath = SettingsXMLFilePath(true);
+            var settingsRootName = "Settings";
 
             XDocument doc;
             if (File.Exists(xmlFilePath))
-            {
                 try
                 {
                     doc = XDocument.Load(xmlFilePath);
                 }
-                catch  //if xml file fails to load recreate it
+                catch //if xml file fails to load recreate it
                 {
                     File.Delete(xmlFilePath);
                     doc = new XDocument(new XDeclaration("1.0", "utf-8", null),
-                            new XElement("Settings")
-                        );
-                }
-            }
-            else
-                doc = new XDocument(new XDeclaration("1.0", "utf-8", null),
                         new XElement("Settings")
                     );
+                }
+            else
+                doc = new XDocument(new XDeclaration("1.0", "utf-8", null),
+                    new XElement("Settings")
+                );
 
             if (!doc.Root.Descendants().Any(obj => obj.Name == settingsRootName))
             {
                 doc.Root.Add(new XElement(settingsRootName,
-                                new XAttribute("Username", defaultSetting.Username)
-                            ));
+                    new XAttribute("Username", defaultSetting.Username)
+                ));
             }
             else
             {
-                XElement findDatabase = doc.Root.Descendants().FirstOrDefault(obj => obj.Name == settingsRootName);
+                var findDatabase = doc.Root.Descendants().FirstOrDefault(obj => obj.Name == settingsRootName);
                 //dont need to check for null because we've already checked for any
                 findDatabase.Attribute("Username").Value = defaultSetting.Username;
             }
@@ -75,30 +73,26 @@ namespace BluePrints.Common.Helpers
 
         public static string GetSettings_Username()
         {
-            string xmlFilePath = SettingsXMLFilePath(true);
-            string settingsRootName = "Settings";
+            var xmlFilePath = SettingsXMLFilePath(true);
+            var settingsRootName = "Settings";
 
             XDocument doc = null;
             if (File.Exists(xmlFilePath))
-            {
                 try
                 {
                     doc = XDocument.Load(xmlFilePath);
                 }
-                catch  //if xml file fails to load recreate it
+                catch //if xml file fails to load recreate it
                 {
                     return string.Empty;
                 }
-            }
 
-            string username = string.Empty;
+            var username = string.Empty;
             if (doc != null)
             {
-                XElement findDatabase = doc.Root.Descendants().FirstOrDefault(obj => obj.Name == settingsRootName);
+                var findDatabase = doc.Root.Descendants().FirstOrDefault(obj => obj.Name == settingsRootName);
                 if (findDatabase != null)
-                {
                     username = findDatabase.Attribute("Username").Value;
-                }
             }
 
             return username;

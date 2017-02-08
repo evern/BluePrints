@@ -16,13 +16,14 @@ namespace BluePrints.Views
         public COMMODITY_GROUP_DIRECTCollectionView()
         {
             InitializeComponent();
-            ((COMMODITY_GROUP_DIRECTCollectionViewModelWrapper)this.DataContext).Redraw = this.Redraw;
-            ((COMMODITY_GROUP_DIRECTCollectionViewModelWrapper)this.DataContext).SetIsRowExpanded = this.SetIsRowExpanded;
+            ((COMMODITY_GROUP_DIRECTCollectionViewModelWrapper) DataContext).Redraw = Redraw;
+            ((COMMODITY_GROUP_DIRECTCollectionViewModelWrapper) DataContext).SetIsRowExpanded =
+                SetIsRowExpanded;
         }
 
         private void dragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.GridDropEventArgs e)
         {
-            ((COMMODITY_GROUP_DIRECTCollectionViewModelWrapper)this.DataContext).dragDropManager_Drop(sender, e);
+            ((COMMODITY_GROUP_DIRECTCollectionViewModelWrapper) DataContext).dragDropManager_Drop(sender, e);
         }
 
         public void Redraw()
@@ -35,7 +36,7 @@ namespace BluePrints.Views
             if (row == null)
                 return;
 
-            int rowHandle = gridControl.DataController.FindRowByRowValue(row);
+            var rowHandle = gridControl.DataController.FindRowByRowValue(row);
             gridControl.SetMasterRowExpanded(rowHandle, row.ISEXPANDED);
         }
 

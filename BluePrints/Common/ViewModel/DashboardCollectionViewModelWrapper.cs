@@ -21,13 +21,17 @@ using DevExpress.Xpf.Bars;
 
 namespace BluePrints.Common.ViewModel
 {
-    public abstract class DashboardViewModelWrapper<TEntity, TProjection, TPrimaryKey, TUnitOfWork> : CollectionViewModelsWrapper<TEntity, TProjection, TPrimaryKey, TUnitOfWork, CollectionViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork>>
+    public abstract class DashboardViewModelWrapper<TEntity, TProjection, TPrimaryKey, TUnitOfWork> :
+        CollectionViewModelsWrapper
+        <TEntity, TProjection, TPrimaryKey, TUnitOfWork,
+            CollectionViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork>>
         where TEntity : class
         where TUnitOfWork : IUnitOfWork
         where TProjection : SummarizableObject, new()
     {
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> UnitOfWorkFactory;
-        DispatcherTimer dispatchTimer;
+        private DispatcherTimer dispatchTimer;
+
         public DashboardViewModelWrapper()
         {
             dispatchTimer = new DispatcherTimer();
@@ -36,48 +40,62 @@ namespace BluePrints.Common.ViewModel
 
         protected override bool OnMainViewModelLoaded(IEnumerable<TProjection> entities)
         {
-            MainViewModel.OnSelectedEntitiesChangedCallBack = this.DelayedProcessForSelectedEntitiesCompletion;
+            MainViewModel.OnSelectedEntitiesChangedCallBack = DelayedProcessForSelectedEntitiesCompletion;
             return true;
         }
-        
-        void DelayedProcessForSelectedEntitiesCompletion()
+
+        private void DelayedProcessForSelectedEntitiesCompletion()
         {
             dispatchTimer.Tick -= dispatchTimer_Tick;
             dispatchTimer.Tick += dispatchTimer_Tick;
             dispatchTimer.Start();
         }
 
-        void dispatchTimer_Tick(object sender, EventArgs e)
+        private void dispatchTimer_Tick(object sender, EventArgs e)
         {
             OnSelectedEntityChanged(MainViewModel.SelectedEntities);
             dispatchTimer.Stop();
         }
 
         public virtual TProjection SummaryEntity { get; set; }
+
         public void OnSelectedEntityChanged(IEnumerable<TProjection> entities)
         {
             if (entities.Count() == 0)
                 return;
 
             if (entities.Count() == 1)
+            {
                 SummaryEntity = entities.First();
+            }
             else
             {
-                TProjection newEntity = ViewModelSource.Create(() => new TProjection());
-                DateTime earliestDataDate = entities.Min(x => x.ReportingDataDate);
-                var earliestLiveProgress = entities.First(x => x.LivePROGRESS.DATA_DATE == earliestDataDate).LivePROGRESS;
+                var newEntity = ViewModelSource.Create(() => new TProjection());
+                var earliestDataDate = entities.Min(x => x.ReportingDataDate);
+                var earliestLiveProgress =
+                    entities.First(x => x.LivePROGRESS.DATA_DATE == earliestDataDate).LivePROGRESS;
                 newEntity.LivePROGRESS = earliestLiveProgress;
-                newEntity.IntervalPeriod = ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(earliestLiveProgress);
+                newEntity.IntervalPeriod =
+                    ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(earliestLiveProgress);
                 newEntity.ReportableObjects = entities.SelectMany(x => x.ReportableObjects);
                 newEntity.FirstAlignedDataDate = entities.Min(x => x.FirstAlignedDataDate);
                 newEntity.ReportingDataDate = earliestLiveProgress.DATA_DATE;
-                newEntity.NonCumulative_VariationAdjustments = new ObservableCollection<VariationAdjustment>(entities.SelectMany(x => x.NonCumulative_VariationAdjustments));
-                newEntity.NonCumulative_ActualDataPoints = new ObservableCollection<ProgressInfo>(entities.SelectMany(x => x.NonCumulative_ActualDataPoints));
-                newEntity.NonCumulative_BurnedDataPoints = new ObservableCollection<ProgressInfo>(entities.SelectMany(x => x.NonCumulative_BurnedDataPoints));
-                newEntity.NonCumulative_EarnedDataPoints = new ObservableCollection<ProgressInfo>(entities.SelectMany(x => x.NonCumulative_EarnedDataPoints));
-                newEntity.NonCumulative_OriginalDataPoints = new ObservableCollection<ProgressInfo>(entities.SelectMany(x => x.NonCumulative_OriginalDataPoints));
-                newEntity.NonCumulative_PlannedDataPoints = new ObservableCollection<ProgressInfo>(entities.SelectMany(x => x.NonCumulative_PlannedDataPoints));
-                newEntity.NonCumulative_RemainingPlannedDataPoints = new ObservableCollection<ProgressInfo>(entities.SelectMany(x => x.NonCumulative_RemainingPlannedDataPoints));
+                newEntity.NonCumulative_VariationAdjustments =
+                    new ObservableCollection<VariationAdjustment>(
+                        entities.SelectMany(x => x.NonCumulative_VariationAdjustments));
+                newEntity.NonCumulative_ActualDataPoints =
+                    new ObservableCollection<ProgressInfo>(entities.SelectMany(x => x.NonCumulative_ActualDataPoints));
+                newEntity.NonCumulative_BurnedDataPoints =
+                    new ObservableCollection<ProgressInfo>(entities.SelectMany(x => x.NonCumulative_BurnedDataPoints));
+                newEntity.NonCumulative_EarnedDataPoints =
+                    new ObservableCollection<ProgressInfo>(entities.SelectMany(x => x.NonCumulative_EarnedDataPoints));
+                newEntity.NonCumulative_OriginalDataPoints =
+                    new ObservableCollection<ProgressInfo>(entities.SelectMany(x => x.NonCumulative_OriginalDataPoints));
+                newEntity.NonCumulative_PlannedDataPoints =
+                    new ObservableCollection<ProgressInfo>(entities.SelectMany(x => x.NonCumulative_PlannedDataPoints));
+                newEntity.NonCumulative_RemainingPlannedDataPoints =
+                    new ObservableCollection<ProgressInfo>(
+                        entities.SelectMany(x => x.NonCumulative_RemainingPlannedDataPoints));
                 ISupportProgressReportingExtensions.GenerateCumulativeSummaryDataPoints(newEntity);
                 SummaryEntity = newEntity;
             }
@@ -87,21 +105,22 @@ namespace BluePrints.Common.ViewModel
 
         public virtual bool CanChangeStatsType(object checkButton)
         {
-            return (MainViewModel != null && !MainViewModel.IsLoading);
+            return MainViewModel != null && !MainViewModel.IsLoading;
         }
 
         public Action<DashboardViewType> ChangeViewMemberFieldNames { get; set; }
+
         public virtual void ChangeStatsType(object checkButton)
         {
-            BarCheckItem button = (BarCheckItem)checkButton;
-            DashboardViewType calculationType = button.Name.ToUpper().Contains("COSTS") ? DashboardViewType.Costs : DashboardViewType.Units;
+            var button = (BarCheckItem) checkButton;
+            var calculationType = button.Name.ToUpper().Contains("COSTS")
+                ? DashboardViewType.Costs
+                : DashboardViewType.Units;
             if (ChangeViewMemberFieldNames != null)
                 ChangeViewMemberFieldNames(calculationType);
 
-            foreach (var summaryEntity in this.MainViewModel.Entities)
-            {
+            foreach (var summaryEntity in MainViewModel.Entities)
                 summaryEntity.RecalculateStats(calculationType == DashboardViewType.Costs);
-            }
         }
     }
 }

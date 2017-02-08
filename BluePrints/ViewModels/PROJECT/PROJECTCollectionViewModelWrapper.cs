@@ -18,13 +18,18 @@ using System.Threading.Tasks;
 
 namespace BluePrints.ViewModels
 {
-    public class PROJECTCollectionViewModelWrapper : CollectionViewModelsWrapper<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork, CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>>, ISupportCustomDocumentTypeNameAndParameter
+    public class PROJECTCollectionViewModelWrapper :
+        CollectionViewModelsWrapper
+        <PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork,
+            CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>>,
+        ISupportCustomDocumentTypeNameAndParameter
     {
         /// <summary>
         /// Creates a new instance of PROJECT_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static PROJECTCollectionViewModelWrapper Create(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        public static PROJECTCollectionViewModelWrapper Create(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
             return ViewModelSource.Create(() => new PROJECTCollectionViewModelWrapper(unitOfWorkFactory));
         }
@@ -34,12 +39,15 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the PROJECTViewModel type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected PROJECTCollectionViewModelWrapper(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        protected PROJECTCollectionViewModelWrapper(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
 
         #region Database Operations
-        IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
+            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
         protected override void InitializeParameters(object parameter)
         {
@@ -49,14 +57,16 @@ namespace BluePrints.ViewModels
         {
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddEntitiesLoader<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>(1, bluePrintsUnitOfWorkFactory, x => x.BASELINES, null, null, null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>(2, bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, null, null, null, OnAfterEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>(1,
+                bluePrintsUnitOfWorkFactory, x => x.BASELINES, null, null, null, OnAfterEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>(2,
+                bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, null, null, null, OnAfterEntitiesChanged);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(this.bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoader.CreateCollectionViewModel()));
         }
 
@@ -67,14 +77,15 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECT> entities)
         {
-            MainViewModel.PostSave = this.PostSave;
+            MainViewModel.PostSave = PostSave;
             MainViewModel.SetParentViewModel(this);
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
 
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
+            object sender)
         {
-            if (sender.ToString() == MainViewModel.ToString() || sender.ToString() == this.ToString())
+            if (sender.ToString() == MainViewModel.ToString() || sender.ToString() == ToString())
                 return;
 
             if (MainViewModel != null)
@@ -84,18 +95,19 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
+
         private void PostSave(PROJECT entity, bool isNewEntity)
         {
-            if(isNewEntity)
+            if (isNewEntity)
             {
-                BASELINE newBASELINE = new BASELINE();
+                var newBASELINE = new BASELINE();
                 newBASELINE.GUID_PROJECT = entity.GUID;
                 newBASELINE.NAME = entity.NUMBER + "_001";
                 newBASELINE.REVISION = "A";
                 newBASELINE.STATUS = BaselineStatus.Live;
                 BASELINEViewModel.Save(newBASELINE);
 
-                PROGRESS newPROGRESS = new PROGRESS();
+                var newPROGRESS = new PROGRESS();
                 newPROGRESS.GUID_PROJECT = entity.GUID;
                 newPROGRESS.NAME = entity.NUMBER + "WEEKLY_001";
                 newPROGRESS.PROGRESS_START = DateTime.Now;
@@ -106,10 +118,13 @@ namespace BluePrints.ViewModels
                 PROGRESSViewModel.Save(newPROGRESS);
             }
         }
+
         #endregion
+
         #endregion
 
         #region View Properties
+
         public CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork> BASELINEViewModel
         {
             get
@@ -117,7 +132,9 @@ namespace BluePrints.ViewModels
                 if (loaderCollection == null)
                     return null;
 
-                return (CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<BASELINE>();
+                return
+                    (CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<BASELINE>();
             }
         }
 
@@ -128,7 +145,9 @@ namespace BluePrints.ViewModels
                 if (loaderCollection == null)
                     return null;
 
-                return (CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROGRESS>();
+                return
+                    (CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<PROGRESS>();
             }
         }
 
@@ -137,15 +156,13 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get
-            {
-                return "PROJECTCollectionViewModelWrapper";
-            }
+            get { return "PROJECTCollectionViewModelWrapper"; }
         }
 
         #endregion
 
         #region ISupportCustomDocumentTypeNameAndParameter
+
         public bool CanEdit(PROJECT entity)
         {
             if (MainViewModel == null || MainViewModel.SelectedEntity == null)
@@ -154,7 +171,11 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        protected IDocumentManagerService DocumentManagerService { get { return this.GetService<IDocumentManagerService>(); } }
+        protected IDocumentManagerService DocumentManagerService
+        {
+            get { return this.GetService<IDocumentManagerService>(); }
+        }
+
         public void Edit(PROJECT entity)
         {
             if (entity == null)
@@ -175,13 +196,14 @@ namespace BluePrints.ViewModels
 
         public string GetCustomDocumentTitle()
         {
-            return "[" + this.MainViewModel.SelectedEntity.NUMBER + "]";
+            return "[" + MainViewModel.SelectedEntity.NUMBER + "]";
         }
 
         public bool IsCustomModeEnabled()
         {
             return true;
         }
+
         #endregion
     }
 }

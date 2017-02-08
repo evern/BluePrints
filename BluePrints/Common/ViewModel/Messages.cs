@@ -9,7 +9,6 @@ namespace BluePrints.Common.ViewModel
     /// </summary>
     public enum EntityMessageType
     {
-
         /// <summary>
         /// A new entity has been added to the unit of work. 
         /// </summary>
@@ -33,7 +32,6 @@ namespace BluePrints.Common.ViewModel
     /// <typeparam name="TPrimaryKey">A primary key value type.</typeparam>
     public class EntityMessage<TEntity, TPrimaryKey>
     {
-
         /// <summary>
         /// Initializes a new instance of the EntityMessage class.
         /// </summary>
@@ -42,9 +40,9 @@ namespace BluePrints.Common.ViewModel
         /// /// <param name="sender">The message sender.</param>
         public EntityMessage(TPrimaryKey primaryKey, EntityMessageType messageType, object sender = null)
         {
-            this.PrimaryKey = primaryKey;
-            this.MessageType = messageType;
-            this.Sender = sender;
+            PrimaryKey = primaryKey;
+            MessageType = messageType;
+            Sender = sender;
         }
 
         /// <summary>
@@ -66,7 +64,7 @@ namespace BluePrints.Common.ViewModel
     /// <summary>
     /// A message notifying that all view models should save changes. Usually sent by DocumentsViewModel when the SaveAll command is executed.
     /// </summary>
-	public class SaveAllMessage
+    public class SaveAllMessage
     {
     }
 
@@ -75,9 +73,8 @@ namespace BluePrints.Common.ViewModel
     /// </summary>
     public class CloseAllMessage
     {
-
-        readonly CancelEventArgs cancelEventArgs;
-        Func<object, bool> viewModelPredicate;
+        private readonly CancelEventArgs cancelEventArgs;
+        private Func<object, bool> viewModelPredicate;
 
         /// <summary>
         /// Initializes a new instance of the CloseAllMessage class.
@@ -104,15 +101,16 @@ namespace BluePrints.Common.ViewModel
         }
     }
 
-    public class DestroyOrphanedDocumentsMessage { }
+    public class DestroyOrphanedDocumentsMessage
+    {
+    }
 
     /// <summary>
     /// Used by the PeekCollectionViewModel to notify that DocumentsViewModel should navigate to the specified module.
     /// </summary>
     /// <typeparam name="TNavigationToken">The navigation token type.</typeparam>
-	public class NavigateMessage<TNavigationToken>
+    public class NavigateMessage<TNavigationToken>
     {
-
         /// <summary>
         /// Initializes a new instance of the NavigateMessage class.
         /// </summary>

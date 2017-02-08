@@ -16,7 +16,6 @@ namespace BluePrints.P6EntitiesDataModel
     /// </summary>
     public interface IP6EntitiesUnitOfWork : IUnitOfWork
     {
-
         /// <summary>
         /// The ACCOUNT entities repository.
         /// </summary>

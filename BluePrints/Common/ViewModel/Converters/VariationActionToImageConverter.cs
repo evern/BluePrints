@@ -20,25 +20,26 @@ namespace BluePrints.Common.ViewModel.Converters
 
             if (value == DependencyProperty.UnsetValue || value == null)
             {
-                DXImageInfo a = (DXImageInfo)new DXImageConverter().ConvertFromString("DeleteList_16x16.png");
+                var a = (DXImageInfo) new DXImageConverter().ConvertFromString("DeleteList_16x16.png");
                 returnImage = new BitmapImage(a.MakeUri());
             }
 
-            if ((VariationAction)value == VariationAction.Cancel)
+            if ((VariationAction) value == VariationAction.Cancel)
             {
-                DXImageInfo a = (DXImageInfo)new DXImageConverter().ConvertFromString("AddFile_16x16.png");
+                var a = (DXImageInfo) new DXImageConverter().ConvertFromString("AddFile_16x16.png");
                 returnImage = new BitmapImage(a.MakeUri());
             }
             else
             {
-                DXImageInfo a = (DXImageInfo)new DXImageConverter().ConvertFromString("DeleteList_16x16.png");
+                var a = (DXImageInfo) new DXImageConverter().ConvertFromString("DeleteList_16x16.png");
                 returnImage = new BitmapImage(a.MakeUri());
             }
 
             return returnImage;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
         {
             throw new NotImplementedException();
         }

@@ -18,7 +18,8 @@ namespace BluePrints.Common.ViewModel.UndoRedo
         /// <param name="newValue">New value of the property</param>
         /// <param name="actionId">Undo/Redo action id</param>
         /// <param name="messageType">Action to take when undoing/redoing</param>
-        public UndoRedoEntityInfo(TEntity changedEntity, string propertyName, object oldValue, object newValue, int actionId, EntityMessageType messageType)
+        public UndoRedoEntityInfo(TEntity changedEntity, string propertyName, object oldValue, object newValue,
+            int actionId, EntityMessageType messageType)
         {
             ChangedEntity = changedEntity;
             PropertyName = propertyName;

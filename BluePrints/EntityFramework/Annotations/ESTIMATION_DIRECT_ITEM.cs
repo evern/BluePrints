@@ -10,10 +10,7 @@ namespace BluePrints.Data
     {
         public decimal TOTAL_QUANTITY
         {
-            get
-            {
-                return ESTIMATED_QUANTITY + VAR_QUANTITY;
-            }
+            get { return ESTIMATED_QUANTITY + VAR_QUANTITY; }
         }
     }
 }

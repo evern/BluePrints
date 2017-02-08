@@ -10,15 +10,16 @@ using BluePrints.Data;
 
 namespace BluePrints.Reports
 {
-    public partial class XtraReportBASELINE_ITEMS : DevExpress.XtraReports.UI.XtraReport
+    public partial class XtraReportBASELINE_ITEMS : XtraReport
     {
         public XtraReportBASELINE_ITEMS()
         {
             InitializeComponent();
-            this.ParametersRequestSubmit += rptBaselineItem_ParametersRequestSubmit;
+            ParametersRequestSubmit += rptBaselineItem_ParametersRequestSubmit;
         }
 
-        public void AssignProperties(PROJECT PROJECT, BASELINE BASELINE, IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMS)
+        public void AssignProperties(PROJECT PROJECT, BASELINE BASELINE,
+            IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMS)
         {
             objectDataSource1.DataSource = BASELINE_ITEMS;
             title1.Value = BASELINE.NAME;
@@ -27,32 +28,34 @@ namespace BluePrints.Reports
         }
 
         #region Parameter Events
-        private void rptBaselineItem_ParametersRequestSubmit(object sender, DevExpress.XtraReports.Parameters.ParametersRequestEventArgs e)
-        {
-            bool showHours = true;
-            bool showCosts = true;
-            bool showType = true;
-            bool showDeliverableType = true;
 
-            foreach (ParameterInfo info in e.ParametersInformation)
+        private void rptBaselineItem_ParametersRequestSubmit(object sender,
+            ParametersRequestEventArgs e)
+        {
+            var showHours = true;
+            var showCosts = true;
+            var showType = true;
+            var showDeliverableType = true;
+
+            foreach (var info in e.ParametersInformation)
             {
                 if (info.Parameter.Name == "showHours")
-                    showHours = (bool)info.Parameter.Value;
-                else if(info.Parameter.Name == "showCosts")
-                    showCosts = (bool)info.Parameter.Value;
+                    showHours = (bool) info.Parameter.Value;
+                else if (info.Parameter.Name == "showCosts")
+                    showCosts = (bool) info.Parameter.Value;
 
                 if (info.Parameter.Name == "showType")
-                    showType = (bool)info.Parameter.Value;
+                    showType = (bool) info.Parameter.Value;
 
                 if (info.Parameter.Name == "showDeliverableType")
-                    showDeliverableType = (bool)info.Parameter.Value;
+                    showDeliverableType = (bool) info.Parameter.Value;
             }
 
-            if(showType)
+            if (showType)
             {
                 xrlblNumber.LocationF = new System.Drawing.PointF(356F, 0);
 
-                if(showDeliverableType)
+                if (showDeliverableType)
                 {
                     xrlblDeliverableType.Visible = true;
                     xrlblDataDeliverableType.Visible = true;
@@ -124,9 +127,10 @@ namespace BluePrints.Reports
                 xrlblTotalCosts.Visible = true;
                 xrlblTotalCosts.WidthF = 133.9366F;
                 xrlblTotalCosts.LocationF = new System.Drawing.PointF(905.06F, 0);
-                xrlblTotalCosts.Borders = DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom;
+                xrlblTotalCosts.Borders = DevExpress.XtraPrinting.BorderSide.Right |
+                                          DevExpress.XtraPrinting.BorderSide.Bottom;
             }
-            else if(showHours)
+            else if (showHours)
             {
                 xrlblTitle.WidthF = showType ? 332.1F : 428.1F;
                 xrlblDataTitle.WidthF = showType ? 332.1F : 428.1F;
@@ -156,7 +160,9 @@ namespace BluePrints.Reports
 
                 xrlblTotalCosts.LocationF = new System.Drawing.PointF(904.06F, 0);
                 xrlblTotalCosts.WidthF = 134.9366F;
-                xrlblTotalCosts.Borders = DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom;
+                xrlblTotalCosts.Borders = DevExpress.XtraPrinting.BorderSide.Left |
+                                          DevExpress.XtraPrinting.BorderSide.Right |
+                                          DevExpress.XtraPrinting.BorderSide.Bottom;
             }
             else
             {
@@ -172,12 +178,13 @@ namespace BluePrints.Reports
                 xrlblTotalCosts.Visible = false;
             }
 
-            if(!showDeliverableType)
+            if (!showDeliverableType)
             {
                 xrlblTitle.WidthF += 100F;
                 xrlblDataTitle.WidthF += 100F;
             }
         }
+
         #endregion
     }
 }

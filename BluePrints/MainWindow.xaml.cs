@@ -28,15 +28,16 @@ namespace BluePrints
         {
             InitializeComponent();
         }
+
         //public Action ShowLoginWindow { get; set; }
         protected override void OnClosed(EventArgs e)
         {
             SignalR.Disconnect();
             LayoutSettings.Default.ThemeName = ApplicationThemeHelper.ApplicationThemeName;
             LayoutSettings.Default.Save();
-            ((BluePrintsEntitiesViewModel)((BluePrintsEntitiesView)this.Content).DataContext).SaveLayout();
+            ((BluePrintsEntitiesViewModel) ((BluePrintsEntitiesView) Content).DataContext).Unloaded();
             base.OnClosed(e);
-            System.Environment.Exit(1);
+            Environment.Exit(1);
             //if (ShowLoginWindow != null)
             //    ShowLoginWindow();
         }

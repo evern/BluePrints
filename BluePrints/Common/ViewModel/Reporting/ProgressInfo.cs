@@ -20,6 +20,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string WorkpackName { get; set; }
         public string ResourceName { get; set; }
         public decimal Quantity { get; set; }
+
         public decimal UnitsPercentage
         {
             get
@@ -30,6 +31,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     return Units / BudgetedUnits;
             }
         }
+
         public decimal CostsPercentage
         {
             get

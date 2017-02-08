@@ -1,22 +1,23 @@
-﻿<UserControl 
-        x:Name="userControl"
-        x:Class="BluePrints.Views.COMMODITY_GROUP_DIRECTCollectionView"
-        xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
-        xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
-        xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
-        xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
-        xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
-        xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-        xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
-        xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
-        xmlns:helper="clr-namespace:BluePrints.Common.Helpers"
-        xmlns:converters="clr-namespace:BluePrints.Common.ViewModel.Converters"
-        mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:COMMODITY_GROUP_DIRECTCollectionViewModelWrapper}">
+﻿<UserControl
+    x:Name="userControl"
+    x:Class="BluePrints.Views.COMMODITY_GROUP_DIRECTCollectionView"
+    xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+    xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
+    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+    xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
+    xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
+    xmlns:helper="clr-namespace:BluePrints.Common.Helpers"
+    xmlns:converters="clr-namespace:BluePrints.Common.ViewModel.Converters"
+    mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
+    DataContext="{dxmvvm:ViewModelSource viewmodel:COMMODITY_GROUP_DIRECTCollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -31,9 +32,9 @@
         <dx:DialogService x:Name="BulkColumnEditService">
             <dx:DialogService.DialogStyle>
                 <Style TargetType="dx:DXDialogWindow">
-                    <Setter Property="SizeToContent" Value="WidthAndHeight"/>
-                    <Setter Property="MinWidth" Value="500"/>
-                    <Setter Property="MinHeight" Value="370"/>
+                    <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                    <Setter Property="MinWidth" Value="500" />
+                    <Setter Property="MinHeight" Value="370" />
                 </Style>
             </dx:DialogService.DialogStyle>
         </dx:DialogService>
@@ -42,80 +43,119 @@
         <dxmvvm:Interaction.Behaviors>
             <dxmvvm:LayoutSerializationService />
         </dxmvvm:Interaction.Behaviors>
-        <Grid DataContext="{Binding MainViewModel}" >
+        <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
-                <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
+                <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False"
+                                   MDIMergeStyle="Always">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Home">
                             <dxr:RibbonPageGroup Caption="COMMODITY_GROUP_DIRECT Tasks">
-                                <dxb:BarButtonItem Content="Delete" Command="{Binding DataContext.BulkDeleteCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.RefreshCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
-                                <dxb:BarButtonItem Content="Redo" Command="{Binding RedoCommand}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
-                                <dxb:BarButtonItem Content="Save Layout" Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" Glyph="{dx:DXImage Image=Save_16x16.png}" />
-                                <dxb:BarButtonItem Content="Reset Layout" Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
+                                <dxb:BarButtonItem Content="Delete"
+                                                   Command="{Binding DataContext.BulkDeleteCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                <dxb:BarButtonItem Content="Refresh"
+                                                   Command="{Binding DataContext.RefreshCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}"
+                                                   LargeGlyph="{dx:DXImage Image=Undo_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=Undo_16x16.png}" />
+                                <dxb:BarButtonItem Content="Redo" Command="{Binding RedoCommand}"
+                                                   LargeGlyph="{dx:DXImage Image=Redo_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=Redo_16x16.png}" />
+                                <dxb:BarButtonItem Content="Save Layout"
+                                                   Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImage Image=Save_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=Save_16x16.png}" />
+                                <dxb:BarButtonItem Content="Reset Layout"
+                                                   Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
                 <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
                     <dxr:RibbonStatusBarControl.LeftItems>
-                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                        <dxb:BarStaticItem
+                            Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl Name="gridControl" Style="{StaticResource WrapperGridTemplate}" 
-                                     dx:DXSerializer.SerializationID="COMMODITY_GROUP_DIRECTGrid" 
+                    <dxg:GridControl Name="gridControl" Style="{StaticResource WrapperGridTemplate}"
+                                     dx:DXSerializer.SerializationID="COMMODITY_GROUP_DIRECTGrid"
                                      ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}"
                                      CurrentItem="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}"
-                                     SelectedItems="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}"
-                    >
+                                     SelectedItems="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}">
                         <dxmvvm:Interaction.Behaviors>
                             <dxg:GridDragDropManager x:Name="dragDropManager" Drop="dragDropManager_Drop" />
-                            <dxmvvm:EventToCommand Command="{Binding DataContext.MasterRowExpandedCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="MasterRowExpanded" />
-                            <dxmvvm:EventToCommand Command="{Binding DataContext.MasterRowCollapsedCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="MasterRowCollapsed" />
+                            <dxmvvm:EventToCommand
+                                Command="{Binding DataContext.MasterRowExpandedCommand, ElementName=userControl}"
+                                PassEventArgsToCommand="True" EventName="MasterRowExpanded" />
+                            <dxmvvm:EventToCommand
+                                Command="{Binding DataContext.MasterRowCollapsedCommand, ElementName=userControl}"
+                                PassEventArgsToCommand="True" EventName="MasterRowCollapsed" />
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="COMMODITY_GROUP.DESCRIPTION" Header="DESCRIPTION" VisibleIndex="0"/>
+                            <dxg:GridColumn FieldName="COMMODITY_GROUP.DESCRIPTION" Header="DESCRIPTION"
+                                            VisibleIndex="0" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.DetailDescriptor>
                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding CHILD_COMMODITY_GROUP}">
-                                <dxg:GridControl Name="gridControlChild"                                      
-                                    CurrentItem="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}"
-                                    SelectedItems="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}">
+                                <dxg:GridControl Name="gridControlChild"
+                                                 CurrentItem="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}"
+                                                 SelectedItems="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}">
                                     <dxg:GridControl.Columns>
-                                        <dxg:GridColumn FieldName="COMMODITY_GROUP.DESCRIPTION" Header="DESCRIPTION" VisibleIndex="0"/>
-                                        <dxg:GridColumn FieldName="COMMODITY_GROUP.GUID_COMMODITYCODE" Header="COMMODITY_CODE" VisibleIndex="5" >
+                                        <dxg:GridColumn FieldName="COMMODITY_GROUP.DESCRIPTION" Header="DESCRIPTION"
+                                                        VisibleIndex="0" />
+                                        <dxg:GridColumn FieldName="COMMODITY_GROUP.GUID_COMMODITYCODE"
+                                                        Header="COMMODITY_CODE" VisibleIndex="5">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxg:LookUpEditSettings
-                                                        Name="LookUpCHILD_COMMODITY_CODE"
-                                                        AutoComplete="True"
-                                                        DisplayMember="FULLCODE"
-                                                        ValueMember="GUID"
-                                                        IsTextEditable="true"
-                                                        PopupMinWidth="600"
-                                                        AutoPopulateColumns="False"
-                                                        NullValueButtonPlacement="None"
-                                                        ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" 
-                                                    >
+                                                    Name="LookUpCHILD_COMMODITY_CODE"
+                                                    AutoComplete="True"
+                                                    DisplayMember="FULLCODE"
+                                                    ValueMember="GUID"
+                                                    IsTextEditable="true"
+                                                    PopupMinWidth="600"
+                                                    AutoPopulateColumns="False"
+                                                    NullValueButtonPlacement="None"
+                                                    ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}">
                                                     <dxg:LookUpEditSettings.PopupContentTemplate>
-                                                        <ControlTemplate TargetType="ContentControl" >
-                                                            <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False">
+                                                        <ControlTemplate TargetType="ContentControl">
+                                                            <dxg:GridControl x:Name="PART_GridControl"
+                                                                             ShowBorder="False">
                                                                 <dxg:GridControl.Columns>
-                                                                    <dxg:GridColumn FieldName="CODE" VisibleIndex="10" AllowEditing="False" ReadOnly="True" />
-                                                                    <dxg:GridColumn FieldName="FULLCODE" VisibleIndex="20" AllowEditing="False" ReadOnly="True" Header="FULLCODE" />
-                                                                    <dxg:GridColumn FieldName="NAME" VisibleIndex="30" AllowEditing="False" ReadOnly="True" />
-                                                                    <dxg:GridColumn FieldName="DISCIPLINE.NAME" Header="DISCIPLINE" ReadOnly="True" VisibleIndex="50" />
+                                                                    <dxg:GridColumn FieldName="CODE" VisibleIndex="10"
+                                                                                    AllowEditing="False"
+                                                                                    ReadOnly="True" />
+                                                                    <dxg:GridColumn FieldName="FULLCODE"
+                                                                                    VisibleIndex="20"
+                                                                                    AllowEditing="False"
+                                                                                    ReadOnly="True" Header="FULLCODE" />
+                                                                    <dxg:GridColumn FieldName="NAME" VisibleIndex="30"
+                                                                                    AllowEditing="False"
+                                                                                    ReadOnly="True" />
+                                                                    <dxg:GridColumn FieldName="DISCIPLINE.NAME"
+                                                                                    Header="DISCIPLINE" ReadOnly="True"
+                                                                                    VisibleIndex="50" />
                                                                     <dxg:GridColumn FieldName="TYPE" VisibleIndex="70" />
                                                                     <dxg:GridColumn FieldName="SPEC" VisibleIndex="80" />
-                                                                    <dxg:GridColumn FieldName="DESCRIPTION" VisibleIndex="90" />
+                                                                    <dxg:GridColumn FieldName="DESCRIPTION"
+                                                                                    VisibleIndex="90" />
                                                                     <dxg:GridColumn FieldName="UOM" VisibleIndex="100" />
                                                                 </dxg:GridControl.Columns>
                                                                 <dxg:GridControl.View>
-                                                                    <dxg:TreeListView x:Name="treeListView1" NavigationStyle="Cell" MultiSelectMode="Row" TreeDerivationMode="Selfreference" KeyFieldName="GUID" ParentFieldName="GUID_PARENT" />
+                                                                    <dxg:TreeListView x:Name="treeListView1"
+                                                                                      NavigationStyle="Cell"
+                                                                                      MultiSelectMode="Row"
+                                                                                      TreeDerivationMode="Selfreference"
+                                                                                      KeyFieldName="GUID"
+                                                                                      ParentFieldName="GUID_PARENT" />
                                                                 </dxg:GridControl.View>
                                                             </dxg:GridControl>
                                                         </ControlTemplate>
@@ -125,9 +165,12 @@
                                         </dxg:GridColumn>
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView Name="tableView1" Style="{StaticResource ChildTableViewTemplate}" >
+                                        <dxg:TableView Name="tableView1"
+                                                       Style="{StaticResource ChildTableViewTemplate}">
                                             <dxmvvm:Interaction.Behaviors>
-                                                <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="CellValueChanging" />
+                                                <dxmvvm:EventToCommand
+                                                    Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}"
+                                                    PassEventArgsToCommand="True" EventName="CellValueChanging" />
                                             </dxmvvm:Interaction.Behaviors>
                                         </dxg:TableView>
                                     </dxg:GridControl.View>
@@ -141,16 +184,33 @@
                             <dxg:GridSummaryItem SummaryType="Count" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
-                            <dxg:TableView Name="tableView" IsDetailButtonVisibleBinding="{Binding Row.COMMODITY_GROUP.ISQUANTIFIABLE, Converter={StaticResource BooleanNegationConverter}}" Style="{StaticResource DefaultTableViewTemplate}" >
+                            <dxg:TableView Name="tableView"
+                                           IsDetailButtonVisibleBinding="{Binding Row.COMMODITY_GROUP.ISQUANTIFIABLE, Converter={StaticResource BooleanNegationConverter}}"
+                                           Style="{StaticResource DefaultTableViewTemplate}">
                                 <dxmvvm:Interaction.Behaviors>
-                                    <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="CellValueChanging" />
+                                    <dxmvvm:EventToCommand
+                                        Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}"
+                                        PassEventArgsToCommand="True" EventName="CellValueChanging" />
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:TableView.RowCellMenuCustomizations>
-                                    <dxb:BarButtonItem Content="Bulk Edit" Command="{Binding View.DataContext.BulkColumnEditCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" Command="{Binding View.DataContext.FillUpCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Content="Fill Down" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" Command="{Binding View.DataContext.FillDownCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Content="Delete" Command="{Binding View.DataContext.BulkDeleteCommand}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Refresh" Command="{Binding View.DataContext.RefreshCommand}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Bulk Edit"
+                                                       Command="{Binding View.DataContext.BulkColumnEditCommand}"
+                                                       CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                                                       Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Fill Up"
+                                                       Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}"
+                                                       Command="{Binding View.DataContext.FillUpCommand}"
+                                                       CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                                    <dxb:BarButtonItem Content="Fill Down"
+                                                       Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}"
+                                                       Command="{Binding View.DataContext.FillDownCommand}"
+                                                       CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                                    <dxb:BarButtonItem Content="Delete"
+                                                       Command="{Binding View.DataContext.BulkDeleteCommand}"
+                                                       Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Refresh"
+                                                       Command="{Binding View.DataContext.RefreshCommand}"
+                                                       Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>

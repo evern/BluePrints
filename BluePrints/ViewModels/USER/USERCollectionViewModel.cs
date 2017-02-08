@@ -18,13 +18,17 @@ using BluePrints.Common.Helpers;
 
 namespace BluePrints.ViewModels
 {
-    public class USERCollectionViewModelWrapper : CollectionViewModelsWrapper<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork, CollectionViewModel<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>>
+    public class USERCollectionViewModelWrapper :
+        CollectionViewModelsWrapper
+        <USER, USER, Guid, IBluePrintsEntitiesUnitOfWork,
+            CollectionViewModel<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
         /// <summary>
         /// Creates a new instance of USERCollectionViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static USERCollectionViewModelWrapper Create(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        public static USERCollectionViewModelWrapper Create(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
             return ViewModelSource.Create(() => new USERCollectionViewModelWrapper(unitOfWorkFactory));
         }
@@ -35,28 +39,32 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the USERCollectionViewModelWrapper type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected USERCollectionViewModelWrapper(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        protected USERCollectionViewModelWrapper(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
 
         #region Database Operations
-        IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
+            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
         protected override void InitializeParameters(object parameter)
         {
-
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
         {
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddEntitiesLoader<ROLE, ROLE, Guid, IBluePrintsEntitiesUnitOfWork>(0, bluePrintsUnitOfWorkFactory, x => x.ROLES, null, null, null, OnAfterEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<ROLE, ROLE, Guid, IBluePrintsEntitiesUnitOfWork>(0,
+                bluePrintsUnitOfWorkFactory, x => x.ROLES, null, null, null, OnAfterEntitiesChanged);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(this.bluePrintsUnitOfWorkFactory, x => x.USERS);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.USERS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoader.CreateCollectionViewModel()));
         }
 
@@ -71,23 +79,23 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
 
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
+            object sender)
         {
             //Since this is a simple model, it will be handled natively
             return;
         }
+
         #endregion
 
         #region View Properties
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
         protected override string ViewName
         {
-            get
-            {
-                return "USERCollectionViewModelWrapper";
-            }
+            get { return "USERCollectionViewModelWrapper"; }
         }
 
         public IEnumerable<ROLE> ROLECollection
@@ -100,21 +108,27 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
+
         #endregion
 
         #region View Commands
-        IDialogService USERImportDialogService { get { return this.GetRequiredService<IDialogService>("USERImportDialogService"); } }
+
+        private IDialogService USERImportDialogService
+        {
+            get { return this.GetRequiredService<IDialogService>("USERImportDialogService"); }
+        }
 
         public void Import()
         {
             var selectEntitiesViewModel = USERSelectionViewModel.Create(MainViewModel.Entities);
-            if (USERImportDialogService.ShowDialog(MessageButton.OKCancel, "Select Users to Import", "USERSelectionView", selectEntitiesViewModel) == MessageResult.OK)
-            {
+            if (
+                USERImportDialogService.ShowDialog(MessageButton.OKCancel, "Select Users to Import", "USERSelectionView",
+                    selectEntitiesViewModel) == MessageResult.OK)
                 MainViewModel.BulkSave(selectEntitiesViewModel.SelectedEntities);
-            }
 
             selectEntitiesViewModel = null;
         }
+
         #endregion
     }
 }

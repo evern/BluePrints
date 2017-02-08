@@ -1,6 +1,6 @@
 namespace BluePrints.Data
 {
-    using BluePrints.Data.Attributes;
+    using Attributes;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -10,6 +10,5 @@ namespace BluePrints.Data
     [ConstraintAttributes("MAX_PERCENTAGE")]
     public partial class DELIVERABLES_STATUS
     {
-
     }
 }

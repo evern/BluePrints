@@ -14,9 +14,9 @@ using DevExpress.Data.Async.Helpers;
 
 namespace BluePrints.Common.DataModel.DesignTime
 {
-    class DesignTimeUnitOfWorkFactory<TUnitOfWork> : IUnitOfWorkFactory<TUnitOfWork> where TUnitOfWork : IUnitOfWork
+    internal class DesignTimeUnitOfWorkFactory<TUnitOfWork> : IUnitOfWorkFactory<TUnitOfWork> where TUnitOfWork : IUnitOfWork
     {
-        Func<TUnitOfWork> getUnitOfWork;
+        private Func<TUnitOfWork> getUnitOfWork;
 
         public DesignTimeUnitOfWorkFactory(Func<TUnitOfWork> getUnitOfWork)
         {
@@ -28,9 +28,10 @@ namespace BluePrints.Common.DataModel.DesignTime
             return getUnitOfWork();
         }
 
-        IInstantFeedbackSource<TProjection> IUnitOfWorkFactory<TUnitOfWork>.CreateInstantFeedbackSource<TEntity, TProjection, TPrimaryKey>(
-            Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
-            Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection)
+        IInstantFeedbackSource<TProjection> IUnitOfWorkFactory<TUnitOfWork>.CreateInstantFeedbackSource
+            <TEntity, TProjection, TPrimaryKey>(
+                Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
+                Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection)
         {
             return new DesignTimeInstantFeedbackSource<TProjection, TPrimaryKey>();
         }

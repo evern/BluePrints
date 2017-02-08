@@ -22,11 +22,11 @@ namespace BluePrints.Common.ViewModel
     /// </summary>
     /// <typeparam name="TEntity">An entity type.</typeparam>
     /// <typeparam name="TUnitOfWork">A unit of work type.</typeparam>
-    public partial class ReadOnlyCollectionViewModel<TEntity, TUnitOfWork> : ReadOnlyCollectionViewModel<TEntity, TEntity, TUnitOfWork>
+    public partial class ReadOnlyCollectionViewModel<TEntity, TUnitOfWork> :
+        ReadOnlyCollectionViewModel<TEntity, TEntity, TUnitOfWork>
         where TEntity : class
         where TUnitOfWork : IUnitOfWork
     {
-
         /// <summary>
         /// Creates a new instance of ReadOnlyCollectionViewModel as a POCO view model.
         /// </summary>
@@ -38,7 +38,11 @@ namespace BluePrints.Common.ViewModel
             Func<TUnitOfWork, IReadOnlyRepository<TEntity>> getRepositoryFunc,
             Func<IRepositoryQuery<TEntity>, IQueryable<TEntity>> projection = null)
         {
-            return ViewModelSource.Create(() => new ReadOnlyCollectionViewModel<TEntity, TUnitOfWork>(unitOfWorkFactory, getRepositoryFunc, projection));
+            return
+                ViewModelSource.Create(
+                    () =>
+                        new ReadOnlyCollectionViewModel<TEntity, TUnitOfWork>(unitOfWorkFactory, getRepositoryFunc,
+                            projection));
         }
 
         /// <summary>
@@ -64,24 +68,29 @@ namespace BluePrints.Common.ViewModel
     /// <typeparam name="TEntity">A repository entity type.</typeparam>
     /// <typeparam name="TProjection">A projection entity type.</typeparam>
     /// <typeparam name="TUnitOfWork">A unit of work type.</typeparam>
-    public partial class ReadOnlyCollectionViewModel<TEntity, TProjection, TUnitOfWork> : ReadOnlyCollectionViewModelBase<TEntity, TProjection, TUnitOfWork>
+    public partial class ReadOnlyCollectionViewModel<TEntity, TProjection, TUnitOfWork> :
+        ReadOnlyCollectionViewModelBase<TEntity, TProjection, TUnitOfWork>
         where TEntity : class
         where TProjection : class
         where TUnitOfWork : IUnitOfWork
     {
-
         /// <summary>
         /// Creates a new instance of ReadOnlyCollectionViewModel as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
         /// <param name="getRepositoryFunc">A function that returns the repository representing entities of a given type.</param>
         /// <param name="projection">A LINQ function used to customize a query for entities. The parameter, for example, can be used for sorting data and/or for projecting data to a custom type that does not match the repository entity type.</param>
-        public static ReadOnlyCollectionViewModel<TEntity, TProjection, TUnitOfWork> CreateReadOnlyProjectionCollectionViewModel(
-            IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory,
-            Func<TUnitOfWork, IReadOnlyRepository<TEntity>> getRepositoryFunc,
-            Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection)
+        public static ReadOnlyCollectionViewModel<TEntity, TProjection, TUnitOfWork>
+            CreateReadOnlyProjectionCollectionViewModel(
+                IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory,
+                Func<TUnitOfWork, IReadOnlyRepository<TEntity>> getRepositoryFunc,
+                Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection)
         {
-            return ViewModelSource.Create(() => new ReadOnlyCollectionViewModel<TEntity, TProjection, TUnitOfWork>(unitOfWorkFactory, getRepositoryFunc, projection));
+            return
+                ViewModelSource.Create(
+                    () =>
+                        new ReadOnlyCollectionViewModel<TEntity, TProjection, TUnitOfWork>(unitOfWorkFactory,
+                            getRepositoryFunc, projection));
         }
 
         /// <summary>
@@ -108,12 +117,12 @@ namespace BluePrints.Common.ViewModel
     /// <typeparam name="TProjection">A projection entity type.</typeparam>
     /// <typeparam name="TUnitOfWork">A unit of work type.</typeparam>
     [POCOViewModel]
-    public abstract class ReadOnlyCollectionViewModelBase<TEntity, TProjection, TUnitOfWork> : EntitiesViewModel<TEntity, TProjection, TUnitOfWork>
+    public abstract class ReadOnlyCollectionViewModelBase<TEntity, TProjection, TUnitOfWork> :
+        EntitiesViewModel<TEntity, TProjection, TUnitOfWork>
         where TEntity : class
         where TProjection : class
         where TUnitOfWork : IUnitOfWork
     {
-
         /// <summary>
         /// Initializes a new instance of the ReadOnlyCollectionViewModelBase class.
         /// </summary>
@@ -124,7 +133,7 @@ namespace BluePrints.Common.ViewModel
             IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory,
             Func<TUnitOfWork, IReadOnlyRepository<TEntity>> getRepositoryFunc,
             Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection
-            ) : base(unitOfWorkFactory, getRepositoryFunc, projection)
+        ) : base(unitOfWorkFactory, getRepositoryFunc, projection)
         {
             //BluePrints Modification Start
             //Messenger.Default.Register<CloseAllMessage>(this, m =>
@@ -158,11 +167,17 @@ namespace BluePrints.Common.ViewModel
             LoadEntities(false);
         }
 
-        protected ILayoutSerializationService LayoutSerializationService { get { return this.GetService<ILayoutSerializationService>(); } }
+        protected ILayoutSerializationService LayoutSerializationService
+        {
+            get { return this.GetService<ILayoutSerializationService>(); }
+        }
 
-        protected virtual string ViewName { get { return typeof(TEntity).Name + "ReadonlyCollectionView"; } }
+        protected virtual string ViewName
+        {
+            get { return typeof(TEntity).Name + "ReadonlyCollectionView"; }
+        }
 
-        bool isLoaded = false;
+        private bool isLoaded = false;
 
         [Display(AutoGenerateField = false)]
         public virtual void OnLoaded()
@@ -175,9 +190,7 @@ namespace BluePrints.Common.ViewModel
         public virtual void OnUnloaded()
         {
             if (isLoaded)
-            {
                 SaveLayout();
-            }
         }
 
         public void SaveLayout()
@@ -213,7 +226,9 @@ namespace BluePrints.Common.ViewModel
             this.RaiseCanExecuteChanged(x => x.Refresh());
         }
 
-        protected virtual void OnSelectedEntityChanged() { }
+        protected virtual void OnSelectedEntityChanged()
+        {
+        }
 
 
         protected virtual void OnFilterExpressionChanged()

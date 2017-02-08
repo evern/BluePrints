@@ -33,11 +33,12 @@ namespace BluePrints.Common.ViewModel
     /// <typeparam name="TEntity">An entity type.</typeparam>
     /// <typeparam name="TPrimaryKey">A primary key value type.</typeparam>
     /// <typeparam name="TUnitOfWork">A unit of work type.</typeparam>
-    public partial class CollectionViewModel<TEntity, TPrimaryKey, TUnitOfWork> : CollectionViewModel<TEntity, TEntity, TPrimaryKey, TUnitOfWork>, ISupportUndoRedo<TEntity>, ISupportFiltering<TEntity>
+    public partial class CollectionViewModel<TEntity, TPrimaryKey, TUnitOfWork> :
+        CollectionViewModel<TEntity, TEntity, TPrimaryKey, TUnitOfWork>, ISupportUndoRedo<TEntity>,
+        ISupportFiltering<TEntity>
         where TEntity : class
         where TUnitOfWork : IUnitOfWork
     {
-
         //#region Data Operations
         ///// <summary>
         ///// Converts clipboard text into entity values and saves to database

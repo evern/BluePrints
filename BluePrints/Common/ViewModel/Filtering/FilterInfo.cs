@@ -15,7 +15,10 @@ namespace BluePrints.Common.ViewModel.Filtering
 
     public class FilterInfoList : List<FilterInfo>
     {
-        public FilterInfoList() { }
+        public FilterInfoList()
+        {
+        }
+
         public FilterInfoList(IEnumerable<FilterInfo> filters)
             : base(filters)
         {
@@ -24,9 +27,7 @@ namespace BluePrints.Common.ViewModel.Filtering
         public void AddUnique(FilterInfo filterInfo)
         {
             if (!this.Any(x => x.Name == filterInfo.Name))
-            {
-                this.Add(filterInfo);
-            }
+                Add(filterInfo);
         }
     }
 }

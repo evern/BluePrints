@@ -31,8 +31,9 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new LoginViewModel());
         }
 
-        IEnumerable<USER> USERS { get; set; }
-        DispatcherTimer delayedHideDispatcher;
+        private IEnumerable<USER> USERS { get; set; }
+        private DispatcherTimer delayedHideDispatcher;
+
         protected LoginViewModel()
         {
             delayedHideDispatcher = new DispatcherTimer();
@@ -43,7 +44,7 @@ namespace BluePrints.ViewModels
             Application.Current.Dispatcher.BeginInvoke(new Action(() => EVERNPCLogin()));
         }
 
-        void delayedHideDispatcher_Tick(object sender, EventArgs e)
+        private void delayedHideDispatcher_Tick(object sender, EventArgs e)
         {
             delayedHideDispatcher.Stop();
             if (HideControlCallBack != null)
@@ -64,10 +65,11 @@ namespace BluePrints.ViewModels
 
         public void Login()
         {
-            if ((UserName == CommonResources.AdminUsername && UserPassword == CommonResources.AdminPassword) || UserAuthenticate())
+            if (UserName == CommonResources.AdminUsername && UserPassword == CommonResources.AdminPassword ||
+                UserAuthenticate())
             {
                 if (UserName == CommonResources.AdminUsername)
-                    LoginCredentials.CurrentUser = new USER() { NAME = CommonResources.AdminUsername };
+                    LoginCredentials.CurrentUser = new USER() {NAME = CommonResources.AdminUsername};
                 else
                     LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME == UserName);
 
@@ -76,19 +78,24 @@ namespace BluePrints.ViewModels
                 delayedHideDispatcher.Start();
             }
             else
+            {
                 SetUsernamePasswordError();
+            }
         }
 
-        protected IMessageBoxService MessageBoxService { get { return this.GetRequiredService<IMessageBoxService>(); } }
+        protected IMessageBoxService MessageBoxService
+        {
+            get { return this.GetRequiredService<IMessageBoxService>(); }
+        }
 
         public void Exit()
         {
-            System.Environment.Exit(1);
+            Environment.Exit(1);
         }
 
         private bool UserAuthenticate()
         {
-            USER user = USERS.FirstOrDefault(x => x.NAME == UserName);
+            var user = USERS.FirstOrDefault(x => x.NAME == UserName);
             if (user == null)
             {
                 ShowError(false, "Username not found");
@@ -103,21 +110,19 @@ namespace BluePrints.ViewModels
                 }
 
                 if (UserName != null && UserPassword != null)
-                {
                     if (ActiveDirectory.Authenticate(UserName, UserPassword))
                     {
                         ShowError(false, null);
                         ShowError(true, null);
-                        XMLHelpers.UpdateSettingsXML(new XMLSettings() { Username = UserName.Trim() });
+                        XMLHelpers.UpdateSettingsXML(new XMLSettings() {Username = UserName.Trim()});
                         return true;
                     }
                     else
                     {
                         SetUsernamePasswordError();
-                        XMLHelpers.UpdateSettingsXML(new XMLSettings() { Username = string.Empty });
+                        XMLHelpers.UpdateSettingsXML(new XMLSettings() {Username = string.Empty});
                         return false;
                     }
-                }
                 else
                     return false;
             }
@@ -132,6 +137,7 @@ namespace BluePrints.ViewModels
         public Action ShowControlCallBack;
         public Action HideControlCallBack;
         public Action<bool, string> ShowErrorCallBack;
+
         public void ShowThisControl()
         {
             if (ShowControlCallBack != null)
@@ -146,7 +152,7 @@ namespace BluePrints.ViewModels
 
         public void ShowMainWindow()
         {
-            MainWindow mainWindow = new MainWindow();
+            var mainWindow = new MainWindow();
             //mainWindow.ShowLoginWindow = this.ShowThisControl;
             mainWindow.Show();
         }
@@ -154,9 +160,7 @@ namespace BluePrints.ViewModels
         public void Window_KeyUp(KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
-            {
                 Login();
-            }
         }
     }
 }

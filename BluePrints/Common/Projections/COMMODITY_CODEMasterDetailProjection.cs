@@ -30,10 +30,12 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (this.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT == null || this.COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID == null)
+                if (COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT == null ||
+                    COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID == null)
                     return string.Empty;
                 else
-                    return COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT.ToString() + COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID.ToString();
+                    return COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT.ToString() +
+                           COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID.ToString();
             }
         }
 
@@ -46,16 +48,26 @@ namespace BluePrints.Common.Projections
 
         public string COMMODITY_GROUP_CODE_SELECTION
         {
-            get { return COMMODITY_CODE.GUID.ToString() + (COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT == null ? Guid.Empty.ToString() : COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT.ToString()) + COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID.ToString(); }
+            get
+            {
+                return COMMODITY_CODE.GUID.ToString() +
+                       (COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT == null
+                           ? Guid.Empty.ToString()
+                           : COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT.ToString()) +
+                       COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID.ToString();
+            }
         }
-
     }
 
     public static class COMMODITY_CODEMasterDetailProjectionQueries
     {
-        public static IQueryable<COMMODITY_CODEMasterDetailProjection> transformCOMMODITY_CODE(IQueryable<COMMODITY_CODE> COMMODITY_CODES)
+        public static IQueryable<COMMODITY_CODEMasterDetailProjection> transformCOMMODITY_CODE(
+            IQueryable<COMMODITY_CODE> COMMODITY_CODES)
         {
-            return COMMODITY_CODES.ToArray().AsQueryable().Select(x => new COMMODITY_CODEMasterDetailProjection() { GUID = x.GUID, COMMODITY_CODE = x });
+            return
+                COMMODITY_CODES.ToArray()
+                    .AsQueryable()
+                    .Select(x => new COMMODITY_CODEMasterDetailProjection() {GUID = x.GUID, COMMODITY_CODE = x});
         }
     }
 }

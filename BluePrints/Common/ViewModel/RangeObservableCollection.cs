@@ -28,17 +28,15 @@ namespace BluePrints.Common.ViewModel
 
             _suppressNotification = true;
 
-            foreach (T item in list)
-            {
+            foreach (var item in list)
                 Add(item);
-            }
             _suppressNotification = false;
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         public void InsertRangeBackground(IEnumerable<T> list)
         {
-            BackgroundWorker backgroundWorker = new BackgroundWorker();
+            var backgroundWorker = new BackgroundWorker();
             backgroundWorker.WorkerSupportsCancellation = true;
             backgroundWorker.DoWork += backgroundWorker_DoInsert;
             backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
@@ -47,27 +45,27 @@ namespace BluePrints.Common.ViewModel
 
         public void RemoveRangeBackground(T[] list)
         {
-            BackgroundWorker backgroundWorker = new BackgroundWorker();
+            var backgroundWorker = new BackgroundWorker();
             backgroundWorker.WorkerSupportsCancellation = true;
             backgroundWorker.DoWork += backgroundWorker_DoRemove;
             backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
             backgroundWorker.RunWorkerAsync(list);
         }
 
-        void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
-        void backgroundWorker_DoInsert(object sender, DoWorkEventArgs e)
+        private void backgroundWorker_DoInsert(object sender, DoWorkEventArgs e)
         {
-            IEnumerable<T> list = (IEnumerable<T>)e.Argument;
+            var list = (IEnumerable<T>) e.Argument;
             InsertRange(list);
         }
 
-        void backgroundWorker_DoRemove(object sender, DoWorkEventArgs e)
+        private void backgroundWorker_DoRemove(object sender, DoWorkEventArgs e)
         {
-            T[] list = (T[])e.Argument;
+            var list = (T[]) e.Argument;
             RemoveRange(list);
         }
 
@@ -78,10 +76,8 @@ namespace BluePrints.Common.ViewModel
 
             _suppressNotification = true;
 
-            foreach (T item in list)
-            {
+            foreach (var item in list)
                 Insert(0, item);
-            }
             _suppressNotification = false;
         }
 
@@ -97,12 +93,10 @@ namespace BluePrints.Common.ViewModel
 
             _suppressNotification = true;
 
-            for (int i = 0; i < list.Count();i++ )
-            {
+            for (var i = 0; i < list.Count(); i++)
                 Remove(list[i]);
-            }
 
-            _suppressNotification = false; 
+            _suppressNotification = false;
         }
     }
 }

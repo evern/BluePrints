@@ -18,9 +18,8 @@ namespace BluePrints.Common.DataModel.EntityFramework
         where TEntity : class
         where TDbContext : DbContext
     {
-
-        readonly Func<TDbContext, DbSet<TEntity>> dbSetAccessor;
-        readonly DbUnitOfWork<TDbContext> unitOfWork;
+        private readonly Func<TDbContext, DbSet<TEntity>> dbSetAccessor;
+        private readonly DbUnitOfWork<TDbContext> unitOfWork;
 
         /// <summary>
         /// Initializes a new instance of DbReadOnlyRepository class.
@@ -45,10 +44,12 @@ namespace BluePrints.Common.DataModel.EntityFramework
         }
 
         #region IReadOnlyRepository
+
         IUnitOfWork IReadOnlyRepository<TEntity>.UnitOfWork
         {
             get { return unitOfWork; }
         }
+
         #endregion
     }
 
@@ -56,15 +57,17 @@ namespace BluePrints.Common.DataModel.EntityFramework
     /// DbRepositoryQuery is an IRepositoryQuery interface implementation that is an extension of IQueryable designed to specify the related objects to include in query results.
     /// </summary>
     /// <typeparam name="TEntity">An entity type.</typeparam>
-    public class DbRepositoryQuery<TEntity> : RepositoryQueryBase<TEntity>, IRepositoryQuery<TEntity> where TEntity : class
+    public class DbRepositoryQuery<TEntity> : RepositoryQueryBase<TEntity>, IRepositoryQuery<TEntity>
+        where TEntity : class
     {
-
         /// <summary>
         /// Initializes a new instance of the DesignTimeRepositoryQuery class.
         /// </summary>
         /// <param name="getQueryable">A function that returns an IQueryable instance which is used by DbRepositoryQuery to perform queries.</param>
         public DbRepositoryQuery(Func<IQueryable<TEntity>> getQueryable)
-            : base(getQueryable) { }
+            : base(getQueryable)
+        {
+        }
 
         IRepositoryQuery<TEntity> IRepositoryQuery<TEntity>.Include<TProperty>(Expression<Func<TEntity, TProperty>> path)
         {

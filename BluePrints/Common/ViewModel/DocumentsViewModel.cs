@@ -23,7 +23,7 @@ namespace BluePrints.Common.ViewModel
         where TModule : ModuleDescription<TModule>
         where TUnitOfWork : IUnitOfWork
     {
-        const string ViewLayoutName = "DocumentViewModel";
+        private const string ViewLayoutName = "DocumentViewModel";
 
         protected readonly IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory;
 
@@ -34,18 +34,15 @@ namespace BluePrints.Common.ViewModel
         protected DocumentsViewModel(IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory)
         {
             this.unitOfWorkFactory = unitOfWorkFactory;
-            Modules = new RangeObservableCollection<TModule>();
-            Modules.AddRange(CreateModules());
-            
             //foreach (var module in Modules)
             //    Messenger.Default.Register<NavigateMessage<TModule>>(this, module, x => Show(x.Token));
             //Messenger.Default.Register<DestroyOrphanedDocumentsMessage>(this, x => DestroyOrphanedDocuments());
         }
 
-        void DestroyOrphanedDocuments()
+        private void DestroyOrphanedDocuments()
         {
             var orphans = this.GetOrphanedDocuments().Except(this.GetImmediateChildren());
-            foreach (IDocument orphan in orphans)
+            foreach (var orphan in orphans)
             {
                 orphan.DestroyOnClose = true;
                 orphan.Close();
@@ -60,13 +57,13 @@ namespace BluePrints.Common.ViewModel
         /// <summary>
         /// Navigation list that represents a collection of module descriptions.
         /// </summary>
-        public RangeObservableCollection<TModule> Modules { get; private set; }
+        public RangeObservableCollection<TModule> Modules { get; set; }
 
         /// <summary>
         /// A currently selected navigation list entry. This property is writable. When this property is assigned a new value, it triggers the navigating to the corresponding document.
         /// Since DocumentsViewModel is a POCO view model, this property will raise INotifyPropertyChanged.PropertyEvent when modified so it can be used as a binding source in views.
         /// </summary>
-		public virtual TModule SelectedModule { get; set; }
+        public virtual TModule SelectedModule { get; set; }
 
         /// <summary>
         /// A navigation list entry that corresponds to the currently active document. If the active document does not have the corresponding entry in the navigation list, the property value is null. This property is read-only.
@@ -104,15 +101,14 @@ namespace BluePrints.Common.ViewModel
             //BluePrints Customization
             //SaveLogicalLayout();
             if (LayoutSerializationService != null)
-            {
                 PersistentLayoutHelper.PersistentViewsLayout[ViewLayoutName] = LayoutSerializationService.Serialize();
-            }
 
             Messenger.Default.Send(new CloseAllMessage(cancelEventArgs, vm => true));
             PersistentLayoutHelper.SaveLayout();
         }
 
-        NavigationPaneVisibility navigationPaneVisibility { get; set; }
+        private NavigationPaneVisibility navigationPaneVisibility { get; set; }
+
         /// <summary>
         /// Contains a current state of the navigation pane.
         /// </summary>
@@ -137,7 +133,8 @@ namespace BluePrints.Common.ViewModel
         {
             if (module == null || DocumentManagerService == null)
                 return null;
-            IDocument document = DocumentManagerService.FindDocumentByIdOrCreate(module.DocumentType, x => CreateDocument(module));
+            var document = DocumentManagerService.FindDocumentByIdOrCreate(module.DocumentType,
+                x => CreateDocument(module));
             document.Show();
             return document;
         }
@@ -151,13 +148,11 @@ namespace BluePrints.Common.ViewModel
             IsLoaded = true;
             DocumentManagerService.ActiveDocumentChanged += OnActiveDocumentChanged;
             if (!RestoreLogicalLayout())
-            {
                 Show(module);
-            }
             PersistentLayoutHelper.TryDeserializeLayout(LayoutSerializationService, ViewLayoutName);
         }
 
-        bool documentChanging = false;
+        private bool documentChanging = false;
         //BluePrints Customization
         //void OnActiveDocumentChanged(object sender, ActiveDocumentChangedEventArgs e)
         //{
@@ -173,12 +168,30 @@ namespace BluePrints.Common.ViewModel
         //    }
         //}
 
-        protected IGroupedDocumentManagerService GroupedDocumentManagerService { get { return this.GetService<IGroupedDocumentManagerService>(); } }
-        protected IDocumentManagerService DocumentManagerService { get { return this.GetService<IDocumentManagerService>(); } }
-        protected ILayoutSerializationService LayoutSerializationService { get { return this.GetService<ILayoutSerializationService>("RootLayoutSerializationService"); } }
-        protected IDocumentManagerService WorkspaceDocumentManagerService { get { return this.GetService<IDocumentManagerService>("WorkspaceDocumentManagerService"); } }
+        protected IGroupedDocumentManagerService GroupedDocumentManagerService
+        {
+            get { return this.GetService<IGroupedDocumentManagerService>(); }
+        }
 
-        public virtual TModule DefaultModule { get { return Modules.First(); } }
+        protected IDocumentManagerService DocumentManagerService
+        {
+            get { return this.GetService<IDocumentManagerService>(); }
+        }
+
+        protected ILayoutSerializationService LayoutSerializationService
+        {
+            get { return this.GetService<ILayoutSerializationService>("RootLayoutSerializationService"); }
+        }
+
+        protected IDocumentManagerService WorkspaceDocumentManagerService
+        {
+            get { return this.GetService<IDocumentManagerService>("WorkspaceDocumentManagerService"); }
+        }
+
+        public virtual TModule DefaultModule
+        {
+            get { return Modules.First(); }
+        }
 
         protected bool IsLoaded { get; set; }
 
@@ -189,7 +202,8 @@ namespace BluePrints.Common.ViewModel
         }
 
         #region Custom Implementation
-        void OnActiveDocumentChanged(object sender, ActiveDocumentChangedEventArgs e)
+
+        private void OnActiveDocumentChanged(object sender, ActiveDocumentChangedEventArgs e)
         {
             if (e.NewDocument == null)
             {
@@ -198,7 +212,7 @@ namespace BluePrints.Common.ViewModel
             else
             {
                 documentChanging = true;
-                ActiveModule = Modules.FirstOrDefault(m => m.DocumentId.ToString() == (string)e.NewDocument.Id);
+                ActiveModule = Modules.FirstOrDefault(m => m.DocumentId.ToString() == (string) e.NewDocument.Id);
                 documentChanging = false;
             }
         }
@@ -210,21 +224,23 @@ namespace BluePrints.Common.ViewModel
         /// <param name="module">A navigation list entry specifying a document what to be opened.</param>
         public void Navigate()
         {
-            if (IsLoaded && !documentChanging && this.SelectedModule != null && !this.SelectedModule.DocumentId.ToString().ToUpper().Contains("CATEGORYVIEW"))
-                NavigateCore(this.SelectedModule);
+            if (IsLoaded && !documentChanging && SelectedModule != null &&
+                !SelectedModule.DocumentId.ToString().ToUpper().Contains("CATEGORYVIEW"))
+                NavigateCore(SelectedModule);
         }
 
         public IDocument NavigateCore(TModule module)
         {
             if (module == null || DocumentManagerService == null)
                 return null;
-            IDocument document = DocumentManagerService.FindDocumentByIdOrCreate(module.DocumentId, x => NavigateToDocument(module));
+            var document = DocumentManagerService.FindDocumentByIdOrCreate(module.DocumentId,
+                x => NavigateToDocument(module));
 
             document.Show();
             return document;
         }
 
-        IDocument NavigateToDocument(TModule module)
+        private IDocument NavigateToDocument(TModule module)
         {
             var document = DocumentManagerService.CreateDocument(module.DocumentType, module.DocumentParameter, this);
             document.Title = GetModuleTitle(module);
@@ -236,10 +252,11 @@ namespace BluePrints.Common.ViewModel
         protected virtual void OnActiveModuleChanged(TModule oldModule)
         {
             SelectedModule = ActiveModule;
-        } 
+        }
+
         #endregion
 
-        IDocument CreateDocument(TModule module)
+        private IDocument CreateDocument(TModule module)
         {
             var document = DocumentManagerService.CreateDocument(module.DocumentType, null, this);
             document.Title = GetModuleTitle(module);
@@ -252,9 +269,13 @@ namespace BluePrints.Common.ViewModel
             return module.ModuleTitle;
         }
 
-        protected Func<TModule, object> GetPeekCollectionViewModelFactory<TEntity, TPrimaryKey>(Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc) where TEntity : class
+        protected Func<TModule, object> GetPeekCollectionViewModelFactory<TEntity, TPrimaryKey>(
+            Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc) where TEntity : class
         {
-            return module => PeekCollectionViewModel<TModule, TEntity, TPrimaryKey, TUnitOfWork>.Create(module, unitOfWorkFactory, getRepositoryFunc).SetParentViewModel(this);
+            return
+                module =>
+                    PeekCollectionViewModel<TModule, TEntity, TPrimaryKey, TUnitOfWork>.Create(module, unitOfWorkFactory,
+                        getRepositoryFunc).SetParentViewModel(this);
         }
 
         protected abstract TModule[] CreateModules();
@@ -306,10 +327,11 @@ namespace BluePrints.Common.ViewModel
         /// <param name="documentType">A string value that specifies the view type of corresponding document.</param>
         /// <param name="group">A navigation list entry group name.</param>
         /// <param name="peekCollectionViewModelFactory">An optional parameter that provides a function used to create a PeekCollectionViewModel that provides quick navigation between collection views.</param>
-        public ModuleDescription(string title, string documentType)
+        public ModuleDescription(string title, string documentType, TreeViewProperty treeViewProperty)
         {
             ModuleTitle = title;
             DocumentType = documentType;
+            TreeViewProperty = treeViewProperty;
         }
 
         /// <summary>
@@ -326,13 +348,12 @@ namespace BluePrints.Common.ViewModel
     /// <summary>
     /// Represents a navigation pane state.
     /// </summary>
-	public enum NavigationPaneVisibility
+    public enum NavigationPaneVisibility
     {
-
         /// <summary>
         /// Navigation pane is visible and minimized.
         /// </summary>
-	    Minimized,
+        Minimized,
 
         /// <summary>
         /// Navigation pane is visible and not minimized.

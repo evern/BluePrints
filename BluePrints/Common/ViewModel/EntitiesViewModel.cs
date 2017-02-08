@@ -28,7 +28,6 @@ namespace BluePrints.Common.ViewModel
         where TProjection : class
         where TUnitOfWork : IUnitOfWork
     {
-
         /// <summary>
         /// Initializes a new instance of the EntitiesViewModel class.
         /// </summary>
@@ -58,6 +57,7 @@ namespace BluePrints.Common.ViewModel
         where TUnitOfWork : IUnitOfWork
     {
         #region inner classes
+
         protected interface IEntitiesChangeTracker
         {
             void RegisterMessageHandler();
@@ -66,9 +66,17 @@ namespace BluePrints.Common.ViewModel
 
         protected class EntitiesChangeTracker<TPrimaryKey> : IEntitiesChangeTracker
         {
-            readonly EntitiesViewModelBase<TEntity, TProjection, TUnitOfWork> owner;
-            ObservableCollection<TProjection> Entities { get { return owner.Entities; } }
-            IRepository<TEntity, TPrimaryKey> Repository { get { return (IRepository<TEntity, TPrimaryKey>)owner.ReadOnlyRepository; } }
+            private readonly EntitiesViewModelBase<TEntity, TProjection, TUnitOfWork> owner;
+
+            private ObservableCollection<TProjection> Entities
+            {
+                get { return owner.Entities; }
+            }
+
+            private IRepository<TEntity, TPrimaryKey> Repository
+            {
+                get { return (IRepository<TEntity, TPrimaryKey>) owner.ReadOnlyRepository; }
+            }
 
             public EntitiesChangeTracker(EntitiesViewModelBase<TEntity, TProjection, TUnitOfWork> owner)
             {
@@ -88,30 +96,33 @@ namespace BluePrints.Common.ViewModel
 
             public TProjection FindLocalProjectionByKey(TPrimaryKey primaryKey)
             {
-                var primaryKeyEqualsExpression = RepositoryExtensions.GetProjectionPrimaryKeyEqualsExpression<TEntity, TProjection, TPrimaryKey>(Repository, primaryKey);
+                var primaryKeyEqualsExpression =
+                    RepositoryExtensions.GetProjectionPrimaryKeyEqualsExpression<TEntity, TProjection, TPrimaryKey>(
+                        Repository, primaryKey);
                 return Entities.AsQueryable().FirstOrDefault(primaryKeyEqualsExpression);
             }
 
             public TProjection FindActualProjectionByKey(TPrimaryKey primaryKey)
             {
                 var projectionEntity = Repository.FindActualProjectionByKey(owner.Projection, primaryKey);
-                if (projectionEntity != null && ExpressionHelper.IsFitEntity(Repository.Find(primaryKey), owner.GetFilterExpression()))
+                if (projectionEntity != null &&
+                    ExpressionHelper.IsFitEntity(Repository.Find(primaryKey), owner.GetFilterExpression()))
                 {
-                    owner.OnEntitiesLoaded(GetUnitOfWork(Repository), new TProjection[] { projectionEntity });
+                    owner.OnEntitiesLoaded(GetUnitOfWork(Repository), new TProjection[] {projectionEntity});
                     return projectionEntity;
                 }
                 return null;
             }
 
-            void OnMessage(EntityMessage<TEntity, TPrimaryKey> message)
+            private void OnMessage(EntityMessage<TEntity, TPrimaryKey> message)
             {
-
                 if (!owner.IsLoaded)
                     return;
 
-                bool continueOnMessage = true;
+                var continueOnMessage = true;
                 if (owner.OnBeforeEntitiesChangedCallBack != null)
-                    continueOnMessage = owner.OnBeforeEntitiesChangedCallBack(message.PrimaryKey, typeof(TEntity), message.MessageType, message.Sender);
+                    continueOnMessage = owner.OnBeforeEntitiesChangedCallBack(message.PrimaryKey, typeof(TEntity),
+                        message.MessageType, message.Sender);
 
                 if (!continueOnMessage)
                     return;
@@ -130,10 +141,11 @@ namespace BluePrints.Common.ViewModel
                 }
 
                 if (owner.OnAfterEntitiesChangedCallBack != null)
-                    owner.OnAfterEntitiesChangedCallBack(message.PrimaryKey, typeof(TEntity), message.MessageType, message.Sender);
+                    owner.OnAfterEntitiesChangedCallBack(message.PrimaryKey, typeof(TEntity), message.MessageType,
+                        message.Sender);
             }
 
-            void OnEntityAdded(TPrimaryKey primaryKey)
+            private void OnEntityAdded(TPrimaryKey primaryKey)
             {
                 var projectionEntity = FindActualProjectionByKey(primaryKey);
                 var entity = FindLocalProjectionByKey(primaryKey);
@@ -141,14 +153,14 @@ namespace BluePrints.Common.ViewModel
                     Entities.Add(projectionEntity);
             }
 
-            void OnEntityChanged(TPrimaryKey primaryKey)
+            private void OnEntityChanged(TPrimaryKey primaryKey)
             {
                 var existingProjectionEntity = FindLocalProjectionByKey(primaryKey);
                 var projectionEntity = FindActualProjectionByKey(primaryKey);
                 if (projectionEntity == null)
                 {
-                    if(!owner.IsPersistentView)
-                    Entities.Remove(existingProjectionEntity);
+                    if (!owner.IsPersistentView)
+                        Entities.Remove(existingProjectionEntity);
                     return;
                 }
                 if (existingProjectionEntity != null)
@@ -160,16 +172,17 @@ namespace BluePrints.Common.ViewModel
                 OnEntityAdded(primaryKey);
             }
 
-            void OnEntityDeleted(TPrimaryKey primaryKey)
+            private void OnEntityDeleted(TPrimaryKey primaryKey)
             {
                 if (!owner.IsPersistentView)
                     Entities.Remove(FindLocalProjectionByKey(primaryKey));
             }
         }
+
         #endregion
 
-        ObservableCollection<TProjection> entities = new ObservableCollection<TProjection>();
-        CancellationTokenSource loadCancellationTokenSource;
+        private ObservableCollection<TProjection> entities = new ObservableCollection<TProjection>();
+        private CancellationTokenSource loadCancellationTokenSource;
         protected readonly IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory;
         protected readonly Func<TUnitOfWork, IReadOnlyRepository<TEntity>> getRepositoryFunc;
         protected Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> Projection { get; private set; }
@@ -184,12 +197,12 @@ namespace BluePrints.Common.ViewModel
             IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory,
             Func<TUnitOfWork, IReadOnlyRepository<TEntity>> getRepositoryFunc,
             Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>> projection
-            )
+        )
         {
             this.unitOfWorkFactory = unitOfWorkFactory;
             this.getRepositoryFunc = getRepositoryFunc;
-            this.Projection = projection;
-            this.ChangeTracker = CreateEntitiesChangeTracker();
+            Projection = projection;
+            ChangeTracker = CreateEntitiesChangeTracker();
             if (!this.IsInDesignMode())
                 OnInitializeInRuntime();
         }
@@ -216,7 +229,10 @@ namespace BluePrints.Common.ViewModel
 
         protected IReadOnlyRepository<TEntity> ReadOnlyRepository { get; private set; }
 
-        protected bool IsLoaded { get { return ReadOnlyRepository != null; } }
+        protected bool IsLoaded
+        {
+            get { return ReadOnlyRepository != null; }
+        }
 
         protected void LoadEntities(bool forceLoad)
         {
@@ -232,14 +248,14 @@ namespace BluePrints.Common.ViewModel
             loadCancellationTokenSource = LoadCore();
         }
 
-        void CancelLoading()
+        private void CancelLoading()
         {
             if (loadCancellationTokenSource != null)
                 loadCancellationTokenSource.Cancel();
             IsLoading = false;
         }
 
-        CancellationTokenSource LoadCore()
+        private CancellationTokenSource LoadCore()
         {
             IsLoading = true;
             var cancellationTokenSource = new CancellationTokenSource();
@@ -247,29 +263,32 @@ namespace BluePrints.Common.ViewModel
             var selectedEntitiesCallBack = GetSelectedEntityCallback();
             StoreSelectedEntitiesKey();
             //BluePrints Customization
-            System.Threading.Tasks.Task.Factory.StartNew(() =>
+            Task.Factory.StartNew(() =>
             {
                 var repository = CreateReadOnlyRepository();
-                var entities = new ObservableCollection<TProjection>(repository.GetFilteredEntities(GetFilterExpression(), Projection));
+                var entities =
+                    new ObservableCollection<TProjection>(repository.GetFilteredEntities(GetFilterExpression(),
+                        Projection));
                 OnEntitiesLoaded(GetUnitOfWork(repository), entities);
                 return new Tuple<IReadOnlyRepository<TEntity>, ObservableCollection<TProjection>>(repository, entities);
             }).ContinueWith(x =>
-            {
-                if (!x.IsFaulted)
                 {
-                    ReadOnlyRepository = x.Result.Item1;
-                    entities = x.Result.Item2;
-                    this.RaisePropertyChanged(y => y.Entities);
-                    OnEntitiesAssigned(selectedEntitiesCallBack);
-                }
-                IsLoading = false;
-            }, cancellationTokenSource.Token, TaskContinuationOptions.None, TaskScheduler.FromCurrentSynchronizationContext());
+                    if (!x.IsFaulted)
+                    {
+                        ReadOnlyRepository = x.Result.Item1;
+                        entities = x.Result.Item2;
+                        this.RaisePropertyChanged(y => y.Entities);
+                        OnEntitiesAssigned(selectedEntitiesCallBack);
+                    }
+                    IsLoading = false;
+                }, cancellationTokenSource.Token, TaskContinuationOptions.None,
+                TaskScheduler.FromCurrentSynchronizationContext());
             return cancellationTokenSource;
         }
 
-        static TUnitOfWork GetUnitOfWork(IReadOnlyRepository<TEntity> repository)
+        private static TUnitOfWork GetUnitOfWork(IReadOnlyRepository<TEntity> repository)
         {
-            return (TUnitOfWork)repository.UnitOfWork;
+            return (TUnitOfWork) repository.UnitOfWork;
         }
 
         protected virtual void OnEntitiesLoaded(TUnitOfWork unitOfWork, IEnumerable<TProjection> entities)
@@ -296,7 +315,6 @@ namespace BluePrints.Common.ViewModel
 
         protected virtual void RestoreSelectionEntitiesByKey()
         {
-
         }
 
         protected virtual void RestoreSelectedEntity(TProjection existingProjectionEntity, TProjection projectionEntity)
@@ -349,9 +367,16 @@ namespace BluePrints.Common.ViewModel
         protected IDocumentOwner DocumentOwner { get; private set; }
 
         #region IDocumentContent
-        object IDocumentContent.Title { get { return null; } }
 
-        protected virtual void OnClose(CancelEventArgs e) { }
+        object IDocumentContent.Title
+        {
+            get { return null; }
+        }
+
+        protected virtual void OnClose(CancelEventArgs e)
+        {
+        }
+
         void IDocumentContent.OnClose(CancelEventArgs e)
         {
             OnClose(e);
@@ -370,12 +395,21 @@ namespace BluePrints.Common.ViewModel
             get { return DocumentOwner; }
             set { DocumentOwner = value; }
         }
+
         #endregion
 
         #region IEntitiesViewModel
-        ObservableCollection<TProjection> IEntitiesViewModel<TProjection>.Entities { get { return Entities; } }
 
-        bool IEntitiesViewModel<TProjection>.IsLoading { get { return IsLoading; } }
+        ObservableCollection<TProjection> IEntitiesViewModel<TProjection>.Entities
+        {
+            get { return Entities; }
+        }
+
+        bool IEntitiesViewModel<TProjection>.IsLoading
+        {
+            get { return IsLoading; }
+        }
+
         #endregion
 
         //BluePrints Customization Start
@@ -393,7 +427,6 @@ namespace BluePrints.Common.ViewModel
     public interface IEntitiesViewModel<TEntity> : IDocumentContent
         where TEntity : class
     {
-
         /// <summary>
         /// The loaded collection of entities.
         /// </summary>

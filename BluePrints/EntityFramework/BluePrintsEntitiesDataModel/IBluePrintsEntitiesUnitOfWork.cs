@@ -16,7 +16,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
     /// </summary>
     public interface IBluePrintsEntitiesUnitOfWork : IUnitOfWork
     {
-
         /// <summary>
         /// The AREA entities repository.
         /// </summary>

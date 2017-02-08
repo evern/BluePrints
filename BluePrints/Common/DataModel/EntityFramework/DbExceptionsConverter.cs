@@ -11,7 +11,6 @@ namespace BluePrints.Common.DataModel.EntityFramework
     /// </summary>
     public static class DbExceptionsConverter
     {
-
         /// <summary>
         /// Converts System.Data.Entity.Infrastructure.DbUpdateException exception to database-independent DbException exception used in Data Layer and View Model Layer.
         /// </summary>
@@ -20,9 +19,7 @@ namespace BluePrints.Common.DataModel.EntityFramework
         {
             Exception originalException = exception;
             while (originalException.InnerException != null)
-            {
                 originalException = originalException.InnerException;
-            }
             return new DbException(originalException.Message, CommonResources.Exception_UpdateErrorCaption, exception);
         }
 
@@ -32,15 +29,13 @@ namespace BluePrints.Common.DataModel.EntityFramework
         /// <param name="exception">Exception to convert.</param>
         public static DbException Convert(DbEntityValidationException exception)
         {
-            StringBuilder stringBuilder = new StringBuilder();
-            foreach (DbEntityValidationResult validationResult in exception.EntityValidationErrors)
+            var stringBuilder = new StringBuilder();
+            foreach (var validationResult in exception.EntityValidationErrors)
+            foreach (var error in validationResult.ValidationErrors)
             {
-                foreach (DbValidationError error in validationResult.ValidationErrors)
-                {
-                    if (stringBuilder.Length > 0)
-                        stringBuilder.AppendLine();
-                    stringBuilder.Append(error.PropertyName + ": " + error.ErrorMessage);
-                }
+                if (stringBuilder.Length > 0)
+                    stringBuilder.AppendLine();
+                stringBuilder.Append(error.PropertyName + ": " + error.ErrorMessage);
             }
             return new DbException(stringBuilder.ToString(), CommonResources.Exception_ValidationErrorCaption, exception);
         }

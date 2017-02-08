@@ -20,7 +20,9 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the PROJECTS collection view model.
     /// </summary>
-    public class PROJECTViewModelWrapper : DashboardViewModelWrapper<PROJECT, PROJECT_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>, ISupportCustomDocumentTypeNameAndParameter
+    public class PROJECTViewModelWrapper :
+        DashboardViewModelWrapper<PROJECT, PROJECT_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>,
+        ISupportCustomDocumentTypeNameAndParameter
     {
         /// <summary>
         /// Creates a new instance of PROJECT_ITEMSViewModelWrapper as a POCO view model.
@@ -40,82 +42,106 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operation
-        PROJECT loadPROJECT;
-        IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
+        private PROJECT loadPROJECT;
+
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
+            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
         protected override void InitializeParameters(object parameter)
         {
-            EntitiesParameter<BluePrints.Data.PROJECT> PROJECTParameter = (EntitiesParameter<BluePrints.Data.PROJECT>)parameter;
-            this.loadPROJECT = PROJECTParameter.GetEntity();
+            var PROJECTParameter =
+                (EntitiesParameter<PROJECT>) parameter;
+            loadPROJECT = PROJECTParameter.GetEntity();
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
         {
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddEntitiesLoader<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>(1, bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, null, null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>(2, bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, null, null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>(3, bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc, null, null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(4, bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, null, null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<VARIATION, VARIATION, Guid, IBluePrintsEntitiesUnitOfWork>(5, bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc, null, null, OnAfterEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>(1,
+                bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, null, null,
+                OnAfterEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>(2,
+                bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, null, null,
+                OnAfterEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>(3,
+                bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc, null, null,
+                OnAfterEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(4,
+                bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, null, null, OnAfterEntitiesChanged);
+            loaderCollection.AddEntitiesLoader<VARIATION, VARIATION, Guid, IBluePrintsEntitiesUnitOfWork>(5,
+                bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc, null, null,
+                OnAfterEntitiesChanged);
 
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
-        Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
+        private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
         {
             return query => query.Where(x => x.STATUS == BaselineStatus.Live && x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
+        private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
+        private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
         {
-            return query => query.Where(x => x.PROGRESS.STATUS == ProgressStatus.Live && x.PROGRESS.PROJECT.GUID == loadPROJECT.GUID);
+            return
+                query =>
+                    query.Where(
+                        x => x.PROGRESS.STATUS == ProgressStatus.Live && x.PROGRESS.PROJECT.GUID == loadPROJECT.GUID);
         }
 
-        Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
-        }
-
-        Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
+        private Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
+        private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
+        private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(this.bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoader.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT_Dashboard>> ConstructMainViewModelProjection()
+        protected override Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT_Dashboard>>
+            ConstructMainViewModelProjection()
         {
-            Func<IQueryable<BASELINE>> getBASELINESFunc = loaderCollection.GetCollectionFunc<BASELINE>();
-            Func<IQueryable<PROGRESS>> getPROGRESSESFunc = loaderCollection.GetCollectionFunc<PROGRESS>();
-            Func<IQueryable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc = loaderCollection.GetCollectionFunc<PROGRESS_ITEM>();
-            Func<IQueryable<RATE>> getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
-            Func<IQueryable<VARIATION>> getVARIATIONSFunc = loaderCollection.GetCollectionFunc<VARIATION>();
+            var getBASELINESFunc = loaderCollection.GetCollectionFunc<BASELINE>();
+            var getPROGRESSESFunc = loaderCollection.GetCollectionFunc<PROGRESS>();
+            var getPROGRESS_ITEMSFunc = loaderCollection.GetCollectionFunc<PROGRESS_ITEM>();
+            var getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
+            var getVARIATIONSFunc = loaderCollection.GetCollectionFunc<VARIATION>();
 
-            return query => PROJECT_DashboardQueries.SummarizePROJECTDashboard(query, getPROGRESSESFunc, getPROGRESS_ITEMSFunc, getBASELINESFunc, getRATESFunc, getVARIATIONSFunc, () => this.RaisePropertyChanged(), loadPROJECT.GUID);
+            return
+                query =>
+                    PROJECT_DashboardQueries.SummarizePROJECTDashboard(query, getPROGRESSESFunc, getPROGRESS_ITEMSFunc,
+                        getBASELINESFunc, getRATESFunc, getVARIATIONSFunc, () => RaisePropertyChanged(),
+                        loadPROJECT.GUID);
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)
         {
-            MainViewModel = (CollectionViewModel<PROJECT, PROJECT_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>)mainEntityLoader.GetViewModel();
+            MainViewModel =
+                (CollectionViewModel<PROJECT, PROJECT_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>)
+                mainEntityLoader.GetViewModel();
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             MainViewModel.SetParentViewModel(this);
 
@@ -123,9 +149,11 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
+            object sender)
         {
-            if ((sender == MainViewModel && messageType != EntityMessageType.Added) || sender == this || changedType == typeof(PROJECT))
+            if (sender == MainViewModel && messageType != EntityMessageType.Added || sender == this ||
+                changedType == typeof(PROJECT))
                 return;
 
             if (MainViewModel != null)
@@ -133,117 +161,127 @@ namespace BluePrints.ViewModels
             else
                 mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
         }
+
         #endregion
 
         #region View Behavior
+
         public Action Redraw;
 
         public void RaisePropertyChanged()
         {
             if (Redraw != null)
-                mainThreadDispatcher.BeginInvoke(new Action(() => this.Redraw()));
+                mainThreadDispatcher.BeginInvoke(new Action(() => Redraw()));
 
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
+
         #endregion
 
         #region View Properties
-        BASELINECollectionViewModelWrapper baselineViewModel;
+
+        private BASELINECollectionViewModelWrapper baselineViewModel;
+
         public BASELINECollectionViewModelWrapper BASELINEViewModel
         {
             get
             {
-                if (baselineViewModel == null && this.loadPROJECT != null)
+                if (baselineViewModel == null && loadPROJECT != null)
                 {
                     baselineViewModel = BASELINECollectionViewModelWrapper.Create();
                     baselineViewModel.SetParentViewModel(this);
-                    ISupportParameter baselineSupportParameterObj = baselineViewModel as ISupportParameter;
-                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(this.loadPROJECT);
+                    var baselineSupportParameterObj = baselineViewModel as ISupportParameter;
+                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(loadPROJECT);
                 }
 
                 return baselineViewModel;
             }
         }
 
-        PROGRESSCollectionViewModelWrapper progressViewModel;
+        private PROGRESSCollectionViewModelWrapper progressViewModel;
+
         public PROGRESSCollectionViewModelWrapper PROGRESSViewModel
         {
             get
             {
-                if (progressViewModel == null && this.loadPROJECT != null)
+                if (progressViewModel == null && loadPROJECT != null)
                 {
                     progressViewModel = PROGRESSCollectionViewModelWrapper.Create();
                     progressViewModel.SetParentViewModel(this);
-                    ISupportParameter baselineSupportParameterObj = progressViewModel as ISupportParameter;
-                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(this.loadPROJECT);
+                    var baselineSupportParameterObj = progressViewModel as ISupportParameter;
+                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(loadPROJECT);
                 }
 
                 return progressViewModel;
             }
         }
 
-        AREACollectionViewModelWrapper areaViewModel;
+        private AREACollectionViewModelWrapper areaViewModel;
+
         public AREACollectionViewModelWrapper AREAViewModel
         {
             get
             {
-                if (areaViewModel == null && this.loadPROJECT != null)
+                if (areaViewModel == null && loadPROJECT != null)
                 {
                     areaViewModel = AREACollectionViewModelWrapper.Create();
                     areaViewModel.SetParentViewModel(this);
-                    ISupportParameter baselineSupportParameterObj = areaViewModel as ISupportParameter;
-                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(this.loadPROJECT);
+                    var baselineSupportParameterObj = areaViewModel as ISupportParameter;
+                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(loadPROJECT);
                 }
 
                 return areaViewModel;
             }
         }
 
-        RATECollectionViewModelWrapper rateViewModel;
+        private RATECollectionViewModelWrapper rateViewModel;
+
         public RATECollectionViewModelWrapper RATEViewModel
         {
             get
             {
-                if (rateViewModel == null && this.loadPROJECT != null)
+                if (rateViewModel == null && loadPROJECT != null)
                 {
                     rateViewModel = RATECollectionViewModelWrapper.Create();
                     rateViewModel.SetParentViewModel(this);
-                    ISupportParameter baselineSupportParameterObj = rateViewModel as ISupportParameter;
-                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(this.loadPROJECT);
+                    var baselineSupportParameterObj = rateViewModel as ISupportParameter;
+                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(loadPROJECT);
                 }
 
                 return rateViewModel;
             }
         }
 
-        PHASECollectionViewModelWrapper phaseViewModel;
+        private PHASECollectionViewModelWrapper phaseViewModel;
+
         public PHASECollectionViewModelWrapper PHASEViewModel
         {
             get
             {
-                if (phaseViewModel == null && this.loadPROJECT != null)
+                if (phaseViewModel == null && loadPROJECT != null)
                 {
                     phaseViewModel = PHASECollectionViewModelWrapper.Create();
                     phaseViewModel.SetParentViewModel(this);
-                    ISupportParameter baselineSupportParameterObj = phaseViewModel as ISupportParameter;
-                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(this.loadPROJECT);
+                    var baselineSupportParameterObj = phaseViewModel as ISupportParameter;
+                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(loadPROJECT);
                 }
 
                 return phaseViewModel;
             }
         }
 
-        ESTIMATION_DIRECTCollectionViewModelWrapper estimationDirectViewModel;
+        private ESTIMATION_DIRECTCollectionViewModelWrapper estimationDirectViewModel;
+
         public ESTIMATION_DIRECTCollectionViewModelWrapper ESTIMATION_DIRECTViewModel
         {
             get
             {
-                if (estimationDirectViewModel == null && this.loadPROJECT != null)
+                if (estimationDirectViewModel == null && loadPROJECT != null)
                 {
                     estimationDirectViewModel = ESTIMATION_DIRECTCollectionViewModelWrapper.Create();
                     estimationDirectViewModel.SetParentViewModel(this);
-                    ISupportParameter baselineSupportParameterObj = estimationDirectViewModel as ISupportParameter;
-                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(this.loadPROJECT);
+                    var baselineSupportParameterObj = estimationDirectViewModel as ISupportParameter;
+                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(loadPROJECT);
                 }
 
                 return estimationDirectViewModel;
@@ -274,7 +312,11 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        protected IDocumentManagerService DocumentManagerService { get { return this.GetService<IDocumentManagerService>(); } }
+        protected IDocumentManagerService DocumentManagerService
+        {
+            get { return this.GetService<IDocumentManagerService>(); }
+        }
+
         public void Edit(PROJECT_Dashboard entity)
         {
             if (entity == null)
@@ -289,14 +331,13 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get
-            {
-                return "PROJECTViewModelWrapper";
-            }
+            get { return "PROJECTViewModelWrapper"; }
         }
+
         #endregion
 
         #region ISupportCustomDocumentTypeNameAndParameter
+
         public string GetCustomDocumentTypeName()
         {
             return "WORKPACKDashboardView";
@@ -304,18 +345,19 @@ namespace BluePrints.ViewModels
 
         public object GetCustomDocumentParameter()
         {
-            return this.SummaryEntity;
+            return SummaryEntity;
         }
 
         public string GetCustomDocumentTitle()
         {
-            return this.SummaryEntity.PROJECT.NUMBER + " - WORKPACKS";
+            return SummaryEntity.PROJECT.NUMBER + " - WORKPACKS";
         }
 
         public bool IsCustomModeEnabled()
         {
             return true;
         }
+
         #endregion
     }
 }

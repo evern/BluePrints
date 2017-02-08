@@ -18,6 +18,7 @@ namespace BluePrints.ViewModels
 
         public decimal EditValue { get; set; }
         public EnumMemberInfo SelectedOperation { get; set; }
+
         protected BulkEditNumbersViewModel(decimal editValue)
         {
             EditValue = editValue;

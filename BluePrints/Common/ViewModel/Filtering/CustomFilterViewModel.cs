@@ -10,12 +10,16 @@ namespace BluePrints.Common.ViewModel.Filtering
 {
     public class CustomFilterViewModel
     {
-        public static CustomFilterViewModel Create(Type entityType, IEnumerable<string> hiddenProperties, IEnumerable<string> additionalProperties)
+        public static CustomFilterViewModel Create(Type entityType, IEnumerable<string> hiddenProperties,
+            IEnumerable<string> additionalProperties)
         {
-            return ViewModelSource.Create(() => new CustomFilterViewModel(entityType, hiddenProperties, additionalProperties));
+            return
+                ViewModelSource.Create(
+                    () => new CustomFilterViewModel(entityType, hiddenProperties, additionalProperties));
         }
 
-        protected CustomFilterViewModel(Type entityType, IEnumerable<string> hiddenProperties, IEnumerable<string> additionalProperties)
+        protected CustomFilterViewModel(Type entityType, IEnumerable<string> hiddenProperties,
+            IEnumerable<string> additionalProperties)
         {
             EntityType = entityType;
             HiddenProperties = hiddenProperties;

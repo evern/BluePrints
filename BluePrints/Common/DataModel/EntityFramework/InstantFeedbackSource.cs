@@ -15,31 +15,35 @@ using DevExpress.Data.Async.Helpers;
 
 namespace BluePrints.Common.DataModel.EntityFramework
 {
-
-    class InstantFeedbackSource<TEntity> : IInstantFeedbackSource<TEntity>
+    internal class InstantFeedbackSource<TEntity> : IInstantFeedbackSource<TEntity>
         where TEntity : class
     {
-        readonly EntityInstantFeedbackSource source;
-        readonly PropertyDescriptorCollection threadSafeProperties;
+        private readonly EntityInstantFeedbackSource source;
+        private readonly PropertyDescriptorCollection threadSafeProperties;
 
-        public InstantFeedbackSource(EntityInstantFeedbackSource source, PropertyDescriptorCollection threadSafeProperties)
+        public InstantFeedbackSource(EntityInstantFeedbackSource source,
+            PropertyDescriptorCollection threadSafeProperties)
         {
             this.source = source;
             this.threadSafeProperties = threadSafeProperties;
         }
 
-        bool IListSource.ContainsListCollection { get { return ((IListSource)source).ContainsListCollection; } }
+        bool IListSource.ContainsListCollection
+        {
+            get { return ((IListSource) source).ContainsListCollection; }
+        }
 
         IList IListSource.GetList()
         {
-            return ((IListSource)source).GetList();
+            return ((IListSource) source).GetList();
         }
 
-        TProperty IInstantFeedbackSource<TEntity>.GetPropertyValue<TProperty>(object threadSafeProxy, Expression<Func<TEntity, TProperty>> propertyExpression)
+        TProperty IInstantFeedbackSource<TEntity>.GetPropertyValue<TProperty>(object threadSafeProxy,
+            Expression<Func<TEntity, TProperty>> propertyExpression)
         {
             var propertyName = ExpressionHelper.GetPropertyName(propertyExpression);
             var threadSafeProperty = threadSafeProperties[propertyName];
-            return (TProperty)threadSafeProperty.GetValue(threadSafeProxy);
+            return (TProperty) threadSafeProperty.GetValue(threadSafeProxy);
         }
 
         bool IInstantFeedbackSource<TEntity>.IsLoadedProxy(object threadSafeProxy)
