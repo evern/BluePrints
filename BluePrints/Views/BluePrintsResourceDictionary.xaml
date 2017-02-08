@@ -8,6 +8,7 @@
                     xmlns:dxgt="http://schemas.devexpress.com/winfx/2008/xaml/grid/themekeys"
                     xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
                     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+                    xmlns:dxsc="clr-namespace:DevExpress.Xpf.SpellChecker;assembly=DevExpress.Xpf.SpellChecker.v16.2"
                     xmlns:local="clr-namespace:BluePrints"
                     xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
                     xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters"
@@ -137,11 +138,15 @@
         <Setter Property="SelectedItems" Value="{Binding SelectedEntities, Mode=TwoWay}" />
         <Setter Property="ShowBorder" Value="False" />
         <Setter Property="AutoExpandAllGroups" Value="False" />
+        <Setter Property="dxsc:SpellingSettings.CheckAsYouType" Value="True" />
+        <Setter Property="dxsc:SpellingSettings.ShowSpellCheckMenu" Value="True" />
+        <Setter Property="dxsc:SpellingSettings.SpellChecker" Value="{Binding DataContext.spellCheckerModule.spellChecker, ElementName=userControl}" />
         <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
             <Setter.Value>
                 <DataTemplate>
                     <ItemsControl>
                         <dxmvvm:KeyToCommand Command="{Binding ShowPopUpCommand}" KeyGesture="Space" CommandParameter="{Binding ElementName=gridControl}"/>
+                        <dxmvvm:EventToCommand Command="{Binding DataContext.LoadedCommand, ElementName=userControl}" EventName="Loaded" />
                     </ItemsControl>
                 </DataTemplate>
             </Setter.Value>

@@ -24,7 +24,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>64</ApplicationRevision>
+    <ApplicationRevision>66</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -101,6 +101,7 @@
     <Reference Include="DevExpress.Sparkline.v16.2.Core, Version=16.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
+    <Reference Include="DevExpress.SpellChecker.v16.2.Core, Version=16.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Utils.v16.2, Version=16.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
@@ -149,9 +150,11 @@
     <Reference Include="DevExpress.Xpf.Ribbon.v16.2, Version=16.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
+    <Reference Include="DevExpress.Xpf.RichEdit.v16.2, Version=16.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Xpf.Scheduler.v16.2, Version=16.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
+    <Reference Include="DevExpress.Xpf.SpellChecker.v16.2, Version=16.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Xpf.Themes.DXStyle.v16.2, Version=16.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
@@ -333,6 +336,8 @@
     <Compile Include="Common\ActiveDirectory.cs" />
     <Compile Include="Common\Attributes\BulkEditDisabledAttributes.cs" />
     <Compile Include="Common\Attributes\RequiredAttributes.cs" />
+    <Compile Include="Common\DemoHelper.cs" />
+    <Compile Include="Common\DemoModule.cs" />
     <Compile Include="Common\Helpers\CustomMessageBoxService.cs" />
     <Compile Include="Common\Helpers\EntitiesLoader.cs" />
     <Compile Include="Common\Helpers\XMLHelpers.cs" />
@@ -366,6 +371,8 @@
       <DependentUpon>XtraReportPROGRESS_ITEMS.cs</DependentUpon>
     </Compile>
     <Compile Include="Common\SignalR.cs" />
+    <Compile Include="Common\SpellCheckerHelper.cs" />
+    <Compile Include="Common\SpellCheckerModule.cs" />
     <Compile Include="Common\Utils\StringFormatUtils.cs" />
     <Compile Include="Common\ViewModel\DashboardCollectionViewModelWrapper.cs" />
     <Compile Include="Common\ViewModel\EntitiesCollectionsWrapper.cs" />
@@ -1501,6 +1508,30 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>LayoutSettings.Designer.cs</LastGenOutput>
     </None>
+    <EmbeddedResource Include="Data\Dictionaries\CustomEnglish.dic">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data\Dictionaries\default.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data\Dictionaries\de\de_DE.aff">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data\Dictionaries\de\de_DE.dic">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data\Dictionaries\en\en_US.aff">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data\Dictionaries\en\en_US.dic">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data\Dictionaries\ru\ru_RU.aff">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data\Dictionaries\ru\ru_RU.dic">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -1530,7 +1561,11 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Data\Dictionaries\EnglishAlphabet.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Common\Images\PRIMERO.jpg" />
   </ItemGroup>

@@ -53,6 +53,7 @@ namespace BluePrints.ViewModels
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
         protected BASELINE_ITEMSViewModelWrapper(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
+
         }
 
         #region Database Operations

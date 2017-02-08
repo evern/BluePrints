@@ -96,7 +96,7 @@ namespace BluePrints.ViewModels
                 var Project = this.CreateUnitOfWork().PROJECTS.FirstOrDefault(x => x.GUID == message.PrimaryKey);
                 if(Project != null)
                 {
-                    if(Project.STATUS == ProjectStatus.Active)
+                    if (Project.STATUS == ProjectStatus.Active || Project.STATUS == ProjectStatus.Tender)
                     {
                         if (!Modules.Any(x => x.TreeViewId.ToString() == "PROJECTView" + message.PrimaryKey.ToString() || x.TreeViewParentId.ToString() == "PROJECTView" + message.PrimaryKey.ToString()))
                             Modules.AddRange(createPROJECTTree(Project));

@@ -144,6 +144,15 @@ namespace BluePrints.Common.ViewModel
         }
         #endregion
 
+        #region SpellChecker
+        public SpellCheckerModule spellCheckerModule { get; set; }
+        public void Loaded()
+        {
+            spellCheckerModule = new SpellCheckerModule();
+            spellCheckerModule.ApplySpellCheckMode(true);
+        }
+        #endregion
+
         #region IDocumentContent
         protected IDocumentOwner DocumentOwner { get; private set; }
         object IDocumentContent.Title { get { return null; } }
