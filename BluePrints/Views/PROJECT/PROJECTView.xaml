@@ -680,8 +680,53 @@
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
                             <dxg:GridControl Name="gridControlProgress" dx:DXSerializer.SerializationID="PROGRESSGrid"
-                                             ColumnsSource="{StaticResource PROGRESSColumns}"
                                              Style="{StaticResource NestedWrapperGridTemplate}" Grid.Row="1">
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn FieldName="NAME" />
+                                    <dxg:GridColumn FieldName="PROGRESS_START">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="DATA_DATE">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="INTERVAL_COUNT">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:SpinEditSettings MaskType="Numeric" Mask="n0" MinValue="0" Increment="1" MaxValue="99"
+                                      MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="INTERVAL_TYPE">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProgressIntervalType}}" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="STATUS">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProgressStatus}}" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="COMMENTS" />
+                                    <dxg:GridColumn FieldName="P6PROGRESS_NAME">
+                                        <dxg:GridColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <dxlc:LayoutGroup Orientation="Horizontal">
+                                                    <dxe:ComboBoxEdit x:Name="PART_Editor" IsTextEditable="True"
+                                                                      NullValueButtonPlacement="Popup"
+                                                                      AutoComplete="True"
+                                                                      ItemsSource="{Binding View.DataContext.P6PROJECTSCollection}"
+                                                                      DisplayMember="wbs_short_name"
+                                                                      ValueMember="wbs_short_name" />
+                                                </dxlc:LayoutGroup>
+                                            </DataTemplate>
+                                        </dxg:GridColumn.CellTemplate>
+                                    </dxg:GridColumn>
+                                </dxg:GridControl.Columns>
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                                 </dxg:GridControl.TotalSummary>

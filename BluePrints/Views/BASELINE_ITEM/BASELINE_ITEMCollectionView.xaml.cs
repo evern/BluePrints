@@ -5,7 +5,10 @@ using System.Collections.Generic;
 using BluePrints.ViewModels;
 using DevExpress.Xpf.Grid;
 using System.Windows.Input;
+using BluePrints.Common.Projections;
 using DevExpress.Xpf.Editors;
+using DevExpress.Data.Filtering;
+using DevExpress.Data.Helpers;
 
 namespace BluePrints.Views
 {
@@ -18,6 +21,19 @@ namespace BluePrints.Views
                 ShowWorkpackInternalName1;
             ((BASELINE_ITEMSViewModelWrapper) DataContext).ShowWORKPACKInternalName2 =
                 ShowWorkpackInternalName2;
+            ((BASELINE_ITEMSViewModelWrapper)DataContext).GetGridVisibleRows =
+                GetGridVisibleRows;
+        }
+
+        public IEnumerable<BASELINE_ITEMProjection> GetGridVisibleRows()
+        {
+            List<BASELINE_ITEMProjection> visibleBaselineItemProjections = new List<BASELINE_ITEMProjection>();
+            for (int i = 0; i < gridControl.VisibleRowCount; i++)
+            {
+                BASELINE_ITEMProjection dataRow = (BASELINE_ITEMProjection)gridControl.GetRow(gridControl.GetRowHandleByVisibleIndex(i));
+                visibleBaselineItemProjections.Add(dataRow);
+            }
+            return visibleBaselineItemProjections;
         }
 
         public void ShowWorkpackInternalName1()

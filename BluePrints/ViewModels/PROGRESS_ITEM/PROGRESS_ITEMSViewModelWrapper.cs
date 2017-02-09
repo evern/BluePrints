@@ -620,7 +620,17 @@ namespace BluePrints.ViewModels
 
         private WORKPACKSchedulingViewModelWrapper WORKPACK_DashboardViewModel;
 
-        public bool CanPushToP6()
+        public bool CanPushToP6Original()
+        {
+            return CanPushToP6();
+        }
+
+        public bool CanPushToP6Modified()
+        {
+            return CanPushToP6();
+        }
+
+        private bool CanPushToP6()
         {
             if (loadPROGRESS == null || loadPROGRESS.P6PROGRESS_NAME == string.Empty)
                 return false;
@@ -628,7 +638,17 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public void PushToP6()
+        public void PushToP6Original()
+        {
+            PushToP6(BaselineMappingSelectionType.Original);
+        }
+
+        public void PushToP6Modified()
+        {
+            PushToP6(BaselineMappingSelectionType.Modified);
+        }
+
+        private void PushToP6(BaselineMappingSelectionType mappingSelectionType)
         {
             if (WORKPACK_DashboardViewModel == null)
             {
@@ -636,7 +656,7 @@ namespace BluePrints.ViewModels
                 WORKPACK_DashboardViewModel.OnPROJECTWORKPACKSMappingViewModelLoaded =
                     OnPROJECTWORKPACKSMappingViewModelLoaded;
                 var ParameterObj = WORKPACK_DashboardViewModel as ISupportParameter;
-                ParameterObj.Parameter = new object[] {loadPROGRESS, null};
+                ParameterObj.Parameter = new object[] { loadPROGRESS, mappingSelectionType };
             }
             else
             {
@@ -653,7 +673,7 @@ namespace BluePrints.ViewModels
                     .SelectMany(x => x.Summary_CumulativeEarnedDataPoints);
             cumulativeEarnedDataPoints = cumulativeEarnedDataPoints.OrderBy(x => x.ProgressDate).ToList();
             var intervalTimeSpan = ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(loadPROGRESS);
-            var P6TASKCollectionViewModel =
+            CollectionViewModel<TASK, int, IP6EntitiesUnitOfWork> P6TASKCollectionViewModel =
                 WORKPACK_DashboardViewModel.P6TASKCollectionViewModel;
 
             foreach (var workpack in WORKPACK_DashboardViewModel.MainViewModel.Entities)

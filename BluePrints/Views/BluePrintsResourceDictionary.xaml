@@ -655,6 +655,14 @@
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn FieldName="COMMENTS" />
+        <dxg:GridColumn FieldName="P6PROGRESS_NAME">
+            <dxg:GridColumn.EditSettings>
+                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                                              ItemsSource="{Binding DataContext.P6PROJECTSCollection, ElementName=userControl}"
+                                                              DisplayMember="wbs_short_name"
+                                                              ValueMember="wbs_short_name" />
+            </dxg:GridColumn.EditSettings>
+        </dxg:GridColumn>
     </collections:ArrayList>
     <collections:ArrayList x:Key="VARIATIONColumns">
         <dxg:GridColumn FieldName="NAME" VisibleIndex="10" />

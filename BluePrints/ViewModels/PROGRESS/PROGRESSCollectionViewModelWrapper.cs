@@ -15,6 +15,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BluePrints.Common.Helpers;
+using BluePrints.P6Data;
+using BluePrints.P6EntitiesDataModel;
+using PROJECT = BluePrints.Data.PROJECT;
 
 namespace BluePrints.ViewModels
 {
@@ -52,6 +55,8 @@ namespace BluePrints.ViewModels
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
+        private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory =
+            P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void InitializeParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>) parameter;
@@ -65,6 +70,9 @@ namespace BluePrints.ViewModels
             loaderCollection.AddEntitiesLoader<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0,
                 bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT,
                 OnAfterEntitiesChanged);
+            loaderCollection
+                .AddEntitiesLoader<PROJWBS, PROJWBS, int, IP6EntitiesUnitOfWork>(1,
+                    p6UnitOfWorkFactory, x => x.PROJWBS, P6PROJECTProjectionFunc);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -86,6 +94,11 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
         {
             return query => query.Where(x => x.GUID == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<PROJWBS>, IQueryable<PROJWBS>> P6PROJECTProjectionFunc()
+        {
+            return query => query.Where(x => x.proj_node_flag == "Y").OrderBy(proj => proj.wbs_short_name);
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
@@ -153,6 +166,17 @@ namespace BluePrints.ViewModels
         protected override string ViewName
         {
             get { return "PROGRESSCollectionViewModelWrapper"; }
+        }
+
+        public IEnumerable<PROJWBS> P6PROJECTSCollection
+        {
+            get
+            {
+                var collection = GetEntities<PROJWBS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.wbs_short_name);
+                return collection;
+            }
         }
 
         #endregion

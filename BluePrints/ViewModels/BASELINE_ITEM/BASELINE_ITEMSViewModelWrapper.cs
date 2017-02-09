@@ -24,6 +24,7 @@ using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Views;
 using BluePrints.Reports;
 using System.IO;
+using DevExpress.Data.Filtering;
 using DevExpress.Xpf.Printing;
 using DevExpress.Xpf.Editors;
 using DevExpress.Xpf.Editors.Settings;
@@ -691,6 +692,8 @@ namespace BluePrints.ViewModels
                 reportDesigner.Dispose();
         }
 
+        public Func<IEnumerable<BASELINE_ITEMProjection>> GetGridVisibleRows;
+
         public void ViewReport()
         {
             var baselineReport = new XtraReportBASELINE_ITEMS();
@@ -708,7 +711,9 @@ namespace BluePrints.ViewModels
 
             //make sure disciplines are all populated
             PopulateNavigationalProperties();
-            baselineReport.AssignProperties(_loadProject, _loadBaseline, MainViewModel.Entities);
+            IEnumerable<BASELINE_ITEMProjection> gridVisibleRows = GetGridVisibleRows();
+
+            baselineReport.AssignProperties(_loadProject, _loadBaseline, gridVisibleRows);
             var previewWindow = new DocumentPreviewWindow();
             previewWindow.PreviewControl.DocumentSource = baselineReport;
             previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
