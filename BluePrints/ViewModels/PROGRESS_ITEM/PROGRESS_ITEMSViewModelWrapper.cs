@@ -650,72 +650,44 @@ namespace BluePrints.ViewModels
 
         private void PushToP6(BaselineMappingSelectionType mappingSelectionType)
         {
-            if (WORKPACK_DashboardViewModel == null)
-            {
-                WORKPACK_DashboardViewModel = WORKPACKSchedulingViewModelWrapper.Create();
-                WORKPACK_DashboardViewModel.OnPROJECTWORKPACKSMappingViewModelLoaded =
-                    OnPROJECTWORKPACKSMappingViewModelLoaded;
-                var ParameterObj = WORKPACK_DashboardViewModel as ISupportParameter;
-                ParameterObj.Parameter = new object[] { loadPROGRESS, mappingSelectionType };
-            }
-            else
-            {
-                WORKPACK_DashboardViewModel.MainViewModel.Refresh();
-            }
+            WORKPACK_DashboardViewModel = WORKPACKSchedulingViewModelWrapper.Create();
+            WORKPACK_DashboardViewModel.OnPROJECTWORKPACKSMappingViewModelLoaded =
+                OnPROJECTWORKPACKSMappingViewModelLoaded;
+            var ParameterObj = WORKPACK_DashboardViewModel as ISupportParameter;
+            ParameterObj.Parameter = new object[] { loadPROGRESS, mappingSelectionType };
         }
 
         private void OnPROJECTWORKPACKSMappingViewModelLoaded(IEnumerable<WORKPACK_Dashboard> entities)
         {
-            var PROJECTTASK = WORKPACK_DashboardViewModel.P6TASKCollection;
-            var cumulativeEarnedDataPoints =
-                WORKPACK_DashboardViewModel.MainViewModel.Entities.Where(
-                        x => x.Summary_CumulativeEarnedDataPoints != null)
-                    .SelectMany(x => x.Summary_CumulativeEarnedDataPoints);
+            IEnumerable<TASK> PROJECTTASK = WORKPACK_DashboardViewModel.P6TASKCollection;
+            IEnumerable<ProgressInfo> cumulativeEarnedDataPoints = entities.Where(x => x.Summary_CumulativeEarnedDataPoints != null).SelectMany(x => x.Summary_CumulativeEarnedDataPoints);
             cumulativeEarnedDataPoints = cumulativeEarnedDataPoints.OrderBy(x => x.ProgressDate).ToList();
-            var intervalTimeSpan = ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(loadPROGRESS);
-            CollectionViewModel<TASK, int, IP6EntitiesUnitOfWork> P6TASKCollectionViewModel =
-                WORKPACK_DashboardViewModel.P6TASKCollectionViewModel;
+            TimeSpan intervalTimeSpan = ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(loadPROGRESS);
+            ICollectionViewModel<TASK> P6TASKCollectionViewModel = WORKPACK_DashboardViewModel.P6TASKCollectionViewModel;
 
-            foreach (var workpack in WORKPACK_DashboardViewModel.MainViewModel.Entities)
+            foreach (WORKPACK_Dashboard workpack in entities)
             {
-                var fWorkpackEarnedDataPoint =
-                    cumulativeEarnedDataPoints.FirstOrDefault(
-                        dataPoint => dataPoint.WorkpackGuid == workpack.WORKPACK.GUID && dataPoint.Units > 0);
+                ProgressInfo fWorkpackEarnedDataPoint = cumulativeEarnedDataPoints.FirstOrDefault(dataPoint => dataPoint.WorkpackGuid == workpack.WORKPACK.GUID && dataPoint.Units > 0);
                 if (fWorkpackEarnedDataPoint != null)
                 {
-                    var lWorkpackEarnedDataPoint =
-                        cumulativeEarnedDataPoints.LastOrDefault(
-                            dataPoint =>
-                                dataPoint.WorkpackGuid == workpack.WORKPACK.GUID &&
-                                dataPoint.ProgressDate <= loadPROGRESS.DATA_DATE);
-                    var workpackAssignments =
-                        workpack.WORKPACK.WORKPACK_ASSIGNMENT.Where(
-                                assignment => assignment.LOW_VALUE <= lWorkpackEarnedDataPoint.Units)
-                            .OrderBy(assignment => assignment.LOW_VALUE)
-                            .ToList();
-                    for (var i = 0; i < workpackAssignments.Count; i++)
+                    ProgressInfo lWorkpackEarnedDataPoint = cumulativeEarnedDataPoints.LastOrDefault(dataPoint => dataPoint.WorkpackGuid == workpack.WORKPACK.GUID && dataPoint.ProgressDate <= loadPROGRESS.DATA_DATE);
+                    List<WORKPACK_ASSIGNMENT> workpackAssignments = workpack.WORKPACK.WORKPACK_ASSIGNMENT.Where(assignment => assignment.LOW_VALUE <= lWorkpackEarnedDataPoint.Units).OrderBy(assignment => assignment.LOW_VALUE).ToList();
+                    for (int i = 0; i < workpackAssignments.Count; i++)
                     {
-                        var workpackAssignment = workpackAssignments[i];
-                        var P6TASK =
-                            PROJECTTASK.FirstOrDefault(P6Task => P6Task.task_code == workpackAssignment.P6_ACTIVITYID);
+                        WORKPACK_ASSIGNMENT workpackAssignment = workpackAssignments[i];
+                        TASK P6TASK = PROJECTTASK.FirstOrDefault(P6Task => P6Task.task_code == workpackAssignment.P6_ACTIVITYID);
                         if (P6TASK != null)
                         {
-                            var proposedStartDate =
-                                fWorkpackEarnedDataPoint.ProgressDate.AddDays(-1 * intervalTimeSpan.Days).AddSeconds(1);
+                            DateTime proposedStartDate = fWorkpackEarnedDataPoint.ProgressDate.AddDays(-1 * intervalTimeSpan.Days).AddSeconds(1);
                             if (P6TASK.act_start_date == null || P6TASK.act_start_date > proposedStartDate)
                                 P6TASK.act_start_date = proposedStartDate;
 
-                            var actUnits = lWorkpackEarnedDataPoint.Units < workpackAssignment.HIGH_VALUE
-                                ? lWorkpackEarnedDataPoint.Units
-                                : workpackAssignment.HIGH_VALUE;
-                            var actWorkUnitNormalize = i == 0
-                                ? actUnits
-                                : actUnits - workpackAssignments[i - 1].HIGH_VALUE;
+                            decimal actUnits = lWorkpackEarnedDataPoint.Units < workpackAssignment.HIGH_VALUE ? lWorkpackEarnedDataPoint.Units : workpackAssignment.HIGH_VALUE;
+                            decimal actWorkUnitNormalize = i == 0 ? actUnits : (actUnits - workpackAssignments[i - 1].HIGH_VALUE);
                             P6TASK.act_work_qty = actWorkUnitNormalize;
                             if (P6TASK.remain_work_qty >= 0)
                                 P6TASK.remain_work_qty = P6TASK.target_work_qty - P6TASK.act_work_qty;
-                            P6TASK.remain_drtn_hr_cnt = P6TASK.target_drtn_hr_cnt *
-                                                        (P6TASK.remain_work_qty / P6TASK.target_work_qty);
+                            P6TASK.remain_drtn_hr_cnt = P6TASK.target_drtn_hr_cnt * (P6TASK.remain_work_qty / P6TASK.target_work_qty);
 
                             if (P6TASK.remain_work_qty == 0)
                             {
@@ -728,9 +700,7 @@ namespace BluePrints.ViewModels
                                 P6TASK.act_end_date = null;
                             }
                             else if (P6TASK.status_code == P6TASKSTATUS.TK_NotStart.ToString())
-                            {
                                 P6TASK.status_code = P6TASKSTATUS.TK_Active.ToString();
-                            }
 
                             P6TASKCollectionViewModel.Save(P6TASK);
                         }

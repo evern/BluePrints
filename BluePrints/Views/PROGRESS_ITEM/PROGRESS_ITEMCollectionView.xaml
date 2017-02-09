@@ -94,11 +94,11 @@
                                                    CommandParameter="{Binding SelectedEntity}"
                                                    LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}"
                                                    Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" />
-                                <!--<dxb:BarButtonItem Content="Populate P6 Modified Units"
+                                <dxb:BarButtonItem Content="Populate P6 Modified Units"
                                                    Command="{Binding DataContext.PushToP6ModifiedCommand, ElementName=userControl}"
                                                    CommandParameter="{Binding SelectedEntity}"
                                                    LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}"
-                                                   Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" />-->
+                                                   Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

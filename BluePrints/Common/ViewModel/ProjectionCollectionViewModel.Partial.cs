@@ -43,7 +43,7 @@ namespace BluePrints.Common.ViewModel
     /// <typeparam name="TUnitOfWork">A unit of work type.</typeparam>
     public partial class CollectionViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork> :
         CollectionViewModelBase<TEntity, TProjection, TPrimaryKey, TUnitOfWork>, ISupportUndoRedo<TProjection>,
-        ISupportFiltering<TEntity>
+        ISupportFiltering<TEntity>, ICollectionViewModel<TProjection>
         where TEntity : class
         where TProjection : class
         where TUnitOfWork : IUnitOfWork

@@ -60,6 +60,9 @@ namespace BluePrints.Common
 
         public static void HubReceiveMessage(string entityName, string key, string messageType, string sender)
         {
+            if (key.Length < Guid.Empty.ToString().Length)
+                return;
+
             var MessageType = (EntityMessageType) Enum.Parse(typeof(EntityMessageType), messageType);
             var PrimaryKey = new Guid(key);
 

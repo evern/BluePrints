@@ -85,8 +85,8 @@ namespace BluePrints.ViewModels
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection
                 .AddEntitiesLoader<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>(0,
-                bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, null,
-                isContinueLoadingAfterBASELINE, OnAfterEntitiesChanged);
+                    bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, null,
+                    isContinueLoadingAfterBASELINE, OnAfterEntitiesChanged);
             loaderCollection
                 .AddEntitiesLoader
                 <Data.PROJECT, Data.PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(1,
@@ -94,42 +94,45 @@ namespace BluePrints.ViewModels
                     isContinueLoadingAfterPROJECT, OnAfterEntitiesChanged);
             loaderCollection
                 .AddEntitiesLoader<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>(2,
-                bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, typeof(BASELINE),
-                isContinueLoadingAfterPROGRESS, OnAfterEntitiesChanged);
+                    bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, typeof(BASELINE),
+                    isContinueLoadingAfterPROGRESS, OnAfterEntitiesChanged);
             loaderCollection
                 .AddEntitiesLoader<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>(3,
-                bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc, typeof(BASELINE));
+                    bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc, typeof(BASELINE));
             loaderCollection
                 .AddEntitiesLoader<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>(4,
                     bluePrintsUnitOfWorkFactory, x => x.WORKPACK_ASSIGNMENTS, WORKPACK_ASSIGNMENTProjectionFunc,
                     typeof(WORKPACK));
             loaderCollection
                 .AddEntitiesLoader<BASELINE_ITEM, BASELINE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>(5,
-                bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc, typeof(BASELINE), null,
-                OnAfterEntitiesChanged);
+                    bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc, typeof(BASELINE),
+                    null,
+                    OnAfterEntitiesChanged);
             loaderCollection
                 .AddEntitiesLoader<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(6,
-                bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, typeof(PROGRESS), null,
-                OnAfterEntitiesChanged);
+                    bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, typeof(PROGRESS), null,
+                    OnAfterEntitiesChanged);
             loaderCollection
                 .AddEntitiesLoader<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>(7,
-                bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc, typeof(PROGRESS), null,
-                OnAfterEntitiesChanged);
+                    bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc, typeof(PROGRESS),
+                    null,
+                    OnAfterEntitiesChanged);
             loaderCollection
                 .AddEntitiesLoader<P6Data.PROJECT, P6Data.PROJECT, int, IP6EntitiesUnitOfWork>(8,
                     p6UnitOfWorkFactory, x => x.PROJECT, P6PROJECTProjectionFunc, null, isContinueLoadingAfterP6PROJECT,
                     OnAfterEntitiesChanged);
             loaderCollection
                 .AddEntitiesLoader<P6Data.TASK, P6Data.TASK, int, IP6EntitiesUnitOfWork>(9, p6UnitOfWorkFactory,
-                x => x.TASK, P6TASKProjectionFunc, typeof(P6Data.PROJECT), null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<PROJWBS, PROJWBS, int, IP6EntitiesUnitOfWork>(10, p6UnitOfWorkFactory,
-                x => x.PROJWBS, PROJWBSProjectionFunc, typeof(P6Data.PROJECT));
+                    x => x.TASK, P6TASKProjectionFunc, typeof(P6Data.PROJECT), null, OnAfterEntitiesChanged);
+            loaderCollection
+                .AddEntitiesLoader<PROJWBS, PROJWBS, int, IP6EntitiesUnitOfWork>(10, p6UnitOfWorkFactory,
+                    x => x.PROJWBS, PROJWBSProjectionFunc, typeof(P6Data.PROJECT));
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
         private bool isContinueLoadingAfterBASELINE(IEnumerable<BASELINE> entities)
         {
-            if (entities.Count() == 0)
+            if (!entities.Any())
             {
                 mainThreadDispatcher.BeginInvoke(
                     new Action(
@@ -144,7 +147,7 @@ namespace BluePrints.ViewModels
 
         private bool isContinueLoadingAfterPROJECT(IEnumerable<Data.PROJECT> entities)
         {
-            if (entities.Count() == 0)
+            if (!entities.Any())
             {
                 mainThreadDispatcher.BeginInvoke(
                     new Action(
@@ -159,7 +162,7 @@ namespace BluePrints.ViewModels
 
         private bool isContinueLoadingAfterP6PROJECT(IEnumerable<P6Data.PROJECT> entities)
         {
-            if (entities.Count() == 0)
+            if (!entities.Any())
             {
                 mainThreadDispatcher.BeginInvoke(
                     new Action(
@@ -174,7 +177,7 @@ namespace BluePrints.ViewModels
 
         private bool isContinueLoadingAfterPROGRESS(IEnumerable<PROGRESS> entities)
         {
-            if (entities.Count() == 0)
+            if (!entities.Any())
             {
                 mainThreadDispatcher.BeginInvoke(
                     new Action(
@@ -217,7 +220,8 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<WORKPACK_ASSIGNMENT>, IQueryable<WORKPACK_ASSIGNMENT>> WORKPACK_ASSIGNMENTProjectionFunc()
+        private Func<IRepositoryQuery<WORKPACK_ASSIGNMENT>, IQueryable<WORKPACK_ASSIGNMENT>>
+            WORKPACK_ASSIGNMENTProjectionFunc()
         {
             return
                 query =>
@@ -343,18 +347,14 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public CollectionViewModel<BluePrints.P6Data.TASK, int, IP6EntitiesUnitOfWork> P6TASKCollectionViewModel
+        public ICollectionViewModel<BluePrints.P6Data.TASK> P6TASKCollectionViewModel
         {
-            get
-            {
-                return (CollectionViewModel<BluePrints.P6Data.TASK, int, IP6EntitiesUnitOfWork>)loaderCollection.GetViewModel<TASK>();
-            }
+            get { return (ICollectionViewModel<BluePrints.P6Data.TASK>) loaderCollection.GetViewModel<TASK>(); }
         }
 
         public void PushToP6()
         {
-            var IBluePrintsEntitiesUnitOfWork =
-                BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            var IBluePrintsEntitiesUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             var IP6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
 
             string ProjectName;
@@ -363,24 +363,13 @@ namespace BluePrints.ViewModels
             else
                 ProjectName = loadBASELINE.P6BASELINE_NAME;
 
-            var P6PROJECT =
-                IP6EntitiesUnitOfWork.PROJECT.FirstOrDefault(
-                    x => x.proj_short_name == ProjectName && x.delete_date == null);
+            BluePrints.P6Data.PROJECT P6PROJECT = IP6EntitiesUnitOfWork.PROJECT.FirstOrDefault(x => x.proj_short_name == ProjectName && x.delete_date == null);
             if (P6PROJECT != null)
             {
-                var currentPROJECTWORKPACK_ASSIGNMENTS =
-                    loadPROJECT.WORKPACK.Where(x => x.DELETED == null)
-                        .SelectMany(
-                            x =>
-                                x.WORKPACK_ASSIGNMENT.Where(
-                                    y =>
-                                        y.DELETED == null &&
-                                        y.ISMODIFIEDBASELINE == (mappingType == BaselineMappingSelectionType.Modified)))
-                        .ToArray()
-                        .AsEnumerable();
-                var ExistingTaskResource = P6PROJECT.TASKRSRC.ToArray().AsEnumerable();
-                var P6Tasks = P6PROJECT.TASK.ToArray().AsEnumerable();
-                foreach (var Task in P6Tasks)
+                IEnumerable<WORKPACK_ASSIGNMENT> currentPROJECTWORKPACK_ASSIGNMENTS = loadPROJECT.WORKPACK.Where(x => x.DELETED == null).SelectMany(x => x.WORKPACK_ASSIGNMENT.Where(y => y.DELETED == null && y.ISMODIFIEDBASELINE == (mappingType == BaselineMappingSelectionType.Modified))).ToArray().AsEnumerable();
+                IEnumerable<TASKRSRC> ExistingTaskResource = P6PROJECT.TASKRSRC.ToArray().AsEnumerable();
+                IEnumerable<TASK> P6Tasks = P6PROJECT.TASK.ToArray().AsEnumerable();
+                foreach (TASK Task in P6Tasks)
                 {
                     Task.act_work_qty = 0;
                     Task.remain_work_qty = 0;
@@ -389,27 +378,25 @@ namespace BluePrints.ViewModels
 
                 double taskrsrcCount = ExistingTaskResource.Count();
                 foreach (var TaskRsrc in ExistingTaskResource)
-                    IP6EntitiesUnitOfWork.TASKRSRC.Remove(TaskRsrc);
-
-                foreach (var WORKPACK_ASSIGNMENT in currentPROJECTWORKPACK_ASSIGNMENTS)
                 {
-                    var existingTask = P6Tasks.FirstOrDefault(x => x.task_code == WORKPACK_ASSIGNMENT.P6_ACTIVITYID);
+                    IP6EntitiesUnitOfWork.TASKRSRC.Remove(TaskRsrc);
+                }
+
+                foreach (WORKPACK_ASSIGNMENT WORKPACK_ASSIGNMENT in currentPROJECTWORKPACK_ASSIGNMENTS)
+                {
+                    TASK existingTask = P6Tasks.FirstOrDefault(x => x.task_code == WORKPACK_ASSIGNMENT.P6_ACTIVITYID);
 
                     if (existingTask != null)
                     {
-                        var remainingValue = WORKPACK_ASSIGNMENT.HIGH_VALUE - WORKPACK_ASSIGNMENT.LOW_VALUE + 1;
-                        var remainingProductivity =
-                            (decimal)
-                            (existingTask.target_drtn_hr_cnt == null || existingTask.target_drtn_hr_cnt == 0
-                                ? remainingValue
-                                : remainingValue / existingTask.target_drtn_hr_cnt);
+                        decimal remainingValue = (WORKPACK_ASSIGNMENT.HIGH_VALUE - WORKPACK_ASSIGNMENT.LOW_VALUE) + 1;
+                        decimal remainingProductivity = (decimal)((existingTask.target_drtn_hr_cnt == null || existingTask.target_drtn_hr_cnt == 0) ? remainingValue : (remainingValue / existingTask.target_drtn_hr_cnt));
 
                         existingTask.target_work_qty += remainingValue;
                         existingTask.remain_work_qty += remainingValue;
                     }
                 }
 
-                ((P6EntitiesUnitOfWork) IP6EntitiesUnitOfWork).Context.SaveChanges();
+                ((P6EntitiesUnitOfWork)IP6EntitiesUnitOfWork).Context.SaveChanges();
                 MessageBoxService.ShowMessage(CommonResources.WORKPACK_ASSIGNMENT_P6WriteComplete);
             }
         }
