@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Windows;
-using DevExpress.Xpf.Utils.Themes;
 using DevExpress.Xpf.SpellChecker;
 using DevExpress.XtraSpellChecker.Native;
-using DevExpress.Xpf.RichEdit;
 using DevExpress.XtraRichEdit.SpellChecker;
 using System.Globalization;
+using DevExpress.XtraRichEdit;
 using DevExpress.XtraSpellChecker;
-using System.Windows.Media;
-using System.IO;
-using DevExpress.Utils.Zip;
-using System.Windows.Controls;
 
 namespace BluePrints.Common
 {
@@ -36,10 +30,10 @@ namespace BluePrints.Common
 
         public SpellCheckerModule()
         {
-            spellChecker = CreateDefaultSpellCheckerControl();
+            SpellChecker = CreateDefaultSpellCheckerControl();
         }
 
-        public SpellChecker spellChecker { get; set; }
+        public SpellChecker SpellChecker { get; set; }
 
         protected virtual List<FrameworkElement> CheckingElements
         {
@@ -64,9 +58,9 @@ namespace BluePrints.Common
         public void ApplySpellCheckMode(bool isAsYouType)
         {
             if (isAsYouType)
-                spellChecker.SpellCheckMode = SpellCheckMode.AsYouType;
+                SpellChecker.SpellCheckMode = SpellCheckMode.AsYouType;
             else
-                spellChecker.SpellCheckMode = SpellCheckMode.OnDemand;
+                SpellChecker.SpellCheckMode = SpellCheckMode.OnDemand;
         }
 
         protected virtual SpellChecker CreateSpellCheckerControl()
@@ -84,7 +78,7 @@ namespace BluePrints.Common
 
         protected object GetModuleDataContext()
         {
-            return spellChecker;
+            return SpellChecker;
         }
     }
 }

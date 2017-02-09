@@ -165,12 +165,12 @@ namespace BluePrints.Common.ViewModel
 
         #region SpellChecker
 
-        public SpellCheckerModule spellCheckerModule { get; set; }
+        public SpellCheckerModule SpellCheckerModule { get; set; }
 
         public void Loaded()
         {
-            spellCheckerModule = new SpellCheckerModule();
-            spellCheckerModule.ApplySpellCheckMode(true);
+            SpellCheckerModule = new SpellCheckerModule();
+            SpellCheckerModule.ApplySpellCheckMode(true);
         }
 
         #endregion

@@ -754,7 +754,7 @@ namespace BluePrints.ViewModels
         }
 
         private BluePrintsEntitiesViewModel Owner { get; set; }
-        public BluePrintsEntitiesModuleDescription[] Modules { get; protected set; }
+        public BluePrintsEntitiesModuleDescription[] Modules { get; set; }
         private BluePrintsEntitiesModuleDescription LastSelectedItem { get; set; }
         public BluePrintsEntitiesModuleDescription SelectedItem { get; set; }
         public BluePrintsEntitiesModuleDescription DefaultItem { get; set; }

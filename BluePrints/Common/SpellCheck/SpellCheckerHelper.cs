@@ -1,41 +1,36 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Xml.Serialization;
-using DevExpress.Utils;
 using DevExpress.Utils.Zip;
 using DevExpress.Xpf.Core;
-using DevExpress.Xpf.RichEdit;
 using DevExpress.Xpf.SpellChecker;
-using DevExpress.XtraRichEdit;
 using DevExpress.XtraSpellChecker;
 
 namespace BluePrints.Common
 {
     public class DemoUtils
     {
-        public static readonly string PathToDemoData = "BluePrints.Data";
-        public static readonly string PathToDictionaries = PathToDemoData + ".Dictionaries";
+        public static readonly string PathToDemoData = @"\\Fileserver\General\BLUEPRINTS\";
+        public static readonly string PathToDictionaries = PathToDemoData + @"Data\";
 
         public static string GetPathToResource(string path, string name)
         {
-            return string.Format("{0}.{1}", path, name);
+            return string.Format("{0}{1}", path, name);
         }
 
         public static Stream GetDataStream(string path, string name)
         {
             var fullPath = GetPathToResource(path, name);
             if (!string.IsNullOrEmpty(fullPath))
-                return Assembly.GetExecutingAssembly().GetManifestResourceStream(fullPath);
+            {
+                Stream fs = File.OpenRead(fullPath);
+                return fs;
+            }
+            //return Assembly.GetExecutingAssembly().GetManifestResourceStream(fullPath);
             return null;
         }
 
