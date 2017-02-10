@@ -104,7 +104,7 @@ namespace BluePrints.ViewModels
 
         private bool isContinueLoadingAfterPROJECT(IEnumerable<PROJECT> entities)
         {
-            if (isPROJECTSpecific && entities.Count() == 0)
+            if (isPROJECTSpecific && !entities.Any())
             {
                 mainThreadDispatcher.BeginInvoke(
                     new Action(
@@ -129,7 +129,7 @@ namespace BluePrints.ViewModels
 
         private bool isContinueLoadingAfterDEPARTMENT(IEnumerable<DEPARTMENT> entities)
         {
-            if (entities.Count() == 0)
+            if (!entities.Any())
             {
                 mainThreadDispatcher.BeginInvoke(
                     new Action(() => MessageBoxService.ShowMessage(CommonResources.CommodityCode_NoDepartment)));
@@ -141,7 +141,7 @@ namespace BluePrints.ViewModels
 
         private bool isContinueLoadingAfterDISCIPLINE(IEnumerable<DISCIPLINE> entities)
         {
-            if (entities.Count() == 0)
+            if (!entities.Any())
             {
                 mainThreadDispatcher.BeginInvoke(
                     new Action(() => MessageBoxService.ShowMessage(CommonResources.CommodityCode_NoDiscipline)));

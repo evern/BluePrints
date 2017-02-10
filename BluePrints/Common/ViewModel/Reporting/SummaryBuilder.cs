@@ -517,7 +517,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             foreach (ReportableObject reportableObject in SummaryObject.ReportableObjects)
             {
                 //when remaining units is more than 0 continue calculation
-                if (reportableObject.RemainingUnitsAfterDataDate > 0)
+                if (reportableObject.RemainingUnitsAfterDataDate > 0 && reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK != null)
                 {
                     List<ProgressInfo> progressItemP6DataPoints;
                     if (reportableObject.isDataPointsGeneratedFromP6 && TryBuildP6DataPoints(this.PROGRESS_PROJECT, this.PROGRESS_TASKS, reportableObject, DataPointsType.Remaining, WorkpackAssignmentLoadType.Modified, out progressItemP6DataPoints))

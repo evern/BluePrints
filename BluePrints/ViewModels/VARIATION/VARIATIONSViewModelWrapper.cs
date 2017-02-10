@@ -85,7 +85,7 @@ namespace BluePrints.ViewModels
 
         private bool isContinueLoadingAfterPROJECT(IEnumerable<PROJECT> entities)
         {
-            if (entities.Count() == 0)
+            if (!entities.Any())
             {
                 mainThreadDispatcher.BeginInvoke(
                     new Action(
@@ -100,7 +100,7 @@ namespace BluePrints.ViewModels
 
         private bool isContinueLoadingAfterBASELINE(IEnumerable<BASELINE> entities)
         {
-            if (entities.Count() == 0)
+            if (!entities.Any())
             {
                 mainThreadDispatcher.BeginInvoke(
                     new Action(
@@ -115,7 +115,7 @@ namespace BluePrints.ViewModels
 
         private bool isContinueLoadingAfterPROGRESS(IEnumerable<PROGRESS> entities)
         {
-            if (entities.Count() == 0)
+            if (!entities.Any())
             {
                 mainThreadDispatcher.BeginInvoke(
                     new Action(

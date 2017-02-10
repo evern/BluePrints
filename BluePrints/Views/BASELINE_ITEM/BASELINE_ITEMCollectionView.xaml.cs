@@ -17,9 +17,9 @@ namespace BluePrints.Views
         public BASELINE_ITEMCollectionView()
         {
             InitializeComponent();
-            ((BASELINE_ITEMSViewModelWrapper) DataContext).ShowWORKPACKInternalName1 =
+            ((BASELINE_ITEMSViewModelWrapper)DataContext).ShowWORKPACKInternalName1 =
                 ShowWorkpackInternalName1;
-            ((BASELINE_ITEMSViewModelWrapper) DataContext).ShowWORKPACKInternalName2 =
+            ((BASELINE_ITEMSViewModelWrapper)DataContext).ShowWORKPACKInternalName2 =
                 ShowWorkpackInternalName2;
             ((BASELINE_ITEMSViewModelWrapper)DataContext).GetGridVisibleRows =
                 GetGridVisibleRows;
@@ -130,6 +130,19 @@ namespace BluePrints.Views
                 {
                     contextMenuPopulate.IsVisible = false;
                 }
+            }
+        }
+
+        private void gridControl_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    tableView.CommitEditing();
+                    tableView.MoveNextRow();
+                    gridControl.SelectedItem = gridControl.GetRow(tableView.FocusedRowHandle);
+                }));
             }
         }
     }

@@ -53,6 +53,20 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public decimal DC_COSTS
+        {
+            get
+            {
+                if (BASELINE_ITEM == null)
+                    return 0;
+
+                if (RATE == null || RATE.RATE1 == null)
+                    return 0;
+
+                return BASELINE_ITEM.DC_HOURS * (decimal)RATE.RATE1;
+            }
+        }
+
         public decimal TOTAL_COSTS
         {
             get { return BASELINE_ITEM.TOTAL_HOURS * ITEMRATE; }

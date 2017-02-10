@@ -61,7 +61,7 @@ namespace BluePrints.Common.ViewModel
 
         public void OnSelectedEntityChanged(IEnumerable<TProjection> entities)
         {
-            if (entities.Count() == 0)
+            if (!entities.Any())
                 return;
 
             if (entities.Count() == 1)

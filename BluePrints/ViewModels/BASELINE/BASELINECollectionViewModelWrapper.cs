@@ -83,7 +83,7 @@ namespace BluePrints.ViewModels
 
         private bool isContinueLoadingAfterPROJECT(IEnumerable<Data.PROJECT> entities)
         {
-            if (entities.Count() == 0)
+            if (!entities.Any())
             {
                 mainThreadDispatcher.BeginInvoke(
                     new Action(

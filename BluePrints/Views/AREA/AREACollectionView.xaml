@@ -83,7 +83,7 @@
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl Name="gridControl" ColumnsSource="{StaticResource AREAColumns}"
-                                     Style="{StaticResource WrapperGridTemplate}">
+                                     Style="{StaticResource WrapperGridTemplate}" >
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.TotalSummary>

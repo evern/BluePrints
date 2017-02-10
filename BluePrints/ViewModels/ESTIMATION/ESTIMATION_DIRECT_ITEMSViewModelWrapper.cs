@@ -160,7 +160,7 @@ namespace BluePrints.ViewModels
 
         private bool isContinueLoadingAfterPROJECT(IEnumerable<PROJECT> entities)
         {
-            if (entities.Count() == 0)
+            if (!entities.Any())
             {
                 mainThreadDispatcher.BeginInvoke(
                     new Action(
@@ -175,7 +175,7 @@ namespace BluePrints.ViewModels
 
         private bool isContinueLoadingAfterESTIMATION_DIRECT(IEnumerable<ESTIMATION_DIRECT> entities)
         {
-            if (entities.Count() == 0)
+            if (!entities.Any())
             {
                 mainThreadDispatcher.BeginInvoke(
                     new Action(

@@ -88,7 +88,7 @@
                 </dxr:RibbonStatusBarControl>
                 <Grid>
                     <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="BASELINE_ITEMSGrid"
-                                     Style="{StaticResource WrapperGridTemplate}">
+                                     Style="{StaticResource WrapperGridTemplate}" PreviewKeyDown="gridControl_PreviewKeyDown">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="BASELINE_ITEM.GUID_WORKPACK"
                                             Header="WORKPACK" Visible="False" VisibleIndex="0">

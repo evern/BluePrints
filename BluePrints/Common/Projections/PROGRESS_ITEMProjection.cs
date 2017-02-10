@@ -48,9 +48,7 @@ namespace BluePrints.Common.Projections
             Func<IQueryable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc = null,
             bool isBASELINEQueryProcessed = false)
         {
-            var BASELINE = getBASELINEFunc();
             var PROGRESS = getPROGRESSFunc();
-            var RATES = getRATESFunc();
 
             IQueryable<PROGRESS_ITEM> LoadPROGRESS_ITEMS;
             if (PROGRESS == null)
