@@ -15,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BluePrints.Common.Helpers;
+using DevExpress.Xpf.Bars;
 
 namespace BluePrints.ViewModels
 {
@@ -247,7 +248,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
-
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
@@ -314,7 +314,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
-
         /// <summary>
         /// Allow cells to commit immediately upon losing focus
         /// </summary>
@@ -417,7 +416,78 @@ namespace BluePrints.ViewModels
                 MainViewModel.UpdateSelectedEntity();
             }
         }
+        #endregion
 
+        #region View Commands
+
+        public bool CanDuplicate()
+        {
+            if (MainViewModel == null || MainViewModel.SelectedEntities.Count == 0)
+                return false;
+
+            return true;
+        }
+
+        public void Duplicate()
+        {
+            if (!_isProcessingMultipleDuplicates)
+                MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+
+            foreach (var selectedEntity in MainViewModel.SelectedEntities)
+            {
+                var newProjection = new WORKPACKProjection();
+                DataUtils.ShallowCopy(newProjection.WORKPACK, selectedEntity.WORKPACK);
+                newProjection.WORKPACK.GUID = Guid.Empty;
+                var selectedAREA = AREACollection.FirstOrDefault(x => x.GUID == newProjection.WORKPACK.GUID_DAREA);
+                var selectedDISCIPLINE =
+                    DISCIPLINECollection.FirstOrDefault(x => x.GUID == newProjection.WORKPACK.GUID_DDISCIPLINE);
+                var selectedDOCTYPE =
+                    DOCTYPECollection.FirstOrDefault(x => x.GUID == newProjection.WORKPACK.GUID_DDOCTYPE);
+                var selectedPHASE =
+                    DOCTYPECollection.FirstOrDefault(x => x.GUID == newProjection.WORKPACK.GUID_DPHASE);
+
+                newProjection.WORKPACK.INTERNAL_NAME1 =
+                    BluePrintDataUtils.WORKPACK_Generate_InternalNumber1(loadPROJECT, newProjection.WORKPACK
+                        , MainViewModel.Entities.Select(x => x.WORKPACK), AREACollection, DISCIPLINECollection,
+                        DOCTYPECollection);
+
+                newProjection.WORKPACK.INTERNAL_NAME2 =
+                    BluePrintDataUtils.WORKPACK_Generate_InternalNumber2(loadPROJECT, newProjection.WORKPACK
+                        , MainViewModel.Entities.Select(x => x.WORKPACK), AREACollection, DISCIPLINECollection,
+                        PHASECollection);
+
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(newProjection, null, null, null, EntityMessageType.Added);
+                MainViewModel.Save(newProjection);
+            }
+
+            if (!_isProcessingMultipleDuplicates)
+                MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        public bool CanDuplicateMultiple(BarEditItem barEdit)
+        {
+            if (MainViewModel == null || MainViewModel.SelectedEntities.Count == 0)
+                return false;
+
+            return true;
+        }
+
+        private bool _isProcessingMultipleDuplicates;
+
+        /// <summary>
+        /// Paste clipboard data multiple times
+        /// </summary>
+        public void DuplicateMultiple(BarEditItem barEdit)
+        {
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            _isProcessingMultipleDuplicates = true;
+            var timesToDuplicate = 0;
+            if (int.TryParse(barEdit.EditValue.ToString(), out timesToDuplicate))
+                for (var i = 0; i < timesToDuplicate; i++)
+                    Duplicate();
+            _isProcessingMultipleDuplicates = false;
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+        }
         #endregion
     }
 }

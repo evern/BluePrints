@@ -31,6 +31,9 @@ namespace BluePrints.Data
         [StringLength(200)]
         public string INTERNAL_NAME2 { get; set; }
 
+        [StringLength(500)]
+        public string COMMENTS { get; set; }
+
         public DateTime? STARTDATE { get; set; }
 
         public DateTime? ENDDATE { get; set; }

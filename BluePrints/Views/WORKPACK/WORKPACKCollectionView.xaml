@@ -123,6 +123,7 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="INTERNAL NAME" FieldName="WORKPACK.INTERNAL_NAME1" />
                             <dxg:GridColumn Header="INTERNAL NAME" FieldName="WORKPACK.INTERNAL_NAME2" />
+                            <dxg:GridColumn Header="COMMENTS" FieldName="WORKPACK.COMMENTS" />
                             <dxg:GridColumn Header="START DATE" FieldName="WORKPACK.STARTDATE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59" />
@@ -196,6 +197,33 @@
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}"
                                                        Command="{Binding View.DataContext.FillDownCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                                    <dxb:BarButtonItem x:Name="contextMenuDuplicate" Content="Duplicate"
+                                                       Command="{Binding DataContext.DuplicateCommand, ElementName=userControl}"
+                                                       Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" />
+                                    <dxb:BarSubItem x:Name="contextMenuDuplicateMulti" Content="Duplicate Multiple"
+                                                    Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}">
+                                        <dxb:BarEditItem x:Name="contextMenuDuplicateMultiCount" Content="Count"
+                                                         EditValue="2">
+                                            <dxb:BarEditItem.EditSettings>
+                                                <dxe:SpinEditSettings IsTextEditable="True" IsFloatValue="False"
+                                                                      Increment="1" MinValue="2" MaxValue="99"
+                                                                      MaskType="Numeric" Mask="n0"
+                                                                      MaskUseAsDisplayFormat="True">
+                                                    <dxe:SpinEditSettings.Buttons>
+                                                        <dxe:ButtonInfo x:Name="contextMenuPasteMultiCountBtn"
+                                                                        GlyphKind="Apply">
+                                                            <dxmvvm:Interaction.Behaviors>
+                                                                <dxmvvm:EventToCommand
+                                                                    Command="{Binding DataContext.DuplicateMultipleCommand, ElementName=userControl}"
+                                                                    CommandParameter="{Binding ElementName=contextMenuDuplicateMultiCount}"
+                                                                    EventName="Click" />
+                                                            </dxmvvm:Interaction.Behaviors>
+                                                        </dxe:ButtonInfo>
+                                                    </dxe:SpinEditSettings.Buttons>
+                                                </dxe:SpinEditSettings>
+                                            </dxb:BarEditItem.EditSettings>
+                                        </dxb:BarEditItem>
+                                    </dxb:BarSubItem>
                                     <dxb:BarButtonItem Content="Delete"
                                                        Command="{Binding View.DataContext.BulkDeleteCommand}"
                                                        CommandParameter="{Binding View.DataContext.SelectedEntities}"
