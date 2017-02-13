@@ -213,6 +213,7 @@
         <Setter Property="AllowScrollAnimation" Value="True" />
         <Setter Property="ShowAutoFilterRow" Value="True" />
         <Setter Property="ShowCriteriaInAutoFilterRow" Value="True" />
+        <Setter Property="UseLightweightTemplates" Value="GroupRow" />
     </Style>
     <Style x:Key="ChildTableReadOnlyViewTemplate" TargetType="{x:Type dxg:TableView}">
         <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">

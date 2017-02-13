@@ -108,7 +108,7 @@
                             <dxg:GridSummaryItem SummaryType="Count" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
-                            <dxg:TableView Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                            <common:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxrudex:GridReportManagerService x:Name="PROJECTCollectionViewReportService" />
                                 </dxmvvm:Interaction.Behaviors>
@@ -133,7 +133,7 @@
                                                        Command="{Binding View.DataContext.RefreshCommand}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 </dxg:TableView.RowCellMenuCustomizations>
-                            </dxg:TableView>
+                            </common:TableViewEx>
                         </dxg:GridControl.View>
                     </dxg:GridControl>
                 </Grid>

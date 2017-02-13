@@ -14,6 +14,7 @@
     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
     xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
     xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
+    xmlns:common="clr-namespace:BluePrints.Common"
     mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
     DataContext="{dxmvvm:ViewModelSource viewmodel:INDIRECT_TYPECollectionViewModelWrapper}">
     <UserControl.Resources>
@@ -91,7 +92,7 @@
                             <dxg:GridSummaryItem SummaryType="Count" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
-                            <dxg:TableView Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                            <common:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
                                 <dxg:TableView.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Bulk Edit"
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"
@@ -113,7 +114,7 @@
                                                        Command="{Binding View.DataContext.RefreshCommand}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 </dxg:TableView.RowCellMenuCustomizations>
-                            </dxg:TableView>
+                            </common:TableViewEx>
                         </dxg:GridControl.View>
                     </dxg:GridControl>
                 </Grid>

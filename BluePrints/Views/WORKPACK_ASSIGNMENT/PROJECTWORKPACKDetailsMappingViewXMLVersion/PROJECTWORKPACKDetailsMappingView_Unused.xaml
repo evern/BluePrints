@@ -15,6 +15,7 @@
              xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
              xmlns:dxschi="http://schemas.devexpress.com/winfx/2008/xaml/scheduler/internal"
              xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
+             xmlns:common="clr-namespace:BluePrints.Common"
              mc:Ignorable="d" d:DesignHeight="1200" d:DesignWidth="800"
              DataContext="{dxmvvm:ViewModelSource viewmodel:WORKPACKSchedulingViewModelWrapper}">
     <UserControl.Resources>
@@ -335,7 +336,7 @@
                                                  SummaryType="Sum" DisplayFormat="{}{0:n}" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
-                            <dxg:TableView Name="tableView" AllowEditing="False"
+                            <common:TableViewEx x:Name="tableView" AllowEditing="False"
                                            Style="{StaticResource DefaultTableViewTemplate}" NewItemRowPosition="None">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand PassEventArgsToCommand="True"
@@ -350,7 +351,7 @@
                                                        Command="{Binding View.DataContext.RefreshCommand}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 </dxg:TableView.RowCellMenuCustomizations>
-                            </dxg:TableView>
+                            </common:TableViewEx>
                         </dxg:GridControl.View>
                     </dxg:GridControl>
                 </dxlc:LayoutGroup>

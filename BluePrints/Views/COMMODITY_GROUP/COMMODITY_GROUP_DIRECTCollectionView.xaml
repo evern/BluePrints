@@ -16,6 +16,7 @@
     xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
     xmlns:helper="clr-namespace:BluePrints.Common.Helpers"
     xmlns:converters="clr-namespace:BluePrints.Common.ViewModel.Converters"
+    xmlns:common="clr-namespace:BluePrints.Common"
     mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
     DataContext="{dxmvvm:ViewModelSource viewmodel:COMMODITY_GROUP_DIRECTCollectionViewModelWrapper}">
     <UserControl.Resources>
@@ -165,14 +166,14 @@
                                         </dxg:GridColumn>
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView Name="tableView1"
+                                        <common:TableViewEx x:Name="tableView1"
                                                        Style="{StaticResource ChildTableViewTemplate}">
                                             <dxmvvm:Interaction.Behaviors>
                                                 <dxmvvm:EventToCommand
                                                     Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}"
                                                     PassEventArgsToCommand="True" EventName="CellValueChanging" />
                                             </dxmvvm:Interaction.Behaviors>
-                                        </dxg:TableView>
+                                        </common:TableViewEx>
                                     </dxg:GridControl.View>
                                 </dxg:GridControl>
                             </dxg:DataControlDetailDescriptor>
@@ -184,7 +185,7 @@
                             <dxg:GridSummaryItem SummaryType="Count" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
-                            <dxg:TableView Name="tableView"
+                            <common:TableViewEx x:Name="tableView"
                                            IsDetailButtonVisibleBinding="{Binding Row.COMMODITY_GROUP.ISQUANTIFIABLE, Converter={StaticResource BooleanNegationConverter}}"
                                            Style="{StaticResource DefaultTableViewTemplate}">
                                 <dxmvvm:Interaction.Behaviors>
@@ -212,7 +213,7 @@
                                                        Command="{Binding View.DataContext.RefreshCommand}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 </dxg:TableView.RowCellMenuCustomizations>
-                            </dxg:TableView>
+                            </common:TableViewEx>
                         </dxg:GridControl.View>
                     </dxg:GridControl>
                 </Grid>

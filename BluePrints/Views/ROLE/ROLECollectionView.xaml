@@ -14,6 +14,7 @@
     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
     xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
     xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
+    xmlns:common="clr-namespace:BluePrints.Common"
     mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="1200"
     DataContext="{dxmvvm:ViewModelSource viewmodel:ROLECollectionViewModelWrapper}">
     <UserControl.Resources>
@@ -122,14 +123,14 @@
                                     <dxg:GridColumn FieldName="ASSIGNED" />
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
+                                    <common:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
                                                    NewItemRowPosition="None" AutoWidth="True">
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand PassEventArgsToCommand="True"
                                                                    Command="{Binding DataContext.AssignPermissionCommand, ElementName=userControl}"
                                                                    EventName="CellValueChanging" />
                                         </dxmvvm:Interaction.Behaviors>
-                                    </dxg:TableView>
+                                    </common:TableViewEx>
                                 </dxg:GridControl.View>
                             </dxg:GridControl>
                         </dxlc:LayoutGroup>

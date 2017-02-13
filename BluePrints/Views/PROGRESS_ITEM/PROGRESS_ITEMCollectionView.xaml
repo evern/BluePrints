@@ -13,6 +13,7 @@
              xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
+             xmlns:common="clr-namespace:BluePrints.Common"
              mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
              DataContext="{dxmvvm:ViewModelSource viewmodel:PROGRESS_ITEMSViewModelWrapper}">
     <UserControl.Resources>
@@ -371,7 +372,7 @@
                                                  Alignment="Right" DisplayFormat="Total {0} Records" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
-                            <dxg:TableView Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
+                            <common:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
                                            ShowTotalSummary="True" ShowFixedTotalSummary="True"
                                            GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None">
                                 <dxmvvm:Interaction.Behaviors>
@@ -393,7 +394,7 @@
                                                        Command="{Binding View.DataContext.RefreshCommand}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 </dxg:TableView.RowCellMenuCustomizations>
-                            </dxg:TableView>
+                            </common:TableViewEx>
                         </dxg:GridControl.View>
                     </dxg:GridControl>
                 </Grid>

@@ -10,6 +10,7 @@
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+             xmlns:common="clr-namespace:BluePrints.Common"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
@@ -40,7 +41,7 @@
                         </dxg:GridColumn>
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.View>
-                        <dxg:TableView Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
+                        <common:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
                                        AllowEditing="False" NewItemRowPosition="None" />
                     </dxg:GridControl.View>
                 </dxg:GridControl>

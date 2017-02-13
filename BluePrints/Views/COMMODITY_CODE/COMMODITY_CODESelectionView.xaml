@@ -7,6 +7,7 @@
     xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
     xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+    xmlns:common="clr-namespace:BluePrints.Common"
     Height="100" Width="300">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -157,7 +158,7 @@
                                         </dxg:DataControlDetailDescriptor>
                                     </dxg:GridControl.DetailDescriptor>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView Name="tableView" />
+                                        <common:TableViewEx x:Name="tableView" />
                                     </dxg:GridControl.View>
                                 </dxg:GridControl>
                             </ControlTemplate>

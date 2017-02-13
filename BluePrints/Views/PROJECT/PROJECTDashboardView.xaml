@@ -371,7 +371,7 @@
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>
-                                <dxg:TableView Name="tableView" AllowEditing="False"
+                                <common:TableViewEx x:Name="tableView" AllowEditing="False"
                                                Style="{StaticResource DefaultTableViewTemplate}"
                                                NewItemRowPosition="None" ShowGroupPanel="False">
                                     <dxg:TableView.RowCellMenuCustomizations>
@@ -427,7 +427,7 @@
                                             <dx:DataBarFormat FillNegative="#FFFF9B98" Fill="#FF9ACCFF" />
                                         </dxg:DataBarFormatCondition>
                                     </dxg:TableView.FormatConditions>
-                                </dxg:TableView>
+                                </common:TableViewEx>
                             </dxg:GridControl.View>
                         </dxg:GridControl>
                     </dxlc:LayoutGroup>

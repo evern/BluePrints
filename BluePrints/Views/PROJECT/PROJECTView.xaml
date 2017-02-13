@@ -362,7 +362,7 @@
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>
-                                <dxg:TableView Name="tableView" AllowEditing="False"
+                                <common:TableViewEx x:Name="tableView" AllowEditing="False"
                                                Style="{StaticResource DefaultTableViewTemplate}"
                                                ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                NewItemRowPosition="None" ShowGroupPanel="False">
@@ -419,7 +419,7 @@
                                             <dx:DataBarFormat FillNegative="#FFFF9B98" Fill="#FF9ACCFF" />
                                         </dxg:DataBarFormatCondition>
                                     </dxg:TableView.FormatConditions>
-                                </dxg:TableView>
+                                </common:TableViewEx>
                             </dxg:GridControl.View>
                         </dxg:GridControl>
                     </dxlc:LayoutGroup>
@@ -626,7 +626,7 @@
                                     <dxg:GridSummaryItem SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView Name="tableViewBaseline"
+                                    <common:TableViewEx x:Name="tableViewBaseline"
                                                    Style="{StaticResource NestedWrapperTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
@@ -651,7 +651,7 @@
                                                                Command="{Binding View.DataContext.MainViewModel.RefreshCommand}"
                                                                Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                         </dxg:TableView.RowCellMenuCustomizations>
-                                    </dxg:TableView>
+                                    </common:TableViewEx>
                                 </dxg:GridControl.View>
                             </dxg:GridControl>
                         </Grid>
@@ -734,7 +734,7 @@
                                     <dxg:GridSummaryItem SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView Name="tableViewProgress"
+                                    <common:TableViewEx x:Name="tableViewProgress"
                                                    Style="{StaticResource NestedWrapperTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
@@ -759,7 +759,7 @@
                                                                Command="{Binding View.DataContext.MainViewModel.RefreshCommand}"
                                                                Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                         </dxg:TableView.RowCellMenuCustomizations>
-                                    </dxg:TableView>
+                                    </common:TableViewEx>
                                 </dxg:GridControl.View>
                             </dxg:GridControl>
                         </Grid>
@@ -820,7 +820,7 @@
                                     <dxg:GridSummaryItem SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView Name="tableViewEstimateDirect"
+                                    <common:TableViewEx x:Name="tableViewEstimateDirect"
                                                    Style="{StaticResource NestedWrapperTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
@@ -845,7 +845,7 @@
                                                                Command="{Binding View.DataContext.MainViewModel.RefreshCommand}"
                                                                Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                         </dxg:TableView.RowCellMenuCustomizations>
-                                    </dxg:TableView>
+                                    </common:TableViewEx>
                                 </dxg:GridControl.View>
                             </dxg:GridControl>
                         </Grid>
@@ -879,7 +879,7 @@
                                     <dxg:GridSummaryItem SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView Name="tableViewPhase"
+                                    <common:TableViewEx x:Name="tableViewPhase"
                                                    Style="{StaticResource NestedWrapperTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
@@ -904,7 +904,7 @@
                                                                Command="{Binding View.DataContext.MainViewModel.RefreshCommand}"
                                                                Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                         </dxg:TableView.RowCellMenuCustomizations>
-                                    </dxg:TableView>
+                                    </common:TableViewEx>
                                 </dxg:GridControl.View>
                             </dxg:GridControl>
                         </Grid>
@@ -938,7 +938,7 @@
                                     <dxg:GridSummaryItem SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView Name="tableViewArea"
+                                    <common:TableViewEx x:Name="tableViewArea"
                                                    Style="{StaticResource NestedWrapperTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
@@ -963,7 +963,7 @@
                                                                Command="{Binding View.DataContext.MainViewModel.RefreshCommand}"
                                                                Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                         </dxg:TableView.RowCellMenuCustomizations>
-                                    </dxg:TableView>
+                                    </common:TableViewEx>
                                 </dxg:GridControl.View>
                             </dxg:GridControl>
                         </Grid>
@@ -1018,7 +1018,7 @@
                                     <dxg:GridSummaryItem SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView Name="tableViewRate"
+                                    <common:TableViewEx x:Name="tableViewRate"
                                                    Style="{StaticResource NestedWrapperTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
@@ -1043,7 +1043,7 @@
                                                                Command="{Binding View.DataContext.MainViewModel.RefreshCommand}"
                                                                Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                         </dxg:TableView.RowCellMenuCustomizations>
-                                    </dxg:TableView>
+                                    </common:TableViewEx>
                                 </dxg:GridControl.View>
                             </dxg:GridControl>
                         </Grid>

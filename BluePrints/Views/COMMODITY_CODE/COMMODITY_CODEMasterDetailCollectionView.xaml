@@ -290,7 +290,7 @@
                             </dxg:DataControlDetailDescriptor>
                         </dxg:GridControl.DetailDescriptor>
                         <dxg:GridControl.View>
-                            <dxg:TableView Name="tableView" IsDetailButtonVisibleBinding="{Binding Row.HAS_CHILDREN}"
+                            <common:TableViewEx x:Name="tableView" IsDetailButtonVisibleBinding="{Binding Row.HAS_CHILDREN}"
                                            Style="{StaticResource DefaultTableViewTemplate}" ShowTotalSummary="True"
                                            ShowFixedTotalSummary="True" GroupSummaryDisplayMode="AlignByColumns"
                                            NewItemRowPosition="None">
@@ -309,7 +309,7 @@
                                                        Command="{Binding View.DataContext.RefreshCommand}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 </dxg:TableView.RowCellMenuCustomizations>
-                            </dxg:TableView>
+                            </common:TableViewEx>
                         </dxg:GridControl.View>
                     </dxg:GridControl>
                 </Grid>

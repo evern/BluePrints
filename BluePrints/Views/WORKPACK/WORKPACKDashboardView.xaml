@@ -383,7 +383,7 @@
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>
-                                <dxg:TableView Name="tableView" AllowEditing="False"
+                                <common:TableViewEx x:Name="tableView" AllowEditing="False"
                                                Style="{StaticResource DefaultTableViewTemplate}"
                                                NewItemRowPosition="None">
                                     <dxg:TableView.RowCellMenuCustomizations>
@@ -391,7 +391,7 @@
                                                            Command="{Binding View.DataContext.RefreshCommand}"
                                                            Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                     </dxg:TableView.RowCellMenuCustomizations>
-                                </dxg:TableView>
+                                </common:TableViewEx>
                             </dxg:GridControl.View>
                         </dxg:GridControl>
                     </dxlc:LayoutGroup>
