@@ -21,8 +21,10 @@ namespace BluePrints.Data
 
         public Guid? GUID_DDOCTYPE { get; set; }
 
+        [Required]
         public Guid GUID_DDEPARTMENT { get; set; }
 
+        [Required]
         public Guid GUID_DDISCIPLINE { get; set; }
 
         [StringLength(200)]

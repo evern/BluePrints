@@ -69,7 +69,8 @@ namespace BluePrints.ViewModels
                 bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc, null, null,
                 OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(4,
-                bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, null, null, OnAfterEntitiesChanged);
+                bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, null, null, 
+                OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<VARIATION, VARIATION, Guid, IBluePrintsEntitiesUnitOfWork>(5,
                 bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc, null, null,
                 OnAfterEntitiesChanged);

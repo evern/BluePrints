@@ -17,6 +17,7 @@ namespace BluePrints.Data
 
         public CostGroup COST_GROUP { get; set; }
 
+        [Required]
         public Guid GUID_DEPARTMENT { get; set; }
 
         public Guid? GUID_DISCIPLINE { get; set; }

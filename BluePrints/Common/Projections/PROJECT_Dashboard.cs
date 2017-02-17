@@ -75,7 +75,7 @@ namespace BluePrints.Common.Projections
                     continue;
 
                 var currentPROJECTLivePROGRESS =
-                    LivePROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == localPROJECT.GUID);
+                    LivePROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == localPROJECT.GUID && x.STATUS == ProgressStatus.Live);
 
                 if (currentPROJECTLivePROGRESS == null)
                     continue;

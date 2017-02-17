@@ -170,7 +170,9 @@ namespace BluePrints.Common
 
     public enum CostGroup
     {
+        [Display(Name = "Offsite")]
         Offsite = 0,
+        [Display(Name = "Site")]
         Site = 1,
     }
 

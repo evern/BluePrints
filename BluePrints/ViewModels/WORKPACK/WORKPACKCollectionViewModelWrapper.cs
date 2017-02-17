@@ -117,7 +117,11 @@ namespace BluePrints.ViewModels
 
         private bool isContinueLoadingAfterPROGRESS(IEnumerable<PROGRESS> entities)
         {
-            loadPROGRESS = entities.First();
+            if(entities.Any())
+            {
+                loadPROGRESS = entities.First();
+            }
+
             return true;
         }
 

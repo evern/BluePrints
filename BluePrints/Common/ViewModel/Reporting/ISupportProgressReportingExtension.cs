@@ -124,7 +124,12 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public static TimeSpan ConvertProgressIntervalToPeriod(PROGRESS PROGRESS)
         {
-            return TimeSpan.FromDays((int) PROGRESS.INTERVAL_TYPE * PROGRESS.INTERVAL_COUNT);
+            int intervalCount = PROGRESS.INTERVAL_COUNT;
+            if (intervalCount == 0)
+                intervalCount = 1;
+
+            TimeSpan intervalPeriod = TimeSpan.FromDays((int)PROGRESS.INTERVAL_TYPE * intervalCount);
+            return intervalPeriod;
         }
 
         #endregion

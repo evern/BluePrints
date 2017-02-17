@@ -72,9 +72,13 @@ namespace BluePrints.Common.Projections
             {
                 newWORKPACKDashboard.InitializeUnpacker(projectDashboard);
                 rollUpReportableObjects.Manufacture(newWORKPACKDashboard.SummaryUnpacker);
-                foreach (ProgressInfo progressInfo in newWORKPACKDashboard.Summary_CumulativeEarnedDataPoints)
+
+                if (newWORKPACKDashboard.Summary_CumulativeEarnedDataPoints != null)
                 {
-                    progressInfo.WorkpackGuid = newWORKPACKDashboard.GUID; //used in push to p6
+                    foreach (ProgressInfo progressInfo in newWORKPACKDashboard.Summary_CumulativeEarnedDataPoints)
+                    {
+                        progressInfo.WorkpackGuid = newWORKPACKDashboard.GUID; //used in push to p6
+                    }
                 }
             }
 

@@ -1008,9 +1008,9 @@ namespace BluePrints.Common.ViewModel
             var entityProperties = typeof(TEntity).GetProperties();
             var gridView = sourceGridControl.View;
 
-            if (gridView.ActiveEditor == null && gridView.GetType() == typeof(TableView))
+            if (gridView.ActiveEditor == null && gridView.GetType() == typeof(TableViewEx))
             {
-                var gridTableView = gridView as TableView;
+                var gridTableView = gridView as TableViewEx;
                 foreach (var Row in RowData)
                 {
                     var newEntity = CreateEntity();
