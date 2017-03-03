@@ -25,13 +25,12 @@ namespace BluePrints.Common.Projections
 
         public void InitializeBuilder(IEnumerable<ReportableObject> reportableObjects, PROGRESS livePROGRESS,
             BASELINE liveBASELINE, IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork,
-            IP6EntitiesUnitOfWork p6UnitOfWork)
+            IP6EntitiesUnitOfWork p6UnitOfWork, PROJECT currentProject = null)
         {
             ReportableObjects = reportableObjects;
             LiveBASELINE = liveBASELINE;
             LivePROGRESS = livePROGRESS;
-
-            SummaryBuilder = new PROJECTSummaryBuilder(this, bluePrintsUnitOfWork, p6UnitOfWork);
+            SummaryBuilder = new PROJECTSummaryBuilder(this, bluePrintsUnitOfWork, p6UnitOfWork, PROJECT);
         }
     }
 

@@ -250,19 +250,22 @@
                             <dxg:GridControl.DetailDescriptor>
                                 <dxg:DataControlDetailDescriptor
                                     ItemsSourceBinding="{Binding NonCumulative_BurnedDataPoints}">
-                                    <dxg:GridControl Style="{StaticResource DefaultGridTemplate}">
-                                        <dxg:GridControl.Columns>
+                                    <!--<dxg:GridControl Style="{StaticResource DefaultGridTemplate}">-->
+                                    <dxg:GridControl>
+                                            <dxg:GridControl.Columns>
                                             <dxg:GridColumn Header="Resource Name" FieldName="ResourceName"
                                                             VisibleIndex="10" />
                                             <dxg:GridColumn FieldName="Units" VisibleIndex="20" />
                                             <dxg:GridColumn FieldName="Costs" VisibleIndex="30" />
-                                            <dxg:GridColumn FieldName="Actuals" VisibleIndex="40" />
+                                            <dxg:GridColumn FieldName="Actuals" VisibleIndex="40" Visible="False" />
                                             <dxg:GridColumn Header="Transaction Date" FieldName="ProgressDate"
                                                             VisibleIndex="90" />
                                         </dxg:GridControl.Columns>
                                         <dxg:GridControl.View>
-                                            <dxg:TableView Name="detailTableView" AllowEditing="False"
+                                            <!--<dxg:TableView Name="detailTableView" AllowEditing="False"
                                                            Style="{StaticResource ChildTableReadOnlyViewTemplate}"
+                                                           NewItemRowPosition="None" />-->
+                                            <dxg:TableView Name="detailTableView" AllowEditing="False" 
                                                            NewItemRowPosition="None" />
                                         </dxg:GridControl.View>
                                     </dxg:GridControl>

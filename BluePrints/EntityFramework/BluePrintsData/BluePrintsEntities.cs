@@ -4,6 +4,7 @@ namespace BluePrints.Data
     using System.Data.Entity;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
+    using EntityFramework.Functions;
 
     public partial class BluePrintsEntities : DbContext
     {
@@ -49,6 +50,11 @@ namespace BluePrints.Data
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             Database.SetInitializer<BluePrintsEntities>(null);
+            modelBuilder.Conventions.Add(new FunctionConvention<BluePrintsEntities>());
+            modelBuilder.ComplexType<StoredProcedure_DeliverablesDataPoints>();
+            // Add all complex types in the assembly of AdventureWorks.
+            modelBuilder.AddComplexTypesFromAssembly(typeof(BluePrintsEntities).Assembly);
+
             modelBuilder.Entity<AREA>()
                 .HasMany(e => e.BASELINE_ITEM)
                 .WithOptional(e => e.AREA)

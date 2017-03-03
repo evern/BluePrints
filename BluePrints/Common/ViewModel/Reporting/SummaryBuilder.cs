@@ -9,10 +9,12 @@ using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data.Entity.Core.Objects;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static BluePrints.Data.BluePrintsEntities;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
@@ -182,11 +184,15 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal CurrencyConversion { get; set; }
         IEnumerable<TASK> PROGRESS_TASKS { get; set; }
         BluePrints.P6Data.PROJECT PROGRESS_PROJECT = null;
-        public PROJECTSummaryBuilder(SummarizableObject summaryObject, IBluePrintsEntitiesUnitOfWork BluePrintsUOW = null, IP6EntitiesUnitOfWork P6UOW = null)
+        Data.PROJECT CURRENTPROJECT = null;
+
+        public PROJECTSummaryBuilder(SummarizableObject summaryObject, IBluePrintsEntitiesUnitOfWork BluePrintsUOW = null, IP6EntitiesUnitOfWork P6UOW = null, Data.PROJECT currentPROJECT = null)
         {
+            this.CURRENTPROJECT = currentPROJECT;
+
             if (summaryObject.LivePROGRESS == null || summaryObject.LiveBASELINE == null)
                 return;
-
+            
             this.CurrencyConversion = summaryObject.LiveBASELINE.PROJECT.CURRENCYCONVERSION;
             this.SummaryObject = summaryObject;
             this.SummaryObject.ReportingDataDate = this.SummaryObject.LivePROGRESS.DATA_DATE;
@@ -220,15 +226,24 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public override void BuildOriginalPlannedDataPoints()
         {
+            //PlannedDataPointsBuilderFromDatabase(CURRENTPROJECT.NUMBER, false);
             PlannedDataPointsBuilder(true);
         }
 
         public override void BuildModifiedPlannedDataPoints()
         {
+            //PlannedDataPointsBuilderFromDatabase(CURRENTPROJECT.NUMBER, true);
             PlannedDataPointsBuilder(false);
         }
 
-        private void PlannedDataPointsBuilder(bool fromOriginalBaseline)
+        private void PlannedDataPointsBuilderFromDatabase(string ProjectNumber, bool tryUsingForecast)
+        {
+            BluePrintsEntities bluePrintDataContext = new BluePrintsEntities();
+            ObjectResult<StoredProcedure_DeliverablesDataPoints> deliverablesDataPoints = bluePrintDataContext.GetDataPointsByProject(ProjectNumber, tryUsingForecast);
+            PlannedDataPointsBuilder(tryUsingForecast, deliverablesDataPoints.ToList());
+        }
+
+        private void PlannedDataPointsBuilder(bool tryUsingForecast, IEnumerable<StoredProcedure_DeliverablesDataPoints> DataPointsCollection = null)
         {
             foreach (ReportableObject ReportableObject in SummaryObject.ReportableObjects)
             {
@@ -246,12 +261,12 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 List<ProgressInfo> progressItemP6DataPoints;
                 WorkpackAssignmentLoadType assignmentLoadType = WorkpackAssignmentLoadType.Original;
-                if (!fromOriginalBaseline)
+                if (!tryUsingForecast)
                     assignmentLoadType = WorkpackAssignmentLoadType.Modified;
 
                 IEnumerable<TASK> BASELINE_TASKS = null;
                 P6Data.PROJECT BASELINE_P6PROJECT = null;
-                if (fromOriginalBaseline)
+                if (tryUsingForecast)
                 {
                     if (this.SummaryObject.LiveBASELINE.P6BASELINE_NAME != null && this.SummaryObject.LiveBASELINE.P6BASELINE_NAME != string.Empty)
                         BASELINE_TASKS = GetP6ScheduleTasks(SummaryObject.LiveBASELINE.P6BASELINE_NAME, out BASELINE_P6PROJECT);
@@ -264,7 +279,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 if (SummaryObject.LivePROGRESS.P6PROGRESS_NAME != null && TryBuildP6DataPoints(BASELINE_P6PROJECT, BASELINE_TASKS, ReportableObject, DataPointsType.Planned, assignmentLoadType, out progressItemP6DataPoints))
                 {
-                    if (fromOriginalBaseline)
+                    if (tryUsingForecast)
                         ReportableObject.NonCumulative_OriginalDataPoints = new ObservableCollection<ProgressInfo>(progressItemP6DataPoints);
                     else
                         ReportableObject.NonCumulative_PlannedDataPoints = new ObservableCollection<ProgressInfo>(progressItemP6DataPoints);
@@ -272,7 +287,6 @@ namespace BluePrints.Common.ViewModel.Reporting
                 else
                 {
                     List<Period> workpackSuspensionPeriod = new List<Period>();
-
                     workpackSuspensionPeriod.Add(new Period((DateTime)currentWORKPACK.REVIEWSTARTDATE, (DateTime)currentWORKPACK.REVIEWENDDATE));
 
                     decimal BaselineItemBaseUnits = currentBASELINE_ITEM.BASELINE_ITEM.ESTIMATED_HOURS;
@@ -281,36 +295,71 @@ namespace BluePrints.Common.ViewModel.Reporting
                     decimal BaselineItemTotalCosts = currentBASELINE_ITEM.TOTAL_COSTS;
 
                     List<ProgressInfo> plannedDataPoints;
-                    if (fromOriginalBaseline) //if it's generating from original baseline ignore variation
+                    if (tryUsingForecast) //if it's generating from original baseline ignore variation
                     {
-                        TimeSpan workingBaseTimeSpan = (DateTime)currentWORKPACK.ENDDATE - (DateTime)currentWORKPACK.STARTDATE;
-                        plannedDataPoints = ISupportProgressReportingExtensions.DataPointsGenerator(SummaryObject, workingBaseTimeSpan, BaselineItemBaseUnits, BaselineItemBaseCosts, (DateTime)currentWORKPACK.STARTDATE, currentBASELINE_ITEM.BASELINE_ITEM.GUID_ORIGINAL, this.CurrencyConversion, workpackSuspensionPeriod, BaselineItemTotalUnits, BaselineItemTotalCosts);
-                        ReportableObject.NonCumulative_OriginalDataPoints = new ObservableCollection<ProgressInfo>(plannedDataPoints);
+                        if(DataPointsCollection != null)
+                        {
+                            IEnumerable<StoredProcedure_DeliverablesDataPoints> currentDeliverableDataPoints = DataPointsCollection.Where(x => x.GUID_ORIGINAL == ReportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL).OrderBy(x => x.UniversalPeriodStartDate);
+                            ReportableObject.NonCumulative_OriginalDataPoints = new ObservableCollection<ProgressInfo>(ConvertDeliverablesDataPointToProgressInfo(currentDeliverableDataPoints, ReportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS, ReportableObject.BASELINE_ITEMJoinRATE.TOTAL_COSTS));
+                        }
+                        else
+                        {
+                            TimeSpan workingBaseTimeSpan = (DateTime)currentWORKPACK.ENDDATE - (DateTime)currentWORKPACK.STARTDATE;
+                            plannedDataPoints = ISupportProgressReportingExtensions.DataPointsGenerator(SummaryObject, workingBaseTimeSpan, BaselineItemBaseUnits, BaselineItemBaseCosts, (DateTime)currentWORKPACK.STARTDATE, currentBASELINE_ITEM.BASELINE_ITEM.GUID_ORIGINAL, this.CurrencyConversion, workpackSuspensionPeriod, BaselineItemTotalUnits, BaselineItemTotalCosts);
+                            ReportableObject.NonCumulative_OriginalDataPoints = new ObservableCollection<ProgressInfo>(plannedDataPoints);
+                        }
                     }
                     else
                     {
-                        DateTime modifiedEndDateToUse = (DateTime)currentWORKPACK.ENDDATE;
-                        if (currentWORKPACK.FORECASTENDDATE != null)
-                            modifiedEndDateToUse = (DateTime)currentWORKPACK.FORECASTENDDATE;
+                        if (DataPointsCollection != null)
+                        {
+                            IEnumerable<StoredProcedure_DeliverablesDataPoints> currentDeliverableDataPoints = DataPointsCollection.Where(x => x.GUID_ORIGINAL == ReportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL).OrderBy(x => x.UniversalPeriodStartDate);
+                            ReportableObject.NonCumulative_PlannedDataPoints = new ObservableCollection<ProgressInfo>(ConvertDeliverablesDataPointToProgressInfo(currentDeliverableDataPoints, ReportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS, ReportableObject.BASELINE_ITEMJoinRATE.TOTAL_COSTS));
+                        }
+                        else
+                        {
+                            DateTime modifiedEndDateToUse = (DateTime)currentWORKPACK.ENDDATE;
+                            if (currentWORKPACK.FORECASTENDDATE != null)
+                                modifiedEndDateToUse = (DateTime)currentWORKPACK.FORECASTENDDATE;
 
-                        TimeSpan workingModifiedTimeSpan = modifiedEndDateToUse - (DateTime)currentWORKPACK.STARTDATE;
-                        if (currentWORKPACK.FORECASTSTARTDATE != null && ((DateTime)currentWORKPACK.FORECASTSTARTDATE) > currentWORKPACK.ENDDATE)
-                            workpackSuspensionPeriod.Add(new Period(((DateTime)currentWORKPACK.ENDDATE).AddDays(1), (DateTime)currentWORKPACK.FORECASTSTARTDATE));
+                            TimeSpan workingModifiedTimeSpan = modifiedEndDateToUse - (DateTime)currentWORKPACK.STARTDATE;
+                            if (currentWORKPACK.FORECASTSTARTDATE != null && ((DateTime)currentWORKPACK.FORECASTSTARTDATE) > currentWORKPACK.ENDDATE)
+                                workpackSuspensionPeriod.Add(new Period(((DateTime)currentWORKPACK.ENDDATE).AddDays(1), (DateTime)currentWORKPACK.FORECASTSTARTDATE));
 
-                        //Used to show sharktooth on variation
-                        plannedDataPoints = ISupportProgressReportingExtensions.DataPointsGenerator(SummaryObject, workingModifiedTimeSpan, BaselineItemBaseUnits, BaselineItemBaseCosts, (DateTime)currentWORKPACK.STARTDATE, currentBASELINE_ITEM.BASELINE_ITEM.GUID_ORIGINAL, this.CurrencyConversion, workpackSuspensionPeriod, null, null, ReportableObject.Cumulative_VariationAdjustments);
+                            //Used to show sharktooth on variation
+                            plannedDataPoints = ISupportProgressReportingExtensions.DataPointsGenerator(SummaryObject, workingModifiedTimeSpan, BaselineItemBaseUnits, BaselineItemBaseCosts, (DateTime)currentWORKPACK.STARTDATE, currentBASELINE_ITEM.BASELINE_ITEM.GUID_ORIGINAL, this.CurrencyConversion, workpackSuspensionPeriod, null, null, ReportableObject.Cumulative_VariationAdjustments);
 
-                        //Used to show normalized variation
-                        //plannedDataPoints = DataPointsGenerator(WorkingPeriod, progressInterval, BaselineItemTotalUnits, BaselineItemTotalCosts, this.CurrencyConversion, baselineItem.WORKPACK.STARTDATE, firstAlignedDataDate, baselineItem.GUID_ORIGINAL);
-                        ReportableObject.NonCumulative_PlannedDataPoints = new ObservableCollection<ProgressInfo>(plannedDataPoints);
+                            //Used to show normalized variation
+                            //plannedDataPoints = DataPointsGenerator(WorkingPeriod, progressInterval, BaselineItemTotalUnits, BaselineItemTotalCosts, this.CurrencyConversion, baselineItem.WORKPACK.STARTDATE, firstAlignedDataDate, baselineItem.GUID_ORIGINAL);
+                            ReportableObject.NonCumulative_PlannedDataPoints = new ObservableCollection<ProgressInfo>(plannedDataPoints);
+                        }
                     }
                 }
             }
 
-            if (fromOriginalBaseline)
+            if (tryUsingForecast)
                 SummaryObject.NonCumulative_OriginalDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_OriginalDataPoints));
             else
                 SummaryObject.NonCumulative_PlannedDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_PlannedDataPoints));
+        }
+
+        private IEnumerable<ProgressInfo> ConvertDeliverablesDataPointToProgressInfo(IEnumerable<StoredProcedure_DeliverablesDataPoints> deliverablesDataPoints, decimal BudgetedUnits, decimal BudgetedCosts )
+        {
+            List<ProgressInfo> progressInfoConversion = new List<ProgressInfo>();
+            foreach (StoredProcedure_DeliverablesDataPoints deliverablesDataPoint in deliverablesDataPoints)
+            {
+                progressInfoConversion.Add(new ProgressInfo
+                {
+                    BaselineItemGuid = deliverablesDataPoint.GUID_ORIGINAL, 
+                    BudgetedUnits = BudgetedUnits, 
+                    BudgetedCosts = BudgetedCosts, 
+                    Costs = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedPrice),
+                    Units = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedUnits), 
+                    ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate
+                });
+            }
+
+            return progressInfoConversion;
         }
 
         /// <summary>
@@ -364,8 +413,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                         CurrentAssignmentStartDate = (DateTime)currentAssignmentTASK.target_start_date;
                         CurrentAssignmentWorkingPeriod = (DateTime)currentAssignmentTASK.target_end_date - (DateTime)currentAssignmentTASK.target_start_date;
-                        CurrentAssignmentMaxUnits = progressItemTotalHours;
                         CurrentAssignmentMinUnits = WORKPACK_ASSIGNMENTS.LOW_VALUE;
+                        CurrentAssignmentMaxUnits = progressItemTotalHours;
+
                     }
                     else if (processingType == DataPointsType.Earned)
                     {

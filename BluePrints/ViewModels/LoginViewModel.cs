@@ -3,21 +3,13 @@ using BluePrints.Common;
 using BluePrints.Common.Helpers;
 using BluePrints.Common.ViewModel;
 using BluePrints.Data;
-using BluePrints.Views;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
-using DevExpress.Xpf.Editors.Helpers;
-using DevExpress.XtraEditors.DXErrorProvider;
 using System;
-using System.Net.Http;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
-using Microsoft.AspNet.SignalR.Client;
-using DevExpress.Mvvm;
 
 namespace BluePrints.ViewModels
 {
@@ -25,6 +17,13 @@ namespace BluePrints.ViewModels
     {
         public string UserName { get; set; }
         public string UserPassword { get; set; }
+        enum UserAuthenticationResult
+        {
+            UsernameNotAdded,
+            RoleNotAssigned,
+            InvalidUsernameOrPassword,
+            Authenticated
+        }
 
         public static LoginViewModel Create()
         {
@@ -33,7 +32,7 @@ namespace BluePrints.ViewModels
 
         private IEnumerable<USER> USERS { get; set; }
         private DispatcherTimer delayedHideDispatcher;
-
+        bool isUsernameLoadedFromXML;
         protected LoginViewModel()
         {
             delayedHideDispatcher = new DispatcherTimer();
@@ -41,7 +40,9 @@ namespace BluePrints.ViewModels
             delayedHideDispatcher.Tick += delayedHideDispatcher_Tick;
             USERS = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork().USERS.AsEnumerable();
             UserName = XMLHelpers.GetSettings_Username();
-            Application.Current.Dispatcher.BeginInvoke(new Action(() => EVERNPCLogin()));
+            if (UserName != string.Empty)
+                isUsernameLoadedFromXML = true;
+            //Application.Current.Dispatcher.BeginInvoke(new Action(() => EVERNPCLogin()));
         }
 
         private void delayedHideDispatcher_Tick(object sender, EventArgs e)
@@ -65,11 +66,12 @@ namespace BluePrints.ViewModels
 
         public void Login()
         {
-            if (UserName == CommonResources.AdminUsername && UserPassword == CommonResources.AdminPassword ||
-                UserAuthenticate())
+            UserAuthenticationResult authenticationResult = UserAuthenticate;
+
+            if (authenticationResult == UserAuthenticationResult.Authenticated || UserName == CommonResources.AdminUsername && UserPassword == CommonResources.AdminPassword)
             {
                 if (UserName == CommonResources.AdminUsername)
-                    LoginCredentials.CurrentUser = new USER() {NAME = CommonResources.AdminUsername};
+                    LoginCredentials.CurrentUser = new USER() { NAME = CommonResources.AdminUsername };
                 else
                     LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME == UserName);
 
@@ -78,9 +80,7 @@ namespace BluePrints.ViewModels
                 delayedHideDispatcher.Start();
             }
             else
-            {
-                SetUsernamePasswordError();
-            }
+                SetUsernamePasswordError(authenticationResult);
         }
 
         protected IMessageBoxService MessageBoxService
@@ -93,45 +93,64 @@ namespace BluePrints.ViewModels
             Environment.Exit(1);
         }
 
-        private bool UserAuthenticate()
+        private UserAuthenticationResult UserAuthenticate
         {
-            var user = USERS.FirstOrDefault(x => x.NAME == UserName);
-            if (user == null)
+            get
             {
-                ShowError(false, "Username not found");
-                return false;
-            }
-            else
-            {
-                if (user.GUID_ROLE == Guid.Empty)
-                {
-                    ShowError(false, "No role assigned on user");
-                    return false;
-                }
-
-                if (UserName != null && UserPassword != null)
-                    if (ActiveDirectory.Authenticate(UserName, UserPassword))
-                    {
-                        ShowError(false, null);
-                        ShowError(true, null);
-                        XMLHelpers.UpdateSettingsXML(new XMLSettings() {Username = UserName.Trim()});
-                        return true;
-                    }
-                    else
-                    {
-                        SetUsernamePasswordError();
-                        XMLHelpers.UpdateSettingsXML(new XMLSettings() {Username = string.Empty});
-                        return false;
-                    }
+                var user = USERS.FirstOrDefault(x => x.NAME.ToLower() == UserName.ToLower());
+                if (user == null)
+                    return UserAuthenticationResult.UsernameNotAdded;
                 else
-                    return false;
+                {
+                    if (user.GUID_ROLE == Guid.Empty)
+                        return UserAuthenticationResult.RoleNotAssigned;
+
+                    if (UserName != null && UserPassword != null)
+                    {
+                        IEnumerable<USER> activeDirectoryUSERS = ActiveDirectory.GetUSERS();
+                        USER CaseSensitiveUser = activeDirectoryUSERS.FirstOrDefault(x => x.NAME.ToLower() == UserName.ToLower());
+                        if (CaseSensitiveUser != null)
+                            UserName = CaseSensitiveUser.NAME;
+
+                        if (ActiveDirectory.Authenticate(UserName, UserPassword))
+                        {
+                            ShowError(false, null);
+                            ShowError(true, null);
+                            XMLHelpers.UpdateSettingsXML(new XMLSettings() { Username = UserName.Trim() });
+                            return UserAuthenticationResult.Authenticated;
+                        }
+                        else
+                        {
+                            XMLHelpers.UpdateSettingsXML(new XMLSettings() { Username = string.Empty });
+                            return UserAuthenticationResult.InvalidUsernameOrPassword;
+                        }
+                    }
+
+                    else
+                        return UserAuthenticationResult.InvalidUsernameOrPassword;
+                }
             }
         }
 
-        private void SetUsernamePasswordError()
+        private void SetUsernamePasswordError(UserAuthenticationResult authenticationResult)
         {
-            ShowError(false, "Invalid username or password");
-            ShowError(true, "Invalid username or password");
+            String errorText = string.Empty;
+            if(authenticationResult == UserAuthenticationResult.InvalidUsernameOrPassword)
+            {
+                errorText = "Invalid username or password";
+                ShowError(true, errorText);
+                ShowError(false, errorText);
+            }
+            else if (authenticationResult == UserAuthenticationResult.RoleNotAssigned)
+            {
+                errorText = "Please ask pete to assign a role to you";
+                ShowError(false, errorText);
+            }
+            else if (authenticationResult == UserAuthenticationResult.UsernameNotAdded)
+            {
+                errorText = "Please ask pete to add you as a BluePrint user";
+                ShowError(false, errorText);
+            }
         }
 
         public Action ShowControlCallBack;

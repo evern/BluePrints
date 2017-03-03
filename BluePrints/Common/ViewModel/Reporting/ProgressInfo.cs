@@ -9,6 +9,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     public class ProgressInfo
     {
         public Guid BaselineItemGuid { get; set; }
+        public Guid WorkpackGuid { get; set; }
         public DateTime ProgressDate { get; set; }
         public decimal Units { get; set; }
         public decimal Costs { get; set; }
@@ -16,7 +17,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Actuals { get; set; }
         public decimal BudgetedUnits { get; set; }
         public decimal BudgetedCosts { get; set; }
-        public Guid WorkpackGuid { get; set; }
         public string WorkpackName { get; set; }
         public string ResourceName { get; set; }
         public decimal Quantity { get; set; }

@@ -1,7 +1,11 @@
 ﻿using BluePrints.Data.Helpers;
+using EntityFramework.Functions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -76,6 +80,34 @@ namespace BluePrints.Data
         public void Reload(object entity)
         {
             Entry(entity).Reload();
+        }
+
+        public const string dbo = nameof(dbo);
+        [Function(FunctionType.StoredProcedure, nameof(GetDataPointsByProject), Schema = dbo)]
+        public ObjectResult<StoredProcedure_DeliverablesDataPoints> GetDataPointsByProject(string ProjectNumber, bool TryUsingForecast)
+        {
+            ObjectParameter projectNumberParameter = new ObjectParameter(nameof(ProjectNumber), ProjectNumber);
+            ObjectParameter tryUsingForecastParameter = new ObjectParameter(nameof(TryUsingForecast), TryUsingForecast);
+            ObjectParameter[] parameterArray = new ObjectParameter[] { projectNumberParameter, tryUsingForecastParameter };
+
+            return this.ObjectContext().ExecuteFunction<StoredProcedure_DeliverablesDataPoints>(
+                nameof(this.GetDataPointsByProject), parameterArray);
+        }
+
+        [ComplexType]
+        public class StoredProcedure_DeliverablesDataPoints
+        {
+            public Guid GUID_PROJECT { get; set; }
+            public Guid GUID_WORKPACK { get; set; }
+            public Guid GUID_ORIGINAL { get; set; }
+            public DateTime UniversalPeriodStartDate { get; set; }
+            public DateTime UniversalPeriodEndDate { get; set; }
+            public double PeriodPlannedUnits { get; set; }
+            public double PeriodEarnedUnits { get; set; }
+            public double PeriodRemainingUnits { get; set; }
+            public double PeriodPlannedPrice { get; set; }
+            public double PeriodEarnedPrice { get; set; }
+            public double PeriodRemainingPrice { get; set; }
         }
     }
 }
