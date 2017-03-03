@@ -243,7 +243,7 @@ namespace BluePrints.Common.ViewModel
         private IDocument NavigateToDocument(TModule module)
         {
             var document = DocumentManagerService.CreateDocument(module.DocumentType, module.DocumentParameter, this);
-            document.Title = GetModuleTitle(module);
+            document.Title = GetTabTitle(module);
             document.Id = module.DocumentId;
             document.DestroyOnClose = true;
             return document;
@@ -259,14 +259,14 @@ namespace BluePrints.Common.ViewModel
         private IDocument CreateDocument(TModule module)
         {
             var document = DocumentManagerService.CreateDocument(module.DocumentType, null, this);
-            document.Title = GetModuleTitle(module);
+            document.Title = GetTabTitle(module);
             document.DestroyOnClose = true;
             return document;
         }
 
-        protected virtual string GetModuleTitle(TModule module)
+        protected virtual string GetTabTitle(TModule module)
         {
-            return module.ModuleTitle;
+            return module.TabTitle;
         }
 
         protected Func<TModule, object> GetPeekCollectionViewModelFactory<TEntity, TPrimaryKey>(
@@ -338,6 +338,11 @@ namespace BluePrints.Common.ViewModel
         /// The navigation list entry display text.
         /// </summary>
         public string ModuleTitle { get; private set; }
+
+        /// <summary>
+        /// The tab display text when opened.
+        /// </summary>
+        public string TabTitle { get; private set; }
 
         /// <summary>
         /// Contains the corresponding document view type.

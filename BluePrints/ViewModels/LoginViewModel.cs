@@ -8,6 +8,7 @@ using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -42,7 +43,7 @@ namespace BluePrints.ViewModels
             UserName = XMLHelpers.GetSettings_Username();
             if (UserName != string.Empty)
                 isUsernameLoadedFromXML = true;
-            //Application.Current.Dispatcher.BeginInvoke(new Action(() => EVERNPCLogin()));
+            Application.Current.Dispatcher.BeginInvoke(new Action(() => EVERNPCLogin()));
         }
 
         private void delayedHideDispatcher_Tick(object sender, EventArgs e)

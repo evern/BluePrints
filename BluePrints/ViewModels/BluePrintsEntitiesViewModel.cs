@@ -279,7 +279,9 @@ namespace BluePrints.ViewModels
             var newModules = new List<BluePrintsEntitiesModuleDescription>();
             var projectModuleTreeViewProperty = ModuleTreeProperty.ProjectTreeProperty(entity);
 
-            var moduleTitle = entity.NUMBER + " " + entity.NAME;
+            string moduleTitle = entity.NUMBER + " " + entity.NAME;
+            string tabTitle = string.Empty;
+
             object parentId;
             if (entity.STATUS == ProjectStatus.Active)
                 parentId = ModuleTreeProperty.ActiveprojectCategoryTreeProperty.Id;
@@ -301,8 +303,9 @@ namespace BluePrints.ViewModels
                     Image = ModuleTreeProperty.TreeViewImage
                 };
                 moduleTitle = "Phases";
+                tabTitle = string.Format("[{0}] {1}", entity.NUMBER, moduleTitle);
                 newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle, "PHASECollectionView",
-                    new EntitiesParameter<PROJECT>(entity), projectphaseModuleTreeProperty));
+                    new EntitiesParameter<PROJECT>(entity), projectphaseModuleTreeProperty, tabTitle));
 
                 var projectareaModuleTreeProperty = new TreeViewProperty
                 {
@@ -311,8 +314,9 @@ namespace BluePrints.ViewModels
                     Image = ModuleTreeProperty.TreeViewImage
                 };
                 moduleTitle = "Areas";
+                tabTitle = string.Format("[{0}] {1}", entity.NUMBER, moduleTitle);
                 newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle, "AREACollectionView",
-                    new EntitiesParameter<PROJECT>(entity), projectareaModuleTreeProperty));
+                    new EntitiesParameter<PROJECT>(entity), projectareaModuleTreeProperty, tabTitle));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageRate))
@@ -324,8 +328,9 @@ namespace BluePrints.ViewModels
                     Image = ModuleTreeProperty.TreeViewImage
                 };
                 moduleTitle = "Rates";
+                tabTitle = string.Format("[{0}] {1}", entity.NUMBER, moduleTitle);
                 newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle, "RATECollectionView",
-                    new EntitiesParameter<PROJECT>(entity), projectrateModuleTreeProperty));
+                    new EntitiesParameter<PROJECT>(entity), projectrateModuleTreeProperty, tabTitle));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageWorkpack))
@@ -337,8 +342,9 @@ namespace BluePrints.ViewModels
                     Image = ModuleTreeProperty.TreeViewImage
                 };
                 moduleTitle = "Workpacks";
+                tabTitle = string.Format("[{0}] {1}", entity.NUMBER, moduleTitle);
                 newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle, "WORKPACKCollectionView",
-                    new EntitiesParameter<PROJECT>(entity), projectworkpackModuleTreeProperty));
+                    new EntitiesParameter<PROJECT>(entity), projectworkpackModuleTreeProperty, tabTitle));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageBaseline))
@@ -350,9 +356,10 @@ namespace BluePrints.ViewModels
                     Image = ModuleTreeProperty.TreeViewImage
                 };
                 moduleTitle = "Deliverables";
+                tabTitle = string.Format("[{0}] {1}", entity.NUMBER, moduleTitle);
                 newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle, "BASELINE_ITEMCollectionView",
                     new OptionalEntitiesParameter<PROJECT, BASELINE>(entity, null),
-                    projectlivebaselineModuleTreeProperty));
+                    projectlivebaselineModuleTreeProperty, tabTitle));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageVariation))
@@ -364,8 +371,9 @@ namespace BluePrints.ViewModels
                     Image = ModuleTreeProperty.TreeViewImage
                 };
                 moduleTitle = "Variations";
+                tabTitle = string.Format("[{0}] {1}", entity.NUMBER, moduleTitle);
                 newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle, "VARIATIONCollectionView",
-                    new EntitiesParameter<PROJECT>(entity), projectvariationModuleTreeProperty));
+                    new EntitiesParameter<PROJECT>(entity), projectvariationModuleTreeProperty, tabTitle));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageProgress))
@@ -377,9 +385,10 @@ namespace BluePrints.ViewModels
                     Image = ModuleTreeProperty.TreeViewImage
                 };
                 moduleTitle = "Progress";
+                tabTitle = string.Format("[{0}] {1}", entity.NUMBER, moduleTitle);
                 newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle, "PROGRESS_ITEMCollectionView",
                     new OptionalEntitiesParameter<PROJECT, PROGRESS>(entity, null),
-                    projectliveprogressModuleTreeProperty));
+                    projectliveprogressModuleTreeProperty, tabTitle));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))
@@ -391,10 +400,11 @@ namespace BluePrints.ViewModels
                     Image = ModuleTreeProperty.TreeViewImage
                 };
                 moduleTitle = "Commodity Code";
+                tabTitle = string.Format("[{0}] {1}", entity.NUMBER, moduleTitle);
                 newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle,
                     "COMMODITY_CODEMasterDetailCollectionView",
                     new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(entity,
-                        new CommodityCodeTypeClass(CommodityCodeType.Direct)), projectcommodityCodeModuleTreeProperty));
+                        new CommodityCodeTypeClass(CommodityCodeType.Direct)), projectcommodityCodeModuleTreeProperty, tabTitle));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageEstimation))
@@ -406,10 +416,11 @@ namespace BluePrints.ViewModels
                     Image = ModuleTreeProperty.TreeViewImage
                 };
                 moduleTitle = "Estimation";
+                tabTitle = string.Format("[{0}] {1}", entity.NUMBER, moduleTitle);
                 newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle,
                     "ESTIMATION_DIRECT_ITEMCollectionView",
                     new OptionalEntitiesParameter<PROJECT, ESTIMATION_DIRECT>(entity, null),
-                    projectliveestimationModuleTreeProperty));
+                    projectliveestimationModuleTreeProperty, tabTitle));
             }
 
             return newModules;
@@ -695,8 +706,8 @@ namespace BluePrints.ViewModels
     public class BluePrintsEntitiesModuleDescription : ModuleDescription<BluePrintsEntitiesModuleDescription>
     {
         protected BluePrintsEntitiesModuleDescription(string title, string documentType, object documentParameter = null,
-            TreeViewProperty treeViewProperty = null)
-            : base(title, documentType, documentParameter, treeViewProperty)
+            TreeViewProperty treeViewProperty = null, string tabTitle = null)
+            : base(title, documentType, documentParameter, treeViewProperty, tabTitle)
         {
         }
 
@@ -718,12 +729,12 @@ namespace BluePrints.ViewModels
         }
 
         public static BluePrintsEntitiesModuleDescription Create(string title, string documentType,
-            object documentParameter = null, TreeViewProperty treeViewProperty = null)
+            object documentParameter = null, TreeViewProperty treeViewProperty = null, string tabTitle = null)
         {
             return
                 ViewModelSource.Create(
                     () =>
-                        new BluePrintsEntitiesModuleDescription(title, documentType, documentParameter, treeViewProperty));
+                        new BluePrintsEntitiesModuleDescription(title, documentType, documentParameter, treeViewProperty, tabTitle));
         }
     }
 
@@ -842,9 +853,10 @@ namespace BluePrints.Common.ViewModel
         /// <param name="documentType">A string value that specifies the view type of corresponding document.</param>
         /// <param name="treeViewProperty">A property containing tree view specific properties for view binding</param>
         /// <param name="documentParameter">A document parameter to specify SingleObjectView to display</param>
-        protected ModuleDescription(string title, string documentType, object documentParameter = null, TreeViewProperty treeViewProperty = null)
+        protected ModuleDescription(string title, string documentType, object documentParameter = null, TreeViewProperty treeViewProperty = null, string tabTitle = null)
         {
             ModuleTitle = title;
+            TabTitle = tabTitle == null ? ModuleTitle : tabTitle;
             DocumentType = documentType;
             DocumentId = documentParameter == null
                 ? documentType
