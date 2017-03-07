@@ -15,6 +15,7 @@ namespace BluePrints.Data
             PROGRESS_START = DateTime.Now;
             DATA_DATE = DateTime.Now;
             INTERVAL_COUNT = 1;
+            INTERVAL_TYPE = ProgressIntervalType.Weekly;
         }
     }
 }

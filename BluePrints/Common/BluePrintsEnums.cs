@@ -176,6 +176,12 @@ namespace BluePrints.Common
         Site = 1,
     }
 
+    public enum PasteStatus
+    {
+        Start,
+        Stop
+    }
+
     public enum COMMODITY_CODEProjectionType
     {
         [Display(Name = "Grouped Project Specific")] ProjectSpecificGrouped,

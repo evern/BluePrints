@@ -995,6 +995,8 @@ namespace BluePrints.Common.ViewModel
         #endregion
 
         #region Data Operations
+        public Func<TProjection, bool> OnBeforePasteWithValidation;
+        public Action<PasteStatus> PasteListener;
 
         /// <summary>
         /// Converts clipboard text into entity values and saves to database
@@ -1002,6 +1004,8 @@ namespace BluePrints.Common.ViewModel
         /// <param name="e"></param>
         public virtual void PastingFromClipboard(PastingFromClipboardEventArgs e)
         {
+            PasteListener?.Invoke(PasteStatus.Start);
+
             var PasteString = Clipboard.GetText();
             var RowData = PasteString.Split(new char[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
             var sourceGridControl = (GridControl) e.Source;
@@ -1180,7 +1184,13 @@ namespace BluePrints.Common.ViewModel
                     var errorMessage = "Duplicate exists on constraint field named: ";
                     if (IsValidEntity(projection, ref errorMessage))
                     {
-                        Save(projection);
+                        if (OnBeforePasteWithValidation != null)
+                        {
+                            if (OnBeforePasteWithValidation(projection))
+                                Save(projection);
+                        }
+                        else
+                            Save(projection);
                     }
                     else
                     {
@@ -1191,6 +1201,7 @@ namespace BluePrints.Common.ViewModel
                     }
                 }
 
+                PasteListener?.Invoke(PasteStatus.Stop);
                 e.Handled = true;
             }
         }
@@ -1208,7 +1219,6 @@ namespace BluePrints.Common.ViewModel
 
         #endregion
     }
-
 
     /// <summary>
     /// The base class for POCO view models exposing a collection of entities of a given type and CRUD operations against these entities.

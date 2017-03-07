@@ -92,7 +92,7 @@ namespace BluePrints.ViewModels
                 return;
 
             MainThreadDispatcher.BeginInvoke(new Action(() => PopulateAllModules(entities)));
-            MainThreadDispatcher.BeginInvoke(new Action(() => ShowDashboardModule()));
+            //MainThreadDispatcher.BeginInvoke(new Action(() => ShowDashboardModule()));
             _isLoaded = true;
         }
 

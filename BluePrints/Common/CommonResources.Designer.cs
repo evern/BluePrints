@@ -322,6 +322,33 @@ namespace BluePrints.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Engineering.
+        /// </summary>
+        internal static string NewProject_DefaultDepartment {
+            get {
+                return ResourceManager.GetString("NewProject_DefaultDepartment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to General Engineering.
+        /// </summary>
+        internal static string NewProject_DefaultDiscipline {
+            get {
+                return ResourceManager.GetString("NewProject_DefaultDiscipline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Report.
+        /// </summary>
+        internal static string NewProject_DefaultDocType {
+            get {
+                return ResourceManager.GetString("NewProject_DefaultDocType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please add this record first before adjusting it&apos;s units.
         /// </summary>
         internal static string Notify_AddBASELINE_ITEMBeforeVARIATION_UNITS {

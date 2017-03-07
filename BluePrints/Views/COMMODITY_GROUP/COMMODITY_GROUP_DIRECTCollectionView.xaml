@@ -166,14 +166,14 @@
                                         </dxg:GridColumn>
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.View>
-                                        <common:TableViewEx x:Name="tableView1"
+                                        <dxg:TableView x:Name="tableView1"
                                                        Style="{StaticResource ChildTableViewTemplate}">
                                             <dxmvvm:Interaction.Behaviors>
                                                 <dxmvvm:EventToCommand
                                                     Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}"
                                                     PassEventArgsToCommand="True" EventName="CellValueChanging" />
                                             </dxmvvm:Interaction.Behaviors>
-                                        </common:TableViewEx>
+                                        </dxg:TableView>
                                     </dxg:GridControl.View>
                                 </dxg:GridControl>
                             </dxg:DataControlDetailDescriptor>

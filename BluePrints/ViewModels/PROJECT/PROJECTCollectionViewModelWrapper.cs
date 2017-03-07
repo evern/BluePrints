@@ -58,9 +58,21 @@ namespace BluePrints.ViewModels
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddEntitiesLoader<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>(1,
-                bluePrintsUnitOfWorkFactory, x => x.BASELINES, null, null, null, OnAfterEntitiesChanged);
+                bluePrintsUnitOfWorkFactory, x => x.BASELINES, null, null, null, null);
             loaderCollection.AddEntitiesLoader<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>(2,
-                bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, null, null, null, OnAfterEntitiesChanged);
+                bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, null, null, null, null);
+            loaderCollection.AddEntitiesLoader<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>(3,
+                bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, null, null, null, null);
+            loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(4,
+                bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, null, null, null, null);
+            loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(5,
+                bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES, null, null, null, null);
+            loaderCollection.AddEntitiesLoader<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>(6,
+                bluePrintsUnitOfWorkFactory, x => x.AREAS, null, null, null, null);
+            loaderCollection.AddEntitiesLoader<BASELINE_ITEM, BASELINE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>(7,
+                bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, null, null, null, null);
+            loaderCollection.AddEntitiesLoader<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(8,
+                bluePrintsUnitOfWorkFactory, x => x.DOCTYPES, null, null, null, null);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -111,11 +123,47 @@ namespace BluePrints.ViewModels
                 newPROGRESS.GUID_PROJECT = entity.GUID;
                 newPROGRESS.NAME = entity.NUMBER + "WEEKLY_001";
                 newPROGRESS.PROGRESS_START = DateTime.Now;
-                newPROGRESS.DATA_DATE = DateTime.Now;
+                newPROGRESS.DATA_DATE = CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday);
                 newPROGRESS.INTERVAL_COUNT = 1;
                 newPROGRESS.INTERVAL_TYPE = ProgressIntervalType.Weekly;
                 newPROGRESS.STATUS = ProgressStatus.Live;
                 PROGRESSViewModel.Save(newPROGRESS);
+
+                var newAREA = new AREA();
+                newAREA.GUID_PROJECT = entity.GUID;
+                newAREA.INTERNAL_NUM = "000";
+                newAREA.CLIENT_NUM = "000";
+                newAREA.TITLE = "000";
+                AREAViewModel.Save(newAREA);
+
+                DEPARTMENT defaultDepartment = DEPARTMENTViewModel.Entities.FirstOrDefault(x => x.NAME == CommonResources.NewProject_DefaultDepartment);
+                DISCIPLINE defaultDiscipline = DISCIPLINEViewModel.Entities.FirstOrDefault(x => x.NAME == CommonResources.NewProject_DefaultDiscipline);
+                DOCTYPE defaultDocType = DOCTYPEViewModel.Entities.FirstOrDefault(x => x.NAME == CommonResources.NewProject_DefaultDocType);
+
+                if(defaultDepartment != null && defaultDiscipline != null)
+                {
+                    var newWORKPACK = new WORKPACK();
+                    newWORKPACK.GUID_PROJECT = entity.GUID;
+                    newWORKPACK.INTERNAL_NAME1 = entity.NUMBER;
+                    newWORKPACK.STARTDATE = CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday);
+                    newWORKPACK.ENDDATE = ((DateTime)newWORKPACK.STARTDATE).AddDays(7);
+                    newWORKPACK.REVIEWSTARTDATE = (DateTime)newWORKPACK.STARTDATE; //effectively nullifies review date
+                    newWORKPACK.REVIEWENDDATE = (DateTime)newWORKPACK.STARTDATE; //effectively nullifies review date
+                    newWORKPACK.GUID_DAREA = newAREA.GUID;
+                    newWORKPACK.GUID_DDEPARTMENT = defaultDepartment.GUID;
+                    newWORKPACK.GUID_DDISCIPLINE = defaultDiscipline.GUID;
+                    newWORKPACK.GUID_DDOCTYPE = defaultDocType.GUID;
+                    WORKPACKViewModel.Save(newWORKPACK);
+
+                    var newBASELINE_ITEM = new BASELINE_ITEM();
+                    newBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
+                    newBASELINE_ITEM.GUID_WORKPACK = newWORKPACK.GUID;
+                    newBASELINE_ITEM.GUID_DEPARTMENT = defaultDepartment.GUID;
+                    newBASELINE_ITEM.GUID_DISCIPLINE = defaultDiscipline.GUID;
+                    newBASELINE_ITEM.GUID_DOCTYPE = defaultDocType.GUID;
+                    newBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-000-REP-GE-001";
+                    BASELINE_ITEMViewModel.Save(newBASELINE_ITEM);
+                }
             }
         }
 
@@ -148,6 +196,86 @@ namespace BluePrints.ViewModels
                 return
                     (CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<PROGRESS>();
+            }
+        }
+
+
+        public CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACKViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<WORKPACK>();
+            }
+        }
+
+        public CollectionViewModel<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork> DISCIPLINEViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<DISCIPLINE>();
+            }
+        }
+
+        public CollectionViewModel<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork> DEPARTMENTViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<DEPARTMENT>();
+            }
+        }
+
+        public CollectionViewModel<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork> AREAViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<AREA>();
+            }
+        }
+
+
+        public CollectionViewModel<BASELINE_ITEM, BASELINE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> BASELINE_ITEMViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<BASELINE_ITEM, BASELINE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<BASELINE_ITEM>();
+            }
+        }
+
+        public CollectionViewModel<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork> DOCTYPEViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<DOCTYPE>();
             }
         }
 

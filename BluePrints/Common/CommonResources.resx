@@ -246,4 +246,13 @@
   <data name="Estimation_Item_Direct_ProjectSpecificCommodityCodeCreated" xml:space="preserve">
     <value>Project specific commodity code created</value>
   </data>
+  <data name="NewProject_DefaultDepartment" xml:space="preserve">
+    <value>Engineering</value>
+  </data>
+  <data name="NewProject_DefaultDiscipline" xml:space="preserve">
+    <value>General Engineering</value>
+  </data>
+  <data name="NewProject_DefaultDocType" xml:space="preserve">
+    <value>Report</value>
+  </data>
 </root>

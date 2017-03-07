@@ -221,6 +221,7 @@ namespace BluePrints.ViewModels
             MainViewModel.CreateNewProjectionFromNewEntityCallBack = CreateNewProjectionFromNewEntityCallBack;
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntity;
             MainViewModel.OnEntitySavedCallBack = OnEntitiesSavedCallBack;
+            MainViewModel.PasteListener = this.PasteListener;
             MainViewModel.SetParentViewModel(this);
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             mainThreadDispatcher.BeginInvoke(new Action(() => ShowWORKPACKColumns()));
@@ -258,6 +259,12 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
+
+        private void PasteListener(PasteStatus pasteStatus)
+        {
+
+        }
+
 
         public void ApplyProjectionPropertiesToEntity(BASELINE_ITEMProjection projectionEntity, BASELINE_ITEM entity)
         {
