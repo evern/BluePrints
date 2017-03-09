@@ -1,4 +1,5 @@
-﻿using BluePrints.Data;
+﻿using BluePrints.Common.ViewModel;
+using BluePrints.Data;
 using BluePrints.Data.Attributes;
 using BluePrints.Data.Helpers;
 using DevExpress.Mvvm.POCO;
@@ -15,7 +16,7 @@ namespace BluePrints.Common.Projections
 {
     [ConstraintAttributes("COMMODITY_GROUP.GUID_PARENT, COMMODITY_GROUP.GUID_COMMODITYCODE")]
     [RequiredAttributes("COMMODITY_GROUP.DESCRIPTION")]
-    public class COMMODITY_GROUP_DIRECTProjection
+    public class COMMODITY_GROUP_DIRECTProjection : IHaveGUID
     {
         public COMMODITY_GROUP_DIRECTProjection()
         {

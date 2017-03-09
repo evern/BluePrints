@@ -7,9 +7,10 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
+    using Common.ViewModel;
 
     [ConstraintAttributes("GUID_DEPARTMENT, GUID_DISCIPLINE")]
-    public partial class RATE
+    public partial class RATE : IHaveGUID
     {
     }
 }

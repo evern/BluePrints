@@ -1,6 +1,7 @@
 namespace BluePrints.Data
 {
     using Attributes;
+    using Common.ViewModel;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -8,7 +9,7 @@ namespace BluePrints.Data
     using System.Data.Entity.Spatial;
 
     [ConstraintAttributes("GUID_DDEPARTMENT, CODE")]
-    public partial class DOCTYPE
+    public partial class DOCTYPE : IHaveGUID
     {
     }
 }

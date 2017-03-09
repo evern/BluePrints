@@ -1,4 +1,7 @@
-﻿<UserControl x:Name="userControl" x:Class="BluePrints.Views.BASELINE_ITEMCollectionView"
+﻿<view:ViewStateRestoreUserControl
+             x:Name="userControl" 
+             x:Class="BluePrints.Views.BASELINE_ITEMCollectionView"
+             xmlns:view="clr-namespace:BluePrints.Views"
              xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -89,7 +92,7 @@
                 </dxr:RibbonStatusBarControl>
                 <Grid>
                     <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="BASELINE_ITEMSGrid"
-                                     Style="{StaticResource WrapperGridTemplate}" PreviewKeyDown="gridControl_PreviewKeyDown">
+                                     Style="{StaticResource AggregateViewGridTemplate}" PreviewKeyDown="gridControl_PreviewKeyDown">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="BASELINE_ITEM.GUID_WORKPACK"
                                             Header="WORKPACK" Visible="False" VisibleIndex="0">
@@ -294,4 +297,4 @@
             </DockPanel>
         </Grid>
     </Grid>
-</UserControl>
+</view:ViewStateRestoreUserControl>

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace BluePrints.Common.Projections
 {
     [ConstraintAttributes("BASELINE_ITEM.GUID_BASELINE, BASELINE_ITEM.INTERNAL_NUM")]
-    public class BASELINE_ITEMProjection
+    public class BASELINE_ITEMProjection : IHaveGUID
     {
         public BASELINE_ITEMProjection()
         {

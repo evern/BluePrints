@@ -18,9 +18,9 @@ using System.Windows.Threading;
 namespace BluePrints.Common.ViewModel
 {
     public abstract class CollectionViewModelsWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
-        TMainEntityUnitOfWork, TMainViewModel> : ICollectionViewModelsWrapper, IDocumentContent, ISupportParameter
-        where TMainEntity : class
-        where TMainProjectionEntity : class
+        TMainEntityUnitOfWork, TMainViewModel> : ICollectionViewModelsWrapper, IDocumentContent, ISupportParameter, ISupportViewRestoration
+        where TMainEntity : class, IHaveGUID
+        where TMainProjectionEntity : class, IHaveGUID
         where TMainEntityUnitOfWork : IUnitOfWork
         where TMainViewModel :
         CollectionViewModel<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork>
@@ -97,14 +97,14 @@ namespace BluePrints.Common.ViewModel
 
         protected virtual void OnParameterChanged(object parameter)
         {
+            InitializePresentationProperties();
             InitializeParameters(parameter);
             InitializeAndLoadEntitiesLoaderDescription();
         }
 
         protected virtual void InitializeParameters(object parameter)
         {
-            throw new NotImplementedException(
-                "Override this method to initialize primary parameter attributes in inherited member.");
+            throw new NotImplementedException("Override this method to initialize primary parameter attributes in inherited member.");
         }
 
         public virtual void InitializeAndLoadEntitiesLoaderDescription()
@@ -144,7 +144,10 @@ namespace BluePrints.Common.ViewModel
 
         protected virtual void AssignCallBacksAndRaisePropertyChange(IEnumerable<TMainProjectionEntity> entities)
         {
-            throw new NotImplementedException("Override this method to assign call backs and also notify the view.");
+            MainViewModel.SelectedEntities = this.SelectedEntities;
+            MainViewModel.SelectedEntity = this.SelectedEntity;
+            Refresh();
+            //throw new NotImplementedException("Override this method to assign call backs and also notify the view.");
         }
 
         protected virtual void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
@@ -164,7 +167,6 @@ namespace BluePrints.Common.ViewModel
         #endregion
 
         #region SpellChecker
-
         public SpellCheckerModule SpellCheckerModule { get; set; }
 
         public void Loaded()
@@ -172,7 +174,95 @@ namespace BluePrints.Common.ViewModel
             SpellCheckerModule = new SpellCheckerModule();
             SpellCheckerModule.ApplySpellCheckMode(true);
         }
+        #endregion
 
+        #region Presentation
+        public Action StoreActiveCell { get; set; }
+        public Action RestoreActiveCell { get; set; }
+
+        private Guid RestoreSelectedEntityGuid;
+        private List<Guid> RestoreSelectedEntitiesGuids = new List<Guid>();
+        public TMainProjectionEntity SelectedEntity { get; set; }
+        public ObservableCollection<TMainProjectionEntity> SelectedEntities { get; set; }
+        private BackgroundWorker refreshBackgroundWorker;
+
+        private void InitializePresentationProperties()
+        {
+            refreshBackgroundWorker = new BackgroundWorker();
+            refreshBackgroundWorker.DoWork += refreshBackgroundWorker_DoWork;
+            refreshBackgroundWorker.WorkerSupportsCancellation = true;
+            SelectedEntities = new ObservableCollection<TMainProjectionEntity>();
+        }
+
+        protected void Refresh()
+        {
+            if (!refreshBackgroundWorker.IsBusy)
+                refreshBackgroundWorker.RunWorkerAsync();
+        }
+
+        private void refreshBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            System.Threading.Thread.Sleep(500);
+            if (((BackgroundWorker)sender).CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.refreshViewWithStateRestoration()));
+        }
+
+        public ObservableCollection<TMainProjectionEntity> DisplayEntities
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return MainViewModel.Entities;
+            }
+        }
+
+        private void storeViewState()
+        {
+            StoreActiveCell();
+
+            RestoreSelectedEntityGuid = Guid.Empty;
+            RestoreSelectedEntitiesGuids.Clear();
+
+            foreach (var selectedEntity in SelectedEntities)
+                RestoreSelectedEntitiesGuids.Add(new Guid(selectedEntity.GUID.ToString()));
+
+            if (SelectedEntity != null)
+                RestoreSelectedEntityGuid = SelectedEntity.GUID;
+        }
+
+        private void restoreViewState()
+        {
+            var restoreSelectedEntities =
+                DisplayEntities.Where(x => RestoreSelectedEntitiesGuids.Any(y => y == x.GUID));
+            SelectedEntities.Clear();
+            if (restoreSelectedEntities.Count() > 0)
+                foreach (var restoreSelectedEntity in restoreSelectedEntities)
+                    SelectedEntities.Add(restoreSelectedEntity);
+
+            if (RestoreSelectedEntityGuid != Guid.Empty)
+            {
+                var restoreSelectedEntity =
+                    DisplayEntities.FirstOrDefault(x => x.GUID == RestoreSelectedEntityGuid);
+                if (restoreSelectedEntity != null)
+                    SelectedEntity = restoreSelectedEntity;
+            }
+
+            RestoreActiveCell();
+        }
+
+        private void refreshViewWithStateRestoration()
+        {
+            storeViewState();
+            this.RaisePropertiesChanged();
+            restoreViewState();
+        }
         #endregion
 
         #region IDocumentContent
@@ -237,6 +327,7 @@ namespace BluePrints.Common.ViewModel
 
         #endregion
 
+        #region Services
         protected IMessageBoxService MessageBoxService
         {
             get { return this.GetRequiredService<IMessageBoxService>(); }
@@ -246,7 +337,9 @@ namespace BluePrints.Common.ViewModel
         {
             get { return this.GetService<ILayoutSerializationService>(); }
         }
+        #endregion
 
+        #region Layout
         public void SaveLayout()
         {
             PersistentLayoutHelper.TrySerializeLayout(LayoutSerializationService, ViewName);
@@ -262,6 +355,7 @@ namespace BluePrints.Common.ViewModel
 
             PersistentLayoutHelper.ResetLayout(ViewName);
         }
+        #endregion
     }
 
     public interface ICollectionViewModelsWrapper

@@ -199,7 +199,7 @@
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl Name="gridControl" DataContext="{Binding DashboardCollection}"
-                                     Style="{StaticResource DefaultGridTemplate}">
+                                     Style="{StaticResource BasicGridTemplate}">
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding EditCommand}"
                                                    EventName="MouseDoubleClick" MarkRoutedEventsAsHandled="True">

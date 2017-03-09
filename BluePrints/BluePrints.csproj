@@ -377,7 +377,9 @@
     <Compile Include="Common\ViewModel\DashboardCollectionViewModelWrapper.cs" />
     <Compile Include="Common\ViewModel\EntitiesCollectionsWrapper.cs" />
     <Compile Include="Common\ViewModel\ICollectionViewModel.cs" />
+    <Compile Include="Common\ViewModel\IHaveGUID.cs" />
     <Compile Include="Common\ViewModel\ISupportCustomDocumentTypeNameAndParameter.cs" />
+    <Compile Include="Common\ViewModel\ISupportViewRestoration.cs" />
     <Compile Include="Common\ViewModel\RangeObservableCollection.cs" />
     <Compile Include="Common\ViewModel\Reporting\ISupportProgressReportingExtension.cs" />
     <Compile Include="Common\ViewModel\Reporting\ISupportSummaryCalculation.cs" />
@@ -385,9 +387,11 @@
     <Compile Include="Common\ViewModel\Reporting\SummaryManufacturer.cs" />
     <Compile Include="Common\Attributes\ProjectionPropertyAttribute.cs" />
     <Compile Include="Common\ViewModel\Settings\XMLSettings.cs" />
+    <Compile Include="Common\View\ViewRestoreUserControl.cs" />
     <Compile Include="EntityFramework\Annotations\BluePrintsEntities.cs" />
     <Compile Include="EntityFramework\Annotations\COMMODITY_GROUP_DIRECT.cs" />
     <Compile Include="EntityFramework\Annotations\DELIVERABLES_STATUS.cs" />
+    <Compile Include="EntityFramework\Annotations\ESTIMATION_DIRECT.cs" />
     <Compile Include="EntityFramework\Annotations\ESTIMATION_DIRECT_ITEM.cs" />
     <Compile Include="EntityFramework\Annotations\INDIRECT_TYPE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\AREA.cs" />
@@ -488,7 +492,6 @@
     <Compile Include="Common\ViewModel\Converters\VariationActionToStringConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\VariationActionToImageConverter.cs" />
     <Compile Include="Common\ViewModel\ProjectionCollectionViewModel.Partial.cs" />
-    <Compile Include="Common\ViewModel\CollectionViewModel.Partial.cs" />
     <Compile Include="Common\ViewModel\Converters\NumericCompareToVisibilityConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\QuantityExpressionConverter.cs" />
     <Compile Include="Common\ViewModel\DetailsFilterableSingleObjectViewModel.cs" />

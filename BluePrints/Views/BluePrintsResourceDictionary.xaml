@@ -71,7 +71,7 @@
         <Setter Property="ValueScaleType" Value="Numerical" />
         <Setter Property="dxc:XYDiagram2D.SeriesAxisY" Value="{Binding ElementName=secondaryAxisY}" />
     </Style>
-    <Style x:Key="DefaultGridTemplate" TargetType="{x:Type dxg:GridControl}">
+    <Style x:Key="BasicGridTemplate" TargetType="{x:Type dxg:GridControl}">
         <Setter Property="ShowLoadingPanel" Value="{Binding IsLoading}" />
         <Setter Property="ItemsSource" Value="{Binding Entities}" />
         <Setter Property="ClipboardCopyMode" Value="ExcludeHeader" />
@@ -150,6 +150,32 @@
         <Setter Property="SelectionMode" Value="Row" />
         <Setter Property="CurrentItem" Value="{Binding SelectedEntity}" />
         <Setter Property="SelectedItems" Value="{Binding SelectedEntities, Mode=TwoWay}" />
+        <Setter Property="ShowBorder" Value="False" />
+        <Setter Property="AutoExpandAllGroups" Value="False" />
+        <Setter Property="dxsc:SpellingSettings.CheckAsYouType" Value="True" />
+        <Setter Property="dxsc:SpellingSettings.ShowSpellCheckMenu" Value="True" />
+        <Setter Property="dxsc:SpellingSettings.SpellChecker"
+                Value="{Binding DataContext.SpellCheckerModule.SpellChecker, ElementName=userControl}" />
+        <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <ItemsControl>
+                        <dxmvvm:KeyToCommand Command="{Binding ShowPopUpCommand}" KeyGesture="Space"
+                                             CommandParameter="{Binding ElementName=gridControl}" />
+                        <dxmvvm:EventToCommand Command="{Binding DataContext.LoadedCommand, ElementName=userControl}"
+                                               EventName="Loaded" />
+                    </ItemsControl>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="AggregateViewGridTemplate" TargetType="{x:Type dxg:GridControl}">
+        <Setter Property="ShowLoadingPanel" Value="{Binding DataContext.IsLoading, ElementName=userControl}" />
+        <Setter Property="ItemsSource" Value="{Binding DataContext.DisplayEntities, ElementName=userControl}" />
+        <Setter Property="ClipboardCopyMode" Value="ExcludeHeader" />
+        <Setter Property="SelectionMode" Value="Row" />
+        <Setter Property="CurrentItem" Value="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}" />
+        <Setter Property="SelectedItems" Value="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}" />
         <Setter Property="ShowBorder" Value="False" />
         <Setter Property="AutoExpandAllGroups" Value="False" />
         <Setter Property="dxsc:SpellingSettings.CheckAsYouType" Value="True" />

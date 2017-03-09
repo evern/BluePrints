@@ -1,6 +1,7 @@
 namespace BluePrints.Data
 {
     using Attributes;
+    using Common.ViewModel;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -8,7 +9,7 @@ namespace BluePrints.Data
     using System.Data.Entity.Spatial;
 
     [ConstraintAttributes("GUID_PROJECT, INTERNAL_NAME1, INTERNAL_NAME2")]
-    public partial class WORKPACK
+    public partial class WORKPACK : IHaveGUID
     {
         public WORKPACK()
         {

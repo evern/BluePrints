@@ -244,7 +244,7 @@ namespace BluePrints.ViewModels
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntityCallBack;
             MainViewModel.ExistingRowAddUndoAndSaveCallBack = ExistingRowAddUndoAndSaveCallBack;
             MainViewModel.PreSave = MainEntityPreSave;
-                //have to add this so that undo will have an effect on progress item
+            //have to add this so that undo will have an effect on progress item
             //MainViewModel.BulkPreSave = this.MainEntityBulkPreSave;
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             MainViewModel.BeforeShownEditor = BeforeShownEditor;
@@ -287,7 +287,9 @@ namespace BluePrints.ViewModels
             var summaryManufacturer =
                 new BuildMinimalStatsForPlannedOriginalPercentage();
             summaryManufacturer.Manufacture(summaryBuilder);
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
+
+            Refresh();
+            //mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
 
         private bool isReportReady;
@@ -339,6 +341,8 @@ namespace BluePrints.ViewModels
                     mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
                 else if (loadPROJECT != null || loadBASELINE != null)
                     mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
+
+            Refresh();
         }
 
         #region Collection Call Backs

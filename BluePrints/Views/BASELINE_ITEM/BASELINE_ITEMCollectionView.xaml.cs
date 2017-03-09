@@ -12,11 +12,12 @@ using DevExpress.Data.Helpers;
 
 namespace BluePrints.Views
 {
-    public partial class BASELINE_ITEMCollectionView : UserControl
+    public partial class BASELINE_ITEMCollectionView : ViewStateRestoreUserControl
     {
         public BASELINE_ITEMCollectionView()
         {
             InitializeComponent();
+            InitializeViewRestoration(gridControl, tableView);
             ((BASELINE_ITEMSViewModelWrapper)DataContext).ShowWORKPACKInternalName1 =
                 ShowWorkpackInternalName1;
             ((BASELINE_ITEMSViewModelWrapper)DataContext).ShowWORKPACKInternalName2 =

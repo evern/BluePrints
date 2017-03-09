@@ -250,7 +250,7 @@
                             <dxg:GridControl.DetailDescriptor>
                                 <dxg:DataControlDetailDescriptor
                                     ItemsSourceBinding="{Binding NonCumulative_BurnedDataPoints}">
-                                    <!--<dxg:GridControl Style="{StaticResource DefaultGridTemplate}">-->
+                                    <!--<dxg:GridControl Style="{StaticResource BasicGridTemplate}">-->
                                     <dxg:GridControl>
                                             <dxg:GridControl.Columns>
                                             <dxg:GridColumn Header="Resource Name" FieldName="ResourceName"

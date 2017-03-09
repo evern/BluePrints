@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    public class PROGRESS_ITEMProjection : ReportableObject
+    public class PROGRESS_ITEMProjection : ReportableObject, IHaveGUID
     {
         public PROGRESS_ITEMProjection()
         {

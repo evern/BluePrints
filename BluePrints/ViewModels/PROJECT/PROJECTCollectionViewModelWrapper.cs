@@ -146,7 +146,7 @@ namespace BluePrints.ViewModels
                     newWORKPACK.GUID_PROJECT = entity.GUID;
                     newWORKPACK.INTERNAL_NAME1 = entity.NUMBER;
                     newWORKPACK.STARTDATE = CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday);
-                    newWORKPACK.ENDDATE = ((DateTime)newWORKPACK.STARTDATE).AddDays(7);
+                    newWORKPACK.ENDDATE = ((DateTime)newWORKPACK.STARTDATE).AddDays(7).AddSeconds(-1);
                     newWORKPACK.REVIEWSTARTDATE = (DateTime)newWORKPACK.STARTDATE; //effectively nullifies review date
                     newWORKPACK.REVIEWENDDATE = (DateTime)newWORKPACK.STARTDATE; //effectively nullifies review date
                     newWORKPACK.GUID_DAREA = newAREA.GUID;

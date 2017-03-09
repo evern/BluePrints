@@ -1,4 +1,5 @@
-﻿using BluePrints.Data;
+﻿using BluePrints.Common.ViewModel;
+using BluePrints.Data;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    public class COMMODITY_CODEMasterDetailProjection
+    public class COMMODITY_CODEMasterDetailProjection : IHaveGUID
     {
         public COMMODITY_CODEMasterDetailProjection()
         {

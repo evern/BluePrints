@@ -1,6 +1,7 @@
 namespace BluePrints.Data
 {
     using Attributes;
+    using Common.ViewModel;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -8,7 +9,7 @@ namespace BluePrints.Data
     using System.Data.Entity.Spatial;
 
     [ConstraintAttributes("UOM1")]
-    public partial class UOM
+    public partial class UOM : IHaveGUID
     {
     }
 }

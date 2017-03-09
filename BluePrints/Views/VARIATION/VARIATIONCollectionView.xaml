@@ -88,7 +88,7 @@
                 <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="PROJECTVARIATIONDetailsGrid"
                                  DataContext="{Binding MainViewModel}"
                                  ColumnsSource="{StaticResource VARIATIONColumns}"
-                                 Style="{StaticResource DefaultGridTemplate}">
+                                 Style="{StaticResource BasicGridTemplate}">
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                     </dxg:GridControl.TotalSummary>

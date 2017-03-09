@@ -25,9 +25,9 @@ namespace BluePrints.Common.ViewModel
         CollectionViewModelsWrapper
         <TEntity, TProjection, TPrimaryKey, TUnitOfWork,
             CollectionViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork>>
-        where TEntity : class
+        where TEntity : class, IHaveGUID
         where TUnitOfWork : IUnitOfWork
-        where TProjection : SummarizableObject, new()
+        where TProjection : SummarizableObject, IHaveGUID, new()
     {
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> UnitOfWorkFactory;
         private DispatcherTimer dispatchTimer;

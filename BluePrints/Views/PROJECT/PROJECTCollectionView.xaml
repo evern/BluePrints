@@ -91,7 +91,7 @@
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="PROJECTSGrid"
                                      ColumnsSource="{StaticResource PROJECTcolumns}"
-                                     Style="{StaticResource DefaultGridTemplate}">
+                                     Style="{StaticResource BasicGridTemplate}">
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand PassEventArgsToCommand="True"
                                                    Command="{Binding DataContext.EditCommand, ElementName=userControl}"

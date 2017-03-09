@@ -8,9 +8,10 @@ namespace BluePrints.Data
     using Common;
     using Attributes;
     using System.ComponentModel;
+    using Common.ViewModel;
 
     [ConstraintAttributes("NUMBER")]
-    public partial class PROJECT
+    public partial class PROJECT : IHaveGUID
     {
         public PROJECT()
         {

@@ -1,6 +1,7 @@
 namespace BluePrints.Data
 {
     using Attributes;
+    using Common.ViewModel;
     using Helpers;
     using System;
     using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace BluePrints.Data
     using System.Data.Entity.Spatial;
 
     [ConstraintAttributes("GUID_PARENT, GUID_COMMODITYCODE")]
-    public partial class COMMODITY_GROUP_DIRECT
+    public partial class COMMODITY_GROUP_DIRECT : IHaveGUID
     {
     }
 }

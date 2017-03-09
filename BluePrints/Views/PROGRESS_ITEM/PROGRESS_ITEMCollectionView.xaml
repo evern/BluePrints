@@ -1,4 +1,6 @@
-﻿<UserControl x:Name="userControl" x:Class="BluePrints.Views.PROGRESS_ITEMCollectionView"
+﻿<view:ViewStateRestoreUserControl x:Name="userControl" 
+             x:Class="BluePrints.Views.PROGRESS_ITEMCollectionView"
+             xmlns:view="clr-namespace:BluePrints.Views"
              xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -112,7 +114,7 @@
                 </dxr:RibbonStatusBarControl>
                 <Grid>
                     <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="PROGRESS_ITEMSGrid"
-                                     Style="{StaticResource WrapperGridTemplate}">
+                                     Style="{StaticResource AggregateViewGridTemplate}" >
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand
                                 Command="{Binding DataContext.CustomSummaryCommand, ElementName=userControl}"
@@ -401,4 +403,4 @@
             </DockPanel>
         </Grid>
     </Grid>
-</UserControl>
+</view:ViewStateRestoreUserControl>

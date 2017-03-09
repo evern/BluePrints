@@ -223,14 +223,17 @@ namespace BluePrints.ViewModels
             MainViewModel.OnEntitySavedCallBack = OnEntitiesSavedCallBack;
             MainViewModel.PasteListener = this.PasteListener;
             MainViewModel.SetParentViewModel(this);
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             mainThreadDispatcher.BeginInvoke(new Action(() => ShowWORKPACKColumns()));
+
+            base.AssignCallBacksAndRaisePropertyChange(entities);
+            //mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
 
         private void OnSimpleEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
             object sender)
         {
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
+            Refresh();
+            //mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
 
         protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
@@ -255,7 +258,7 @@ namespace BluePrints.ViewModels
                 else if (_loadProject != null || _loadBaseline != null)
                     mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
 
-            return;
+            Refresh();
         }
 
         #region Collection Call Backs

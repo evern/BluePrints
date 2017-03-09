@@ -308,7 +308,6 @@ namespace BluePrints.ViewModels
                     SelectedEntity = restoreSelectedEntity;
             }
         }
-
         #endregion
 
         #region Local Methods

@@ -111,7 +111,7 @@
                                           DataContext="{Binding ROLE_PERMISSIONCollection}" View="Group"
                                           Header="Edit Value" Orientation="Horizontal"
                                           dxlc:LayoutControl.AllowVerticalSizing="True">
-                            <dxg:GridControl Style="{StaticResource DefaultGridTemplate}">
+                            <dxg:GridControl Style="{StaticResource BasicGridTemplate}">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="PERMISSION" AllowEditing="False" MinWidth="300">
                                         <dxg:GridColumn.EditSettings>

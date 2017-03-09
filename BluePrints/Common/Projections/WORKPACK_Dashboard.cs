@@ -1,4 +1,5 @@
 ﻿using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.P6EntitiesDataModel;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    public class WORKPACK_Dashboard : PROJECTSummary
+    public class WORKPACK_Dashboard : PROJECTSummary, IHaveGUID
     {
         public Guid GUID { get; set; }
         public WORKPACK WORKPACK { get; set; }

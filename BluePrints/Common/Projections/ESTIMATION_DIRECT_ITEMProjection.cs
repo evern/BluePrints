@@ -16,7 +16,7 @@ namespace BluePrints.Common.Projections
 {
     //[ConstraintAttributes("ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT")]
     //[RequiredAttributes("ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT")]
-    public class ESTIMATION_DIRECT_ITEMProjection
+    public class ESTIMATION_DIRECT_ITEMProjection : IHaveGUID
     {
         public ESTIMATION_DIRECT_ITEMProjection()
         {

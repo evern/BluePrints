@@ -1,4 +1,5 @@
-﻿using BluePrints.Data.Attributes;
+﻿using BluePrints.Common.ViewModel;
+using BluePrints.Data.Attributes;
 using BluePrints.Data.Helpers;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Data
 {
-    public class ROLE_PERMISSIONInfo
+    public class ROLE_PERMISSIONInfo : IHaveGUID
     {
         public ROLE_PERMISSIONInfo(ROLE_PERMISSION systemPERMISSION,
             IEnumerable<ROLE_PERMISSION> currentAssignedROLE_PERMISSIONS)

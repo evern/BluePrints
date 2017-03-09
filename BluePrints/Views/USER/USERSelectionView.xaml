@@ -26,7 +26,7 @@
         </dxmvvm:Interaction.Behaviors>
         <dxlc:LayoutControl Name="LayoutControlRoot" Orientation="Vertical">
             <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group">
-                <dxg:GridControl Name="gridControl" Style="{StaticResource DefaultGridTemplate}">
+                <dxg:GridControl Name="gridControl" Style="{StaticResource BasicGridTemplate}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn FieldName="NAME" />
                         <dxg:GridColumn FieldName="DEPARTMENT" />

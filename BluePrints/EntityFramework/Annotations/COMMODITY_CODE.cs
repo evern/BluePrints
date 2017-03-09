@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using Common.ViewModel;
     using Helpers;
     using System;
     using System.Collections.Generic;
@@ -7,7 +8,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class COMMODITY_CODE
+    public partial class COMMODITY_CODE : IHaveGUID
     {
         public override string ToString()
         {
