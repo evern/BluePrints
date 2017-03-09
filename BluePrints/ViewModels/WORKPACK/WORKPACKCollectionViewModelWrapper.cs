@@ -192,7 +192,7 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.CreateNewProjectionFromNewEntityCallBack = CreateNewProjectionFromNewEntityCallBack;
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntity;
-            MainViewModel.OnEntitySavedCallBack = OnEntitySavedCallBack;
+            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitySavedCallBack;
             MainViewModel.SetParentViewModel(this);
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
@@ -225,8 +225,7 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-
-        public WORKPACKProjection CreateNewProjectionFromNewEntityCallBack(WORKPACK entity)
+        public WORKPACKProjection CreateNewProjectionFromNewEntityCallBack()
         {
             return new WORKPACKProjection();
         }

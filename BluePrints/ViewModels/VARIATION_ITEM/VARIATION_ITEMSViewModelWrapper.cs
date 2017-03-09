@@ -246,15 +246,15 @@ namespace BluePrints.ViewModels
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             MainViewModel.ValidateBulkEditCallBack = ValidateBulkEditCallBack;
             MainViewModel.CanBulkDeleteCallBack = CanBulkDeleteCallBack;
-            MainViewModel.NewRowAddUndoAndBeforeSaveCallBack = NewProjectionInitializeCallBack;
+            MainViewModel.SetParentAssociationCallBack = NewProjectionInitializeCallBack;
             MainViewModel.ExistingRowAddUndoAndSaveCallBack = ExistingProjectionEditCallBack;
-            MainViewModel.PreSaveWithNewEntityDetection = MainEntityPreSaveWithNewEntityDetection;
-            MainViewModel.PostSave = MainEntitySaveVariation;
+            MainViewModel.IsContinueSaveCallBack = MainEntityPreSaveWithNewEntityDetection;
+            MainViewModel.OnAfterEntitySavedCallBack = MainEntitySaveVariation;
             //MainViewModel.BulkPreSave = this.MainEntityBulkPreSave;
             //MainViewModel.BulkPostSave = this.MainEntityBulkPostSave;
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntityCallBack;
-            MainViewModel.OnEntitySavedCallBack = OnEntitiesSavedCallBack;
-            MainViewModel.EntityBeforeDeletionCallBack = EntityBeforeDeletionCallBack;
+            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
+            MainViewModel.OnBeforeEntityDeleteCallBack = EntityBeforeDeletionCallBack;
             MainViewModel.CreateNewProjectionFromNewEntityCallBack = CreateNewProjectionFromNewEntity;
             MainViewModel.SetParentViewModel(this);
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
@@ -304,7 +304,7 @@ namespace BluePrints.ViewModels
 
         #region CallBacks
 
-        public VARIATION_ITEMProjection CreateNewProjectionFromNewEntity(BASELINE_ITEM entity)
+        public VARIATION_ITEMProjection CreateNewProjectionFromNewEntity()
         {
             var newVARIATION_ITEM = new VARIATION_ITEMProjection();
             newVARIATION_ITEM.VARIATION_ITEM.ACTION = VariationAction.Add;
@@ -365,11 +365,10 @@ namespace BluePrints.ViewModels
             return loadVARIATION.SUBMITTED == null && selectedEntities != null && selectedEntities.All(x => x.VARIATION_ITEM != null && x.VARIATION_ITEM.ACTION == VariationAction.Add);
         }
 
-        public bool NewProjectionInitializeCallBack(RowEventArgs e, VARIATION_ITEMProjection projectionEntity)
+        public void NewProjectionInitializeCallBack(VARIATION_ITEMProjection projectionEntity)
         {
             projectionEntity.VARIATION_ITEM.GUID_VARIATION = loadVARIATION.GUID;
             projectionEntity.VARIATION_ITEM.ACTION = VariationAction.Add;
-            return true;
         }
 
         public bool ExistingProjectionEditCallBack(VARIATION_ITEMProjection projectionEntity,
@@ -417,9 +416,6 @@ namespace BluePrints.ViewModels
 
         private void MainEntitySaveVariation(VARIATION_ITEMProjection projectionEntity, bool isNewEntity)
         {
-            //if (isNewEntity)
-            //    return;
-
             var saveVARIATION_ITEM = projectionEntity.VARIATION_ITEM;
             saveVARIATION_ITEM.GUID_VARIATION = loadVARIATION.GUID;
             saveVARIATION_ITEM.GUID_ORIBASEITEM = projectionEntity.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL;

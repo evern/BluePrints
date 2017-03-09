@@ -140,9 +140,7 @@ namespace BluePrints.Common.ViewModel
                         break;
                 }
 
-                if (owner.OnAfterEntitiesChangedCallBack != null)
-                    owner.OnAfterEntitiesChangedCallBack(message.PrimaryKey, typeof(TEntity), message.MessageType,
-                        message.Sender);
+                owner.OnAfterEntitiesChangedCallBack?.Invoke(message.PrimaryKey, typeof(TEntity), message.MessageType, message.Sender);
             }
 
             private void OnEntityAdded(TPrimaryKey primaryKey)

@@ -18,11 +18,12 @@ namespace BluePrints.Views
     /// <summary>
     /// Interaction logic for AREACollectionView.xaml
     /// </summary>
-    public partial class AREACollectionView : UserControl
+    public partial class AREACollectionView : ViewStateRestoreUserControl
     {
         public AREACollectionView()
         {
             InitializeComponent();
+            InitializeViewRestoration(gridControl, tableView);
         }
     }
 }

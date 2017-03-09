@@ -543,8 +543,8 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
-                            <dxg:GridControl Name="gridControlBaseline" dx:DXSerializer.SerializationID="BASELINEGrid"
-                                             Style="{StaticResource NestedWrapperGridTemplate}" Grid.Row="1">
+                            <dxg:GridControl Name="gridControlBASELINE" dx:DXSerializer.SerializationID="BASELINEGrid"
+                                             Style="{StaticResource AggregateNestedViewGridTemplate}" Grid.Row="1">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="NAME" />
                                     <dxg:GridColumn FieldName="REVISION" />
@@ -626,7 +626,7 @@
                                     <dxg:GridSummaryItem SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <common:TableViewEx x:Name="tableViewBaseline"
+                                    <common:TableViewEx x:Name="tableViewBASELINE"
                                                    Style="{StaticResource NestedWrapperTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
@@ -679,7 +679,7 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
-                            <dxg:GridControl Name="gridControlProgress" dx:DXSerializer.SerializationID="PROGRESSGrid"
+                            <dxg:GridControl Name="gridControlPROGRESS" dx:DXSerializer.SerializationID="PROGRESSGrid"
                                              Style="{StaticResource NestedWrapperGridTemplate}" Grid.Row="1">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="NAME" />
@@ -734,7 +734,7 @@
                                     <dxg:GridSummaryItem SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <common:TableViewEx x:Name="tableViewProgress"
+                                    <common:TableViewEx x:Name="tableViewPROGRESS"
                                                    Style="{StaticResource NestedWrapperTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
@@ -787,7 +787,7 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
-                            <dxg:GridControl Name="gridControlEstimationDirect"
+                            <dxg:GridControl Name="gridControlESTIMATION_DIRECT"
                                              dx:DXSerializer.SerializationID="ESTIMATION_DIRECTGrid"
                                              Style="{StaticResource NestedWrapperGridTemplate}" Grid.Row="1">
                                 <dxg:GridControl.Columns>
@@ -820,7 +820,7 @@
                                     <dxg:GridSummaryItem SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <common:TableViewEx x:Name="tableViewEstimateDirect"
+                                    <common:TableViewEx x:Name="tableViewESTIMATION_DIRECT"
                                                    Style="{StaticResource NestedWrapperTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
@@ -869,7 +869,7 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
-                            <dxg:GridControl Name="gridControlPhase" dx:DXSerializer.SerializationID="PHASEGrid"
+                            <dxg:GridControl Name="gridControlPHASE" dx:DXSerializer.SerializationID="PHASEGrid"
                                              ColumnsSource="{StaticResource PHASEColumns}"
                                              Style="{StaticResource NestedWrapperGridTemplate}" Grid.Row="1">
                                 <dxg:GridControl.TotalSummary>
@@ -879,7 +879,7 @@
                                     <dxg:GridSummaryItem SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <common:TableViewEx x:Name="tableViewPhase"
+                                    <common:TableViewEx x:Name="tableViewPHASE"
                                                    Style="{StaticResource NestedWrapperTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
@@ -928,7 +928,7 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
-                            <dxg:GridControl Name="gridControlArea" dx:DXSerializer.SerializationID="AREAGrid"
+                            <dxg:GridControl Name="gridControlAREA" dx:DXSerializer.SerializationID="AREAGrid"
                                              ColumnsSource="{StaticResource AREAColumns}"
                                              Style="{StaticResource NestedWrapperGridTemplate}" Grid.Row="1">
                                 <dxg:GridControl.TotalSummary>
@@ -938,7 +938,7 @@
                                     <dxg:GridSummaryItem SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <common:TableViewEx x:Name="tableViewArea"
+                                    <common:TableViewEx x:Name="tableViewAREA"
                                                    Style="{StaticResource NestedWrapperTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
@@ -987,7 +987,7 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
-                            <dxg:GridControl Name="gridControlRate" dx:DXSerializer.SerializationID="RATEGrid"
+                            <dxg:GridControl Name="gridControlRATE" dx:DXSerializer.SerializationID="RATEGrid"
                                              Style="{StaticResource NestedWrapperGridTemplate}" Grid.Row="1">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn Header="DEPARTMENT" FieldName="GUID_DEPARTMENT">
@@ -1018,7 +1018,7 @@
                                     <dxg:GridSummaryItem SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <common:TableViewEx x:Name="tableViewRate"
+                                    <common:TableViewEx x:Name="tableViewRATE"
                                                    Style="{StaticResource NestedWrapperTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">

@@ -169,8 +169,8 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATION> entities)
         {
-            MainViewModel.OnBeforeEntitySavedCallBack = OnBeforeEntitySaved;
-            MainViewModel.PreSave = BeforeSaveValidation;
+            MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
+            MainViewModel.IsContinueSaveCallBack = BeforeSaveValidation;
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
 
@@ -187,7 +187,7 @@ namespace BluePrints.ViewModels
 
         #region CallBacks
 
-        public bool BeforeSaveValidation(VARIATION entity)
+        public bool BeforeSaveValidation(VARIATION entity, bool isNewEntity)
         {
             if (loadBASELINE == null)
                 return false;

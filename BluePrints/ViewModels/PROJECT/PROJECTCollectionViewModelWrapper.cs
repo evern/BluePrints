@@ -58,19 +58,19 @@ namespace BluePrints.ViewModels
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddEntitiesLoader<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>(1,
-                bluePrintsUnitOfWorkFactory, x => x.BASELINES, null, null, null, null);
+                bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, null, null, null);
             loaderCollection.AddEntitiesLoader<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>(2,
-                bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, null, null, null, null);
+                bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, null, null, null);
             loaderCollection.AddEntitiesLoader<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>(3,
-                bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, null, null, null, null);
+                bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc, null, null, null);
             loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(4,
                 bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, null, null, null, null);
             loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(5,
                 bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES, null, null, null, null);
             loaderCollection.AddEntitiesLoader<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>(6,
-                bluePrintsUnitOfWorkFactory, x => x.AREAS, null, null, null, null);
+                bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc, null, null, null);
             loaderCollection.AddEntitiesLoader<BASELINE_ITEM, BASELINE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>(7,
-                bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, null, null, null, null);
+                bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc, null, null, null);
             loaderCollection.AddEntitiesLoader<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(8,
                 bluePrintsUnitOfWorkFactory, x => x.DOCTYPES, null, null, null, null);
             InvokeEntitiesLoaderDescriptionLoading();
@@ -87,9 +87,49 @@ namespace BluePrints.ViewModels
             return query => query.OrderBy(x => x.NUMBER);
         }
 
+        /// <summary>
+        /// BASELINE is used for write only so just load a single entry for repository to be initialized
+        /// </summary>
+        private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
+        {
+            return query => query.Take(1);
+        }
+
+        /// <summary>
+        /// PROGRESS is used for write only so just load a single entry for repository to be initialized
+        /// </summary>
+        private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
+        {
+            return query => query.Take(1);
+        }
+
+        /// <summary>
+        /// WORKPACK is used for write only so just load a single entry for repository to be initialized
+        /// </summary>
+        private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        {
+            return query => query.Take(1);
+        }
+
+        /// <summary>
+        /// AREA is used for write only so just load a single entry for repository to be initialized
+        /// </summary>
+        private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
+        {
+            return query => query.Take(1);
+        }
+
+        /// <summary>
+        /// BASELINE_ITEM is used for write only so just load a single entry for repository to be initialized
+        /// </summary>
+        private Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BASELINE_ITEMProjectionFunc()
+        {
+            return query => query.Take(1);
+        }
+
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECT> entities)
         {
-            MainViewModel.PostSave = PostSave;
+            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = PostSave;
             MainViewModel.SetParentViewModel(this);
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
@@ -108,7 +148,7 @@ namespace BluePrints.ViewModels
 
         #region Collection Call Backs
 
-        private void PostSave(PROJECT entity, bool isNewEntity)
+        private void PostSave(Guid key, PROJECT projectionEntity, PROJECT entity, bool isNewEntity)
         {
             if (isNewEntity)
             {

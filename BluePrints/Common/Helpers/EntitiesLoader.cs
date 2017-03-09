@@ -125,14 +125,14 @@ namespace BluePrints.Data.Helpers
         public bool isLoaded { get; set; }
         public Type dependencyType { get; set; }
 
-        private IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory;
-        private Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc;
+        readonly IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory;
+        readonly Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc;
 
-        private Func<Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>>> constructProjectionCallBackFunc;
+        readonly Func<Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>>> constructProjectionCallBackFunc;
 
         private IEntitiesViewModel<TProjection> collectionViewModel;
-        private Func<IEnumerable<TProjection>, bool> isContinueLoadingCallBack;
-        private Action<object, Type, EntityMessageType, object> collectionViewModelChangedCallBack;
+        readonly Func<IEnumerable<TProjection>, bool> isContinueLoadingCallBack;
+        readonly Action<object, Type, EntityMessageType, object> collectionViewModelChangedCallBack;
 
         /// <summary>
         /// Describe how should entities be handled within EntitiesCollectionWrapper
@@ -173,11 +173,6 @@ namespace BluePrints.Data.Helpers
             collectionViewModel.OnEntitiesLoadedCallBack = OnEntitiesFirstLoaded;
             collectionViewModel.OnAfterEntitiesChangedCallBack = collectionViewModelChangedCallBack;
 
-            collectionViewModel.Entities.ToList();
-        }
-
-        public void LoadCollectionViewModel()
-        {
             collectionViewModel.Entities.ToList();
         }
 
@@ -264,7 +259,6 @@ namespace BluePrints.Data.Helpers
         void OnDestroy();
         Type GetProjectionEntityType();
         void CreateCollectionViewModel();
-        void LoadCollectionViewModel();
         bool isLoaded { get; set; }
         int loadOrder { get; set; }
         Type dependencyType { get; set; }

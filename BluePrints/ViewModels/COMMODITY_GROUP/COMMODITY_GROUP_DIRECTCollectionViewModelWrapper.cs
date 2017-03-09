@@ -55,22 +55,11 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operation
-
-        private BackgroundWorker refreshBackgroundWorker;
         private BackgroundWorker displayEntitiesRefreshBackgroundWorker;
         private BackgroundWorker userStateRestoreBackgroundWorker;
 
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
-        public COMMODITY_GROUP_DIRECTProjection SelectedEntity { get; set; }
-        private ObservableCollection<COMMODITY_GROUP_DIRECTProjection> selectedentities { get; set; }
-
-        public ObservableCollection<COMMODITY_GROUP_DIRECTProjection> SelectedEntities
-        {
-            get { return selectedentities; }
-            set { selectedentities = value; }
-        }
 
         private Guid RestoreSelectedEntityGuid;
         private List<Guid> RestoreSelectedEntitiesGuids = new List<Guid>();
@@ -83,10 +72,6 @@ namespace BluePrints.ViewModels
             userStateRestoreBackgroundWorker = new BackgroundWorker();
             userStateRestoreBackgroundWorker.DoWork += userStateRestoreBackgroundWorker_DoWork;
             userStateRestoreBackgroundWorker.WorkerSupportsCancellation = true;
-
-            refreshBackgroundWorker = new BackgroundWorker();
-            refreshBackgroundWorker.DoWork += refreshBackgroundWorker_DoWork;
-            refreshBackgroundWorker.WorkerSupportsCancellation = true;
 
             displayEntitiesRefreshBackgroundWorker = new BackgroundWorker();
             displayEntitiesRefreshBackgroundWorker.DoWork += displayEntitiesRefreshBackgroundWorker_DoWork;
@@ -139,15 +124,15 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(
             IEnumerable<COMMODITY_GROUP_DIRECTProjection> entities)
         {
-            MainViewModel.EntitiesBeforeDeletionCallBack = EntitiesBeforeDeletion;
-            MainViewModel.NewRowAddUndoAndBeforeSaveCallBack = NewRowAddUndoAndSave;
-            MainViewModel.OnEntitySavedCallBack = OnEntitiesSavedCallBack;
-            MainViewModel.AdditionalValidateCellCallBack = AdditionalCellValidation;
+            MainViewModel.OnBeforeEntitiesDeleteCallBack = EntitiesBeforeDeletion;
+            MainViewModel.IsContinueSetParentAssociationFromViewCallBack = NewRowAddUndoAndSave;
+            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
+            MainViewModel.IsValidFromViewCallBack = AdditionalCellValidation;
             MainViewModel.AdditionalValidateRowCallBack = AdditionalRowValidation;
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntity;
 
             MainViewModel.SetParentViewModel(this);
-            refreshBackgroundWorker.RunWorkerAsync();
+            Refresh();
         }
 
         protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
@@ -162,8 +147,7 @@ namespace BluePrints.ViewModels
                 else
                     mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.RefreshWithoutClearingUndoManager()));
 
-                if (!displayEntitiesRefreshBackgroundWorker.IsBusy)
-                    displayEntitiesRefreshBackgroundWorker.RunWorkerAsync(sender);
+                RefreshDisplayEntities();
             }
 
             if (sender.ToString() == MainViewModel.ToString() || sender.ToString() == ToString())
@@ -173,22 +157,10 @@ namespace BluePrints.ViewModels
                 mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
         }
 
-        private void refreshBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            System.Threading.Thread.Sleep(500);
-            if (((BackgroundWorker) sender).CancellationPending)
-            {
-                e.Cancel = true;
-                return;
-            }
-
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
-        }
-
         private void displayEntitiesRefreshBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             System.Threading.Thread.Sleep(100);
-            if (((BackgroundWorker) sender).CancellationPending)
+            if(displayEntitiesRefreshBackgroundWorker.CancellationPending)
             {
                 e.Cancel = true;
                 return;
@@ -201,7 +173,7 @@ namespace BluePrints.ViewModels
         private void userStateRestoreBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             System.Threading.Thread.Sleep(1);
-            if (((BackgroundWorker) sender).CancellationPending)
+            if (userStateRestoreBackgroundWorker.CancellationPending)
             {
                 e.Cancel = true;
                 return;
@@ -309,7 +281,7 @@ namespace BluePrints.ViewModels
         {
             if (e.Column.FieldName == "COMMODITY_GROUP.GUID_COMMODITYCODE")
             {
-                var editingCOMMODITY_GROUP = (COMMODITY_GROUP_DIRECTProjection) e.Row;
+                var editingCOMMODITY_GROUP = (COMMODITY_GROUP_DIRECTProjection)e.Row;
                 if (editingCOMMODITY_GROUP.CHILD_COMMODITY_GROUP != null &&
                     editingCOMMODITY_GROUP.CHILD_COMMODITY_GROUP.Count > 0)
                 {
@@ -423,9 +395,21 @@ namespace BluePrints.ViewModels
             get { return "COMMODITY_GROUP_DIRECTCollectionViewModelWrapper"; }
         }
 
+        private void RefreshDisplayEntities()
+        {
+            if (!displayEntitiesRefreshBackgroundWorker.IsBusy)
+                displayEntitiesRefreshBackgroundWorker.RunWorkerAsync();
+        }
+
+        private void RestoreUserState()
+        {
+            if (!userStateRestoreBackgroundWorker.IsBusy)
+                userStateRestoreBackgroundWorker.RunWorkerAsync();
+        }
+
         private ObservableCollection<COMMODITY_GROUP_DIRECTProjection> displayEntities;
 
-        public ObservableCollection<COMMODITY_GROUP_DIRECTProjection> DisplayEntities
+        public override ObservableCollection<COMMODITY_GROUP_DIRECTProjection> DisplayEntities
         {
             get
             {
@@ -469,8 +453,7 @@ namespace BluePrints.ViewModels
                         }
                     }
 
-                    if (!userStateRestoreBackgroundWorker.IsBusy)
-                        userStateRestoreBackgroundWorker.RunWorkerAsync();
+                    RestoreUserState();
                 }
 
                 return displayEntities;
@@ -489,7 +472,7 @@ namespace BluePrints.ViewModels
             return MainViewModel.CanRefresh();
         }
 
-        public void Refresh()
+        public override void FullRefresh()
         {
             MainViewModel.Refresh();
             displayEntities = null;
@@ -637,7 +620,6 @@ namespace BluePrints.ViewModels
 
         protected override void OnClose(CancelEventArgs e)
         {
-            refreshBackgroundWorker.CancelAsync();
             displayEntitiesRefreshBackgroundWorker.CancelAsync();
             userStateRestoreBackgroundWorker.CancelAsync();
             base.OnClose(e);

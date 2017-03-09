@@ -374,6 +374,7 @@
     <Compile Include="Common\SpellCheck\SpellCheckerHelper.cs" />
     <Compile Include="Common\SpellCheck\SpellCheckerModule.cs" />
     <Compile Include="Common\Utils\StringFormatUtils.cs" />
+    <Compile Include="Common\ViewModel\CollectionViewModelBase.cs" />
     <Compile Include="Common\ViewModel\DashboardCollectionViewModelWrapper.cs" />
     <Compile Include="Common\ViewModel\EntitiesCollectionsWrapper.cs" />
     <Compile Include="Common\ViewModel\ICollectionViewModel.cs" />

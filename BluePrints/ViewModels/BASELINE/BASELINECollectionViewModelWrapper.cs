@@ -120,9 +120,9 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE> entities)
         {
-            MainViewModel.OnBeforeEntitySavedCallBack = OnBeforeEntitySaved;
+            MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
+            base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
@@ -145,6 +145,8 @@ namespace BluePrints.ViewModels
                     mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
                 else if (loadPROJECT != null)
                     mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
+
+            base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
         }
 
         #region Collection Call Backs

@@ -147,7 +147,7 @@ namespace BluePrints.Common.ViewModel
         }
 
         /// <summary>
-        /// The selected enity.
+        /// The selected entity.
         /// Since ReadOnlyCollectionViewModelBase is a POCO view model, this property will raise INotifyPropertyChanged.PropertyEvent when modified so it can be used as a binding source in views.
         /// </summary>
         public virtual TProjection SelectedEntity { get; set; }

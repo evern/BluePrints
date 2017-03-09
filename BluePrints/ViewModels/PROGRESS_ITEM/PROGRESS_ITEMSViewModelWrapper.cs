@@ -243,7 +243,7 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntityCallBack;
             MainViewModel.ExistingRowAddUndoAndSaveCallBack = ExistingRowAddUndoAndSaveCallBack;
-            MainViewModel.PreSave = MainEntityPreSave;
+            MainViewModel.OnAfterEntitySavedCallBack = OnAfterBASELINE_ITEMEntitySaved;
             //have to add this so that undo will have an effect on progress item
             //MainViewModel.BulkPreSave = this.MainEntityBulkPreSave;
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
@@ -379,12 +379,20 @@ namespace BluePrints.ViewModels
             entity = projectionEntity.BASELINE_ITEMJoinRATE.BASELINE_ITEM;
         }
 
-        private bool MainEntityPreSave(PROGRESS_ITEMProjection projectionEntity)
+        /// <summary>
+        /// Save progress item during BASELINE_ITEM Undo/Redo operation
+        /// </summary>
+        /// <param name="projectionEntity"></param>
+        /// <param name="isNewEntity"></param>
+        private void OnAfterBASELINE_ITEMEntitySaved(PROGRESS_ITEMProjection projectionEntity, bool isNewEntity)
         {
             SaveProgressItem(projectionEntity);
-            return true;
         }
 
+        /// <summary>
+        /// Saving derivated progress_item from projectionEntity which is fundamentally baseline_item
+        /// </summary>
+        /// <param name="projectionEntity"></param>
         private void SaveProgressItem(PROGRESS_ITEMProjection projectionEntity)
         {
             var findPROGRESS_ITEM =

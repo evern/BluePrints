@@ -1,5 +1,6 @@
-﻿<UserControl x:Name="userControl"
+﻿<view:ViewStateRestoreUserControl x:Name="userControl"
              x:Class="BluePrints.Views.BASELINECollectionView"
+             xmlns:view="clr-namespace:BluePrints.Views"
              xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -55,7 +56,7 @@
                                 <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"
                                                    LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                <dxb:BarButtonItem Content="Refresh" Command="{Binding RefreshCommand}"
+                                <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}"
@@ -87,7 +88,7 @@
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="BASELINESGrid"
-                                     Style="{StaticResource WrapperGridTemplate}">
+                                     Style="{StaticResource AggregateViewGridTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn FieldName="NAME" />
                             <dxg:GridColumn FieldName="REVISION" />
@@ -190,7 +191,7 @@
                                                        Glyph="{dx:DXImage Image=Export_16x16.png}" />
                                     <dxb:BarButtonItem Content="Delete"
                                                        Command="{Binding View.DataContext.BulkDeleteCommand}"
-                                                       CommandParameter="{Binding View.DataContext.SelectedEntities}"
+                                                       CommandParameter="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                        Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                     <dxb:BarButtonItem Content="Refresh"
                                                        Command="{Binding View.DataContext.RefreshCommand}"
@@ -203,4 +204,4 @@
             </DockPanel>
         </Grid>
     </Grid>
-</UserControl>
+</view:ViewStateRestoreUserControl>

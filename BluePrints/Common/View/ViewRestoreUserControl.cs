@@ -41,6 +41,8 @@ namespace BluePrints.Views
             gridControl.CurrentColumn = this.currentColumn;
             tableView.FocusedRowHandle = focusedRowHandle;
             gridControl.Focus();
+            //Allows for previous value to be restored 
+            //Because active editor have latest value but cannot revert to old value when esc is pressed
             //GridColumn setValueColumn = gridControl.Columns[gridControl.CurrentColumn.FieldName];
             //gridControl.SetFocusedRowCellValue(setValueColumn, currentValue);
             tableView.ShowEditor();

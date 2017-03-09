@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using BluePrints.ViewModels;
 using BluePrints.Common;
+using DevExpress.Xpf.Grid;
 
 namespace BluePrints.Views
 {
@@ -14,6 +15,145 @@ namespace BluePrints.Views
             InitializeComponent();
             ((PROJECTViewModelWrapper) DataContext).ChangeViewMemberFieldNames = ChangeViewMemberFieldNames;
             ((PROJECTViewModelWrapper) DataContext).Redraw = Redraw;
+
+            ((PROJECTViewModelWrapper)DataContext).AssignBASELINEDelegates = this.AssignBASELINEDelegates;
+            ((PROJECTViewModelWrapper)DataContext).AssignPROGRESSDelegates = this.AssignPROGRESSDelegates;
+            ((PROJECTViewModelWrapper)DataContext).AssignESTIMATION_DIRECTDelegates = this.AssignESTIMATION_DIRECTDelegates;
+            ((PROJECTViewModelWrapper)DataContext).AssignPHASEDelegates = this.AssignPHASEDelegates;
+            ((PROJECTViewModelWrapper)DataContext).AssignAREADelegates = this.AssignAREADelegates;
+            ((PROJECTViewModelWrapper)DataContext).AssignRATEDelegates = this.AssignRATEDelegates;
+        }
+
+        int focusedRowHandleBASELINE;
+        ColumnBase currentColumnBASELINE;
+        private void AssignBASELINEDelegates(BASELINECollectionViewModelWrapper viewModelWrapper)
+        {
+            viewModelWrapper.StoreActiveCell = this.StoreBASELINEFocusedCell;
+            viewModelWrapper.RestoreActiveCell = this.RestoreBASELINEFocusedCell;
+        }
+
+        protected void StoreBASELINEFocusedCell()
+        {
+            focusedRowHandleBASELINE = tableViewBASELINE.FocusedRowHandle;
+            currentColumnBASELINE = gridControlBASELINE.CurrentColumn;
+        }
+
+        protected void RestoreBASELINEFocusedCell()
+        {
+            gridControlBASELINE.CurrentColumn = currentColumnBASELINE;
+            tableViewBASELINE.FocusedRowHandle = focusedRowHandleBASELINE;
+            gridControlBASELINE.Focus();
+            tableViewBASELINE.ShowEditor();
+        }
+
+        int focusedRowHandlePROGRESS;
+        ColumnBase currentColumnPROGRESS;
+        private void AssignPROGRESSDelegates(PROGRESSCollectionViewModelWrapper viewModelWrapper)
+        {
+            viewModelWrapper.StoreActiveCell = this.StorePROGRESSFocusedCell;
+            viewModelWrapper.RestoreActiveCell = this.RestorePROGRESSFocusedCell;
+        }
+
+        protected void StorePROGRESSFocusedCell()
+        {
+            focusedRowHandlePROGRESS = tableViewPROGRESS.FocusedRowHandle;
+            currentColumnPROGRESS = gridControlPROGRESS.CurrentColumn;
+        }
+
+        protected void RestorePROGRESSFocusedCell()
+        {
+            gridControlPROGRESS.CurrentColumn = currentColumnPROGRESS;
+            tableViewPROGRESS.FocusedRowHandle = focusedRowHandlePROGRESS;
+            gridControlPROGRESS.Focus();
+            tableViewPROGRESS.ShowEditor();
+        }
+
+        int focusedRowHandleESTIMATION_DIRECT;
+        ColumnBase currentColumnESTIMATION_DIRECT;
+        private void AssignESTIMATION_DIRECTDelegates(ESTIMATION_DIRECTCollectionViewModelWrapper viewModelWrapper)
+        {
+            viewModelWrapper.StoreActiveCell = this.StoreESTIMATION_DIRECTFocusedCell;
+            viewModelWrapper.RestoreActiveCell = this.RestoreESTIMATION_DIRECTFocusedCell;
+        }
+
+        protected void StoreESTIMATION_DIRECTFocusedCell()
+        {
+            focusedRowHandleESTIMATION_DIRECT = tableViewESTIMATION_DIRECT.FocusedRowHandle;
+            currentColumnESTIMATION_DIRECT = gridControlESTIMATION_DIRECT.CurrentColumn;
+        }
+
+        protected void RestoreESTIMATION_DIRECTFocusedCell()
+        {
+            gridControlESTIMATION_DIRECT.CurrentColumn = currentColumnESTIMATION_DIRECT;
+            tableViewESTIMATION_DIRECT.FocusedRowHandle = focusedRowHandleESTIMATION_DIRECT;
+            gridControlESTIMATION_DIRECT.Focus();
+            tableViewESTIMATION_DIRECT.ShowEditor();
+        }
+
+        int focusedRowHandlePHASE;
+        ColumnBase currentColumnPHASE;
+        private void AssignPHASEDelegates(PHASECollectionViewModelWrapper viewModelWrapper)
+        {
+            viewModelWrapper.StoreActiveCell = this.StorePHASEFocusedCell;
+            viewModelWrapper.RestoreActiveCell = this.RestorePHASEFocusedCell;
+        }
+
+        protected void StorePHASEFocusedCell()
+        {
+            focusedRowHandlePHASE = tableViewPHASE.FocusedRowHandle;
+            currentColumnPHASE = gridControlPHASE.CurrentColumn;
+        }
+
+        protected void RestorePHASEFocusedCell()
+        {
+            gridControlPHASE.CurrentColumn = currentColumnPHASE;
+            tableViewPHASE.FocusedRowHandle = focusedRowHandlePHASE;
+            gridControlPHASE.Focus();
+            tableViewPHASE.ShowEditor();
+        }
+
+        int focusedRowHandleAREA;
+        ColumnBase currentColumnAREA;
+        private void AssignAREADelegates(AREACollectionViewModelWrapper viewModelWrapper)
+        {
+            viewModelWrapper.StoreActiveCell = this.StoreAREAFocusedCell;
+            viewModelWrapper.RestoreActiveCell = this.RestoreAREAFocusedCell;
+        }
+
+        protected void StoreAREAFocusedCell()
+        {
+            focusedRowHandleAREA = tableViewAREA.FocusedRowHandle;
+            currentColumnAREA = gridControlAREA.CurrentColumn;
+        }
+
+        protected void RestoreAREAFocusedCell()
+        {
+            gridControlAREA.CurrentColumn = currentColumnAREA;
+            tableViewAREA.FocusedRowHandle = focusedRowHandleAREA;
+            gridControlAREA.Focus();
+            tableViewAREA.ShowEditor();
+        }
+
+        int focusedRowHandleRATE;
+        ColumnBase currentColumnRATE;
+        private void AssignRATEDelegates(RATECollectionViewModelWrapper viewModelWrapper)
+        {
+            viewModelWrapper.StoreActiveCell = this.StoreRATEFocusedCell;
+            viewModelWrapper.RestoreActiveCell = this.RestoreRATEFocusedCell;
+        }
+
+        protected void StoreRATEFocusedCell()
+        {
+            focusedRowHandleRATE = tableViewRATE.FocusedRowHandle;
+            currentColumnRATE = gridControlRATE.CurrentColumn;
+        }
+
+        protected void RestoreRATEFocusedCell()
+        {
+            gridControlRATE.CurrentColumn = currentColumnRATE;
+            tableViewRATE.FocusedRowHandle = focusedRowHandleRATE;
+            gridControlRATE.Focus();
+            tableViewRATE.ShowEditor();
         }
 
         public void Redraw()

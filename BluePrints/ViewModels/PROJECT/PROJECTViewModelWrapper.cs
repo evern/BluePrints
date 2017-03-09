@@ -44,6 +44,12 @@ namespace BluePrints.ViewModels
         #region Database Operation
 
         private PROJECT loadPROJECT;
+        public Action<BASELINECollectionViewModelWrapper> AssignBASELINEDelegates;
+        public Action<PROGRESSCollectionViewModelWrapper> AssignPROGRESSDelegates;
+        public Action<ESTIMATION_DIRECTCollectionViewModelWrapper> AssignESTIMATION_DIRECTDelegates;
+        public Action<PHASECollectionViewModelWrapper> AssignPHASEDelegates;
+        public Action<AREACollectionViewModelWrapper> AssignAREADelegates;
+        public Action<RATECollectionViewModelWrapper> AssignRATEDelegates;
 
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
@@ -193,6 +199,7 @@ namespace BluePrints.ViewModels
                     baselineViewModel.SetParentViewModel(this);
                     var baselineSupportParameterObj = baselineViewModel as ISupportParameter;
                     baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(loadPROJECT);
+                    AssignBASELINEDelegates?.Invoke(baselineViewModel);
                 }
 
                 return baselineViewModel;
@@ -211,6 +218,7 @@ namespace BluePrints.ViewModels
                     progressViewModel.SetParentViewModel(this);
                     var baselineSupportParameterObj = progressViewModel as ISupportParameter;
                     baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(loadPROJECT);
+                    AssignPROGRESSDelegates?.Invoke(progressViewModel);
                 }
 
                 return progressViewModel;
@@ -229,6 +237,7 @@ namespace BluePrints.ViewModels
                     areaViewModel.SetParentViewModel(this);
                     var baselineSupportParameterObj = areaViewModel as ISupportParameter;
                     baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(loadPROJECT);
+                    AssignAREADelegates?.Invoke(areaViewModel);
                 }
 
                 return areaViewModel;
@@ -247,6 +256,7 @@ namespace BluePrints.ViewModels
                     rateViewModel.SetParentViewModel(this);
                     var baselineSupportParameterObj = rateViewModel as ISupportParameter;
                     baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(loadPROJECT);
+                    AssignRATEDelegates?.Invoke(rateViewModel);
                 }
 
                 return rateViewModel;
@@ -265,6 +275,7 @@ namespace BluePrints.ViewModels
                     phaseViewModel.SetParentViewModel(this);
                     var baselineSupportParameterObj = phaseViewModel as ISupportParameter;
                     baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(loadPROJECT);
+                    AssignPHASEDelegates?.Invoke(phaseViewModel);
                 }
 
                 return phaseViewModel;
@@ -283,6 +294,7 @@ namespace BluePrints.ViewModels
                     estimationDirectViewModel.SetParentViewModel(this);
                     var baselineSupportParameterObj = estimationDirectViewModel as ISupportParameter;
                     baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(loadPROJECT);
+                    AssignESTIMATION_DIRECTDelegates?.Invoke(estimationDirectViewModel);
                 }
 
                 return estimationDirectViewModel;

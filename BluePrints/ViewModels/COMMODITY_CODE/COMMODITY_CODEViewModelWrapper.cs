@@ -171,10 +171,10 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<COMMODITY_CODE> entities)
         {
-            MainViewModel.EntitiesAfterDeletionCallBack = EntitiesAfterDeletion;
-            MainViewModel.EntitiesBeforeDeletionCallBack = EntitiesBeforeDeletion;
-            MainViewModel.OnBeforeEntitySavedCallBack = OnBeforeEntitiesSaved;
-            MainViewModel.TreeListExistingRowAddUndoAndSavePostCallBack = PostTreeListExistingRowAddUndoAndSave;
+            MainViewModel.OnAfterEntitiesDeletedCallBack = EntitiesAfterDeletion;
+            MainViewModel.OnBeforeEntitiesDeleteCallBack = EntitiesBeforeDeletion;
+            MainViewModel.SetParentAssociationCallBack = OnBeforeEntitiesSaved;
+            MainViewModel.OnAfterTreelistExistingRowAddUndoAndSaveCallBack = PostTreeListExistingRowAddUndoAndSave;
 
             MainViewModel.SetParentViewModel(this);
             if (loadCommodityCodeType == CommodityCodeType.Design)

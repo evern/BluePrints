@@ -71,20 +71,11 @@ namespace BluePrints.ViewModels
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
-        private BackgroundWorker refreshBackgroundWorker;
         private BackgroundWorker displayEntitiesRefreshBackgroundWorker;
         private BackgroundWorker userStateStoreBackgroundWorker;
         private BackgroundWorker userStateRestoreBackgroundWorker;
 
         public bool TryUsingProjectRates { get; set; }
-        public ESTIMATION_DIRECT_ITEMProjection SelectedEntity { get; set; }
-        private ObservableCollection<ESTIMATION_DIRECT_ITEMProjection> selectedentities { get; set; }
-
-        public ObservableCollection<ESTIMATION_DIRECT_ITEMProjection> SelectedEntities
-        {
-            get { return selectedentities; }
-            set { selectedentities = value; }
-        }
 
         private Guid RestoreSelectedEntityGuid;
         private List<Guid> RestoreSelectedEntitiesGuids = new List<Guid>();
@@ -101,10 +92,6 @@ namespace BluePrints.ViewModels
             userStateStoreBackgroundWorker = new BackgroundWorker();
             userStateStoreBackgroundWorker.DoWork += userStateStoreBackgroundWorker_DoWork;
             userStateStoreBackgroundWorker.WorkerSupportsCancellation = true;
-
-            refreshBackgroundWorker = new BackgroundWorker();
-            refreshBackgroundWorker.DoWork += refreshBackgroundWorker_DoWork;
-            refreshBackgroundWorker.WorkerSupportsCancellation = true;
 
             displayEntitiesRefreshBackgroundWorker = new BackgroundWorker();
             displayEntitiesRefreshBackgroundWorker.DoWork += displayEntitiesRefreshBackgroundWorker_DoWork;
@@ -357,7 +344,7 @@ namespace BluePrints.ViewModels
         {
             Thread.Sleep(10);
             var changedType = (Type) e.Argument;
-            if (((BackgroundWorker) sender).CancellationPending)
+            if (userStateStoreBackgroundWorker.CancellationPending)
             {
                 e.Cancel = true;
                 return;
@@ -369,7 +356,7 @@ namespace BluePrints.ViewModels
         private void userStateRestoreBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             Thread.Sleep(1);
-            if (((BackgroundWorker) sender).CancellationPending)
+            if (userStateRestoreBackgroundWorker.CancellationPending)
             {
                 e.Cancel = true;
                 return;
@@ -430,15 +417,14 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.CreateNewProjectionFromNewEntityCallBack = CreateNewProjectionFromNewEntityCallBack;
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntity;
-            MainViewModel.OnEntitySavedCallBack = OnEntitiesSavedCallBack;
+            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
             MainViewModel.ExistingRowAddUndoAndSaveCallBack = ExistingProjectionEditCallBack;
-            MainViewModel.NewRowAddUndoAndBeforeSaveCallBack = NewRowAddUndoAndBeforeSaveCallBack;
-            MainViewModel.NewRowAddUndoAndAfterSavedCallBack = NewRowAddUndoAndAfterSavedCallBack;
-            MainViewModel.EntitiesBeforeDeletionCallBack = EntitiesBeforeDeletion;
+            MainViewModel.OnAfterEntitySavedCallBack = OnAfterEntitySaved;
+            MainViewModel.OnBeforeEntitiesDeleteCallBack = EntitiesBeforeDeletion;
             MainViewModel.SetParentViewModel(this);
 
             var initializeCOMMODITY_CODEMasterDetailView = COMMODITY_CODEMasterDetailViewModel;
-            refreshBackgroundWorker.RunWorkerAsync();
+            Refresh();
         }
 
         #region Collection Call Backs
@@ -463,18 +449,14 @@ namespace BluePrints.ViewModels
             projectionEntity.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL = entity.GUID_ORIGINAL;
         }
 
-        public bool NewRowAddUndoAndBeforeSaveCallBack(RowEventArgs e, ESTIMATION_DIRECT_ITEMProjection projectionEntity)
+        public void OnAfterEntitySaved(ESTIMATION_DIRECT_ITEMProjection projectionEntity, bool isNewEntity)
         {
-            projectionEntity.ESTIMATION_DIRECT_ITEM.ESTIMATED_QUANTITY = 1;
-            NewRowAndExistingAddUndoAndSave(projectionEntity, true);
-            return true;
-        }
-
-        public void NewRowAddUndoAndAfterSavedCallBack(RowEventArgs e, ESTIMATION_DIRECT_ITEMProjection projectionEntity)
-        {
-            //Needs to be after so projectionEntity is guaranteed to have GUID generated
-            if (projectionEntity.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT != null)
-                AddChildrenESTIMATION_DIRECT_ITEM(projectionEntity);
+            if(isNewEntity)
+            {
+                //Needs to be after so projectionEntity is guaranteed to have GUID generated
+                if (projectionEntity.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT != null)
+                    AddChildrenESTIMATION_DIRECT_ITEM(projectionEntity);
+            }
         }
 
         public bool ExistingProjectionEditCallBack(ESTIMATION_DIRECT_ITEMProjection projectionEntity,
@@ -1099,7 +1081,6 @@ namespace BluePrints.ViewModels
 
         protected override void OnClose(CancelEventArgs e)
         {
-            refreshBackgroundWorker.CancelAsync();
             displayEntitiesRefreshBackgroundWorker.CancelAsync();
             userStateRestoreBackgroundWorker.CancelAsync();
             base.OnClose(e);
@@ -1109,7 +1090,7 @@ namespace BluePrints.ViewModels
 
         #region View Behavior
 
-        public ESTIMATION_DIRECT_ITEMProjection CreateNewProjectionFromNewEntityCallBack(ESTIMATION_DIRECT_ITEM entity)
+        public ESTIMATION_DIRECT_ITEMProjection CreateNewProjectionFromNewEntityCallBack()
         {
             return new ESTIMATION_DIRECT_ITEMProjection();
         }
@@ -1228,7 +1209,7 @@ namespace BluePrints.ViewModels
 
         private ObservableCollection<ESTIMATION_DIRECT_ITEMProjection> displayEntities;
 
-        public ObservableCollection<ESTIMATION_DIRECT_ITEMProjection> DisplayEntities
+        public override ObservableCollection<ESTIMATION_DIRECT_ITEMProjection> DisplayEntities
         {
             get
             {

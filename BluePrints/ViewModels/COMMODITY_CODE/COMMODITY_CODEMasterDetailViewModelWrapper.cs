@@ -61,15 +61,6 @@ namespace BluePrints.ViewModels
         private BackgroundWorker displayEntitiesRefreshBackgroundWorker;
         private BackgroundWorker userStateRestoreBackgroundWorker;
 
-        public COMMODITY_CODEMasterDetailProjection SelectedEntity { get; set; }
-        private ObservableCollection<COMMODITY_CODEMasterDetailProjection> selectedentities { get; set; }
-
-        public ObservableCollection<COMMODITY_CODEMasterDetailProjection> SelectedEntities
-        {
-            get { return selectedentities; }
-            set { selectedentities = value; }
-        }
-
         private Guid RestoreSelectedEntityGuid;
         private List<Guid> RestoreSelectedEntitiesGuids = new List<Guid>();
         private List<Guid> RestoreExpandedGuids = new List<Guid>();
@@ -338,9 +329,9 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(
             IEnumerable<COMMODITY_CODEMasterDetailProjection> entities)
         {
-            MainViewModel.OnBeforeEntitySavedCallBack = OnBeforeEntitiesSaved;
+            MainViewModel.SetParentAssociationCallBack = OnBeforeEntitiesSaved;
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntity;
-            MainViewModel.OnEntitySavedCallBack = OnEntitiesSavedCallBack;
+            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
             MainViewModel.SetParentViewModel(this);
             var initializeCOMMODITY_GROUP = COMMODITY_GROUPCollectionViewModel;
 
@@ -385,9 +376,9 @@ namespace BluePrints.ViewModels
             entity.CREATED = projectionEntity.COMMODITY_CODE.CREATED;
         }
 
-        private void OnBeforeEntitiesSaved(COMMODITY_CODE entity)
+        private void OnBeforeEntitiesSaved(COMMODITY_CODEMasterDetailProjection entity)
         {
-            entity.COMMODITYCODETYPE = loadCommodityCodeType;
+            entity.COMMODITY_CODE.COMMODITYCODETYPE = loadCommodityCodeType;
         }
 
         #endregion
@@ -436,7 +427,7 @@ namespace BluePrints.ViewModels
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
             var deletingEntities =
                 new List<COMMODITY_CODEMasterDetailProjection>();
-            foreach (var selectedEntity in selectedentities)
+            foreach (var selectedEntity in SelectedEntities)
                 if (selectedEntity.COMMODITY_CODE.GUID == Guid.Empty)
                     foreach (var childrenEntity in selectedEntity.CHILD_COMMODITY_CODES
                     )
@@ -458,7 +449,7 @@ namespace BluePrints.ViewModels
 
         private ObservableCollection<COMMODITY_CODEMasterDetailProjection> displayEntities;
 
-        public ObservableCollection<COMMODITY_CODEMasterDetailProjection> DisplayEntities
+        public override ObservableCollection<COMMODITY_CODEMasterDetailProjection> DisplayEntities
         {
             get
             {

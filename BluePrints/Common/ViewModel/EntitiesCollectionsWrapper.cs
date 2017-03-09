@@ -5,6 +5,9 @@ using BluePrints.Common.Projections;
 using BluePrints.Data.Helpers;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Bars;
+using DevExpress.Xpf.Editors.Settings;
+using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,6 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using BluePrints.ViewModels;
 
 namespace BluePrints.Common.ViewModel
 {
@@ -145,7 +149,6 @@ namespace BluePrints.Common.ViewModel
         protected virtual void AssignCallBacksAndRaisePropertyChange(IEnumerable<TMainProjectionEntity> entities)
         {
             MainViewModel.SelectedEntities = this.SelectedEntities;
-            MainViewModel.SelectedEntity = this.SelectedEntity;
             Refresh();
             //throw new NotImplementedException("Override this method to assign call backs and also notify the view.");
         }
@@ -153,7 +156,8 @@ namespace BluePrints.Common.ViewModel
         protected virtual void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
             object sender)
         {
-            throw new NotImplementedException("Override this method to reload or refresh the main view model.");
+            Refresh();
+            //throw new NotImplementedException("Override this method to reload or refresh the main view model.");
         }
 
         #region ISupportParameter
@@ -194,6 +198,12 @@ namespace BluePrints.Common.ViewModel
             SelectedEntities = new ObservableCollection<TMainProjectionEntity>();
         }
 
+        public virtual void FullRefresh()
+        {
+            MainViewModel.Refresh();
+            Refresh();
+        }
+
         protected void Refresh()
         {
             if (!refreshBackgroundWorker.IsBusy)
@@ -203,7 +213,7 @@ namespace BluePrints.Common.ViewModel
         private void refreshBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             System.Threading.Thread.Sleep(500);
-            if (((BackgroundWorker)sender).CancellationPending)
+            if (refreshBackgroundWorker.CancellationPending)
             {
                 e.Cancel = true;
                 return;
@@ -212,7 +222,7 @@ namespace BluePrints.Common.ViewModel
             mainThreadDispatcher.BeginInvoke(new Action(() => this.refreshViewWithStateRestoration()));
         }
 
-        public ObservableCollection<TMainProjectionEntity> DisplayEntities
+        public virtual ObservableCollection<TMainProjectionEntity> DisplayEntities
         {
             get
             {
@@ -225,7 +235,7 @@ namespace BluePrints.Common.ViewModel
 
         private void storeViewState()
         {
-            StoreActiveCell();
+            StoreActiveCell?.Invoke();
 
             RestoreSelectedEntityGuid = Guid.Empty;
             RestoreSelectedEntitiesGuids.Clear();
@@ -254,7 +264,7 @@ namespace BluePrints.Common.ViewModel
                     SelectedEntity = restoreSelectedEntity;
             }
 
-            RestoreActiveCell();
+            RestoreActiveCell?.Invoke();
         }
 
         private void refreshViewWithStateRestoration()
@@ -264,6 +274,8 @@ namespace BluePrints.Common.ViewModel
             restoreViewState();
         }
         #endregion
+
+
 
         #region IDocumentContent
 
@@ -300,6 +312,7 @@ namespace BluePrints.Common.ViewModel
 
         protected virtual void OnClose(CancelEventArgs e)
         {
+            refreshBackgroundWorker.CancelAsync();
         }
 
         void IDocumentContent.OnClose(CancelEventArgs e)
@@ -325,6 +338,14 @@ namespace BluePrints.Common.ViewModel
             set { DocumentOwner = value; }
         }
 
+        #endregion
+
+        #region View Interactions
+        public void SetMainNestedValueWithUndoAndRefresh(TMainProjectionEntity entity, string propertyName, object newValue)
+        {
+            MainViewModel.SetNestedValueWithUndo(entity, propertyName, newValue);
+            this.RaisePropertyChanged(x => x.SelectedEntity);
+        }
         #endregion
 
         #region Services

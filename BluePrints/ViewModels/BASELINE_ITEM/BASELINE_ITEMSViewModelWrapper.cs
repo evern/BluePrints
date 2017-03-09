@@ -220,7 +220,7 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.CreateNewProjectionFromNewEntityCallBack = CreateNewProjectionFromNewEntityCallBack;
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntity;
-            MainViewModel.OnEntitySavedCallBack = OnEntitiesSavedCallBack;
+            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
             MainViewModel.PasteListener = this.PasteListener;
             MainViewModel.SetParentViewModel(this);
             mainThreadDispatcher.BeginInvoke(new Action(() => ShowWORKPACKColumns()));
@@ -258,7 +258,7 @@ namespace BluePrints.ViewModels
                 else if (_loadProject != null || _loadBaseline != null)
                     mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
 
-            Refresh();
+            base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
         }
 
         #region Collection Call Backs
@@ -294,7 +294,7 @@ namespace BluePrints.ViewModels
 
         #region View Behavior
 
-        public BASELINE_ITEMProjection CreateNewProjectionFromNewEntityCallBack(BASELINE_ITEM entity)
+        public BASELINE_ITEMProjection CreateNewProjectionFromNewEntityCallBack()
         {
             return new BASELINE_ITEMProjection();
         }
@@ -459,7 +459,7 @@ namespace BluePrints.ViewModels
                     var internalNum = BluePrintDataUtils.BASELINEITEM_Generate_InternalNumber(_loadProject,
                         MainViewModel.Entities, currentItemAREA, currentItemDISCIPLINE,
                         currentItemDOCTYPE, entity.GUID);
-                    MainViewModel.SetNestedValueWithUndo(entity, info.Column.FieldName, internalNum);
+                    SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName, internalNum);
                     entitiesToSave.Add(entity);
                 }
                 else if (info.Column.FieldName == departmentFieldName || info.Column.FieldName == disciplineFieldName ||
@@ -469,15 +469,15 @@ namespace BluePrints.ViewModels
                         continue;
 
                     if (info.Column.FieldName == departmentFieldName)
-                        MainViewModel.SetNestedValueWithUndo(entity, info.Column.FieldName,
+                        SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName,
                             entityWORKPACK.GUID_DDEPARTMENT);
                     else if (info.Column.FieldName == disciplineFieldName)
-                        MainViewModel.SetNestedValueWithUndo(entity, info.Column.FieldName,
+                        SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName,
                             entityWORKPACK.GUID_DDISCIPLINE);
                     else if (info.Column.FieldName == docTypeFieldName)
-                        MainViewModel.SetNestedValueWithUndo(entity, info.Column.FieldName, entityWORKPACK.GUID_DDOCTYPE);
+                        SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName, entityWORKPACK.GUID_DDOCTYPE);
                     else if (info.Column.FieldName == areaFieldName)
-                        MainViewModel.SetNestedValueWithUndo(entity, info.Column.FieldName, entityWORKPACK.GUID_DAREA);
+                        SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName, entityWORKPACK.GUID_DAREA);
 
                     entitiesToSave.Add(entity);
                 }
@@ -531,11 +531,11 @@ namespace BluePrints.ViewModels
                         ((CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>)
                             loaderCollection.GetViewModel<WORKPACK>()).Save(newWORKPACK);
 
-                        MainViewModel.SetNestedValueWithUndo(entity, info.Column.FieldName, newWORKPACK.GUID);
+                        SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName, newWORKPACK.GUID);
                     }
                     else
                     {
-                        MainViewModel.SetNestedValueWithUndo(entity, info.Column.FieldName, findWORKPACK.GUID);
+                        SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName, findWORKPACK.GUID);
                     }
 
                     entitiesToSave.Add(entity);
@@ -544,6 +544,7 @@ namespace BluePrints.ViewModels
 
             MainViewModel.BulkSave(entitiesToSave);
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+            Refresh();
         }
 
         #endregion

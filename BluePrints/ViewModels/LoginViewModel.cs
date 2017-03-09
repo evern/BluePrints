@@ -108,10 +108,13 @@ namespace BluePrints.ViewModels
 
                     if (UserName != null && UserPassword != null)
                     {
-                        IEnumerable<USER> activeDirectoryUSERS = ActiveDirectory.GetUSERS();
-                        USER CaseSensitiveUser = activeDirectoryUSERS.FirstOrDefault(x => x.NAME.ToLower() == UserName.ToLower());
-                        if (CaseSensitiveUser != null)
-                            UserName = CaseSensitiveUser.NAME;
+                        if(!isUsernameLoadedFromXML)
+                        {
+                            IEnumerable<USER> activeDirectoryUSERS = ActiveDirectory.GetUSERS();
+                            USER CaseSensitiveUser = activeDirectoryUSERS.FirstOrDefault(x => x.NAME.ToLower() == UserName.ToLower());
+                            if (CaseSensitiveUser != null)
+                                UserName = CaseSensitiveUser.NAME;
+                        }
 
                         if (ActiveDirectory.Authenticate(UserName, UserPassword))
                         {

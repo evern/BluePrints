@@ -124,6 +124,8 @@ namespace BluePrints.Common
                 ReceiveMessage<WORKPACK_ASSIGNMENT, Guid>(PrimaryKey, MessageType, sender);
             else if (entityName == typeof(WORKPACK).ToString())
                 ReceiveMessage<WORKPACK, Guid>(PrimaryKey, MessageType, sender);
+            else if (entityName == typeof(DELIVERABLES_STATUS).ToString())
+                ReceiveMessage<DELIVERABLES_STATUS, Guid>(PrimaryKey, MessageType, sender);
         }
 
 
