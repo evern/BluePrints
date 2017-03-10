@@ -324,6 +324,7 @@ namespace BluePrints.ViewModels
                 sender.ToString() == PROGRESS_ITEMSCollectionViewModel.ToString())
                 return;
 
+            storeViewState();
             if (loadPROGRESS != null && changedType == typeof(PROGRESS) &&
                 loadPROGRESS.GUID.ToString() == key.ToString() ||
                 loadBASELINE != null && changedType == typeof(BASELINE) &&

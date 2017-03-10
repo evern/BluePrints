@@ -18,9 +18,23 @@ namespace BluePrints.Common
 {
     public class TableViewEx : TableView
     {
+        public bool isEditorActive;
+
         public TableViewEx()
         {
             this.PreviewKeyDown += TableViewEx_PreviewKeyDown;
+            this.ShownEditor += TableViewEx_ShownEditor;
+            this.HiddenEditor += TableViewEx_HiddenEditor;
+        }
+
+        private void TableViewEx_HiddenEditor(object sender, EditorEventArgs e)
+        {
+            isEditorActive = false;
+        }
+
+        private void TableViewEx_ShownEditor(object sender, EditorEventArgs e)
+        {
+            isEditorActive = true;
         }
 
         void TableViewEx_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)

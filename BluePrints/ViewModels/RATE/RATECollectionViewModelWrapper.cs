@@ -115,6 +115,7 @@ namespace BluePrints.ViewModels
             if (sender.ToString() == MainViewModel.ToString())
                 return;
 
+            storeViewState();
             if (loadPROJECT != null && changedType == typeof(PROJECT) &&
                 loadPROJECT.GUID.ToString() == key.ToString())
                 if (messageType == EntityMessageType.Added)

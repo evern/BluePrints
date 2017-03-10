@@ -182,7 +182,7 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => restoreViewState()));
         }
 
-        private void storeViewState()
+        protected override void storeViewState()
         {
             RestoreSelectedEntityGuid = Guid.Empty;
             RestoreSelectedEntitiesGuids.Clear();
@@ -199,7 +199,7 @@ namespace BluePrints.ViewModels
                 RestoreSelectedEntityGuid = DisplaySelectedEntity.GUID;
         }
 
-        private void restoreViewState()
+        protected override void restoreViewState()
         {
             var restoreSelectedEntities =
                 DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.CHILD_COMMODITY_GROUP))

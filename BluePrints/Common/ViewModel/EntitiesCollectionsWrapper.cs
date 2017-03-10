@@ -238,7 +238,7 @@ namespace BluePrints.Common.ViewModel
             }
         }
 
-        private void storeViewState()
+        protected virtual void storeViewState()
         {
             StoreActiveCell?.Invoke();
 
@@ -252,7 +252,7 @@ namespace BluePrints.Common.ViewModel
                 RestoreSelectedEntityGuid = DisplaySelectedEntity.GUID;
         }
 
-        private void restoreViewState()
+        protected virtual void restoreViewState()
         {
             var restoreSelectedEntities =
                 DisplayEntities.Where(x => RestoreSelectedEntitiesGuids.Any(y => y == x.GUID));
@@ -274,7 +274,6 @@ namespace BluePrints.Common.ViewModel
 
         private void refreshViewWithStateRestoration()
         {
-            storeViewState();
             this.RaisePropertiesChanged();
             restoreViewState();
         }

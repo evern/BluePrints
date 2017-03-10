@@ -242,6 +242,7 @@ namespace BluePrints.ViewModels
             if (sender.ToString() == MainViewModel.ToString())
                 return;
 
+            storeViewState();
             if (_loadBaseline != null && changedType == typeof(BASELINE) &&
                 _loadBaseline.GUID.ToString() == key.ToString() ||
                 _loadProject != null && changedType == typeof(PROJECT) && _loadProject.GUID.ToString() == key.ToString())

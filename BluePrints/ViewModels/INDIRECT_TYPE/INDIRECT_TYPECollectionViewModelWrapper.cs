@@ -75,14 +75,14 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<INDIRECT_TYPE> entities)
         {
             MainViewModel.SetParentViewModel(this);
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
+            base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
             object sender)
         {
-            //Since this is a simple model, it will be handled natively
-            return;
+            storeViewState();
+            base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
         }
 
         #endregion

@@ -181,6 +181,7 @@ namespace BluePrints.ViewModels
                 sender.ToString() == ToString())
                 return;
 
+            storeViewState();
             if (loadPROJECT != null)
                 mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
 

@@ -1,4 +1,5 @@
-﻿using BluePrints.Common.ViewModel;
+﻿using BluePrints.Common;
+using BluePrints.Common.ViewModel;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
@@ -13,11 +14,12 @@ namespace BluePrints.Views
     {
         int focusedRowHandle;
         ColumnBase currentColumn;
+        bool isActive;
 
         GridControl gridControl;
-        TableView tableView;
+        TableViewEx tableView;
 
-        public void InitializeViewControl(GridControl gridControl, TableView tableView)
+        public void InitializeViewControl(GridControl gridControl, TableViewEx tableView)
         {
             this.gridControl = gridControl;
             this.tableView = tableView;
@@ -35,13 +37,14 @@ namespace BluePrints.Views
             }
         }
 
-        protected void StoreFocusedCell()
+        protected virtual void StoreFocusedCell()
         {
             this.focusedRowHandle = tableView.FocusedRowHandle;
             this.currentColumn = gridControl.CurrentColumn;
+            this.isActive = tableView.isEditorActive;
         }
 
-        protected void RestoreFocusedCell()
+        protected virtual void RestoreFocusedCell()
         {
             gridControl.CurrentColumn = this.currentColumn;
             tableView.FocusedRowHandle = focusedRowHandle;
@@ -50,7 +53,9 @@ namespace BluePrints.Views
             //Because active editor have latest value but cannot revert to old value when esc is pressed
             //GridColumn setValueColumn = gridControl.Columns[gridControl.CurrentColumn.FieldName];
             //gridControl.SetFocusedRowCellValue(setValueColumn, currentValue);
-            tableView.ShowEditor();
+
+            if (this.isActive)
+                tableView.ShowEditor();
         }
     }
 }

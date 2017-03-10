@@ -81,7 +81,8 @@ namespace BluePrints.ViewModels
         protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
             object sender)
         {
-            //Since this is a simple model, it will be handled natively
+            storeViewState();
+            base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
         }
 
         #endregion
