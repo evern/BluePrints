@@ -250,6 +250,7 @@ namespace BluePrints.ViewModels
             MainViewModel.ExistingRowAddUndoAndSaveCallBack = ExistingProjectionEditCallBack;
             MainViewModel.IsContinueSaveCallBack = MainEntityPreSaveWithNewEntityDetection;
             MainViewModel.OnAfterEntitySavedCallBack = MainEntitySaveVariation;
+            MainViewModel.IsContinueNewRowFromViewCallBack = AddVARIATION_ITEMCallBack;
             //MainViewModel.BulkPreSave = this.MainEntityBulkPreSave;
             //MainViewModel.BulkPostSave = this.MainEntityBulkPostSave;
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntityCallBack;
@@ -257,8 +258,9 @@ namespace BluePrints.ViewModels
             MainViewModel.OnBeforeEntityDeleteCallBack = EntityBeforeDeletionCallBack;
             MainViewModel.CreateNewProjectionFromNewEntityCallBack = CreateNewProjectionFromNewEntity;
             MainViewModel.SetParentViewModel(this);
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
+
             mainThreadDispatcher.BeginInvoke(new Action(() => ShowWORKPACKColumns()));
+            base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
@@ -268,18 +270,18 @@ namespace BluePrints.ViewModels
                 return;
 
             //Map the changes from PROGRESS_ITEM to BASELINE_ITEM so undo/redo operation is valid
-            if (changedType == typeof(VARIATION_ITEM) && messageType != EntityMessageType.Added)
-            {
-                var mappedEntity =
-                    MainViewModel.Entities.FirstOrDefault(
-                        x => x.VARIATION_ITEM != null && x.VARIATION_ITEM.GUID.ToString() == key.ToString());
-                mainThreadDispatcher.BeginInvoke(
-                    new Action(
-                        () =>
-                            Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(mappedEntity.GUID,
-                                EntityMessageType.Changed, this))));
-                return;
-            }
+            //if (changedType == typeof(VARIATION_ITEM) && messageType != EntityMessageType.Added)
+            //{
+            //    var mappedEntity =
+            //        MainViewModel.Entities.FirstOrDefault(
+            //            x => x.VARIATION_ITEM != null && x.VARIATION_ITEM.GUID.ToString() == key.ToString());
+            //    mainThreadDispatcher.BeginInvoke(
+            //        new Action(
+            //            () =>
+            //                Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(mappedEntity.GUID,
+            //                    EntityMessageType.Changed, this))));
+            //    return;
+            //}
 
             if (loadPROGRESS != null && changedType == typeof(PROGRESS) &&
                 loadPROGRESS.GUID.ToString() == key.ToString() ||
@@ -297,9 +299,11 @@ namespace BluePrints.ViewModels
 
             if (loadPROJECT != null || loadBASELINE != null || loadPROGRESS != null || loadVARIATION != null)
                 if (MainViewModel != null)
-                    mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
+                    mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.RefreshWithoutClearingUndoManager()));
                 else if (loadPROJECT != null || loadBASELINE != null)
                     mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
+
+            base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
         }
 
         #region CallBacks
@@ -365,10 +369,55 @@ namespace BluePrints.ViewModels
             return loadVARIATION.SUBMITTED == null && selectedEntities != null && selectedEntities.All(x => x.VARIATION_ITEM != null && x.VARIATION_ITEM.ACTION == VariationAction.Add);
         }
 
+        //public bool CanBulkRestore()
+        //{
+        //    return loadVARIATION.SUBMITTED == null && SelectedEntities != null && SelectedEntities.Any(x => x.VARIATION_ITEM != null && x.VARIATION_ITEM.ACTION == VariationAction.Cancel);
+        //}
+
+        //public void BulkRestore()
+        //{
+        //    IEnumerable<VARIATION_ITEMProjection> cancelledVARIATIONS = SelectedEntities.Where(x => x.VARIATION_ITEM != null && x.VARIATION_ITEM.ACTION == VariationAction.Cancel);
+        //    foreach(VARIATION_ITEMProjection cancelledVARIATION in cancelledVARIATIONS)
+        //    {
+        //        cancelledVARIATION.VARIATION_ITEM.ACTION = VariationAction.NoAction;
+        //        MainEntitySaveVariation(cancelledVARIATION, false);
+        //    }
+        //}
+
+        //public bool CanBulkDelete()
+        //{
+        //    return loadVARIATION.SUBMITTED == null && SelectedEntities != null;
+        //}
+
+        //public void BulkDelete()
+        //{
+        //    //Only newly added variation can be deleted
+        //    IEnumerable<VARIATION_ITEMProjection> addedVARIATIONS = SelectedEntities.Where(x => x.VARIATION_ITEM != null && x.VARIATION_ITEM.ACTION == VariationAction.Add);
+        //    //variation that is in appended or no action shall be cancelled
+        //    IEnumerable<VARIATION_ITEMProjection> existingVARIATIONS = SelectedEntities.Where(x => x.VARIATION_ITEM != null && (x.VARIATION_ITEM.ACTION == VariationAction.Append || x.VARIATION_ITEM.ACTION == VariationAction.NoAction));
+
+        //    IEnumerable<VARIATION_ITEM> deleteVARIATION_ITEM = addedVARIATIONS.Select(x => x.VARIATION_ITEM);
+        //    VARIATION_ITEMSCollectionViewModel.BaseBulkDelete(deleteVARIATION_ITEM);
+        //    MainViewModel.BaseBulkDelete(addedVARIATIONS);
+
+        //    foreach(VARIATION_ITEMProjection existingVARIATION in existingVARIATIONS)
+        //    {
+        //        existingVARIATION.VARIATION_ITEM.VARIATION_UNITS = 0;
+        //        existingVARIATION.VARIATION_ITEM.ACTION = VariationAction.Cancel;
+        //        MainEntitySaveVariation(existingVARIATION, false);
+        //    }
+        //}
+        public bool AddVARIATION_ITEMCallBack(RowEventArgs e, VARIATION_ITEMProjection projectionEntity)
+        {
+            projectionEntity.VARIATION_ITEM.ACTION = VariationAction.Add;
+            return true;
+        }
+
+
         public void NewProjectionInitializeCallBack(VARIATION_ITEMProjection projectionEntity)
         {
             projectionEntity.VARIATION_ITEM.GUID_VARIATION = loadVARIATION.GUID;
-            projectionEntity.VARIATION_ITEM.ACTION = VariationAction.Add;
+            //projectionEntity.VARIATION_ITEM.ACTION = VariationAction.Add;
         }
 
         public bool ExistingProjectionEditCallBack(VARIATION_ITEMProjection projectionEntity,
@@ -459,6 +508,7 @@ namespace BluePrints.ViewModels
 
         public void CancelBASELINE_ITEM(VARIATION_ITEMProjection projectionEntity)
         {
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
             if (projectionEntity.VARIATION_ITEM.ACTION == VariationAction.Add)
                 return;
 
@@ -475,7 +525,7 @@ namespace BluePrints.ViewModels
             {
                 var oldUnits = projectionEntity.VARIATION_ITEM.VARIATION_UNITS;
                 projectionEntity.VARIATION_ITEM.VARIATION_UNITS = 0;
-                MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+
                 MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity,
                     BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().VARIATION_ITEM)
                     + "."
@@ -488,10 +538,11 @@ namespace BluePrints.ViewModels
                     + "."
                     + BindableBase.GetPropertyName(() => new VARIATION_ITEM().ACTION), oldAction, VariationAction.Cancel,
                     EntityMessageType.Changed);
-                MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
             }
 
             MainViewModel.Save(projectionEntity);
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+            RefreshSelectedEntity();
         }
 
         /// <summary>
@@ -542,7 +593,7 @@ namespace BluePrints.ViewModels
                     activeItem.BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM =
                         BluePrintDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT, BASELINE_ITEMJoinRATES,
                             SelectedAREA, SelectedDISCIPLINE, SelectedDOCTYPE);
-                    MainViewModel.UpdateSelectedEntity();
+                    RefreshSelectedEntity();
                 }
             }
             else if (e.Column.FieldName ==
@@ -555,7 +606,7 @@ namespace BluePrints.ViewModels
                 if (chosenDOCTYPE != null && chosenDOCTYPE.GUID_DDEPARTMENT != null)
                 {
                     activeItem.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_DEPARTMENT = chosenDOCTYPE.DEPARTMENT.GUID;
-                    MainViewModel.UpdateSelectedEntity();
+                    RefreshSelectedEntity();
                 }
             }
         }
@@ -575,7 +626,7 @@ namespace BluePrints.ViewModels
 
             var BASELINE_ITEMS =
                 MainViewModel.Entities.Select(x => x.BASELINE_ITEMJoinRATE.BASELINE_ITEM);
-            foreach (var selectedEntity in MainViewModel.SelectedEntities)
+            foreach (var selectedEntity in DisplaySelectedEntities)
             {
                 var newProjection = new VARIATION_ITEMProjection();
                 DataUtils.ShallowCopy(newProjection.BASELINE_ITEMJoinRATE.BASELINE_ITEM,

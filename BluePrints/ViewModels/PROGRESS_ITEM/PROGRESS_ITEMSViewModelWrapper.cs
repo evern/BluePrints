@@ -250,6 +250,7 @@ namespace BluePrints.ViewModels
             MainViewModel.BeforeShownEditor = BeforeShownEditor;
             MainViewModel.SetParentViewModel(this);
             mainThreadDispatcher.BeginInvoke(new Action(() => InitializePROJECTSummary(entities)));
+            base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         private void InitializePROJECTSummary(IEnumerable<PROGRESS_ITEMProjection> entities)
@@ -342,7 +343,7 @@ namespace BluePrints.ViewModels
                 else if (loadPROJECT != null || loadBASELINE != null)
                     mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
 
-            Refresh();
+            base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
         }
 
         #region Collection Call Backs

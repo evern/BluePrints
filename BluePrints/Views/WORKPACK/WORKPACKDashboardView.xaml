@@ -262,10 +262,10 @@
                                                             VisibleIndex="90" />
                                         </dxg:GridControl.Columns>
                                         <dxg:GridControl.View>
-                                            <!--<dxg:TableView Name="detailTableView" AllowEditing="False"
+                                            <!--<common:TableViewEx Name="detailTableView" AllowEditing="False"
                                                            Style="{StaticResource ChildTableReadOnlyViewTemplate}"
                                                            NewItemRowPosition="None" />-->
-                                            <dxg:TableView Name="detailTableView" AllowEditing="False" 
+                                            <common:TableViewEx x:Name="detailTableView" AllowEditing="False" 
                                                            NewItemRowPosition="None" />
                                         </dxg:GridControl.View>
                                     </dxg:GridControl>
@@ -389,11 +389,11 @@
                                 <common:TableViewEx x:Name="tableView" AllowEditing="False"
                                                Style="{StaticResource DefaultTableViewTemplate}"
                                                NewItemRowPosition="None">
-                                    <dxg:TableView.RowCellMenuCustomizations>
+                                    <common:TableViewEx.RowCellMenuCustomizations>
                                         <dxb:BarButtonItem Content="Refresh"
                                                            Command="{Binding View.DataContext.RefreshCommand}"
                                                            Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                    </dxg:TableView.RowCellMenuCustomizations>
+                                    </common:TableViewEx.RowCellMenuCustomizations>
                                 </common:TableViewEx>
                             </dxg:GridControl.View>
                         </dxg:GridControl>

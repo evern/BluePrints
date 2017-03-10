@@ -762,7 +762,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         BudgetedCosts = 0,
                         Units = (decimal)jobTransaction.QUANTITY,
                         Costs = (decimal)jobTransaction.LINETOTAL * this.CurrencyConversion,
-                        Actuals = (decimal)jobTransaction.LINECOST,
+                        Actuals = jobTransaction.LINECOST == null ? 0 : (decimal)jobTransaction.LINECOST,
                         ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE),
                         BaselineItemGuid = Guid.Empty,
                         WorkpackName = jobTransaction.JOBCODE,

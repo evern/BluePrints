@@ -1,6 +1,7 @@
-﻿<UserControl
+﻿<view:ViewStateRestoreUserControl
     x:Name="userControl"
     x:Class="BluePrints.Views.RATECollectionView"
+    xmlns:view="clr-namespace:BluePrints.Views"
     xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -52,7 +53,7 @@
                                 <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"
                                                    LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                <dxb:BarButtonItem Content="Refresh" Command="{Binding RefreshCommand}"
+                                <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}"
@@ -84,7 +85,7 @@
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl Name="gridControl" ColumnsSource="{StaticResource RATEColumns}"
-                                     Style="{StaticResource WrapperGridTemplate}">
+                                     Style="{StaticResource AggregateViewGridTemplate}">
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.TotalSummary>
@@ -93,7 +94,7 @@
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
                             <common:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
-                                <dxg:TableView.RowCellMenuCustomizations>
+                                <common:TableViewEx.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Bulk Edit"
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
@@ -111,9 +112,9 @@
                                                        CommandParameter="{Binding View.DataContext.SelectedEntities}"
                                                        Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                     <dxb:BarButtonItem Content="Refresh"
-                                                       Command="{Binding View.DataContext.RefreshCommand}"
+                                                       Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                </dxg:TableView.RowCellMenuCustomizations>
+                                </common:TableViewEx.RowCellMenuCustomizations>
                             </common:TableViewEx>
                         </dxg:GridControl.View>
                     </dxg:GridControl>
@@ -121,4 +122,4 @@
             </DockPanel>
         </Grid>
     </Grid>
-</UserControl>
+</view:ViewStateRestoreUserControl>

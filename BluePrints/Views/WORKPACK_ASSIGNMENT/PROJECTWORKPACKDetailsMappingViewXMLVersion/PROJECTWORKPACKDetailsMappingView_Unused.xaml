@@ -346,11 +346,11 @@
                                                            Command="{Binding DataContext.PreviewMouseMoveCommand, ElementName=userControl}"
                                                            Event="PreviewMouseMove" />
                                 </dxmvvm:Interaction.Behaviors>
-                                <dxg:TableView.RowCellMenuCustomizations>
+                                <common:TableViewEx.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Refresh"
                                                        Command="{Binding View.DataContext.RefreshCommand}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                </dxg:TableView.RowCellMenuCustomizations>
+                                </common:TableViewEx.RowCellMenuCustomizations>
                             </common:TableViewEx>
                         </dxg:GridControl.View>
                     </dxg:GridControl>

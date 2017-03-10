@@ -5,11 +5,12 @@ using System.Collections.Generic;
 
 namespace BluePrints.Views
 {
-    public partial class DISCIPLINECollectionView : UserControl
+    public partial class DISCIPLINECollectionView : ViewStateRestoreUserControl
     {
         public DISCIPLINECollectionView()
         {
             InitializeComponent();
+            InitializeViewRestoration(gridControl, tableView);
         }
     }
 }

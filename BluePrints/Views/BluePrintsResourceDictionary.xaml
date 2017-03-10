@@ -103,7 +103,7 @@
         <Setter Property="ShowBorder" Value="False" />
         <Setter Property="AutoExpandAllGroups" Value="False" />
     </Style>
-    <Style x:Key="NestedWrapperTableViewTemplate" TargetType="{x:Type dxg:TableView}">
+    <Style x:Key="NestedWrapperTableViewTemplate" TargetType="{x:Type common:TableViewEx}">
         <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
             <Setter.Value>
                 <DataTemplate>
@@ -174,8 +174,8 @@
         <Setter Property="ItemsSource" Value="{Binding DataContext.DisplayEntities, ElementName=userControl}" />
         <Setter Property="ClipboardCopyMode" Value="ExcludeHeader" />
         <Setter Property="SelectionMode" Value="Row" />
-        <Setter Property="CurrentItem" Value="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}" />
-        <Setter Property="SelectedItems" Value="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}" />
+        <Setter Property="CurrentItem" Value="{Binding DataContext.DisplaySelectedEntity, Mode=TwoWay, ElementName=userControl}" />
+        <Setter Property="SelectedItems" Value="{Binding DataContext.DisplaySelectedEntities, Mode=TwoWay, ElementName=userControl}" />
         <Setter Property="ShowBorder" Value="False" />
         <Setter Property="AutoExpandAllGroups" Value="False" />
         <Setter Property="dxsc:SpellingSettings.CheckAsYouType" Value="True" />
@@ -200,8 +200,8 @@
         <Setter Property="ItemsSource" Value="{Binding DisplayEntities}" />
         <Setter Property="ClipboardCopyMode" Value="ExcludeHeader" />
         <Setter Property="SelectionMode" Value="Row" />
-        <Setter Property="CurrentItem" Value="{Binding SelectedEntity, Mode=TwoWay}" />
-        <Setter Property="SelectedItems" Value="{Binding SelectedEntities, Mode=TwoWay}" />
+        <Setter Property="CurrentItem" Value="{Binding DisplaySelectedEntity, Mode=TwoWay}" />
+        <Setter Property="SelectedItems" Value="{Binding DisplaySelectedEntities, Mode=TwoWay}" />
         <Setter Property="ShowBorder" Value="False" />
         <Setter Property="AutoExpandAllGroups" Value="False" />
     </Style>
@@ -214,7 +214,7 @@
         <Setter Property="ShowBorder" Value="False" />
         <Setter Property="ShowLoadingPanel" Value="{Binding DataContext.IsLoading, ElementName=userControl}" />
     </Style>
-    <Style x:Key="DefaultTableViewTemplate" TargetType="{x:Type dxg:TableView}">
+    <Style x:Key="DefaultTableViewTemplate" TargetType="{x:Type common:TableViewEx}">
         <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
             <Setter.Value>
                 <DataTemplate>
@@ -233,7 +233,7 @@
                                                EventName="PastingFromClipboard" />
                         <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding ShownEditorCommand}"
                                                EventName="ShownEditor" />
-                        <!--<dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}"  />-->
+                        <dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}"  />
                         <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}" />
                         <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}" />
                     </ItemsControl>
@@ -251,7 +251,7 @@
         <Setter Property="ShowCriteriaInAutoFilterRow" Value="True" />
         <Setter Property="UseLightweightTemplates" Value="GroupRow" />
     </Style>
-    <Style x:Key="ChildTableReadOnlyViewTemplate" TargetType="{x:Type dxg:TableView}">
+    <Style x:Key="ChildTableReadOnlyViewTemplate" TargetType="{x:Type common:TableViewEx}">
         <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
             <Setter.Value>
                 <DataTemplate>
@@ -285,7 +285,7 @@
         <Setter Property="SearchDelay" Value="0" />
         <Setter Property="AllowScrollAnimation" Value="True" />
     </Style>
-    <Style x:Key="ChildTableViewTemplate" TargetType="{x:Type dxg:TableView}">
+    <Style x:Key="ChildTableViewTemplate" TargetType="{x:Type common:TableViewEx}">
         <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
             <Setter.Value>
                 <DataTemplate>
@@ -317,7 +317,7 @@
         <Setter Property="SearchDelay" Value="0" />
         <Setter Property="AllowScrollAnimation" Value="True" />
     </Style>
-    <Style x:Key="DisplayEntitiesChildTableViewTemplate" TargetType="{x:Type dxg:TableView}">
+    <Style x:Key="DisplayEntitiesChildTableViewTemplate" TargetType="{x:Type common:TableViewEx}">
         <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
             <Setter.Value>
                 <DataTemplate>

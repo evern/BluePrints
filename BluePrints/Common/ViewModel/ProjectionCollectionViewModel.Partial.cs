@@ -56,7 +56,7 @@ namespace BluePrints.Common.ViewModel
         /// Additional initialization parameter apart from SetParentAssociationCallBack from CollectionViewModelBase when RowEventArgs is needed
         /// e.g. Retrieving master row from child to set parent association
         /// </summary>
-        public Func<RowEventArgs, TProjection, bool> IsContinueSetParentAssociationFromViewCallBack;
+        public Func<RowEventArgs, TProjection, bool> IsContinueNewRowFromViewCallBack;
 
         /// <summary>
         /// Additional validation from view
@@ -588,8 +588,8 @@ namespace BluePrints.Common.ViewModel
 
                 var projection = (TProjection)e.Row;
 
-                if (IsContinueSetParentAssociationFromViewCallBack != null)
-                    if (!IsContinueSetParentAssociationFromViewCallBack(e, projection))
+                if (IsContinueNewRowFromViewCallBack != null)
+                    if (!IsContinueNewRowFromViewCallBack(e, projection))
                         return;
 
                 EntitiesUndoRedoManager.AddUndo(projection, null, null, null, EntityMessageType.Added);

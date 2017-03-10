@@ -73,7 +73,7 @@ namespace BluePrints.ViewModels
         protected override void InitializeParameters(object parameter)
         {
             RestoreSelectedEntityGuid = Guid.Empty;
-            SelectedEntities = new ObservableCollection<COMMODITY_CODEMasterDetailProjection>();
+            DisplaySelectedEntities = new ObservableCollection<COMMODITY_CODEMasterDetailProjection>();
 
             refreshBackgroundWorker = new BackgroundWorker();
             refreshBackgroundWorker.DoWork += refreshBackgroundWorker_DoWork;
@@ -261,15 +261,15 @@ namespace BluePrints.ViewModels
             RestoreSelectedEntitiesGuids.Clear();
             RestoreExpandedGuids.Clear();
 
-            foreach (var selectedEntity in SelectedEntities)
+            foreach (var selectedEntity in DisplaySelectedEntities)
                 RestoreSelectedEntitiesGuids.Add(new Guid(selectedEntity.GUID.ToString()));
 
             foreach (var entity in DisplayEntities)
                 if (entity.ISEXPANDED)
                     RestoreExpandedGuids.Add(entity.GUID);
 
-            if (SelectedEntity != null)
-                RestoreSelectedEntityGuid = SelectedEntity.GUID;
+            if (DisplaySelectedEntity != null)
+                RestoreSelectedEntityGuid = DisplaySelectedEntity.GUID;
         }
 
         private void restoreViewState()
@@ -277,10 +277,10 @@ namespace BluePrints.ViewModels
             var restoreSelectedEntities =
                 DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.CHILD_COMMODITY_CODES))
                     .Where(x => RestoreSelectedEntitiesGuids.Any(y => y == x.GUID));
-            SelectedEntities.Clear();
+            DisplaySelectedEntities.Clear();
             if (restoreSelectedEntities.Count() > 0)
                 foreach (var restoreSelectedEntity in restoreSelectedEntities)
-                    SelectedEntities.Add(restoreSelectedEntity);
+                    DisplaySelectedEntities.Add(restoreSelectedEntity);
 
             foreach (var expandedGuid in RestoreExpandedGuids)
             {
@@ -296,7 +296,7 @@ namespace BluePrints.ViewModels
                     DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.CHILD_COMMODITY_CODES))
                         .FirstOrDefault(x => x.GUID == RestoreSelectedEntityGuid);
                 if (restoreSelectedEntity != null)
-                    SelectedEntity = restoreSelectedEntity;
+                    DisplaySelectedEntity = restoreSelectedEntity;
             }
         }
         #endregion
@@ -418,8 +418,8 @@ namespace BluePrints.ViewModels
         public virtual bool CanBulkDelete()
         {
             return MainViewModel != null && MainViewModel.Entities != null && MainViewModel.Entities.Count > 0 &&
-                   !IsLoading && SelectedEntities.Count > 0 &&
-                   !SelectedEntities.Any(x => x.COMMODITY_CODE.GUID_PROJECT == null);
+                   !IsLoading && DisplaySelectedEntities.Count > 0 &&
+                   !DisplaySelectedEntities.Any(x => x.COMMODITY_CODE.GUID_PROJECT == null);
         }
 
         public void BulkDelete()
@@ -427,7 +427,7 @@ namespace BluePrints.ViewModels
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
             var deletingEntities =
                 new List<COMMODITY_CODEMasterDetailProjection>();
-            foreach (var selectedEntity in SelectedEntities)
+            foreach (var selectedEntity in DisplaySelectedEntities)
                 if (selectedEntity.COMMODITY_CODE.GUID == Guid.Empty)
                     foreach (var childrenEntity in selectedEntity.CHILD_COMMODITY_CODES
                     )

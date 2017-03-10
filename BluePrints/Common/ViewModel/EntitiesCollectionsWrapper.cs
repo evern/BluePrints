@@ -148,7 +148,7 @@ namespace BluePrints.Common.ViewModel
 
         protected virtual void AssignCallBacksAndRaisePropertyChange(IEnumerable<TMainProjectionEntity> entities)
         {
-            MainViewModel.SelectedEntities = this.SelectedEntities;
+            MainViewModel.SelectedEntities = this.DisplaySelectedEntities;
             Refresh();
             //throw new NotImplementedException("Override this method to assign call backs and also notify the view.");
         }
@@ -186,8 +186,8 @@ namespace BluePrints.Common.ViewModel
 
         private Guid RestoreSelectedEntityGuid;
         private List<Guid> RestoreSelectedEntitiesGuids = new List<Guid>();
-        public TMainProjectionEntity SelectedEntity { get; set; }
-        public ObservableCollection<TMainProjectionEntity> SelectedEntities { get; set; }
+        public TMainProjectionEntity DisplaySelectedEntity { get; set; }
+        public ObservableCollection<TMainProjectionEntity> DisplaySelectedEntities { get; set; }
         private BackgroundWorker refreshBackgroundWorker;
 
         private void InitializePresentationProperties()
@@ -195,7 +195,12 @@ namespace BluePrints.Common.ViewModel
             refreshBackgroundWorker = new BackgroundWorker();
             refreshBackgroundWorker.DoWork += refreshBackgroundWorker_DoWork;
             refreshBackgroundWorker.WorkerSupportsCancellation = true;
-            SelectedEntities = new ObservableCollection<TMainProjectionEntity>();
+            DisplaySelectedEntities = new ObservableCollection<TMainProjectionEntity>();
+        }
+
+        public virtual void RefreshSelectedEntity()
+        {
+            this.RaisePropertyChanged(x => x.DisplaySelectedEntity);
         }
 
         public virtual void FullRefresh()
@@ -240,28 +245,28 @@ namespace BluePrints.Common.ViewModel
             RestoreSelectedEntityGuid = Guid.Empty;
             RestoreSelectedEntitiesGuids.Clear();
 
-            foreach (var selectedEntity in SelectedEntities)
+            foreach (var selectedEntity in DisplaySelectedEntities)
                 RestoreSelectedEntitiesGuids.Add(new Guid(selectedEntity.GUID.ToString()));
 
-            if (SelectedEntity != null)
-                RestoreSelectedEntityGuid = SelectedEntity.GUID;
+            if (DisplaySelectedEntity != null)
+                RestoreSelectedEntityGuid = DisplaySelectedEntity.GUID;
         }
 
         private void restoreViewState()
         {
             var restoreSelectedEntities =
                 DisplayEntities.Where(x => RestoreSelectedEntitiesGuids.Any(y => y == x.GUID));
-            SelectedEntities.Clear();
+            DisplaySelectedEntities.Clear();
             if (restoreSelectedEntities.Count() > 0)
                 foreach (var restoreSelectedEntity in restoreSelectedEntities)
-                    SelectedEntities.Add(restoreSelectedEntity);
+                    DisplaySelectedEntities.Add(restoreSelectedEntity);
 
             if (RestoreSelectedEntityGuid != Guid.Empty)
             {
                 var restoreSelectedEntity =
                     DisplayEntities.FirstOrDefault(x => x.GUID == RestoreSelectedEntityGuid);
                 if (restoreSelectedEntity != null)
-                    SelectedEntity = restoreSelectedEntity;
+                    DisplaySelectedEntity = restoreSelectedEntity;
             }
 
             RestoreActiveCell?.Invoke();
@@ -344,7 +349,7 @@ namespace BluePrints.Common.ViewModel
         public void SetMainNestedValueWithUndoAndRefresh(TMainProjectionEntity entity, string propertyName, object newValue)
         {
             MainViewModel.SetNestedValueWithUndo(entity, propertyName, newValue);
-            this.RaisePropertyChanged(x => x.SelectedEntity);
+            this.RaisePropertyChanged(x => x.DisplaySelectedEntity);
         }
         #endregion
 

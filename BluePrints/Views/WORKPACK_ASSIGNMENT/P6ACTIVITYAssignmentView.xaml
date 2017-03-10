@@ -6,6 +6,7 @@
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:common="clr-namespace:BluePrints.Common"
              Title="Activity's Workpack Assignment" Height="520" Width="700"
              WindowStartupLocation="CenterScreen">
     <dxlc:LayoutControl Orientation="Vertical">
@@ -66,7 +67,7 @@
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.View>
-                            <dxg:TableView x:Name="gridViewTASK_ASSIGNMENTS"
+                            <common:TableViewEx x:Name="gridViewTASK_ASSIGNMENTS"
                                            FocusedRow="{Binding SelectedWORKPACK_ASSIGNMENT, Mode=TwoWay}"
                                            NavigationStyle="Row" ShowGroupPanel="False" AutoWidth="False"
                                            AllowEditing="False" AllowSorting="False" />

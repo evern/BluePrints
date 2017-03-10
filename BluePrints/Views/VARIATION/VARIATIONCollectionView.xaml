@@ -1,6 +1,7 @@
-﻿<UserControl
+﻿<view:ViewStateRestoreUserControl
     x:Name="userControl"
     x:Class="BluePrints.Views.VARIATIONCollectionView"
+    xmlns:view="clr-namespace:BluePrints.Views"
     xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -29,16 +30,15 @@
         <dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />
         <dx:WindowedDocumentUIService YieldToParent="True" />
     </dxmvvm:Interaction.Behaviors>
-    <Grid>
+    <Grid DataContext="{Binding MainViewModel}" >
         <DockPanel>
-            <dxr:RibbonControl DataContext="{Binding MainViewModel}" RibbonStyle="Office2010" DockPanel.Dock="Top"
+            <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top"
                                AllowCustomization="False" MDIMergeStyle="Always">
                 <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                     <dxr:RibbonPage Caption="Home">
                         <dxr:RibbonPageGroup Caption="PROJECT Tasks">
                             <dxb:BarButtonItem Content="Edit"
                                                Command="{Binding DataContext.EditCommand, ElementName=userControl}"
-                                               CommandParameter="{Binding SelectedEntity}"
                                                LargeGlyph="{dx:DXImage Image=Edit_32x32.png}"
                                                Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                             <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"
@@ -54,7 +54,7 @@
                                                CommandParameter="{Binding SelectedEntity}"
                                                LargeGlyph="{dx:DXImage Image=Apply_32x32.png}"
                                                Glyph="{dx:DXImage Image=Apply_16x16.png}" />
-                            <dxb:BarButtonItem Content="Refresh" Command="{Binding RefreshCommand}"
+                            <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
                                                Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                             <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}"
@@ -85,10 +85,9 @@
                 <dxmvvm:Interaction.Behaviors>
                     <dxmvvm:LayoutSerializationService />
                 </dxmvvm:Interaction.Behaviors>
-                <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="PROJECTVARIATIONDetailsGrid"
-                                 DataContext="{Binding MainViewModel}"
-                                 ColumnsSource="{StaticResource VARIATIONColumns}"
-                                 Style="{StaticResource BasicGridTemplate}">
+                <dxg:GridControl Name="gridControl" ColumnsSource="{StaticResource VARIATIONColumns}"
+                                 dx:DXSerializer.SerializationID="PROJECTVARIATIONDetailsGrid"
+                                 Style="{StaticResource AggregateViewGridTemplate}">
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                     </dxg:GridControl.TotalSummary>
@@ -97,9 +96,8 @@
                     </dxg:GridControl.GroupSummary>
                     <dxg:GridControl.View>
                         <common:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
-                            <dxg:TableView.RowCellMenuCustomizations>
+                            <common:TableViewEx.RowCellMenuCustomizations>
                                 <dxb:BarButtonItem Content="Edit" Command="{Binding View.DataContext.EditCommand}"
-                                                   CommandParameter="{Binding Row.Row}"
                                                    Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                 <dxb:BarButtonItem Content="Fill Down"
                                                    Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}"
@@ -112,20 +110,19 @@
                                                    Glyph="{dx:DXImage Image=CheckBox_16x16.png}" />
                                 <dxb:BarButtonItem Content="Approve"
                                                    Glyph="{dx:DXImageOffice2013 Image=Apply_16x16.png}"
-                                                   Command="{Binding DataContext.MainViewModel.ApproveCommand, ElementName=userControl}"
-                                                   CommandParameter="{Binding SelectedEntity, ElementName=userControl}" />
+                                                   Command="{Binding DataContext.ApproveCommand, ElementName=userControl}" />
                                 <dxb:BarButtonItem Content="Delete"
                                                    Command="{Binding View.DataContext.BulkDeleteCommand}"
                                                    CommandParameter="{Binding View.DataContext.SelectedEntities}"
                                                    Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                 <dxb:BarButtonItem Content="Refresh"
-                                                   Command="{Binding View.DataContext.RefreshCommand}"
+                                                   Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                    Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                            </dxg:TableView.RowCellMenuCustomizations>
+                            </common:TableViewEx.RowCellMenuCustomizations>
                         </common:TableViewEx>
                     </dxg:GridControl.View>
                 </dxg:GridControl>
             </Grid>
         </DockPanel>
     </Grid>
-</UserControl>
+</view:ViewStateRestoreUserControl>

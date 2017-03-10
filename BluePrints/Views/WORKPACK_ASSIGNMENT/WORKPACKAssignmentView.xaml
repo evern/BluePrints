@@ -6,6 +6,7 @@
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:common="clr-namespace:BluePrints.Common"
              Height="550" Width="700" Title="Workpack's Activity Assignment" WindowStartupLocation="CenterScreen">
     <dxlc:LayoutControl Orientation="Vertical">
         <dxlc:LayoutGroup Name="LayoutGroupWorkpackSelection" View="GroupBox" Header="Current Workpack"
@@ -100,7 +101,7 @@
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.View>
-                            <dxg:TableView x:Name="GridViewWorkpackAssignment"
+                            <common:TableViewEx x:Name="GridViewWorkpackAssignment"
                                            FocusedRow="{Binding SelectedWORKPACK_ASSIGNMENT, Mode=TwoWay}"
                                            NavigationStyle="Row" ShowGroupPanel="False" AutoWidth="False"
                                            AllowEditing="False" AllowSorting="False" />

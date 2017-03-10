@@ -7,11 +7,12 @@ using BluePrints.Common;
 
 namespace BluePrints.Views
 {
-    public partial class VARIATION_ITEMCollectionView : UserControl
+    public partial class VARIATION_ITEMCollectionView : ViewStateRestoreUserControl
     {
         public VARIATION_ITEMCollectionView()
         {
             InitializeComponent();
+            InitializeViewRestoration(gridControl, tableView);
             ((VARIATION_ITEMSViewModelWrapper) DataContext).ShowWORKPACKInternalName1 =
                 ShowWorkpackInternalName1;
             ((VARIATION_ITEMSViewModelWrapper) DataContext).ShowWORKPACKInternalName2 =

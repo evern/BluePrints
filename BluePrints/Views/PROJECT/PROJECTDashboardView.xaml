@@ -374,7 +374,7 @@
                                 <common:TableViewEx x:Name="tableView" AllowEditing="False"
                                                Style="{StaticResource DefaultTableViewTemplate}"
                                                NewItemRowPosition="None" ShowGroupPanel="False">
-                                    <dxg:TableView.RowCellMenuCustomizations>
+                                    <common:TableViewEx.RowCellMenuCustomizations>
                                         <dxb:BarButtonItem Content="Workpacks"
                                                            Command="{Binding View.DataContext.EditCommand}"
                                                            CommandParameter="{Binding Row.Row}"
@@ -382,8 +382,8 @@
                                         <dxb:BarButtonItem Content="Refresh"
                                                            Command="{Binding View.DataContext.RefreshCommand}"
                                                            Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                    </dxg:TableView.RowCellMenuCustomizations>
-                                    <dxg:TableView.FormatConditions>
+                                    </common:TableViewEx.RowCellMenuCustomizations>
+                                    <common:TableViewEx.FormatConditions>
                                         <dxg:FormatCondition
                                             Expression="[Summary_CumulativeEarned.Units] / [Summary_CumulativePlanned.Units] &lt; 0.8"
                                             FieldName="Summary_CumulativeEarned.UnitsPercentage">
@@ -426,7 +426,7 @@
                                                                     MaxValue="1" MinValue="-1">
                                             <dx:DataBarFormat FillNegative="#FFFF9B98" Fill="#FF9ACCFF" />
                                         </dxg:DataBarFormatCondition>
-                                    </dxg:TableView.FormatConditions>
+                                    </common:TableViewEx.FormatConditions>
                                 </common:TableViewEx>
                             </dxg:GridControl.View>
                         </dxg:GridControl>

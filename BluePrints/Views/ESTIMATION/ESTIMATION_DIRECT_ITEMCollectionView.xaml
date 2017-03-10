@@ -646,7 +646,7 @@
                                         </dxg:GridControlBand>
                                     </dxg:GridControl.Bands>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView Name="tableView1"
+                                        <common:TableViewEx x:Name="tableView1"
                                                        Style="{StaticResource DisplayEntitiesChildTableViewTemplate}" />
                                     </dxg:GridControl.View>
                                 </dxg:GridControl>
@@ -689,7 +689,7 @@
                                         Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}"
                                         PassEventArgsToCommand="True" EventName="CellValueChanging" />
                                 </dxmvvm:Interaction.Behaviors>
-                                <dxg:TableView.RowCellMenuCustomizations>
+                                <common:TableViewEx.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Bulk Edit"
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
@@ -740,7 +740,7 @@
                                     <dxb:BarButtonItem Content="Refresh"
                                                        Command="{Binding View.DataContext.RefreshCommand}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                </dxg:TableView.RowCellMenuCustomizations>
+                                </common:TableViewEx.RowCellMenuCustomizations>
                             </common:TableViewEx>
                         </dxg:GridControl.View>
                     </dxg:GridControl>

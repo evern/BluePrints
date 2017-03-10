@@ -171,7 +171,7 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
             MainViewModel.IsContinueSaveCallBack = BeforeSaveValidation;
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
+            base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
@@ -183,6 +183,8 @@ namespace BluePrints.ViewModels
 
             if (loadPROJECT != null)
                 mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
+
+            base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
         }
 
         #region CallBacks
@@ -246,20 +248,20 @@ namespace BluePrints.ViewModels
             get { return this.GetService<IDocumentManagerService>(); }
         }
 
-        public bool CanEdit(VARIATION entity)
+        public bool CanEdit()
         {
-            if (MainViewModel == null || MainViewModel.SelectedEntity == null)
+            if (DisplaySelectedEntity == null)
                 return false;
 
             return true;
         }
 
-        public void Edit(VARIATION entity)
+        public void Edit()
         {
-            if (entity == null)
+            if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentManagerService.ShowExistingEntityDocument<VARIATION_ITEM, Guid>(this, entity.GUID, string.Empty);
+            DocumentManagerService.ShowExistingEntityDocument<VARIATION_ITEM, Guid>(this, DisplaySelectedEntity.GUID, string.Empty);
         }
 
         /// <summary>
@@ -298,16 +300,16 @@ namespace BluePrints.ViewModels
         /// Since CollectionViewModelBase is a POCO view model, this method will be used as a CanExecute callback for ApproveCommand.
         /// </summary>
         /// <param name="projectionEntity">Entities to approve.</param>
-        public bool CanApprove(VARIATION entity)
+        public bool CanApprove()
         {
-            if (MainViewModel == null || MainViewModel.SelectedEntity == null)
+            if (MainViewModel == null || DisplaySelectedEntity == null)
                 return false;
 
             if (loadBASELINE == null || loadPROGRESS == null)
                 return false;
-            else if (entity.SUBMITTED == null)
+            else if (DisplaySelectedEntity.SUBMITTED == null)
                 return false;
-            else if (entity != null && entity.APPROVED != null)
+            else if (DisplaySelectedEntity != null && DisplaySelectedEntity.APPROVED != null)
                 return false;
 
             return true;
@@ -318,10 +320,10 @@ namespace BluePrints.ViewModels
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the ApproveCommand property that can be used as a binding source in views.
         /// </summary>
         /// <param name="projectionEntity">An entity to approve.</param>
-        public void Approve(VARIATION entity)
+        public void Approve()
         {
             var errorMessage = string.Empty;
-            if (entity == null)
+            if (DisplaySelectedEntity == null)
                 errorMessage = "Nothing within variation to approve";
             else if (loadPROJECT == null)
                 errorMessage = "Project doesn't exists";
@@ -339,9 +341,9 @@ namespace BluePrints.ViewModels
             var unitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             var LiveBASELINE = loadBASELINE;
             var editVARIATION_ITEMS =
-                unitOfWork.VARIATION_ITEMS.Where(x => x.GUID_VARIATION == entity.GUID).ToArray().AsEnumerable();
+                unitOfWork.VARIATION_ITEMS.Where(x => x.GUID_VARIATION == DisplaySelectedEntity.GUID).ToArray().AsEnumerable();
             var addBASELINE_ITEMS =
-                unitOfWork.BASELINE_ITEMS.Where(x => x.GUID_VARIATION == entity.GUID && x.GUID_BASELINE == null)
+                unitOfWork.BASELINE_ITEMS.Where(x => x.GUID_VARIATION == DisplaySelectedEntity.GUID && x.GUID_BASELINE == null)
                     .ToArray()
                     .AsEnumerable();
             var editBASELINE_ITEMS = loaderCollection.GetCollection<BASELINE_ITEM>();
@@ -363,10 +365,10 @@ namespace BluePrints.ViewModels
                     loaderCollection.GetViewModel<BASELINE_ITEM>();
             BASELINECollectionViewModel.Save(newBASELINE);
 
-            entity.APPROVED = DateTime.Now;
-            entity.GUID_ORIBASELINE = LiveBASELINE.GUID;
-            entity.GUID_BASELINE = newBASELINE.GUID;
-            MainViewModel.Save(entity);
+            DisplaySelectedEntity.APPROVED = DateTime.Now;
+            DisplaySelectedEntity.GUID_ORIBASELINE = LiveBASELINE.GUID;
+            DisplaySelectedEntity.GUID_BASELINE = newBASELINE.GUID;
+            MainViewModel.Save(DisplaySelectedEntity);
 
             var newBASELINE_ITEMS = new ObservableCollection<BASELINE_ITEM>();
 
@@ -386,14 +388,14 @@ namespace BluePrints.ViewModels
                                 .Sum(y => y.EARNED_UNITS);
                         if (progressItemEARNED_UNITS == 0)
                         {
-                            if (entity.TYPE == VariationType.Internal)
+                            if (DisplaySelectedEntity.TYPE == VariationType.Internal)
                                 copyBASELINE_ITEM.ESTIMATED_HOURS = 0;
                             else
                                 copyBASELINE_ITEM.DC_HOURS = -1 * copyBASELINE_ITEM.ESTIMATED_HOURS;
                         }
                         else
                         {
-                            if (entity.TYPE == VariationType.Internal)
+                            if (DisplaySelectedEntity.TYPE == VariationType.Internal)
                                 copyBASELINE_ITEM.ESTIMATED_HOURS = progressItemEARNED_UNITS;
                             else
                                 copyBASELINE_ITEM.DC_HOURS = -1 *
@@ -406,7 +408,7 @@ namespace BluePrints.ViewModels
                     }
 
                     if (editVARIATION_ITEM.ACTION != VariationAction.NoAction)
-                        copyBASELINE_ITEM.GUID_VARIATION = entity.GUID;
+                        copyBASELINE_ITEM.GUID_VARIATION = DisplaySelectedEntity.GUID;
                 }
 
                 copyBASELINE_ITEM.GUID = Guid.Empty;
@@ -426,12 +428,12 @@ namespace BluePrints.ViewModels
                 var editVARIATION_ITEM =
                     editVARIATION_ITEMS.First(x => x.GUID_ORIBASEITEM == newBASELINE_ITEM.GUID_ORIGINAL);
 
-                if (entity.TYPE == VariationType.Internal)
+                if (DisplaySelectedEntity.TYPE == VariationType.Internal)
                     newBASELINE_ITEM.ESTIMATED_HOURS += editVARIATION_ITEM.VARIATION_UNITS;
                 else
                     newBASELINE_ITEM.DC_HOURS = editVARIATION_ITEM.VARIATION_UNITS;
 
-                newBASELINE_ITEM.GUID_VARIATION = entity.GUID;
+                newBASELINE_ITEM.GUID_VARIATION = DisplaySelectedEntity.GUID;
                 newBASELINE_ITEMS.Add(newBASELINE_ITEM);
             }
 
@@ -460,7 +462,7 @@ namespace BluePrints.ViewModels
 
         public object GetCustomDocumentParameter()
         {
-            return new OptionalEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, MainViewModel.SelectedEntity);
+            return new OptionalEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, DisplaySelectedEntity);
         }
 
         public string GetCustomDocumentTitle()

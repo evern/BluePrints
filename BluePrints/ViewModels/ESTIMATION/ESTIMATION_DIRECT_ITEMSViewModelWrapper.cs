@@ -84,7 +84,7 @@ namespace BluePrints.ViewModels
         protected override void InitializeParameters(object parameter)
         {
             RestoreSelectedEntityGuid = Guid.Empty;
-            SelectedEntities = new ObservableCollection<ESTIMATION_DIRECT_ITEMProjection>();
+            DisplaySelectedEntities = new ObservableCollection<ESTIMATION_DIRECT_ITEMProjection>();
             userStateRestoreBackgroundWorker = new BackgroundWorker();
             userStateRestoreBackgroundWorker.DoWork += userStateRestoreBackgroundWorker_DoWork;
             userStateRestoreBackgroundWorker.WorkerSupportsCancellation = true;
@@ -371,15 +371,15 @@ namespace BluePrints.ViewModels
             RestoreSelectedEntitiesGuids.Clear();
             RestoreExpandedGuids.Clear();
 
-            foreach (var selectedEntity in SelectedEntities)
+            foreach (var selectedEntity in DisplaySelectedEntities)
                 RestoreSelectedEntitiesGuids.Add(new Guid(selectedEntity.GUID.ToString()));
 
             foreach (var entity in DisplayEntities)
                 if (entity.ISEXPANDED)
                     RestoreExpandedGuids.Add(entity.GUID);
 
-            if (SelectedEntity != null)
-                RestoreSelectedEntityGuid = SelectedEntity.GUID;
+            if (DisplaySelectedEntity != null)
+                RestoreSelectedEntityGuid = DisplaySelectedEntity.GUID;
         }
 
         private void restoreViewState()
@@ -387,10 +387,10 @@ namespace BluePrints.ViewModels
             var restoreSelectedEntities =
                 DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.CHILD_ESTIMATION_DIRECT_ITEM))
                     .Where(x => RestoreSelectedEntitiesGuids.Any(y => y == x.GUID));
-            SelectedEntities.Clear();
+            DisplaySelectedEntities.Clear();
             if (restoreSelectedEntities.Count() > 0)
                 foreach (var restoreSelectedEntity in restoreSelectedEntities)
-                    SelectedEntities.Add(restoreSelectedEntity);
+                    DisplaySelectedEntities.Add(restoreSelectedEntity);
 
             foreach (var expandedGuid in RestoreExpandedGuids)
             {
@@ -406,7 +406,7 @@ namespace BluePrints.ViewModels
                     DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.CHILD_ESTIMATION_DIRECT_ITEM))
                         .FirstOrDefault(x => x.GUID == RestoreSelectedEntityGuid);
                 if (restoreSelectedEntity != null)
-                    SelectedEntity = restoreSelectedEntity;
+                    DisplaySelectedEntity = restoreSelectedEntity;
             }
         }
 
@@ -1119,13 +1119,13 @@ namespace BluePrints.ViewModels
         public virtual bool CanBulkDelete()
         {
             return MainViewModel != null && MainViewModel.Entities != null && MainViewModel.Entities.Count > 0 &&
-                   !IsLoading && SelectedEntities.Count > 0;
+                   !IsLoading && DisplaySelectedEntities.Count > 0;
         }
 
         public void BulkDelete()
         {
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-            MainViewModel.BaseBulkDelete(SelectedEntities);
+            MainViewModel.BaseBulkDelete(DisplaySelectedEntities);
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }
 

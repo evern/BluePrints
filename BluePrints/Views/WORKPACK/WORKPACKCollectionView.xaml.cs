@@ -18,11 +18,12 @@ namespace BluePrints.Views
     /// <summary>
     /// Interaction logic for WORKPACKCollectionView.xaml
     /// </summary>
-    public partial class WORKPACKCollectionView : UserControl
+    public partial class WORKPACKCollectionView : ViewStateRestoreUserControl
     {
         public WORKPACKCollectionView()
         {
             InitializeComponent();
+            InitializeViewRestoration(gridControl, tableView);
         }
     }
 }
