@@ -10,7 +10,7 @@ namespace BluePrints.Views
         public USERCollectionView()
         {
             InitializeComponent();
-            InitializeViewRestoration(gridControl, tableView);
+            InitializeViewControl(gridControl, tableView);
         }
     }
 }

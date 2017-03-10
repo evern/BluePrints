@@ -23,7 +23,7 @@ namespace BluePrints.Views
         public RATECollectionView()
         {
             InitializeComponent();
-            InitializeViewRestoration(gridControl, tableView);
+            InitializeViewControl(gridControl, tableView);
         }
     }
 }

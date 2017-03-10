@@ -17,7 +17,7 @@ namespace BluePrints.Views
         GridControl gridControl;
         TableView tableView;
 
-        public void InitializeViewRestoration(GridControl gridControl, TableView tableView)
+        public void InitializeViewControl(GridControl gridControl, TableView tableView)
         {
             this.gridControl = gridControl;
             this.tableView = tableView;
@@ -27,6 +27,11 @@ namespace BluePrints.Views
             {
                 viewRestoration.StoreActiveCell = this.StoreFocusedCell;
                 viewRestoration.RestoreActiveCell = this.RestoreFocusedCell;
+            }
+
+            foreach(GridColumn gridColumn in gridControl.Columns)
+            {
+                gridColumn.FilterPopupMode = FilterPopupMode.CheckedList;
             }
         }
 

@@ -79,6 +79,7 @@
         <Setter Property="CurrentItem" Value="{Binding SelectedEntity}" />
         <Setter Property="SelectedItems" Value="{Binding SelectedEntities, Mode=TwoWay}" />
         <Setter Property="ShowBorder" Value="False" />
+        <Setter Property="ShowAllTableValuesInCheckedFilterPopup" Value="False" />
         <!--<Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
             <Setter.Value>
                 <DataTemplate>
@@ -102,6 +103,7 @@
         <Setter Property="SelectedItems" Value="{Binding MainViewModel.SelectedEntities, Mode=TwoWay}" />
         <Setter Property="ShowBorder" Value="False" />
         <Setter Property="AutoExpandAllGroups" Value="False" />
+        <Setter Property="ShowAllTableValuesInCheckedFilterPopup" Value="False" />
     </Style>
     <Style x:Key="NestedWrapperTableViewTemplate" TargetType="{x:Type common:TableViewEx}">
         <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
@@ -152,6 +154,7 @@
         <Setter Property="SelectedItems" Value="{Binding SelectedEntities, Mode=TwoWay}" />
         <Setter Property="ShowBorder" Value="False" />
         <Setter Property="AutoExpandAllGroups" Value="False" />
+        <Setter Property="ShowAllTableValuesInCheckedFilterPopup" Value="False" />
         <Setter Property="dxsc:SpellingSettings.CheckAsYouType" Value="True" />
         <Setter Property="dxsc:SpellingSettings.ShowSpellCheckMenu" Value="True" />
         <Setter Property="dxsc:SpellingSettings.SpellChecker"
@@ -178,6 +181,7 @@
         <Setter Property="SelectedItems" Value="{Binding DataContext.DisplaySelectedEntities, Mode=TwoWay, ElementName=userControl}" />
         <Setter Property="ShowBorder" Value="False" />
         <Setter Property="AutoExpandAllGroups" Value="False" />
+        <Setter Property="ShowAllTableValuesInCheckedFilterPopup" Value="False" />
         <Setter Property="dxsc:SpellingSettings.CheckAsYouType" Value="True" />
         <Setter Property="dxsc:SpellingSettings.ShowSpellCheckMenu" Value="True" />
         <Setter Property="dxsc:SpellingSettings.SpellChecker"

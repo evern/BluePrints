@@ -17,7 +17,7 @@ namespace BluePrints.Views
         public BASELINE_ITEMCollectionView()
         {
             InitializeComponent();
-            InitializeViewRestoration(gridControl, tableView);
+            InitializeViewControl(gridControl, tableView);
             ((BASELINE_ITEMSViewModelWrapper)DataContext).ShowWORKPACKInternalName1 =
                 ShowWorkpackInternalName1;
             ((BASELINE_ITEMSViewModelWrapper)DataContext).ShowWORKPACKInternalName2 =

@@ -20,7 +20,7 @@ namespace BluePrints.Views
         public PROGRESS_ITEMCollectionView()
         {
             InitializeComponent();
-            InitializeViewRestoration(gridControl, tableView);
+            InitializeViewControl(gridControl, tableView);
         }
     }
 }

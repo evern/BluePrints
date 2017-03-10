@@ -10,7 +10,7 @@ namespace BluePrints.Views
         public DELIVERABLES_STATUSCollectionView()
         {
             InitializeComponent();
-            InitializeViewRestoration(gridControl, tableView);
+            InitializeViewControl(gridControl, tableView);
         }
     }
 }

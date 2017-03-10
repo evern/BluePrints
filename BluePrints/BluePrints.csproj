@@ -388,7 +388,7 @@
     <Compile Include="Common\ViewModel\Reporting\SummaryManufacturer.cs" />
     <Compile Include="Common\Attributes\ProjectionPropertyAttribute.cs" />
     <Compile Include="Common\ViewModel\Settings\XMLSettings.cs" />
-    <Compile Include="Common\View\ViewRestoreUserControl.cs" />
+    <Compile Include="Common\ViewRestoreUserControl.cs" />
     <Compile Include="EntityFramework\Annotations\BluePrintsEntities.cs" />
     <Compile Include="EntityFramework\Annotations\COMMODITY_GROUP_DIRECT.cs" />
     <Compile Include="EntityFramework\Annotations\DELIVERABLES_STATUS.cs" />

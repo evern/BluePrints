@@ -12,7 +12,7 @@ namespace BluePrints.Views
         public VARIATION_ITEMCollectionView()
         {
             InitializeComponent();
-            InitializeViewRestoration(gridControl, tableView);
+            InitializeViewControl(gridControl, tableView);
             ((VARIATION_ITEMSViewModelWrapper) DataContext).ShowWORKPACKInternalName1 =
                 ShowWorkpackInternalName1;
             ((VARIATION_ITEMSViewModelWrapper) DataContext).ShowWORKPACKInternalName2 =

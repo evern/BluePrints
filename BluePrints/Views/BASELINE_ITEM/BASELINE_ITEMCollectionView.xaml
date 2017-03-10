@@ -91,7 +91,7 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="BASELINE_ITEMSGrid"
+                    <dxg:GridControl x:Name="gridControl" dx:DXSerializer.SerializationID="BASELINE_ITEMSGrid" 
                                      Style="{StaticResource AggregateViewGridTemplate}" PreviewKeyDown="gridControl_PreviewKeyDown">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="BASELINE_ITEM.GUID_WORKPACK"
@@ -231,7 +231,7 @@
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
                             <common:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
-                                           ShowGridMenu="tableView_ShowGridMenu" ShowTotalSummary="True"
+                                           ShowGridMenu="tableView_ShowGridMenu" ShowTotalSummary="True" 
                                            ShowFixedTotalSummary="True" GroupSummaryDisplayMode="AlignByColumns">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand
