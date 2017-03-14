@@ -35,7 +35,7 @@ namespace BluePrints.ViewModels
     /// Represents the single BASELINE object view model.
     /// </summary>
     public partial class BASELINE_ITEMSViewModelWrapper :
-        CollectionViewModelsWrapper
+        CollectionViewModelsWrapper1
         <BASELINE_ITEM, BASELINE_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<BASELINE_ITEM, BASELINE_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
@@ -95,26 +95,24 @@ namespace BluePrints.ViewModels
                 _bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, typeof(PROJECT),
                 isContinueLoadingAfterBASELINE, null, OnAfterEntitiesChanged, null, true);
             loaderCollection.AddEntitiesLoader<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>(2,
-                _bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc, typeof(PROJECT), null, null,
-                OnSimpleEntitiesChanged);
+                _bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc, typeof(PROJECT));
             loaderCollection.AddEntitiesLoader<PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork>(3,
-                _bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc, typeof(PROJECT), null, null, OnSimpleEntitiesChanged);
+                _bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc, typeof(PROJECT));
             loaderCollection.AddEntitiesLoader<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>(4,
-                _bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc, typeof(PROJECT), null, null, OnSimpleEntitiesChanged);
+                _bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc, typeof(PROJECT));
             loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(5,
-                _bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, null, null, null, null, OnSimpleEntitiesChanged);
+                _bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(6,
-                _bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES, null, null, null, null, OnSimpleEntitiesChanged);
+                _bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddEntitiesLoader<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(7,
-                _bluePrintsUnitOfWorkFactory, x => x.DOCTYPES, null, null, null, null, OnSimpleEntitiesChanged);
+                _bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddEntitiesLoader<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(8,
-                _bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, typeof(PROJECT), null,
-                 null, OnAfterEntitiesChanged);
+                _bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, typeof(PROJECT));
             loaderCollection
                 .AddEntitiesLoader<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(9,
-                    _bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, null, null, null, null, OnSimpleEntitiesChanged);
+                    _bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
             loaderCollection.AddEntitiesLoader<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(10,
-                _bluePrintsUnitOfWorkFactory, x => x.USERS, null, null, null, null, OnSimpleEntitiesChanged);
+                _bluePrintsUnitOfWorkFactory, x => x.USERS);
             loaderCollection.AddEntitiesLoader<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>(11,
                 _bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc,
                 typeof(PROJECT));
@@ -229,19 +227,6 @@ namespace BluePrints.ViewModels
 
             base.AssignCallBacksAndRaisePropertyChange(entities);
             //mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
-        }
-
-        private void OnSimpleEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-            object sender)
-        {
-            RefreshView();
-            //mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
-        }
-
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-            object sender)
-        {
-            base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
         }
 
         #region Collection Call Backs

@@ -29,7 +29,7 @@ namespace BluePrints.ViewModels
     /// Represents the single VARIATION object view model.
     /// </summary>
     public partial class VARIATION_ITEMSViewModelWrapper :
-        CollectionViewModelsWrapper
+        CollectionViewModelsWrapper1
         <BASELINE_ITEM, VARIATION_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<BASELINE_ITEM, VARIATION_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
@@ -70,22 +70,21 @@ namespace BluePrints.ViewModels
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddEntitiesLoader<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0,
                 bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT, null,
-                OnAfterEntitiesChanged);
+                OnAfterEntitiesChanged, null, true);
             loaderCollection.AddEntitiesLoader<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>(1,
                 bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, typeof(PROJECT),
-                isContinueLoadingAfterBASELINE, null, OnAfterEntitiesChanged);
+                isContinueLoadingAfterBASELINE, null, OnAfterEntitiesChanged, null, true);
             loaderCollection.AddEntitiesLoader<VARIATION, VARIATION, Guid, IBluePrintsEntitiesUnitOfWork>(2,
                 bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc, typeof(PROJECT),
-                isContinueLoadingAfterVARIATION, null, OnAfterEntitiesChanged);
+                isContinueLoadingAfterVARIATION, null, OnAfterEntitiesChanged, null, true);
             loaderCollection.AddEntitiesLoader<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>(3,
                 bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, typeof(PROJECT),
-                isContinueLoadingAfterPROGRESS, null, OnAfterEntitiesChanged);
+                isContinueLoadingAfterPROGRESS, null, OnAfterEntitiesChanged, null, true);
             loaderCollection.AddEntitiesLoader<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>(4,
                 bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc, typeof(PROGRESS), null, null,
-                OnAfterEntitiesChanged);
+                OnAfterEntitiesChanged, null, true);
             loaderCollection.AddEntitiesLoader<VARIATION_ITEM, VARIATION_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>(5,
-                bluePrintsUnitOfWorkFactory, x => x.VARIATION_ITEMS, VARIATION_ITEMProjectionFunc, typeof(VARIATION),
-                null, null, OnAfterEntitiesChanged);
+                bluePrintsUnitOfWorkFactory, x => x.VARIATION_ITEMS, VARIATION_ITEMProjectionFunc, typeof(VARIATION));
             loaderCollection.AddEntitiesLoader<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>(6,
                 bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc, typeof(PROJECT));
             loaderCollection.AddEntitiesLoader<PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork>(7,
@@ -99,8 +98,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddEntitiesLoader<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(11,
                 bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddEntitiesLoader<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(12,
-                bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, typeof(PROJECT), null, null,
-                OnAfterEntitiesChanged);
+                bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, typeof(PROJECT));
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -266,42 +264,19 @@ namespace BluePrints.ViewModels
         protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
             object sender)
         {
-            if (sender == MainViewModel && messageType != EntityMessageType.Added || sender == this)
-                return;
-
             //Map the changes from PROGRESS_ITEM to BASELINE_ITEM so undo/redo operation is valid
-            //if (changedType == typeof(VARIATION_ITEM) && messageType != EntityMessageType.Added)
-            //{
-            //    var mappedEntity =
-            //        MainViewModel.Entities.FirstOrDefault(
-            //            x => x.VARIATION_ITEM != null && x.VARIATION_ITEM.GUID.ToString() == key.ToString());
-            //    mainThreadDispatcher.BeginInvoke(
-            //        new Action(
-            //            () =>
-            //                Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(mappedEntity.GUID,
-            //                    EntityMessageType.Changed, this))));
-            //    return;
-            //}
-
-            if (loadPROGRESS != null && changedType == typeof(PROGRESS) &&
-                loadPROGRESS.GUID.ToString() == key.ToString() ||
-                loadBASELINE != null && changedType == typeof(BASELINE) &&
-                loadBASELINE.GUID.ToString() == key.ToString() ||
-                loadVARIATION != null && changedType == typeof(VARIATION) &&
-                loadVARIATION.GUID.ToString() == key.ToString() ||
-                loadPROJECT != null && changedType == typeof(PROJECT) && loadPROJECT.GUID.ToString() == key.ToString())
-                if (messageType == EntityMessageType.Added)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Restored,
-                        StringFormatUtils.GetEntityNameByType(changedType)));
-                else if (messageType == EntityMessageType.Deleted)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed,
-                        StringFormatUtils.GetEntityNameByType(changedType)));
-
-            if (loadPROJECT != null || loadBASELINE != null || loadPROGRESS != null || loadVARIATION != null)
-                if (MainViewModel != null)
-                    mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.RefreshWithoutClearingUndoManager()));
-                else if (loadPROJECT != null || loadBASELINE != null)
-                    mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
+            if (changedType == typeof(VARIATION_ITEM) && messageType != EntityMessageType.Added)
+            {
+                var mappedEntity =
+                    MainViewModel.Entities.FirstOrDefault(
+                        x => x.VARIATION_ITEM != null && x.VARIATION_ITEM.GUID.ToString() == key.ToString());
+                mainThreadDispatcher.BeginInvoke(
+                    new Action(
+                        () =>
+                            Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(mappedEntity.GUID,
+                                EntityMessageType.Changed, this))));
+                return;
+            }
 
             base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
         }

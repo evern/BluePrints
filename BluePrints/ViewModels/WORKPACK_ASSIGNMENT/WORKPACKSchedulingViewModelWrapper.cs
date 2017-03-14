@@ -29,7 +29,7 @@ using BluePrints.P6EntitiesDataModel;
 namespace BluePrints.ViewModels
 {
     public class WORKPACKSchedulingViewModelWrapper :
-        CollectionViewModelsWrapper
+        CollectionViewModelsWrapper1
         <WORKPACK, WORKPACK_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<WORKPACK, WORKPACK_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
@@ -86,16 +86,16 @@ namespace BluePrints.ViewModels
             loaderCollection
                 .AddEntitiesLoader<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>(0,
                     bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, null,
-                    isContinueLoadingAfterBASELINE, null, OnAfterEntitiesChanged);
+                    isContinueLoadingAfterBASELINE, null, OnAfterEntitiesChanged, null, true);
             loaderCollection
                 .AddEntitiesLoader
                 <Data.PROJECT, Data.PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(1,
                     bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, typeof(BASELINE),
-                    isContinueLoadingAfterPROJECT, null, OnAfterEntitiesChanged);
+                    isContinueLoadingAfterPROJECT, null, OnAfterEntitiesChanged, null, true);
             loaderCollection
                 .AddEntitiesLoader<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>(2,
                     bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, typeof(BASELINE),
-                    isContinueLoadingAfterPROGRESS, null, OnAfterEntitiesChanged);
+                    isContinueLoadingAfterPROGRESS, null, OnAfterEntitiesChanged, null, true);
             loaderCollection
                 .AddEntitiesLoader<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>(3,
                     bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc, typeof(BASELINE));
@@ -105,25 +105,19 @@ namespace BluePrints.ViewModels
                     typeof(WORKPACK));
             loaderCollection
                 .AddEntitiesLoader<BASELINE_ITEM, BASELINE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>(5,
-                    bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc, typeof(BASELINE),
-                    null, null,
-                    OnAfterEntitiesChanged);
+                    bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc, typeof(BASELINE));
             loaderCollection
                 .AddEntitiesLoader<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(6,
-                    bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, typeof(PROGRESS), null, null,
-                    OnAfterEntitiesChanged);
+                    bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, typeof(PROGRESS));
             loaderCollection
                 .AddEntitiesLoader<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>(7,
-                    bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc, typeof(PROGRESS),
-                    null, null,
-                    OnAfterEntitiesChanged);
+                    bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc, typeof(PROGRESS));
             loaderCollection
                 .AddEntitiesLoader<P6Data.PROJECT, P6Data.PROJECT, int, IP6EntitiesUnitOfWork>(8,
-                    p6UnitOfWorkFactory, x => x.PROJECT, P6PROJECTProjectionFunc, null, isContinueLoadingAfterP6PROJECT, null,
-                    OnAfterEntitiesChanged);
+                    p6UnitOfWorkFactory, x => x.PROJECT, P6PROJECTProjectionFunc, null, isContinueLoadingAfterP6PROJECT);
             loaderCollection
                 .AddEntitiesLoader<P6Data.TASK, P6Data.TASK, int, IP6EntitiesUnitOfWork>(9, p6UnitOfWorkFactory,
-                    x => x.TASK, P6TASKProjectionFunc, typeof(P6Data.PROJECT), null, null, OnAfterEntitiesChanged);
+                    x => x.TASK, P6TASKProjectionFunc, typeof(P6Data.PROJECT));
             loaderCollection
                 .AddEntitiesLoader<PROJWBS, PROJWBS, int, IP6EntitiesUnitOfWork>(10, p6UnitOfWorkFactory,
                     x => x.PROJWBS, PROJWBSProjectionFunc, typeof(P6Data.PROJECT));
@@ -317,13 +311,6 @@ namespace BluePrints.ViewModels
                                 WORKPACK_ASSIGNMENTCollectionViewModel,
                                 mappingType == BaselineMappingSelectionType.Modified)));
         }
-
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-            object sender)
-        {
-            return;
-        }
-
         #endregion
 
         #region View Properties

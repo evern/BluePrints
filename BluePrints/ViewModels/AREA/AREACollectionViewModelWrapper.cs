@@ -19,7 +19,7 @@ using BluePrints.Common.Helpers;
 namespace BluePrints.ViewModels
 {
     public class AREACollectionViewModelWrapper :
-        CollectionViewModelsWrapper
+        CollectionViewModelsWrapper1
         <AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
@@ -63,7 +63,7 @@ namespace BluePrints.ViewModels
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddEntitiesLoader<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0,
                 bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT,
-                null, OnAfterEntitiesChanged);
+                null, OnAfterEntitiesChanged, null, true);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -108,24 +108,6 @@ namespace BluePrints.ViewModels
         protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
             object sender)
         {
-            if (sender.ToString() == MainViewModel.ToString())
-                return;
-
-            if (loadPROJECT != null && changedType == typeof(PROJECT) &&
-                loadPROJECT.GUID.ToString() == key.ToString())
-                if (messageType == EntityMessageType.Added)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Restored,
-                        StringFormatUtils.GetEntityNameByType(changedType)));
-                else if (messageType == EntityMessageType.Deleted)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed,
-                        StringFormatUtils.GetEntityNameByType(changedType)));
-
-            if (loadPROJECT != null)
-                if (MainViewModel != null)
-                    mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
-                else if (loadPROJECT != null)
-                    mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
-
             base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
         }
 

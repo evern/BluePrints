@@ -29,7 +29,7 @@ namespace BluePrints.ViewModels
     /// Represents the COMMODITIES collection view model.
     /// </summary>
     public partial class COMMODITY_GROUP_DIRECTCollectionViewModelWrapper :
-        CollectionViewModelsWrapper
+        CollectionViewModelsWrapper1
         <COMMODITY_GROUP_DIRECT, COMMODITY_GROUP_DIRECTProjection, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel
             <COMMODITY_GROUP_DIRECT, COMMODITY_GROUP_DIRECTProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
@@ -148,11 +148,7 @@ namespace BluePrints.ViewModels
                 RefreshDisplayEntities();
             }
 
-            if (sender.ToString() == MainViewModel.ToString() || sender.ToString() == ToString())
-                return;
-
-            if (MainViewModel != null)
-                mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
+            base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
         }
 
         private void displayEntitiesRefreshBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)

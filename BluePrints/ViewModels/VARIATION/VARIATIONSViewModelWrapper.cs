@@ -21,7 +21,7 @@ using System.Windows.Threading;
 namespace BluePrints.ViewModels
 {
     public class VARIATIONSViewModelWrapper :
-        CollectionViewModelsWrapper
+        CollectionViewModelsWrapper1
         <VARIATION, VARIATION, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<VARIATION, VARIATION, Guid, IBluePrintsEntitiesUnitOfWork>>,
         ISupportCustomDocumentTypeNameAndParameter
@@ -65,19 +65,17 @@ namespace BluePrints.ViewModels
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddEntitiesLoader<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0,
                 bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT, null,
-                OnAfterEntitiesChanged);
+                OnAfterEntitiesChanged, null, true);
             loaderCollection.AddEntitiesLoader<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>(1,
                 bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, typeof(PROJECT),
-                isContinueLoadingAfterBASELINE, null, OnAfterEntitiesChanged);
+                isContinueLoadingAfterBASELINE, null, OnAfterEntitiesChanged, null, true);
             loaderCollection.AddEntitiesLoader<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>(2,
                 bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, typeof(PROJECT),
-                isContinueLoadingAfterPROGRESS, null, OnAfterEntitiesChanged);
+                isContinueLoadingAfterPROGRESS, null, OnAfterEntitiesChanged, null, true);
             loaderCollection.AddEntitiesLoader<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>(3,
-                bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc, typeof(PROGRESS), null, null,
-                OnAfterEntitiesChanged);
+                bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc, typeof(PROGRESS));
             loaderCollection.AddEntitiesLoader<BASELINE_ITEM, BASELINE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>(4,
-                bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc, typeof(BASELINE), null, null,
-                OnAfterEntitiesChanged);
+                bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc, typeof(BASELINE));
             loaderCollection.AddEntitiesLoader<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(5,
                 bluePrintsUnitOfWorkFactory, x => x.USERS);
             InvokeEntitiesLoaderDescriptionLoading();
@@ -172,19 +170,6 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
             MainViewModel.IsContinueSaveCallBack = BeforeSaveValidation;
             base.AssignCallBacksAndRaisePropertyChange(entities);
-        }
-
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-            object sender)
-        {
-            if (MainViewModel == null || sender.ToString() == MainViewModel.ToString() ||
-                sender.ToString() == ToString())
-                return;
-
-            if (loadPROJECT != null)
-                mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
-
-            base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
         }
 
         #region CallBacks

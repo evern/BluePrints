@@ -22,7 +22,7 @@ using DevExpress.Xpf.Bars;
 namespace BluePrints.Common.ViewModel
 {
     public abstract class DashboardViewModelWrapper<TEntity, TProjection, TPrimaryKey, TUnitOfWork> :
-        CollectionViewModelsWrapper
+        CollectionViewModelsWrapper1
         <TEntity, TProjection, TPrimaryKey, TUnitOfWork,
             CollectionViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork>>
         where TEntity : class, IHaveGUID

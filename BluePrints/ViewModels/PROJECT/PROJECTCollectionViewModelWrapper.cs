@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace BluePrints.ViewModels
 {
     public class PROJECTCollectionViewModelWrapper :
-        CollectionViewModelsWrapper
+        CollectionViewModelsWrapper1
         <PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>>,
         ISupportCustomDocumentTypeNameAndParameter
@@ -133,21 +133,6 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
-
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-            object sender)
-        {
-            if (sender.ToString() == MainViewModel.ToString() || sender.ToString() == ToString())
-                return;
-
-            if (MainViewModel != null)
-                mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
-            else
-                mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
-
-            base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
-        }
-
         #region Collection Call Backs
 
         private void PostSave(Guid key, PROJECT projectionEntity, PROJECT entity, bool isNewEntity)

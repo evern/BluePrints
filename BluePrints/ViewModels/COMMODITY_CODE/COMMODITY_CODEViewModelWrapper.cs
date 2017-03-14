@@ -24,7 +24,7 @@ namespace BluePrints.ViewModels
     /// Represents the COMMODITY_CODES collection view model.
     /// </summary>
     public partial class COMMODITY_CODESViewModelWrapper :
-        CollectionViewModelsWrapper
+        CollectionViewModelsWrapper1
         <COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
@@ -194,22 +194,6 @@ namespace BluePrints.ViewModels
 
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             mainThreadDispatcher.BeginInvoke(new Action(() => delayedCOMMODITY_CODEPopulateDispatcher.Start()));
-        }
-
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-            object sender)
-        {
-            if (changedType == typeof(COMMODITY_CODE))
-                if (!refreshBackgroundWorker.IsBusy)
-                    refreshBackgroundWorker.RunWorkerAsync();
-
-            if (sender.ToString() == MainViewModel.ToString())
-                return;
-
-            if (MainViewModel != null)
-                mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
-            else
-                mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
         }
 
         private void refreshBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)

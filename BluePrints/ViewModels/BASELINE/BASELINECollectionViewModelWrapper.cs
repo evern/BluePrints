@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 namespace BluePrints.ViewModels
 {
     public class BASELINECollectionViewModelWrapper :
-        CollectionViewModelsWrapper
+        CollectionViewModelsWrapper1
         <BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>>,
         ISupportCustomDocumentTypeNameAndParameter
@@ -122,30 +122,6 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
-        }
-
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-            object sender)
-        {
-            if (sender.ToString() == MainViewModel.ToString())
-                return;
-
-            if (loadPROJECT != null && changedType == typeof(Data.PROJECT) &&
-                loadPROJECT.GUID.ToString() == key.ToString())
-                if (messageType == EntityMessageType.Added)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Restored,
-                        StringFormatUtils.GetEntityNameByType(changedType)));
-                else if (messageType == EntityMessageType.Deleted)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed,
-                        StringFormatUtils.GetEntityNameByType(changedType)));
-
-            //if (loadPROJECT != null)
-            //    if (MainViewModel != null)
-            //        mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
-            //    else if (loadPROJECT != null)
-            //        mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
-
-            base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
         }
 
         #region Collection Call Backs

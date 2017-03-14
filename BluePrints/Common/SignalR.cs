@@ -61,8 +61,8 @@ namespace BluePrints.Common
 
         public static void HubReceiveMessage(string entityName, string key, string messageType, string sender, string hwid)
         {
-            if (hwid == LoginCredentials.CurrentHWID)
-                return;
+            //if (hwid == LoginCredentials.CurrentHWID)
+            //    return;
 
             if (key.Length < Guid.Empty.ToString().Length)
                 return;

@@ -22,7 +22,7 @@ using PROJECT = BluePrints.Data.PROJECT;
 namespace BluePrints.ViewModels
 {
     public class PROGRESSCollectionViewModelWrapper :
-        CollectionViewModelsWrapper
+        CollectionViewModelsWrapper1
         <PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>>,
         ISupportCustomDocumentTypeNameAndParameter
@@ -36,7 +36,6 @@ namespace BluePrints.ViewModels
         {
             return ViewModelSource.Create(() => new PROGRESSCollectionViewModelWrapper(unitOfWorkFactory));
         }
-
 
         /// <summary>
         /// Initializes a new instance of the PROGRESSCollectionViewModelWrapper class.

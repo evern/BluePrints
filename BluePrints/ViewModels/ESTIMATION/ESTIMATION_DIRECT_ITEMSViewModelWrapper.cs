@@ -35,7 +35,7 @@ namespace BluePrints.ViewModels
     /// Represents the single ESTIMATION_DIRECT object view model.
     /// </summary>
     public partial class ESTIMATION_DIRECT_ITEMSViewModelWrapper :
-        CollectionViewModelsWrapper
+        CollectionViewModelsWrapper1
         <ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel
             <ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
@@ -280,32 +280,7 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            if (sender.ToString() == MainViewModel.ToString())
-                return;
-
-            if (changedType == typeof(WORKPACK))
-            {
-                this.RaisePropertyChanged(x => x.WORKPACKCollection);
-                return;
-            }
-
-            if (loadESTIMATION_DIRECT != null && changedType == typeof(ESTIMATION_DIRECT) &&
-                loadESTIMATION_DIRECT.GUID.ToString() == key.ToString() ||
-                loadPROJECT != null && changedType == typeof(PROJECT) && loadPROJECT.GUID.ToString() == key.ToString())
-                if (messageType == EntityMessageType.Added)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Restored,
-                        StringFormatUtils.GetEntityNameByType(changedType)));
-                else if (messageType == EntityMessageType.Deleted)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed,
-                        StringFormatUtils.GetEntityNameByType(changedType)));
-
-            if (loadPROJECT != null || loadESTIMATION_DIRECT != null)
-                if (MainViewModel != null)
-                    mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
-                else if (loadPROJECT != null || loadESTIMATION_DIRECT != null)
-                    mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
-
-            return;
+            base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
         }
 
         private void refreshBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)

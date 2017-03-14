@@ -24,7 +24,7 @@ namespace BluePrints.ViewModels
     /// Represents the COMMODITY_CODES collection view model.
     /// </summary>
     public partial class COMMODITY_CODEMasterDetailViewModelWrapper :
-        CollectionViewModelsWrapper
+        CollectionViewModelsWrapper1
         <COMMODITY_CODE, COMMODITY_CODEMasterDetailProjection, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel
             <COMMODITY_CODE, COMMODITY_CODEMasterDetailProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
@@ -179,42 +179,6 @@ namespace BluePrints.ViewModels
 
         private List<Guid> SelectedEntitiesGuid = new List<Guid>();
 
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-            object sender)
-        {
-            if (changedType == typeof(COMMODITY_CODE))
-            {
-                if (sender.ToString() != MainViewModel.ToString())
-                    mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
-                else
-                    mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.RefreshWithoutClearingUndoManager()));
-
-                if (!displayEntitiesRefreshBackgroundWorker.IsBusy)
-                    displayEntitiesRefreshBackgroundWorker.RunWorkerAsync();
-
-                return;
-            }
-
-            if (sender.ToString() == MainViewModel.ToString())
-                return;
-
-
-            if (loadPROJECT != null && changedType == typeof(PROJECT) && loadPROJECT.GUID.ToString() == key.ToString())
-                if (messageType == EntityMessageType.Added)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Restored,
-                        StringFormatUtils.GetEntityNameByType(changedType)));
-                else if (messageType == EntityMessageType.Deleted)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed,
-                        StringFormatUtils.GetEntityNameByType(changedType)));
-
-            if (loadPROJECT != null)
-                if (MainViewModel != null)
-                    mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
-                else if (loadPROJECT != null)
-                    mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
-
-            return;
-        }
 
         private void refreshBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {

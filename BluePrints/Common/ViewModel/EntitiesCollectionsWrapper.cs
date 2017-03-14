@@ -21,7 +21,7 @@ using BluePrints.ViewModels;
 
 namespace BluePrints.Common.ViewModel
 {
-    public abstract class CollectionViewModelsWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
+    public abstract class CollectionViewModelsWrapper1<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
         TMainEntityUnitOfWork, TMainViewModel> : ICollectionViewModelsWrapper, IDocumentContent, ISupportParameter, ISupportViewRestoration
         where TMainEntity : class, IHaveGUID
         where TMainProjectionEntity : class, IHaveGUID
@@ -130,7 +130,7 @@ namespace BluePrints.Common.ViewModel
                 new EntitiesLoaderDescription
                     <TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork>(this, 0,
                         unitOfWorkFactory, getRepositoryFunc, OnMainViewModelLoaded, OnBeforeEntitiesChanged, 
-                        OnAfterEntitiesChanged, OnEntitiesRefreshed, 
+                        null, OnEntitiesRefreshed, 
                         ConstructMainViewModelProjection);
         }
 
@@ -172,7 +172,7 @@ namespace BluePrints.Common.ViewModel
                 return compulsoryLoaders;
             }
         }
-
+        
         protected virtual void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
             object sender)
         {
