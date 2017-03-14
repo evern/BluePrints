@@ -29,7 +29,7 @@ using BluePrints.P6EntitiesDataModel;
 namespace BluePrints.ViewModels
 {
     public class WORKPACKSchedulingViewModelWrapper :
-        CollectionViewModelsWrapper1
+        CollectionViewModelsWrapper
         <WORKPACK, WORKPACK_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<WORKPACK, WORKPACK_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
@@ -66,6 +66,11 @@ namespace BluePrints.ViewModels
 
         private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory =
             P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
+        private IDialogService MissingActivitiesDialogService
+        {
+            get { return this.GetRequiredService<IDialogService>("MissingActivityIdDialog"); }
+        }
 
         protected override void InitializeParameters(object parameter)
         {
@@ -334,6 +339,17 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<WORKPACK> WORKPACKCollection
+        {
+            get
+            {
+                var collection = GetEntities<WORKPACK>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NAME1);
+                return collection;
+            }
+        }
+
         public ICollectionViewModel<BluePrints.P6Data.TASK> P6TASKCollectionViewModel
         {
             get { return (ICollectionViewModel<BluePrints.P6Data.TASK>) loaderCollection.GetViewModel<TASK>(); }
@@ -369,22 +385,37 @@ namespace BluePrints.ViewModels
                     IP6EntitiesUnitOfWork.TASKRSRC.Remove(TaskRsrc);
                 }
 
+                List<MissingP6Activities> missingActivities = new List<MissingP6Activities>();
+
                 foreach (WORKPACK_ASSIGNMENT WORKPACK_ASSIGNMENT in currentPROJECTWORKPACK_ASSIGNMENTS)
                 {
                     TASK existingTask = P6Tasks.FirstOrDefault(x => x.task_code == WORKPACK_ASSIGNMENT.P6_ACTIVITYID);
+                    decimal remainingValue = (WORKPACK_ASSIGNMENT.HIGH_VALUE - WORKPACK_ASSIGNMENT.LOW_VALUE) + 1;
 
                     if (existingTask != null)
                     {
-                        decimal remainingValue = (WORKPACK_ASSIGNMENT.HIGH_VALUE - WORKPACK_ASSIGNMENT.LOW_VALUE) + 1;
                         decimal remainingProductivity = (decimal)((existingTask.target_drtn_hr_cnt == null || existingTask.target_drtn_hr_cnt == 0) ? remainingValue : (remainingValue / existingTask.target_drtn_hr_cnt));
 
                         existingTask.target_work_qty += remainingValue;
                         existingTask.remain_work_qty += remainingValue;
                     }
+                    else
+                    {
+                        WORKPACK missingWORKPACK = WORKPACKCollection.FirstOrDefault(x => x.GUID == WORKPACK_ASSIGNMENT.GUID_WORKPACK);
+                        missingActivities.Add(new MissingP6Activities() { INTERNAL_NUM = missingWORKPACK == null ? string.Empty : missingWORKPACK.INTERNAL_NAME1, P6_ACTIVITY = WORKPACK_ASSIGNMENT.P6_ACTIVITYID, UNITS = remainingValue });
+                    }
                 }
 
                 ((P6EntitiesUnitOfWork)IP6EntitiesUnitOfWork).Context.SaveChanges();
-                MessageBoxService.ShowMessage(CommonResources.WORKPACK_ASSIGNMENT_P6WriteComplete);
+
+                if(missingActivities.Count > 0)
+                {
+                    MissingP6ActivitiesViewModel missingActivitiesViewModel = MissingP6ActivitiesViewModel.Create(missingActivities);
+                    MissingActivitiesDialogService.ShowDialog(MessageButton.OK,
+                    "Missing P6 Activities", "MissingAssignments", missingActivitiesViewModel);
+                }
+                else
+                    MessageBoxService.ShowMessage(CommonResources.WORKPACK_ASSIGNMENT_P6WriteComplete);
             }
         }
 

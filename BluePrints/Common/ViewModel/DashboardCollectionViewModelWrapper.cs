@@ -22,7 +22,7 @@ using DevExpress.Xpf.Bars;
 namespace BluePrints.Common.ViewModel
 {
     public abstract class DashboardViewModelWrapper<TEntity, TProjection, TPrimaryKey, TUnitOfWork> :
-        CollectionViewModelsWrapper1
+        CollectionViewModelsWrapper
         <TEntity, TProjection, TPrimaryKey, TUnitOfWork,
             CollectionViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork>>
         where TEntity : class, IHaveGUID
@@ -53,7 +53,7 @@ namespace BluePrints.Common.ViewModel
 
         private void dispatchTimer_Tick(object sender, EventArgs e)
         {
-            OnSelectedEntityChanged(MainViewModel.SelectedEntities);
+            OnSelectedEntityChanged(DisplaySelectedEntities);
             dispatchTimer.Stop();
         }
 

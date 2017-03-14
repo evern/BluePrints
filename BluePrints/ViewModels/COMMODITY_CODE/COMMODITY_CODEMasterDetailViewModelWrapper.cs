@@ -24,7 +24,7 @@ namespace BluePrints.ViewModels
     /// Represents the COMMODITY_CODES collection view model.
     /// </summary>
     public partial class COMMODITY_CODEMasterDetailViewModelWrapper :
-        CollectionViewModelsWrapper1
+        CollectionViewModelsWrapper
         <COMMODITY_CODE, COMMODITY_CODEMasterDetailProjection, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel
             <COMMODITY_CODE, COMMODITY_CODEMasterDetailProjection, Guid, IBluePrintsEntitiesUnitOfWork>>

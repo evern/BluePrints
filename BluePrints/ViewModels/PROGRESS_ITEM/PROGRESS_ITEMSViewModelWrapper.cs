@@ -35,7 +35,7 @@ namespace BluePrints.ViewModels
     /// Represents the single PROGRESS object view model.
     /// </summary>
     public partial class PROGRESS_ITEMSViewModelWrapper :
-        CollectionViewModelsWrapper1
+        CollectionViewModelsWrapper
         <BASELINE_ITEM, PROGRESS_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<BASELINE_ITEM, PROGRESS_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
     {

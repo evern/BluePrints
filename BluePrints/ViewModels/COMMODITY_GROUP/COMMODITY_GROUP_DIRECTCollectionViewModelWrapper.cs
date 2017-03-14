@@ -29,7 +29,7 @@ namespace BluePrints.ViewModels
     /// Represents the COMMODITIES collection view model.
     /// </summary>
     public partial class COMMODITY_GROUP_DIRECTCollectionViewModelWrapper :
-        CollectionViewModelsWrapper1
+        CollectionViewModelsWrapper
         <COMMODITY_GROUP_DIRECT, COMMODITY_GROUP_DIRECTProjection, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel
             <COMMODITY_GROUP_DIRECT, COMMODITY_GROUP_DIRECTProjection, Guid, IBluePrintsEntitiesUnitOfWork>>

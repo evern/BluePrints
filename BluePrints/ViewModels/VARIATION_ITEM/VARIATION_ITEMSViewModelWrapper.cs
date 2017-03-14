@@ -29,7 +29,7 @@ namespace BluePrints.ViewModels
     /// Represents the single VARIATION object view model.
     /// </summary>
     public partial class VARIATION_ITEMSViewModelWrapper :
-        CollectionViewModelsWrapper1
+        CollectionViewModelsWrapper
         <BASELINE_ITEM, VARIATION_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<BASELINE_ITEM, VARIATION_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
     {

@@ -529,7 +529,7 @@
                             <dxb:ToolBarControl>
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Edit"
                                                    Command="{Binding EditCommand}"
-                                                   CommandParameter="{Binding MainViewModel.SelectedEntity}"
+                                                   CommandParameter="{Binding DisplaySelectedEntity}"
                                                    Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Delete"
                                                    Command="{Binding MainViewModel.BulkDeleteCommand}"
@@ -665,7 +665,7 @@
                             <dxb:ToolBarControl>
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Edit"
                                                    Command="{Binding EditCommand}"
-                                                   CommandParameter="{Binding MainViewModel.SelectedEntity}"
+                                                   CommandParameter="{Binding DisplaySelectedEntity}"
                                                    Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Delete"
                                                    Command="{Binding MainViewModel.BulkDeleteCommand}"
@@ -773,7 +773,7 @@
                             <dxb:ToolBarControl>
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Edit"
                                                    Command="{Binding EditCommand}"
-                                                   CommandParameter="{Binding MainViewModel.SelectedEntity}"
+                                                   CommandParameter="{Binding DisplaySelectedEntity}"
                                                    Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Delete"
                                                    Command="{Binding MainViewModel.BulkDeleteCommand}"

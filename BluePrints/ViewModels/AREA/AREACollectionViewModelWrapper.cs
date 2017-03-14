@@ -19,7 +19,7 @@ using BluePrints.Common.Helpers;
 namespace BluePrints.ViewModels
 {
     public class AREACollectionViewModelWrapper :
-        CollectionViewModelsWrapper1
+        CollectionViewModelsWrapper
         <AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>>
     {

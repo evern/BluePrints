@@ -21,7 +21,7 @@ using BluePrints.ViewModels;
 
 namespace BluePrints.Common.ViewModel
 {
-    public abstract class CollectionViewModelsWrapper1<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
+    public abstract class CollectionViewModelsWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
         TMainEntityUnitOfWork, TMainViewModel> : ICollectionViewModelsWrapper, IDocumentContent, ISupportParameter, ISupportViewRestoration
         where TMainEntity : class, IHaveGUID
         where TMainProjectionEntity : class, IHaveGUID

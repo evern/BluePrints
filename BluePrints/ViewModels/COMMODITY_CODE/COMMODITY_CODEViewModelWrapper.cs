@@ -24,7 +24,7 @@ namespace BluePrints.ViewModels
     /// Represents the COMMODITY_CODES collection view model.
     /// </summary>
     public partial class COMMODITY_CODESViewModelWrapper :
-        CollectionViewModelsWrapper1
+        CollectionViewModelsWrapper
         <COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
@@ -623,26 +623,26 @@ namespace BluePrints.ViewModels
 
             var commodityCodeOrder = 0;
             var guid_parent = Guid.Empty;
-            if (MainViewModel.SelectedEntity != null)
+            if (DisplayEntities != null)
             {
                 if (isAfter)
-                    commodityCodeOrder = MainViewModel.SelectedEntity.SORTORDER + 1;
+                    commodityCodeOrder = DisplaySelectedEntity.SORTORDER + 1;
                 else
-                    commodityCodeOrder = MainViewModel.SelectedEntity.SORTORDER - 1;
+                    commodityCodeOrder = DisplaySelectedEntity.SORTORDER - 1;
 
-                guid_parent = MainViewModel.SelectedEntity.GUID_PARENT;
+                guid_parent = DisplaySelectedEntity.GUID_PARENT;
             }
 
             var newCommodityCode = new COMMODITY_CODE();
             newCommodityCode.CODE = "temp";
             newCommodityCode.FULLCODE = "temp";
             newCommodityCode.NAME = CommonResources.CommodityCode_NewCommodity;
-            newCommodityCode.GUID_DISCIPLINE = MainViewModel.SelectedEntity == null
+            newCommodityCode.GUID_DISCIPLINE = DisplaySelectedEntity == null
                 ? DISCIPLINECollection.First().GUID
-                : MainViewModel.SelectedEntity.GUID_DISCIPLINE;
-            newCommodityCode.GUID_DEPARTMENT = MainViewModel.SelectedEntity == null
+                : DisplaySelectedEntity.GUID_DISCIPLINE;
+            newCommodityCode.GUID_DEPARTMENT = DisplaySelectedEntity == null
                 ? DEPARTMENTCollection.First().GUID
-                : MainViewModel.SelectedEntity.GUID_DEPARTMENT;
+                : DisplaySelectedEntity.GUID_DEPARTMENT;
             newCommodityCode.SORTORDER = commodityCodeOrder;
             newCommodityCode.GUID_PARENT = guid_parent;
 

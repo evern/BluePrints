@@ -35,7 +35,7 @@ namespace BluePrints.ViewModels
     /// Represents the single ESTIMATION_DIRECT object view model.
     /// </summary>
     public partial class ESTIMATION_DIRECT_ITEMSViewModelWrapper :
-        CollectionViewModelsWrapper1
+        CollectionViewModelsWrapper
         <ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel
             <ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>>

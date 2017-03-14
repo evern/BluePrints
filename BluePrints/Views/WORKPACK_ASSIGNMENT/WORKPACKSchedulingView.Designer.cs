@@ -165,7 +165,7 @@ namespace BluePrints.Views
             this.gridControlWorkpack.MainView = this.gridViewWorkpack;
             this.gridControlWorkpack.Name = "gridControlWorkpack";
             this.gridControlWorkpack.ShowOnlyPredefinedDetails = true;
-            this.gridControlWorkpack.Size = new System.Drawing.Size(1904, 436);
+            this.gridControlWorkpack.Size = new System.Drawing.Size(1904, 433);
             this.gridControlWorkpack.TabIndex = 1;
             this.gridControlWorkpack.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridViewWorkpack,
@@ -217,6 +217,7 @@ namespace BluePrints.Views
             new DevExpress.XtraGrid.GridGroupSummaryItem(DevExpress.Data.SummaryItemType.Sum, "Workpack_AssignedUnits", null, "(Assigned Units: SUM={0:0.##})"),
             new DevExpress.XtraGrid.GridGroupSummaryItem(DevExpress.Data.SummaryItemType.Sum, "Total_BudgetedUnits", null, "(Budgeted Units: SUM={0:0.##})")});
             this.gridViewWorkpack.Name = "gridViewWorkpack";
+            this.gridViewWorkpack.OptionsSelection.MultiSelect = true;
             this.gridViewWorkpack.OptionsView.ShowFooter = true;
             // 
             // colINTERNAL_NAME1
@@ -372,6 +373,7 @@ namespace BluePrints.Views
             // schedulerControl1
             // 
             this.schedulerControl1.ActiveViewType = DevExpress.XtraScheduler.SchedulerViewType.Gantt;
+            this.schedulerControl1.DataStorage = this.schedulerStorage1;
             this.schedulerControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.schedulerControl1.Font = new System.Drawing.Font("Calibri", 9.75F);
             this.schedulerControl1.GroupType = DevExpress.XtraScheduler.SchedulerGroupType.Resource;
@@ -388,9 +390,8 @@ namespace BluePrints.Views
             this.schedulerControl1.OptionsCustomization.AllowDisplayAppointmentDependencyForm = DevExpress.XtraScheduler.AllowDisplayAppointmentDependencyForm.Never;
             this.schedulerControl1.OptionsCustomization.AllowDisplayAppointmentForm = DevExpress.XtraScheduler.AllowDisplayAppointmentForm.Never;
             this.schedulerControl1.OptionsCustomization.AllowInplaceEditor = DevExpress.XtraScheduler.UsedAppointmentType.None;
-            this.schedulerControl1.Size = new System.Drawing.Size(1387, 600);
+            this.schedulerControl1.Size = new System.Drawing.Size(1384, 600);
             this.schedulerControl1.Start = new System.DateTime(2012, 1, 1, 0, 0, 0, 0);
-            this.schedulerControl1.Storage = this.schedulerStorage1;
             this.schedulerControl1.TabIndex = 2;
             this.schedulerControl1.Text = "schedulerControl1";
             this.schedulerControl1.Views.DayView.TimeRulers.Add(timeRuler1);

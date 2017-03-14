@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace BluePrints.ViewModels
 {
     public class PROJECTCollectionViewModelWrapper :
-        CollectionViewModelsWrapper1
+        CollectionViewModelsWrapper
         <PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>>,
         ISupportCustomDocumentTypeNameAndParameter
@@ -320,7 +320,7 @@ namespace BluePrints.ViewModels
 
         public bool CanEdit(PROJECT entity)
         {
-            if (MainViewModel == null || MainViewModel.SelectedEntity == null)
+            if (DisplaySelectedEntity == null)
                 return false;
 
             return true;
@@ -346,12 +346,12 @@ namespace BluePrints.ViewModels
 
         public object GetCustomDocumentParameter()
         {
-            return new EntitiesParameter<PROJECT>(MainViewModel.SelectedEntity);
+            return new EntitiesParameter<PROJECT>(DisplaySelectedEntity);
         }
 
         public string GetCustomDocumentTitle()
         {
-            return "[" + MainViewModel.SelectedEntity.NUMBER + "]";
+            return "[" + DisplaySelectedEntity.NUMBER + "]";
         }
 
         public bool IsCustomModeEnabled()

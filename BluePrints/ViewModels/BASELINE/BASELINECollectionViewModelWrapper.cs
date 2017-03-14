@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 namespace BluePrints.ViewModels
 {
     public class BASELINECollectionViewModelWrapper :
-        CollectionViewModelsWrapper1
+        CollectionViewModelsWrapper
         <BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>>,
         ISupportCustomDocumentTypeNameAndParameter
@@ -165,7 +165,7 @@ namespace BluePrints.ViewModels
 
         public bool CanEdit(BASELINE entity)
         {
-            if (MainViewModel == null || MainViewModel.SelectedEntity == null)
+            if (DisplaySelectedEntity == null)
                 return false;
 
             return true;
@@ -224,18 +224,18 @@ namespace BluePrints.ViewModels
         {
             if (mappingSelectionType == BaselineMappingSelectionType.None)
                 return new OptionalEntitiesParameter<Data.PROJECT, BASELINE>(null,
-                    MainViewModel.SelectedEntity);
+                    DisplaySelectedEntity);
 
-            return new object[] {MainViewModel.SelectedEntity, mappingSelectionType};
+            return new object[] { DisplaySelectedEntity, mappingSelectionType};
         }
 
         public string GetCustomDocumentTitle()
         {
             if (mappingSelectionType == BaselineMappingSelectionType.Original)
-                return MainViewModel.SelectedEntity.NAME + " - " + MainViewModel.SelectedEntity.P6BASELINE_NAME +
+                return DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME +
                        " Mapping";
             else if (mappingSelectionType == BaselineMappingSelectionType.Modified)
-                return MainViewModel.SelectedEntity.NAME + " - " + MainViewModel.SelectedEntity.P6MODBASELINE_NAME +
+                return DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6MODBASELINE_NAME +
                        " Mapping";
             else
                 return "[" + loadPROJECT.NUMBER + "] BASELINE";

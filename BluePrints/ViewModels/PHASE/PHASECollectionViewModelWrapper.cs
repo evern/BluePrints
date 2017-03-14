@@ -19,7 +19,7 @@ using BluePrints.Common.Helpers;
 namespace BluePrints.ViewModels
 {
     public class PHASECollectionViewModelWrapper :
-        CollectionViewModelsWrapper1
+        CollectionViewModelsWrapper
         <PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork>>
     {

@@ -21,6 +21,8 @@ using System.Collections.ObjectModel;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel;
+using DevExpress.Mvvm;
+using DevExpress.Mvvm.POCO;
 
 namespace BluePrints.Views
 {
@@ -203,19 +205,45 @@ namespace BluePrints.Views
         }
 
         //Recurse childrens to sum budgeted units
-        private decimal RecurseSummarizeWBS(IEnumerable<TASK_AppointmentInfo> ChildTASKs)
+        private void RecurseSummarizeWBS(IEnumerable<TASK_AppointmentInfo> ChildTASKs)
         {
+            foreach (var childTASK in ChildTASKs)
+            {
+                if (childTASK.Status == AppointmentActivityType.WBS)
+                {
+                    childTASK.AssignedUnits = 0;
+                }
+            }
+
             foreach (var childTASK in ChildTASKs)
                 if (childTASK.Status == AppointmentActivityType.WBS)
                 {
-                    var childBaselineMapItems =
-                        ChildTASKs.Where(x => x.ParentId == childTASK.task_id).AsEnumerable();
-                    if (childBaselineMapItems.Count() != 0)
-                        childTASK.AssignedUnits = RecurseSummarizeWBS(childBaselineMapItems);
+                    List<TASK_AppointmentInfo> childTASKInfos = new List<TASK_AppointmentInfo>();
+                    AllChildActivityTask(ChildTASKs, childTASK, childTASKInfos);
+                    //return childTASKInfos.Sum(x => x.AssignedUnits);
+                    if (childTASKInfos.Count() != 0)
+                        childTASK.AssignedUnits = childTASKInfos.Sum(x => x.AssignedUnits);
                 }
 
             //if the foreach loop doesn't iterate
-            return ChildTASKs.Sum(x => x.AssignedUnits);
+            //return ChildTASKs.Sum(x => x.AssignedUnits);
+        }
+
+        /// <summary>
+        /// Recurse member instance to change its value
+        /// </summary>
+        /// <param name="propertyString">Property string to change</param>
+        /// <param name="parentInstance">Instance to modify</param>
+        /// <param name="value">Value to modify</param>
+        public void AllChildActivityTask(IEnumerable<TASK_AppointmentInfo> childTASKInfo, TASK_AppointmentInfo parentTASKInfo, List<TASK_AppointmentInfo> childTASKInfosCollector)
+        {
+            IEnumerable<TASK_AppointmentInfo> childActivityTasks = childTASKInfo.Where(x => x.ParentId == parentTASKInfo.task_id);
+
+            foreach (var childActivityTask in childActivityTasks)
+            {
+                childTASKInfosCollector.Add(childActivityTask);
+                AllChildActivityTask(childTASKInfo, childActivityTask, childTASKInfosCollector);
+            }
         }
 
         private void schedulerControl1_DragOver(object sender, DragEventArgs e)

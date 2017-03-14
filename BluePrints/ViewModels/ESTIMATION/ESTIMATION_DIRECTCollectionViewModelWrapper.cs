@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 namespace BluePrints.ViewModels
 {
     public class ESTIMATION_DIRECTCollectionViewModelWrapper :
-        CollectionViewModelsWrapper1
+        CollectionViewModelsWrapper
         <ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork>>,
         ISupportCustomDocumentTypeNameAndParameter
@@ -157,7 +157,7 @@ namespace BluePrints.ViewModels
 
         public bool CanEdit(ESTIMATION_DIRECT entity)
         {
-            if (MainViewModel == null || MainViewModel.SelectedEntity == null)
+            if (DisplaySelectedEntity == null)
                 return false;
 
             return true;
@@ -185,7 +185,7 @@ namespace BluePrints.ViewModels
         public object GetCustomDocumentParameter()
         {
             return new OptionalEntitiesParameter<Data.PROJECT, ESTIMATION_DIRECT>(null,
-                MainViewModel.SelectedEntity);
+                DisplaySelectedEntity);
         }
 
         public string GetCustomDocumentTitle()

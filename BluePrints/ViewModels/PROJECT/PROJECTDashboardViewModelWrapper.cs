@@ -195,7 +195,7 @@ namespace BluePrints.ViewModels
 
         public bool CanEdit(PROJECT_Dashboard entity)
         {
-            if (MainViewModel == null || MainViewModel.SelectedEntity == null)
+            if (DisplaySelectedEntity == null)
                 return false;
 
             return true;
@@ -233,12 +233,12 @@ namespace BluePrints.ViewModels
 
         public object GetCustomDocumentParameter()
         {
-            return MainViewModel.SelectedEntity;
+            return DisplaySelectedEntity;
         }
 
         public string GetCustomDocumentTitle()
         {
-            return MainViewModel.SelectedEntity.PROJECT.NUMBER + " - WORKPACKS";
+            return DisplaySelectedEntity.PROJECT.NUMBER + " - WORKPACKS";
         }
 
         public bool IsCustomModeEnabled()

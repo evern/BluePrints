@@ -22,7 +22,7 @@ using PROJECT = BluePrints.Data.PROJECT;
 namespace BluePrints.ViewModels
 {
     public class PROGRESSCollectionViewModelWrapper :
-        CollectionViewModelsWrapper1
+        CollectionViewModelsWrapper
         <PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>>,
         ISupportCustomDocumentTypeNameAndParameter
@@ -184,7 +184,7 @@ namespace BluePrints.ViewModels
 
         public bool CanEdit(PROGRESS entity)
         {
-            if (MainViewModel == null || MainViewModel.SelectedEntity == null)
+            if (DisplaySelectedEntity == null)
                 return false;
 
             return true;
@@ -210,7 +210,7 @@ namespace BluePrints.ViewModels
 
         public object GetCustomDocumentParameter()
         {
-            return new OptionalEntitiesParameter<PROJECT, PROGRESS>(null, MainViewModel.SelectedEntity);
+            return new OptionalEntitiesParameter<PROJECT, PROGRESS>(null, DisplaySelectedEntity);
         }
 
         public string GetCustomDocumentTitle()

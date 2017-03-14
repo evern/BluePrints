@@ -35,7 +35,7 @@ namespace BluePrints.ViewModels
     /// Represents the single BASELINE object view model.
     /// </summary>
     public partial class BASELINE_ITEMSViewModelWrapper :
-        CollectionViewModelsWrapper1
+        CollectionViewModelsWrapper
         <BASELINE_ITEM, BASELINE_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<BASELINE_ITEM, BASELINE_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
     {

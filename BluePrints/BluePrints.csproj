@@ -390,6 +390,9 @@
     <Compile Include="Common\Attributes\ProjectionPropertyAttribute.cs" />
     <Compile Include="Common\ViewModel\Settings\XMLSettings.cs" />
     <Compile Include="Common\ViewRestoreUserControl.cs" />
+    <Compile Include="Common\View\MissingAssignments.xaml.cs">
+      <DependentUpon>MissingAssignments.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EntityFramework\Annotations\BluePrintsEntities.cs" />
     <Compile Include="EntityFramework\Annotations\COMMODITY_GROUP_DIRECT.cs" />
     <Compile Include="EntityFramework\Annotations\DELIVERABLES_STATUS.cs" />
@@ -1070,6 +1073,7 @@
     </Compile>
     <Compile Include="ViewModels\AREA\AREACollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSViewModelWrapper.cs" />
+    <Compile Include="ViewModels\BulkEdit\MissingP6ActivitiesViewModel.cs" />
     <Compile Include="ViewModels\BulkEdit\BulkEditEnumsViewModel.cs" />
     <Compile Include="ViewModels\BulkEdit\BulkEditNumbersViewModel.cs" />
     <Compile Include="ViewModels\BulkEdit\BulkEditStringsViewModel.cs" />
@@ -1258,6 +1262,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>XRDesignRibbonControllerResources.resx</DependentUpon>
     </Compile>
+    <Page Include="Common\View\MissingAssignments.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

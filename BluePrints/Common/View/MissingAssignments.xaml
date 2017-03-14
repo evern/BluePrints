@@ -1,0 +1,35 @@
+﻿<UserControl
+    x:Name="userControl"
+    x:Class="BluePrints.Views.MissingAssignments"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+    xmlns:common="clr-namespace:BluePrints.Common"
+    Height="250" Width="500">
+    <dxlc:LayoutControl Orientation="Vertical">
+        <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
+            <dxlc:LayoutGroup Height="300" Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
+                <dxlc:LayoutItem Height="230" >
+                    <dxg:GridControl Name="gridControl" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn Header="WORKPACK" FieldName="INTERNAL_NUM" />
+                            <dxg:GridColumn Header="P6 ID" FieldName="P6_ACTIVITY" />
+                            <dxg:GridColumn Header="UNITS" FieldName="UNITS" />
+                        </dxg:GridControl.Columns>
+                        <dxg:GridControl.TotalSummary>
+                            <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
+                        </dxg:GridControl.TotalSummary>
+                        <dxg:GridControl.View>
+                            <common:TableViewEx x:Name="tableView" ShowGroupedColumns="False" ShowGroupPanel="False"/>
+                        </dxg:GridControl.View>
+                    </dxg:GridControl>
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+            <dxlc:LayoutGroup Height="25" HorizontalAlignment="Right" Name="LayoutGroupButtons" View="Group"
+                              Orientation="Horizontal" />
+        </dxlc:LayoutGroup>
+    </dxlc:LayoutControl>
+</UserControl>

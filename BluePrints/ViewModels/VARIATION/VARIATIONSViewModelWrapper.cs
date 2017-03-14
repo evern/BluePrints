@@ -21,7 +21,7 @@ using System.Windows.Threading;
 namespace BluePrints.ViewModels
 {
     public class VARIATIONSViewModelWrapper :
-        CollectionViewModelsWrapper1
+        CollectionViewModelsWrapper
         <VARIATION, VARIATION, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<VARIATION, VARIATION, Guid, IBluePrintsEntitiesUnitOfWork>>,
         ISupportCustomDocumentTypeNameAndParameter
@@ -256,7 +256,7 @@ namespace BluePrints.ViewModels
         /// <param name="projectionEntity">Entities to Submit.</param>
         public bool CanSubmit(VARIATION entity)
         {
-            if (MainViewModel == null || MainViewModel.SelectedEntity == null)
+            if (DisplaySelectedEntity == null)
                 return false;
 
             if (loadBASELINE == null)

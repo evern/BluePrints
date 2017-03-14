@@ -319,7 +319,7 @@ namespace BluePrints.ViewModels
 
         public bool CanEdit(PROJECT_Dashboard entity)
         {
-            if (MainViewModel == null || MainViewModel.SelectedEntity == null)
+            if (DisplaySelectedEntity == null)
                 return false;
 
             return true;

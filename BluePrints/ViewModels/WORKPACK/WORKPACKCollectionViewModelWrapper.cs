@@ -20,7 +20,7 @@ using DevExpress.Xpf.Bars;
 namespace BluePrints.ViewModels
 {
     public class WORKPACKCollectionViewModelWrapper :
-        CollectionViewModelsWrapper1
+        CollectionViewModelsWrapper
         <WORKPACK, WORKPACKProjection, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<WORKPACK, WORKPACKProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
     {

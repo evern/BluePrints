@@ -19,7 +19,7 @@ using BluePrints.Common.Helpers;
 namespace BluePrints.ViewModels
 {
     public class RATECollectionViewModelWrapper :
-        CollectionViewModelsWrapper1
+        CollectionViewModelsWrapper
         <RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
