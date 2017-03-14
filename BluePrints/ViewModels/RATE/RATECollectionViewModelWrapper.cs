@@ -62,7 +62,7 @@ namespace BluePrints.ViewModels
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddEntitiesLoader<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0,
-                bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT,
+                bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT, null,
                 OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(1,
                 bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
@@ -115,7 +115,6 @@ namespace BluePrints.ViewModels
             if (sender.ToString() == MainViewModel.ToString())
                 return;
 
-            storeViewState();
             if (loadPROJECT != null && changedType == typeof(PROJECT) &&
                 loadPROJECT.GUID.ToString() == key.ToString())
                 if (messageType == EntityMessageType.Added)

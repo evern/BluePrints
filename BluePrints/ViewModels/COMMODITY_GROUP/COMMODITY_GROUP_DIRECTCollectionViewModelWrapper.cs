@@ -84,7 +84,7 @@ namespace BluePrints.ViewModels
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddEntitiesLoader<COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork>(1,
                 bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc, null, null,
-                OnAfterEntitiesChanged);
+                null, OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(2,
                 bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddEntitiesLoader<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork>(3,
@@ -132,7 +132,7 @@ namespace BluePrints.ViewModels
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntity;
 
             MainViewModel.SetParentViewModel(this);
-            Refresh();
+            RefreshView();
         }
 
         protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
@@ -140,8 +140,6 @@ namespace BluePrints.ViewModels
         {
             if (changedType == typeof(COMMODITY_GROUP_DIRECT))
             {
-                storeViewState();
-
                 if (sender.ToString() != MainViewModel.ToString())
                     mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
                 else

@@ -10,7 +10,7 @@ namespace BluePrints.Views
         public INDIRECT_TYPECollectionView()
         {
             InitializeComponent();
-            InitializeViewRestoration(gridControl, tableView);
+            InitializeViewControl(gridControl, tableView);
         }
     }
 }

@@ -100,17 +100,17 @@ namespace BluePrints.ViewModels
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddEntitiesLoader<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(1,
                 bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT,
-                OnAfterEntitiesChanged);
+                null, OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(2,
                 bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, null, null, isContinueLoadingAfterDEPARTMENT,
-                OnAfterEntitiesChanged);
+                null, OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(3,
                 bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES, null, null, isContinueLoadingAfterDISCIPLINE,
-                OnAfterEntitiesChanged);
+                null, OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<INDIRECT_TYPE, INDIRECT_TYPE, Guid, IBluePrintsEntitiesUnitOfWork>(4,
-                bluePrintsUnitOfWorkFactory, x => x.INDIRECT_TYPES, null, null, null, OnAfterEntitiesChanged);
+                bluePrintsUnitOfWorkFactory, x => x.INDIRECT_TYPES, null, null, null, null, OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork>(5,
-                bluePrintsUnitOfWorkFactory, x => x.UOMS, null, null, null, OnAfterEntitiesChanged);
+                bluePrintsUnitOfWorkFactory, x => x.UOMS, null, null, null, null, OnAfterEntitiesChanged);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -184,7 +184,6 @@ namespace BluePrints.ViewModels
         {
             if (changedType == typeof(COMMODITY_CODE))
             {
-                storeViewState();
                 if (sender.ToString() != MainViewModel.ToString())
                     mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
                 else

@@ -53,6 +53,7 @@ namespace BluePrints.Common.DataModel.EntityFramework
 
         protected virtual void UpdateCore(TEntity entity)
         {
+            Context.Entry(entity).Reload();
         }
 
         protected virtual EntityState GetStateCore(TEntity entity)
@@ -167,6 +168,15 @@ namespace BluePrints.Common.DataModel.EntityFramework
         void IRepository<TEntity, TPrimaryKey>.Update(TEntity entity)
         {
             UpdateCore(entity);
+        }
+
+        TEntity IRepository<TEntity, TPrimaryKey>.Refresh(TPrimaryKey key)
+        {
+            var entity = FindCore(key);
+            if (entity != null)
+                Context.Entry(entity).Reload();
+
+            return entity;
         }
 
         EntityState IRepository<TEntity, TPrimaryKey>.GetState(TEntity entity)

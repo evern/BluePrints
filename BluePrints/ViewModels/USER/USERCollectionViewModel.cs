@@ -58,7 +58,7 @@ namespace BluePrints.ViewModels
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddEntitiesLoader<ROLE, ROLE, Guid, IBluePrintsEntitiesUnitOfWork>(0,
-                bluePrintsUnitOfWorkFactory, x => x.ROLES, null, null, null, OnAfterEntitiesChanged);
+                bluePrintsUnitOfWorkFactory, x => x.ROLES, null, null, null, null, OnAfterEntitiesChanged);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -78,14 +78,6 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
-
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-            object sender)
-        {
-            storeViewState();
-            base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
-        }
-
         #endregion
 
         #region View Properties

@@ -85,34 +85,36 @@ namespace BluePrints.ViewModels
         public override void InitializeAndLoadEntitiesLoaderDescription()
         {
             MainViewModel = null;
+            base.CleanUpEntitiesLoader();
+
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddEntitiesLoader<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0,
-                _bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT,
-                OnAfterEntitiesChanged);
+                _bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT, null, 
+                OnAfterEntitiesChanged, null, true);
             loaderCollection.AddEntitiesLoader<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>(1,
                 _bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, typeof(PROJECT),
-                isContinueLoadingAfterBASELINE, OnAfterEntitiesChanged);
+                isContinueLoadingAfterBASELINE, null, OnAfterEntitiesChanged, null, true);
             loaderCollection.AddEntitiesLoader<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>(2,
-                _bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc, typeof(PROJECT), null,
+                _bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc, typeof(PROJECT), null, null,
                 OnSimpleEntitiesChanged);
             loaderCollection.AddEntitiesLoader<PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork>(3,
-                _bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc, typeof(PROJECT), null, OnSimpleEntitiesChanged);
+                _bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc, typeof(PROJECT), null, null, OnSimpleEntitiesChanged);
             loaderCollection.AddEntitiesLoader<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>(4,
-                _bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc, typeof(PROJECT), null, OnSimpleEntitiesChanged);
+                _bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc, typeof(PROJECT), null, null, OnSimpleEntitiesChanged);
             loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(5,
-                _bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, null, null, null, OnSimpleEntitiesChanged);
+                _bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, null, null, null, null, OnSimpleEntitiesChanged);
             loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(6,
-                _bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES, null, null, null, OnSimpleEntitiesChanged);
+                _bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES, null, null, null, null, OnSimpleEntitiesChanged);
             loaderCollection.AddEntitiesLoader<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(7,
-                _bluePrintsUnitOfWorkFactory, x => x.DOCTYPES, null, null, null, OnSimpleEntitiesChanged);
+                _bluePrintsUnitOfWorkFactory, x => x.DOCTYPES, null, null, null, null, OnSimpleEntitiesChanged);
             loaderCollection.AddEntitiesLoader<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(8,
                 _bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, typeof(PROJECT), null,
-                OnAfterEntitiesChanged);
+                 null, OnAfterEntitiesChanged);
             loaderCollection
                 .AddEntitiesLoader<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(9,
-                    _bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, null, null, null, OnSimpleEntitiesChanged);
+                    _bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, null, null, null, null, OnSimpleEntitiesChanged);
             loaderCollection.AddEntitiesLoader<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(10,
-                _bluePrintsUnitOfWorkFactory, x => x.USERS, null, null, null, OnSimpleEntitiesChanged);
+                _bluePrintsUnitOfWorkFactory, x => x.USERS, null, null, null, null, OnSimpleEntitiesChanged);
             loaderCollection.AddEntitiesLoader<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>(11,
                 _bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc,
                 typeof(PROJECT));
@@ -232,33 +234,13 @@ namespace BluePrints.ViewModels
         private void OnSimpleEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
             object sender)
         {
-            Refresh();
+            RefreshView();
             //mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
 
         protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
             object sender)
         {
-            if (sender.ToString() == MainViewModel.ToString())
-                return;
-
-            storeViewState();
-            if (_loadBaseline != null && changedType == typeof(BASELINE) &&
-                _loadBaseline.GUID.ToString() == key.ToString() ||
-                _loadProject != null && changedType == typeof(PROJECT) && _loadProject.GUID.ToString() == key.ToString())
-                if (messageType == EntityMessageType.Added)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Restored,
-                        StringFormatUtils.GetEntityNameByType(changedType)));
-                else if (messageType == EntityMessageType.Deleted)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed,
-                        StringFormatUtils.GetEntityNameByType(changedType)));
-
-            if (_loadProject != null || _loadBaseline != null)
-                if (MainViewModel != null)
-                    mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
-                else if (_loadProject != null || _loadBaseline != null)
-                    mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
-
             base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
         }
 
@@ -545,7 +527,7 @@ namespace BluePrints.ViewModels
 
             MainViewModel.BulkSave(entitiesToSave);
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
-            Refresh();
+            RefreshView();
         }
 
         #endregion

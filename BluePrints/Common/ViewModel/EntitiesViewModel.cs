@@ -90,9 +90,9 @@ namespace BluePrints.Common.ViewModel
 
             void IEntitiesChangeTracker.UnregisterMessageHandler()
             {
+                //Messenger.Default.Unregister<EntityMessage<TEntity, TPrimaryKey>>(this);
                 Messenger.Default.Unregister(this);
             }
-
 
             public TProjection FindLocalProjectionByKey(TPrimaryKey primaryKey)
             {
@@ -291,14 +291,12 @@ namespace BluePrints.Common.ViewModel
 
         protected virtual void OnEntitiesLoaded(TUnitOfWork unitOfWork, IEnumerable<TProjection> entities)
         {
-            if (OnEntitiesLoadedCallBack != null)
-                OnEntitiesLoadedCallBack(entities);
+            OnEntitiesLoadedCallBack?.Invoke(entities);
         }
 
         protected virtual void OnEntitiesAssigned(Action restoreSelectedEntitiesCallBack)
         {
-            if (restoreSelectedEntitiesCallBack != null)
-                restoreSelectedEntitiesCallBack();
+            restoreSelectedEntitiesCallBack?.Invoke();
         }
 
         protected virtual Action GetSelectedEntityCallback()

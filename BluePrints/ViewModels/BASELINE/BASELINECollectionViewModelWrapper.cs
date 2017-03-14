@@ -68,12 +68,11 @@ namespace BluePrints.ViewModels
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection
-                .AddEntitiesLoader
-                <Data.PROJECT, Data.PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0,
+                .AddEntitiesLoader(0,
                     bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null,
-                    isContinueLoadingAfterPROJECT, OnAfterEntitiesChanged);
+                    isContinueLoadingAfterPROJECT, null, OnAfterEntitiesChanged, null, true);
             loaderCollection
-                .AddEntitiesLoader<PROJWBS, PROJWBS, int, IP6EntitiesUnitOfWork>(1,
+                .AddEntitiesLoader(1,
                     p6UnitOfWorkFactory, x => x.PROJWBS, P6PROJECTProjectionFunc);
             //loaderCollection.AddEntitiesLoader<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>(2, bluePrintsUnitOfWorkFactory, x => x.WORKPACK_ASSIGNMENTS, WORKPACK_ASSIGNMENTProjectionFunc, typeof(BluePrints.Data.PROJECT));
             //loaderCollection.AddEntitiesLoader<TASKRSRC, TASKRSRC, Guid, IBluePrintsEntitiesUnitOfWork>(3, bluePrintsUnitOfWorkFactory, x => x.WORKPACK_ASSIGNMENTS, TASKRSRCProjectionFunc, typeof(BluePrints.P6Data.PROJECT));
@@ -131,7 +130,6 @@ namespace BluePrints.ViewModels
             if (sender.ToString() == MainViewModel.ToString())
                 return;
 
-            storeViewState();
             if (loadPROJECT != null && changedType == typeof(Data.PROJECT) &&
                 loadPROJECT.GUID.ToString() == key.ToString())
                 if (messageType == EntityMessageType.Added)
@@ -141,11 +139,11 @@ namespace BluePrints.ViewModels
                     MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed,
                         StringFormatUtils.GetEntityNameByType(changedType)));
 
-            if (loadPROJECT != null)
-                if (MainViewModel != null)
-                    mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
-                else if (loadPROJECT != null)
-                    mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
+            //if (loadPROJECT != null)
+            //    if (MainViewModel != null)
+            //        mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
+            //    else if (loadPROJECT != null)
+            //        mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
 
             base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
         }

@@ -63,6 +63,11 @@ namespace BluePrints.Common.DataModel.DesignTime
             throw new InvalidOperationException();
         }
 
+        public virtual TEntity Refresh(TPrimaryKey primaryKey)
+        {
+            throw new InvalidOperationException();
+        }
+
         protected virtual TPrimaryKey GetPrimaryKeyCore(TEntity entity)
         {
             return entityTraits.GetPrimaryKey(entity);

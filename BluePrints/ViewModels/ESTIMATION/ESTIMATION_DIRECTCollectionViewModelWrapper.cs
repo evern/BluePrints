@@ -72,7 +72,7 @@ namespace BluePrints.ViewModels
                 .AddEntitiesLoader
                 <Data.PROJECT, Data.PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0,
                     bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null,
-                    isContinueLoadingAfterPROJECT, OnAfterEntitiesChanged);
+                    isContinueLoadingAfterPROJECT, null, OnAfterEntitiesChanged);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 

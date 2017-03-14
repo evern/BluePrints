@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Management;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,6 +17,19 @@ namespace BluePrints.Common.Helpers
                 diff += 7;
             }
             return dt.AddDays(-1 * diff).Date;
+        }
+
+        /// <summary>
+        /// Gets the Disk ID for this computer
+        /// </summary>
+        /// <returns>Processor ID</returns>
+        public static string GetHWID()
+        {
+            string drive = "C";
+            ManagementObject dsk = new ManagementObject(@"win32_logicaldisk.deviceid=""" + drive + @":""");
+            dsk.Get();
+            string volumeSerial = dsk["VolumeSerialNumber"].ToString();
+            return volumeSerial;
         }
     }
 }

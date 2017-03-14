@@ -77,14 +77,6 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
-
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-            object sender)
-        {
-            storeViewState();
-            base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
-        }
-
         #endregion
 
         #region View Properties

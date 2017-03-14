@@ -76,6 +76,7 @@ namespace BluePrints.ViewModels
                 else
                     LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME == UserName);
 
+                LoginCredentials.CurrentHWID = CommonMethods.GetHWID();
                 SignalR.ConnectAsync();
                 ShowMainWindow();
                 delayedHideDispatcher.Start();

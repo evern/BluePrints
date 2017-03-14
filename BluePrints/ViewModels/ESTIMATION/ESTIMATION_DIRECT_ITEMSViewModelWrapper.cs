@@ -114,14 +114,14 @@ namespace BluePrints.ViewModels
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddEntitiesLoader<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0,
                 bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT,
-                OnAfterEntitiesChanged);
+                null, OnAfterEntitiesChanged);
             loaderCollection
                 .AddEntitiesLoader<ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork>(1,
                     bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc,
-                    typeof(PROJECT), isContinueLoadingAfterESTIMATION_DIRECT, OnAfterEntitiesChanged);
+                    typeof(PROJECT), isContinueLoadingAfterESTIMATION_DIRECT, null, OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>(2,
                 bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc, typeof(PROJECT), null,
-                OnAfterEntitiesChanged);
+                null, OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(3,
                 bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(4,
@@ -129,18 +129,18 @@ namespace BluePrints.ViewModels
             loaderCollection
                 .AddEntitiesLoader<COMMODITY_GROUP_DIRECT, COMMODITY_GROUP_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork>(
                     5, bluePrintsUnitOfWorkFactory, x => x.COMMODITY_GROUP_DIRECT, COMMODITY_GROUP_DIRECTProjectionFunc,
-                    typeof(PROJECT), null, OnAfterEntitiesChanged);
+                    typeof(PROJECT), null, null, OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork>(6,
                 bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc, null, null,
-                OnAfterEntitiesChanged);
+                null, OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>(7,
                 bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc,
                 typeof(PROJECT));
             loaderCollection.AddEntitiesLoader<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(8,
                 bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, typeof(PROJECT), null,
-                OnAfterEntitiesChanged);
+                null, OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork>(9,
-                bluePrintsUnitOfWorkFactory, x => x.UOMS, null, null, null, OnAfterEntitiesChanged);
+                bluePrintsUnitOfWorkFactory, x => x.UOMS, null, null, null, null, OnAfterEntitiesChanged);
 
             InvokeEntitiesLoaderDescriptionLoading();
         }
@@ -424,7 +424,7 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentViewModel(this);
 
             var initializeCOMMODITY_CODEMasterDetailView = COMMODITY_CODEMasterDetailViewModel;
-            Refresh();
+            RefreshView();
         }
 
         #region Collection Call Backs

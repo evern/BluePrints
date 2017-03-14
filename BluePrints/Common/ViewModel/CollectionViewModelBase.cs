@@ -164,8 +164,8 @@ namespace BluePrints.Common.ViewModel
         protected virtual void OnEntityDeleted(TPrimaryKey primaryKey, TEntity entity)
         {
             SignalR.HubSendMessage(typeof(TEntity).ToString(), primaryKey.ToString(),
-                EntityMessageType.Deleted.ToString(), ToString());
-            Messenger.Default.Send(new EntityMessage<TEntity, TPrimaryKey>(primaryKey, EntityMessageType.Deleted, this));
+                EntityMessageType.Deleted.ToString(), ToString(), LoginCredentials.CurrentHWID);
+            Messenger.Default.Send(new EntityMessage<TEntity, TPrimaryKey>(primaryKey, EntityMessageType.Deleted, this, LoginCredentials.CurrentHWID));
         }
 
         protected virtual void OnEntitySaved(TPrimaryKey primaryKey, TProjection projectionEntity, TEntity entity,
@@ -174,7 +174,7 @@ namespace BluePrints.Common.ViewModel
             ApplyEntityPropertiesToProjectionCallBack?.Invoke(primaryKey, projectionEntity, entity, isNewEntity);
 
             SignalR.HubSendMessage(typeof(TEntity).ToString(), primaryKey.ToString(),
-                isNewEntity ? EntityMessageType.Added.ToString() : EntityMessageType.Changed.ToString(), ToString());
+                isNewEntity ? EntityMessageType.Added.ToString() : EntityMessageType.Changed.ToString(), ToString(), LoginCredentials.CurrentHWID);
             Messenger.Default.Send(new EntityMessage<TEntity, TPrimaryKey>(primaryKey,
                 isNewEntity ? EntityMessageType.Added : EntityMessageType.Changed, this));
         }

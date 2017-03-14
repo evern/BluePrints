@@ -365,7 +365,7 @@
             this.Detail1.HeightF = 25.00002F;
             this.Detail1.Name = "Detail1";
             this.Detail1.SortFields.AddRange(new DevExpress.XtraReports.UI.GroupField[] {
-            new DevExpress.XtraReports.UI.GroupField("BASELINE_ITEM.INTERNAL_NUM", DevExpress.XtraReports.UI.XRColumnSortOrder.Ascending)});
+            new DevExpress.XtraReports.UI.GroupField("BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM", DevExpress.XtraReports.UI.XRColumnSortOrder.Ascending)});
             // 
             // xrLabel7
             // 
@@ -642,7 +642,7 @@
             this.xrLabel42});
             this.GroupHeader1.Dpi = 100F;
             this.GroupHeader1.GroupFields.AddRange(new DevExpress.XtraReports.UI.GroupField[] {
-            new DevExpress.XtraReports.UI.GroupField("BASELINE_ITEM.AREA.INTERNAL_NUM", DevExpress.XtraReports.UI.XRColumnSortOrder.Ascending)});
+            new DevExpress.XtraReports.UI.GroupField("BASELINE_ITEMJoinRATE.BASELINE_ITEM.AREA.INTERNAL_NUM", DevExpress.XtraReports.UI.XRColumnSortOrder.Ascending)});
             this.GroupHeader1.HeightF = 23.87497F;
             this.GroupHeader1.Name = "GroupHeader1";
             // 
@@ -1519,7 +1519,7 @@
             this.FieldCaption,
             this.PageInfo,
             this.DataField});
-            this.Version = "16.1";
+            this.Version = "16.2";
             this.BeforePrint += new System.Drawing.Printing.PrintEventHandler(this.rptProgressItem_BeforePrint);
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(secondaryAxisY1)).EndInit();

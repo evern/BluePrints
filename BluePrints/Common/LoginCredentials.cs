@@ -13,6 +13,8 @@ namespace BluePrints.Common
     {
         public static USER CurrentUser { get; set; }
 
+        public static string CurrentHWID { get; set; }
+
         public static bool hasPermission(string permissionName)
         {
             if (CurrentUser == null)

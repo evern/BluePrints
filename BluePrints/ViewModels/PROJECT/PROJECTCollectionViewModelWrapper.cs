@@ -140,7 +140,6 @@ namespace BluePrints.ViewModels
             if (sender.ToString() == MainViewModel.ToString() || sender.ToString() == ToString())
                 return;
 
-            storeViewState();
             if (MainViewModel != null)
                 mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
             else

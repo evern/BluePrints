@@ -80,17 +80,17 @@ namespace BluePrints.ViewModels
                 .AddEntitiesLoader
                 <Data.PROJECT, Data.PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0,
                     bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null,
-                    isContinueLoadingAfterPROJECT, OnAfterEntitiesChanged);
+                    isContinueLoadingAfterPROJECT, null, OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>(1,
                 bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, typeof(Data.PROJECT),
-                isContinueLoadingAfterBASELINE, OnAfterEntitiesChanged);
+                isContinueLoadingAfterBASELINE, null, OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>(2,
                 bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, typeof(BASELINE),
-                isContinueLoadingAfterPROGRESS, OnAfterEntitiesChanged);
+                isContinueLoadingAfterPROGRESS, null, OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>(3,
                 bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc, typeof(BASELINE));
             loaderCollection.AddEntitiesLoader<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>(4,
-                bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc, typeof(PROGRESS), null,
+                bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc, typeof(PROGRESS), null, null, 
                 OnAfterEntitiesChanged);
             loaderCollection.AddEntitiesLoader<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>(5,
                 bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc,
@@ -102,7 +102,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddEntitiesLoader<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(8,
                 bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddEntitiesLoader<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(9,
-                bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, typeof(Data.PROJECT), null,
+                bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, typeof(Data.PROJECT), null, null,
                 OnAfterEntitiesChanged);
             loaderCollection
                 .AddEntitiesLoader<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(10,
@@ -111,7 +111,7 @@ namespace BluePrints.ViewModels
                 bluePrintsUnitOfWorkFactory, x => x.USERS);
             loaderCollection.AddEntitiesLoader<VARIATION, VARIATION, Guid, IBluePrintsEntitiesUnitOfWork>(12,
                 bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc, typeof(Data.PROJECT),
-                null, OnAfterEntitiesChanged);
+                null, null, OnAfterEntitiesChanged);
 
             InvokeEntitiesLoaderDescriptionLoading();
         }
@@ -289,7 +289,7 @@ namespace BluePrints.ViewModels
                 new BuildMinimalStatsForPlannedOriginalPercentage();
             summaryManufacturer.Manufacture(summaryBuilder);
 
-            Refresh();
+            RefreshView();
             //mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
 
@@ -324,7 +324,6 @@ namespace BluePrints.ViewModels
                 sender.ToString() == PROGRESS_ITEMSCollectionViewModel.ToString())
                 return;
 
-            storeViewState();
             if (loadPROGRESS != null && changedType == typeof(PROGRESS) &&
                 loadPROGRESS.GUID.ToString() == key.ToString() ||
                 loadBASELINE != null && changedType == typeof(BASELINE) &&
