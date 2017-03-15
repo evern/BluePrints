@@ -156,20 +156,7 @@ namespace BluePrints.Common.ViewModel
         {
             MainViewModel.SelectedEntities = this.DisplaySelectedEntities;
             RefreshView();
-            //throw new NotImplementedException("Override this method to assign call backs and also notify the view.");
         }
-
-        //IEnumerable<IEntitiesLoaderDescription> compulsoryLoaders { get; set; }
-        //IEnumerable<IEntitiesLoaderDescription> CompulsoryLoaders
-        //{
-        //    get
-        //    {
-        //        if(compulsoryLoaders == null)
-        //            compulsoryLoaders = loaderCollection.Where(x => x.isCompulsory);
-
-        //        return compulsoryLoaders;
-        //    }
-        //}
 
         IEnumerable<IEntitiesLoaderDescription> compulsoryLoaders { get; set; }
         IEnumerable<IEntitiesLoaderDescription> CompulsoryLoaders
@@ -198,7 +185,14 @@ namespace BluePrints.Common.ViewModel
             if (sender != null && sender == MainViewModel)
                 return;
 
-            mainThreadDispatcher.BeginInvoke(new Action(() => FullRefresh()));
+            if(!IsSingleMainEntityRefreshIdentified(key, changedType, messageType, sender))
+                mainThreadDispatcher.BeginInvoke(new Action(() => FullRefresh()));
+        }
+
+        protected virtual bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender)
+        {
+            //Override this method to check if a single main entity can be refreshed by sending a message
+            return false;
         }
 
         public virtual void OnAfterCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
@@ -268,6 +262,7 @@ namespace BluePrints.Common.ViewModel
         private List<Guid> RestoreSelectedEntitiesGuids = new List<Guid>();
         public TMainProjectionEntity DisplaySelectedEntity { get; set; }
         public ObservableCollection<TMainProjectionEntity> DisplaySelectedEntities { get; set; }
+        public Action OnSelectedEntitiesChangedCallBack;
         private BackgroundWorker refreshBackgroundWorker;
 
         private void InitializePresentationProperties()
@@ -276,6 +271,12 @@ namespace BluePrints.Common.ViewModel
             refreshBackgroundWorker.DoWork += refreshBackgroundWorker_DoWork;
             refreshBackgroundWorker.WorkerSupportsCancellation = true;
             DisplaySelectedEntities = new ObservableCollection<TMainProjectionEntity>();
+            DisplaySelectedEntities.CollectionChanged += DisplaySelectedEntities_CollectionChanged;
+        }
+
+        private void DisplaySelectedEntities_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            OnSelectedEntitiesChangedCallBack?.Invoke();
         }
 
         public virtual void RefreshSelectedEntity()

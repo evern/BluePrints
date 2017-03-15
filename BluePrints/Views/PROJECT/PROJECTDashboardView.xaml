@@ -43,7 +43,7 @@
                             <dxr:RibbonPageGroup Caption="PROJECT Tasks">
                                 <dxb:BarButtonItem Content="Workpacks"
                                                    Command="{Binding DataContext.EditCommand, ElementName=userControl}"
-                                                   CommandParameter="{Binding SelectedEntity}"
+                                                   CommandParameter="{Binding DataContext.DisplaySelectedEntity, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Line_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Line_32x32.png}" />
                                 <dxb:BarCheckItem x:Name="biCheckUnits" Content="Units"
@@ -58,7 +58,7 @@
                                                   Glyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}"
                                                   LargeGlyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}"
                                                   IsChecked="{Binding ElementName=biCheckUnits, Path=IsChecked, Converter={StaticResource BooleanNegationConverter}}" />
-                                <dxb:BarButtonItem Content="Refresh" Command="{Binding RefreshCommand}"
+                                <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
                                                    Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />
                                 <dxb:BarCheckItem Content="Auto Refresh"
@@ -81,7 +81,7 @@
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical"
                                       dxlc:LayoutControl.AllowVerticalSizing="True">
                         <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="PROJECT_DashboardGrid"
-                                         Style="{StaticResource WrapperGridTemplate}">
+                                         Style="{StaticResource AggregateViewGridTemplate}">
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EventToCommand PassEventArgsToCommand="True"
                                                        Command="{Binding DataContext.EditCommand, ElementName=userControl}"

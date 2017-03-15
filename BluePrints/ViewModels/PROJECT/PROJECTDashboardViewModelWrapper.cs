@@ -122,24 +122,12 @@ namespace BluePrints.ViewModels
                 mainEntityLoader.GetViewModel();
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             MainViewModel.SetParentViewModel(this);
-            base.OnMainViewModelLoaded(entities);
-            return true;
+            return base.OnMainViewModelLoaded(entities);
         }
 
-        public override void OnAfterCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-            object sender)
+        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender)
         {
-            if (!isAutoRefresh)
-                return;
-
-            if (sender == MainViewModel && messageType != EntityMessageType.Added || sender == this ||
-                changedType == typeof(PROJECT))
-                return;
-
-            if (MainViewModel != null)
-                mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
-            else
-                mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
+            return !isAutoRefresh;
         }
 
         #endregion
@@ -170,7 +158,7 @@ namespace BluePrints.ViewModels
 
         public bool CanEditReport()
         {
-            if (MainViewModel == null || MainViewModel.Entities.Count == 0)
+            if (DisplaySelectedEntities.Count > 0)
                 return false;
 
             return true;
@@ -178,7 +166,7 @@ namespace BluePrints.ViewModels
 
         public bool CanViewReport()
         {
-            if (MainViewModel == null || MainViewModel.Entities.Count == 0)
+            if (DisplaySelectedEntities.Count > 0)
                 return false;
 
             return true;

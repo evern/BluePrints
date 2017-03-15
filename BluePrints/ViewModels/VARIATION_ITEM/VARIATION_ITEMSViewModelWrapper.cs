@@ -182,28 +182,22 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        public override void OnAfterCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-            object sender)
+        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender)
         {
-            //Map the changes from PROGRESS_ITEM to BASELINE_ITEM so undo/redo operation is valid
-            if (changedType == typeof(VARIATION_ITEM) && messageType != EntityMessageType.Added)
+            if(changedType == typeof(VARIATION_ITEM))
             {
-                var mappedEntity =
-                    MainViewModel.Entities.FirstOrDefault(
-                        x => x.VARIATION_ITEM != null && x.VARIATION_ITEM.GUID.ToString() == key.ToString());
-                mainThreadDispatcher.BeginInvoke(
-                    new Action(
-                        () =>
-                            Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(mappedEntity.GUID,
-                                EntityMessageType.Changed, this))));
-                return;
+                VARIATION_ITEMProjection mainEntity = MainViewModel.Entities.Where(x => x.VARIATION_ITEM != null).FirstOrDefault(x => x.VARIATION_ITEM.GUID.ToString() == key.ToString());
+                if (mainEntity != null)
+                {
+                    //got to make sure sender is not MainViewModel or else it'll not be refreshed
+                    mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(mainEntity.GUID, EntityMessageType.Changed, this))));
+                    return true;
+                }
             }
 
-            base.OnAfterCompulsoryEntitiesChanged(key, changedType, messageType, sender);
+            return false;
         }
-
         #region CallBacks
-
         public VARIATION_ITEMProjection CreateNewProjectionFromNewEntity()
         {
             var newVARIATION_ITEM = new VARIATION_ITEMProjection();

@@ -139,26 +139,15 @@ namespace BluePrints.ViewModels
             MainViewModel =
                 (CollectionViewModel<PROJECT, PROJECT_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>)
                 mainEntityLoader.GetViewModel();
+
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             MainViewModel.SetParentViewModel(this);
+
+            DisplaySelectedEntities_CollectionChanged();
 
             base.OnMainViewModelLoaded(entities);
             return true;
         }
-
-        public override void OnAfterCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-            object sender)
-        {
-            if (sender == MainViewModel && messageType != EntityMessageType.Added || sender == this ||
-                changedType == typeof(PROJECT))
-                return;
-
-            if (MainViewModel != null)
-                mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
-            else
-                mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
-        }
-
         #endregion
 
         #region View Behavior
@@ -307,7 +296,7 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public bool CanEdit(PROJECT_Dashboard entity)
+        public bool CanEdit()
         {
             if (DisplaySelectedEntity == null)
                 return false;
@@ -320,12 +309,12 @@ namespace BluePrints.ViewModels
             get { return this.GetService<IDocumentManagerService>(); }
         }
 
-        public void Edit(PROJECT_Dashboard entity)
+        public void Edit()
         {
-            if (entity == null)
+            if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentManagerService.ShowExistingEntityDocument<WORKPACK_Dashboard, Guid>(this, entity.GUID, string.Empty);
+            DocumentManagerService.ShowExistingEntityDocument<WORKPACK_Dashboard, Guid>(this, DisplaySelectedEntity.GUID, string.Empty);
         }
 
 

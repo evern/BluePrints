@@ -239,6 +239,22 @@ namespace BluePrints.ViewModels
             isReportReady = true;
         }
 
+        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender)
+        {
+            if(changedType == typeof(PROGRESS_ITEM))
+            {
+                PROGRESS_ITEMProjection mainEntity = MainViewModel.Entities.Where(x => x.PROGRESS_ITEMCurrent != null).FirstOrDefault(x => x.PROGRESS_ITEMCurrent.GUID.ToString() == key.ToString());
+                if (mainEntity != null)
+                {
+                    //got to make sure sender is not MainViewModel or else it'll not be refreshed
+                    mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(mainEntity.GUID, EntityMessageType.Changed, this))));
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         //protected override void OnAfterCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
         //    object sender)
         //{

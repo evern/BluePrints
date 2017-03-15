@@ -40,11 +40,11 @@ namespace BluePrints.Common.ViewModel
 
         protected override bool OnMainViewModelLoaded(IEnumerable<TProjection> entities)
         {
-            MainViewModel.OnSelectedEntitiesChangedCallBack = DelayedProcessForSelectedEntitiesCompletion;
-            return true;
+            OnSelectedEntitiesChangedCallBack = DisplaySelectedEntities_CollectionChanged;
+            return base.OnMainViewModelLoaded(entities);
         }
 
-        private void DelayedProcessForSelectedEntitiesCompletion()
+        protected void DisplaySelectedEntities_CollectionChanged()
         {
             dispatchTimer.Tick -= dispatchTimer_Tick;
             dispatchTimer.Tick += dispatchTimer_Tick;
@@ -62,7 +62,10 @@ namespace BluePrints.Common.ViewModel
         public void OnSelectedEntityChanged(IEnumerable<TProjection> entities)
         {
             if (!entities.Any())
-                return;
+                if (MainViewModel.Entities.Count() > 0)
+                    entities = MainViewModel.Entities;
+                else
+                    return;
 
             if (entities.Count() == 1)
             {
