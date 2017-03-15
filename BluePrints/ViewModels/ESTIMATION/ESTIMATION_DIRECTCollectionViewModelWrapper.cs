@@ -68,27 +68,8 @@ namespace BluePrints.ViewModels
         {
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection
-                .AddEntitiesLoader
-                <Data.PROJECT, Data.PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0,
-                    bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null,
-                    isContinueLoadingAfterPROJECT, null, OnAfterEntitiesChanged);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             InvokeEntitiesLoaderDescriptionLoading();
-        }
-
-        private bool isContinueLoadingAfterPROJECT(IEnumerable<Data.PROJECT> entities)
-        {
-            if (!entities.Any())
-            {
-                mainThreadDispatcher.BeginInvoke(
-                    new Action(
-                        () =>
-                            MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed, "PROJECT"))));
-                return false;
-            }
-
-            loadPROJECT = entities.First();
-            return true;
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()

@@ -61,25 +61,8 @@ namespace BluePrints.ViewModels
         {
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddEntitiesLoader<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0,
-                bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT,
-                null, OnAfterEntitiesChanged, null, true);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             InvokeEntitiesLoaderDescriptionLoading();
-        }
-
-        private bool isContinueLoadingAfterPROJECT(IEnumerable<PROJECT> entities)
-        {
-            if (!entities.Any())
-            {
-                mainThreadDispatcher.BeginInvoke(
-                    new Action(
-                        () =>
-                            MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed, "PROJECT"))));
-                return false;
-            }
-
-            loadPROJECT = entities.First();
-            return true;
         }
 
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
@@ -103,12 +86,6 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
-        }
-
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-            object sender)
-        {
-            base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
         }
 
         #region Collection Call Backs

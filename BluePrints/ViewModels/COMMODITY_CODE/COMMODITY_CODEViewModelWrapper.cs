@@ -81,19 +81,11 @@ namespace BluePrints.ViewModels
         {
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddEntitiesLoader<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(1,
-                bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT,
-                null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(2,
-                bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, null, null, isContinueLoadingAfterDEPARTMENT,
-                null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(3,
-                bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES, null, null, isContinueLoadingAfterDISCIPLINE,
-                null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<INDIRECT_TYPE, INDIRECT_TYPE, Guid, IBluePrintsEntitiesUnitOfWork>(4,
-                bluePrintsUnitOfWorkFactory, x => x.INDIRECT_TYPES, null, null, null, null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork>(5,
-                bluePrintsUnitOfWorkFactory, x => x.UOMS, null, null, null, null, OnAfterEntitiesChanged);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
+            loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, null, x => { });
+            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES, null, x => { });
+            loaderCollection.AddLoaderDescription<INDIRECT_TYPE, INDIRECT_TYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.INDIRECT_TYPES);
+            loaderCollection.AddLoaderDescription<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.UOMS);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -102,53 +94,12 @@ namespace BluePrints.ViewModels
             get { return loadPROJECT != null; }
         }
 
-        private bool isContinueLoadingAfterPROJECT(IEnumerable<PROJECT> entities)
-        {
-            if (isPROJECTSpecific && !entities.Any())
-            {
-                mainThreadDispatcher.BeginInvoke(
-                    new Action(
-                        () =>
-                            MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed, "PROJECT"))));
-                return false;
-            }
-
-            if (isPROJECTSpecific)
-                loadPROJECT = entities.First();
-
-            return true;
-        }
-
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
         {
             if (isPROJECTSpecific)
                 return query => query.Where(x => x.GUID == loadPROJECT.GUID);
             else
                 return query => query.Where(x => x.GUID == Guid.Empty);
-        }
-
-        private bool isContinueLoadingAfterDEPARTMENT(IEnumerable<DEPARTMENT> entities)
-        {
-            if (!entities.Any())
-            {
-                mainThreadDispatcher.BeginInvoke(
-                    new Action(() => MessageBoxService.ShowMessage(CommonResources.CommodityCode_NoDepartment)));
-                return false;
-            }
-
-            return true;
-        }
-
-        private bool isContinueLoadingAfterDISCIPLINE(IEnumerable<DISCIPLINE> entities)
-        {
-            if (!entities.Any())
-            {
-                mainThreadDispatcher.BeginInvoke(
-                    new Action(() => MessageBoxService.ShowMessage(CommonResources.CommodityCode_NoDiscipline)));
-                return false;
-            }
-
-            return true;
         }
 
         protected override void OnAllEntitiesCollectionLoaded()

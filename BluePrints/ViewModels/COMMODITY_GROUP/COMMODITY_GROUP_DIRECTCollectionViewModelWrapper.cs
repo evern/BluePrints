@@ -82,13 +82,9 @@ namespace BluePrints.ViewModels
         {
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddEntitiesLoader<COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork>(1,
-                bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc, null, null,
-                null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(2,
-                bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
-            loaderCollection.AddEntitiesLoader<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork>(3,
-                bluePrintsUnitOfWorkFactory, x => x.UOMS);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
+            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
+            loaderCollection.AddLoaderDescription<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.UOMS);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -135,21 +131,21 @@ namespace BluePrints.ViewModels
             RefreshView();
         }
 
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-            object sender)
-        {
-            if (changedType == typeof(COMMODITY_GROUP_DIRECT))
-            {
-                if (sender.ToString() != MainViewModel.ToString())
-                    mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
-                else
-                    mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.RefreshWithoutClearingUndoManager()));
+        //protected override void OnAfterCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
+        //    object sender)
+        //{
+        //    if (changedType == typeof(COMMODITY_GROUP_DIRECT))
+        //    {
+        //        if (sender.ToString() != MainViewModel.ToString())
+        //            mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
+        //        else
+        //            mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.RefreshWithoutClearingUndoManager()));
 
-                RefreshDisplayEntities();
-            }
+        //        RefreshDisplayEntities();
+        //    }
 
-            base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
-        }
+        //    base.OnAfterCompulsoryEntitiesChanged(key, changedType, messageType, sender);
+        //}
 
         private void displayEntitiesRefreshBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {

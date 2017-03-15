@@ -67,34 +67,14 @@ namespace BluePrints.ViewModels
         {
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection
-                .AddEntitiesLoader(0,
-                    bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null,
-                    isContinueLoadingAfterPROJECT, null, OnAfterEntitiesChanged, null, true);
-            loaderCollection
-                .AddEntitiesLoader(1,
-                    p6UnitOfWorkFactory, x => x.PROJWBS, P6PROJECTProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
+            loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJWBS, P6PROJECTProjectionFunc);
             //loaderCollection.AddEntitiesLoader<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>(2, bluePrintsUnitOfWorkFactory, x => x.WORKPACK_ASSIGNMENTS, WORKPACK_ASSIGNMENTProjectionFunc, typeof(BluePrints.Data.PROJECT));
             //loaderCollection.AddEntitiesLoader<TASKRSRC, TASKRSRC, Guid, IBluePrintsEntitiesUnitOfWork>(3, bluePrintsUnitOfWorkFactory, x => x.WORKPACK_ASSIGNMENTS, TASKRSRCProjectionFunc, typeof(BluePrints.P6Data.PROJECT));
             //loaderCollection.AddEntitiesLoader<TASK, TASK, Guid, IBluePrintsEntitiesUnitOfWork>(4, bluePrintsUnitOfWorkFactory, x => x.WORKPACK_ASSIGNMENTS, TASKProjectionFunc, typeof(BluePrints.P6Data.PROJECT));
             InvokeEntitiesLoaderDescriptionLoading();
         }
-
-        private bool isContinueLoadingAfterPROJECT(IEnumerable<Data.PROJECT> entities)
-        {
-            if (!entities.Any())
-            {
-                mainThreadDispatcher.BeginInvoke(
-                    new Action(
-                        () =>
-                            MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed, "PROJECT"))));
-                return false;
-            }
-
-            loadPROJECT = entities.First();
-            return true;
-        }
-
+        
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
         {
             return query => query.Where(x => x.GUID == loadPROJECT.GUID);

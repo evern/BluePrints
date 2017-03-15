@@ -66,27 +66,9 @@ namespace BluePrints.ViewModels
         {
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddEntitiesLoader<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0,
-                bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT, null, OnAfterEntitiesChanged);
-            loaderCollection
-                .AddEntitiesLoader<PROJWBS, PROJWBS, int, IP6EntitiesUnitOfWork>(1,
-                    p6UnitOfWorkFactory, x => x.PROJWBS, P6PROJECTProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
+            loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJWBS, P6PROJECTProjectionFunc);
             InvokeEntitiesLoaderDescriptionLoading();
-        }
-
-        private bool isContinueLoadingAfterPROJECT(IEnumerable<PROJECT> entities)
-        {
-            if (!entities.Any())
-            {
-                mainThreadDispatcher.BeginInvoke(
-                    new Action(
-                        () =>
-                            MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed, "PROJECT"))));
-                return false;
-            }
-
-            loadPROJECT = entities.First();
-            return true;
         }
 
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
@@ -118,29 +100,29 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-            object sender)
-        {
-            if (sender.ToString() == MainViewModel.ToString())
-                return;
+        //protected override void OnAfterCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
+        //    object sender)
+        //{
+        //    if (sender.ToString() == MainViewModel.ToString())
+        //        return;
 
-            if (loadPROJECT != null && changedType == typeof(PROJECT) &&
-                loadPROJECT.GUID.ToString() == key.ToString())
-                if (messageType == EntityMessageType.Added)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Restored,
-                        StringFormatUtils.GetEntityNameByType(changedType)));
-                else if (messageType == EntityMessageType.Deleted)
-                    MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed,
-                        StringFormatUtils.GetEntityNameByType(changedType)));
+        //    if (loadPROJECT != null && changedType == typeof(PROJECT) &&
+        //        loadPROJECT.GUID.ToString() == key.ToString())
+        //        if (messageType == EntityMessageType.Added)
+        //            MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Restored,
+        //                StringFormatUtils.GetEntityNameByType(changedType)));
+        //        else if (messageType == EntityMessageType.Deleted)
+        //            MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed,
+        //                StringFormatUtils.GetEntityNameByType(changedType)));
 
-            if (loadPROJECT != null)
-                if (MainViewModel != null)
-                    mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
-                else if (loadPROJECT != null)
-                    mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
+        //    if (loadPROJECT != null)
+        //        if (MainViewModel != null)
+        //            mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
+        //        else if (loadPROJECT != null)
+        //            mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
 
-            base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
-        }
+        //    base.OnAfterCompulsoryEntitiesChanged(key, changedType, messageType, sender);
+        //}
 
         #region Collection Call Backs
         /// <summary>

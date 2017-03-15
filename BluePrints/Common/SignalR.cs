@@ -16,8 +16,8 @@ namespace BluePrints.Common
     public static class SignalR
     {
         public static IHubProxy HubProxy { get; set; }
-        //public const string ServerURI = "http://192.168.70.5:5050/signalr";
-        public const string ServerURI = "http://127.0.0.1:5050/signalr";
+        public const string ServerURI = "http://192.168.70.5:5050/signalr";
+        //public const string ServerURI = "http://127.0.0.1:5050/signalr";
         public static HubConnection Connection { get; set; }
 
         public static async void ConnectAsync()
@@ -61,8 +61,9 @@ namespace BluePrints.Common
 
         public static void HubReceiveMessage(string entityName, string key, string messageType, string sender, string hwid)
         {
-            //if (hwid == LoginCredentials.CurrentHWID)
-            //    return;
+            //ignore messages returned from hub because it was transmitted locally
+            if (hwid == LoginCredentials.CurrentHWID)
+                return;
 
             if (key.Length < Guid.Empty.ToString().Length)
                 return;

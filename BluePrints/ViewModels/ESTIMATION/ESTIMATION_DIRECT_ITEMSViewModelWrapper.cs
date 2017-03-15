@@ -112,68 +112,18 @@ namespace BluePrints.ViewModels
         {
             MainViewModel = null;
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddEntitiesLoader<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(0,
-                bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, null, isContinueLoadingAfterPROJECT,
-                null, OnAfterEntitiesChanged);
-            loaderCollection
-                .AddEntitiesLoader<ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork>(1,
-                    bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc,
-                    typeof(PROJECT), isContinueLoadingAfterESTIMATION_DIRECT, null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>(2,
-                bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc, typeof(PROJECT), null,
-                null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(3,
-                bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
-            loaderCollection.AddEntitiesLoader<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(4,
-                bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
-            loaderCollection
-                .AddEntitiesLoader<COMMODITY_GROUP_DIRECT, COMMODITY_GROUP_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork>(
-                    5, bluePrintsUnitOfWorkFactory, x => x.COMMODITY_GROUP_DIRECT, COMMODITY_GROUP_DIRECTProjectionFunc,
-                    typeof(PROJECT), null, null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork>(6,
-                bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc, null, null,
-                null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>(7,
-                bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc,
-                typeof(PROJECT));
-            loaderCollection.AddEntitiesLoader<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(8,
-                bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc, typeof(PROJECT), null,
-                null, OnAfterEntitiesChanged);
-            loaderCollection.AddEntitiesLoader<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork>(9,
-                bluePrintsUnitOfWorkFactory, x => x.UOMS, null, null, null, null, OnAfterEntitiesChanged);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc, x => loadESTIMATION_DIRECT = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
+            loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
+            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_GROUP_DIRECT, COMMODITY_GROUP_DIRECTProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
+            loaderCollection.AddLoaderDescription<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.UOMS);
 
             InvokeEntitiesLoaderDescriptionLoading();
-        }
-
-        private bool isContinueLoadingAfterPROJECT(IEnumerable<PROJECT> entities)
-        {
-            if (!entities.Any())
-            {
-                mainThreadDispatcher.BeginInvoke(
-                    new Action(
-                        () =>
-                            MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed, "PROJECT"))));
-                return false;
-            }
-
-            loadPROJECT = entities.First();
-            return true;
-        }
-
-        private bool isContinueLoadingAfterESTIMATION_DIRECT(IEnumerable<ESTIMATION_DIRECT> entities)
-        {
-            if (!entities.Any())
-            {
-                mainThreadDispatcher.BeginInvoke(
-                    new Action(
-                        () =>
-                            MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed,
-                                "ESTIMATION_DIRECT"))));
-                return false;
-            }
-
-            loadESTIMATION_DIRECT = entities.First();
-            return true;
         }
 
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
@@ -252,36 +202,36 @@ namespace BluePrints.ViewModels
 
         private List<Guid> SelectedEntitiesGuid = new List<Guid>();
 
-        protected override void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-            object sender)
-        {
-            if (changedType == typeof(COMMODITY_CODE) || changedType == typeof(COMMODITY_GROUP_DIRECT) ||
-                changedType == typeof(ESTIMATION_DIRECT_ITEM))
-            {
-                if (!displayEntitiesRefreshBackgroundWorker.IsBusy)
-                {
-                    storeViewState();
-                    if (changedType == typeof(COMMODITY_CODE))
-                    {
-                        mainThreadDispatcher.BeginInvoke(new Action(() => COMMODITY_CODECollectionViewModel.Refresh()));
-                    }
-                    else
-                    {
-                        if (sender.ToString() != MainViewModel.ToString())
-                            mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
-                        else
-                            mainThreadDispatcher.BeginInvoke(
-                                new Action(() => MainViewModel.RefreshWithoutClearingUndoManager()));
-                    }
+        //protected override void OnAfterCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
+        //    object sender)
+        //{
+        //    if (changedType == typeof(COMMODITY_CODE) || changedType == typeof(COMMODITY_GROUP_DIRECT) ||
+        //        changedType == typeof(ESTIMATION_DIRECT_ITEM))
+        //    {
+        //        if (!displayEntitiesRefreshBackgroundWorker.IsBusy)
+        //        {
+        //            storeViewState();
+        //            if (changedType == typeof(COMMODITY_CODE))
+        //            {
+        //                mainThreadDispatcher.BeginInvoke(new Action(() => COMMODITY_CODECollectionViewModel.Refresh()));
+        //            }
+        //            else
+        //            {
+        //                if (sender.ToString() != MainViewModel.ToString())
+        //                    mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
+        //                else
+        //                    mainThreadDispatcher.BeginInvoke(
+        //                        new Action(() => MainViewModel.RefreshWithoutClearingUndoManager()));
+        //            }
 
-                    displayEntitiesRefreshBackgroundWorker.RunWorkerAsync();
-                }
+        //            displayEntitiesRefreshBackgroundWorker.RunWorkerAsync();
+        //        }
 
-                return;
-            }
+        //        return;
+        //    }
 
-            base.OnAfterEntitiesChanged(key, changedType, messageType, sender);
-        }
+        //    base.OnAfterCompulsoryEntitiesChanged(key, changedType, messageType, sender);
+        //}
 
         private void refreshBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {

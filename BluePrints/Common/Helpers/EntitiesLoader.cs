@@ -15,6 +15,37 @@ namespace BluePrints.Data.Helpers
             this.owner = owner;
         }
 
+        public void AddLoaderDescription<TEntity, TProjection, TPrimaryKey, TUnitOfWork>(
+        IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory, 
+        Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
+        Func<Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>>> projectionFunc = null, 
+        Action<TProjection> compulsoryEntityAssignmentFunc = null,
+        bool doesNotRefreshMainEntity = false)
+        where TEntity : class
+        where TProjection : class
+        where TUnitOfWork : IUnitOfWork
+        {
+            Action<object, Type, EntityMessageType, object> OnAfterEntitiesChanged = null;
+            Func<object, Type, EntityMessageType, object, bool> OnBeforeAffectingOrCompulsoryEntitiesChanged = null;
+            int loadOrder = this.Count() + 1;
+
+            //Entities either affect MainEntities before it is loaded or after it is loaded
+            //CompulsoryEntityAssignment is used to determine whether MainEntity should be loaded and assign variable back for projection usage
+            //Because it doesn't affect MainEntities after it is loaded OnAfterAffectingEntities is not assigned
+            if (compulsoryEntityAssignmentFunc != null)
+                OnAfterEntitiesChanged = owner.OnAfterCompulsoryEntitiesChanged;
+
+            //Some entities are used as auxiliary data for certain functions and doesn't not affect MainEntities at all
+            else if(!doesNotRefreshMainEntity)
+            {
+                OnBeforeAffectingOrCompulsoryEntitiesChanged = owner.OnBeforeAffectingOrCompulsoryEntitiesChanged;
+                OnAfterEntitiesChanged = owner.OnAfterAffectingEntitiesChanged;
+            }
+
+            Add(new EntitiesLoaderDescription<TEntity, TProjection, TPrimaryKey, TUnitOfWork>(owner, loadOrder,
+                unitOfWorkFactory, getRepositoryFunc, null, OnBeforeAffectingOrCompulsoryEntitiesChanged, OnAfterEntitiesChanged, null, projectionFunc, compulsoryEntityAssignmentFunc));
+        }
+
         /// <summary>
         /// Add collection view model into parent entity
         /// </summary>
@@ -27,24 +58,23 @@ namespace BluePrints.Data.Helpers
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
         /// <param name="getRepositoryFunc">A function that returns a repository representing entities of the given type.</param>
         /// <param name="additionalProjection">An optional parameter that provides a LINQ function used to customize a query for entities. The parameter, for example, can be used for sorting data.</param>
-        public void AddEntitiesLoader<TEntity, TProjection, TPrimaryKey, TUnitOfWork>(
+        public void AddAdvancedLoaderDescription<TEntity, TProjection, TPrimaryKey, TUnitOfWork>(
             int loadOrder,
             IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory,
             Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
             Func<Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>>> constructProjectionCallBackFunc = null,
-            Type dependencyType = null,
             Func<IEnumerable<TProjection>, bool> isContinueLoadingCallBack = null,
             Func<object, Type, EntityMessageType, object, bool> collectionViewModelBeforeChangedCallBack = null,
             Action<object, Type, EntityMessageType, object> collectionViewModelChangedCallBack = null,
-            Action<IEnumerable<TProjection>> collectionViewModelRefreshedCallBack = null, 
+            Action<IEnumerable<TProjection>> collectionViewModelRefreshedCallBack = null,
             bool isCompulsory = false)
             where TEntity : class
             where TProjection : class
             where TUnitOfWork : IUnitOfWork
         {
             Add(new EntitiesLoaderDescription<TEntity, TProjection, TPrimaryKey, TUnitOfWork>(owner, loadOrder,
-                unitOfWorkFactory, getRepositoryFunc, isContinueLoadingCallBack, collectionViewModelBeforeChangedCallBack, collectionViewModelChangedCallBack, collectionViewModelRefreshedCallBack, 
-                constructProjectionCallBackFunc, dependencyType, isCompulsory));
+                unitOfWorkFactory, getRepositoryFunc, isContinueLoadingCallBack, collectionViewModelBeforeChangedCallBack, collectionViewModelChangedCallBack, collectionViewModelRefreshedCallBack,
+                constructProjectionCallBackFunc));
         }
 
         public IEntitiesLoaderDescription GetLoader(Type dependencyType)
@@ -118,10 +148,9 @@ namespace BluePrints.Data.Helpers
         where TUnitOfWork : IUnitOfWork
     {
         private readonly ICollectionViewModelsWrapper owner;
-        public int loadOrder { get; set; }
-        public bool isLoaded { get; set; }
-        public bool isCompulsory { get; set; }
-        public Type dependencyType { get; set; }
+        public int LoadOrder { get; set; }
+        public bool IsLoaded { get; set; }
+        readonly Action<TProjection> compulsoryEntityAssignmentFunc;
 
         readonly IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory;
         readonly Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc;
@@ -133,7 +162,6 @@ namespace BluePrints.Data.Helpers
         readonly Action<IEnumerable<TProjection>> onEntitiesRefreshedCallBack;
         readonly Action<object, Type, EntityMessageType, object> collectionViewModelChangedCallBack;
         readonly Func<object, Type, EntityMessageType, object, bool> collectionViewModelBeforeChangedCallBack;
-
 
         /// <summary>
         /// Describe how should entities be handled within EntitiesCollectionWrapper
@@ -152,11 +180,10 @@ namespace BluePrints.Data.Helpers
             Action<object, Type, EntityMessageType, object> collectionViewModelChangedCallBack = null,
             Action<IEnumerable<TProjection>> collectionViewModelRefreshedCallBack = null,
             Func<Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>>> constructProjectionCallBackFunc = null,
-            Type dependencyType = null, bool isCompulsory = false)
+            Action<TProjection> compulsoryEntityAssignmentFunc = null)
         {
             this.owner = owner;
-            this.loadOrder = loadOrder;
-            this.dependencyType = dependencyType;
+            this.LoadOrder = loadOrder;
             this.unitOfWorkFactory = unitOfWorkFactory;
             this.getRepositoryFunc = getRepositoryFunc;
             this.constructProjectionCallBackFunc = constructProjectionCallBackFunc;
@@ -164,7 +191,7 @@ namespace BluePrints.Data.Helpers
             this.onEntitiesRefreshedCallBack = collectionViewModelRefreshedCallBack;
             this.collectionViewModelChangedCallBack = collectionViewModelChangedCallBack;
             this.collectionViewModelBeforeChangedCallBack = collectionViewModelBeforeChangedCallBack;
-            this.isCompulsory = isCompulsory;
+            this.compulsoryEntityAssignmentFunc = compulsoryEntityAssignmentFunc;
         }
 
         public void CreateCollectionViewModel()
@@ -197,14 +224,22 @@ namespace BluePrints.Data.Helpers
 
         private void OnEntitiesFirstLoaded(IEnumerable<TProjection> loadedEntities)
         {
-            isLoaded = true;
+            IsLoaded = true;
 
-            if (isContinueLoadingCallBack != null)
-                if (!isContinueLoadingCallBack(loadedEntities))
-                {
-                    collectionViewModel.OnEntitiesLoadedCallBack = null;
+            if (isContinueLoadingCallBack != null && !isContinueLoadingCallBack(loadedEntities))
+            {
+                collectionViewModel.OnEntitiesLoadedCallBack = null;
+                return;
+            }
+
+            if (compulsoryEntityAssignmentFunc != null)
+            {
+                if (loadedEntities.Count() == 0)
                     return;
-                }
+
+                TProjection compulsoryEntity = loadedEntities.First();
+                compulsoryEntityAssignmentFunc(compulsoryEntity);
+            }
 
             collectionViewModel.OnEntitiesLoadedCallBack = null;
             collectionViewModel.OnEntitiesLoadedCallBack = OnEntitiesSubsequentLoading;
@@ -214,6 +249,11 @@ namespace BluePrints.Data.Helpers
         private void OnEntitiesSubsequentLoading(IEnumerable<TProjection> loadedEntities)
         {
             onEntitiesRefreshedCallBack?.Invoke(loadedEntities);
+        }
+
+        public bool IsCompulsory
+        {
+            get { return compulsoryEntityAssignmentFunc != null; }
         }
 
         public Type GetProjectionEntityType()
@@ -282,11 +322,10 @@ namespace BluePrints.Data.Helpers
         void OnDestroy();
         Type GetProjectionEntityType();
         void CreateCollectionViewModel();
-        bool isLoaded { get; set; }
-        bool isCompulsory { get; set; }
+        bool IsLoaded { get; set; }
         int GetEntitiesCount();
         Type GetEntitiesProjectionType();
-        int loadOrder { get; set; }
-        Type dependencyType { get; set; }
+        int LoadOrder { get; set; }
+        bool IsCompulsory { get; }
     }
 }

@@ -14,7 +14,7 @@ namespace BluePrints.Views
     {
         int focusedRowHandle;
         ColumnBase currentColumn;
-        bool isActive;
+        bool onBeforeRefreshIsActive;
 
         GridControl gridControl;
         TableViewEx tableView;
@@ -41,7 +41,7 @@ namespace BluePrints.Views
         {
             this.focusedRowHandle = tableView.FocusedRowHandle;
             this.currentColumn = gridControl.CurrentColumn;
-            this.isActive = tableView.isEditorActive;
+            this.onBeforeRefreshIsActive = tableView.IsEditing;
         }
 
         protected virtual void RestoreFocusedCell()
@@ -54,7 +54,7 @@ namespace BluePrints.Views
             //GridColumn setValueColumn = gridControl.Columns[gridControl.CurrentColumn.FieldName];
             //gridControl.SetFocusedRowCellValue(setValueColumn, currentValue);
 
-            if (this.isActive)
+            if (this.onBeforeRefreshIsActive && !tableView.IsEditing)
                 tableView.ShowEditor();
         }
     }

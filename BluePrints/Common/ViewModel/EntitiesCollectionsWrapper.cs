@@ -37,6 +37,10 @@ namespace BluePrints.Common.ViewModel
             mainEntityLoader;
 
         public TMainViewModel MainViewModel { get; set; }
+
+        //allows view state to interact with OnMainViewModelRefreshed
+        //due to StoreViewState being called OnBeforeEntitiesChanged and OnMainViewModelRefreshed called OnEntitiesLoaded
+        private object onMessageSender;
         protected Dispatcher mainThreadDispatcher = Application.Current.Dispatcher;
 
         public virtual void InvokeEntitiesLoaderDescriptionLoading()
@@ -54,31 +58,31 @@ namespace BluePrints.Common.ViewModel
         /// </summary>
         private void loadEntitiesCollectionOnMainThread()
         {
-            var entitiesLoader = loaderCollection.Where(x => !x.isLoaded);
+            var entitiesLoader = loaderCollection.Where(x => !x.IsLoaded);
             if (entitiesLoader == null || entitiesLoader.Count() == 0)
                 return;
 
-            var currentLoadOrder = entitiesLoader.Min(x => x.loadOrder);
+            var currentLoadOrder = entitiesLoader.Min(x => x.LoadOrder);
             var entitiesLoaderDescription =
-                loaderCollection.First(x => x.loadOrder == currentLoadOrder);
+                loaderCollection.First(x => x.LoadOrder == currentLoadOrder);
 
-            if (entitiesLoaderDescription.dependencyType != null)
-                if (loaderCollection.IsEntitiesLoaderExists(entitiesLoaderDescription.dependencyType))
-                {
-                    var dependentEntitiesLoaderDescription =
-                        loaderCollection.GetLoader(entitiesLoaderDescription.dependencyType);
-                    if (!dependentEntitiesLoaderDescription.isLoaded)
-                        throw new InvalidOperationException(
-                            "Dependent entities loader is sequenced after the current entities loader.");
-                    else
-                        entitiesLoaderDescription.CreateCollectionViewModel();
-                }
-                else
-                {
-                    throw new InvalidOperationException("Dependent entities loader not added.");
-                }
-            else
-                entitiesLoaderDescription.CreateCollectionViewModel();
+            //if (entitiesLoaderDescription.dependencyType != null)
+            //    if (loaderCollection.IsEntitiesLoaderExists(entitiesLoaderDescription.dependencyType))
+            //    {
+            //        var dependentEntitiesLoaderDescription =
+            //            loaderCollection.GetLoader(entitiesLoaderDescription.dependencyType);
+            //        if (!dependentEntitiesLoaderDescription.IsLoaded)
+            //            throw new InvalidOperationException(
+            //                "Dependent entities loader is sequenced after the current entities loader.");
+            //        else
+            //            entitiesLoaderDescription.CreateCollectionViewModel();
+            //    }
+            //    else
+            //    {
+            //        throw new InvalidOperationException("Dependent entities loader not added.");
+            //    }
+            //else
+            entitiesLoaderDescription.CreateCollectionViewModel();
         }
 
         private bool isAllEntitiesLoaded()
@@ -86,7 +90,7 @@ namespace BluePrints.Common.ViewModel
             if (loaderCollection == null)
                 return false;
 
-            return loaderCollection.Where(x => !x.isLoaded).Count() == 0 ? true : false;
+            return loaderCollection.Where(x => !x.IsLoaded).Count() == 0 ? true : false;
         }
 
         protected IEnumerable<TProjection> GetEntities<TProjection>()
@@ -129,8 +133,8 @@ namespace BluePrints.Common.ViewModel
             mainEntityLoader =
                 new EntitiesLoaderDescription
                     <TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork>(this, 0,
-                        unitOfWorkFactory, getRepositoryFunc, OnMainViewModelLoaded, OnBeforeEntitiesChanged, 
-                        null, OnEntitiesRefreshed, 
+                        unitOfWorkFactory, getRepositoryFunc, OnMainViewModelLoaded, OnBeforeAffectingOrCompulsoryEntitiesChanged, 
+                        null, OnMainViewModelRefreshed, 
                         ConstructMainViewModelProjection);
         }
 
@@ -155,26 +159,49 @@ namespace BluePrints.Common.ViewModel
             //throw new NotImplementedException("Override this method to assign call backs and also notify the view.");
         }
 
-        protected virtual bool OnBeforeEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
-        {
-            storeViewState();
-            return true;
-        }
+        //IEnumerable<IEntitiesLoaderDescription> compulsoryLoaders { get; set; }
+        //IEnumerable<IEntitiesLoaderDescription> CompulsoryLoaders
+        //{
+        //    get
+        //    {
+        //        if(compulsoryLoaders == null)
+        //            compulsoryLoaders = loaderCollection.Where(x => x.isCompulsory);
+
+        //        return compulsoryLoaders;
+        //    }
+        //}
 
         IEnumerable<IEntitiesLoaderDescription> compulsoryLoaders { get; set; }
         IEnumerable<IEntitiesLoaderDescription> CompulsoryLoaders
         {
             get
             {
-                if(compulsoryLoaders == null)
-                    compulsoryLoaders = loaderCollection.Where(x => x.isCompulsory);
+                if (compulsoryLoaders == null)
+                    compulsoryLoaders = loaderCollection.Where(x => x.IsCompulsory);
 
                 return compulsoryLoaders;
             }
         }
-        
-        protected virtual void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-            object sender)
+
+        public virtual bool OnBeforeAffectingOrCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        {
+            onMessageSender = sender;
+            if (sender != null && sender == MainViewModel)
+                return true;
+
+            mainThreadDispatcher.BeginInvoke(new Action(() => storeViewState()));
+            return true;
+        }
+
+        public virtual void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        {
+            if (sender != null && sender == MainViewModel)
+                return;
+
+            mainThreadDispatcher.BeginInvoke(new Action(() => FullRefresh()));
+        }
+
+        public virtual void OnAfterCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
             IEntitiesLoaderDescription currentCompulsoryEntitiesLoader = CompulsoryLoaders.FirstOrDefault(x => x.GetEntitiesProjectionType() == changedType);
 
@@ -185,7 +212,8 @@ namespace BluePrints.Common.ViewModel
                     MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed,
                         StringFormatUtils.GetEntityNameByType(changedType)));
 
-                    FullRefresh();
+                    mainThreadDispatcher.BeginInvoke(new Action(() => FullRefresh()));
+                    return;
                 }
                 else if (messageType == EntityMessageType.Added && compulsoryLoaders.All(x => x.GetEntitiesCount() > 0))
                 {
@@ -193,12 +221,22 @@ namespace BluePrints.Common.ViewModel
                         StringFormatUtils.GetEntityNameByType(changedType)));
 
                     mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
+                    return;
                 }
             }
         }
 
-        protected virtual void OnEntitiesRefreshed(IEnumerable<TMainProjectionEntity> refreshedEntities)
+        public Type MainEntityType
         {
+            get { return typeof(TMainProjectionEntity); }
+        }
+
+        protected virtual void OnMainViewModelRefreshed(IEnumerable<TMainProjectionEntity> refreshedEntities)
+        {
+            if (onMessageSender != null && onMessageSender == MainViewModel)
+                return;
+
+            //entities are confirmed to be loaded here for refresh to work properly on MainViewModel
             RefreshView();
         }
 
@@ -266,7 +304,7 @@ namespace BluePrints.Common.ViewModel
                 return;
             }
 
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.refreshViewWithStateRestoration()));
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.refreshView()));
         }
 
         public virtual ObservableCollection<TMainProjectionEntity> DisplayEntities
@@ -320,7 +358,7 @@ namespace BluePrints.Common.ViewModel
             RestoreActiveCell?.Invoke();
         }
 
-        private void refreshViewWithStateRestoration()
+        private void refreshView()
         {
             this.RaisePropertiesChanged();
             restoreViewState();
@@ -444,5 +482,13 @@ namespace BluePrints.Common.ViewModel
         void InvokeEntitiesLoaderDescriptionLoading();
 
         void InitializeAndLoadEntitiesLoaderDescription();
+
+        bool OnBeforeAffectingOrCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender);
+
+        void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender);
+
+        void OnAfterCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender);
+
+        Type MainEntityType { get; }
     }
 }
