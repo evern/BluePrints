@@ -63,7 +63,7 @@
                 <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
                     <dxr:RibbonStatusBarControl.LeftItems>
                         <dxb:BarStaticItem
-                            Content="{Binding PROJECTDashboardCollection.Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                            Content="{Binding DataContext.DisplayEntities.Count, ElementName=userControl, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <dxlc:LayoutControl Orientation="Vertical">

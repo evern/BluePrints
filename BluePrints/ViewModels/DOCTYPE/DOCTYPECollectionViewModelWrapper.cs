@@ -56,6 +56,8 @@ namespace BluePrints.ViewModels
         public override void InitializeAndLoadEntitiesLoaderDescription()
         {
             MainViewModel = null;
+            base.CleanUpEntitiesLoader();
+
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             InvokeEntitiesLoaderDescriptionLoading();

@@ -61,6 +61,8 @@ namespace BluePrints.ViewModels
         public override void InitializeAndLoadEntitiesLoaderDescription()
         {
             MainViewModel = null;
+            base.CleanUpEntitiesLoader();
+
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);

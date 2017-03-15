@@ -111,6 +111,8 @@ namespace BluePrints.ViewModels
         public override void InitializeAndLoadEntitiesLoaderDescription()
         {
             MainViewModel = null;
+            base.CleanUpEntitiesLoader();
+
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc, x => loadESTIMATION_DIRECT = x);

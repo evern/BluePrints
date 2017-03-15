@@ -71,7 +71,7 @@
                 <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
                     <dxr:RibbonStatusBarControl.LeftItems>
                         <dxb:BarStaticItem
-                            Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                            Content="{Binding DataContext.DisplayEntities.Count, ElementName=userControl, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <dxlc:LayoutControl Orientation="Vertical">
@@ -380,7 +380,7 @@
                                                            CommandParameter="{Binding Row.Row}"
                                                            Glyph="{dx:DXImage Image=Line_32x32.png}" />
                                         <dxb:BarButtonItem Content="Refresh"
-                                                           Command="{Binding View.DataContext.RefreshCommand}"
+                                                           Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                            Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                     </common:TableViewEx.RowCellMenuCustomizations>
                                     <common:TableViewEx.FormatConditions>
