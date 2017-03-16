@@ -50,7 +50,6 @@
                             <dxr:RibbonPageGroup Caption="BASELINE Tasks">
                                 <dxb:BarButtonItem Content="Edit"
                                                    Command="{Binding DataContext.EditCommand, ElementName=userControl}"
-                                                   CommandParameter="{Binding SelectedEntity}"
                                                    LargeGlyph="{dx:DXImage Image=Edit_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                 <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"

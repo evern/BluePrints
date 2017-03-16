@@ -170,15 +170,6 @@ namespace BluePrints.Common.DataModel.EntityFramework
             UpdateCore(entity);
         }
 
-        TEntity IRepository<TEntity, TPrimaryKey>.Refresh(TPrimaryKey key)
-        {
-            var entity = FindCore(key);
-            if (entity != null)
-                Context.Entry(entity).Reload();
-
-            return entity;
-        }
-
         EntityState IRepository<TEntity, TPrimaryKey>.GetState(TEntity entity)
         {
             return GetStateCore(entity);

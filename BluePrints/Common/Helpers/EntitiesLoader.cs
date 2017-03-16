@@ -20,7 +20,8 @@ namespace BluePrints.Data.Helpers
         Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
         Func<Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>>> projectionFunc = null, 
         Action<TProjection> compulsoryEntityAssignmentFunc = null,
-        bool doesNotRefreshMainEntity = false)
+        bool doesNotRefreshMainEntity = false, 
+        bool IsBypassReloadOnCompulsoryEntityChange = false)
         where TEntity : class
         where TProjection : class
         where TUnitOfWork : IUnitOfWork
@@ -33,8 +34,17 @@ namespace BluePrints.Data.Helpers
             //CompulsoryEntityAssignment is used to determine whether MainEntity should be loaded and assign variable back for projection usage
             //Because it doesn't affect MainEntities after it is loaded OnAfterAffectingEntities is not assigned
             if (compulsoryEntityAssignmentFunc != null)
-                OnAfterEntitiesChanged = owner.OnAfterCompulsoryEntitiesChanged;
-
+            {
+                //When assignment is required for certain functions to work but it does not affect the MainEntity in any way
+                //e.g. BASELINE is required in VARIATION for approval but it is not compulsory for VARIATION's to be loaded
+                if(IsBypassReloadOnCompulsoryEntityChange)
+                {
+                    OnBeforeAffectingOrCompulsoryEntitiesChanged = owner.OnBeforeAffectingOrCompulsoryEntitiesChanged;
+                    OnAfterEntitiesChanged = owner.OnAfterAffectingEntitiesChanged;
+                }
+                else
+                    OnAfterEntitiesChanged = owner.OnAfterCompulsoryEntitiesChanged;
+            }
             //Some entities are used as auxiliary data for certain functions and doesn't not affect MainEntities at all
             else if(!doesNotRefreshMainEntity)
             {
@@ -151,7 +161,6 @@ namespace BluePrints.Data.Helpers
         public int LoadOrder { get; set; }
         public bool IsLoaded { get; set; }
         readonly Action<TProjection> compulsoryEntityAssignmentFunc;
-
         readonly IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory;
         readonly Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc;
 

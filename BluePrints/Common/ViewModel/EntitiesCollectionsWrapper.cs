@@ -286,6 +286,9 @@ namespace BluePrints.Common.ViewModel
 
         public virtual void FullRefresh()
         {
+            if (MainViewModel == null)
+                return;
+
             MainViewModel.Refresh();
             RefreshView();
         }

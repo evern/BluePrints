@@ -64,8 +64,11 @@ namespace BluePrints.Common
     {
         public static void RegisterDefaultDictionaries(SpellChecker spellChecker)
         {
-            spellChecker.Dictionaries.Add(GetDefaultDictionary());
-            spellChecker.Dictionaries.Add(GetCustomDictionary());
+            if (Environment.MachineName != "EVERN-PC")
+            {
+                spellChecker.Dictionaries.Add(GetDefaultDictionary());
+                spellChecker.Dictionaries.Add(GetCustomDictionary());
+            }
         }
 
         public static void RegisterHunspellDictionaries(SpellChecker spellChecker)

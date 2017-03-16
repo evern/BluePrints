@@ -34,7 +34,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single BASELINE object view model.
     /// </summary>
-    public partial class BASELINE_ITEMSViewModelWrapper :
+    public partial class BASELINE_ITEMSCollectionViewModelWrapper :
         CollectionViewModelsWrapper
         <BASELINE_ITEM, BASELINE_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<BASELINE_ITEM, BASELINE_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
@@ -46,10 +46,10 @@ namespace BluePrints.ViewModels
         /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static BASELINE_ITEMSViewModelWrapper Create(
+        public static BASELINE_ITEMSCollectionViewModelWrapper Create(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new BASELINE_ITEMSViewModelWrapper(unitOfWorkFactory));
+            return ViewModelSource.Create(() => new BASELINE_ITEMSCollectionViewModelWrapper(unitOfWorkFactory));
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the BASELINEViewModel type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected BASELINE_ITEMSViewModelWrapper(
+        protected BASELINE_ITEMSCollectionViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
@@ -65,7 +65,7 @@ namespace BluePrints.ViewModels
         #region Database Operations
 
         private PROJECT _loadProject;
-        private BASELINE _loadBaseline;
+        public BASELINE _LoadBaseline;
         private bool _isQueryForLiveStatus;
 
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> _bluePrintsUnitOfWorkFactory =
@@ -76,7 +76,7 @@ namespace BluePrints.ViewModels
             var receiveParameter =
                 (OptionalEntitiesParameter<PROJECT, BASELINE>) parameter;
             _loadProject = receiveParameter.GetFirstEntity();
-            _loadBaseline = receiveParameter.GetSecondEntity();
+            _LoadBaseline = receiveParameter.GetSecondEntity();
 
             if (_loadProject != null)
                 _isQueryForLiveStatus = true;
@@ -89,7 +89,7 @@ namespace BluePrints.ViewModels
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(_bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => _loadProject = x);
-            loaderCollection.AddLoaderDescription(_bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, x => _loadBaseline = x);
+            loaderCollection.AddLoaderDescription(_bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, x => _LoadBaseline = x);
             loaderCollection.AddLoaderDescription(_bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             loaderCollection.AddLoaderDescription(_bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
             loaderCollection.AddLoaderDescription(_bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
@@ -109,7 +109,7 @@ namespace BluePrints.ViewModels
             if (_isQueryForLiveStatus)
                 return query => query.Where(x => x.GUID == _loadProject.GUID);
             else
-                return query => query.Where(x => x.GUID == _loadBaseline.GUID_PROJECT);
+                return query => query.Where(x => x.GUID == _LoadBaseline.GUID_PROJECT);
         }
 
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
@@ -119,7 +119,7 @@ namespace BluePrints.ViewModels
                     query =>
                         query.Where(x => x.GUID_PROJECT == _loadProject.GUID && x.STATUS == BaselineStatus.Live);
             else
-                return query => query.Where(x => x.GUID == _loadBaseline.GUID);
+                return query => query.Where(x => x.GUID == _LoadBaseline.GUID);
         }
 
         private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
@@ -193,7 +193,7 @@ namespace BluePrints.ViewModels
 
         public void ApplyProjectionPropertiesToEntity(BASELINE_ITEMProjection projectionEntity, BASELINE_ITEM entity)
         {
-            projectionEntity.BASELINE_ITEM.GUID_BASELINE = _loadBaseline.GUID;
+            projectionEntity.BASELINE_ITEM.GUID_BASELINE = _LoadBaseline.GUID;
             DataUtils.ShallowCopy(entity, projectionEntity.BASELINE_ITEM);
             //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
             if (entity.CREATED.Date.Year == 1)
@@ -646,7 +646,7 @@ namespace BluePrints.ViewModels
             PopulateNavigationalProperties();
             IEnumerable<BASELINE_ITEMProjection> gridVisibleRows = GetGridVisibleRows();
 
-            baselineReport.AssignProperties(_loadProject, _loadBaseline, gridVisibleRows);
+            baselineReport.AssignProperties(_loadProject, _LoadBaseline, gridVisibleRows);
             var previewWindow = new DocumentPreviewWindow();
             previewWindow.PreviewControl.DocumentSource = baselineReport;
             previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -671,6 +671,21 @@ namespace BluePrints.ViewModels
             }
         }
 
+        #endregion
+
+        #region For Variation Usage
+        public CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork> BASELINEViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<BASELINE>();
+            }
+        }
         #endregion
     }
 }

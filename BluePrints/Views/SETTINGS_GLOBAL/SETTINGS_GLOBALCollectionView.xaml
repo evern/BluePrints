@@ -32,11 +32,9 @@
                                                LargeGlyph="{dx:DXImage Image=New_32x32.png}"
                                                Glyph="{dx:DXImage Image=New_16x16.png}" />
                             <dxb:BarButtonItem Content="Edit" Command="{Binding EditCommand}"
-                                               CommandParameter="{Binding SelectedEntity}"
                                                LargeGlyph="{dx:DXImage Image=Edit_32x32.png}"
                                                Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                             <dxb:BarButtonItem Content="Delete" Command="{Binding DeleteCommand}"
-                                               CommandParameter="{Binding SelectedEntity}"
                                                LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"
                                                Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                             <dxb:BarButtonItem Content="Refresh" Command="{Binding RefreshCommand}"

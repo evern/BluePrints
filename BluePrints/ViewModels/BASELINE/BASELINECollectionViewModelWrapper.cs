@@ -145,7 +145,7 @@ namespace BluePrints.ViewModels
 
         #region ISupportCustomDocumentTypeNameAndParameter
 
-        public bool CanEdit(BASELINE entity)
+        public bool CanEdit()
         {
             if (DisplaySelectedEntity == null)
                 return false;
@@ -158,39 +158,39 @@ namespace BluePrints.ViewModels
             get { return this.GetService<IDocumentManagerService>(); }
         }
 
-        public void Edit(BASELINE entity)
+        public void Edit()
         {
-            if (entity == null)
+            if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentManagerService.ShowExistingEntityDocument<BASELINE_ITEM, Guid>(this, entity.GUID, string.Empty);
+            DocumentManagerService.ShowExistingEntityDocument<BASELINE_ITEM, Guid>(this, DisplaySelectedEntity.GUID, string.Empty);
         }
 
         private BaselineMappingSelectionType mappingSelectionType = new BaselineMappingSelectionType();
 
-        public bool CanP6BASELINE_ASSIGN(BASELINE assignEntity)
+        public bool CanP6BASELINE_ASSIGN()
         {
-            return assignEntity != null && assignEntity.P6BASELINE_NAME != null &&
-                   assignEntity.P6BASELINE_NAME != string.Empty;
+            return DisplaySelectedEntity != null && DisplaySelectedEntity.P6BASELINE_NAME != null &&
+                   DisplaySelectedEntity.P6BASELINE_NAME != string.Empty;
         }
 
-        public void P6BASELINE_ASSIGN(BASELINE assignEntity)
+        public void P6BASELINE_ASSIGN()
         {
             mappingSelectionType = BaselineMappingSelectionType.Original;
-            Edit(assignEntity);
+            Edit();
             mappingSelectionType = BaselineMappingSelectionType.None;
         }
 
-        public bool CanP6MODBASELINE_ASSIGN(BASELINE assignEntity)
+        public bool CanP6MODBASELINE_ASSIGN()
         {
-            return assignEntity != null && assignEntity.P6MODBASELINE_NAME != null &&
-                   assignEntity.P6MODBASELINE_NAME != string.Empty;
+            return DisplaySelectedEntity != null && DisplaySelectedEntity.P6MODBASELINE_NAME != null &&
+                   DisplaySelectedEntity.P6MODBASELINE_NAME != string.Empty;
         }
 
-        public void P6MODBASELINE_ASSIGN(BASELINE assignEntity)
+        public void P6MODBASELINE_ASSIGN()
         {
             mappingSelectionType = BaselineMappingSelectionType.Modified;
-            Edit(assignEntity);
+            Edit();
             mappingSelectionType = BaselineMappingSelectionType.None;
         }
 

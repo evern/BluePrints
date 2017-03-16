@@ -57,9 +57,6 @@ namespace BluePrints.Common.DataModel
         /// <param name="entity">An entity which state should be updated/</param>
         void Update(TEntity entity);
 
-
-        TEntity Refresh(TPrimaryKey key);
-
         /// <summary>
         /// Reloads the entity from the store overwriting any property values with values from the store and returns a reloaded entity. 
         /// This method returns the same entity instance with updated properties or new one depending on the implementation.
@@ -315,12 +312,16 @@ namespace BluePrints.Common.DataModel
                     .ToArray()
                     .FirstOrDefault(); //WCF incorrect FirstOrDefault implementation workaround
 
-            //Fix an issue where projection doesn't get reloaded
-            var entity = repository.Refresh(primaryKey);
+            //Start fix an issue where projection doesn't get reloaded
+            var actualEntity = repository.Find(primaryKey);
+            repository.Reload(actualEntity);
 
             return GetProjectionValue(result,
-                (TEntity x) => x != null ? entity : null,
+                (TEntity x) => x != null ? actualEntity : null,
                 (TProjection x) => x);
+            //End
+
+            //DevExpress
             //return GetProjectionValue(result,
             //    (TEntity x) => x != null ? repository.Reload(x) : null,
             //    (TProjection x) => x);

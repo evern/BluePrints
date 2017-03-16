@@ -138,7 +138,7 @@ namespace BluePrints.ViewModels
 
         #region ISupportCustomDocumentTypeNameAndParameter
 
-        public bool CanEdit(ESTIMATION_DIRECT entity)
+        public bool CanEdit()
         {
             if (DisplaySelectedEntity == null)
                 return false;
@@ -151,12 +151,12 @@ namespace BluePrints.ViewModels
             get { return this.GetService<IDocumentManagerService>(); }
         }
 
-        public void Edit(ESTIMATION_DIRECT entity)
+        public void Edit()
         {
-            if (entity == null)
+            if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentManagerService.ShowExistingEntityDocument<ESTIMATION_DIRECT_ITEM, Guid>(this, entity.GUID,
+            DocumentManagerService.ShowExistingEntityDocument<ESTIMATION_DIRECT_ITEM, Guid>(this, DisplaySelectedEntity.GUID,
                 string.Empty);
         }
 

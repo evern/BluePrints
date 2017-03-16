@@ -368,8 +368,7 @@
                                                NewItemRowPosition="None" ShowGroupPanel="False">
                                     <common:TableViewEx.RowCellMenuCustomizations>
                                         <dxb:BarButtonItem Content="Workpacks"
-                                                           Command="{Binding View.DataContext.EditCommand}"
-                                                           CommandParameter="{Binding Row.Row}"
+                                                           Command="{Binding DataContext.EditCommand, ElementName=userControl}"
                                                            Glyph="{dx:DXImage Image=Line_32x32.png}" />
                                         <dxb:BarButtonItem Content="Refresh"
                                                            Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
@@ -528,7 +527,6 @@
                             <dxb:ToolBarControl>
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Edit"
                                                    Command="{Binding EditCommand}"
-                                                   CommandParameter="{Binding DisplaySelectedEntity}"
                                                    Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Delete"
                                                    Command="{Binding MainViewModel.BulkDeleteCommand}"
@@ -583,8 +581,7 @@
                                                                       DisplayMember="wbs_short_name"
                                                                       ValueMember="wbs_short_name" />
                                                     <Button Width="50"
-                                                            Command="{Binding View.DataContext.P6BASELINE_ASSIGNCommand}"
-                                                            CommandParameter="{Binding RowData.Row}">
+                                                            Command="{Binding View.DataContext.P6BASELINE_ASSIGNCommand}">
                                                         <StackPanel Orientation="Horizontal">
                                                             <Image Source="{dx:DXImageOffice2013 Image=Edit_16x16.png}"
                                                                    Width="16" Height="16" Margin="0, 0, 3, 0" />
@@ -606,8 +603,7 @@
                                                                       DisplayMember="wbs_short_name"
                                                                       ValueMember="wbs_short_name" />
                                                     <Button Width="50"
-                                                            Command="{Binding View.DataContext.P6MODBASELINE_ASSIGNCommand}"
-                                                            CommandParameter="{Binding RowData.Row}">
+                                                            Command="{Binding View.DataContext.P6MODBASELINE_ASSIGNCommand}">
                                                         <StackPanel Orientation="Horizontal">
                                                             <Image Source="{dx:DXImageOffice2013 Image=Edit_16x16.png}"
                                                                    Width="16" Height="16" Margin="0, 0, 3, 0" />
@@ -664,7 +660,6 @@
                             <dxb:ToolBarControl>
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Edit"
                                                    Command="{Binding EditCommand}"
-                                                   CommandParameter="{Binding DisplaySelectedEntity}"
                                                    Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Delete"
                                                    Command="{Binding MainViewModel.BulkDeleteCommand}"
@@ -680,7 +675,7 @@
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
                             <dxg:GridControl Name="gridControlPROGRESS" dx:DXSerializer.SerializationID="PROGRESSGrid"
-                                             Style="{StaticResource NestedWrapperGridTemplate}" Grid.Row="1">
+                                             Style="{StaticResource AggregateNestedViewGridTemplate}" Grid.Row="1">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="NAME" />
                                     <dxg:GridColumn FieldName="PROGRESS_START">
@@ -772,7 +767,6 @@
                             <dxb:ToolBarControl>
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Edit"
                                                    Command="{Binding EditCommand}"
-                                                   CommandParameter="{Binding DisplaySelectedEntity}"
                                                    Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Delete"
                                                    Command="{Binding MainViewModel.BulkDeleteCommand}"
@@ -789,7 +783,7 @@
                             </dxb:ToolBarControl>
                             <dxg:GridControl Name="gridControlESTIMATION_DIRECT"
                                              dx:DXSerializer.SerializationID="ESTIMATION_DIRECTGrid"
-                                             Style="{StaticResource NestedWrapperGridTemplate}" Grid.Row="1">
+                                             Style="{StaticResource AggregateNestedViewGridTemplate}" Grid.Row="1">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="NAME" />
                                     <dxg:GridColumn FieldName="REVISION" />

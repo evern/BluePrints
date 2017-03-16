@@ -24,7 +24,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>118</ApplicationRevision>
+    <ApplicationRevision>119</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -1072,7 +1072,7 @@
       <DependentUpon>PrintRibbonControllerResources.resx</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\AREA\AREACollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSViewModelWrapper.cs" />
+    <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BulkEdit\MissingP6ActivitiesViewModel.cs" />
     <Compile Include="ViewModels\BulkEdit\BulkEditEnumsViewModel.cs" />
     <Compile Include="ViewModels\BulkEdit\BulkEditNumbersViewModel.cs" />
@@ -1096,7 +1096,7 @@
     <Compile Include="ViewModels\DISCIPLINE\DISCIPLINECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\DOCTYPE\DOCTYPECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PHASE\PHASECollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\PROGRESS_ITEM\PROGRESS_ITEMSViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROGRESS_ITEM\PROGRESS_ITEMSCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS\PROGRESSCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\WORKPACK\WORKPACKDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTDashboardViewModelWrapper.cs" />
@@ -1107,7 +1107,7 @@
     <Compile Include="ViewModels\SETTINGS_GLOBAL\SETTINGS_GLOBALViewModel.cs" />
     <Compile Include="ViewModels\UOM\UOMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\USERCollectionViewModel.cs" />
-    <Compile Include="ViewModels\VARIATION\VARIATIONSViewModelWrapper.cs" />
+    <Compile Include="ViewModels\VARIATION\VARIATIONSCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\VARIATION_ITEMSViewModelWrapper.cs" />
     <Compile Include="ViewModels\WORKPACK\WORKPACKCollectionViewModelWrapper.cs" />
     <Compile Include="LoginWindow.xaml.cs">

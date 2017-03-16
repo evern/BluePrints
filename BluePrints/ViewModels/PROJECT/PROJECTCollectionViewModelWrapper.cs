@@ -312,7 +312,7 @@ namespace BluePrints.ViewModels
 
         #region ISupportCustomDocumentTypeNameAndParameter
 
-        public bool CanEdit(PROJECT entity)
+        public bool CanEdit()
         {
             if (DisplaySelectedEntity == null)
                 return false;
@@ -325,12 +325,12 @@ namespace BluePrints.ViewModels
             get { return this.GetService<IDocumentManagerService>(); }
         }
 
-        public void Edit(PROJECT entity)
+        public void Edit()
         {
-            if (entity == null)
+            if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentManagerService.ShowExistingEntityDocument<PROJECT, Guid>(this, entity.GUID, string.Empty);
+            DocumentManagerService.ShowExistingEntityDocument<PROJECT, Guid>(this, DisplaySelectedEntity.GUID, string.Empty);
         }
 
         public string GetCustomDocumentTypeName()

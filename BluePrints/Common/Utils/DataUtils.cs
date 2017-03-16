@@ -43,20 +43,25 @@ namespace BluePrints.Data.Helpers
             if (copyObject == null || objectToCopy == null)
                 return null;
 
-            var objectToCopyProperties =
-                objectToCopy.GetType()
-                    .GetProperties()
-                    .Where(
-                        p =>
-                            (copyVirtualProperties == true || !p.GetGetMethod().IsVirtual) &&
-                            !p.GetCustomAttributes().Any(attr => attr.GetType() == typeof(ProjectionPropertyAttribute)));
+            PropertyInfo keyProperty = objectToCopy.GetType().GetProperties().FirstOrDefault(x => x.GetCustomAttributes().Any(y => y.GetType() == typeof(KeyAttribute)));
+            IEnumerable<PropertyInfo> objectToCopyProperties = objectToCopy.GetType().GetProperties().Where(p => !p.GetCustomAttributes().Any(attr => attr.GetType() == typeof(ProjectionPropertyAttribute)));
+            if(!copyVirtualProperties)
+                objectToCopyProperties = objectToCopyProperties.Where(p => !p.GetGetMethod().IsVirtual);
+
+            PropertyInfo copyObjectKeyProperty = copyObject.GetType().GetProperties().FirstOrDefault(x => x.Name == keyProperty.Name);
+            if(keyProperty != null && copyObjectKeyProperty != null)
+            {
+                var keyValue = keyProperty.GetValue(objectToCopy);
+                copyObjectKeyProperty.SetValue(copyObject, keyValue);
+            }
+
             foreach (var objectToCopyProperty in objectToCopyProperties)
             {
                 if (!objectToCopyProperty.CanWrite || !objectToCopyProperty.CanRead)
                     continue;
 
                 var objectToCopyValue = objectToCopyProperty.GetValue(objectToCopy);
-                var copyObjectProperty = copyObject.GetType().GetProperty(objectToCopyProperty.Name);
+                PropertyInfo copyObjectProperty = copyObject.GetType().GetProperty(objectToCopyProperty.Name);
 
                 copyObjectProperty.SetValue(copyObject, objectToCopyValue);
             }
