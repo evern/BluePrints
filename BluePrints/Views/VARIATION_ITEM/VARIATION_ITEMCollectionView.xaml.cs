@@ -13,9 +13,9 @@ namespace BluePrints.Views
         {
             InitializeComponent();
             InitializeViewControl(gridControl, tableView);
-            ((VARIATION_ITEMSViewModelWrapper) DataContext).ShowWORKPACKInternalName1 =
+            ((VARIATION_ITEMSCollectionViewModelWrapper) DataContext).ShowWORKPACKInternalName1 =
                 ShowWorkpackInternalName1;
-            ((VARIATION_ITEMSViewModelWrapper) DataContext).ShowWORKPACKInternalName2 =
+            ((VARIATION_ITEMSCollectionViewModelWrapper) DataContext).ShowWORKPACKInternalName2 =
                 ShowWorkpackInternalName2;
         }
 

@@ -131,7 +131,6 @@ namespace BluePrints.ViewModels
         {
             return !isAutoRefresh;
         }
-
         #endregion
 
         #region View Behavior

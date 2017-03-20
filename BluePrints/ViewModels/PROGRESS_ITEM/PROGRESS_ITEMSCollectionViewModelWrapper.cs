@@ -34,7 +34,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single PROGRESS object view model.
     /// </summary>
-    public partial class PROGRESS_ITEMSViewModelWrapper :
+    public partial class PROGRESS_ITEMSCollectionViewModelWrapper :
         CollectionViewModelsWrapper
         <BASELINE_ITEM, PROGRESS_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<BASELINE_ITEM, PROGRESS_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
@@ -43,9 +43,9 @@ namespace BluePrints.ViewModels
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static PROGRESS_ITEMSViewModelWrapper Create()
+        public static PROGRESS_ITEMSCollectionViewModelWrapper Create()
         {
-            return ViewModelSource.Create(() => new PROGRESS_ITEMSViewModelWrapper());
+            return ViewModelSource.Create(() => new PROGRESS_ITEMSCollectionViewModelWrapper());
         }
 
         #region Database Operation
@@ -257,24 +257,6 @@ namespace BluePrints.ViewModels
             return false;
         }
 
-        //protected override void OnAfterCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-        //    object sender)
-        //{
-        //    //Map the changes from PROGRESS_ITEM to BASELINE_ITEM so undo/redo operation is valid
-        //    if ((sender != null && PROGRESS_ITEMSCollectionViewModel != null) && changedType == typeof(PROGRESS_ITEM))
-        //    {
-        //        PROGRESS_ITEMProjection mappedEntity = MainViewModel.Entities.FirstOrDefault(x => x.PROGRESS_ITEMCurrent != null && x.PROGRESS_ITEMCurrent.GUID.ToString() == key.ToString());
-        //        if (mappedEntity != null)
-        //            mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(mappedEntity.GUID, EntityMessageType.Changed, this))));
-
-        //        if (MainViewModel != null)
-        //            mainThreadDispatcher.BeginInvoke(new Action(() => this.InitializePROJECTSummary(MainViewModel.Entities)));
-
-        //        return;
-        //    }
-
-        //    base.OnAfterCompulsoryEntitiesChanged(key, changedType, messageType, sender);
-        //}
         #region Collection Call Backs
 
         private bool ExistingRowAddUndoAndSaveCallBack(PROGRESS_ITEMProjection projectionEntity, CellValueChangedEventArgs e)
@@ -365,7 +347,7 @@ namespace BluePrints.ViewModels
                 return false;
             else if (newPercentage < fillDownEntity.MinPercentage)
                 return false;
-
+            
             return true;
         }
 
@@ -606,6 +588,7 @@ namespace BluePrints.ViewModels
             cumulativeEarnedDataPoints = cumulativeEarnedDataPoints.OrderBy(x => x.ProgressDate).ToList();
             TimeSpan intervalTimeSpan = ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(loadPROGRESS);
             ICollectionViewModel<TASK> P6TASKCollectionViewModel = WORKPACK_DashboardViewModel.P6TASKCollectionViewModel;
+            bool isError = false;
 
             foreach (WORKPACK_Dashboard workpack in entities)
             {
@@ -629,6 +612,13 @@ namespace BluePrints.ViewModels
                             P6TASK.act_work_qty = actWorkUnitNormalize;
                             if (P6TASK.remain_work_qty >= 0)
                                 P6TASK.remain_work_qty = P6TASK.target_work_qty - P6TASK.act_work_qty;
+
+                            if (P6TASK.target_work_qty <= 0)
+                            {
+                                isError = true;
+                                break;
+                            }
+
                             P6TASK.remain_drtn_hr_cnt = P6TASK.target_drtn_hr_cnt * (P6TASK.remain_work_qty / P6TASK.target_work_qty);
 
                             if (P6TASK.remain_work_qty == 0)
@@ -649,6 +639,11 @@ namespace BluePrints.ViewModels
                     }
                 }
             }
+
+            if(!isError)
+                MessageBoxService.ShowMessage(CommonResources.WORKPACK_ASSIGNMENT_P6ProgressWriteSuccess);
+            else
+                MessageBoxService.ShowMessage(CommonResources.WORKPACK_ASSIGNMENT_P6ProgressWriteFailed);
         }
 
         private decimal cumulativePrincipalUnits = 0;

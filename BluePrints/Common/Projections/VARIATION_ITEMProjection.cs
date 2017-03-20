@@ -58,11 +58,9 @@ namespace BluePrints.Common.Projections
                     BASELINE_ITEMJoinRATE == null || BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS == 0)
                     return 0;
                 if (PROGRESS_ITEMCurrent == null)
-                    return -1 * BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS;
+                    return -1 * BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
                 else
-                    return -1 *
-                           (BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS - PROGRESS_ITEMCurrent.EARNED_UNITS -
-                            PastPROGRESS_ITEMS_UNITS);
+                    return -1 * (BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS - (PROGRESS_ITEMCurrent.EARNED_UNITS + PastPROGRESS_ITEMS_UNITS));
             }
         }
 
@@ -77,6 +75,14 @@ namespace BluePrints.Common.Projections
             {
                 return (BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS + VARIATION_ITEM.VARIATION_UNITS) *
                        BASELINE_ITEMJoinRATE.ITEMRATE;
+            }
+        }
+
+        public decimal VARIATION_COST
+        {
+            get
+            {
+                return VARIATION_ITEM.VARIATION_UNITS * BASELINE_ITEMJoinRATE.ITEMRATE;
             }
         }
     }

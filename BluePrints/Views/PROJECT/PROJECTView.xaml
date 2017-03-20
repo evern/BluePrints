@@ -63,6 +63,9 @@
                             <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
                                                Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                            <dxb:BarCheckItem Content="Auto Refresh"
+                                                  IsChecked="{Binding DataContext.IsAutoRefresh, ElementName=userControl}"
+                                                  Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />
                         </dxr:RibbonPageGroup>
                     </dxr:RibbonPage>
                 </dxr:RibbonDefaultPageCategory>

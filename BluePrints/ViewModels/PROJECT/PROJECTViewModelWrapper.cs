@@ -146,13 +146,18 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentViewModel(this);
 
             DisplaySelectedEntities_CollectionChanged();
-
+            
             base.OnMainViewModelLoaded(entities);
             return true;
         }
         #endregion
 
         #region View Behavior
+
+        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender)
+        {
+            return !IsAutoRefresh;
+        }
 
         public Action Redraw;
 
@@ -167,6 +172,14 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+
+        private bool isAutoRefresh { get; set; }
+
+        public bool IsAutoRefresh
+        {
+            get { return isAutoRefresh; }
+            set { isAutoRefresh = value; }
+        }
 
         private BASELINECollectionViewModelWrapper baselineViewModel;
 

@@ -37,6 +37,7 @@ namespace BluePrints.Common.ViewModel
             mainEntityLoader;
 
         public TMainViewModel MainViewModel { get; set; }
+        public bool SuppressNotification { get; set; }
 
         //allows view state to interact with OnMainViewModelRefreshed
         //due to StoreViewState being called OnBeforeEntitiesChanged and OnMainViewModelRefreshed called OnEntitiesLoaded
@@ -66,22 +67,6 @@ namespace BluePrints.Common.ViewModel
             var entitiesLoaderDescription =
                 loaderCollection.First(x => x.LoadOrder == currentLoadOrder);
 
-            //if (entitiesLoaderDescription.dependencyType != null)
-            //    if (loaderCollection.IsEntitiesLoaderExists(entitiesLoaderDescription.dependencyType))
-            //    {
-            //        var dependentEntitiesLoaderDescription =
-            //            loaderCollection.GetLoader(entitiesLoaderDescription.dependencyType);
-            //        if (!dependentEntitiesLoaderDescription.IsLoaded)
-            //            throw new InvalidOperationException(
-            //                "Dependent entities loader is sequenced after the current entities loader.");
-            //        else
-            //            entitiesLoaderDescription.CreateCollectionViewModel();
-            //    }
-            //    else
-            //    {
-            //        throw new InvalidOperationException("Dependent entities loader not added.");
-            //    }
-            //else
             entitiesLoaderDescription.CreateCollectionViewModel();
         }
 
@@ -197,6 +182,9 @@ namespace BluePrints.Common.ViewModel
 
         public virtual void OnAfterCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
+            if (SuppressNotification)
+                return;
+
             IEntitiesLoaderDescription currentCompulsoryEntitiesLoader = CompulsoryLoaders.FirstOrDefault(x => x.GetEntitiesProjectionType() == changedType);
 
             if (currentCompulsoryEntitiesLoader != null)
@@ -415,7 +403,7 @@ namespace BluePrints.Common.ViewModel
         /// <summary>
         /// Unregister any messaging listener
         /// </summary>
-        protected void CleanUpEntitiesLoader()
+        public void CleanUpEntitiesLoader()
         {
             compulsoryLoaders = null;
 
@@ -494,5 +482,7 @@ namespace BluePrints.Common.ViewModel
         void OnAfterCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender);
 
         Type MainEntityType { get; }
+
+        bool SuppressNotification { get; set; }
     }
 }

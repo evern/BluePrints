@@ -839,6 +839,8 @@ namespace BluePrints.Common.ViewModel
         }
 
         public Func<TProjection, string, object, bool> ValidateBulkEditCallBack;
+        public Action<TProjection, string> OnBeforeBulkEditSaveCallBack;
+
         public void BulkColumnEdit(object button)
         {
             var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
@@ -862,8 +864,7 @@ namespace BluePrints.Common.ViewModel
                         var bulkEditEnumsViewModel =
                             BulkEditEnumsViewModel.Create((IEnumerable<object>)copyColumnEditSettings.ItemsSource,
                                 copyColumnEditSettings.DisplayMember);
-                        if (
-                            BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Select Item to assign",
+                        if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Select Item to assign",
                                 "BulkEditEnums", bulkEditEnumsViewModel) == MessageResult.OK)
                             if (bulkEditEnumsViewModel.SelectedItem != null)
                                 if (columnPropertyInfo.PropertyType.BaseType == typeof(Enum))
@@ -946,6 +947,7 @@ namespace BluePrints.Common.ViewModel
                                 newValue, EntityMessageType.Changed);
                         }
 
+                        OnBeforeBulkEditSaveCallBack?.Invoke(selectedProjection, info.Column.FieldName);
                         SaveEntities.Add(selectedProjection);
                     }
 

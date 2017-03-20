@@ -48,11 +48,15 @@ namespace BluePrints.Data.Helpers
             if(!copyVirtualProperties)
                 objectToCopyProperties = objectToCopyProperties.Where(p => !p.GetGetMethod().IsVirtual);
 
-            PropertyInfo copyObjectKeyProperty = copyObject.GetType().GetProperties().FirstOrDefault(x => x.Name == keyProperty.Name);
-            if(keyProperty != null && copyObjectKeyProperty != null)
+            
+            if(keyProperty != null)
             {
-                var keyValue = keyProperty.GetValue(objectToCopy);
-                copyObjectKeyProperty.SetValue(copyObject, keyValue);
+                PropertyInfo copyObjectKeyProperty = copyObject.GetType().GetProperties().FirstOrDefault(x => x.Name == keyProperty.Name);
+                if(copyObjectKeyProperty != null)
+                {
+                    var keyValue = keyProperty.GetValue(objectToCopy);
+                    copyObjectKeyProperty.SetValue(copyObject, keyValue);
+                }
             }
 
             foreach (var objectToCopyProperty in objectToCopyProperties)

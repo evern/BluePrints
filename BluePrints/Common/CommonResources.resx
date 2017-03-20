@@ -255,4 +255,10 @@
   <data name="NewProject_DefaultDocType" xml:space="preserve">
     <value>Report</value>
   </data>
+  <data name="WORKPACK_ASSIGNMENT_P6ProgressWriteFailed" xml:space="preserve">
+    <value>P6 progress schedule population failed</value>
+  </data>
+  <data name="WORKPACK_ASSIGNMENT_P6ProgressWriteSuccess" xml:space="preserve">
+    <value>P6 progress schedule successfully populated</value>
+  </data>
 </root>

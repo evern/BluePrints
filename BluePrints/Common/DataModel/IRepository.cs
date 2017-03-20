@@ -314,7 +314,8 @@ namespace BluePrints.Common.DataModel
 
             //Start fix an issue where projection doesn't get reloaded
             var actualEntity = repository.Find(primaryKey);
-            repository.Reload(actualEntity);
+            if(actualEntity != null)
+                repository.Reload(actualEntity);
 
             return GetProjectionValue(result,
                 (TEntity x) => x != null ? actualEntity : null,

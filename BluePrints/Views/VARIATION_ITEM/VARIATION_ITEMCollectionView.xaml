@@ -17,7 +17,7 @@
              xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
              xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
              mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
-             DataContext="{dxmvvm:ViewModelSource viewmodel:VARIATION_ITEMSViewModelWrapper}">
+             DataContext="{dxmvvm:ViewModelSource viewmodel:VARIATION_ITEMSCollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -301,6 +301,15 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="VARIATION_COST" ReadOnly="True" Header="VARIATION COSTS"
+                                            AllowSearchPanel="False">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True"
+                                                      MaskType="Numeric" Mask="c" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
                             <dxg:GridColumn Header="ACTION" FieldName="VARIATION_ITEM.ACTION" ReadOnly="True"
                                             IsEnabled="False">
                                 <dxg:GridColumn.EditSettings>
@@ -340,6 +349,8 @@
                                                  DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="TOTAL_COST" SummaryType="SUM" ShowInColumn="TOTAL_COST"
                                                  DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem FieldName="VARIATION_COST" SummaryType="SUM" ShowInColumn="VARIATION_COST"
+                                                 DisplayFormat="Total: {0:c}" />
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.TotalSummary>
@@ -351,6 +362,8 @@
                                                  ShowInColumn="VARIATION_ITEM.VARIATION_UNITS"
                                                  DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="TOTAL_COST" SummaryType="SUM" ShowInColumn="TOTAL_COST"
+                                                 DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem FieldName="VARIATION_COST" SummaryType="SUM" ShowInColumn="VARIATION_COST"
                                                  DisplayFormat="Total: {0:c}" />
                             <dxg:GridSummaryItem SummaryType="Count" />
                         </dxg:GridControl.TotalSummary>

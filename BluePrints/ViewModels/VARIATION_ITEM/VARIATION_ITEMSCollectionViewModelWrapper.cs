@@ -28,21 +28,25 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single VARIATION object view model.
     /// </summary>
-    public partial class VARIATION_ITEMSViewModelWrapper :
+    public partial class VARIATION_ITEMSCollectionViewModelWrapper :
         CollectionViewModelsWrapper
         <BASELINE_ITEM, VARIATION_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<BASELINE_ITEM, VARIATION_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
+        //Used by view to show hidden workpack columns
         public Action ShowWORKPACKInternalName1;
         public Action ShowWORKPACKInternalName2;
+
+        //Used by variation to generate new baseline
+        public Action<IEnumerable<VARIATION_ITEMProjection>> OnEntitiesLoadedCallBack;
 
         /// <summary>
         /// Creates a new instance of VARIATION_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static VARIATION_ITEMSViewModelWrapper Create()
+        public static VARIATION_ITEMSCollectionViewModelWrapper Create()
         {
-            return ViewModelSource.Create(() => new VARIATION_ITEMSViewModelWrapper());
+            return ViewModelSource.Create(() => new VARIATION_ITEMSCollectionViewModelWrapper());
         }
 
         #region Database Operation
@@ -172,6 +176,7 @@ namespace BluePrints.ViewModels
             MainViewModel.IsContinueSaveCallBack = MainEntityPreSaveWithNewEntityDetection;
             MainViewModel.OnAfterEntitySavedCallBack = MainEntitySaveVariation;
             MainViewModel.IsContinueNewRowFromViewCallBack = AddVARIATION_ITEMCallBack;
+            MainViewModel.OnBeforeBulkEditSaveCallBack = OnBeforeBulkEditSaveCallBack;
             //MainViewModel.BulkPreSave = this.MainEntityBulkPreSave;
             //MainViewModel.BulkPostSave = this.MainEntityBulkPostSave;
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntityCallBack;
@@ -181,6 +186,7 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentViewModel(this);
 
             mainThreadDispatcher.BeginInvoke(new Action(() => ShowWORKPACKColumns()));
+            OnEntitiesLoadedCallBack?.Invoke(entities);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
@@ -236,10 +242,10 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public bool ValidateBulkEditCallBack(VARIATION_ITEMProjection fillDownEntity, string fieldName, object editValue)
+        public bool ValidateBulkEditCallBack(VARIATION_ITEMProjection projection, string fieldName, object editValue)
         {
-            if (fillDownEntity.VARIATION_ITEM.ACTION != VariationAction.Add)
-                return false;
+            if (projection.VARIATION_ITEM.ACTION == VariationAction.Add)
+                return true;
 
             if (fieldName == BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().BASELINE_ITEMJoinRATE)
                 + "."
@@ -248,12 +254,55 @@ namespace BluePrints.ViewModels
                 + BindableBase.GetPropertyName(() => new BASELINE_ITEM().INTERNAL_NUM))
             {
                 var errorMessage = string.Empty;
-                MainViewModel.IsValidEntityCellValue(fillDownEntity, fieldName, editValue, ref errorMessage);
+                MainViewModel.IsValidEntityCellValue(projection, fieldName, editValue, ref errorMessage);
                 if (errorMessage != string.Empty)
                     return false;
+                else
+                    return true;
             }
 
-            return true;
+            if (fieldName == BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().VARIATION_ITEM)
+                + "."
+                + BindableBase.GetPropertyName(() => new VARIATION_ITEM().VARIATION_UNITS))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public void OnBeforeBulkEditSaveCallBack(VARIATION_ITEMProjection projection, string fieldName)
+        {
+            if (projection.VARIATION_ITEM.ACTION == VariationAction.Add)
+                return;
+
+            string variationItemUnitsFieldName = BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().VARIATION_ITEM)
+                + "."
+                + BindableBase.GetPropertyName(() => new VARIATION_ITEM().VARIATION_UNITS);
+
+            string variationItemActionFieldName = BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().VARIATION_ITEM)
+                + "."
+                + BindableBase.GetPropertyName(() => new VARIATION_ITEM().ACTION);
+
+            if (fieldName == variationItemUnitsFieldName)
+            {
+                if(projection.VARIATION_ITEM.VARIATION_UNITS > 0 && 
+                    (projection.VARIATION_ITEM.ACTION == VariationAction.NoAction || projection.VARIATION_ITEM.ACTION == VariationAction.Cancel))
+                {
+                    VariationAction oldValue = projection.VARIATION_ITEM.ACTION;
+
+                    projection.VARIATION_ITEM.ACTION = VariationAction.Append;
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, variationItemActionFieldName, oldValue,
+                                VariationAction.Append, EntityMessageType.Changed);
+                }
+                else if (projection.VARIATION_ITEM.VARIATION_UNITS == 0 && 
+                    projection.VARIATION_ITEM.ACTION == VariationAction.Append)
+                {
+                    projection.VARIATION_ITEM.ACTION = VariationAction.NoAction;
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, variationItemActionFieldName, VariationAction.Append,
+                                VariationAction.NoAction, EntityMessageType.Changed);
+                }
+            }
         }
 
         public bool CanBulkDeleteCallBack(IEnumerable<VARIATION_ITEMProjection> selectedEntities)
@@ -299,6 +348,7 @@ namespace BluePrints.ViewModels
         //        MainEntitySaveVariation(existingVARIATION, false);
         //    }
         //}
+
         public bool AddVARIATION_ITEMCallBack(RowEventArgs e, VARIATION_ITEMProjection projectionEntity)
         {
             projectionEntity.VARIATION_ITEM.ACTION = VariationAction.Add;
@@ -391,13 +441,11 @@ namespace BluePrints.ViewModels
         {
             VARIATION_ITEMSCollectionViewModel.Delete(undoRedoEntity.VARIATION_ITEM);
         }
-
         #endregion
 
         #endregion
 
         #region View Behavior
-
         public void CancelBASELINE_ITEM(VARIATION_ITEMProjection projectionEntity)
         {
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
@@ -729,9 +777,9 @@ namespace BluePrints.ViewModels
                 return;
 
             if (loadPROJECT == null || loadPROJECT.USELEGACYWORKPACK)
-                ShowWORKPACKInternalName1();
+                ShowWORKPACKInternalName1?.Invoke();
             else
-                ShowWORKPACKInternalName2();
+                ShowWORKPACKInternalName2?.Invoke();
         }
 
         public IEnumerable<WORKPACK> WORKPACKCollection
@@ -817,7 +865,7 @@ namespace BluePrints.ViewModels
                 return variation_itemsCollectionViewModel;
             }
         }
-
         #endregion
+
     }
 }

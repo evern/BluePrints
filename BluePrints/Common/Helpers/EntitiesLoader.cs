@@ -19,9 +19,7 @@ namespace BluePrints.Data.Helpers
         IUnitOfWorkFactory<TUnitOfWork> unitOfWorkFactory, 
         Func<TUnitOfWork, IRepository<TEntity, TPrimaryKey>> getRepositoryFunc,
         Func<Func<IRepositoryQuery<TEntity>, IQueryable<TProjection>>> projectionFunc = null, 
-        Action<TProjection> compulsoryEntityAssignmentFunc = null,
-        bool doesNotRefreshMainEntity = false, 
-        bool IsBypassReloadOnCompulsoryEntityChange = false)
+        Action<TProjection> compulsoryEntityAssignmentFunc = null, bool suppressNotification = false)
         where TEntity : class
         where TProjection : class
         where TUnitOfWork : IUnitOfWork
@@ -34,26 +32,27 @@ namespace BluePrints.Data.Helpers
             //CompulsoryEntityAssignment is used to determine whether MainEntity should be loaded and assign variable back for projection usage
             //Because it doesn't affect MainEntities after it is loaded OnAfterAffectingEntities is not assigned
             if (compulsoryEntityAssignmentFunc != null)
-            {
-                //When assignment is required for certain functions to work but it does not affect the MainEntity in any way
-                //e.g. BASELINE is required in VARIATION for approval but it is not compulsory for VARIATION's to be loaded
-                if(IsBypassReloadOnCompulsoryEntityChange)
-                {
-                    OnBeforeAffectingOrCompulsoryEntitiesChanged = owner.OnBeforeAffectingOrCompulsoryEntitiesChanged;
-                    OnAfterEntitiesChanged = owner.OnAfterAffectingEntitiesChanged;
-                }
-                else
                     OnAfterEntitiesChanged = owner.OnAfterCompulsoryEntitiesChanged;
-            }
             //Some entities are used as auxiliary data for certain functions and doesn't not affect MainEntities at all
-            else if(!doesNotRefreshMainEntity)
+            else
             {
                 OnBeforeAffectingOrCompulsoryEntitiesChanged = owner.OnBeforeAffectingOrCompulsoryEntitiesChanged;
                 OnAfterEntitiesChanged = owner.OnAfterAffectingEntitiesChanged;
             }
 
-            Add(new EntitiesLoaderDescription<TEntity, TProjection, TPrimaryKey, TUnitOfWork>(owner, loadOrder,
-                unitOfWorkFactory, getRepositoryFunc, null, OnBeforeAffectingOrCompulsoryEntitiesChanged, OnAfterEntitiesChanged, null, projectionFunc, compulsoryEntityAssignmentFunc));
+            owner.SuppressNotification = suppressNotification;
+
+            Add(new EntitiesLoaderDescription<TEntity, TProjection, TPrimaryKey, TUnitOfWork>(
+                owner, 
+                loadOrder,
+                unitOfWorkFactory, 
+                getRepositoryFunc, 
+                null, 
+                OnBeforeAffectingOrCompulsoryEntitiesChanged, 
+                OnAfterEntitiesChanged, 
+                null, 
+                projectionFunc, 
+                compulsoryEntityAssignmentFunc));
         }
 
         /// <summary>
@@ -309,9 +308,8 @@ namespace BluePrints.Data.Helpers
             if (collectionViewModel != null)
             {
                 collectionViewModel.OnDestroy();
-
                 collectionViewModel.OnEntitiesLoadedCallBack = null;
-                collectionViewModel.OnEntitiesLoadedCallBack = null;
+                collectionViewModel.OnAfterEntitiesChangedCallBack = null;
                 collectionViewModel.OnBeforeEntitiesChangedCallBack = null;
                 collectionViewModel = null;
             }

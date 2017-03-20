@@ -439,6 +439,24 @@ namespace BluePrints.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to P6 progress schedule population failed.
+        /// </summary>
+        internal static string WORKPACK_ASSIGNMENT_P6ProgressWriteFailed {
+            get {
+                return ResourceManager.GetString("WORKPACK_ASSIGNMENT_P6ProgressWriteFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to P6 progress schedule successfully populated.
+        /// </summary>
+        internal static string WORKPACK_ASSIGNMENT_P6ProgressWriteSuccess {
+            get {
+                return ResourceManager.GetString("WORKPACK_ASSIGNMENT_P6ProgressWriteSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to P6 units populated.
         /// </summary>
         internal static string WORKPACK_ASSIGNMENT_P6WriteComplete {
