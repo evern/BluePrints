@@ -65,7 +65,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc, null, true);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -100,7 +100,7 @@ namespace BluePrints.ViewModels
         protected override void OnAllEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS);
-            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoader.CreateCollectionViewModel()));
+            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
         protected override Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> ConstructMainViewModelProjection()
@@ -326,23 +326,19 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            invokedRevision = false;
             VARIATION_ITEMSViewModelWrapper(DisplaySelectedEntity);
         }
 
-        bool invokedRevision = false;
         private void OnVARIATION_ITEMSLoaded(IEnumerable<VARIATION_ITEMProjection> projections)
         {
-            if (invokedRevision)
-                return;
-
             mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE(projections)));
-
-            invokedRevision = true;
         }
 
         public void ReviseBASELINE(IEnumerable<VARIATION_ITEMProjection> projections)
         {
+            //prevent call back from invoking this method again
+            CleanUpVARIATION_ITEMS();
+
             var newBASELINE = new BASELINE();
             BASELINE liveBASELINE = LiveBASELINE;
             liveBASELINE.STATUS = BaselineStatus.Superseded;
@@ -356,8 +352,9 @@ namespace BluePrints.ViewModels
             BASELINEViewModel.Save(newBASELINE);
 
             DisplaySelectedEntity.APPROVED = DateTime.Now;
-            DisplaySelectedEntity.GUID_ORIBASELINE = LiveBASELINE.GUID;
+            DisplaySelectedEntity.GUID_ORIBASELINE = liveBASELINE.GUID;
             DisplaySelectedEntity.GUID_BASELINE = newBASELINE.GUID;
+            MainViewModel.Save(DisplaySelectedEntity);
 
             //var newBASELINE_ITEMS = new ObservableCollection<BASELINE_ITEM>();
             List<BASELINE_ITEM> baseline_itemForInternalNumberGeneration = new List<BASELINE_ITEM>();
@@ -413,7 +410,6 @@ namespace BluePrints.ViewModels
                 BASELINE_ITEMSViewModel.Save(newBASELINE_ITEM);
             }
 
-            CleanUpVARIATION_ITEMS();
             InitializeAndLoadEntitiesLoaderDescription();
         }
         #endregion

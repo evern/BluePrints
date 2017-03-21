@@ -86,7 +86,7 @@ namespace BluePrints.ViewModels
         protected override void OnAllEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES);
-            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoader.CreateCollectionViewModel()));
+            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
         protected override Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> ConstructMainViewModelProjection()

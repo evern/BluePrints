@@ -133,7 +133,6 @@ namespace BluePrints.Common
                 ReceiveMessage<DELIVERABLES_STATUS, Guid>(PrimaryKey, MessageType, sender, hwid);
         }
 
-
         private static void ReceiveMessage<TEntity, TPrimaryKey>(TPrimaryKey primaryKey, EntityMessageType messageType,
             string sender, string hwid)
             where TEntity : class

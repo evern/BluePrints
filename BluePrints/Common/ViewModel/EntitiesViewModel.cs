@@ -90,7 +90,6 @@ namespace BluePrints.Common.ViewModel
 
             void IEntitiesChangeTracker.UnregisterMessageHandler()
             {
-                Messenger.Default.Unregister<EntityMessage<TEntity, TPrimaryKey>>(this);
                 Messenger.Default.Unregister(this);
             }
 

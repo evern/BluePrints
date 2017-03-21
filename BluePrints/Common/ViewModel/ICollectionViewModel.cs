@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DevExpress.Xpf.Grid;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +12,6 @@ namespace BluePrints.Common.ViewModel
     {
         void Save(TProjection entity);
         void Delete(TProjection entity);
+        void CleanUpCallBacks();
     }
 }

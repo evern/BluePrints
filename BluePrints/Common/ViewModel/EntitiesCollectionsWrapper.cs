@@ -34,7 +34,7 @@ namespace BluePrints.Common.ViewModel
 
         protected
             EntitiesLoaderDescription<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork>
-            mainEntityLoader;
+            mainEntityLoaderDescription;
 
         public TMainViewModel MainViewModel { get; set; }
         public bool SuppressNotification { get; set; }
@@ -115,7 +115,7 @@ namespace BluePrints.Common.ViewModel
             IUnitOfWorkFactory<TMainEntityUnitOfWork> unitOfWorkFactory,
             Func<TMainEntityUnitOfWork, IRepository<TMainEntity, TMainEntityPrimaryKey>> getRepositoryFunc)
         {
-            mainEntityLoader =
+            mainEntityLoaderDescription =
                 new EntitiesLoaderDescription
                     <TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork>(this, 0,
                         unitOfWorkFactory, getRepositoryFunc, OnMainViewModelLoaded, OnBeforeAffectingOrCompulsoryEntitiesChanged, 
@@ -132,7 +132,7 @@ namespace BluePrints.Common.ViewModel
 
         protected virtual bool OnMainViewModelLoaded(IEnumerable<TMainProjectionEntity> entities)
         {
-            MainViewModel = (TMainViewModel) mainEntityLoader.GetViewModel();
+            MainViewModel = (TMainViewModel) mainEntityLoaderDescription.GetViewModel();
             AssignCallBacksAndRaisePropertyChange(entities);
             return true;
         }
@@ -403,12 +403,12 @@ namespace BluePrints.Common.ViewModel
         /// <summary>
         /// Unregister any messaging listener
         /// </summary>
-        public void CleanUpEntitiesLoader()
+        public virtual void CleanUpEntitiesLoader()
         {
             compulsoryLoaders = null;
-
-            if (mainEntityLoader != null)
-                mainEntityLoader.OnDestroy();
+            
+            if (mainEntityLoaderDescription != null)
+                mainEntityLoaderDescription.OnDestroy();
 
             if (loaderCollection == null)
                 return;

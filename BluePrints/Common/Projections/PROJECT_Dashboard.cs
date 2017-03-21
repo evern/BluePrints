@@ -130,8 +130,7 @@ namespace BluePrints.Common.Projections
                     return;
                 }
 
-                if (raisePropertyChanged != null)
-                    raisePropertyChanged();
+                raisePropertyChanged?.Invoke();
             }
         }
 

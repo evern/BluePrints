@@ -220,6 +220,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             foreach (ReportableObject reportableObject in SummaryObject.ReportableObjects)
             {
+                string s;
+                if (reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM == "P027-20000-DSH-ME-835")
+                    s = string.Empty;
+
                 ISupportProgressReportingExtensions.GenerateCumulativeSummaryDataPoints(reportableObject, this.SummaryObject.FirstAlignedDataDate, this.SummaryObject.IntervalPeriod);
             }
         }
@@ -420,18 +424,29 @@ namespace BluePrints.Common.ViewModel.Reporting
                 foreach (WORKPACK_ASSIGNMENT currentWORKPACK_ASSIGNMENT in currentWORKPACK_ASSIGNMENTS)
                 {
                     if (currentAssignmentRemainingUnits == 0)
-                        continue;
+                        break;
 
-                    if (currentWORKPACK_ASSIGNMENT.LOW_VALUE <= totalUnitsAssigned + 1 && totalUnitsAssigned + 1 <= currentWORKPACK_ASSIGNMENT.HIGH_VALUE)
+                    decimal compareUnitsAssigned = Math.Round(totalUnitsAssigned + 1, 0);
+                    if (currentWORKPACK_ASSIGNMENT.LOW_VALUE <= compareUnitsAssigned && compareUnitsAssigned <= currentWORKPACK_ASSIGNMENT.HIGH_VALUE)
                     {
                         TASK currentAssignmentTASK = P6TASKS.FirstOrDefault(task => task.task_code == currentWORKPACK_ASSIGNMENT.P6_ACTIVITYID);
                         DateTime CurrentAssignmentStartDate;
                         if (processingType == DataPointsType.Planned)
                             CurrentAssignmentStartDate = (DateTime)currentAssignmentTASK.target_start_date;
                         else if (processingType == DataPointsType.Earned)
+                        {
+                            if (currentAssignmentTASK.act_start_date == null)
+                                return false;
+
                             CurrentAssignmentStartDate = (DateTime)currentAssignmentTASK.act_start_date;
+                        }
                         else
+                        {
+                            if (currentAssignmentTASK.early_start_date == null)
+                                return false;
+
                             CurrentAssignmentStartDate = (DateTime)currentAssignmentTASK.early_start_date;
+                        }
 
                         DateTime CurrentAssignmentEndDate;
                         if (processingType == DataPointsType.Planned)
@@ -457,7 +472,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                         decimal CurrentAssignmentCosts = CurrentAssignmentUnits * reportableObject.BASELINE_ITEMJoinRATE.ITEMRATE;
 
-                        nonCumulativeP6DataPoints.AddRange(ISupportProgressReportingExtensions.DataPointsGenerator(SummaryObject, CurrentAssignmentWorkingPeriod, CurrentAssignmentUnits, CurrentAssignmentCosts, CurrentAssignmentStartDate, currentBASELINE_ITEM.BASELINE_ITEM.GUID_ORIGINAL, this.CurrencyConversion, null, null, null));
+                        List<ProgressInfo> p6ProgressInfo = ISupportProgressReportingExtensions.DataPointsGenerator(SummaryObject, CurrentAssignmentWorkingPeriod, CurrentAssignmentUnits, CurrentAssignmentCosts, CurrentAssignmentStartDate, currentBASELINE_ITEM.BASELINE_ITEM.GUID_ORIGINAL, this.CurrencyConversion, null, null, null);
+                        nonCumulativeP6DataPoints.AddRange(p6ProgressInfo);
                         currentAssignmentRemainingUnits -= CurrentAssignmentUnits;
                         totalUnitsAssigned += CurrentAssignmentUnits;
                     }
@@ -527,11 +543,14 @@ namespace BluePrints.Common.ViewModel.Reporting
                     this.PROGRESS_TASKS = GetP6ScheduleTasks(SummaryObject.LivePROGRESS.P6PROGRESS_NAME, out this.PROGRESS_PROJECT);
 
                 bool isProgressDataDateMatch = (this.PROGRESS_PROJECT != null && this.PROGRESS_PROJECT.last_recalc_date != null && ((DateTime)this.PROGRESS_PROJECT.last_recalc_date).Date == SummaryObject.LivePROGRESS.DATA_DATE.Date);
-                
+                string s;
+                if (reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM == "P027-20000-DSH-ME-835")
+                    s = string.Empty;
+
                 if (isProgressDataDateMatch && TryBuildP6DataPoints(this.PROGRESS_PROJECT, this.PROGRESS_TASKS, reportableObject, DataPointsType.Earned, WorkpackAssignmentLoadType.Modified, workpackAssignedUnits, out progressItemP6DataPoints))
                 {
                     reportableObject.NonCumulative_EarnedDataPoints = new ObservableCollection<ProgressInfo>(progressItemP6DataPoints);
-                    reportableObject.isDataPointsGeneratedFromP6 = true;
+                    reportableObject.isEarnedDataPointsFromP6 = true;
                 }
 
                 else
@@ -573,7 +592,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (reportableObject.RemainingUnitsAfterDataDate > 0 && reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK != null)
                 {
                     List<ProgressInfo> progressItemP6DataPoints;
-                    if (reportableObject.isDataPointsGeneratedFromP6 && TryBuildP6DataPoints(this.PROGRESS_PROJECT, this.PROGRESS_TASKS, reportableObject, DataPointsType.Remaining, WorkpackAssignmentLoadType.Modified, workpackAssignedUnits, out progressItemP6DataPoints))
+                    if (reportableObject.isEarnedDataPointsFromP6 && TryBuildP6DataPoints(this.PROGRESS_PROJECT, this.PROGRESS_TASKS, reportableObject, DataPointsType.Remaining, WorkpackAssignmentLoadType.Modified, workpackAssignedUnits, out progressItemP6DataPoints))
                         reportableObject.NonCumulative_RemainingPlannedDataPoints = new ObservableCollection<ProgressInfo>(progressItemP6DataPoints);
                     else
                     {

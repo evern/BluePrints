@@ -244,6 +244,8 @@
                 </DataTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="ShowTotalSummary" Value="True" />
+        <Setter Property="GroupSummaryDisplayMode" Value="AlignByColumns" />
         <Setter Property="ShowFixedTotalSummary" Value="True" />
         <Setter Property="NewItemRowPosition" Value="Top" />
         <Setter Property="AllowPerPixelScrolling" Value="True" />

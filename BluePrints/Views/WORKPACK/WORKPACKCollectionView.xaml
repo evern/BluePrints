@@ -170,9 +170,17 @@
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
+                            <dxg:GridSummaryItem FieldName="TOTAL_UNITS"
+                                                 SummaryType="Sum" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="TOTAL_COSTS"
+                                                 SummaryType="Sum" DisplayFormat="Total: {0:c2}" />
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.GroupSummary>
+                            <dxg:GridSummaryItem FieldName="TOTAL_UNITS"
+                                                 SummaryType="Sum" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="TOTAL_COSTS"
+                                                 SummaryType="Sum" DisplayFormat="Total: {0:c2}" />
                             <dxg:GridSummaryItem SummaryType="Count" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>

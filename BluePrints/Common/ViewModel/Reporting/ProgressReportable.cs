@@ -243,7 +243,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal VariationProductivity { get; set; }
         public decimal BaselineProductivity { get; set; }
         public decimal ActualProductivity { get; set; }
-        public bool isDataPointsGeneratedFromP6 { get; set; }
+        public bool isEarnedDataPointsFromP6 { get; set; }
+        public bool isPlannedDataPointsFromP6 { get; set; }
 
         private decimal? pastPROGRESS_ITEMS_UNITS;
 
@@ -464,115 +465,98 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        private ProgressInfo summary_cumulativeearned;
-
         public ProgressInfo Summary_CumulativeEarned
         {
             get
             {
-                if (summary_cumulativeearned == null && Summary_CumulativeEarnedDataPoints != null && Summary_CumulativeEarnedDataPoints.Count > 0 && ReportingDataDate != null)
-                    summary_cumulativeearned =
-                        ISupportProgressReportingExtensions.FindDataPointByDate(Summary_CumulativeEarnedDataPoints,
+                if (Summary_CumulativeEarnedDataPoints != null && Summary_CumulativeEarnedDataPoints.Count > 0 && ReportingDataDate != null)
+                    return ISupportProgressReportingExtensions.FindDataPointByDate(Summary_CumulativeEarnedDataPoints,
                             ReportingDataDate.Date);
-                return summary_cumulativeearned;
+
+                return null;
             }
         }
-
-        private ProgressInfo summary_cumulativeburned;
 
         public ProgressInfo Summary_CumulativeBurned
         {
             get
             {
-                if (summary_cumulativeburned == null && Summary_CumulativeBurnedDataPoints != null && Summary_CumulativeBurnedDataPoints.Count > 0 && ReportingDataDate != null)
-                    summary_cumulativeburned =
-                        ISupportProgressReportingExtensions.FindDataPointByDate(Summary_CumulativeBurnedDataPoints,
+                if (Summary_CumulativeBurnedDataPoints != null && Summary_CumulativeBurnedDataPoints.Count > 0 && ReportingDataDate != null)
+                    return ISupportProgressReportingExtensions.FindDataPointByDate(Summary_CumulativeBurnedDataPoints,
                             ReportingDataDate.Date);
-                return summary_cumulativeburned;
+
+                return null;
             }
         }
-
-        private ProgressInfo summary_cumulativeactual;
 
         public ProgressInfo Summary_CumulativeActual
         {
             get
             {
-                if (summary_cumulativeactual == null && Summary_CumulativeActualDataPoints != null && Summary_CumulativeActualDataPoints.Count > 0 && ReportingDataDate != null)
-                    summary_cumulativeactual =
-                        ISupportProgressReportingExtensions.FindDataPointByDate(Summary_CumulativeActualDataPoints,
+                if (Summary_CumulativeActualDataPoints != null && Summary_CumulativeActualDataPoints.Count > 0 && ReportingDataDate != null)
+                    return ISupportProgressReportingExtensions.FindDataPointByDate(Summary_CumulativeActualDataPoints,
                             ReportingDataDate.Date);
-                return summary_cumulativeactual;
+
+                return null;
             }
         }
-
-        private ProgressInfo summary_periodoriginal;
 
         public ProgressInfo Summary_PeriodOriginal
         {
             get
             {
-                if (summary_periodoriginal == null && ReportingDataDate != null)
-                    summary_periodoriginal =
-                        ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(
+                if (ReportingDataDate != null)
+                    return ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(
                             Summary_CumulativeOriginalDataPoints, ReportingDataDate.Date);
-                return summary_periodoriginal;
+                return null;
             }
         }
-
-        private ProgressInfo summary_periodplanned;
 
         public ProgressInfo Summary_PeriodPlanned
         {
             get
             {
-                if (summary_periodplanned == null && Summary_CumulativePlannedDataPoints != null && Summary_CumulativePlannedDataPoints.Count > 0 && ReportingDataDate != null)
-                    summary_periodplanned =
-                        ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(
+                if (Summary_CumulativePlannedDataPoints != null && Summary_CumulativePlannedDataPoints.Count > 0 && ReportingDataDate != null)
+                    return ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(
                             Summary_CumulativePlannedDataPoints, ReportingDataDate.Date);
-                return summary_periodplanned;
+
+                return null;
             }
         }
-
-        private ProgressInfo summary_periodearned;
 
         public ProgressInfo Summary_PeriodEarned
         {
             get
             {
-                if (summary_periodearned == null && Summary_CumulativeEarnedDataPoints != null && Summary_CumulativeEarnedDataPoints.Count > 0 && ReportingDataDate != null)
-                    summary_periodearned =
-                        ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(
+                if (Summary_CumulativeEarnedDataPoints != null && Summary_CumulativeEarnedDataPoints.Count > 0 && ReportingDataDate != null)
+                    return ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(
                             Summary_CumulativeEarnedDataPoints, ReportingDataDate.Date);
-                return summary_periodearned;
+
+                return null;
             }
         }
-
-        private ProgressInfo summary_periodburned;
 
         public ProgressInfo Summary_PeriodBurned
         {
             get
             {
-                if (summary_periodburned == null && Summary_CumulativeBurnedDataPoints != null && Summary_CumulativeBurnedDataPoints.Count > 0 && ReportingDataDate != null)
-                    summary_periodburned =
-                        ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(
+                if (Summary_CumulativeBurnedDataPoints != null && Summary_CumulativeBurnedDataPoints.Count > 0 && ReportingDataDate != null)
+                    return ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(
                             Summary_CumulativeBurnedDataPoints, ReportingDataDate.Date);
-                return summary_periodburned;
+
+                return null;
             }
         }
-
-        private ProgressInfo summary_periodactual;
 
         public ProgressInfo Summary_PeriodActual
         {
             get
             {
-                if (summary_periodactual == null && Summary_CumulativeActualDataPoints != null && Summary_CumulativeActualDataPoints.Count > 0 && ReportingDataDate != null)
-                    summary_periodactual =
-                        ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(
+                if (Summary_CumulativeActualDataPoints != null && Summary_CumulativeActualDataPoints.Count > 0 && ReportingDataDate != null)
+                    return ISupportProgressReportingExtensions.GeneratePeriodDataPointFromCumulative(
                             Summary_CumulativeActualDataPoints, ReportingDataDate.Date);
-                return summary_periodactual;
+
+                return null;
             }
         }
 
@@ -918,7 +902,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (summary_periodremainingoriginaldatapoints == null && ReportingDataDate != null)
+                if (summary_periodremainingoriginaldatapoints == null &&
+                    (summary_remainingoriginaldatapoints != null && summary_remainingoriginaldatapoints.Count() > 0) && ReportingDataDate != null)
                     summary_periodremainingoriginaldatapoints =
                         ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(
                             summary_remainingoriginaldatapoints, ReportingDataDate.Date);
@@ -936,7 +921,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (summary_periodremainingplanneddatapoints == null && ReportingDataDate != null)
+                if (summary_periodremainingplanneddatapoints == null &&
+                    (summary_remainingplanneddatapoints != null && summary_remainingplanneddatapoints.Count() > 0) && ReportingDataDate != null)
                     summary_periodremainingplanneddatapoints =
                         ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(
                             summary_remainingplanneddatapoints, ReportingDataDate.Date);
@@ -954,7 +940,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (summary_periodremainingcurrentdatapoints == null && ReportingDataDate != null)
+                if (summary_periodremainingcurrentdatapoints == null &&
+                    (summary_remainingcurrentdatapoints != null && summary_remainingcurrentdatapoints.Count() > 0) && ReportingDataDate != null)
                     summary_periodremainingcurrentdatapoints =
                         ISupportProgressReportingExtensions.ConvertCumulativeToPeriodDataPoint(
                             summary_remainingcurrentdatapoints, ReportingDataDate.Date);

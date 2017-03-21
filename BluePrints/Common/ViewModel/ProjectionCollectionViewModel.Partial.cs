@@ -17,6 +17,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Threading;
@@ -623,7 +624,7 @@ namespace BluePrints.Common.ViewModel
             IsValidFromViewCallBack?.Invoke(e);
         }
 
-        public Func<GridRowValidationEventArgs, bool> AdditionalValidateRowCallBack;
+        public Func<GridRowValidationEventArgs, bool> AdditionalValidateRowCallBack { get; set; }
 
         public virtual void ValidateRow(GridRowValidationEventArgs e)
         {
@@ -1162,6 +1163,33 @@ namespace BluePrints.Common.ViewModel
 
         #endregion
 
+        public virtual void CleanUpCallBacks()
+        {
+            this.AdditionalValidateRowCallBack = null;
+            this.ApplyEntityPropertiesToProjectionCallBack = null;
+            this.ApplyProjectionPropertiesToEntityCallBack = null;
+            this.CanBulkDeleteCallBack = null;
+            this.CanFillDownCallBack = null;
+            this.CreateNewProjectionFromNewEntityCallBack = null;
+            this.ExistingRowAddUndoAndSaveCallBack = null;
+            this.IsContinueNewRowFromViewCallBack = null;
+            this.IsContinueSaveCallBack = null;
+            this.IsValidFromViewCallBack = null;
+            this.OnAfterEntitiesChangedCallBack = null;
+            this.OnAfterEntitiesDeletedCallBack = null;
+            this.OnAfterEntitySavedCallBack = null;
+            this.OnAfterTreelistExistingRowAddUndoAndSaveCallBack = null;
+            this.OnBeforeBulkEditSaveCallBack = null;
+            this.OnBeforeEntitiesChangedCallBack = null;
+            this.OnBeforeEntitiesDeleteCallBack = null;
+            this.OnBeforeEntityDeleteCallBack = null;
+            this.OnEntitiesLoadedCallBack = null;
+            this.OnFillDownCompletedCallBack = null;
+            this.OnSelectedEntitiesChangedCallBack = null;
+            this.SetParentAssociationCallBack = null;
+            this.ValidateBulkEditCallBack = null;
+            this.ValidateFillDownCallBack = null;
+        }
     }
 
 

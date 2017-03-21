@@ -22,6 +22,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             summaryBuilder.BuildBurnedDataPoints();
             summaryBuilder.BuildActualDataPoints();
             summaryBuilder.BuildRemainingDataPoints();
+            summaryBuilder.SummarizeNestedSummaryObjectDataPoints();
             summaryBuilder.SummarizeDataPoints();
             summaryBuilder.RecalculateStats();
         }
@@ -37,6 +38,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public void Build(SummaryBuilder summaryBuilder)
         {
             summaryBuilder.BuildOriginalPlannedDataPoints();
+            summaryBuilder.SummarizeNestedSummaryObjectDataPoints();
             summaryBuilder.SummarizeDataPoints();
         }
     }
@@ -54,6 +56,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public void Build(SummaryBuilder summaryBuilder)
         {
             summaryBuilder.SummarizeNestedSummaryObjectDataPoints();
+            summaryBuilder.SummarizeDataPoints();
         }
     }
 

@@ -14,6 +14,7 @@ using BluePrints.Common.ViewModel.Filtering;
 using BluePrints.Common.Projections;
 using BluePrints.Data.Helpers;
 using BluePrints.Common;
+using BluePrints.Common.ViewModel.Reporting;
 
 namespace BluePrints.ViewModels
 {
@@ -117,7 +118,7 @@ namespace BluePrints.ViewModels
         protected override void OnAllEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
-            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoader.CreateCollectionViewModel()));
+            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
         protected override Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT_Dashboard>>
@@ -140,7 +141,7 @@ namespace BluePrints.ViewModels
         {
             MainViewModel =
                 (CollectionViewModel<PROJECT, PROJECT_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>)
-                mainEntityLoader.GetViewModel();
+                mainEntityLoaderDescription.GetViewModel();
 
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             MainViewModel.SetParentViewModel(this);
@@ -172,6 +173,18 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        //public bool IsAllFromP6
+        //{
+        //    get
+        //    {
+                
+        //        IEnumerable<ProgressInfo> earnedProgressInfos = MainViewModel.Entities.SelectMany(x => x.ReportableObjects.SelectMany(y => y.NonCumulative_EarnedDataPoints));
+        //        IEnumerable<ProgressInfo> earnedFromP6ProgressInfos = earnedProgressInfos.Where(x => x.IsStatsFromP6);
+        //        decimal reportableItemsFromP6Count = reportableObjectFromP6.Count(x => x.isDataPointsGeneratedFromP6);
+        //        return ((reportableItemsFromP6Count / reportableItemsCount) * 100) > 90;
+        //    }
+        //}
+
 
         private bool isAutoRefresh { get; set; }
 

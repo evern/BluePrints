@@ -272,18 +272,14 @@
                                 </dxg:DataControlDetailDescriptor>
                             </dxg:GridControl.DetailDescriptor>
                             <dxg:GridControl.GroupSummary>
-                                <dxg:GridSummaryItem x:Name="groupSummaryBudgeted"
-                                                     ShowInColumn="Summary_CumulativePlanned.Units"
-                                                     FieldName="Summary_CumulativePlanned.Units" SummaryType="Sum"
-                                                     DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryCumulativeEarnedPercentage"
+                                <!--<dxg:GridSummaryItem x:Name="groupSummaryCumulativeEarnedPercentage"
                                                      ShowInColumn="Summary_CumulativeEarned.UnitsPercentage"
                                                      FieldName="Summary_CumulativeEarned.UnitsPercentage"
-                                                     SummaryType="Custom" DisplayFormat="{}{0:p}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryPeriodEarnedPercentage"
+                                                     SummaryType="Custom" DisplayFormat="{}{0:p}" />-->
+                                <!--<dxg:GridSummaryItem x:Name="groupSummaryPeriodEarnedPercentage"
                                                      ShowInColumn="Summary_PeriodEarned.UnitsPercentage"
                                                      FieldName="Summary_PeriodEarned.UnitsPercentage"
-                                                     SummaryType="Custom" DisplayFormat="{}{0:p}" />
+                                                     SummaryType="Custom" DisplayFormat="{}{0:p}" />-->
                                 <dxg:GridSummaryItem x:Name="groupSummaryGrossProfit"
                                                      FieldName="ProjectDashboard_GrossProfit" SummaryType="Custom"
                                                      ShowInColumn="ProjectDashboard_GrossProfit"
@@ -294,53 +290,48 @@
                                 <dxg:GridSummaryItem x:Name="groupSummaryProgressRatio"
                                                      FieldName="ProjectDashboard_ProgressRatio" SummaryType="Custom"
                                                      DisplayFormat="{}{0:p}" />
-
                                 <dxg:GridSummaryItem x:Name="groupSummaryCumulativePlanned"
-                                                     ShowInColumn="Summary_CumulativePlanned.ProgressDataPoint_Units"
-                                                     FieldName="Summary_CumulativePlanned.ProgressDataPoint_Units"
+                                                     ShowInColumn="Summary_CumulativePlanned.Units"
+                                                     FieldName="Summary_CumulativePlanned.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="groupSummaryCumulativeEarned"
-                                                     ShowInColumn="Summary_CumulativeEarned.ProgressDataPoint_Units"
-                                                     FieldName="Summary_CumulativeEarned.ProgressDataPoint_Units"
+                                                     ShowInColumn="Summary_CumulativeEarned.Units"
+                                                     FieldName="Summary_CumulativeEarned.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="groupSummaryCumulativeBurned"
-                                                     ShowInColumn="Summary_CumulativeBurned.ProgressDataPoint_Units"
-                                                     FieldName="Summary_CumulativeBurned.ProgressDataPoint_Units"
+                                                     ShowInColumn="Summary_CumulativeBurned.Units"
+                                                     FieldName="Summary_CumulativeBurned.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="groupSummaryCumulativeActual"
-                                                     ShowInColumn="Summary_CumulativeActual.ProgressDataPoint_Units"
-                                                     FieldName="Summary_CumulativeActual.ProgressDataPoint_Units"
+                                                     ShowInColumn="Summary_CumulativeActual.Units"
+                                                     FieldName="Summary_CumulativeActual.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="groupSummaryPeriodPlanned"
-                                                     ShowInColumn="Summary_PeriodPlanned.ProgressDataPoint_Units"
-                                                     FieldName="Summary_PeriodPlanned.ProgressDataPoint_Units"
+                                                     ShowInColumn="Summary_PeriodPlanned.Units"
+                                                     FieldName="Summary_PeriodPlanned.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="groupSummaryPeriodEarned"
-                                                     ShowInColumn="Summary_PeriodEarned.ProgressDataPoint_Units"
-                                                     FieldName="Summary_PeriodEarned.ProgressDataPoint_Units"
+                                                     ShowInColumn="Summary_PeriodEarned.Units"
+                                                     FieldName="Summary_PeriodEarned.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="groupSummaryPeriodBurned"
-                                                     ShowInColumn="Summary_PeriodBurned.ProgressDataPoint_Units"
-                                                     FieldName="Summary_PeriodBurned.ProgressDataPoint_Units"
+                                                     ShowInColumn="Summary_PeriodBurned.Units"
+                                                     FieldName="Summary_PeriodBurned.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="groupSummaryPeriodActual"
-                                                     ShowInColumn="Summary_PeriodActual.ProgressDataPoint_Units"
-                                                     FieldName="Summary_PeriodActual.ProgressDataPoint_Units"
+                                                     ShowInColumn="Summary_PeriodActual.Units"
+                                                     FieldName="Summary_PeriodActual.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.TotalSummary>
-                                <dxg:GridSummaryItem x:Name="totalSummaryBudgeted"
-                                                     ShowInColumn="Summary_CumulativePlanned.Units"
-                                                     FieldName="Summary_CumulativePlanned.Units" SummaryType="Sum"
-                                                     DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryCumulativeEarnedPercentage"
+                                <!--<dxg:GridSummaryItem x:Name="totalSummaryCumulativeEarnedPercentage"
                                                      ShowInColumn="Summary_CumulativeEarned.UnitsPercentage"
                                                      FieldName="Summary_CumulativeEarned.UnitsPercentage"
                                                      SummaryType="Custom" DisplayFormat="{}{0:p}" />
                                 <dxg:GridSummaryItem x:Name="totalSummaryPeriodEarnedPercentage"
                                                      ShowInColumn="Summary_PeriodEarned.UnitsPercentage"
                                                      FieldName="Summary_PeriodEarned.UnitsPercentage"
-                                                     SummaryType="Custom" DisplayFormat="{}{0:p}" />
+                                                     SummaryType="Custom" DisplayFormat="{}{0:p}" />-->
                                 <dxg:GridSummaryItem x:Name="totalSummaryGrossProfit"
                                                      FieldName="ProjectDashboard_GrossProfit" SummaryType="Custom"
                                                      DisplayFormat="{}{0:p}" />
@@ -350,39 +341,38 @@
                                 <dxg:GridSummaryItem x:Name="totalSummaryProgressRatio"
                                                      FieldName="ProjectDashboard_ProgressRatio" SummaryType="Custom"
                                                      DisplayFormat="{}{0:p}" />
-
                                 <dxg:GridSummaryItem x:Name="totalSummaryCumulativePlanned"
-                                                     ShowInColumn="Summary_CumulativePlanned.ProgressDataPoint_Units"
-                                                     FieldName="Summary_CumulativePlanned.ProgressDataPoint_Units"
+                                                     ShowInColumn="Summary_CumulativePlanned.Units"
+                                                     FieldName="Summary_CumulativePlanned.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="totalSummaryCumulativeEarned"
-                                                     ShowInColumn="Summary_CumulativeEarned.ProgressDataPoint_Units"
-                                                     FieldName="Summary_CumulativeEarned.ProgressDataPoint_Units"
+                                                     ShowInColumn="Summary_CumulativeEarned.Units"
+                                                     FieldName="Summary_CumulativeEarned.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="totalSummaryCumulativeBurned"
-                                                     ShowInColumn="Summary_CumulativeBurned.ProgressDataPoint_Units"
-                                                     FieldName="Summary_CumulativeBurned.ProgressDataPoint_Units"
+                                                     ShowInColumn="Summary_CumulativeBurned.Units"
+                                                     FieldName="Summary_CumulativeBurned.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="totalSummaryCumulativeActual"
-                                                     ShowInColumn="Summary_CumulativeActual.ProgressDataPoint_Units"
-                                                     FieldName="Summary_CumulativeActual.ProgressDataPoint_Units"
+                                                     ShowInColumn="Summary_CumulativeActual.Units"
+                                                     FieldName="Summary_CumulativeActual.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
 
                                 <dxg:GridSummaryItem x:Name="totalSummaryPeriodPlanned"
-                                                     ShowInColumn="Summary_PeriodPlanned.ProgressDataPoint_Units"
-                                                     FieldName="Summary_PeriodPlanned.ProgressDataPoint_Units"
+                                                     ShowInColumn="Summary_PeriodPlanned.Units"
+                                                     FieldName="Summary_PeriodPlanned.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="totalSummaryPeriodEarned"
-                                                     ShowInColumn="Summary_PeriodEarned.ProgressDataPoint_Units"
-                                                     FieldName="Summary_PeriodEarned.ProgressDataPoint_Units"
+                                                     ShowInColumn="Summary_PeriodEarned.Units"
+                                                     FieldName="Summary_PeriodEarned.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="totalSummaryPeriodBurned"
-                                                     ShowInColumn="Summary_PeriodBurned.ProgressDataPoint_Units"
-                                                     FieldName="Summary_PeriodBurned.ProgressDataPoint_Units"
+                                                     ShowInColumn="Summary_PeriodBurned.Units"
+                                                     FieldName="Summary_PeriodBurned.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="totalSummaryPeriodActual"
-                                                     ShowInColumn="Summary_PeriodActual.ProgressDataPoint_Units"
-                                                     FieldName="Summary_PeriodActual.ProgressDataPoint_Units"
+                                                     ShowInColumn="Summary_PeriodActual.Units"
+                                                     FieldName="Summary_PeriodActual.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>

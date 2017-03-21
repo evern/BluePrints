@@ -74,7 +74,7 @@
             <Grid>
                 <dxlc:LayoutControl x:Name="layoutControl" Orientation="Vertical">
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Orientation="Vertical"
-                                      dxlc:LayoutControl.AllowVerticalSizing="False" Height="150">
+                                      dxlc:LayoutControl.AllowVerticalSizing="False" Height="160">
                         <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="PROJECT_DashboardGrid"
                                          Style="{StaticResource AggregateViewGridTemplate}">
                             <dxmvvm:Interaction.Behaviors>
@@ -367,6 +367,7 @@
                             <dxg:GridControl.View>
                                 <common:TableViewEx x:Name="tableView" AllowEditing="False"
                                                Style="{StaticResource DefaultTableViewTemplate}"
+                                               ShowAutoFilterRow="False"
                                                ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                NewItemRowPosition="None" ShowGroupPanel="False">
                                     <common:TableViewEx.RowCellMenuCustomizations>

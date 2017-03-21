@@ -64,7 +64,7 @@ namespace BluePrints.ViewModels
             delayedPROGRESSSavingDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 10);
             delayedPROGRESSSavingDispatcher.Tick += delayedPROGRESSSavingDispatcher_Tick;
             var receiveParameter =
-                (OptionalEntitiesParameter<Data.PROJECT, PROGRESS>) parameter;
+                (OptionalEntitiesParameter<Data.PROJECT, PROGRESS>)parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadPROGRESS = receiveParameter.GetSecondEntity();
 
@@ -156,7 +156,7 @@ namespace BluePrints.ViewModels
         protected override void OnAllEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
-            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoader.CreateCollectionViewModel()));
+            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<PROGRESS_ITEMProjection>>
@@ -210,15 +210,14 @@ namespace BluePrints.ViewModels
 
         private void summaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            var summaryBuilder = (PROJECTSummaryBuilder) e.Argument;
-            CalculateMinimalStats(summaryBuilder);
-            CalculateStatsForReport(summaryBuilder);
-
-            if (((BackgroundWorker) sender).CancellationPending)
+            var summaryBuilder = (PROJECTSummaryBuilder)e.Argument;
+            if (((BackgroundWorker)sender).CancellationPending)
             {
                 e.Cancel = true;
                 return;
             }
+
+            CalculateMinimalStats(summaryBuilder);
         }
 
         private void CalculateMinimalStats(PROJECTSummaryBuilder summaryBuilder)
@@ -227,23 +226,25 @@ namespace BluePrints.ViewModels
                 new BuildMinimalStatsForPlannedOriginalPercentage();
             summaryManufacturer.Manufacture(summaryBuilder);
 
-            RefreshView();
-            //mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.RefreshView()));
         }
 
-        private bool isReportReady;
+        //private bool isReportReady;
 
         private void CalculateStatsForReport(PROJECTSummaryBuilder summaryBuilder)
         {
+            //var summaryManufacturer =
+            //    new BuildFullStatsIncludingPROGRESS_ITEMSummary();
+
             var summaryManufacturer =
-                new BuildFullStatsIncludingPROGRESS_ITEMSummary();
+                new BuildProjectStats();
             summaryManufacturer.Manufacture(summaryBuilder);
-            isReportReady = true;
+            //isReportReady = true;
         }
 
         protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender)
         {
-            if(changedType == typeof(PROGRESS_ITEM))
+            if (changedType == typeof(PROGRESS_ITEM))
             {
                 PROGRESS_ITEMProjection mainEntity = MainViewModel.Entities.Where(x => x.PROGRESS_ITEMCurrent != null).FirstOrDefault(x => x.PROGRESS_ITEMCurrent.GUID.ToString() == key.ToString());
                 if (mainEntity != null)
@@ -257,6 +258,24 @@ namespace BluePrints.ViewModels
             return false;
         }
 
+        //protected override void OnAfterCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
+        //    object sender)
+        //{
+        //    //Map the changes from PROGRESS_ITEM to BASELINE_ITEM so undo/redo operation is valid
+        //    if ((sender != null && PROGRESS_ITEMSCollectionViewModel != null) && changedType == typeof(PROGRESS_ITEM))
+        //    {
+        //        PROGRESS_ITEMProjection mappedEntity = MainViewModel.Entities.FirstOrDefault(x => x.PROGRESS_ITEMCurrent != null && x.PROGRESS_ITEMCurrent.GUID.ToString() == key.ToString());
+        //        if (mappedEntity != null)
+        //            mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(mappedEntity.GUID, EntityMessageType.Changed, this))));
+
+        //        if (MainViewModel != null)
+        //            mainThreadDispatcher.BeginInvoke(new Action(() => this.InitializePROJECTSummary(MainViewModel.Entities)));
+
+        //        return;
+        //    }
+
+        //    base.OnAfterCompulsoryEntitiesChanged(key, changedType, messageType, sender);
+        //}
         #region Collection Call Backs
 
         private bool ExistingRowAddUndoAndSaveCallBack(PROGRESS_ITEMProjection projectionEntity, CellValueChangedEventArgs e)
@@ -342,12 +361,12 @@ namespace BluePrints.ViewModels
             if (fieldName != BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().TOTAL_EARNED_PERCENTAGE))
                 return false;
 
-            var newPercentage = (decimal) fillValue;
+            var newPercentage = (decimal)fillValue;
             if (newPercentage > fillDownEntity.MaxPercentage)
                 return false;
             else if (newPercentage < fillDownEntity.MinPercentage)
                 return false;
-            
+
             return true;
         }
 
@@ -583,12 +602,22 @@ namespace BluePrints.ViewModels
 
         private void OnPROJECTWORKPACKSMappingViewModelLoaded(IEnumerable<WORKPACK_Dashboard> entities)
         {
+            //if(loadPROGRESS.P6PROGRESS_NAME != string.Empty && entities.Any(x => x.NonCumulative_EarnedDataPoints.Any(y => y.IsStatsFromP6 == false))
+
+
             IEnumerable<TASK> PROJECTTASK = WORKPACK_DashboardViewModel.P6TASKCollection;
             IEnumerable<ProgressInfo> cumulativeEarnedDataPoints = entities.Where(x => x.Summary_CumulativeEarnedDataPoints != null).SelectMany(x => x.Summary_CumulativeEarnedDataPoints);
             cumulativeEarnedDataPoints = cumulativeEarnedDataPoints.OrderBy(x => x.ProgressDate).ToList();
             TimeSpan intervalTimeSpan = ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(loadPROGRESS);
             ICollectionViewModel<TASK> P6TASKCollectionViewModel = WORKPACK_DashboardViewModel.P6TASKCollectionViewModel;
             bool isError = false;
+
+            //IEnumerable<ProgressInfo> nonCumulativeEarnedDataPoints = entities.Where(x => x.NonCumulative_EarnedDataPoints != null).SelectMany(x => x.NonCumulative_EarnedDataPoints);
+
+            //decimal earnedUnits = nonCumulativeEarnedDataPoints.Sum(x => x.Units);
+            //string s = earnedUnits.ToString();
+            decimal assignedUnits = 0;
+            List<string> processedP6Task = new List<string>();
 
             foreach (WORKPACK_Dashboard workpack in entities)
             {
@@ -597,6 +626,7 @@ namespace BluePrints.ViewModels
                 {
                     ProgressInfo lWorkpackEarnedDataPoint = cumulativeEarnedDataPoints.LastOrDefault(dataPoint => dataPoint.WorkpackGuid == workpack.WORKPACK.GUID && dataPoint.ProgressDate <= loadPROGRESS.DATA_DATE);
                     List<WORKPACK_ASSIGNMENT> workpackAssignments = workpack.WORKPACK.WORKPACK_ASSIGNMENT.Where(assignment => assignment.LOW_VALUE <= lWorkpackEarnedDataPoint.Units).OrderBy(assignment => assignment.LOW_VALUE).ToList();
+
                     for (int i = 0; i < workpackAssignments.Count; i++)
                     {
                         WORKPACK_ASSIGNMENT workpackAssignment = workpackAssignments[i];
@@ -609,11 +639,27 @@ namespace BluePrints.ViewModels
 
                             decimal actUnits = lWorkpackEarnedDataPoint.Units < workpackAssignment.HIGH_VALUE ? lWorkpackEarnedDataPoint.Units : workpackAssignment.HIGH_VALUE;
                             decimal actWorkUnitNormalize = i == 0 ? actUnits : (actUnits - workpackAssignments[i - 1].HIGH_VALUE);
-                            P6TASK.act_work_qty = actWorkUnitNormalize;
+                            assignedUnits += actWorkUnitNormalize;
+
+                            //if this is the first time processing the task
+                            if(!processedP6Task.Any(x => x == P6TASK.task_code))
+                            {
+                                P6TASK.act_work_qty = actWorkUnitNormalize;
+                                processedP6Task.Add(P6TASK.task_code);
+                            }
+                            else
+                                P6TASK.act_work_qty += actWorkUnitNormalize;
+
+                            if (P6TASK.target_work_qty <= 0)
+                            {
+                                isError = true;
+                                break;
+                            }
+
                             if (P6TASK.remain_work_qty >= 0)
                                 P6TASK.remain_work_qty = P6TASK.target_work_qty - P6TASK.act_work_qty;
 
-                            if (P6TASK.target_work_qty <= 0)
+                            if (P6TASK.remain_work_qty < 0)
                             {
                                 isError = true;
                                 break;
@@ -636,11 +682,16 @@ namespace BluePrints.ViewModels
 
                             P6TASKCollectionViewModel.Save(P6TASK);
                         }
+                        else
+                        {
+                            isError = true;
+                            break;
+                        }
                     }
                 }
             }
 
-            if(!isError)
+            if (!isError)
                 MessageBoxService.ShowMessage(CommonResources.WORKPACK_ASSIGNMENT_P6ProgressWriteSuccess);
             else
                 MessageBoxService.ShowMessage(CommonResources.WORKPACK_ASSIGNMENT_P6ProgressWriteFailed);
@@ -659,28 +710,28 @@ namespace BluePrints.ViewModels
                     cumulativeCurrentUnits = 0;
                 }
                 if (e.SummaryProcess == CustomSummaryProcess.Calculate)
-                    if (((GridSummaryItem) e.Item).FieldName == "TOTAL_EARNED_PERCENTAGE")
+                    if (((GridSummaryItem)e.Item).FieldName == "TOTAL_EARNED_PERCENTAGE")
                     {
                         var budgetedUnits =
-                            ((PROGRESS_ITEMProjection) e.Row).BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
+                            ((PROGRESS_ITEMProjection)e.Row).BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
                         var previousUnits =
-                            ((PROGRESS_ITEMProjection) e.Row).PROGRESS_ITEMSBeforeReportingDate.Sum(x => x.EARNED_UNITS);
-                        var currentUnits = ((PROGRESS_ITEMProjection) e.Row).PROGRESS_ITEMCurrent == null
+                            ((PROGRESS_ITEMProjection)e.Row).PROGRESS_ITEMSBeforeReportingDate.Sum(x => x.EARNED_UNITS);
+                        var currentUnits = ((PROGRESS_ITEMProjection)e.Row).PROGRESS_ITEMCurrent == null
                             ? 0
-                            : ((PROGRESS_ITEMProjection) e.Row).PROGRESS_ITEMCurrent.EARNED_UNITS;
+                            : ((PROGRESS_ITEMProjection)e.Row).PROGRESS_ITEMCurrent.EARNED_UNITS;
 
                         cumulativePrincipalUnits += budgetedUnits;
                         cumulativeCurrentUnits += currentUnits + previousUnits;
                         if (cumulativePrincipalUnits > 0)
                             e.TotalValue = cumulativeCurrentUnits / cumulativePrincipalUnits;
                     }
-                    else if (((GridSummaryItem) e.Item).FieldName == "PERIOD_EARNED_PERCENTAGE")
+                    else if (((GridSummaryItem)e.Item).FieldName == "PERIOD_EARNED_PERCENTAGE")
                     {
                         var totalUnits =
-                            ((PROGRESS_ITEMProjection) e.Row).BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
-                        var currentUnits = ((PROGRESS_ITEMProjection) e.Row).PROGRESS_ITEMCurrent == null
+                            ((PROGRESS_ITEMProjection)e.Row).BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
+                        var currentUnits = ((PROGRESS_ITEMProjection)e.Row).PROGRESS_ITEMCurrent == null
                             ? 0
-                            : ((PROGRESS_ITEMProjection) e.Row).PROGRESS_ITEMCurrent.EARNED_UNITS;
+                            : ((PROGRESS_ITEMProjection)e.Row).PROGRESS_ITEMCurrent.EARNED_UNITS;
 
                         cumulativePrincipalUnits += totalUnits;
                         cumulativeCurrentUnits += currentUnits;
@@ -711,7 +762,7 @@ namespace BluePrints.ViewModels
 
         public bool CanViewReport()
         {
-            return isReportReady;
+            return true;
         }
 
         public void ViewReport()
@@ -730,7 +781,9 @@ namespace BluePrints.ViewModels
             }
 
             var projectSummaryBuilder = new PROJECTSummaryBuilder(currentPROJECTSummary);
-            //CalculateStatsForReport(projectSummaryBuilder);
+            CalculateStatsForReport(projectSummaryBuilder);
+            //PROGRESS_ITEMProjection pItem = MainViewModel.Entities.FirstOrDefault(x => x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM == "P027-20000-DSH-ME-835");
+            //string s = pItem.ToString();
             progressReport.AssignProperties(currentPROJECTSummary, loadPROGRESS.PROJECT.NAME);
             var previewWindow = new DocumentPreviewWindow();
             previewWindow.PreviewControl.DocumentSource = progressReport;

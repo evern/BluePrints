@@ -292,7 +292,7 @@ namespace BluePrints.Data.Helpers
         public TProjection GetSingleObject()
         {
             //this.collectionViewModel.OnEntitiesLoadedCallBack = null;
-            if (collectionViewModel.Entities == null)
+            if (collectionViewModel == null || collectionViewModel.Entities == null)
                 return null;
             else
             {
@@ -307,6 +307,12 @@ namespace BluePrints.Data.Helpers
         {
             if (collectionViewModel != null)
             {
+                ICollectionViewModel<TProjection> viewModel = collectionViewModel as ICollectionViewModel<TProjection>;
+                if(viewModel != null)
+                {
+                    viewModel.CleanUpCallBacks();
+                }
+
                 collectionViewModel.OnDestroy();
                 collectionViewModel.OnEntitiesLoadedCallBack = null;
                 collectionViewModel.OnAfterEntitiesChangedCallBack = null;
