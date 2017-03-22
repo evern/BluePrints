@@ -164,6 +164,8 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         public BASELINE_ITEMProjection BASELINE_ITEMJoinRATE { get; set; }
 
+        public decimal WorkpackAssignmentStartUnit { get; set; }
+
         private IEnumerable<VARIATION_ITEM> VARIATION_ITEMS { get; set; }
 
         private IEnumerable<PROGRESS_ITEM> progress_items;

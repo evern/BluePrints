@@ -385,6 +385,7 @@
     <Compile Include="Common\ViewModel\ISupportCustomDocumentTypeNameAndParameter.cs" />
     <Compile Include="Common\ViewModel\ISupportViewRestoration.cs" />
     <Compile Include="Common\ViewModel\RangeObservableCollection.cs" />
+    <Compile Include="Common\ViewModel\Reporting\DataPointsBuilder.cs" />
     <Compile Include="Common\ViewModel\Reporting\ISupportProgressReportingExtension.cs" />
     <Compile Include="Common\ViewModel\Reporting\ISupportSummaryCalculation.cs" />
     <Compile Include="Common\ViewModel\Reporting\SummaryBuilder.cs" />

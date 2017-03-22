@@ -30,8 +30,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        #region Parameter Calculation
-
+        #region Reportables Parameter Calculation
         /// <summary>
         /// Calculates productivity
         /// </summary>
@@ -132,6 +131,31 @@ namespace BluePrints.Common.ViewModel.Reporting
             return intervalPeriod;
         }
 
+        public static void SetWorkpackAssignmentStartUnit(IEnumerable<ReportableObject> reportableObjects)
+        {
+            Dictionary<Guid, decimal> workpackP6AssignedUnits = new Dictionary<Guid, decimal>();
+            reportableObjects = reportableObjects.OrderBy(x => x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM);
+            foreach(ReportableObject reportableObject in reportableObjects)
+            {
+                Guid currentWORKPACKGuid = (Guid)reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK;
+                var assignedWorkpack = workpackP6AssignedUnits.Where(x => x.Key == currentWORKPACKGuid)
+                    .Select(e => (KeyValuePair<Guid, decimal>?)e).FirstOrDefault();
+
+                decimal workpackAssignmentStartUnit;
+                if (assignedWorkpack != null)
+                {
+                    workpackAssignmentStartUnit = ((KeyValuePair<Guid, decimal>)assignedWorkpack).Value;
+                    workpackP6AssignedUnits.Remove(((KeyValuePair<Guid, decimal>)assignedWorkpack).Key);
+                }
+                else
+                    workpackAssignmentStartUnit = 1;
+
+                reportableObject.WorkpackAssignmentStartUnit = workpackAssignmentStartUnit;
+                //move assignment start unit by total hours for next start unit assignment
+                workpackAssignmentStartUnit += reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
+                workpackP6AssignedUnits.Add(currentWORKPACKGuid, workpackAssignmentStartUnit);
+            }
+        }
         #endregion
 
         #region Planned Calculation Methods

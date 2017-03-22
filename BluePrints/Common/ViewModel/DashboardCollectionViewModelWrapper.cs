@@ -217,7 +217,7 @@ namespace BluePrints.Common.ViewModel
                 return false;
 
             SummarizableObject summarizableObject = DisplaySelectedEntity as SummarizableObject;
-            if (summarizableObject == null || summarizableObject.missingExoWorkpacks.Count == 0)
+            if (summarizableObject == null || summarizableObject.missingExoWorkpacks == null || summarizableObject.missingExoWorkpacks.Count == 0)
                 return false;
 
             return true;

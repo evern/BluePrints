@@ -114,7 +114,7 @@ namespace BluePrints.Common.Projections
             var summaryBackgroundWorker = new BackgroundWorker();
             summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
             summaryBackgroundWorker.WorkerSupportsCancellation = true;
-            summaryBackgroundWorker.RunWorkerAsync(new object[] {returnPROJECT_Dashboard, raisePropertyChanged});
+            summaryBackgroundWorker.RunWorkerAsync(new object[] { returnPROJECT_Dashboard, raisePropertyChanged});
 
             return returnPROJECT_Dashboard.AsQueryable();
         }
@@ -122,7 +122,7 @@ namespace BluePrints.Common.Projections
         private static void summaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             var argumentObject = (object[]) e.Argument;
-            var summaryManufacturer = new BuildProjectStats();
+            var summaryManufacturer = new ProjectSummarizingFactory();
             var projects = (IEnumerable<PROJECT_Dashboard>) argumentObject[0];
             var raisePropertyChanged = (Action) argumentObject[1];
 
@@ -160,7 +160,7 @@ namespace BluePrints.Common.Projections
             };
             currentPROJECT_Dashboard.InitializeBuilder(PROJECTInfos, getPROGRESSFunc(), getBASELINEFunc(),
                 bluePrintsUnitOfWork, p6UnitOfWork);
-            var summaryManufacturer = new BuildProjectStats();
+            var summaryManufacturer = new ProjectSummarizingFactory();
             summaryManufacturer.Manufacture(currentPROJECT_Dashboard.SummaryBuilder);
 
             return currentPROJECT_Dashboard;

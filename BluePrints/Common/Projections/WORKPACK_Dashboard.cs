@@ -17,11 +17,11 @@ namespace BluePrints.Common.Projections
         public WORKPACK WORKPACK { get; set; }
 
         public PROJECTSummaryBuilder SummaryBuilder { get; private set; }
-        public UnpackPROJECTSummary SummaryUnpacker { get; private set; }
+        public GroupPROJECTReportablesByWorkpackBuilder reportablesByWorkpackBuilder { get; private set; }
 
         public void InitializeUnpacker(PROJECT_Dashboard projectDashboard)
         {
-            SummaryUnpacker = new UnpackPROJECTSummary(this, projectDashboard);
+            reportablesByWorkpackBuilder = new GroupPROJECTReportablesByWorkpackBuilder(this, projectDashboard);
         }
 
         #region WORKPACK Mapping
@@ -67,11 +67,11 @@ namespace BluePrints.Common.Projections
                 WORKPACKS.Where(x => x.GUID_PROJECT == projectDashboard.GUID)
                     .Select(x => new WORKPACK_Dashboard() {GUID = x.GUID, WORKPACK = x});
             var newWORKPACKDashboards = projectWORKPACKDashboards.ToList();
-            var rollUpReportableObjects = new SummaryRollUp();
+            var reportablesByWorkpackSummarizingFactory = new WorkpackSummarizingFactory();
             foreach (var newWORKPACKDashboard in newWORKPACKDashboards)
             {
                 newWORKPACKDashboard.InitializeUnpacker(projectDashboard);
-                rollUpReportableObjects.Manufacture(newWORKPACKDashboard.SummaryUnpacker);
+                reportablesByWorkpackSummarizingFactory.Manufacture(newWORKPACKDashboard.reportablesByWorkpackBuilder);
 
                 if (newWORKPACKDashboard.Summary_CumulativeEarnedDataPoints != null)
                 {

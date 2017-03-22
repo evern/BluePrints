@@ -223,7 +223,7 @@ namespace BluePrints.ViewModels
         private void CalculateMinimalStats(PROJECTSummaryBuilder summaryBuilder)
         {
             var summaryManufacturer =
-                new BuildMinimalStatsForPlannedOriginalPercentage();
+                new Progress_ItemPlannedOnlySummarizingFactory();
             summaryManufacturer.Manufacture(summaryBuilder);
 
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RefreshView()));
@@ -237,7 +237,7 @@ namespace BluePrints.ViewModels
             //    new BuildFullStatsIncludingPROGRESS_ITEMSummary();
 
             var summaryManufacturer =
-                new BuildProjectStats();
+                new ProjectSummarizingFactory();
             summaryManufacturer.Manufacture(summaryBuilder);
             //isReportReady = true;
         }

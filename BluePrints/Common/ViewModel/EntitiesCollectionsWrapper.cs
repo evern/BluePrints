@@ -41,7 +41,7 @@ namespace BluePrints.Common.ViewModel
 
         //allows view state to interact with OnMainViewModelRefreshed
         //due to StoreViewState being called OnBeforeEntitiesChanged and OnMainViewModelRefreshed called OnEntitiesLoaded
-        private object onMessageSender;
+        protected object onMessageSender;
         protected Dispatcher mainThreadDispatcher = Application.Current.Dispatcher;
 
         public virtual void InvokeEntitiesLoaderDescriptionLoading()
@@ -161,7 +161,7 @@ namespace BluePrints.Common.ViewModel
             if (sender != null && sender == MainViewModel)
                 return true;
 
-            mainThreadDispatcher.BeginInvoke(new Action(() => storeViewState()));
+            mainThreadDispatcher.BeginInvoke(new Action(() => StoreViewState()));
             return true;
         }
 
@@ -252,12 +252,18 @@ namespace BluePrints.Common.ViewModel
         public ObservableCollection<TMainProjectionEntity> DisplaySelectedEntities { get; set; }
         public Action OnSelectedEntitiesChangedCallBack;
         private BackgroundWorker refreshBackgroundWorker;
+        private BackgroundWorker storeViewStateBackgroundWorker;
 
         private void InitializePresentationProperties()
         {
             refreshBackgroundWorker = new BackgroundWorker();
             refreshBackgroundWorker.DoWork += refreshBackgroundWorker_DoWork;
             refreshBackgroundWorker.WorkerSupportsCancellation = true;
+
+            storeViewStateBackgroundWorker = new BackgroundWorker();
+            storeViewStateBackgroundWorker.DoWork += storeViewStateBackgroundWorker_DoWork;
+            storeViewStateBackgroundWorker.WorkerSupportsCancellation = true;
+
             DisplaySelectedEntities = new ObservableCollection<TMainProjectionEntity>();
             DisplaySelectedEntities.CollectionChanged += DisplaySelectedEntities_CollectionChanged;
         }
@@ -281,15 +287,16 @@ namespace BluePrints.Common.ViewModel
             RefreshView();
         }
 
+        int viewRefreshDelay = 300;
         protected void RefreshView()
         {
-            if (!refreshBackgroundWorker.IsBusy)
+            if(!refreshBackgroundWorker.IsBusy)
                 refreshBackgroundWorker.RunWorkerAsync();
         }
 
         private void refreshBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            System.Threading.Thread.Sleep(500);
+            System.Threading.Thread.Sleep(viewRefreshDelay);
             if (refreshBackgroundWorker.CancellationPending)
             {
                 e.Cancel = true;
@@ -308,6 +315,24 @@ namespace BluePrints.Common.ViewModel
 
                 return MainViewModel.Entities;
             }
+        }
+
+        protected void StoreViewState()
+        {
+            if (!storeViewStateBackgroundWorker.IsBusy)
+                storeViewStateBackgroundWorker.RunWorkerAsync();
+        }
+
+        private void storeViewStateBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            if (storeViewStateBackgroundWorker.CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.storeViewState()));
+            System.Threading.Thread.Sleep(viewRefreshDelay);
         }
 
         protected virtual void storeViewState()

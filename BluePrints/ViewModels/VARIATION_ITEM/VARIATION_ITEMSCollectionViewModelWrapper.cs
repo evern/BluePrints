@@ -190,8 +190,21 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        {
+            //Don't refresh on local update because every updates invoke baseline_item and variation save
+            if (sender == VARIATION_ITEMSCollectionViewModel)
+                return ;
+
+            base.OnAfterAffectingEntitiesChanged(key, changedType, messageType, sender);
+        }
+
         protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender)
         {
+            //Don't refresh on local update because every updates invoke baseline_item and variation save
+            if (sender == VARIATION_ITEMSCollectionViewModel)
+                return true;
+
             if(changedType == typeof(VARIATION_ITEM))
             {
                 VARIATION_ITEMProjection mainEntity = MainViewModel.Entities.Where(x => x.VARIATION_ITEM != null).FirstOrDefault(x => x.VARIATION_ITEM.GUID.ToString() == key.ToString());

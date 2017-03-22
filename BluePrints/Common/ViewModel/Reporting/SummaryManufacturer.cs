@@ -6,16 +6,12 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public class BuildProjectStats
+    public class ProjectSummarizingFactory
     {
-        public void Manufacture(SummaryBuilder summaryBuilder)
+        public void Manufacture(PROJECTSummaryBuilder summaryBuilder)
         {
-            Build(summaryBuilder);
-        }
-
-        public void Build(SummaryBuilder summaryBuilder)
-        {
-            summaryBuilder.BuildVariationDataPoints();
+            summaryBuilder.SetReportablesP6StartUnits();
+            summaryBuilder.SummarizeVariationDataPoints();
             summaryBuilder.SummarizePlannedDataPoints();
             summaryBuilder.SummarizeModifiedPlannedDataPoints();
             summaryBuilder.SummarizeEarnedDataPoints();
@@ -28,71 +24,28 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class BuildMinimalStatsForPlannedOriginalPercentage
+    public class Progress_ItemPlannedOnlySummarizingFactory
     {
-        public void Manufacture(SummaryBuilder summaryBuilder)
+        public void Manufacture(PROJECTSummaryBuilder summaryBuilder)
         {
-            Build(summaryBuilder);
-        }
-
-        public void Build(SummaryBuilder summaryBuilder)
-        {
+            summaryBuilder.SetReportablesP6StartUnits();
             summaryBuilder.SummarizePlannedDataPoints();
             summaryBuilder.GroupAndAccumulateReportableDataPointsByPeriod();
             summaryBuilder.GroupAndAccumulateDataPointsByPeriod();
         }
     }
 
-    public class BuildFullStatsIncludingPROGRESS_ITEMSummary
+    public class WorkpackSummarizingFactory
     {
-        private BuildProjectStats buildProjectStats = new BuildProjectStats();
-
-        public void Manufacture(SummaryBuilder summaryBuilder)
+        public void Manufacture(GroupPROJECTReportablesByWorkpackBuilder summaryBuilder)
         {
-            buildProjectStats.Build(summaryBuilder);
-            Build(summaryBuilder);
-        }
-
-        public void Build(SummaryBuilder summaryBuilder)
-        {
-            summaryBuilder.GroupAndAccumulateReportableDataPointsByPeriod();
-            summaryBuilder.GroupAndAccumulateDataPointsByPeriod();
-        }
-    }
-
-    public class SummaryRollUp
-    {
-        public void Manufacture(SummaryBuilder summaryBuilder)
-        {
-            Build(summaryBuilder);
-        }
-
-        public void Build(SummaryBuilder summaryBuilder)
-        {
-            summaryBuilder.BuildVariationDataPoints();
+            summaryBuilder.SummarizeVariationDataPoints();
             summaryBuilder.SummarizePlannedDataPoints();
             summaryBuilder.SummarizeModifiedPlannedDataPoints();
             summaryBuilder.SummarizeEarnedDataPoints();
             summaryBuilder.SummarizeRemainingDataPoints();
             summaryBuilder.GroupAndAccumulateDataPointsByPeriod();
             summaryBuilder.RecalculateStats();
-        }
-    }
-
-    public class PROGRESS_ITEMSummaryManufacturer
-    {
-        public void Manufacture(SummaryBuilder summaryBuilder)
-        {
-            Build(summaryBuilder);
-        }
-
-        public void Build(SummaryBuilder summaryBuilder)
-        {
-            summaryBuilder.SummarizePlannedDataPoints();
-            summaryBuilder.SummarizeEarnedDataPoints();
-            summaryBuilder.SummarizeRemainingDataPoints();
-            summaryBuilder.GroupAndAccumulateDataPointsByPeriod();
-            summaryBuilder.GroupAndAccumulateReportableDataPointsByPeriod();
         }
     }
 }
