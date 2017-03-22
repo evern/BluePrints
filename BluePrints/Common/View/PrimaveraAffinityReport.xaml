@@ -8,7 +8,7 @@
     xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
     xmlns:common="clr-namespace:BluePrints.Common"
-    Height="290" Width="650">
+    Height="290" Width="560">
     <dxlc:LayoutControl Orientation="Vertical">
         <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
             <dxlc:LayoutGroup Height="230" Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
@@ -17,7 +17,7 @@
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="INTERNAL NUM" MinWidth="200" IsSmart="True" ReadOnly="True" FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM" />
                             <dxg:GridColumn Header="PLANNED FROM P6" IsSmart="True" ReadOnly="True" FieldName="isPlannedDataPointsFromP6" />
-                            <dxg:GridColumn Header="EARNED FROM P6" IsSmart="True" ReadOnly="True" FieldName="isEarnedDataPointsFromP6" />
+                            <!--<dxg:GridColumn Header="EARNED FROM P6" IsSmart="True" ReadOnly="True" FieldName="isEarnedDataPointsFromP6" />-->
                             <dxg:GridColumn Header="FORECAST FROM P6" IsSmart="True" ReadOnly="True" FieldName="isRemainingDataPointsFromP6" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>

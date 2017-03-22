@@ -24,7 +24,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>127</ApplicationRevision>
+    <ApplicationRevision>129</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -1092,6 +1092,7 @@
     <Compile Include="ViewModels\INDIRECT_TYPE\INDIRECT_TYPECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\USER\USERDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\USERSelectionViewModel.cs" />
     <Compile Include="ViewModels\WORKPACK_ASSIGNMENT\WORKPACK_ASSIGNMENTViewModel.cs" />
     <Compile Include="ViewModels\WORKPACK_ASSIGNMENT\WORKPACKSchedulingViewModelWrapper.cs" />

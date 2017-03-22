@@ -41,7 +41,7 @@ namespace BluePrints.Common.Projections
             Func<IQueryable<PROGRESS>> getLivePROGRESSESFunc, Func<IQueryable<PROGRESS_ITEM>> getLivePROGRESS_ITEMFunc,
             Func<IQueryable<BASELINE>> getLiveBASELINESFunc, Func<IQueryable<RATE>> getRATESFunc,
             Func<IQueryable<VARIATION>> getApprovedVARIATIONFunc = null, Action raisePropertyChanged = null,
-            Guid? SinglePROJECTGuid = null)
+            Guid? SinglePROJECTGuid = null, Guid? USERGuid = null)
         {
             var LiveBASELINES = getLiveBASELINESFunc().ToArray().AsEnumerable();
             var LivePROGRESSES = getLivePROGRESSESFunc().ToArray().AsEnumerable();
@@ -84,7 +84,12 @@ namespace BluePrints.Common.Projections
                     getLivePROGRESS_ITEMFunc()
                         .Where(x => x.PROGRESS.GUID == currentPROJECTLivePROGRESS.GUID)
                         .AsQueryable();
-                var LiveBASELINE_ITEMS = currentPROJECTLiveBASELINE.BASELINE_ITEM.AsQueryable();
+                IQueryable<BASELINE_ITEM> LiveBASELINE_ITEMS;
+                if (USERGuid == null)
+                    LiveBASELINE_ITEMS = currentPROJECTLiveBASELINE.BASELINE_ITEM.AsQueryable();
+                else
+                    LiveBASELINE_ITEMS = currentPROJECTLiveBASELINE.BASELINE_ITEM.Where(x => x.GUID_USER == USERGuid).AsQueryable();
+
                 var RATESByProject = AllRATES.Where(x => x.GUID_PROJECT == localPROJECT.GUID).AsQueryable();
                 var ApprovedVARIATIONSByProject =
                     ApprovedVARIATIONS.Where(x => x.GUID_PROJECT == localPROJECT.GUID).AsEnumerable();

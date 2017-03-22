@@ -16,7 +16,7 @@
              xmlns:common="clr-namespace:BluePrints.Common"
              xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters"
              mc:Ignorable="d" d:DesignHeight="1200" d:DesignWidth="1200"
-             DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTDashboardViewModelWrapper}">
+             DataContext="{dxmvvm:ViewModelSource viewmodel:USERDashboardViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />

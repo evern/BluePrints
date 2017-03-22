@@ -55,7 +55,6 @@ namespace BluePrints.Common.Projections
         {
             get { return ObservableWORKPACK_ASSIGNMENTS.Sum(x => x.HIGH_VALUE - x.LOW_VALUE + 1); }
         }
-
         #endregion
     }
 

@@ -548,14 +548,14 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM == "P027-20000-DSH-ME-835")
                     s = string.Empty;
 
-                if (isProgressDataDateMatch && TryBuildP6DataPoints(this.PROGRESS_PROJECT, this.PROGRESS_TASKS, reportableObject, DataPointsType.Earned, WorkpackAssignmentLoadType.Modified, workpackAssignedUnits, out progressItemP6DataPoints))
-                {
-                    reportableObject.NonCumulative_EarnedDataPoints = new ObservableCollection<ProgressInfo>(progressItemP6DataPoints);
-                    reportableObject.isEarnedDataPointsFromP6 = true;
-                }
+                //if (isProgressDataDateMatch && TryBuildP6DataPoints(this.PROGRESS_PROJECT, this.PROGRESS_TASKS, reportableObject, DataPointsType.Earned, WorkpackAssignmentLoadType.Modified, workpackAssignedUnits, out progressItemP6DataPoints))
+                //{
+                //    reportableObject.NonCumulative_EarnedDataPoints = new ObservableCollection<ProgressInfo>(progressItemP6DataPoints);
+                //    reportableObject.isEarnedDataPointsFromP6 = true;
+                //}
 
-                else
-                {
+                //else
+                //{
                     IQueryable<ProgressInfo> progressItemEarnedDataPoints = reportableObject.PROGRESS_ITEMSUpToCurrentDate.Select(x => new ProgressInfo()
                     {
                         BudgetedUnits = reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS,
@@ -567,7 +567,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     }).AsQueryable();
 
                     reportableObject.NonCumulative_EarnedDataPoints = new ObservableCollection<ProgressInfo>(progressItemEarnedDataPoints);
-                }
+                //}
             }
 
             SummaryObject.NonCumulative_EarnedDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(progressItem => progressItem.NonCumulative_EarnedDataPoints));
@@ -593,7 +593,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (reportableObject.RemainingUnitsAfterDataDate > 0 && reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK != null)
                 {
                     List<ProgressInfo> progressItemP6DataPoints;
-                    if (reportableObject.isEarnedDataPointsFromP6 && TryBuildP6DataPoints(this.PROGRESS_PROJECT, this.PROGRESS_TASKS, reportableObject, DataPointsType.Remaining, WorkpackAssignmentLoadType.Modified, workpackAssignedUnits, out progressItemP6DataPoints))
+                    //if (reportableObject.isEarnedDataPointsFromP6 && TryBuildP6DataPoints(this.PROGRESS_PROJECT, this.PROGRESS_TASKS, reportableObject, DataPointsType.Remaining, WorkpackAssignmentLoadType.Modified, workpackAssignedUnits, out progressItemP6DataPoints))
+                    if (TryBuildP6DataPoints(this.PROGRESS_PROJECT, this.PROGRESS_TASKS, reportableObject, DataPointsType.Remaining, WorkpackAssignmentLoadType.Modified, workpackAssignedUnits, out progressItemP6DataPoints))
                     {
                         reportableObject.isRemainingDataPointsFromP6 = true;
                         reportableObject.NonCumulative_RemainingPlannedDataPoints = new ObservableCollection<ProgressInfo>(progressItemP6DataPoints);
