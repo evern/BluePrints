@@ -284,6 +284,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 List<ProgressInfo> progressItemP6DataPoints;
                 if (TryBuildP6DataPoints(BASELINE_P6PROJECT, BASELINE_TASKS, ReportableObject, DataPointsType.Planned, assignmentLoadType, workpackAssignedUnits, out progressItemP6DataPoints))
                 {
+                    ReportableObject.isPlannedDataPointsFromP6 = true;
                     if (isOriginal)
                         ReportableObject.NonCumulative_OriginalDataPoints = new ObservableCollection<ProgressInfo>(progressItemP6DataPoints);
                     else
@@ -593,7 +594,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                 {
                     List<ProgressInfo> progressItemP6DataPoints;
                     if (reportableObject.isEarnedDataPointsFromP6 && TryBuildP6DataPoints(this.PROGRESS_PROJECT, this.PROGRESS_TASKS, reportableObject, DataPointsType.Remaining, WorkpackAssignmentLoadType.Modified, workpackAssignedUnits, out progressItemP6DataPoints))
+                    {
+                        reportableObject.isRemainingDataPointsFromP6 = true;
                         reportableObject.NonCumulative_RemainingPlannedDataPoints = new ObservableCollection<ProgressInfo>(progressItemP6DataPoints);
+                    }
                     else
                     {
                         DateTime startDateToUse;
@@ -757,8 +761,10 @@ namespace BluePrints.Common.ViewModel.Reporting
             TimeSpan progressInterval = SummaryObject.IntervalPeriod;
             DateTime loopDate = firstAlignedDataDate;
 
-            IEnumerable<WORKPACK> WORKPACKS = SummaryObject.LiveBASELINE.PROJECT.WORKPACK;
-            IEnumerable<string> qualifiedWorkpack = WORKPACKS == null ? new List<string>() : WORKPACKS.Select(x => x.INTERNAL_NAME1);
+            IEnumerable<WORKPACK> workpacks = SummaryObject.LiveBASELINE.PROJECT.WORKPACK.ToList();
+            string projectNumber = SummaryObject.LiveBASELINE.PROJECT.NUMBER;
+
+            IEnumerable<string> qualifiedWorkpacks = workpacks == null ? new List<string>() : workpacks.Select(x => x.INTERNAL_NAME1);
             var PrimeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             var jobTransactions = from JOBTRANS in PrimeroUnitOfWork.JOB_TRANSACTIONS
                                   join JOBCOST_HDR2 in PrimeroUnitOfWork.JOBCOST_HDR
@@ -767,8 +773,23 @@ namespace BluePrints.Common.ViewModel.Reporting
                                   on JOBTRANS.JOBNO equals JOBCOST_HDR1.JOBNO
                                   join JOBCOST_RESOURCE in PrimeroUnitOfWork.JOBCOST_RESOURCE
                                   on JOBTRANS.STAFFNO equals JOBCOST_RESOURCE.SEQNO
-                                  where JOBCOST_HDR2.JOBCODE == SummaryObject.LiveBASELINE.PROJECT.NUMBER && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X"
+                                  where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X"
                                   select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME };
+
+            var exoWorkpacks = from JOBCOST_HDR in PrimeroUnitOfWork.JOBCOST_HDR
+                               where JOBCOST_HDR.JOBCODE.Contains(projectNumber)
+                               select new { JOBCOST_HDR.TITLE, JOBCOST_HDR.JOBCODE };
+
+            var exoWorkpacksList = exoWorkpacks.ToList();
+            SummaryObject.missingExoWorkpacks = new List<WORKPACK>();
+            foreach (WORKPACK workpack in workpacks)
+            {
+                var exoWorkpack = exoWorkpacksList.FirstOrDefault(x => x.JOBCODE == workpack.INTERNAL_NAME1 || x.JOBCODE == workpack.INTERNAL_NAME2);
+                if (exoWorkpack == null)
+                {
+                    SummaryObject.missingExoWorkpacks.Add(workpack);
+                }
+            }
 
             var jobTransactionsList = jobTransactions.ToList();
             if (jobTransactionsList.Count == 0)
@@ -777,7 +798,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             List<DateTime> alignedDataDates = ISupportProgressReportingExtensions.GenerateAlignedDatesCollection(firstAlignedDataDate, jobTransactionsList.Max(x => x.TRANSDATE).Value, progressInterval);
             foreach (var jobTransaction in jobTransactionsList)
             {
-                if (qualifiedWorkpack.Contains(jobTransaction.JOBCODE))
+                if (qualifiedWorkpacks.Contains(jobTransaction.JOBCODE))
+                {
                     nonCumulative_BurnedDataPoints.Add(new ProgressInfo()
                     {
                         BudgetedUnits = 0,
@@ -791,8 +813,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                         ResourceName = jobTransaction.RESOURCENAME,
                         Quantity = (decimal)jobTransaction.QUANTITY
                     });
+                }
             }
 
+            
             SummaryObject.NonCumulative_BurnedDataPoints = nonCumulative_BurnedDataPoints;
         }
 

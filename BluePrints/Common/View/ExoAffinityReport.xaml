@@ -1,6 +1,6 @@
 ﻿<UserControl
     x:Name="userControl"
-    x:Class="BluePrints.Views.MissingAssignments"
+    x:Class="BluePrints.Views.ExoAffinityReport"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
@@ -8,16 +8,14 @@
     xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
     xmlns:common="clr-namespace:BluePrints.Common"
-    Height="250" Width="500">
+    Height="290" Width="300">
     <dxlc:LayoutControl Orientation="Vertical">
         <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
-            <dxlc:LayoutGroup Height="300" Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
+            <dxlc:LayoutGroup Height="230" Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
                 <dxlc:LayoutItem Height="230" >
                     <dxg:GridControl Name="gridControl" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="WORKPACK" ReadOnly="True" FieldName="INTERNAL_NUM" />
-                            <dxg:GridColumn Header="P6 ID" ReadOnly="True" FieldName="P6_ACTIVITY" />
-                            <dxg:GridColumn Header="UNITS" ReadOnly="True" FieldName="UNITS" />
+                            <dxg:GridColumn Header="INTERNAL NUM" MinWidth="230" IsSmart="True" ReadOnly="True" FieldName="INTERNAL_NAME1" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />

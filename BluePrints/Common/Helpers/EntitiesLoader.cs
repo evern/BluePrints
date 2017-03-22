@@ -146,7 +146,7 @@ namespace BluePrints.Data.Helpers
         public void OnDestroy()
         {
             foreach (var entitiesLoaderDescription in this)
-                entitiesLoaderDescription.OnDestroy();
+                entitiesLoaderDescription.DisposeViewModel();
         }
     }
 
@@ -303,20 +303,15 @@ namespace BluePrints.Data.Helpers
             }
         }
 
-        public void OnDestroy()
+        public void DisposeViewModel()
         {
             if (collectionViewModel != null)
             {
                 ICollectionViewModel<TProjection> viewModel = collectionViewModel as ICollectionViewModel<TProjection>;
                 if(viewModel != null)
-                {
                     viewModel.CleanUpCallBacks();
-                }
 
                 collectionViewModel.OnDestroy();
-                collectionViewModel.OnEntitiesLoadedCallBack = null;
-                collectionViewModel.OnAfterEntitiesChangedCallBack = null;
-                collectionViewModel.OnBeforeEntitiesChangedCallBack = null;
                 collectionViewModel = null;
             }
         }
@@ -332,7 +327,7 @@ namespace BluePrints.Data.Helpers
 
     public interface IEntitiesLoaderDescription
     {
-        void OnDestroy();
+        void DisposeViewModel();
         Type GetProjectionEntityType();
         void CreateCollectionViewModel();
         bool IsLoaded { get; set; }

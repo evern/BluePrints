@@ -1175,20 +1175,22 @@ namespace BluePrints.Common.ViewModel
             this.IsContinueNewRowFromViewCallBack = null;
             this.IsContinueSaveCallBack = null;
             this.IsValidFromViewCallBack = null;
-            this.OnAfterEntitiesChangedCallBack = null;
             this.OnAfterEntitiesDeletedCallBack = null;
             this.OnAfterEntitySavedCallBack = null;
             this.OnAfterTreelistExistingRowAddUndoAndSaveCallBack = null;
             this.OnBeforeBulkEditSaveCallBack = null;
-            this.OnBeforeEntitiesChangedCallBack = null;
             this.OnBeforeEntitiesDeleteCallBack = null;
             this.OnBeforeEntityDeleteCallBack = null;
-            this.OnEntitiesLoadedCallBack = null;
             this.OnFillDownCompletedCallBack = null;
             this.OnSelectedEntitiesChangedCallBack = null;
             this.SetParentAssociationCallBack = null;
             this.ValidateBulkEditCallBack = null;
             this.ValidateFillDownCallBack = null;
+
+            //Entities view model call backs
+            //this.OnEntitiesLoadedCallBack = null;
+            //this.OnBeforeEntitiesChangedCallBack = null;
+            //this.OnAfterEntitiesChangedCallBack = null;
         }
     }
 

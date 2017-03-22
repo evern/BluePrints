@@ -325,7 +325,7 @@ namespace BluePrints.ViewModels
 
                 if(missingActivities.Count > 0)
                 {
-                    MissingP6ActivitiesViewModel missingActivitiesViewModel = MissingP6ActivitiesViewModel.Create(missingActivities);
+                    DialogCollectionViewModel<MissingP6Activities> missingActivitiesViewModel = DialogCollectionViewModel<MissingP6Activities>.Create(missingActivities);
                     MissingActivitiesDialogService.ShowDialog(MessageButton.OK,
                     "Missing P6 Activities", "MissingAssignments", missingActivitiesViewModel);
                 }

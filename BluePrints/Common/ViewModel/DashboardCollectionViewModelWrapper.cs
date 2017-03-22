@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using BluePrints.Common.ViewModel.Reporting;
 using System.Windows.Threading;
 using DevExpress.Xpf.Bars;
+using BluePrints.ViewModels;
 
 namespace BluePrints.Common.ViewModel
 {
@@ -53,6 +54,9 @@ namespace BluePrints.Common.ViewModel
 
         private void dispatchTimer_Tick(object sender, EventArgs e)
         {
+            if(DisplaySelectedEntities.Count() > 0)
+                DisplaySelectedEntity = DisplaySelectedEntities.First();
+
             OnSelectedEntityChanged(DisplaySelectedEntities);
             dispatchTimer.Stop();
         }
@@ -125,5 +129,106 @@ namespace BluePrints.Common.ViewModel
             foreach (var summaryEntity in MainViewModel.Entities)
                 summaryEntity.RecalculateStats(calculationType == DashboardViewType.Costs);
         }
+
+        #region Auto Refresh
+        private bool isAutoRefresh { get; set; }
+
+        public bool IsAutoRefresh
+        {
+            get { return isAutoRefresh; }
+            set { isAutoRefresh = value; }
+        }
+
+        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender)
+        {
+            return !IsAutoRefresh;
+        }
+        #endregion
+
+        #region P6 Affinity
+        //public PROGRESS SelectionLivePROGRESS
+        //{
+        //    get
+        //    {
+        //        if (DisplaySelectedEntity == null)
+        //            return null;
+
+        //        var collection = GetEntities<PROGRESS>();
+        //        if (collection == null)
+        //            return null;
+
+        //        return collection.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.GUID_PROJECT == DisplaySelectedEntity.GUID);
+        //    }
+        //}
+
+        //public BASELINE SelectionLiveBASELINE
+        //{
+        //    get
+        //    {
+        //        if (DisplaySelectedEntity == null)
+        //            return null;
+
+        //        var collection = GetEntities<BASELINE>();
+        //        if (collection == null)
+        //            return null;
+
+        //        return collection.FirstOrDefault(x => x.STATUS == BaselineStatus.Live && x.GUID_PROJECT == DisplaySelectedEntity.GUID);
+        //    }
+        //}
+
+        public bool CanShowP6Errors()
+        {
+            if (DisplaySelectedEntity == null || DisplaySelectedEntity.ReportableObjects == null)
+                return false;
+            //if (SelectionLiveBASELINE == null || SelectionLivePROGRESS == null)
+            //    return false;
+
+            //if (SelectionLiveBASELINE.P6BASELINE_NAME == string.Empty && SelectionLivePROGRESS.P6PROGRESS_NAME == string.Empty)
+            //    return false;
+
+            if (!DisplaySelectedEntity.ReportableObjects.Any(x => x.isPlannedDataPointsFromP6))
+                return true;
+
+            if (!DisplaySelectedEntity.ReportableObjects.Any(x => x.isEarnedDataPointsFromP6))
+                return true;
+
+            if (!DisplaySelectedEntity.ReportableObjects.Any(x => x.isRemainingDataPointsFromP6))
+                return true;
+
+            return false;
+        }
+
+        public void ShowP6Errors()
+        {
+            DialogCollectionViewModel<ReportableObject> viewModel = DialogCollectionViewModel<ReportableObject>.Create(DisplaySelectedEntity.ReportableObjects);
+            IssuesDialogService.ShowDialog(MessageButton.OK, "P6 Affinity Report", "PrimaveraAffinityReport", viewModel);
+        }
+        #endregion
+
+        #region Exo Affinity
+        private IDialogService IssuesDialogService
+        {
+            get { return this.GetRequiredService<IDialogService>("IssuesDialogService"); }
+        }
+
+        public bool CanShowExoErrors()
+        {
+            if (DisplaySelectedEntity == null)
+                return false;
+
+            SummarizableObject summarizableObject = DisplaySelectedEntity as SummarizableObject;
+            if (summarizableObject == null || summarizableObject.missingExoWorkpacks.Count == 0)
+                return false;
+
+            return true;
+        }
+
+        public void ShowExoErrors()
+        {
+            SummarizableObject summarizableObject = DisplaySelectedEntity as SummarizableObject;
+            DialogCollectionViewModel<WORKPACK> viewModel = DialogCollectionViewModel<WORKPACK>.Create(summarizableObject.missingExoWorkpacks);
+            IssuesDialogService.ShowDialog(MessageButton.OK, "Exo Affinity Report", "ExoAffinityReport", viewModel);
+        }
+        #endregion
     }
 }

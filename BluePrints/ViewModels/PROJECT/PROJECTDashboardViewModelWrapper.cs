@@ -126,11 +126,6 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentViewModel(this);
             return base.OnMainViewModelLoaded(entities);
         }
-
-        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender)
-        {
-            return !isAutoRefresh;
-        }
         #endregion
 
         #region View Behavior
@@ -148,15 +143,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
-
-        private bool isAutoRefresh { get; set; }
-
-        public bool IsAutoRefresh
-        {
-            get { return isAutoRefresh; }
-            set { isAutoRefresh = value; }
-        }
-
         public bool CanEditReport()
         {
             if (DisplaySelectedEntities.Count > 0)

@@ -144,9 +144,9 @@ namespace BluePrints.ViewModels
         {
             if (variation_itemsViewModelWrapper == null && loadPROJECT != null)
             {
-                variation_itemsViewModelWrapper = VARIATION_ITEMSCollectionViewModelWrapper.Create();
+                variation_itemsViewModelWrapper = new VARIATION_ITEMSCollectionViewModelWrapper();
                 variation_itemsViewModelWrapper.SuppressNotification = true;
-                variation_itemsViewModelWrapper.SetParentViewModel(this);
+                //variation_itemsViewModelWrapper.SetParentViewModel(this);
                 variation_itemsViewModelWrapper.OnEntitiesLoadedCallBack = OnVARIATION_ITEMSLoaded;
                 var baselineSupportParameterObj = variation_itemsViewModelWrapper as ISupportParameter;
                 baselineSupportParameterObj.Parameter = new OptionalEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, loadVARIATION);
@@ -331,12 +331,12 @@ namespace BluePrints.ViewModels
 
         private void OnVARIATION_ITEMSLoaded(IEnumerable<VARIATION_ITEMProjection> projections)
         {
-            mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE(projections)));
+            mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE(projections.ToList())));
         }
 
         public void ReviseBASELINE(IEnumerable<VARIATION_ITEMProjection> projections)
         {
-            //prevent call back from invoking this method again
+            //prevent on loaded call back from invoking this method again
             CleanUpVARIATION_ITEMS();
 
             var newBASELINE = new BASELINE();

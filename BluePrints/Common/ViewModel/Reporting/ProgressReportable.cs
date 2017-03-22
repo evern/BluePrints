@@ -87,6 +87,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public PROGRESS LivePROGRESS { get; set; }
         public IBluePrintsEntitiesUnitOfWork BluePrintsUnitOfWork { get; set; }
         public IP6EntitiesUnitOfWork P6UnitOfWork { get; set; }
+        public List<WORKPACK> missingExoWorkpacks { get; set; }
 
         public virtual void RecalculateStats(bool isCosts)
         {
@@ -245,6 +246,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal ActualProductivity { get; set; }
         public bool isEarnedDataPointsFromP6 { get; set; }
         public bool isPlannedDataPointsFromP6 { get; set; }
+        public bool isRemainingDataPointsFromP6 { get; set; }
 
         private decimal? pastPROGRESS_ITEMS_UNITS;
 

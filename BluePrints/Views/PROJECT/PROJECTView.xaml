@@ -37,6 +37,13 @@
                 </Style>
             </dx:DialogService.DialogStyle>
         </dx:DialogService>
+        <dx:DialogService x:Name="IssuesDialogService">
+            <dx:DialogService.DialogStyle>
+                <Style TargetType="dx:DXDialogWindow">
+                    <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                </Style>
+            </dx:DialogService.DialogStyle>
+        </dx:DialogService>
         <!--<dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />-->
     </dxmvvm:Interaction.Behaviors>
     <Grid DataContext="{Binding MainViewModel}">
@@ -66,6 +73,14 @@
                             <dxb:BarCheckItem Content="Auto Refresh"
                                                   IsChecked="{Binding DataContext.IsAutoRefresh, ElementName=userControl}"
                                                   Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />
+                            <dxb:BarButtonItem Content="P6 Issues"
+                                               Command="{Binding DataContext.ShowP6ErrorsCommand, ElementName=userControl}"
+                                               LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}"
+                                               Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" />
+                            <dxb:BarButtonItem Content="Exo Issues"
+                                               Command="{Binding DataContext.ShowExoErrorsCommand, ElementName=userControl}"
+                                               LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}"
+                                               Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" />
                         </dxr:RibbonPageGroup>
                     </dxr:RibbonPage>
                 </dxr:RibbonDefaultPageCategory>

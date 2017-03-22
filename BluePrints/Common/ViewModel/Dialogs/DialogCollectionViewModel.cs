@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using BluePrints.Common;
+using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.Data;
 
 namespace BluePrints.ViewModels
 {
@@ -16,16 +18,17 @@ namespace BluePrints.ViewModels
         public decimal UNITS { get; set; }
     }
 
-    public class MissingP6ActivitiesViewModel
+    public class DialogCollectionViewModel<TEntity>
+        where TEntity : class
     {
-        public static MissingP6ActivitiesViewModel Create(IEnumerable<MissingP6Activities> enumerableObjects)
+        public static DialogCollectionViewModel<TEntity> Create(IEnumerable<TEntity> enumerableObjects)
         {
-            return ViewModelSource.Create(() => new MissingP6ActivitiesViewModel(enumerableObjects));
+            return ViewModelSource.Create(() => new DialogCollectionViewModel<TEntity>(enumerableObjects));
         }
 
-        public IEnumerable<MissingP6Activities> SourceObjects { get; set; }
+        public IEnumerable<TEntity> SourceObjects { get; set; }
 
-        protected MissingP6ActivitiesViewModel(IEnumerable<MissingP6Activities> enumerableObjects)
+        protected DialogCollectionViewModel(IEnumerable<TEntity> enumerableObjects)
         {
             SourceObjects = enumerableObjects;
         }

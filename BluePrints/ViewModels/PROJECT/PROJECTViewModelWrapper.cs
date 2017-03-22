@@ -155,11 +155,6 @@ namespace BluePrints.ViewModels
 
         #region View Behavior
 
-        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender)
-        {
-            return !IsAutoRefresh;
-        }
-
         public Action Redraw;
 
         public void RaisePropertyChanged()
@@ -173,27 +168,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
-        //public bool IsAllFromP6
-        //{
-        //    get
-        //    {
-                
-        //        IEnumerable<ProgressInfo> earnedProgressInfos = MainViewModel.Entities.SelectMany(x => x.ReportableObjects.SelectMany(y => y.NonCumulative_EarnedDataPoints));
-        //        IEnumerable<ProgressInfo> earnedFromP6ProgressInfos = earnedProgressInfos.Where(x => x.IsStatsFromP6);
-        //        decimal reportableItemsFromP6Count = reportableObjectFromP6.Count(x => x.isDataPointsGeneratedFromP6);
-        //        return ((reportableItemsFromP6Count / reportableItemsCount) * 100) > 90;
-        //    }
-        //}
-
-
-        private bool isAutoRefresh { get; set; }
-
-        public bool IsAutoRefresh
-        {
-            get { return isAutoRefresh; }
-            set { isAutoRefresh = value; }
-        }
-
         private BASELINECollectionViewModelWrapper baselineViewModel;
 
         public BASELINECollectionViewModelWrapper BASELINEViewModel
@@ -382,7 +356,6 @@ namespace BluePrints.ViewModels
         {
             return true;
         }
-
         #endregion
     }
 }

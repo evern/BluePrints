@@ -312,6 +312,10 @@ namespace BluePrints.Common.ViewModel
 
         protected virtual void storeViewState()
         {
+            IPOCOViewModel viewModel = this as IPOCOViewModel;
+            if (viewModel == null)
+                return;
+
             if (DisplayEntities == null)
                 return;
 
@@ -352,8 +356,12 @@ namespace BluePrints.Common.ViewModel
 
         private void refreshView()
         {
-            this.RaisePropertiesChanged();
-            restoreViewState();
+            IPOCOViewModel viewModel = this as IPOCOViewModel;
+            if(viewModel != null)
+            {
+                this.RaisePropertiesChanged();
+                restoreViewState();
+            }
         }
         #endregion
 
@@ -408,13 +416,13 @@ namespace BluePrints.Common.ViewModel
             compulsoryLoaders = null;
             
             if (mainEntityLoaderDescription != null)
-                mainEntityLoaderDescription.OnDestroy();
+                mainEntityLoaderDescription.DisposeViewModel();
 
             if (loaderCollection == null)
                 return;
 
             foreach (var entityLoaderDescription in loaderCollection)
-                entityLoaderDescription.OnDestroy();
+                entityLoaderDescription.DisposeViewModel();
         }
 
         void IDocumentContent.OnDestroy()

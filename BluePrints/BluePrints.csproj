@@ -377,6 +377,7 @@
     <Compile Include="Common\Utils\StringFormatUtils.cs" />
     <Compile Include="Common\ViewModel\CollectionViewModelBase.cs" />
     <Compile Include="Common\ViewModel\DashboardCollectionViewModelWrapper.cs" />
+    <Compile Include="Common\ViewModel\Dialogs\DialogCollectionViewModel.cs" />
     <Compile Include="Common\ViewModel\EntitiesCollectionsWrapper.cs" />
     <Compile Include="Common\ViewModel\ICollectionViewModel.cs" />
     <Compile Include="Common\ViewModel\IHaveGUID.cs" />
@@ -392,6 +393,12 @@
     <Compile Include="Common\ViewRestoreUserControl.cs" />
     <Compile Include="Common\View\MissingAssignments.xaml.cs">
       <DependentUpon>MissingAssignments.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\View\ExoAffinityReport.xaml.cs">
+      <DependentUpon>ExoAffinityReport.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
+      <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
     <Compile Include="EntityFramework\Annotations\BluePrintsEntities.cs" />
     <Compile Include="EntityFramework\Annotations\COMMODITY_GROUP_DIRECT.cs" />
@@ -1073,10 +1080,9 @@
     </Compile>
     <Compile Include="ViewModels\AREA\AREACollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\BulkEdit\MissingP6ActivitiesViewModel.cs" />
-    <Compile Include="ViewModels\BulkEdit\BulkEditEnumsViewModel.cs" />
-    <Compile Include="ViewModels\BulkEdit\BulkEditNumbersViewModel.cs" />
-    <Compile Include="ViewModels\BulkEdit\BulkEditStringsViewModel.cs" />
+    <Compile Include="Common\ViewModel\Dialogs\BulkEditEnumsViewModel.cs" />
+    <Compile Include="Common\ViewModel\Dialogs\BulkEditNumbersViewModel.cs" />
+    <Compile Include="Common\ViewModel\Dialogs\BulkEditStringsViewModel.cs" />
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODESelectionViewModel.cs" />
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODEMasterDetailViewModelWrapper.cs" />
     <Compile Include="ViewModels\COMMODITY_GROUP\COMMODITY_GROUP_DIRECTCollectionViewModelWrapper.cs" />
@@ -1148,6 +1154,9 @@
     </Compile>
     <Compile Include="Views\REPORTDesigner.Designer.cs">
       <DependentUpon>REPORTDesigner.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\USER\USERDashboardView.xaml.cs">
+      <DependentUpon>USERDashboardView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\USER\USERSelectionView.xaml.cs">
       <DependentUpon>USERSelectionView.xaml</DependentUpon>
@@ -1266,6 +1275,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Common\View\ExoAffinityReport.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\View\PrimaveraAffinityReport.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -1319,6 +1336,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\NavigationTreeViewPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\USER\USERDashboardView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
