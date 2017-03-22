@@ -16,14 +16,14 @@ namespace BluePrints.Common.ViewModel.Reporting
         public void Build(SummaryBuilder summaryBuilder)
         {
             summaryBuilder.BuildVariationDataPoints();
-            summaryBuilder.BuildOriginalPlannedDataPoints();
-            summaryBuilder.BuildModifiedPlannedDataPoints();
-            summaryBuilder.BuildEarnedDataPoints();
-            summaryBuilder.BuildBurnedDataPoints();
-            summaryBuilder.BuildActualDataPoints();
-            summaryBuilder.BuildRemainingDataPoints();
-            summaryBuilder.SummarizeNestedSummaryObjectDataPoints();
-            summaryBuilder.SummarizeDataPoints();
+            summaryBuilder.SummarizePlannedDataPoints();
+            summaryBuilder.SummarizeModifiedPlannedDataPoints();
+            summaryBuilder.SummarizeEarnedDataPoints();
+            summaryBuilder.SummarizeBurnedDataPoints();
+            summaryBuilder.SummarizeActualDataPoints();
+            summaryBuilder.SummarizeRemainingDataPoints();
+            summaryBuilder.GroupAndAccumulateReportableDataPointsByPeriod();
+            summaryBuilder.GroupAndAccumulateDataPointsByPeriod();
             summaryBuilder.RecalculateStats();
         }
     }
@@ -37,9 +37,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public void Build(SummaryBuilder summaryBuilder)
         {
-            summaryBuilder.BuildOriginalPlannedDataPoints();
-            summaryBuilder.SummarizeNestedSummaryObjectDataPoints();
-            summaryBuilder.SummarizeDataPoints();
+            summaryBuilder.SummarizePlannedDataPoints();
+            summaryBuilder.GroupAndAccumulateReportableDataPointsByPeriod();
+            summaryBuilder.GroupAndAccumulateDataPointsByPeriod();
         }
     }
 
@@ -55,8 +55,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public void Build(SummaryBuilder summaryBuilder)
         {
-            summaryBuilder.SummarizeNestedSummaryObjectDataPoints();
-            summaryBuilder.SummarizeDataPoints();
+            summaryBuilder.GroupAndAccumulateReportableDataPointsByPeriod();
+            summaryBuilder.GroupAndAccumulateDataPointsByPeriod();
         }
     }
 
@@ -70,11 +70,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         public void Build(SummaryBuilder summaryBuilder)
         {
             summaryBuilder.BuildVariationDataPoints();
-            summaryBuilder.BuildOriginalPlannedDataPoints();
-            summaryBuilder.BuildModifiedPlannedDataPoints();
-            summaryBuilder.BuildEarnedDataPoints();
-            summaryBuilder.BuildRemainingDataPoints();
-            summaryBuilder.SummarizeDataPoints();
+            summaryBuilder.SummarizePlannedDataPoints();
+            summaryBuilder.SummarizeModifiedPlannedDataPoints();
+            summaryBuilder.SummarizeEarnedDataPoints();
+            summaryBuilder.SummarizeRemainingDataPoints();
+            summaryBuilder.GroupAndAccumulateDataPointsByPeriod();
             summaryBuilder.RecalculateStats();
         }
     }
@@ -88,11 +88,11 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public void Build(SummaryBuilder summaryBuilder)
         {
-            summaryBuilder.BuildOriginalPlannedDataPoints();
-            summaryBuilder.BuildEarnedDataPoints();
-            summaryBuilder.BuildRemainingDataPoints();
-            summaryBuilder.SummarizeDataPoints();
-            summaryBuilder.SummarizeNestedSummaryObjectDataPoints();
+            summaryBuilder.SummarizePlannedDataPoints();
+            summaryBuilder.SummarizeEarnedDataPoints();
+            summaryBuilder.SummarizeRemainingDataPoints();
+            summaryBuilder.GroupAndAccumulateDataPointsByPeriod();
+            summaryBuilder.GroupAndAccumulateReportableDataPointsByPeriod();
         }
     }
 }

@@ -920,15 +920,15 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <param name="originalUnits">Override the total units to produce a different percentage</param>
         /// <param name="originalCosts">Override the total costs to produce a different percentage</param>
         /// <returns></returns>
-        public static List<ProgressInfo> DataPointsGenerator(SummarizableObject SummaryObject, TimeSpan workingPeriod,
+        public static List<ProgressInfo> DataPointsGenerator(TimeSpan intervalPeriod, DateTime alignedDataDate, TimeSpan workingPeriod,
             decimal assignmentUnits, decimal assignmentCosts, DateTime plotStartDate, Guid dataPointGuid,
             decimal currencyConversion, IEnumerable<Period> suspensionPeriod = null, decimal? originalUnits = null,
             decimal? originalCosts = null,
             ObservableCollection<VariationAdjustment> cumulativeVariationAdjustment = null)
         {
             var returnProgressDataPoints = new List<ProgressInfo>();
-            var progressInterval = SummaryObject.IntervalPeriod;
-            var firstAlignedDataDate = SummaryObject.FirstAlignedDataDate;
+            var progressInterval = intervalPeriod;
+            DateTime firstAlignedDataDate = alignedDataDate;
 
             decimal PeriodCount = 0;
             PeriodCount = Convert.ToDecimal(workingPeriod.TotalDays) / Convert.ToDecimal(progressInterval.TotalDays);
@@ -1163,7 +1163,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Generate the remaining data points based on productivity
         /// Prerequisites: this.ISupportProgressReportingCollection.FirstAlignedDataDate, this.ISupportProgressReportingCollection.IntervalPeriod and this.ISupportProgressReportingCollection.UnifiedCalculationMethod must be initialized
         /// </summary>
-        public static ObservableCollection<ProgressInfo> RemainingDataPointsGenerator(SummarizableObject summaryObject,
+        public static ObservableCollection<ProgressInfo> RemainingDataPointsGenerator(TimeSpan progressInterval,
             ReportableObject reportableObject, DateTime firstAlignedWeekEndingDataDate, List<Period> exceptionPeriod,
             decimal remainingUnits, decimal unitsPerHour, decimal firstPeriodProRate, decimal currencyConversion,
             DateTime? limitDate = null)
@@ -1175,7 +1175,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             var unitsPerDay = unitsPerHour * int.Parse(CommonResources.ProgressReporting_DefaultHoursADay);
             decimal unitsPerPeriod;
-            var intervalPeriod = summaryObject.IntervalPeriod;
+            TimeSpan intervalPeriod = progressInterval;
 
             if (limitDate != null)
             {
