@@ -91,57 +91,47 @@ namespace BluePrints.Common.Projections
     {
         public static IQueryable<VARIATION_ITEMProjection> JoinRATESAndPROGRESS_ITEMSAndVARIATION_ITEMSOnBASELINE_ITEMS(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS, Func<PROGRESS> getPROGRESSFunc, Func<BASELINE> getBASELINEFunc,
-            Func<VARIATION> getVARIATIONFunc, Func<IQueryable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc,
-            Func<IQueryable<VARIATION_ITEM>> getVARIATION_ITEMSFunc, Func<IQueryable<RATE>> getRATESFunc, bool IsLocked)
+            Func<VARIATION> getVARIATIONFunc, Func<IEnumerable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc,
+            Func<IEnumerable<VARIATION_ITEM>> getVARIATION_ITEMSFunc, Func<IEnumerable<RATE>> getRATESFunc, Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc, bool IsLocked)
         {
             var BASELINE = getBASELINEFunc();
             var PROGRESS = getPROGRESSFunc();
             var VARIATION = getVARIATIONFunc();
             var RATES = getRATESFunc();
 
-            IQueryable<VARIATION_ITEM> LoadVARIATION_ITEMS;
+            IEnumerable<VARIATION_ITEM> LoadVARIATION_ITEMS;
             if (VARIATION == null)
-                LoadVARIATION_ITEMS =
-                    getVARIATION_ITEMSFunc().Where(x => x.GUID_VARIATION == Guid.Empty).ToArray().AsQueryable();
+                LoadVARIATION_ITEMS = new List<VARIATION_ITEM>();
             else
-                LoadVARIATION_ITEMS = getVARIATION_ITEMSFunc().ToArray().AsQueryable();
+                LoadVARIATION_ITEMS = getVARIATION_ITEMSFunc();
 
-            IQueryable<PROGRESS_ITEM> LoadPROGRESS_ITEMS;
+            IEnumerable<PROGRESS_ITEM> LoadPROGRESS_ITEMS;
             if (PROGRESS == null)
-                LoadPROGRESS_ITEMS =
-                    getPROGRESS_ITEMSFunc().Where(x => x.GUID_PROGRESS == Guid.Empty).ToArray().AsQueryable();
+                LoadPROGRESS_ITEMS = new List<PROGRESS_ITEM>();
             else
-                LoadPROGRESS_ITEMS = getPROGRESS_ITEMSFunc().ToArray().AsQueryable();
+                LoadPROGRESS_ITEMS = getPROGRESS_ITEMSFunc();
 
             IQueryable<PROGRESS_ITEMProjection> BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS;
             if (PROGRESS == null || VARIATION == null)
-            {
-                BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS =
-                    PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
-                        BASELINE_ITEMS.Where(x => x.GUID == Guid.Empty), getPROGRESSFunc, getBASELINEFunc,
-                        getPROGRESS_ITEMSFunc, getRATESFunc, null, true);
-            }
+                BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS = new List<PROGRESS_ITEMProjection>().AsQueryable();
             else
             {
                 if (VARIATION.APPROVED != null)
                     BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS =
                         PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
-                            BASELINE_ITEMS.Where(
-                                x => x.GUID_VARIATION == VARIATION.GUID && x.GUID_BASELINE == VARIATION.GUID_BASELINE),
-                            getPROGRESSFunc, getBASELINEFunc, getPROGRESS_ITEMSFunc, getRATESFunc, null, true);
+                            BASELINE_ITEMS.Where(x => x.GUID_VARIATION == VARIATION.GUID && x.GUID_BASELINE == VARIATION.GUID_BASELINE),
+                            getPROGRESSFunc, getBASELINEFunc, getPROGRESS_ITEMSFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, true);
                 else
                     BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS =
                         PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
                             BASELINE_ITEMS.Where(
-                                x =>
-                                    x.GUID_BASELINE == BASELINE.GUID ||
-                                    x.GUID_VARIATION == VARIATION.GUID && x.GUID_BASELINE == null), getPROGRESSFunc,
-                            getBASELINEFunc, getPROGRESS_ITEMSFunc, getRATESFunc, null, true);
+                                x => x.GUID_BASELINE == BASELINE.GUID || x.GUID_VARIATION == VARIATION.GUID && x.GUID_BASELINE == null), getPROGRESSFunc,
+                            getBASELINEFunc, getPROGRESS_ITEMSFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, true);
             }
 
             var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
             return
-                BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS
+                BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS.ToArray()
                     .Select(x => new VARIATION_ITEMProjection()
                     {
                         GUID = x.GUID,
@@ -155,9 +145,7 @@ namespace BluePrints.Common.Projections
                         PROGRESS_ITEMS =
                             LoadPROGRESS_ITEMS.Where(
                                     y => y.GUID_ORIBASEITEM == x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL)
-                                .ToArray()
-                                .AsEnumerable()
-                    });
+                    }).AsQueryable();
         }
     }
 }

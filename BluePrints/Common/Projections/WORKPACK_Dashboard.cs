@@ -87,17 +87,17 @@ namespace BluePrints.Common.Projections
 
         public static IQueryable<WORKPACK_Dashboard> MappingWORKPACKDashboard(IQueryable<WORKPACK> WORKPACKS,
             Func<PROGRESS> getPROGRESSFunc, Func<BASELINE> getBASELINEFunc,
-            Func<IQueryable<BASELINE_ITEM>> getBASELINE_ITEMFunc,
-            Func<IQueryable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc,
-            Func<IQueryable<RATE>> getRATESFunc,
+            Func<IEnumerable<BASELINE_ITEM>> getBASELINE_ITEMFunc,
+            Func<IEnumerable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc,
+            Func<IEnumerable<RATE>> getRATESFunc,
+            Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc, 
             bool getModifiedWORKPACK_ASSIGNMENT)
         {
             var returnWORKPACK_Dashboard = new List<WORKPACK_Dashboard>();
-            var localWORKPACKS = WORKPACKS.ToArray().AsEnumerable();
 
             var projectDashboard =
                 PROJECT_DashboardQueries.SummarizeSinglePROJECTDashboard(getBASELINEFunc().PROJECT, getPROGRESSFunc,
-                    getPROGRESS_ITEMSFunc, getBASELINE_ITEMFunc, getBASELINEFunc, getRATESFunc);
+                    getPROGRESS_ITEMSFunc, getBASELINE_ITEMFunc, getBASELINEFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc);
             return SummarizeWORKPACKDashboard(WORKPACKS, projectDashboard);
         }
     }

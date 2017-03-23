@@ -86,6 +86,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
+            loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             InvokeEntitiesLoaderDescriptionLoading();
         }
@@ -157,12 +158,13 @@ namespace BluePrints.ViewModels
                 loaderCollection.GetCollectionFunc<VARIATION_ITEM>();
             var getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
             var submittedDate = loadVARIATION.SUBMITTED;
+            var getDELIVERABLES_STATUSESFunc = loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
 
             return
                 query =>
                     VARIATION_ITEMProjectionQuery.JoinRATESAndPROGRESS_ITEMSAndVARIATION_ITEMSOnBASELINE_ITEMS(query,
                         getPROGRESSFunc, getBASELINEFunc, getVARIATIONFunc, getPROGRESS_ITEMSFunc,
-                        getVARIATION_ITEMSFunc, getRATESFunc, submittedDate != null);
+                        getVARIATION_ITEMSFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, submittedDate != null);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATION_ITEMProjection> entities)

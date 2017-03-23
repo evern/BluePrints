@@ -73,6 +73,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc);
+            loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
 
             InvokeEntitiesLoaderDescriptionLoading();
         }
@@ -129,11 +130,12 @@ namespace BluePrints.ViewModels
             var getPROGRESS_ITEMSFunc = loaderCollection.GetCollectionFunc<PROGRESS_ITEM>();
             var getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
             var getVARIATIONSFunc = loaderCollection.GetCollectionFunc<VARIATION>();
+            var getDELIVERABLES_STATUSESFunc = loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
 
             return
                 query =>
                     PROJECT_DashboardQueries.SummarizePROJECTDashboard(query, getPROGRESSESFunc, getPROGRESS_ITEMSFunc,
-                        getBASELINESFunc, getRATESFunc, getVARIATIONSFunc, () => RaisePropertyChanged(),
+                        getBASELINESFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, getVARIATIONSFunc, () => RaisePropertyChanged(),
                         loadPROJECT.GUID);
         }
 

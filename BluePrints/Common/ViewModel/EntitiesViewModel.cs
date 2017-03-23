@@ -209,6 +209,18 @@ namespace BluePrints.Common.ViewModel
         /// </summary>
         public virtual bool IsLoading { get; protected set; }
 
+
+        public IReadOnlyRepository<TProjection> RepositoryForProjectionQuery
+        {
+            get
+            {
+                if (typeof(TEntity) == typeof(TProjection))
+                    return (IReadOnlyRepository<TProjection>)ReadOnlyRepository;
+                else
+                    return null;
+            }
+        }
+
         /// <summary>
         /// The collection of entities loaded from the unit of work.
         /// </summary>
@@ -418,14 +430,16 @@ namespace BluePrints.Common.ViewModel
     /// <summary>
     /// The base interface for view models exposing a collection of entities of the given type.
     /// </summary>
-    /// <typeparam name="TEntity">An entity type.</typeparam>
-    public interface IEntitiesViewModel<TEntity> : IDocumentContent
-        where TEntity : class
+    /// <typeparam name="TProjection">An entity type.</typeparam>
+    public interface IEntitiesViewModel<TProjection> : IDocumentContent
+        where TProjection : class
     {
         /// <summary>
         /// The loaded collection of entities.
         /// </summary>
-        ObservableCollection<TEntity> Entities { get; }
+        ObservableCollection<TProjection> Entities { get; }
+
+        IReadOnlyRepository<TProjection> RepositoryForProjectionQuery { get; }
 
         /// <summary>
         /// Used to check whether entities are currently being loaded in the background. The property can be used to show the progress indicator.
@@ -434,7 +448,7 @@ namespace BluePrints.Common.ViewModel
 
         bool IsPersistentView { get; set; }
         //BluePrints Customization Start
-        Action<IEnumerable<TEntity>> OnEntitiesLoadedCallBack { get; set; }
+        Action<IEnumerable<TProjection>> OnEntitiesLoadedCallBack { get; set; }
         Func<object, Type, EntityMessageType, object, bool> OnBeforeEntitiesChangedCallBack { get; set; }
         Action<object, Type, EntityMessageType, object> OnAfterEntitiesChangedCallBack { get; set; }
         //BluePrints Customization End

@@ -28,8 +28,8 @@ namespace BluePrints.Views
 {
     public partial class PROJECTWORKPACKDetailsMappingView : UserControl
     {
-        private IQueryable<TASK> TASKS;
-        private IQueryable<PROJWBS> WBSS;
+        private IEnumerable<TASK> TASKS;
+        private IEnumerable<PROJWBS> WBSS;
         private IEnumerable<WORKPACK_Dashboard> WORKPACK_Dashboards;
 
         private CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
@@ -40,9 +40,9 @@ namespace BluePrints.Views
         private IEnumerable<TASK_AppointmentInfo> TASK_WBSAppointments;
         private bool ISMODIFIED; //Specify whether the context is a original or modified P6BASELINE
 
-        public PROJECTWORKPACKDetailsMappingView(Func<IQueryable<TASK>> getTASKsFunc,
-            Func<IQueryable<PROJWBS>> getWBSSFunc,
-            Func<IQueryable<WORKPACK_Dashboard>> getWORKPACK_DashboardFunc,
+        public PROJECTWORKPACKDetailsMappingView(Func<IEnumerable<TASK>> getTASKsFunc,
+            Func<IEnumerable<PROJWBS>> getWBSSFunc,
+            Func<IEnumerable<WORKPACK_Dashboard>> getWORKPACK_DashboardFunc,
             CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
                 WORKPACK_ASSIGNMENTSViewModel, bool IsModified)
         {

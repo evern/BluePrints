@@ -69,9 +69,9 @@ namespace BluePrints.Common.Projections
     public static class WORKPACKProjectionQueries
     {
         public static IQueryable<WORKPACKProjection> JoinPROGRESSProjectionOnWORKPACKS(
-            IQueryable<WORKPACK> WORKPACKS, IQueryable<BASELINE_ITEM> BASELINE_ITEMS, Func<PROGRESS> getPROGRESSFunc, Func<BASELINE> getBASELINEFunc,
-            Func<IQueryable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc, Func<IQueryable<RATE>> getRATESFunc,
-            Func<IQueryable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc = null,
+            IQueryable<WORKPACK> WORKPACKS, IEnumerable<BASELINE_ITEM> BASELINE_ITEMS, Func<PROGRESS> getPROGRESSFunc, Func<BASELINE> getBASELINEFunc,
+            Func<IEnumerable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc, Func<IEnumerable<RATE>> getRATESFunc,
+            Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc,
             bool isBASELINEQueryProcessed = false)
         {
             var PROGRESS = getPROGRESSFunc();
@@ -80,11 +80,9 @@ namespace BluePrints.Common.Projections
             //LoadPROGRESS_ITEMS = PROGRESS == null ? getPROGRESS_ITEMSFunc().Where(x => x.GUID_PROGRESS == Guid.Empty).ToArray().AsQueryable() : getPROGRESS_ITEMSFunc().ToArray().AsQueryable();
             IQueryable<BASELINE_ITEMProjection> AllBaselineItems;
             if (PROGRESS == null)
-                AllBaselineItems = BASELINE_ITEMProjectionQueries.JoinRATESOnBASELINE_ITEMS(
-                    BASELINE_ITEMS.Where(x => x.GUID == Guid.Empty), getBASELINEFunc, getRATESFunc,
-                    getDELIVERABLES_STATUSESFunc, true);
+                AllBaselineItems = new List<BASELINE_ITEMProjection>().AsQueryable();
             else
-                AllBaselineItems = BASELINE_ITEMProjectionQueries.JoinRATESOnBASELINE_ITEMS(BASELINE_ITEMS,
+                AllBaselineItems = BASELINE_ITEMProjectionQueries.JoinRATESOnBASELINE_ITEMS(BASELINE_ITEMS.AsQueryable(),
                     getBASELINEFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, isBASELINEQueryProcessed);
 
             //IQueryable<PROGRESS_ITEMProjection> reportableItems =
@@ -93,7 +91,7 @@ namespace BluePrints.Common.Projections
 
             var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
             return
-                WORKPACKS.Select(x => new WORKPACKProjection()
+                WORKPACKS.ToArray().Select(x => new WORKPACKProjection()
                 {
                     GUID = x.GUID,
                     WORKPACK = x,
@@ -102,7 +100,7 @@ namespace BluePrints.Common.Projections
                     //ReportableObjects = reportableItems.Where(y => y.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK == x.GUID)
                     //.ToArray()
                     //.AsEnumerable()
-                });
+                }).AsQueryable();
         }
     }
 }

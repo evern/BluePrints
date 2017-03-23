@@ -137,7 +137,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private IQueryable<ROLE_PERMISSION> GetStaticROLE_PERMISSIONS()
+        private IEnumerable<ROLE_PERMISSION> GetStaticROLE_PERMISSIONS()
         {
             var resourceSet = PermissionResources.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture,
                 true, true);
@@ -145,7 +145,7 @@ namespace BluePrints.ViewModels
             foreach (System.Collections.DictionaryEntry permission in resourceSet)
                 permissions.Add(new ROLE_PERMISSION() {PERMISSION = permission.Key.ToString()});
 
-            return permissions.AsQueryable();
+            return permissions;
         }
 
         private IDialogService AddRoleDialogService

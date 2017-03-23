@@ -38,66 +38,61 @@ namespace BluePrints.Common.Projections
     public static class PROJECT_DashboardQueries
     {
         public static IQueryable<PROJECT_Dashboard> SummarizePROJECTDashboard(IQueryable<PROJECT> PROJECTS,
-            Func<IQueryable<PROGRESS>> getLivePROGRESSESFunc, Func<IQueryable<PROGRESS_ITEM>> getLivePROGRESS_ITEMFunc,
-            Func<IQueryable<BASELINE>> getLiveBASELINESFunc, Func<IQueryable<RATE>> getRATESFunc,
-            Func<IQueryable<VARIATION>> getApprovedVARIATIONFunc = null, Action raisePropertyChanged = null,
+            Func<IEnumerable<PROGRESS>> getLivePROGRESSESFunc, Func<IEnumerable<PROGRESS_ITEM>> getLivePROGRESS_ITEMFunc,
+            Func<IEnumerable<BASELINE>> getLiveBASELINESFunc, Func<IEnumerable<RATE>> getRATESFunc, Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc, 
+            Func<IEnumerable<VARIATION>> getApprovedVARIATIONFunc = null, Action raisePropertyChanged = null,
             Guid? SinglePROJECTGuid = null, Guid? USERGuid = null)
         {
-            var LiveBASELINES = getLiveBASELINESFunc().ToArray().AsEnumerable();
-            var LivePROGRESSES = getLivePROGRESSESFunc().ToArray().AsEnumerable();
+            var LiveBASELINES = getLiveBASELINESFunc();
+            var LivePROGRESSES = getLivePROGRESSESFunc();
 
-            IEnumerable<VARIATION> ApprovedVARIATIONS;
-            if (getApprovedVARIATIONFunc != null)
-                ApprovedVARIATIONS = getApprovedVARIATIONFunc().ToArray().AsEnumerable();
-            else
-                ApprovedVARIATIONS = new List<VARIATION>();
-
+            IEnumerable<VARIATION> ApprovedVARIATIONS = ApprovedVARIATIONS = getApprovedVARIATIONFunc();
             IEnumerable<RATE> AllRATES = getRATESFunc();
-            IEnumerable<PROJECT> localPROJECTS;
+            IQueryable<PROJECT> singleOrActivePROJECT;
 
             if (SinglePROJECTGuid != null)
-                localPROJECTS = PROJECTS.Where(x => x.GUID == SinglePROJECTGuid).ToArray().AsEnumerable();
+                singleOrActivePROJECT = PROJECTS.Where(x => x.GUID == SinglePROJECTGuid);
                     //process only active PROJECTS
             else
-                localPROJECTS = PROJECTS.Where(x => x.STATUS == ProjectStatus.Active).ToArray().AsEnumerable();
-                    //process only active PROJECTS
+                singleOrActivePROJECT = PROJECTS.Where(x => x.STATUS == ProjectStatus.Active);
+            //process only active PROJECTS
 
-            var returnPROJECT_Dashboard = new List<PROJECT_Dashboard>();
+            List<PROJECT_Dashboard> PROJECTDashboard = new List<PROJECT_Dashboard>();
             var bluePrintsUnitOfWork =
                 BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             var p6UnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
 
-            foreach (var localPROJECT in localPROJECTS)
+            foreach (var localPROJECT in singleOrActivePROJECT)
             {
-                var currentPROJECTLiveBASELINE =
+                BASELINE currentPROJECTLiveBASELINE =
                     LiveBASELINES.FirstOrDefault(x => x.GUID_PROJECT == localPROJECT.GUID);
                 if (currentPROJECTLiveBASELINE == null)
                     continue;
 
-                var currentPROJECTLivePROGRESS =
+                PROGRESS currentPROJECTLivePROGRESS =
                     LivePROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == localPROJECT.GUID && x.STATUS == ProgressStatus.Live);
 
                 if (currentPROJECTLivePROGRESS == null)
                     continue;
 
-                var LivePROGRESS_ITEMS =
+                IEnumerable<PROGRESS_ITEM> LivePROGRESS_ITEMS =
                     getLivePROGRESS_ITEMFunc()
-                        .Where(x => x.PROGRESS.GUID == currentPROJECTLivePROGRESS.GUID)
-                        .AsQueryable();
-                IQueryable<BASELINE_ITEM> LiveBASELINE_ITEMS;
-                if (USERGuid == null)
-                    LiveBASELINE_ITEMS = currentPROJECTLiveBASELINE.BASELINE_ITEM.AsQueryable();
-                else
-                    LiveBASELINE_ITEMS = currentPROJECTLiveBASELINE.BASELINE_ITEM.Where(x => x.GUID_USER == USERGuid).AsQueryable();
+                        .Where(x => x.PROGRESS.GUID == currentPROJECTLivePROGRESS.GUID);
 
-                var RATESByProject = AllRATES.Where(x => x.GUID_PROJECT == localPROJECT.GUID).AsQueryable();
-                var ApprovedVARIATIONSByProject =
-                    ApprovedVARIATIONS.Where(x => x.GUID_PROJECT == localPROJECT.GUID).AsEnumerable();
+                IEnumerable<BASELINE_ITEM> LiveBASELINE_ITEMS;
+                if (USERGuid == null)
+                    LiveBASELINE_ITEMS = currentPROJECTLiveBASELINE.BASELINE_ITEM;
+                else
+                    LiveBASELINE_ITEMS = currentPROJECTLiveBASELINE.BASELINE_ITEM.Where(x => x.GUID_USER == USERGuid);
+
+                IEnumerable<RATE> RATESByProject = AllRATES.Where(x => x.GUID_PROJECT == localPROJECT.GUID);
+                IEnumerable<VARIATION> ApprovedVARIATIONSByProject =
+                    ApprovedVARIATIONS.Where(x => x.GUID_PROJECT == localPROJECT.GUID);
 
                 IEnumerable<ReportableObject> PROJECTInfos =
                     PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
-                        LiveBASELINE_ITEMS, () => currentPROJECTLivePROGRESS, () => currentPROJECTLiveBASELINE,
-                        () => LivePROGRESS_ITEMS, () => RATESByProject).ToArray().AsEnumerable();
+                        LiveBASELINE_ITEMS.AsQueryable(), () => currentPROJECTLivePROGRESS, () => currentPROJECTLiveBASELINE,
+                        () => LivePROGRESS_ITEMS, () => RATESByProject, () => getDELIVERABLES_STATUSESFunc()).ToArray().AsEnumerable();
 
                 var currentPROJECT_Dashboard = new PROJECT_Dashboard()
                 {
@@ -108,15 +103,15 @@ namespace BluePrints.Common.Projections
 
                 currentPROJECT_Dashboard.InitializeBuilder(PROJECTInfos, currentPROJECTLivePROGRESS,
                     currentPROJECTLiveBASELINE, bluePrintsUnitOfWork, p6UnitOfWork);
-                returnPROJECT_Dashboard.Add(currentPROJECT_Dashboard);
+                PROJECTDashboard.Add(currentPROJECT_Dashboard);
             }
 
             var summaryBackgroundWorker = new BackgroundWorker();
             summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
             summaryBackgroundWorker.WorkerSupportsCancellation = true;
-            summaryBackgroundWorker.RunWorkerAsync(new object[] { returnPROJECT_Dashboard, raisePropertyChanged});
+            summaryBackgroundWorker.RunWorkerAsync(new object[] { PROJECTDashboard, raisePropertyChanged});
 
-            return returnPROJECT_Dashboard.AsQueryable();
+            return PROJECTDashboard.AsQueryable();
         }
 
         private static void summaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -140,8 +135,8 @@ namespace BluePrints.Common.Projections
         }
 
         public static PROJECT_Dashboard SummarizeSinglePROJECTDashboard(PROJECT PROJECT, Func<PROGRESS> getPROGRESSFunc,
-            Func<IQueryable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc, Func<IQueryable<BASELINE_ITEM>> getBASELINE_ITEMSFunc,
-            Func<BASELINE> getBASELINEFunc, Func<IQueryable<RATE>> getRATESFunc)
+            Func<IEnumerable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc, Func<IEnumerable<BASELINE_ITEM>> getBASELINE_ITEMSFunc,
+            Func<BASELINE> getBASELINEFunc, Func<IEnumerable<RATE>> getRATESFunc, Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc)
         {
             var bluePrintsUnitOfWork =
                 BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
@@ -149,7 +144,7 @@ namespace BluePrints.Common.Projections
 
             IEnumerable<ReportableObject> PROJECTInfos =
                 PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
-                        getBASELINE_ITEMSFunc(), getPROGRESSFunc, getBASELINEFunc, getPROGRESS_ITEMSFunc, getRATESFunc)
+                        getBASELINE_ITEMSFunc().AsQueryable(), getPROGRESSFunc, getBASELINEFunc, getPROGRESS_ITEMSFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc)
                     .ToArray()
                     .AsEnumerable();
 
@@ -158,6 +153,7 @@ namespace BluePrints.Common.Projections
                 GUID = PROJECT.GUID,
                 PROJECT = PROJECT
             };
+
             currentPROJECT_Dashboard.InitializeBuilder(PROJECTInfos, getPROGRESSFunc(), getBASELINEFunc(),
                 bluePrintsUnitOfWork, p6UnitOfWork);
             var summaryManufacturer = new ProjectSummarizingFactory();

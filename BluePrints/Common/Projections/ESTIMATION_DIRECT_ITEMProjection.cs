@@ -139,15 +139,13 @@ namespace BluePrints.Common.Projections
     {
         public static IQueryable<ESTIMATION_DIRECT_ITEMProjection> JoinRATESOnESTIMATION_DIRECT_ITEMS(
             IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, Func<ESTIMATION_DIRECT> getESTIMATION_DIRECTFunc,
-            Func<IQueryable<DEPARTMENT>> getDEPARTMENTFunc, Func<IQueryable<RATE>> getRATES_ByProjectFunc = null,
+            Func<IEnumerable<DEPARTMENT>> getDEPARTMENTFunc, Func<IEnumerable<RATE>> getRATES_ByProjectFunc = null,
             bool isESTIMATION_DIRECTQueryProcessed = false)
         {
             var ESTIMATION_DIRECT = getESTIMATION_DIRECTFunc();
             IQueryable<ESTIMATION_DIRECT_ITEM> contextESTIMATION_DIRECT_ITEMS;
             if (ESTIMATION_DIRECT == null)
-            {
-                contextESTIMATION_DIRECT_ITEMS = ESTIMATION_DIRECT_ITEMS.Where(x => x.GUID == Guid.Empty);
-            }
+                contextESTIMATION_DIRECT_ITEMS = new List<ESTIMATION_DIRECT_ITEM>().AsQueryable();
             else
             {
                 if (isESTIMATION_DIRECTQueryProcessed)
@@ -170,19 +168,18 @@ namespace BluePrints.Common.Projections
 
             return
                 contextESTIMATION_DIRECT_ITEMS.ToArray()
-                    .AsQueryable()
                     .Select(
                         x =>
                             new ESTIMATION_DIRECT_ITEMProjection()
                             {
                                 GUID = x.GUID,
                                 ESTIMATION_DIRECT_ITEM = x,
-                                RATE =
+                                RATE = RATES == null ? null :
                                     RATES.FirstOrDefault(
                                         y =>
                                             y.GUID_DEPARTMENT == searchDEPARTMENTGuid &&
                                             y.GUID_DISCIPLINE == x.GUID_DISCIPLINE)
-                            });
+                            }).AsQueryable();
         }
     }
 }

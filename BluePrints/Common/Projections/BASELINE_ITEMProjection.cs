@@ -6,6 +6,7 @@ using BluePrints.Data.Attributes;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -26,6 +27,8 @@ namespace BluePrints.Common.Projections
 
         public BASELINE_ITEM BASELINE_ITEM { get; set; }
         public RATE RATE { get; set; }
+
+        public IEnumerable<RATE> RATES { get; set; }
         public DELIVERABLES_STATUS DELIVERABLE_STATUS { get; set; }
 
         public decimal ITEMRATE
@@ -77,16 +80,14 @@ namespace BluePrints.Common.Projections
     {
         public static IQueryable<BASELINE_ITEMProjection> JoinRATESOnBASELINE_ITEMS(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS, Func<BASELINE> getBASELINEFunc,
-            Func<IQueryable<RATE>> getRATES_ByProjectFunc = null,
-            Func<IQueryable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc = null,
+            Func<IEnumerable<RATE>> getRATES_ByProjectFunc,
+            Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc,
             bool isBASELINEQueryProcessed = false)
         {
             var BASELINE = getBASELINEFunc();
             IQueryable<BASELINE_ITEM> contextBASELINE_ITEMS;
             if (BASELINE == null)
-            {
-                contextBASELINE_ITEMS = BASELINE_ITEMS.Where(x => x.GUID == Guid.Empty);
-            }
+                contextBASELINE_ITEMS = new List<BASELINE_ITEM>().AsQueryable();
             else
             {
                 if (isBASELINEQueryProcessed)
@@ -95,21 +96,11 @@ namespace BluePrints.Common.Projections
                     contextBASELINE_ITEMS = BASELINE_ITEMS.Where(x => x.GUID_BASELINE == BASELINE.GUID);
             }
 
-            List<RATE> RATES;
-            if (getRATES_ByProjectFunc == null)
-                RATES = new List<RATE>();
-            else
-                RATES = new List<RATE>(getRATES_ByProjectFunc());
-
-            List<DELIVERABLES_STATUS> DELIVERABLES_STATUSES;
-            if (getDELIVERABLES_STATUSESFunc == null)
-                DELIVERABLES_STATUSES = new List<DELIVERABLES_STATUS>();
-            else
-                DELIVERABLES_STATUSES = new List<DELIVERABLES_STATUS>(getDELIVERABLES_STATUSESFunc());
+            IEnumerable<RATE> RATES = getRATES_ByProjectFunc();
+            IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSES = getDELIVERABLES_STATUSESFunc();
 
             return
                 contextBASELINE_ITEMS.ToArray()
-                    .AsQueryable()
                     .Select(
                         x =>
                             new BASELINE_ITEMProjection()
@@ -117,15 +108,15 @@ namespace BluePrints.Common.Projections
                                 GUID = x.GUID,
                                 BASELINE_ITEM = x,
                                 DELIVERABLE_STATUS =
-                                    x.GUID_STATUS == null
+                                    (x.GUID_STATUS == null)
                                         ? null
                                         : DELIVERABLES_STATUSES.FirstOrDefault(z => z.GUID == x.GUID_STATUS),
-                                RATE =
+                                RATE = 
                                     RATES.FirstOrDefault(
                                         y =>
                                             y.GUID_DEPARTMENT == x.GUID_DEPARTMENT &&
                                             y.GUID_DISCIPLINE == x.GUID_DISCIPLINE)
-                            });
+                            }).AsQueryable();
         }
     }
 }

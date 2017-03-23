@@ -39,9 +39,9 @@ namespace BluePrints.Views
                 windowsFormHostViewInitialization;
         }
 
-        public void windowsFormHostViewInitialization(Func<IQueryable<TASK>> getTASKsFunc,
-            Func<IQueryable<PROJWBS>> getWBSSFunc,
-            Func<IQueryable<WORKPACK_Dashboard>> getWORKPACK_DashboardFunc,
+        public void windowsFormHostViewInitialization(Func<IEnumerable<TASK>> getTASKsFunc,
+            Func<IEnumerable<PROJWBS>> getWBSSFunc,
+            Func<IEnumerable<WORKPACK_Dashboard>> getWORKPACK_DashboardFunc,
             CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
                 WORKPACKS_ASSIGNMENTSViewModel,
             bool IsModified)

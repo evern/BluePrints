@@ -98,6 +98,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
+            loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJECT, P6PROJECTProjectionFunc, x => loadP6PROJECT = x);
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.TASK, P6TASKProjectionFunc);
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJWBS, PROJWBSProjectionFunc);
@@ -198,18 +199,19 @@ namespace BluePrints.ViewModels
             var getBASELINE_ITEMSFunc = loaderCollection.GetCollectionFunc<BASELINE_ITEM>();
             var getPROGRESS_ITEMSFunc = loaderCollection.GetCollectionFunc<PROGRESS_ITEM>();
             var getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
+            var getDELIVERABLES_STATUSESFunc = loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
 
             return
                 query =>
                     WORKPACK_DashboardQueries.MappingWORKPACKDashboard(
                         query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID), getPROGRESSFunc, getBASELINEFunc,
-                        getBASELINE_ITEMSFunc, getPROGRESS_ITEMSFunc, getRATESFunc,
+                        getBASELINE_ITEMSFunc, getPROGRESS_ITEMSFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, 
                         mappingType == BaselineMappingSelectionType.Modified);
         }
 
         public
             Action
-            <Func<IQueryable<TASK>>, Func<IQueryable<PROJWBS>>, Func<IQueryable<WORKPACK_Dashboard>>,
+            <Func<IEnumerable<TASK>>, Func<IEnumerable<PROJWBS>>, Func<IEnumerable<WORKPACK_Dashboard>>,
                 CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>, bool
             > windowsFormHostViewInitialization { get; set; }
 

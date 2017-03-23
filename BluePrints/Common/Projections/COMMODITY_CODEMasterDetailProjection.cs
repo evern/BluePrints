@@ -66,8 +66,7 @@ namespace BluePrints.Common.Projections
             IQueryable<COMMODITY_CODE> COMMODITY_CODES)
         {
             return
-                COMMODITY_CODES.ToArray()
-                    .AsQueryable()
+                COMMODITY_CODES
                     .Select(x => new COMMODITY_CODEMasterDetailProjection() {GUID = x.GUID, COMMODITY_CODE = x});
         }
     }

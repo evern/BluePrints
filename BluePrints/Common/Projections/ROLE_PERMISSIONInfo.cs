@@ -61,13 +61,13 @@ namespace BluePrints.Data
     {
         public static IQueryable<ROLE_PERMISSIONInfo> GetAssignedROLE_PERMISSIONByROLE(
             IQueryable<ROLE_PERMISSION> ROLE_PERMISSION, Func<Guid> GetROLEKeyFunc,
-            IQueryable<ROLE_PERMISSION> SYSTEM_PERMISSIONS)
+            IEnumerable<ROLE_PERMISSION> SYSTEM_PERMISSIONS)
         {
-            var finalizedROLE_PERMISSION = ROLE_PERMISSION.ToArray().AsQueryable();
+            IEnumerable<ROLE_PERMISSION> finalizedROLE_PERMISSION = ROLE_PERMISSION.ToArray();
             var roleKey = GetROLEKeyFunc();
             var currentAssignedROLE_PERMISSIONS =
-                finalizedROLE_PERMISSION.Where(x => x.GUID_ROLE == roleKey).ToArray().AsEnumerable();
-            return SYSTEM_PERMISSIONS.Select(x => new ROLE_PERMISSIONInfo(x, currentAssignedROLE_PERMISSIONS));
+                finalizedROLE_PERMISSION.Where(x => x.GUID_ROLE == roleKey);
+            return SYSTEM_PERMISSIONS.Select(x => new ROLE_PERMISSIONInfo(x, currentAssignedROLE_PERMISSIONS)).AsQueryable();
         }
     }
 }

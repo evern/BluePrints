@@ -47,10 +47,10 @@ namespace BluePrints.Common.Projections
             IQueryable<COMMODITY_GROUP_DIRECT> COMMODITY_GROUP_DIRECTS)
         {
             var allCOMMODITY_GROUP_DIRECTS =
-                COMMODITY_GROUP_DIRECTS.ToArray().OrderBy(x => x.DESCRIPTION).AsEnumerable();
+                COMMODITY_GROUP_DIRECTS.OrderBy(x => x.DESCRIPTION);
             return
                 allCOMMODITY_GROUP_DIRECTS.Select(
-                    x => new COMMODITY_GROUP_DIRECTProjection() {GUID = x.GUID, COMMODITY_GROUP = x}).AsQueryable();
+                    x => new COMMODITY_GROUP_DIRECTProjection() {GUID = x.GUID, COMMODITY_GROUP = x});
         }
     }
 }

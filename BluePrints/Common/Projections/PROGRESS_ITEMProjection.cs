@@ -7,6 +7,7 @@ using BluePrints.Data.Attributes;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,32 +45,29 @@ namespace BluePrints.Common.Projections
     {
         public static IQueryable<PROGRESS_ITEMProjection> JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS, Func<PROGRESS> getPROGRESSFunc, Func<BASELINE> getBASELINEFunc,
-            Func<IQueryable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc, Func<IQueryable<RATE>> getRATESFunc,
-            Func<IQueryable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc = null,
+            Func<IEnumerable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc, Func<IEnumerable<RATE>> getRATESFunc,
+            Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc,
             bool isBASELINEQueryProcessed = false)
         {
             var PROGRESS = getPROGRESSFunc();
 
-            IQueryable<PROGRESS_ITEM> LoadPROGRESS_ITEMS;
+            IEnumerable<PROGRESS_ITEM> LoadPROGRESS_ITEMS;
             if (PROGRESS == null)
-                LoadPROGRESS_ITEMS =
-                    getPROGRESS_ITEMSFunc().Where(x => x.GUID_PROGRESS == Guid.Empty).ToArray().AsQueryable();
+                LoadPROGRESS_ITEMS = new List<PROGRESS_ITEM>();
             else
-                LoadPROGRESS_ITEMS = getPROGRESS_ITEMSFunc().ToArray().AsQueryable();
+                LoadPROGRESS_ITEMS = getPROGRESS_ITEMSFunc();
 
             IQueryable<BASELINE_ITEMProjection> BASELINE_ITEMJoinRATES;
             if (PROGRESS == null)
-                BASELINE_ITEMJoinRATES =
-                    BASELINE_ITEMProjectionQueries.JoinRATESOnBASELINE_ITEMS(
-                        BASELINE_ITEMS.Where(x => x.GUID == Guid.Empty), getBASELINEFunc, getRATESFunc,
-                        getDELIVERABLES_STATUSESFunc, true);
+                BASELINE_ITEMJoinRATES = new List<BASELINE_ITEMProjection>().AsQueryable();
             else
                 BASELINE_ITEMJoinRATES = BASELINE_ITEMProjectionQueries.JoinRATESOnBASELINE_ITEMS(BASELINE_ITEMS,
                     getBASELINEFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, isBASELINEQueryProcessed);
 
             var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
+
             return
-                BASELINE_ITEMJoinRATES.Select(
+                BASELINE_ITEMJoinRATES.ToArray().Select(
                         x =>
                             new PROGRESS_ITEMProjection()
                             {
@@ -78,9 +76,7 @@ namespace BluePrints.Common.Projections
                                 ReportingDataDate = reportingDate,
                                 PROGRESS_ITEMS =
                                     LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.BASELINE_ITEM.GUID_ORIGINAL)
-                                        .ToArray()
-                                        .AsEnumerable()
-                            });
+                            }).AsQueryable();
         }
     }
 }

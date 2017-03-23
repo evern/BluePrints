@@ -2,6 +2,7 @@
 using BluePrints.Common.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace BluePrints.Data.Helpers
@@ -102,6 +103,16 @@ namespace BluePrints.Data.Helpers
             return entitiesLoader.GetViewModel();
         }
 
+        public IReadOnlyRepository<TProjection> GetRepository<TProjection>()
+            where TProjection : class
+        {
+            var entitiesLoader = (IEntitiesLoaderDescription<TProjection>)GetLoader(typeof(TProjection));
+            if (entitiesLoader == null)
+                throw new InvalidOperationException("Entities loader not added");
+
+            return entitiesLoader.GetRepository();
+        }
+
         public Func<TProjection> GetObjectFunc<TProjection>()
             where TProjection : class
         {
@@ -113,7 +124,7 @@ namespace BluePrints.Data.Helpers
             return entitiesLoader.GetSingleObject;
         }
 
-        public Func<IQueryable<TProjection>> GetCollectionFunc<TProjection>()
+        public Func<IEnumerable<TProjection>> GetCollectionFunc<TProjection>()
             where TProjection : class
         {
             var entitiesLoader =
@@ -124,7 +135,7 @@ namespace BluePrints.Data.Helpers
             return entitiesLoader.GetCollection;
         }
 
-        public IQueryable<TProjection> GetCollection<TProjection>()
+        public IEnumerable<TProjection> GetCollection<TProjection>()
             where TProjection : class
         {
             var GetCollectionFunc = GetCollectionFunc<TProjection>();
@@ -274,10 +285,15 @@ namespace BluePrints.Data.Helpers
             return collectionViewModel;
         }
 
+        public IReadOnlyRepository<TProjection> GetRepository()
+        {
+            return collectionViewModel.RepositoryForProjectionQuery;
+        }
+
         /// <summary>
         /// Call this only after entities has been loaded as notified by OnEntitiesLoadedCallBackFunc
         /// </summary>
-        public IQueryable<TProjection> GetCollection()
+        public IEnumerable<TProjection> GetCollection()
         {
             //this.collectionViewModel.OnEntitiesLoadedCallBack = null;
             if (collectionViewModel == null || collectionViewModel.Entities == null)
@@ -321,8 +337,9 @@ namespace BluePrints.Data.Helpers
         where TProjection : class
     {
         TProjection GetSingleObject();
-        IQueryable<TProjection> GetCollection();
+        IEnumerable<TProjection> GetCollection();
         IEntitiesViewModel<TProjection> GetViewModel();
+        IReadOnlyRepository<TProjection> GetRepository();
     }
 
     public interface IEntitiesLoaderDescription

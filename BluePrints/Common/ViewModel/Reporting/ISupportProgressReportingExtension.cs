@@ -137,7 +137,10 @@ namespace BluePrints.Common.ViewModel.Reporting
             reportableObjects = reportableObjects.OrderBy(x => x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM);
             foreach(ReportableObject reportableObject in reportableObjects)
             {
-                Guid currentWORKPACKGuid = (Guid)reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK;
+                Guid? currentWORKPACKGuid = reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK;
+                if (currentWORKPACKGuid == null)
+                    continue;
+
                 var assignedWorkpack = workpackP6AssignedUnits.Where(x => x.Key == currentWORKPACKGuid)
                     .Select(e => (KeyValuePair<Guid, decimal>?)e).FirstOrDefault();
 
@@ -153,7 +156,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 reportableObject.WorkpackAssignmentStartUnit = workpackAssignmentStartUnit;
                 //move assignment start unit by total hours for next start unit assignment
                 workpackAssignmentStartUnit += reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
-                workpackP6AssignedUnits.Add(currentWORKPACKGuid, workpackAssignmentStartUnit);
+                workpackP6AssignedUnits.Add((Guid)currentWORKPACKGuid, workpackAssignmentStartUnit);
             }
         }
         #endregion
