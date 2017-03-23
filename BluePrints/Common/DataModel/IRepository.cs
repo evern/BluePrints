@@ -236,7 +236,13 @@ namespace BluePrints.Common.DataModel
             //BluePrints Modification End
             TEntity entity = null;
             if (!isGuidEmpty)
+            {
                 entity = repository.Find(projectionPrimaryKey);
+
+                //entity properties might be different from projection when projection is from another view model
+                if(entity != null && typeof(TEntity) == typeof(TProjection))
+                    DataUtils.ShallowCopy(entity, projectionEntity);
+            }
 
             if (entity == null || isGuidEmpty)
             {

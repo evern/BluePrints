@@ -294,7 +294,7 @@
                                                      ShowInColumn="Summary_PeriodEarned.UnitsPercentage"
                                                      FieldName="Summary_PeriodEarned.UnitsPercentage"
                                                      SummaryType="Custom" DisplayFormat="{}{0:p}" />-->
-                                <dxg:GridSummaryItem x:Name="groupSummaryGrossProfit"
+                                <!--<dxg:GridSummaryItem x:Name="groupSummaryGrossProfit"
                                                      FieldName="ProjectDashboard_GrossProfit" SummaryType="Custom"
                                                      ShowInColumn="ProjectDashboard_GrossProfit"
                                                      DisplayFormat="{}{0:p}" />
@@ -303,7 +303,7 @@
                                                      DisplayFormat="{}{0:p}" />
                                 <dxg:GridSummaryItem x:Name="groupSummaryProgressRatio"
                                                      FieldName="ProjectDashboard_ProgressRatio" SummaryType="Custom"
-                                                     DisplayFormat="{}{0:p}" />
+                                                     DisplayFormat="{}{0:p}" />-->
                                 <dxg:GridSummaryItem x:Name="groupSummaryCumulativePlanned"
                                                      ShowInColumn="Summary_CumulativePlanned.Units"
                                                      FieldName="Summary_CumulativePlanned.Units"
@@ -346,7 +346,7 @@
                                                      ShowInColumn="Summary_PeriodEarned.UnitsPercentage"
                                                      FieldName="Summary_PeriodEarned.UnitsPercentage"
                                                      SummaryType="Custom" DisplayFormat="{}{0:p}" />-->
-                                <dxg:GridSummaryItem x:Name="totalSummaryGrossProfit"
+                                <!--<dxg:GridSummaryItem x:Name="totalSummaryGrossProfit"
                                                      FieldName="ProjectDashboard_GrossProfit" SummaryType="Custom"
                                                      DisplayFormat="{}{0:p}" />
                                 <dxg:GridSummaryItem x:Name="totalSummaryEfficiencyRatio"
@@ -354,7 +354,7 @@
                                                      DisplayFormat="{}{0:p}" />
                                 <dxg:GridSummaryItem x:Name="totalSummaryProgressRatio"
                                                      FieldName="ProjectDashboard_ProgressRatio" SummaryType="Custom"
-                                                     DisplayFormat="{}{0:p}" />
+                                                     DisplayFormat="{}{0:p}" />-->
                                 <dxg:GridSummaryItem x:Name="totalSummaryCumulativePlanned"
                                                      ShowInColumn="Summary_CumulativePlanned.Units"
                                                      FieldName="Summary_CumulativePlanned.Units"

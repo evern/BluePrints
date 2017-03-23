@@ -29,12 +29,18 @@ namespace BluePrints.Views
             {
                 viewRestoration.StoreActiveCell = this.StoreFocusedCell;
                 viewRestoration.RestoreActiveCell = this.RestoreFocusedCell;
+                viewRestoration.ForceGridRefresh = this.ForceGridRefresh;
             }
 
             foreach(GridColumn gridColumn in gridControl.Columns)
             {
                 gridColumn.FilterPopupMode = FilterPopupMode.CheckedList;
             }
+        }
+
+        protected virtual void ForceGridRefresh()
+        {
+            gridControl.RefreshData();
         }
 
         protected virtual void StoreFocusedCell()

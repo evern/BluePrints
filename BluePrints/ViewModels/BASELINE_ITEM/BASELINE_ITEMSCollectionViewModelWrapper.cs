@@ -164,6 +164,7 @@ namespace BluePrints.ViewModels
             var getBASELINEFunc = loaderCollection.GetObjectFunc<BASELINE>();
             var getDELIVERABLES_STATUSESFunc =
                 loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
+
             return
                 query =>
                     BASELINE_ITEMProjectionQueries.JoinRATESOnBASELINE_ITEMS(query, getBASELINEFunc, getRATESFunc,

@@ -10,5 +10,8 @@ namespace BluePrints.Common.ViewModel
     {
         Action StoreActiveCell { get; set; }
         Action RestoreActiveCell { get; set; }
+
+        //Raise Properties changed doesn't refresh column data, call this method instead
+        Action ForceGridRefresh { get; set; }
     }
 }

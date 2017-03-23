@@ -34,6 +34,21 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public decimal FORECAST_UNITS
+        {
+            get
+            {
+                //When variation item is approved minunits will be 0 because there will be no more value to contra
+                if (ISLOCKED)
+                    return VARIATION_ITEM.VARIATION_UNITS;
+
+                if (VARIATION_ITEM.ACTION == VariationAction.Cancel)
+                    return MINUNITS;
+
+                return VARIATION_ITEM.VARIATION_UNITS;
+            }
+        }
+
         public bool ISLOCKED { get; set; }
 
         public bool ISREADONLY
@@ -50,10 +65,22 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public bool ISENABLED
+        {
+            get
+            {
+                return !ISREADONLY;
+            }
+        }
+
         public decimal MINUNITS
         {
             get
             {
+                //when variation is apporved MINUNITS should not cause a warning
+                if (ISLOCKED)
+                    return -100000;
+
                 if (PROGRESS_ITEMSBeforeReportingDate == null ||
                     BASELINE_ITEMJoinRATE == null || BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS == 0)
                     return 0;
@@ -82,7 +109,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                return VARIATION_ITEM.VARIATION_UNITS * BASELINE_ITEMJoinRATE.ITEMRATE;
+                return FORECAST_UNITS * BASELINE_ITEMJoinRATE.ITEMRATE;
             }
         }
     }

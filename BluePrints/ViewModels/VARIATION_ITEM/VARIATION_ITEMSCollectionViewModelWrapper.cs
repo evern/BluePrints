@@ -37,8 +37,10 @@ namespace BluePrints.ViewModels
         public Action ShowWORKPACKInternalName1;
         public Action ShowWORKPACKInternalName2;
 
+        public Func<object> OnEntitiesLoadedParameterCallBack;
+
         //Used by variation to generate new baseline
-        public Action<IEnumerable<VARIATION_ITEMProjection>> OnEntitiesLoadedCallBack;
+        public Action<IEnumerable<VARIATION_ITEMProjection>, object> OnEntitiesLoadedWithParameterCallBack;
 
         /// <summary>
         /// Creates a new instance of VARIATION_ITEMSViewModelWrapper as a POCO view model.
@@ -59,6 +61,7 @@ namespace BluePrints.ViewModels
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
+
         protected override void InitializeParameters(object parameter)
         {
             //both parameters is required because when entity is first added the associating entity (PROJECT) is not loaded
@@ -66,6 +69,17 @@ namespace BluePrints.ViewModels
                 (OptionalEntitiesParameter<PROJECT, VARIATION>) parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadVARIATION = receiveParameter.GetSecondEntity();
+        }
+
+        public NewItemRowPosition NewItemRowPosition
+        {
+            get
+            {
+                if (loadVARIATION != null && loadVARIATION.SUBMITTED == null)
+                    return NewItemRowPosition.Top;
+
+                return NewItemRowPosition.None;
+            }
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
@@ -188,7 +202,8 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentViewModel(this);
 
             mainThreadDispatcher.BeginInvoke(new Action(() => ShowWORKPACKColumns()));
-            OnEntitiesLoadedCallBack?.Invoke(entities);
+            object onLoadedParameter = OnEntitiesLoadedParameterCallBack?.Invoke();
+            OnEntitiesLoadedWithParameterCallBack?.Invoke(entities, onLoadedParameter);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
@@ -463,41 +478,37 @@ namespace BluePrints.ViewModels
         #region View Behavior
         public void CancelBASELINE_ITEM(VARIATION_ITEMProjection projectionEntity)
         {
+            if (loadVARIATION == null || loadVARIATION.SUBMITTED != null || loadVARIATION.APPROVED != null)
+                return;
+
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
             if (projectionEntity.VARIATION_ITEM.ACTION == VariationAction.Add)
                 return;
 
-            if (projectionEntity.VARIATION_ITEM.ACTION == VariationAction.Cancel)
-            {
-                MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity,
-                    BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().VARIATION_ITEM)
-                    + "."
-                    + BindableBase.GetPropertyName(() => new VARIATION_ITEM().ACTION), VariationAction.Cancel,
-                    VariationAction.NoAction, EntityMessageType.Changed);
-                projectionEntity.VARIATION_ITEM.ACTION = VariationAction.NoAction;
-            }
-            else
-            {
-                var oldUnits = projectionEntity.VARIATION_ITEM.VARIATION_UNITS;
-                projectionEntity.VARIATION_ITEM.VARIATION_UNITS = 0;
+            var oldUnits = projectionEntity.VARIATION_ITEM.VARIATION_UNITS;
+            projectionEntity.VARIATION_ITEM.VARIATION_UNITS = 0;
 
-                MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity,
-                    BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().VARIATION_ITEM)
-                    + "."
-                    + BindableBase.GetPropertyName(() => new VARIATION_ITEM().VARIATION_UNITS), oldUnits,
-                    projectionEntity.VARIATION_ITEM.VARIATION_UNITS, EntityMessageType.Changed);
-                var oldAction = projectionEntity.VARIATION_ITEM.ACTION;
-                projectionEntity.VARIATION_ITEM.ACTION = VariationAction.Cancel;
-                MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity,
-                    BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().VARIATION_ITEM)
-                    + "."
-                    + BindableBase.GetPropertyName(() => new VARIATION_ITEM().ACTION), oldAction, VariationAction.Cancel,
-                    EntityMessageType.Changed);
-            }
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity,
+                BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().VARIATION_ITEM)
+                + "."
+                + BindableBase.GetPropertyName(() => new VARIATION_ITEM().VARIATION_UNITS), oldUnits,
+                projectionEntity.VARIATION_ITEM.VARIATION_UNITS, EntityMessageType.Changed);
+
+            var oldAction = projectionEntity.VARIATION_ITEM.ACTION;
+
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity,
+                BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().VARIATION_ITEM)
+                + "."
+                + BindableBase.GetPropertyName(() => new VARIATION_ITEM().ACTION), oldAction, VariationAction.Cancel,
+                EntityMessageType.Changed);
+
+            projectionEntity.VARIATION_ITEM.ACTION = VariationAction.Cancel;
 
             MainViewModel.Save(projectionEntity);
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
-            RefreshSelectedEntity();
+            //RefreshSelectedEntity();
+            //RefreshView();
+            FullRefresh();
         }
 
         /// <summary>

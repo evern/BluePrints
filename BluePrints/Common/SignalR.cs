@@ -16,13 +16,11 @@ namespace BluePrints.Common
     public static class SignalR
     {
         public static IHubProxy HubProxy { get; set; }
-        public const string ServerURI = "http://192.168.70.5:5050/signalr";
-        //public const string ServerURI = "http://127.0.0.1:5050/signalr";
         public static HubConnection Connection { get; set; }
 
         public static async void ConnectAsync()
         {
-            Connection = new HubConnection(ServerURI);
+            Connection = new HubConnection(System.Configuration.ConfigurationManager.ConnectionStrings["SignalR"].ConnectionString);
             HubProxy = Connection.CreateHubProxy("MyHub");
 
             HubProxy.On<string, string, string, string, string>("AddMessage", (entityName, key, messageType, sender, hwid) =>

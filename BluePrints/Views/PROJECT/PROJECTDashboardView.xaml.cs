@@ -124,8 +124,8 @@ namespace BluePrints.Views
             primaryAxisY.Title.Content = primaryAxisY.Title.Content.ToString()
                 .Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
 
-            totalSummaryCumulativeEarnedPercentage.FieldName =
-                totalSummaryCumulativeEarnedPercentage.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            //totalSummaryCumulativeEarnedPercentage.FieldName =
+            //    totalSummaryCumulativeEarnedPercentage.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryCumulativePlanned.FieldName =
                 totalSummaryCumulativePlanned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryCumulativeEarned.FieldName = totalSummaryCumulativeEarned.FieldName.Replace(
@@ -134,8 +134,8 @@ namespace BluePrints.Views
                 fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryCumulativeActual.FieldName = totalSummaryCumulativeActual.FieldName.Replace(
                 fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryPeriodEarnedPercentage.FieldName =
-                totalSummaryPeriodEarnedPercentage.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            //totalSummaryPeriodEarnedPercentage.FieldName =
+            //    totalSummaryPeriodEarnedPercentage.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryPeriodPlanned.FieldName = totalSummaryPeriodPlanned.FieldName.Replace(fieldNameReplaceFrom,
                 fieldNameReplaceTo);
             totalSummaryPeriodEarned.FieldName = totalSummaryPeriodEarned.FieldName.Replace(fieldNameReplaceFrom,
@@ -147,8 +147,8 @@ namespace BluePrints.Views
 
             groupSummaryBudgeted.FieldName = groupSummaryBudgeted.FieldName.Replace(fieldNameReplaceFrom,
                 fieldNameReplaceTo);
-            groupSummaryCumulativeEarnedPercentage.FieldName =
-                groupSummaryCumulativeEarnedPercentage.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            //groupSummaryCumulativeEarnedPercentage.FieldName =
+            //    groupSummaryCumulativeEarnedPercentage.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             groupSummaryCumulativePlanned.FieldName =
                 groupSummaryCumulativePlanned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             groupSummaryCumulativeEarned.FieldName = groupSummaryCumulativeEarned.FieldName.Replace(
@@ -157,8 +157,8 @@ namespace BluePrints.Views
                 fieldNameReplaceFrom, fieldNameReplaceTo);
             groupSummaryCumulativeActual.FieldName = groupSummaryCumulativeActual.FieldName.Replace(
                 fieldNameReplaceFrom, fieldNameReplaceTo);
-            groupSummaryPeriodEarnedPercentage.FieldName =
-                groupSummaryPeriodEarnedPercentage.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            //groupSummaryPeriodEarnedPercentage.FieldName =
+            //    groupSummaryPeriodEarnedPercentage.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             groupSummaryPeriodPlanned.FieldName = groupSummaryPeriodPlanned.FieldName.Replace(fieldNameReplaceFrom,
                 fieldNameReplaceTo);
             groupSummaryPeriodEarned.FieldName = groupSummaryPeriodEarned.FieldName.Replace(fieldNameReplaceFrom,
@@ -170,8 +170,8 @@ namespace BluePrints.Views
 
             totalSummaryBudgeted.ShowInColumn = totalSummaryBudgeted.ShowInColumn.Replace(fieldNameReplaceFrom,
                 fieldNameReplaceTo);
-            totalSummaryCumulativeEarnedPercentage.ShowInColumn =
-                totalSummaryCumulativeEarnedPercentage.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            //totalSummaryCumulativeEarnedPercentage.ShowInColumn =
+            //    totalSummaryCumulativeEarnedPercentage.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryCumulativePlanned.ShowInColumn =
                 totalSummaryCumulativePlanned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryCumulativeEarned.ShowInColumn =
@@ -180,8 +180,8 @@ namespace BluePrints.Views
                 totalSummaryCumulativeBurned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryCumulativeActual.ShowInColumn =
                 totalSummaryCumulativeActual.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryPeriodEarnedPercentage.ShowInColumn =
-                totalSummaryPeriodEarnedPercentage.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            //totalSummaryPeriodEarnedPercentage.ShowInColumn =
+            //    totalSummaryPeriodEarnedPercentage.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryPeriodPlanned.ShowInColumn = totalSummaryPeriodPlanned.ShowInColumn.Replace(
                 fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryPeriodEarned.ShowInColumn = totalSummaryPeriodEarned.ShowInColumn.Replace(fieldNameReplaceFrom,
@@ -193,8 +193,8 @@ namespace BluePrints.Views
 
             groupSummaryBudgeted.ShowInColumn = groupSummaryBudgeted.ShowInColumn.Replace(fieldNameReplaceFrom,
                 fieldNameReplaceTo);
-            groupSummaryCumulativeEarnedPercentage.ShowInColumn =
-                groupSummaryCumulativeEarnedPercentage.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            //groupSummaryCumulativeEarnedPercentage.ShowInColumn =
+            //    groupSummaryCumulativeEarnedPercentage.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             groupSummaryCumulativePlanned.ShowInColumn =
                 groupSummaryCumulativePlanned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             groupSummaryCumulativeEarned.ShowInColumn =
@@ -203,8 +203,8 @@ namespace BluePrints.Views
                 groupSummaryCumulativeBurned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             groupSummaryCumulativeActual.ShowInColumn =
                 groupSummaryCumulativeActual.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            groupSummaryPeriodEarnedPercentage.ShowInColumn =
-                groupSummaryPeriodEarnedPercentage.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            //groupSummaryPeriodEarnedPercentage.ShowInColumn =
+            //    groupSummaryPeriodEarnedPercentage.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             groupSummaryPeriodPlanned.ShowInColumn = groupSummaryPeriodPlanned.ShowInColumn.Replace(
                 fieldNameReplaceFrom, fieldNameReplaceTo);
             groupSummaryPeriodEarned.ShowInColumn = groupSummaryPeriodEarned.ShowInColumn.Replace(fieldNameReplaceFrom,

@@ -189,8 +189,9 @@ namespace BluePrints.Common.ViewModel
             if (!DisplaySelectedEntity.ReportableObjects.Any(x => x.isPlannedDataPointsFromP6))
                 return true;
 
-            if (!DisplaySelectedEntity.ReportableObjects.Any(x => x.isEarnedDataPointsFromP6))
-                return true;
+            //Earned is always generated based on progress_item earned_date
+            //if (!DisplaySelectedEntity.ReportableObjects.Any(x => x.isEarnedDataPointsFromP6))
+            //    return true;
 
             if (!DisplaySelectedEntity.ReportableObjects.Any(x => x.isRemainingDataPointsFromP6))
                 return true;

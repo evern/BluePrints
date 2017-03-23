@@ -83,13 +83,76 @@
                 <dxmvvm:Interaction.Behaviors>
                     <dxmvvm:LayoutSerializationService />
                 </dxmvvm:Interaction.Behaviors>
-                <dxg:GridControl Name="gridControl" ColumnsSource="{StaticResource VARIATIONColumns}"
+                <dxg:GridControl Name="gridControl"
                                  dx:DXSerializer.SerializationID="PROJECTVARIATIONDetailsGrid"
                                  Style="{StaticResource AggregateViewGridTemplate}">
+                    <dxg:GridControl.Columns>
+                        <dxg:GridColumn FieldName="VARIATION.NAME" Header="NAME" VisibleIndex="10" />
+                        <dxg:GridColumn FieldName="VARIATION.TYPE" Header="TYPE" VisibleIndex="20">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationType}}" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="VARIATION.COMMENTS" Header="COMMENTS" VisibleIndex="30" />
+                        <dxg:GridColumn FieldName="VARIATION.CREATEDBY" Header="CREATEDBY" ReadOnly="True" VisibleIndex="40">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}"
+                                          IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
+                                          ValueMember="GUID" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="VARIATION.SUBMITTED" Header="SUBMITTED" VisibleIndex="50" />
+                        <dxg:GridColumn FieldName="VARIATION.APPROVED" Header="APPROVED" VisibleIndex="60" />
+                        <dxg:GridColumn Header="FROM BASELINE" FieldName="VARIATION.GUID_ORIBASELINE" ReadOnly="True" AllowEditing="False"
+                        VisibleIndex="70">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings
+                    ItemsSource="{Binding DataContext.BASELINECollection, ElementName=userControl}"
+                    IsTextEditable="True" AutoComplete="True" DisplayMember="REVISION" ValueMember="GUID" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="TO BASELINE" FieldName="VARIATION.GUID_BASELINE" ReadOnly="True" AllowEditing="False"
+                        VisibleIndex="80">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings
+                    ItemsSource="{Binding DataContext.BASELINECollection, ElementName=userControl}"
+                    IsTextEditable="True" AutoComplete="True" DisplayMember="REVISION" ValueMember="GUID" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="TOTAL_UNITS" VisibleIndex="90" >
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:TextEditSettings MaskUseAsDisplayFormat="True"
+                                                      MaskType="Numeric" Mask="n" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="TOTAL_COSTS" VisibleIndex="90" >
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:TextEditSettings MaskUseAsDisplayFormat="True"
+                                                      MaskType="Numeric" Mask="c" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                    </dxg:GridControl.Columns>
                     <dxg:GridControl.TotalSummary>
+                        <dxg:GridSummaryItem FieldName="TOTAL_UNITS"
+                                                 SummaryType="SUM"
+                                                 ShowInColumn="TOTAL_UNITS"
+                                                 DisplayFormat="Total: {0:n}" />
+                        <dxg:GridSummaryItem FieldName="TOTAL_COSTS"
+                                                 SummaryType="SUM"
+                                                 ShowInColumn="TOTAL_COSTS"
+                                                 DisplayFormat="Total: {0:c}" />
                         <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                     </dxg:GridControl.TotalSummary>
                     <dxg:GridControl.GroupSummary>
+                        <dxg:GridSummaryItem FieldName="TOTAL_UNITS"
+                                                 SummaryType="SUM"
+                                                 ShowInColumn="TOTAL_UNITS"
+                                                 DisplayFormat="Total: {0:n}" />
+                        <dxg:GridSummaryItem FieldName="TOTAL_COSTS"
+                                                 SummaryType="SUM"
+                                                 ShowInColumn="TOTAL_COSTS"
+                                                 DisplayFormat="Total: {0:c}" />
                         <dxg:GridSummaryItem SummaryType="Count" />
                     </dxg:GridControl.GroupSummary>
                     <dxg:GridControl.View>

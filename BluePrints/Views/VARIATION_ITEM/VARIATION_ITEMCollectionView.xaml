@@ -216,7 +216,8 @@
                                             Header="INTERNAL NUM">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" IsReadOnly="{Binding RowData.Row.ISREADONLY}" />
+                                        <!-- Use IsEnabled because when textEdit is invoked the 2nd time IsReadOnly didn't get picked up in the binding -->
+                                        <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.ISENABLED}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
@@ -224,7 +225,7 @@
                                             Header="CLIENT NUM">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" IsReadOnly="{Binding RowData.Row.ISREADONLY}" />
+                                        <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.ISENABLED}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
@@ -232,7 +233,7 @@
                                             Header="REVISION NUM">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" IsReadOnly="{Binding RowData.Row.ISREADONLY}" />
+                                        <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.ISENABLED}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
@@ -256,7 +257,7 @@
                                             Header="PRIMARY TITLE">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" IsReadOnly="{Binding RowData.Row.ISREADONLY}" />
+                                        <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.ISENABLED}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
@@ -264,14 +265,14 @@
                                             Header="SECONDARY TITLE">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" IsReadOnly="{Binding RowData.Row.ISREADONLY}" />
+                                        <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.ISENABLED}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.COMMENTS" Header="COMMENTS">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" IsReadOnly="{Binding RowData.Row.ISREADONLY}" />
+                                        <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.ISENABLED}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
@@ -298,6 +299,15 @@
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True"
                                                       MaskType="Numeric" Mask="c" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="FORECAST_UNITS" Header="VARIATION UNITS">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" Increment="1"
+                                                      MaskUseAsDisplayFormat="True"
+                                                      IsReadOnly="True" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
@@ -349,6 +359,8 @@
                                                  DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="TOTAL_COST" SummaryType="SUM" ShowInColumn="TOTAL_COST"
                                                  DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem FieldName="FORECAST_UNITS" SummaryType="SUM" ShowInColumn="FORECAST_UNITS"
+                                                 DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="VARIATION_COST" SummaryType="SUM" ShowInColumn="VARIATION_COST"
                                                  DisplayFormat="Total: {0:c}" />
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
@@ -363,12 +375,15 @@
                                                  DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="TOTAL_COST" SummaryType="SUM" ShowInColumn="TOTAL_COST"
                                                  DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem FieldName="FORECAST_UNITS" SummaryType="SUM" ShowInColumn="FORECAST_UNITS"
+                                                 DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="VARIATION_COST" SummaryType="SUM" ShowInColumn="VARIATION_COST"
                                                  DisplayFormat="Total: {0:c}" />
                             <dxg:GridSummaryItem SummaryType="Count" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
                             <common:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
+                                           NewItemRowPosition="{Binding DataContext.NewItemRowPosition, ElementName=userControl}"
                                            ShowTotalSummary="True" ShowFixedTotalSummary="True" GroupSummaryDisplayMode="AlignByColumns">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand

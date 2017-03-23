@@ -245,6 +245,7 @@ namespace BluePrints.Common.ViewModel
         #region Presentation
         public Action StoreActiveCell { get; set; }
         public Action RestoreActiveCell { get; set; }
+        public Action ForceGridRefresh { get; set; }
 
         private Guid RestoreSelectedEntityGuid;
         private List<Guid> RestoreSelectedEntitiesGuids = new List<Guid>();
@@ -283,27 +284,27 @@ namespace BluePrints.Common.ViewModel
             if (MainViewModel == null)
                 return;
 
-            MainViewModel.Refresh();
-            RefreshView();
+            InitializeAndLoadEntitiesLoaderDescription();
         }
 
         int viewRefreshDelay = 300;
-        protected void RefreshView()
+        protected void RefreshView(bool forceGridRefresh = false)
         {
             if(!refreshBackgroundWorker.IsBusy)
-                refreshBackgroundWorker.RunWorkerAsync();
+                refreshBackgroundWorker.RunWorkerAsync(forceGridRefresh);
         }
 
         private void refreshBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            System.Threading.Thread.Sleep(viewRefreshDelay);
+            bool forceGridRefresh = (bool)e.Argument;
+            //System.Threading.Thread.Sleep(viewRefreshDelay);
             if (refreshBackgroundWorker.CancellationPending)
             {
                 e.Cancel = true;
                 return;
             }
 
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.refreshView()));
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.refreshView(forceGridRefresh)));
         }
 
         public virtual ObservableCollection<TMainProjectionEntity> DisplayEntities
@@ -332,7 +333,7 @@ namespace BluePrints.Common.ViewModel
             }
 
             mainThreadDispatcher.BeginInvoke(new Action(() => this.storeViewState()));
-            System.Threading.Thread.Sleep(viewRefreshDelay);
+            //System.Threading.Thread.Sleep(viewRefreshDelay);
         }
 
         protected virtual void storeViewState()
@@ -379,12 +380,14 @@ namespace BluePrints.Common.ViewModel
             RestoreActiveCell?.Invoke();
         }
 
-        private void refreshView()
+        private void refreshView(bool isForceGridRefresh)
         {
             IPOCOViewModel viewModel = this as IPOCOViewModel;
             if(viewModel != null)
             {
-                this.RaisePropertiesChanged();
+                viewModel.RaisePropertiesChanged();
+                if (isForceGridRefresh && ForceGridRefresh != null)
+                    ForceGridRefresh();
                 restoreViewState();
             }
         }

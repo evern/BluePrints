@@ -23,7 +23,7 @@ namespace BluePrints.Views
         public VARIATIONCollectionView()
         {
             InitializeComponent();
-            //InitializeViewRestoration(gridControl, tableView);
+            InitializeViewControl(gridControl, tableView);
         }
     }
 }

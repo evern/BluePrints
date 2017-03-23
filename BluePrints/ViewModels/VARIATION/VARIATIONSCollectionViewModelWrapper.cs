@@ -13,6 +13,7 @@ using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,8 +23,8 @@ namespace BluePrints.ViewModels
 {
     public class VARIATIONSCollectionViewModelWrapper :
         CollectionViewModelsWrapper
-        <VARIATION, VARIATION, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<VARIATION, VARIATION, Guid, IBluePrintsEntitiesUnitOfWork>>,
+        <VARIATION, VARIATIONProjection, Guid, IBluePrintsEntitiesUnitOfWork,
+            CollectionViewModel<VARIATION, VARIATIONProjection, Guid, IBluePrintsEntitiesUnitOfWork>>,
         ISupportCustomDocumentTypeNameAndParameter
     {
         /// <summary>
@@ -35,14 +36,17 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new VARIATIONSCollectionViewModelWrapper());
         }
 
+        BackgroundWorker variationSummaryBackgroundWorker;
         /// <summary>
         /// Initializes a new instance of the PROJECTViewModel class.
         /// This constructor is declared protected to avoid undesired instantiation of the PROJECTViewModel type without the POCO proxy factory.
         /// </summary>
         protected VARIATIONSCollectionViewModelWrapper()
         {
+            variationSummaryBackgroundWorker = new BackgroundWorker();
+            variationSummaryBackgroundWorker.DoWork += variationSummaryBackgroundWorker_DoWork;
+            variationSummaryBackgroundWorker.WorkerSupportsCancellation = true;
         }
-
         #region Database Operation
 
         private PROJECT loadPROJECT;
@@ -66,6 +70,8 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc, null, true);
+            loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
+
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -84,10 +90,30 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == ProgressStatus.Live);
         }
 
-        //private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
-        //{
-        //    return query => query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID);
-        //}
+        private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<VARIATION_ITEM>, IQueryable<VARIATION_ITEM>> VARIATION_ITEMProjectionFunc()
+        {
+            return query => query.Where(x => x.VARIATION.GUID_PROJECT == loadPROJECT.GUID);
+        }
 
         private Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BASELINE_ITEMProjectionFunc()
         {
@@ -97,26 +123,75 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID_BASELINE == LiveBASELINE.GUID);
         }
 
+        private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
+        {
+            if (LivePROGRESS == null)
+                return query => query.Where(x => x.GUID == Guid.Empty);
+            else
+                return query => query.Where(x => x.GUID_PROGRESS == LivePROGRESS.GUID);
+        }
+
         protected override void OnAllEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> ConstructMainViewModelProjection()
+        protected override Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATIONProjection>> ConstructMainViewModelProjection()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.NAME);
+            return query => VARIATIONProjectionQueries.JoinVARIATION_ITEMSOnVARIATIONS(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID)
+                .OrderBy(x => x.NAME));
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATION> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATIONProjection> entities)
         {
             MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
+            MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntity;
             MainViewModel.IsContinueSaveCallBack = BeforeSaveValidation;
+            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
+
+            variationSummaryBackgroundWorker.RunWorkerAsync(entities);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        Dictionary<Guid, VARIATION_ITEMSCollectionViewModelWrapper> variationitemsWrapperCollection = new Dictionary<Guid, VARIATION_ITEMSCollectionViewModelWrapper>();
+
+        private void variationSummaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            IEnumerable<VARIATIONProjection> entities = (IEnumerable<VARIATIONProjection>)e.Argument;
+            if (variationSummaryBackgroundWorker.CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            foreach (var entity in entities)
+            {
+                VARIATION_ITEMSCollectionViewModelWrapper variationitemsCollectionViewModelWrapper = CreateVARIATION_ITEMSViewModelWrapper(entity.VARIATION, entity.GUID, OnVARIATION_ITEMSLoadedAssign);
+                variationitemsWrapperCollection.Add(entity.GUID, variationitemsCollectionViewModelWrapper);
+            }
+        }
+
+        private void OnVARIATION_ITEMSLoadedAssign(IEnumerable<VARIATION_ITEMProjection> projections, object parameter)
+        {
+            Guid variationProjectionGuid = (Guid)parameter;
+            VARIATION_ITEMSCollectionViewModelWrapper viewModelWrapper = variationitemsWrapperCollection.First(x => x.Key == variationProjectionGuid).Value;
+
+            variationitemsWrapperCollection.Remove(variationProjectionGuid);
+            mainThreadDispatcher.BeginInvoke(new Action(() => AssignVariationSummary(viewModelWrapper, variationProjectionGuid, projections)));
+        }
+
+        private void AssignVariationSummary(VARIATION_ITEMSCollectionViewModelWrapper viewModelWrapper, Guid variationProjectionGuid, IEnumerable<VARIATION_ITEMProjection> projections)
+        {
+            VARIATIONProjection projection = MainViewModel.Entities.First(x => x.GUID == variationProjectionGuid);
+            
+            projection.VARIATION_ITEMS = projections;
+            CleanUpVARIATION_ITEMS(viewModelWrapper);
+            RefreshView(true);
+        }
+
         #region CallBacks
-        public bool BeforeSaveValidation(VARIATION entity, bool isNewEntity)
+        public bool BeforeSaveValidation(VARIATIONProjection entity, bool isNewEntity)
         {
             if (LiveBASELINE == null)
                 return false;
@@ -124,30 +199,49 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public void OnBeforeEntitySaved(VARIATION entity)
+        public void ApplyProjectionPropertiesToEntity(VARIATIONProjection projectionEntity, VARIATION entity)
         {
-            entity.GUID_PROJECT = loadPROJECT.GUID;
+            DataUtils.ShallowCopy(entity, projectionEntity.VARIATION);
+            //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
+            if (entity.CREATED.Date.Year == 1)
+                projectionEntity.VARIATION.CREATED = DateTime.Now;
 
-            if (entity.APPROVED != null)
-                entity.GUID_ORIBASELINE = entity.GUID_ORIBASELINE ?? LiveBASELINE.GUID;
+            entity.CREATED = projectionEntity.VARIATION.CREATED;
+        }
+
+        public void OnBeforeEntitySaved(VARIATIONProjection entity)
+        {
+            entity.VARIATION.GUID_PROJECT = loadPROJECT.GUID;
+
+            if (entity.VARIATION.APPROVED != null)
+                entity.VARIATION.GUID_ORIBASELINE = entity.VARIATION.GUID_ORIBASELINE ?? LiveBASELINE.GUID;
             else
-                entity.GUID_ORIBASELINE = null;
+                entity.VARIATION.GUID_ORIBASELINE = null;
+        }
+
+        public void OnEntitiesSavedCallBack(Guid primaryKey, VARIATIONProjection projectionEntity,
+            VARIATION entity, bool isNewEntity)
+        {
+            projectionEntity.GUID = entity.GUID;
+            projectionEntity.VARIATION.GUID = entity.GUID;
         }
         #endregion
 
         #endregion
 
         #region Variation_Item revision
-        private VARIATION_ITEMSCollectionViewModelWrapper variation_itemsViewModelWrapper;
-
-        public VARIATION_ITEMSCollectionViewModelWrapper VARIATION_ITEMSViewModelWrapper(VARIATION loadVARIATION)
+        public VARIATION_ITEMSCollectionViewModelWrapper CreateVARIATION_ITEMSViewModelWrapper(VARIATION loadVARIATION,
+            object OnEntitiesLoadedParameter, Action<IEnumerable<VARIATION_ITEMProjection>, object> OnLoadedAction)
         {
-            if (variation_itemsViewModelWrapper == null && loadPROJECT != null)
+            VARIATION_ITEMSCollectionViewModelWrapper variation_itemsViewModelWrapper = null;
+
+            if (loadPROJECT != null)
             {
                 variation_itemsViewModelWrapper = new VARIATION_ITEMSCollectionViewModelWrapper();
                 variation_itemsViewModelWrapper.SuppressNotification = true;
                 //variation_itemsViewModelWrapper.SetParentViewModel(this);
-                variation_itemsViewModelWrapper.OnEntitiesLoadedCallBack = OnVARIATION_ITEMSLoaded;
+                variation_itemsViewModelWrapper.OnEntitiesLoadedParameterCallBack = () => OnEntitiesLoadedParameter;
+                variation_itemsViewModelWrapper.OnEntitiesLoadedWithParameterCallBack = OnLoadedAction;
                 var baselineSupportParameterObj = variation_itemsViewModelWrapper as ISupportParameter;
                 baselineSupportParameterObj.Parameter = new OptionalEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, loadVARIATION);
             }
@@ -155,7 +249,7 @@ namespace BluePrints.ViewModels
             return variation_itemsViewModelWrapper;
         }
 
-        public void CleanUpVARIATION_ITEMS()
+        public void CleanUpVARIATION_ITEMS(VARIATION_ITEMSCollectionViewModelWrapper variation_itemsViewModelWrapper)
         {
             if (variation_itemsViewModelWrapper != null)
                 variation_itemsViewModelWrapper.CleanUpEntitiesLoader();
@@ -186,6 +280,14 @@ namespace BluePrints.ViewModels
             get
             {
                 return (CollectionViewModel<BASELINE_ITEM, BASELINE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<BASELINE_ITEM>();
+            }
+        }
+
+        public CollectionViewModel<VARIATION_ITEM, VARIATION_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> VARIATION_ITEMSViewModel
+        {
+            get
+            {
+                return (CollectionViewModel<VARIATION_ITEM, VARIATION_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<VARIATION_ITEM>();
             }
         }
 
@@ -220,11 +322,38 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<BASELINE_ITEM> BASELINE_ITEMCollection
+        {
+            get
+            {
+                var collection = GetEntities<BASELINE_ITEM>();
+                return collection;
+            }
+        }
+
         public IEnumerable<PROGRESS> PROGRESSCollection
         {
             get
             {
                 var collection = GetEntities<PROGRESS>();
+                return collection;
+            }
+        }
+
+        public IEnumerable<USER> USERCollection
+        {
+            get
+            {
+                var collection = GetEntities<USER>();
+                return collection;
+            }
+        }
+
+        public IEnumerable<VARIATION_ITEM> VARIATION_ITEMCollection
+        {
+            get
+            {
+                var collection = GetEntities<VARIATION_ITEM>();
                 return collection;
             }
         }
@@ -263,10 +392,13 @@ namespace BluePrints.ViewModels
             if (LiveBASELINE == null)
                 return false;
 
-            if (DisplaySelectedEntity.SUBMITTED != null)
+            if (DisplaySelectedEntity.VARIATION == null)
                 return false;
 
-            if (DisplaySelectedEntity != null && DisplaySelectedEntity.APPROVED != null)
+            if (DisplaySelectedEntity.VARIATION.SUBMITTED != null)
+                return false;
+
+            if (DisplaySelectedEntity != null && DisplaySelectedEntity.VARIATION.APPROVED != null)
                 return false;
 
             return true;
@@ -279,8 +411,8 @@ namespace BluePrints.ViewModels
         /// <param name="projectionEntity">An entity to Submit.</param>
         public void Submit()
         {
-            DisplaySelectedEntity.SUBMITTED = DateTime.Now;
-            DisplaySelectedEntity.SUBMITTEDBY = LoginCredentials.CurrentUserGuid();
+            DisplaySelectedEntity.VARIATION.SUBMITTED = DateTime.Now;
+            DisplaySelectedEntity.VARIATION.SUBMITTEDBY = LoginCredentials.CurrentUserGuid();
             MainViewModel.Save(DisplaySelectedEntity);
         }
 
@@ -294,15 +426,19 @@ namespace BluePrints.ViewModels
             if (MainViewModel == null || DisplaySelectedEntity == null)
                 return false;
 
-            if (DisplaySelectedEntity.SUBMITTED == null)
+            if (DisplaySelectedEntity.VARIATION == null)
                 return false;
 
-            if (DisplaySelectedEntity != null && DisplaySelectedEntity.APPROVED != null)
+            if (DisplaySelectedEntity.VARIATION.SUBMITTED == null)
+                return false;
+
+            if (DisplaySelectedEntity != null && DisplaySelectedEntity.VARIATION.APPROVED != null)
                 return false;
 
             return true;
         }
 
+        VARIATION_ITEMSCollectionViewModelWrapper variation_itemsViewModelWrapperForApproval;
         /// <summary>
         /// Approves an entity.
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the ApproveCommand property that can be used as a binding source in views.
@@ -326,19 +462,18 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            VARIATION_ITEMSViewModelWrapper(DisplaySelectedEntity);
+            variation_itemsViewModelWrapperForApproval = CreateVARIATION_ITEMSViewModelWrapper(DisplaySelectedEntity.VARIATION, null, OnVARIATION_ITEMSLoaded);
         }
 
-        private void OnVARIATION_ITEMSLoaded(IEnumerable<VARIATION_ITEMProjection> projections)
+        private void OnVARIATION_ITEMSLoaded(IEnumerable<VARIATION_ITEMProjection> projections, object parameter)
         {
             mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE(projections.ToList())));
         }
 
         public void ReviseBASELINE(IEnumerable<VARIATION_ITEMProjection> projections)
         {
-            //prevent on loaded call back from invoking this method again
-            CleanUpVARIATION_ITEMS();
-
+            //Must cleanup before doing baseline update to prevent wrapper from refreshing
+            CleanUpVARIATION_ITEMS(variation_itemsViewModelWrapperForApproval);
             var newBASELINE = new BASELINE();
             BASELINE liveBASELINE = LiveBASELINE;
             liveBASELINE.STATUS = BaselineStatus.Superseded;
@@ -351,9 +486,9 @@ namespace BluePrints.ViewModels
             newBASELINE.STATUS = BaselineStatus.Live;
             BASELINEViewModel.Save(newBASELINE);
 
-            DisplaySelectedEntity.APPROVED = DateTime.Now;
-            DisplaySelectedEntity.GUID_ORIBASELINE = liveBASELINE.GUID;
-            DisplaySelectedEntity.GUID_BASELINE = newBASELINE.GUID;
+            DisplaySelectedEntity.VARIATION.APPROVED = DateTime.Now;
+            DisplaySelectedEntity.VARIATION.GUID_ORIBASELINE = liveBASELINE.GUID;
+            DisplaySelectedEntity.VARIATION.GUID_BASELINE = newBASELINE.GUID;
             MainViewModel.Save(DisplaySelectedEntity);
 
             //var newBASELINE_ITEMS = new ObservableCollection<BASELINE_ITEM>();
@@ -371,6 +506,10 @@ namespace BluePrints.ViewModels
                         newBASELINE_ITEM.DC_HOURS = -1 * newBASELINE_ITEM.TOTAL_HOURS;
                     else
                         newBASELINE_ITEM.DC_HOURS = -1 * (newBASELINE_ITEM.TOTAL_HOURS - currentVARIATION_ITEM.TOTAL_EARNED_UNITS);
+
+                    //Save deducted variation units for future viewing
+                    currentVARIATION_ITEM.VARIATION_ITEM.VARIATION_UNITS = newBASELINE_ITEM.DC_HOURS;
+                    VARIATION_ITEMSViewModel.Save(currentVARIATION_ITEM.VARIATION_ITEM);
                 }
                 else if (currentVARIATION_ITEM.VARIATION_ITEM.ACTION == VariationAction.Append)
                 {
@@ -393,7 +532,7 @@ namespace BluePrints.ViewModels
                         loadPROJECT, baseline_itemForInternalNumberGeneration, newBASELINE_ITEM.AREA, newBASELINE_ITEM.DISCIPLINE,
                         newBASELINE_ITEM.DOCTYPE);
 
-                    if (DisplaySelectedEntity.TYPE == VariationType.Internal)
+                    if (DisplaySelectedEntity.VARIATION.TYPE == VariationType.Internal)
                         newBASELINE_ITEM.ESTIMATED_HOURS += currentVARIATION_ITEM.VARIATION_ITEM.VARIATION_UNITS;
                     else
                         newBASELINE_ITEM.DC_HOURS += currentVARIATION_ITEM.VARIATION_ITEM.VARIATION_UNITS;
@@ -423,7 +562,7 @@ namespace BluePrints.ViewModels
 
         public object GetCustomDocumentParameter()
         {
-            return new OptionalEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, DisplaySelectedEntity);
+            return new OptionalEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, DisplaySelectedEntity.VARIATION);
         }
 
         public string GetCustomDocumentTitle()

@@ -24,7 +24,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>131</ApplicationRevision>
+    <ApplicationRevision>132</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -352,6 +352,7 @@
     <Compile Include="Common\Projections\COMMODITY_GROUP_DIRECTProjection.cs" />
     <Compile Include="Common\Projections\BASELINE_ITEMProjection.cs" />
     <Compile Include="Common\Projections\PROGRESS_ITEMProjection.cs" />
+    <Compile Include="Common\Projections\VARIATIONProjection.cs" />
     <Compile Include="Common\Projections\VARIATION_ITEMProjection.cs" />
     <Compile Include="Common\Projections\OptionalEntitiesParameter.cs" />
     <Compile Include="Common\Projections\PROJECT_Dashboard.cs" />
