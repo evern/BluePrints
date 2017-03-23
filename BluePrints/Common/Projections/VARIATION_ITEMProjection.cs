@@ -141,8 +141,7 @@ namespace BluePrints.Common.Projections
 
             var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
             return
-                BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS.ToArray()
-                    .AsQueryable()
+                BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS
                     .Select(x => new VARIATION_ITEMProjection()
                     {
                         GUID = x.GUID,

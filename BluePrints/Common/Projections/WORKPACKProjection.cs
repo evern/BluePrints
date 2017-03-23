@@ -93,7 +93,7 @@ namespace BluePrints.Common.Projections
 
             var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
             return
-                WORKPACKS.ToArray().AsQueryable().Select(x => new WORKPACKProjection()
+                WORKPACKS.Select(x => new WORKPACKProjection()
                 {
                     GUID = x.GUID,
                     WORKPACK = x,

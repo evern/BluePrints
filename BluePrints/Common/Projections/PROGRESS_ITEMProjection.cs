@@ -69,9 +69,7 @@ namespace BluePrints.Common.Projections
 
             var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
             return
-                BASELINE_ITEMJoinRATES.ToArray()
-                    .AsQueryable()
-                    .Select(
+                BASELINE_ITEMJoinRATES.Select(
                         x =>
                             new PROGRESS_ITEMProjection()
                             {
