@@ -1,5 +1,6 @@
 ﻿using BluePrints.Common.ViewModel;
 using BluePrints.Data;
+using DevExpress.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

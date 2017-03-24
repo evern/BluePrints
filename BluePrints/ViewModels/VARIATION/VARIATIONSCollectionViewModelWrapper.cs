@@ -43,6 +43,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected VARIATIONSCollectionViewModelWrapper()
         {
+            DoNotAutoRefresh = true;
             variationSummaryBackgroundWorker = new BackgroundWorker();
             variationSummaryBackgroundWorker.DoWork += variationSummaryBackgroundWorker_DoWork;
             variationSummaryBackgroundWorker.WorkerSupportsCancellation = true;
@@ -71,7 +72,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc, null, true);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
-
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_ITEMS, VARIATION_ITEMProjectionFunc);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -90,26 +91,6 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == ProgressStatus.Live);
         }
 
-        private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
-        }
-
-        private Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
-        }
-
-        private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
-        }
-
-        private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
-        }
-
         private Func<IRepositoryQuery<VARIATION_ITEM>, IQueryable<VARIATION_ITEM>> VARIATION_ITEMProjectionFunc()
         {
             return query => query.Where(x => x.VARIATION.GUID_PROJECT == loadPROJECT.GUID);
@@ -121,14 +102,6 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID == Guid.Empty);
             else
                 return query => query.Where(x => x.GUID_BASELINE == LiveBASELINE.GUID);
-        }
-
-        private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
-        {
-            if (LivePROGRESS == null)
-                return query => query.Where(x => x.GUID == Guid.Empty);
-            else
-                return query => query.Where(x => x.GUID_PROGRESS == LivePROGRESS.GUID);
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
@@ -154,7 +127,7 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        Dictionary<Guid, VARIATION_ITEMSCollectionViewModelWrapper> variationitemsWrapperCollection = new Dictionary<Guid, VARIATION_ITEMSCollectionViewModelWrapper>();
+        //Dictionary<Guid, VARIATION_ITEMSCollectionViewModelWrapper> variationitemsWrapperCollection = new Dictionary<Guid, VARIATION_ITEMSCollectionViewModelWrapper>();
 
         private void variationSummaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -168,25 +141,29 @@ namespace BluePrints.ViewModels
             foreach (var entity in entities)
             {
                 VARIATION_ITEMSCollectionViewModelWrapper variationitemsCollectionViewModelWrapper = CreateVARIATION_ITEMSViewModelWrapper(entity.VARIATION, entity.GUID, OnVARIATION_ITEMSLoadedAssign);
-                variationitemsWrapperCollection.Add(entity.GUID, variationitemsCollectionViewModelWrapper);
+                //variationitemsWrapperCollection.Add(entity.GUID, variationitemsCollectionViewModelWrapper);
             }
         }
 
         private void OnVARIATION_ITEMSLoadedAssign(IEnumerable<VARIATION_ITEMProjection> projections, object parameter)
         {
             Guid variationProjectionGuid = (Guid)parameter;
-            VARIATION_ITEMSCollectionViewModelWrapper viewModelWrapper = variationitemsWrapperCollection.First(x => x.Key == variationProjectionGuid).Value;
+            //VARIATION_ITEMSCollectionViewModelWrapper viewModelWrapper = variationitemsWrapperCollection.ToList().First(x => x.Key == variationProjectionGuid).Value;
 
-            variationitemsWrapperCollection.Remove(variationProjectionGuid);
-            mainThreadDispatcher.BeginInvoke(new Action(() => AssignVariationSummary(viewModelWrapper, variationProjectionGuid, projections)));
+            //variationitemsWrapperCollection.Remove(variationProjectionGuid);
+            mainThreadDispatcher.BeginInvoke(new Action(() => AssignVariationSummary(variationProjectionGuid, projections)));
         }
 
-        private void AssignVariationSummary(VARIATION_ITEMSCollectionViewModelWrapper viewModelWrapper, Guid variationProjectionGuid, IEnumerable<VARIATION_ITEMProjection> projections)
+        private void AssignVariationSummary(Guid variationProjectionGuid, IEnumerable<VARIATION_ITEMProjection> projections)
         {
+            //When refresh button is pushed too fast, MainViewModel may be initialized
+            if (MainViewModel == null)
+                return;
+
             VARIATIONProjection projection = MainViewModel.Entities.First(x => x.GUID == variationProjectionGuid);
             
             projection.VARIATION_ITEMS = projections;
-            CleanUpVARIATION_ITEMS(viewModelWrapper);
+            //CleanUpVARIATION_ITEMS(viewModelWrapper);
             RefreshView(true);
         }
 
@@ -249,16 +226,21 @@ namespace BluePrints.ViewModels
             return variation_itemsViewModelWrapper;
         }
 
-        public void CleanUpVARIATION_ITEMS(VARIATION_ITEMSCollectionViewModelWrapper variation_itemsViewModelWrapper)
-        {
-            if (variation_itemsViewModelWrapper != null)
-                variation_itemsViewModelWrapper.CleanUpEntitiesLoader();
+        //public void CleanUpVARIATION_ITEMS(VARIATION_ITEMSCollectionViewModelWrapper variation_itemsViewModelWrapper)
+        //{
+        //    if (variation_itemsViewModelWrapper != null)
+        //        variation_itemsViewModelWrapper.CleanUpEntitiesLoader();
 
-            variation_itemsViewModelWrapper = null;
-        }
+        //    variation_itemsViewModelWrapper = null;
+        //}
         #endregion
 
         #region View Properties
+
+        public override void FullRefresh()
+        {
+            InitializeAndLoadEntitiesLoaderDescription();
+        }
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
@@ -438,6 +420,7 @@ namespace BluePrints.ViewModels
             return true;
         }
 
+        // Initialize a separate wrapper for approval because summary wrapper is not persistent to avoid multiple OnMessage event from getting picked up for each variation
         VARIATION_ITEMSCollectionViewModelWrapper variation_itemsViewModelWrapperForApproval;
         /// <summary>
         /// Approves an entity.
@@ -473,7 +456,7 @@ namespace BluePrints.ViewModels
         public void ReviseBASELINE(IEnumerable<VARIATION_ITEMProjection> projections)
         {
             //Must cleanup before doing baseline update to prevent wrapper from refreshing
-            CleanUpVARIATION_ITEMS(variation_itemsViewModelWrapperForApproval);
+            //CleanUpVARIATION_ITEMS(variation_itemsViewModelWrapperForApproval);
             var newBASELINE = new BASELINE();
             BASELINE liveBASELINE = LiveBASELINE;
             liveBASELINE.STATUS = BaselineStatus.Superseded;
@@ -503,9 +486,9 @@ namespace BluePrints.ViewModels
                 if (currentVARIATION_ITEM.VARIATION_ITEM.ACTION == VariationAction.Cancel)
                 {
                     if (currentVARIATION_ITEM.TOTAL_EARNED_UNITS == 0)
-                        newBASELINE_ITEM.DC_HOURS = -1 * newBASELINE_ITEM.TOTAL_HOURS;
+                        newBASELINE_ITEM.DC_HOURS += -1 * newBASELINE_ITEM.TOTAL_HOURS;
                     else
-                        newBASELINE_ITEM.DC_HOURS = -1 * (newBASELINE_ITEM.TOTAL_HOURS - currentVARIATION_ITEM.TOTAL_EARNED_UNITS);
+                        newBASELINE_ITEM.DC_HOURS += -1 * (newBASELINE_ITEM.TOTAL_HOURS - currentVARIATION_ITEM.TOTAL_EARNED_UNITS);
 
                     //Save deducted variation units for future viewing
                     currentVARIATION_ITEM.VARIATION_ITEM.VARIATION_UNITS = newBASELINE_ITEM.DC_HOURS;

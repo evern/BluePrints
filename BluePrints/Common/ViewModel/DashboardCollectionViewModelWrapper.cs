@@ -35,6 +35,7 @@ namespace BluePrints.Common.ViewModel
 
         public DashboardViewModelWrapper()
         {
+            DoNotAutoRefresh = true;
             dispatchTimer = new DispatcherTimer();
             dispatchTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
         }
@@ -129,21 +130,6 @@ namespace BluePrints.Common.ViewModel
             foreach (var summaryEntity in MainViewModel.Entities)
                 summaryEntity.RecalculateStats(calculationType == DashboardViewType.Costs);
         }
-
-        #region Auto Refresh
-        private bool isAutoRefresh { get; set; }
-
-        public bool IsAutoRefresh
-        {
-            get { return isAutoRefresh; }
-            set { isAutoRefresh = value; }
-        }
-
-        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender)
-        {
-            return !IsAutoRefresh;
-        }
-        #endregion
 
         #region P6 Affinity
         //public PROGRESS SelectionLivePROGRESS

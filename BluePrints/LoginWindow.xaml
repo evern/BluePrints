@@ -8,7 +8,7 @@
     xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
     xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
-    x:Class="BluePrints.Views.LoginWindow"
+    x:Class="BluePrints.Views.LoginWindow" Topmost="False"
     Height="320" Width="600" WindowStartupLocation="CenterScreen" WindowStyle="None">
     <dxmvvm:Interaction.Behaviors>
         <dx:DXMessageBoxService />

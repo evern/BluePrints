@@ -288,8 +288,8 @@
                                     <DataTemplate>
                                         <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" Increment="1"
                                                       MaskUseAsDisplayFormat="True"
-                                                      MinValue="{Binding RowData.Row.MINUNITS}"
-                                                      IsReadOnly="{Binding RowData.Row.ISLOCKED}" />
+                                                      MinValue="{Binding RowData.Row.MINUNITSFORVALIDATION}"
+                                                      IsReadOnly="{Binding RowData.Row.ISSUBMITTED}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>

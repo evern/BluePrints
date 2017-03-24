@@ -171,18 +171,25 @@ namespace BluePrints.ViewModels
             var getVARIATION_ITEMSFunc =
                 loaderCollection.GetCollectionFunc<VARIATION_ITEM>();
             var getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
-            var submittedDate = loadVARIATION.SUBMITTED;
             var getDELIVERABLES_STATUSESFunc = loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
 
             return
                 query =>
                     VARIATION_ITEMProjectionQuery.JoinRATESAndPROGRESS_ITEMSAndVARIATION_ITEMSOnBASELINE_ITEMS(query,
                         getPROGRESSFunc, getBASELINEFunc, getVARIATIONFunc, getPROGRESS_ITEMSFunc,
-                        getVARIATION_ITEMSFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, submittedDate != null);
+                        getVARIATION_ITEMSFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, loadVARIATION.SUBMITTED != null, loadVARIATION.APPROVED != null);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATION_ITEMProjection> entities)
         {
+            //Self Clean Up After Usage
+            if(OnEntitiesLoadedWithParameterCallBack != null)
+            {
+                object onLoadedParameter = OnEntitiesLoadedParameterCallBack?.Invoke();
+                OnEntitiesLoadedWithParameterCallBack?.Invoke(entities, onLoadedParameter);
+                CleanUpEntitiesLoader();
+            }
+
             MainViewModel.CanFillDownCallBack = CanFillDownCallBack;
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             MainViewModel.ValidateBulkEditCallBack = ValidateBulkEditCallBack;
@@ -202,8 +209,6 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentViewModel(this);
 
             mainThreadDispatcher.BeginInvoke(new Action(() => ShowWORKPACKColumns()));
-            object onLoadedParameter = OnEntitiesLoadedParameterCallBack?.Invoke();
-            OnEntitiesLoadedWithParameterCallBack?.Invoke(entities, onLoadedParameter);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
@@ -485,6 +490,13 @@ namespace BluePrints.ViewModels
             if (projectionEntity.VARIATION_ITEM.ACTION == VariationAction.Add)
                 return;
 
+            VariationAction newAction;
+
+            if (projectionEntity.VARIATION_ITEM.ACTION == VariationAction.Cancel)
+                newAction = VariationAction.NoAction;
+            else
+                newAction = VariationAction.Cancel;
+
             var oldUnits = projectionEntity.VARIATION_ITEM.VARIATION_UNITS;
             projectionEntity.VARIATION_ITEM.VARIATION_UNITS = 0;
 
@@ -499,10 +511,10 @@ namespace BluePrints.ViewModels
             MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity,
                 BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().VARIATION_ITEM)
                 + "."
-                + BindableBase.GetPropertyName(() => new VARIATION_ITEM().ACTION), oldAction, VariationAction.Cancel,
+                + BindableBase.GetPropertyName(() => new VARIATION_ITEM().ACTION), oldAction, newAction,
                 EntityMessageType.Changed);
 
-            projectionEntity.VARIATION_ITEM.ACTION = VariationAction.Cancel;
+            projectionEntity.VARIATION_ITEM.ACTION = newAction;
 
             MainViewModel.Save(projectionEntity);
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();

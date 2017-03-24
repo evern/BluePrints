@@ -1,6 +1,7 @@
 namespace BluePrints.Data
 {
     using Common;
+    using DevExpress.Mvvm;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -28,6 +29,11 @@ namespace BluePrints.Data
         [Required]
         [StringLength(100)]
         public string NAME { get; set; }
+        //public string NAME
+        //{
+        //    get { return GetProperty(() => NAME); }
+        //    set { SetProperty(() => NAME, value); }
+        //}
 
         [StringLength(500)]
         public string COMMENTS { get; set; }

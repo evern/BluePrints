@@ -38,24 +38,28 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                //When variation item is approved minunits will be 0 because there will be no more value to contra
-                if (ISLOCKED)
+                //When variation item is approved minunits will be 0 because there will be no more value to contra in progress
+                if (ISAPPROVED)
                     return VARIATION_ITEM.VARIATION_UNITS;
 
                 if (VARIATION_ITEM.ACTION == VariationAction.Cancel)
+                {
                     return MINUNITS;
+                }
 
                 return VARIATION_ITEM.VARIATION_UNITS;
             }
         }
 
-        public bool ISLOCKED { get; set; }
+        public bool ISSUBMITTED { get; set; }
+
+        public bool ISAPPROVED { get; set; }
 
         public bool ISREADONLY
         {
             get
             {
-                if (ISLOCKED == true)
+                if (ISSUBMITTED == true)
                     return true;
 
                 if (VARIATION_ITEM.ACTION != VariationAction.Add)
@@ -73,14 +77,22 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public decimal MINUNITS
+        public decimal MINUNITSFORVALIDATION
         {
             get
             {
                 //when variation is apporved MINUNITS should not cause a warning
-                if (ISLOCKED)
+                if (ISSUBMITTED)
                     return -100000;
 
+                return MINUNITS;
+            }
+        }
+
+        public decimal MINUNITS
+        {
+            get
+            {
                 if (PROGRESS_ITEMSBeforeReportingDate == null ||
                     BASELINE_ITEMJoinRATE == null || BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS == 0)
                     return 0;
@@ -93,7 +105,7 @@ namespace BluePrints.Common.Projections
 
         public bool CANTOGGLECANCELLATION
         {
-            get { return !ISLOCKED && VARIATION_ITEM.ACTION != VariationAction.Add; }
+            get { return !ISSUBMITTED && VARIATION_ITEM.ACTION != VariationAction.Add; }
         }
 
         public decimal TOTAL_COST
@@ -119,7 +131,7 @@ namespace BluePrints.Common.Projections
         public static IQueryable<VARIATION_ITEMProjection> JoinRATESAndPROGRESS_ITEMSAndVARIATION_ITEMSOnBASELINE_ITEMS(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS, Func<PROGRESS> getPROGRESSFunc, Func<BASELINE> getBASELINEFunc,
             Func<VARIATION> getVARIATIONFunc, Func<IEnumerable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc,
-            Func<IEnumerable<VARIATION_ITEM>> getVARIATION_ITEMSFunc, Func<IEnumerable<RATE>> getRATESFunc, Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc, bool IsLocked)
+            Func<IEnumerable<VARIATION_ITEM>> getVARIATION_ITEMSFunc, Func<IEnumerable<RATE>> getRATESFunc, Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc, bool IsSubmitted, bool IsApproved)
         {
             var BASELINE = getBASELINEFunc();
             var PROGRESS = getPROGRESSFunc();
@@ -167,7 +179,8 @@ namespace BluePrints.Common.Projections
                                     y => y.GUID_ORIBASEITEM == x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL)
                                 .FirstOrDefault(),
                         BASELINE_ITEMJoinRATE = x.BASELINE_ITEMJoinRATE,
-                        ISLOCKED = IsLocked,
+                        ISSUBMITTED = IsSubmitted,
+                        ISAPPROVED = IsApproved,
                         ReportingDataDate = reportingDate,
                         PROGRESS_ITEMS =
                             LoadPROGRESS_ITEMS.Where(

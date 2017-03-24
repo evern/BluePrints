@@ -260,9 +260,12 @@ namespace BluePrints.Data.Helpers
                 compulsoryEntityAssignmentFunc(compulsoryEntity);
             }
 
-            collectionViewModel.OnEntitiesLoadedCallBack = null;
-            collectionViewModel.OnEntitiesLoadedCallBack = OnEntitiesSubsequentLoading;
-            owner.InvokeEntitiesLoaderDescriptionLoading();
+            if(collectionViewModel != null)
+            {
+                collectionViewModel.OnEntitiesLoadedCallBack = null;
+                collectionViewModel.OnEntitiesLoadedCallBack = OnEntitiesSubsequentLoading;
+                owner.InvokeEntitiesLoaderDescriptionLoading();
+            }
         }
 
         private void OnEntitiesSubsequentLoading(IEnumerable<TProjection> loadedEntities)

@@ -176,8 +176,9 @@ namespace BluePrints.Common.ViewModel
 
         protected virtual bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender)
         {
+            return DoNotAutoRefresh;
             //Override this method to check if a single main entity can be refreshed by sending a message
-            return false;
+            //return false;
         }
 
         public virtual void OnAfterCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
@@ -215,7 +216,7 @@ namespace BluePrints.Common.ViewModel
 
         protected virtual void OnMainViewModelRefreshed(IEnumerable<TMainProjectionEntity> refreshedEntities)
         {
-            if (onMessageSender != null && onMessageSender == MainViewModel)
+            if (onMessageSender != null && (onMessageSender == MainViewModel || onMessageSender == this))
                 return;
 
             //entities are confirmed to be loaded here for refresh to work properly on MainViewModel
@@ -284,10 +285,20 @@ namespace BluePrints.Common.ViewModel
             if (MainViewModel == null)
                 return;
 
-            InitializeAndLoadEntitiesLoaderDescription();
+            MainViewModel.Refresh();
+            RefreshView();
         }
 
-        int viewRefreshDelay = 300;
+        private bool doNotAutoRefresh { get; set; }
+
+        public bool DoNotAutoRefresh
+        {
+            get { return doNotAutoRefresh; }
+            set { doNotAutoRefresh = value; }
+        }
+
+        //Delay to make sure entities are fully loaded before refreshing the view
+        int viewRefreshDelay = 500;
         protected void RefreshView(bool forceGridRefresh = false)
         {
             if(!refreshBackgroundWorker.IsBusy)
@@ -297,7 +308,7 @@ namespace BluePrints.Common.ViewModel
         private void refreshBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             bool forceGridRefresh = (bool)e.Argument;
-            //System.Threading.Thread.Sleep(viewRefreshDelay);
+            System.Threading.Thread.Sleep(viewRefreshDelay);
             if (refreshBackgroundWorker.CancellationPending)
             {
                 e.Cancel = true;
@@ -333,7 +344,7 @@ namespace BluePrints.Common.ViewModel
             }
 
             mainThreadDispatcher.BeginInvoke(new Action(() => this.storeViewState()));
-            //System.Threading.Thread.Sleep(viewRefreshDelay);
+            System.Threading.Thread.Sleep(viewRefreshDelay);
         }
 
         protected virtual void storeViewState()
@@ -385,7 +396,9 @@ namespace BluePrints.Common.ViewModel
             IPOCOViewModel viewModel = this as IPOCOViewModel;
             if(viewModel != null)
             {
-                viewModel.RaisePropertiesChanged();
+                this.RaisePropertiesChanged();
+                //this.RaisePropertyChanged(x => x.DisplaySelectedEntity);
+                this.RaisePropertyChanged(x => x.DisplayEntities);
                 if (isForceGridRefresh && ForceGridRefresh != null)
                     ForceGridRefresh();
                 restoreViewState();

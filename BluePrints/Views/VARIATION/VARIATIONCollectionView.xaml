@@ -55,6 +55,9 @@
                             <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
                                                Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                            <dxb:BarCheckItem Content="Auto Refresh"
+                                                  IsChecked="{Binding DataContext.DoNotAutoRefresh, ElementName=userControl, Converter={dxmvvm:BooleanNegationConverter}}"
+                                                  Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />
                             <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}"
                                                LargeGlyph="{dx:DXImage Image=Undo_32x32.png}"
                                                Glyph="{dx:DXImage Image=Undo_16x16.png}" />
