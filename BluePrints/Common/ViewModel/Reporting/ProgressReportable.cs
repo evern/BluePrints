@@ -243,9 +243,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             get { return PROGRESS_ITEMSuptocurrentdate; }
         }
 
-        public decimal VariationProductivity { get; set; }
-        public decimal BaselineProductivity { get; set; }
-        public decimal ActualProductivity { get; set; }
+        //public decimal VariationProductivity { get; set; }
+        //public decimal BaselineProductivity { get; set; }
+        //public decimal ActualProductivity { get; set; }
         public bool isEarnedDataPointsFromP6 { get; set; }
         public bool isPlannedDataPointsFromP6 { get; set; }
         public bool isRemainingDataPointsFromP6 { get; set; }
@@ -331,7 +331,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             get
             {
                 if (BASELINE_ITEMJoinRATE == null || BASELINE_ITEMJoinRATE.BASELINE_ITEM == null ||
-                    BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS == 0)
+                    BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS == 0)
                     return 0;
 
                 return TOTAL_EARNED_UNITS / BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;

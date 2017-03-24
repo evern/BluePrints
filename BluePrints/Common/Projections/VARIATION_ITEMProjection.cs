@@ -51,16 +51,40 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public bool ISSUBMITTED { get; set; }
+        public DateTime? SUBMITTED { get; set; }
 
-        public bool ISAPPROVED { get; set; }
+        public DateTime? APPROVED { get; set; }
+
+        public bool ISSUBMITTED
+        {
+            get { return SUBMITTED != null; }
+        }
+
+        public bool ISAPPROVED
+        {
+            get { return APPROVED != null; }
+        }
 
         public bool ISREADONLY
         {
             get
             {
-                if (ISSUBMITTED == true)
+                if (ISSUBMITTED)
                     return true;
+
+                if (VARIATION_ITEM.ACTION != VariationAction.Add)
+                    return true;
+
+                return false;
+            }
+        }
+
+        public bool ISCANCELLABLE
+        {
+            get
+            {
+                if (ISSUBMITTED || ISAPPROVED)
+                    return false;
 
                 if (VARIATION_ITEM.ACTION != VariationAction.Add)
                     return true;
@@ -131,7 +155,7 @@ namespace BluePrints.Common.Projections
         public static IQueryable<VARIATION_ITEMProjection> JoinRATESAndPROGRESS_ITEMSAndVARIATION_ITEMSOnBASELINE_ITEMS(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS, Func<PROGRESS> getPROGRESSFunc, Func<BASELINE> getBASELINEFunc,
             Func<VARIATION> getVARIATIONFunc, Func<IEnumerable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc,
-            Func<IEnumerable<VARIATION_ITEM>> getVARIATION_ITEMSFunc, Func<IEnumerable<RATE>> getRATESFunc, Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc, bool IsSubmitted, bool IsApproved)
+            Func<IEnumerable<VARIATION_ITEM>> getVARIATION_ITEMSFunc, Func<IEnumerable<RATE>> getRATESFunc, Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc, DateTime? submittedDate, DateTime? approvedDate)
         {
             var BASELINE = getBASELINEFunc();
             var PROGRESS = getPROGRESSFunc();
@@ -179,8 +203,8 @@ namespace BluePrints.Common.Projections
                                     y => y.GUID_ORIBASEITEM == x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL)
                                 .FirstOrDefault(),
                         BASELINE_ITEMJoinRATE = x.BASELINE_ITEMJoinRATE,
-                        ISSUBMITTED = IsSubmitted,
-                        ISAPPROVED = IsApproved,
+                        SUBMITTED = submittedDate,
+                        APPROVED = approvedDate,
                         ReportingDataDate = reportingDate,
                         PROGRESS_ITEMS =
                             LoadPROGRESS_ITEMS.Where(

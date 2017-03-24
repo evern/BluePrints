@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    public class VARIATIONProjection : IHaveGUID
+    public class VARIATIONProjection : BindableBase, IHaveGUID
     {
         public VARIATIONProjection()
         {
@@ -20,7 +20,17 @@ namespace BluePrints.Common.Projections
         [Key]
         public Guid GUID { get; set; }
         public VARIATION VARIATION { get; set; }
-        public IEnumerable<VARIATION_ITEMProjection> VARIATION_ITEMS { get; set; }
+        public IEnumerable<VARIATION_ITEMProjection> VARIATION_ITEMS
+        {
+            get { return GetProperty(() => VARIATION_ITEMS); }
+            set { SetProperty(() => VARIATION_ITEMS, value, OnVARIATION_ITEMSChanged); }
+        }
+
+        void OnVARIATION_ITEMSChanged()
+        {
+            RaisePropertyChanged(() => TOTAL_UNITS);
+            RaisePropertyChanged(() => TOTAL_COSTS);
+        }
 
         public decimal TOTAL_UNITS
         {

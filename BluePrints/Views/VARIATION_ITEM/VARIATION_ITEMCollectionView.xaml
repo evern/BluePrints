@@ -335,7 +335,7 @@
                                     <DataTemplate>
                                         <Button Height="18"
                                                 Command="{Binding DataContext.CancelBASELINE_ITEMCommand, ElementName=userControl}"
-                                                CommandParameter="{Binding RowData.Row}">
+                                                CommandParameter="{Binding RowData.Row}" IsEnabled="{Binding RowData.Row.ISCANCELLABLE}">
                                             <StackPanel Orientation="Horizontal">
                                                 <Image
                                                     Source="{Binding Path=RowData.Row.VARIATION_ITEM.ACTION, Converter={StaticResource VariationActionToImageConverter}}"

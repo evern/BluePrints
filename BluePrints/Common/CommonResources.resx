@@ -261,4 +261,7 @@
   <data name="WORKPACK_ASSIGNMENT_P6ProgressWriteSuccess" xml:space="preserve">
     <value>P6 progress schedule successfully populated</value>
   </data>
+  <data name="DataPointsBuilder_MaxProjectDuration" xml:space="preserve">
+    <value>2</value>
+  </data>
 </root>

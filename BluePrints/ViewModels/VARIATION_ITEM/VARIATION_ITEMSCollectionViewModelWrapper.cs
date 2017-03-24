@@ -37,9 +37,9 @@ namespace BluePrints.ViewModels
         public Action ShowWORKPACKInternalName1;
         public Action ShowWORKPACKInternalName2;
 
-        public Func<object> OnEntitiesLoadedParameterCallBack;
 
         //Used by variation to generate new baseline
+        public Func<object> OnEntitiesLoadedParameterCallBack;
         public Action<IEnumerable<VARIATION_ITEMProjection>, object> OnEntitiesLoadedWithParameterCallBack;
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace BluePrints.ViewModels
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
         {
-            MainViewModel = null;
+            //MainViewModel = null;
             base.CleanUpEntitiesLoader();
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
@@ -177,17 +177,19 @@ namespace BluePrints.ViewModels
                 query =>
                     VARIATION_ITEMProjectionQuery.JoinRATESAndPROGRESS_ITEMSAndVARIATION_ITEMSOnBASELINE_ITEMS(query,
                         getPROGRESSFunc, getBASELINEFunc, getVARIATIONFunc, getPROGRESS_ITEMSFunc,
-                        getVARIATION_ITEMSFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, loadVARIATION.SUBMITTED != null, loadVARIATION.APPROVED != null);
+                        getVARIATION_ITEMSFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, loadVARIATION.SUBMITTED, loadVARIATION.APPROVED);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATION_ITEMProjection> entities)
         {
-            //Self Clean Up After Usage
             if(OnEntitiesLoadedWithParameterCallBack != null)
             {
                 object onLoadedParameter = OnEntitiesLoadedParameterCallBack?.Invoke();
                 OnEntitiesLoadedWithParameterCallBack?.Invoke(entities, onLoadedParameter);
+
+                //Self destruct after entities has been returned
                 CleanUpEntitiesLoader();
+                return;
             }
 
             MainViewModel.CanFillDownCallBack = CanFillDownCallBack;

@@ -223,6 +223,15 @@ namespace BluePrints.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 2.
+        /// </summary>
+        internal static string DataPointsBuilder_MaxProjectDuration {
+            get {
+                return ResourceManager.GetString("DataPointsBuilder_MaxProjectDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CONSTRUCTION.
         /// </summary>
         internal static string DefaultConstructionDepartment {

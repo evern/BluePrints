@@ -90,7 +90,15 @@ namespace BluePrints.Common.ViewModel
 
             void IEntitiesChangeTracker.UnregisterMessageHandler()
             {
-                Messenger.Default.Unregister(this);
+                string s = string.Empty;
+                try
+                {
+                    Messenger.Default.Unregister(this);
+                }
+                catch(Exception e)
+                {
+                    s = e.ToString();
+                }
             }
 
             public TProjection FindLocalProjectionByKey(TPrimaryKey primaryKey)

@@ -154,10 +154,23 @@ namespace BluePrints.Data.Helpers
             return this.Any(x => x.GetProjectionEntityType() == type);
         }
 
+        bool isDestroying { get; set; }
         public void OnDestroy()
         {
-            foreach (var entitiesLoaderDescription in this)
+            if (isDestroying)
+                return;
+
+            isDestroying = true;
+            for(int i = this.Count() - 1; i >= 0; i--)
+            {
+                IEntitiesLoaderDescription entitiesLoaderDescription = this[i];
                 entitiesLoaderDescription.DisposeViewModel();
+                this.Remove(entitiesLoaderDescription);
+                entitiesLoaderDescription = null;
+            }
+            isDestroying = false;
+            //foreach (var entitiesLoaderDescription in this)
+            //    entitiesLoaderDescription.DisposeViewModel();
         }
     }
 

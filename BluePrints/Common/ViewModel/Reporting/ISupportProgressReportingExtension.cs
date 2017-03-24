@@ -1208,11 +1208,12 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 var dateLimit = (DateTime) limitDate;
                 var remainingCountPeriod =
-                    Convert.ToDecimal((dateLimit - firstAlignedWeekEndingDataDate).TotalDays / intervalPeriod.Days);
+                    Convert.ToDecimal((dateLimit - firstAlignedWeekEndingDataDate).Days / intervalPeriod.Days);
+
                 if (remainingCountPeriod <= 0)
-                    unitsPerPeriod = remainingUnits; //needs to be completed immediately
-                else
-                    unitsPerPeriod = remainingUnits / remainingCountPeriod;
+                    remainingCountPeriod = 1;
+
+                unitsPerPeriod = remainingCountPeriod == remainingUnits ? 1 : remainingUnits / remainingCountPeriod;
             }
             else
             {
@@ -1234,19 +1235,17 @@ namespace BluePrints.Common.ViewModel.Reporting
                             remainingCountDataDate.Date <= dates.EndDate.Date))
                 {
                     decimal periodUnits;
+                    
                     if (firstPeriodProRate > 0)
                     {
                         periodUnits = unitsPerPeriod * firstPeriodProRate;
                         firstPeriodProRate = 0;
                     }
-                    else if (remainingUnits < unitsPerPeriod)
-                    {
+                    else if (remainingUnits < unitsPerPeriod + 1) 
+                    //Do units per periods + 1 so that any insignificant amount won't be pushed to the following period (i.e. week)
                         periodUnits = remainingUnits;
-                    }
                     else
-                    {
                         periodUnits = unitsPerPeriod;
-                    }
 
                     var newDataPoint = new ProgressInfo()
                     {
@@ -1276,6 +1275,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                     remainingDataPoints.Add(newDataPoint);
                 }
 
+                //if (remainingUnits > 10000)
+                //    s = string.Empty;
                 remainingCountDataDate = remainingCountDataDate.AddDays(intervalPeriod.Days);
             } while (remainingUnits > 0);
 

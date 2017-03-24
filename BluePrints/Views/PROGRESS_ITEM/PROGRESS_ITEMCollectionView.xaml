@@ -169,7 +169,7 @@
                                                 FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.DC_HOURS"
                                                 Header="DC HOURS" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1"
+                                        <dxe:SpinEditSettings MaskType="Numeric" Mask="n" Increment="1"
                                                               MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>

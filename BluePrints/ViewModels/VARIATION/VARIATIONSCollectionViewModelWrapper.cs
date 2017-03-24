@@ -63,7 +63,7 @@ namespace BluePrints.ViewModels
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
         {
-            MainViewModel = null;
+            //MainViewModel = null;
             base.CleanUpEntitiesLoader();
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
@@ -127,8 +127,6 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        //Dictionary<Guid, VARIATION_ITEMSCollectionViewModelWrapper> variationitemsWrapperCollection = new Dictionary<Guid, VARIATION_ITEMSCollectionViewModelWrapper>();
-
         private void variationSummaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             IEnumerable<VARIATIONProjection> entities = (IEnumerable<VARIATIONProjection>)e.Argument;
@@ -141,29 +139,24 @@ namespace BluePrints.ViewModels
             foreach (var entity in entities)
             {
                 VARIATION_ITEMSCollectionViewModelWrapper variationitemsCollectionViewModelWrapper = CreateVARIATION_ITEMSViewModelWrapper(entity.VARIATION, entity.GUID, OnVARIATION_ITEMSLoadedAssign);
-                //variationitemsWrapperCollection.Add(entity.GUID, variationitemsCollectionViewModelWrapper);
             }
         }
 
         private void OnVARIATION_ITEMSLoadedAssign(IEnumerable<VARIATION_ITEMProjection> projections, object parameter)
         {
             Guid variationProjectionGuid = (Guid)parameter;
-            //VARIATION_ITEMSCollectionViewModelWrapper viewModelWrapper = variationitemsWrapperCollection.ToList().First(x => x.Key == variationProjectionGuid).Value;
-
-            //variationitemsWrapperCollection.Remove(variationProjectionGuid);
             mainThreadDispatcher.BeginInvoke(new Action(() => AssignVariationSummary(variationProjectionGuid, projections)));
         }
 
         private void AssignVariationSummary(Guid variationProjectionGuid, IEnumerable<VARIATION_ITEMProjection> projections)
         {
-            //When refresh button is pushed too fast, MainViewModel may be initialized
+            //When refresh button is pushed too fast, MainViewModel may not be initialized
             if (MainViewModel == null)
                 return;
 
             VARIATIONProjection projection = MainViewModel.Entities.First(x => x.GUID == variationProjectionGuid);
             
             projection.VARIATION_ITEMS = projections;
-            //CleanUpVARIATION_ITEMS(viewModelWrapper);
             RefreshView(true);
         }
 
@@ -236,7 +229,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
-
         public override void FullRefresh()
         {
             InitializeAndLoadEntitiesLoaderDescription();
@@ -396,6 +388,9 @@ namespace BluePrints.ViewModels
             DisplaySelectedEntity.VARIATION.SUBMITTED = DateTime.Now;
             DisplaySelectedEntity.VARIATION.SUBMITTEDBY = LoginCredentials.CurrentUserGuid();
             MainViewModel.Save(DisplaySelectedEntity);
+
+            //Full refresh is required to pick up summary
+            FullRefresh();
         }
 
         /// <summary>
@@ -532,7 +527,8 @@ namespace BluePrints.ViewModels
                 BASELINE_ITEMSViewModel.Save(newBASELINE_ITEM);
             }
 
-            InitializeAndLoadEntitiesLoaderDescription();
+            //Full refresh is required to pick up summary
+            FullRefresh();
         }
         #endregion
 

@@ -280,6 +280,11 @@ namespace BluePrints.Common.ViewModel
             this.RaisePropertyChanged(x => x.DisplaySelectedEntity);
         }
 
+        public virtual bool CanFullRefresh()
+        {
+            return !IsLoading;
+        }
+
         public virtual void FullRefresh()
         {
             if (MainViewModel == null)
@@ -398,7 +403,7 @@ namespace BluePrints.Common.ViewModel
             {
                 this.RaisePropertiesChanged();
                 //this.RaisePropertyChanged(x => x.DisplaySelectedEntity);
-                this.RaisePropertyChanged(x => x.DisplayEntities);
+                //this.RaisePropertyChanged(x => x.DisplayEntities);
                 if (isForceGridRefresh && ForceGridRefresh != null)
                     ForceGridRefresh();
                 restoreViewState();
@@ -455,15 +460,18 @@ namespace BluePrints.Common.ViewModel
         public virtual void CleanUpEntitiesLoader()
         {
             compulsoryLoaders = null;
-            
             if (mainEntityLoaderDescription != null)
+            {
                 mainEntityLoaderDescription.DisposeViewModel();
+                mainEntityLoaderDescription = null;
+                MainViewModel = null;
+            }
 
             if (loaderCollection == null)
                 return;
 
-            foreach (var entityLoaderDescription in loaderCollection)
-                entityLoaderDescription.DisposeViewModel();
+            loaderCollection.OnDestroy();
+            loaderCollection = null;
         }
 
         void IDocumentContent.OnDestroy()
