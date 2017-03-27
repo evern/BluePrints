@@ -31,7 +31,7 @@ namespace BluePrints.Common.Projections
             ReportableObjects = reportableObjects;
             LiveBASELINE = liveBASELINE;
             LivePROGRESS = livePROGRESS;
-            SummaryBuilder = new PROJECTSummaryBuilder(this, PROJECT.WORKPACK, bluePrintsUnitOfWork, p6UnitOfWork);
+            SummaryBuilder = new PROJECTSummaryBuilder(this, PROJECT.WORKPACK, PROJECT.CURRENCYCONVERSION, PROJECT.VARIATION, bluePrintsUnitOfWork, p6UnitOfWork);
         }
     }
 
@@ -92,8 +92,8 @@ namespace BluePrints.Common.Projections
                 var currentPROJECT_Dashboard = new PROJECT_Dashboard()
                 {
                     GUID = localPROJECT.GUID,
-                    PROJECT = localPROJECT,
-                    VARIATIONS = ApprovedVARIATIONSByProject
+                    PROJECT = localPROJECT
+                    //VARIATIONS = ApprovedVARIATIONSByProject
                 };
 
                 currentPROJECT_Dashboard.InitializeBuilder(PROJECTInfos, currentPROJECTLivePROGRESS,
@@ -101,7 +101,7 @@ namespace BluePrints.Common.Projections
                 PROJECTDashboard.Add(currentPROJECT_Dashboard);
             }
 
-            var summaryBackgroundWorker = new BackgroundWorker();
+            BackgroundWorker summaryBackgroundWorker = new BackgroundWorker();
             summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
             summaryBackgroundWorker.WorkerSupportsCancellation = true;
             summaryBackgroundWorker.RunWorkerAsync(new object[] { PROJECTDashboard, raisePropertyChanged});

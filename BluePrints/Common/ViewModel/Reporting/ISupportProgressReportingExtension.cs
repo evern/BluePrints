@@ -31,6 +31,25 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
 
         #region Reportables Parameter Calculation
+
+        public static IEnumerable<VARIATION_ITEMProjection> ConvertVARIATIONITEMProjection(IEnumerable<VARIATION> approvedVariations)
+        {
+            IQueryable<VARIATION> approvedVARIATION = approvedVariations.Where(x => x.APPROVED != null).AsQueryable();
+            List<VARIATION_ITEMProjection> variation_itemProjection = new List<VARIATION_ITEMProjection>();
+            foreach (VARIATION variation in approvedVARIATION)
+            {
+                foreach (VARIATION_ITEM variation_item in variation.VARIATION_ITEM)
+                {
+                    if (variation_item.ACTION != VariationAction.Add && variation_item.ACTION != VariationAction.Append)
+                        continue;
+
+                    variation_itemProjection.Add(new VARIATION_ITEMProjection() { VARIATION_ITEM = variation_item, APPROVED = variation.APPROVED });
+                }
+            }
+
+            return variation_itemProjection;
+        }
+
         /// <summary>
         /// Calculates productivity
         /// </summary>
@@ -144,14 +163,12 @@ namespace BluePrints.Common.ViewModel.Reporting
                 var assignedWorkpack = workpackP6AssignedUnits.Where(x => x.Key == currentWORKPACKGuid)
                     .Select(e => (KeyValuePair<Guid, decimal>?)e).FirstOrDefault();
 
-                decimal workpackAssignmentStartUnit;
+                decimal workpackAssignmentStartUnit = 1;
                 if (assignedWorkpack != null)
                 {
                     workpackAssignmentStartUnit = ((KeyValuePair<Guid, decimal>)assignedWorkpack).Value;
                     workpackP6AssignedUnits.Remove(((KeyValuePair<Guid, decimal>)assignedWorkpack).Key);
                 }
-                else
-                    workpackAssignmentStartUnit = 1;
 
                 reportableObject.WorkpackAssignmentStartUnit = workpackAssignmentStartUnit;
                 //move assignment start unit by total hours for next start unit assignment

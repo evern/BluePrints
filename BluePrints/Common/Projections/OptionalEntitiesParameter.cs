@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
+    /// <summary>
+    /// Supports generating unique id for document id, TEntity must have GUID field
+    /// </summary>
     public class EntitiesParameter<TEntity>
         where TEntity : class
     {

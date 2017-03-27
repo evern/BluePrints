@@ -48,4 +48,18 @@ namespace BluePrints.Common.ViewModel.Reporting
             summaryBuilder.RecalculateStats();
         }
     }
+
+    public class DataPointsBuildingFactory
+    {
+        public void Manufacture(IBuildDataPoints dataPointsBuilder, ReportableObject reportableObject)
+        {
+            dataPointsBuilder.BuildVariationAdjustments(reportableObject);
+            dataPointsBuilder.BuildVariationAdjustments(reportableObject);
+            dataPointsBuilder.BuildPlannedDataPoints(reportableObject, PROJECTSummaryBuilder.AssignmentLoadType.Original);
+            dataPointsBuilder.BuildPlannedDataPoints(reportableObject, PROJECTSummaryBuilder.AssignmentLoadType.Modified);
+            dataPointsBuilder.BuildEarnedDataPoints(reportableObject);
+            dataPointsBuilder.BuildRemainingDataPoints(reportableObject);
+            dataPointsBuilder.BuildCumulativeSummary(reportableObject);
+        }
+    }
 }

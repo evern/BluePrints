@@ -81,12 +81,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         #endregion
 
         public IEnumerable<ReportableObject> ReportableObjects { get; set; }
-        public IEnumerable<RATE> RATES { get; set; }
-        public IEnumerable<VARIATION> VARIATIONS { get; set; }
+        //public IEnumerable<RATE> RATES { get; set; }
+        //public IEnumerable<VARIATION> VARIATIONS { get; set; }
         public BASELINE LiveBASELINE { get; set; }
         public PROGRESS LivePROGRESS { get; set; }
-        public IBluePrintsEntitiesUnitOfWork BluePrintsUnitOfWork { get; set; }
-        public IP6EntitiesUnitOfWork P6UnitOfWork { get; set; }
+        //public IBluePrintsEntitiesUnitOfWork BluePrintsUnitOfWork { get; set; }
+        //public IP6EntitiesUnitOfWork P6UnitOfWork { get; set; }
         public List<WORKPACK> missingExoWorkpacks { get; set; }
 
         public virtual void RecalculateStats(bool isCosts)

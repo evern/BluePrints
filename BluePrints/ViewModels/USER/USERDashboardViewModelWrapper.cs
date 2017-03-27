@@ -27,8 +27,7 @@ namespace BluePrints.ViewModels
     /// Represents the PROJECTS collection view model.
     /// </summary>
     public class USERDashboardViewModelWrapper :
-        DashboardViewModelWrapper<PROJECT, USER_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>,
-        ISupportCustomDocumentTypeNameAndParameter
+        DashboardViewModelWrapper<PROJECT, USER_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROJECT_ITEMSViewModelWrapper as a POCO view model.
@@ -48,12 +47,14 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operation
-
+        USER _loadUSER;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
         protected override void InitializeParameters(object parameter)
         {
+            var USERParameter = (EntitiesParameter<USER>)parameter;
+            _loadUSER = USERParameter.GetEntity();
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
@@ -62,13 +63,21 @@ namespace BluePrints.ViewModels
             base.CleanUpEntitiesLoader();
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddLoaderDescription<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
 
             InvokeEntitiesLoaderDescriptionLoading();
+        }
+
+        private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
+        {
+            return query => query.Where(x => x.STATUS == ProjectStatus.Active);
+        }
+
+        private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        {
+            return query => query.Where(x => x.PROJECT.STATUS == ProjectStatus.Active);
         }
 
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
@@ -81,33 +90,21 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.STATUS == ProgressStatus.Live);
         }
 
-        private Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
-        {
-            return query => query.Where(x => x.APPROVED != null);
-        }
-
         protected override void OnAllEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        //protected override Func<IRepositoryQuery<PROJECT>, IQueryable<USER_Dashboard>>
-        //    ConstructMainViewModelProjection()
-        //{
-        //    var getBASELINESFunc = loaderCollection.GetCollectionFunc<BASELINE>();
-        //    var getPROGRESSESFunc = loaderCollection.GetCollectionFunc<PROGRESS>();
-        //    var getPROGRESS_ITEMSFunc = loaderCollection.GetCollectionFunc<PROGRESS_ITEM>();
-        //    var getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
-        //    var getVARIATIONSFunc = loaderCollection.GetCollectionFunc<VARIATION>();
-        //    var getDELIVERABLES_STATUSESFunc = loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
+        protected override Func<IRepositoryQuery<PROJECT>, IQueryable<USER_Dashboard>>
+            ConstructMainViewModelProjection()
+        {
+            var getDELIVERABLES_STATUSESFunc = loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
 
-        //    return
-        //        query =>
-        //            USER_DashboardQueries.SummarizePROJECTDashboard(query.OrderBy(x => x.NUMBER), getPROGRESSESFunc,
-        //                getPROGRESS_ITEMSFunc, getBASELINESFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, getVARIATIONSFunc,
-        //                () => RaisePropertyChanged());
-        //}
+            return
+                query =>
+                    USER_DashboardQueries.SummarizeUserDashboard(query.Where(x => x.STATUS == ProjectStatus.Active).OrderBy(x => x.NUMBER), getDELIVERABLES_STATUSESFunc, _loadUSER, RaisePropertyChanged);
+        }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<USER_Dashboard> entities)
         {
@@ -135,6 +132,39 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        public IEnumerable<WORKPACK> WORKPACKCollection
+        {
+            get
+            {
+                var collection = GetEntities<WORKPACK>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NAME1).OrderBy(x => x.INTERNAL_NAME2);
+                return collection;
+            }
+        }
+
+        public IEnumerable<PROJECT> PROJECTCollection
+        {
+            get
+            {
+                var collection = GetEntities<PROJECT>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NUMBER);
+                return collection;
+            }
+        }
+
+        public IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection
+        {
+            get
+            {
+                var collection = GetEntities<DELIVERABLES_STATUS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.MAX_PERCENTAGE);
+                return collection;
+            }
+        }
+
         public bool CanEditReport()
         {
             if (DisplaySelectedEntities.Count > 0)
@@ -177,33 +207,8 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "PROJECTDashboardViewModelWrapper"; }
+            get { return "USERDashboardViewModelWrapper"; }
         }
-
-        #endregion
-
-        #region ISupportCustomDocumentTypeNameAndParameter
-
-        public string GetCustomDocumentTypeName()
-        {
-            return "WORKPACKDashboardView";
-        }
-
-        public object GetCustomDocumentParameter()
-        {
-            return DisplaySelectedEntity;
-        }
-
-        public string GetCustomDocumentTitle()
-        {
-            return DisplaySelectedEntity.PROJECT.NUMBER + " - WORKPACKS";
-        }
-
-        public bool IsCustomModeEnabled()
-        {
-            return true;
-        }
-
         #endregion
     }
 }

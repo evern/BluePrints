@@ -13,7 +13,7 @@ using static BluePrints.Data.BluePrintsEntities;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public class ProjectReportableDataPointsBuilder
+    public class ProjectReportableDataPointsBuilder : IBuildDataPoints
     {
         private IEnumerable<TASK> originalBaselineP6Tasks { get; set; }
         private IEnumerable<TASK> modifiedBaselineP6Tasks { get; set; }
@@ -75,6 +75,12 @@ namespace BluePrints.Common.ViewModel.Reporting
             IEnumerable<TASK> p6BaselineTasks = assignmentLoadType == AssignmentLoadType.Original ? this.originalBaselineP6Tasks : this.modifiedBaselineP6Tasks == null ? this.originalBaselineP6Tasks : this.modifiedBaselineP6Tasks;
 
             List<ProgressInfo> progressItemP6DataPoints;
+
+            string s;
+            if (reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM == "P027-22200-MOD-ME-843")
+                s = string.Empty;
+
+
             if (TryBuildP6DataPoints(p6BaselineTasks, reportableObject, DataPointsType.Planned, assignmentLoadType, out progressItemP6DataPoints))
             {
                 reportableObject.isPlannedDataPointsFromP6 = true;
@@ -160,6 +166,10 @@ namespace BluePrints.Common.ViewModel.Reporting
             //when remaining units is more than 0 continue calculation
             if (reportableObject.RemainingUnitsAfterDataDate > 0 && reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK != null)
             {
+                string s;
+                if (reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM == "P027-22200-MOD-ME-843")
+                    s = string.Empty;
+
                 List<ProgressInfo> progressItemP6DataPoints;
                 if (TryBuildP6DataPoints(this.progressP6Tasks, reportableObject, DataPointsType.Remaining, AssignmentLoadType.Modified, out progressItemP6DataPoints))
                 {
@@ -204,6 +214,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public void BuildCumulativeSummary(ReportableObject reportableObject)
+        {
+            ISupportProgressReportingExtensions.GenerateCumulativeSummaryDataPoints(reportableObject, this.firstAlignedDataDate, this.progressInterval);
+        }
+
         /// <summary>
         /// Try to generate non-cumulative data points from P6 TASKs repository
         /// </summary>
@@ -236,11 +251,16 @@ namespace BluePrints.Common.ViewModel.Reporting
                 decimal totalCosts = currentBASELINE_ITEM.TOTAL_COSTS;
                 decimal reportableAssinmentStartUnitForWorkpackAssignmentPairing = reportableObject.WorkpackAssignmentStartUnit;
 
+                decimal currentAssignmentRemainingUnits;
                 //because the earned units portion is generated independent of P6 tasks, we are only interested in what happens after earned units
                 if (processingType == DataPointsType.Remaining)
+                {
                     reportableAssinmentStartUnitForWorkpackAssignmentPairing += reportableObject.TOTAL_EARNED_UNITS;
+                    currentAssignmentRemainingUnits = totalUnits - reportableObject.TOTAL_EARNED_UNITS;
+                }
+                else
+                    currentAssignmentRemainingUnits = totalUnits;
 
-                decimal currentAssignmentRemainingUnits = totalUnits;
                 foreach (WORKPACK_ASSIGNMENT currentWORKPACK_ASSIGNMENT in currentWORKPACK_ASSIGNMENTS)
                 {
                     if (currentAssignmentRemainingUnits == 0)
@@ -326,5 +346,15 @@ namespace BluePrints.Common.ViewModel.Reporting
             return progressInfoConversion;
         } 
         #endregion
+    }
+
+    public interface IBuildDataPoints
+    {
+        void BuildVariationAdjustments(ReportableObject reportableObject);
+        void BuildPlannedDataPoints(ReportableObject reportableObject, AssignmentLoadType assignmentLoadType,
+          IEnumerable<StoredProcedure_DeliverablesDataPoints> dbDataPointsCollection = null);
+        void BuildEarnedDataPoints(ReportableObject reportableObject);
+        void BuildRemainingDataPoints(ReportableObject reportableObject);
+        void BuildCumulativeSummary(ReportableObject reportableObject);
     }
 }

@@ -124,6 +124,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         IBluePrintsEntitiesUnitOfWork BluePrintsUnitOfWork { get; set; }
         IP6EntitiesUnitOfWork P6UnitOfWork { get; set; }
+        IEnumerable<VARIATION> ProjectVariations { get; set; }
         decimal CurrencyConversion { get; set; }
 
         ProjectReportableDataPointsBuilder dataPointsBuilder;
@@ -133,12 +134,13 @@ namespace BluePrints.Common.ViewModel.Reporting
             set { dataPointsBuilder = value; }
         }
 
-        public PROJECTSummaryBuilder(SummarizableObject summaryObject, IEnumerable<WORKPACK> WORKPACKS, IBluePrintsEntitiesUnitOfWork BluePrintsUOW = null, IP6EntitiesUnitOfWork P6UOW = null)
+        public PROJECTSummaryBuilder(SummarizableObject summaryObject, IEnumerable<WORKPACK> WORKPACKS, decimal currencyConversion, IEnumerable<VARIATION> VARIATIONS, IBluePrintsEntitiesUnitOfWork BluePrintsUOW = null, IP6EntitiesUnitOfWork P6UOW = null)
         {
             if (summaryObject.LivePROGRESS == null || summaryObject.LiveBASELINE == null)
                 return;
-            
-            this.CurrencyConversion = summaryObject.LiveBASELINE.PROJECT.CURRENCYCONVERSION;
+
+            this.ProjectVariations = VARIATIONS;
+            this.CurrencyConversion = currencyConversion;
             this.SummaryObject = summaryObject;
             this.SummaryObject.ReportingDataDate = this.SummaryObject.LivePROGRESS.DATA_DATE;
 
@@ -154,9 +156,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             this.SummaryObject.IntervalPeriod = ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(SummaryObject.LivePROGRESS);
             this.SummaryObject.FirstAlignedDataDate = ISupportProgressReportingExtensions.GenerateFirstAlignedDataDate(SummaryObject.LivePROGRESS);
-            IEnumerable<VARIATION_ITEMProjection> variation_itemProjection = GetVARIATION_ITEMProjection();
-            IEnumerable<WORKPACK> currentWORKPACKS = WORKPACKS.ToList();
+            IEnumerable<VARIATION_ITEMProjection> variation_itemProjection = ISupportProgressReportingExtensions.ConvertVARIATIONITEMProjection(VARIATIONS);
 
+            IEnumerable<WORKPACK> currentWORKPACKS = WORKPACKS.ToList();
             DataPointsBuilder = new ProjectReportableDataPointsBuilder(SummaryObject.IntervalPeriod, SummaryObject.ReportingDataDate, SummaryObject.FirstAlignedDataDate, this.CurrencyConversion, variation_itemProjection, currentWORKPACKS, P6UnitOfWork, summaryObject.LiveBASELINE.P6BASELINE_NAME, summaryObject.LiveBASELINE.P6MODBASELINE_NAME, SummaryObject.LivePROGRESS.P6PROGRESS_NAME);
         }
 
@@ -213,7 +215,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <returns>Non cumulative earned progress data points</returns>
         public override void SummarizeEarnedDataPoints()
         {
-            Dictionary<Guid, decimal> workpackAssignedUnits = new Dictionary<Guid, decimal>();
             foreach (ReportableObject reportableObject in SummaryObject.ReportableObjects)
             {
                 DataPointsBuilder.BuildEarnedDataPoints(reportableObject);
@@ -240,27 +241,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             ISupportProgressReportingExtensions.SetWorkpackAssignmentStartUnit(this.SummaryObject.ReportableObjects);
         }
 
-        private IEnumerable<VARIATION_ITEMProjection> GetVARIATION_ITEMProjection()
-        {
-            IQueryable<VARIATION> approvedVARIATION = this.SummaryObject.VARIATIONS.Where(x => x.APPROVED != null).AsQueryable();
-            List<VARIATION_ITEMProjection> variation_itemProjection = new List<VARIATION_ITEMProjection>();
-            foreach(VARIATION variation in approvedVARIATION)
-            {
-                foreach(VARIATION_ITEM variation_item in variation.VARIATION_ITEM)
-                {
-                    if (variation_item.ACTION != VariationAction.Add && variation_item.ACTION != VariationAction.Append)
-                        continue;
-
-                    variation_itemProjection.Add(new VARIATION_ITEMProjection() { VARIATION_ITEM = variation_item, APPROVED = variation.APPROVED });
-                }
-            }
-
-            return variation_itemProjection;
-        }
-
         public override void SummarizeVariationDataPoints()
         {
-            if (this.SummaryObject.VARIATIONS == null)
+            if (ProjectVariations == null || ProjectVariations.Count() == 0)
                 return;
 
             foreach (ReportableObject reportableObject in SummaryObject.ReportableObjects)

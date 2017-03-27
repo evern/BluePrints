@@ -196,12 +196,12 @@ namespace BluePrints.ViewModels
             currentPROJECTSummary = PROJECTSummary.Create();
             currentPROJECTSummary.LiveBASELINE = loadBASELINE;
             currentPROJECTSummary.LivePROGRESS = loadPROGRESS;
-            currentPROJECTSummary.VARIATIONS = loaderCollection.GetCollection<VARIATION>();
+            //currentPROJECTSummary.VARIATIONS = loaderCollection.GetCollection<VARIATION>();
             currentPROJECTSummary.ReportingDataDate = loadPROGRESS.DATA_DATE;
-            currentPROJECTSummary.RATES = loaderCollection.GetCollection<RATE>();
+            //currentPROJECTSummary.RATES = loaderCollection.GetCollection<RATE>();
             currentPROJECTSummary.ReportableObjects = entities;
 
-            var projectSummaryBuilder = new PROJECTSummaryBuilder(currentPROJECTSummary, WORKPACKCollection);
+            var projectSummaryBuilder = new PROJECTSummaryBuilder(currentPROJECTSummary, WORKPACKCollection, loadPROJECT.CURRENCYCONVERSION, VARIATIONCollection);
             var summaryBackgroundWorker = new BackgroundWorker();
             summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
             summaryBackgroundWorker.WorkerSupportsCancellation = true;
@@ -448,6 +448,15 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<WORKPACK>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.INTERNAL_NAME1).OrderBy(x => x.INTERNAL_NAME2);
+                return collection;
+            }
+        }
+
+        public IEnumerable<VARIATION> VARIATIONCollection
+        {
+            get
+            {
+                var collection = GetEntities<VARIATION>();
                 return collection;
             }
         }
@@ -780,7 +789,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            var projectSummaryBuilder = new PROJECTSummaryBuilder(currentPROJECTSummary, WORKPACKCollection);
+            var projectSummaryBuilder = new PROJECTSummaryBuilder(currentPROJECTSummary, WORKPACKCollection, loadPROJECT.CURRENCYCONVERSION, VARIATIONCollection);
             CalculateStatsForReport(projectSummaryBuilder);
             //PROGRESS_ITEMProjection pItem = MainViewModel.Entities.FirstOrDefault(x => x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM == "P027-20000-DSH-ME-835");
             //string s = pItem.ToString();

@@ -81,7 +81,7 @@ namespace BluePrints.Common.ViewModel
                 var newEntity = ViewModelSource.Create(() => new TProjection());
                 var earliestDataDate = entities.Min(x => x.ReportingDataDate);
                 var earliestLiveProgress =
-                    entities.First(x => x.LivePROGRESS.DATA_DATE == earliestDataDate).LivePROGRESS;
+                    entities.First(x => x.ReportingDataDate == earliestDataDate).LivePROGRESS;
                 newEntity.LivePROGRESS = earliestLiveProgress;
                 newEntity.IntervalPeriod =
                     ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(earliestLiveProgress);

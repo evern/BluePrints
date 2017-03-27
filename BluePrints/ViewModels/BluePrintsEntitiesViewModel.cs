@@ -200,6 +200,9 @@ namespace BluePrints.ViewModels
                 bluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("Dashboard",
                     "PROJECTDashboardView", null, ModuleTreeProperty.ProjectdashboardCollectionModuleTreeProperty));
 
+            bluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("User Dashboard",
+                    "USERDashboardView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), ModuleTreeProperty.UserdashboardCollectionModuleTreeProperty));
+
             if (LoginCredentials.hasPermission(PermissionResources.ManageProject))
             {
                 bluePrintsEntitiesModuleDescriptions.Add(BluePrintsEntitiesModuleDescription.Create("Projects",
@@ -445,6 +448,11 @@ namespace BluePrints.ViewModels
             public static TreeViewProperty ProjectdashboardCollectionModuleTreeProperty
             {
                 get { return new TreeViewProperty {Id = "PROJECTDashboardView", ParentId = 0, Image = TreeViewImage}; }
+            }
+
+            public static TreeViewProperty UserdashboardCollectionModuleTreeProperty
+            {
+                get { return new TreeViewProperty { Id = "USERDashboardView", ParentId = 0, Image = TreeViewImage }; }
             }
 
             public static TreeViewProperty ProjectCollectionModuleTreeProperty
