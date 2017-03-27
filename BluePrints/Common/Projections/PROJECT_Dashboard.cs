@@ -31,7 +31,7 @@ namespace BluePrints.Common.Projections
             ReportableObjects = reportableObjects;
             LiveBASELINE = liveBASELINE;
             LivePROGRESS = livePROGRESS;
-            SummaryBuilder = new PROJECTSummaryBuilder(this, bluePrintsUnitOfWork, p6UnitOfWork, PROJECT);
+            SummaryBuilder = new PROJECTSummaryBuilder(this, PROJECT.WORKPACK, bluePrintsUnitOfWork, p6UnitOfWork);
         }
     }
 
@@ -41,7 +41,7 @@ namespace BluePrints.Common.Projections
             Func<IEnumerable<PROGRESS>> getLivePROGRESSESFunc, Func<IEnumerable<PROGRESS_ITEM>> getLivePROGRESS_ITEMFunc,
             Func<IEnumerable<BASELINE>> getLiveBASELINESFunc, Func<IEnumerable<RATE>> getRATESFunc, Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc, 
             Func<IEnumerable<VARIATION>> getApprovedVARIATIONFunc = null, Action raisePropertyChanged = null,
-            Guid? SinglePROJECTGuid = null, Guid? USERGuid = null)
+            Guid? SinglePROJECTGuid = null)
         {
             var LiveBASELINES = getLiveBASELINESFunc();
             var LivePROGRESSES = getLivePROGRESSESFunc();
@@ -79,12 +79,7 @@ namespace BluePrints.Common.Projections
                     getLivePROGRESS_ITEMFunc()
                         .Where(x => x.PROGRESS.GUID == currentPROJECTLivePROGRESS.GUID);
 
-                IEnumerable<BASELINE_ITEM> LiveBASELINE_ITEMS;
-                if (USERGuid == null)
-                    LiveBASELINE_ITEMS = currentPROJECTLiveBASELINE.BASELINE_ITEM;
-                else
-                    LiveBASELINE_ITEMS = currentPROJECTLiveBASELINE.BASELINE_ITEM.Where(x => x.GUID_USER == USERGuid);
-
+                IEnumerable<BASELINE_ITEM> LiveBASELINE_ITEMS = currentPROJECTLiveBASELINE.BASELINE_ITEM;
                 IEnumerable<RATE> RATESByProject = AllRATES.Where(x => x.GUID_PROJECT == localPROJECT.GUID);
                 IEnumerable<VARIATION> ApprovedVARIATIONSByProject =
                     ApprovedVARIATIONS.Where(x => x.GUID_PROJECT == localPROJECT.GUID);

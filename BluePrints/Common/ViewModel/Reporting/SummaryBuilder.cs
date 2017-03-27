@@ -125,7 +125,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         IBluePrintsEntitiesUnitOfWork BluePrintsUnitOfWork { get; set; }
         IP6EntitiesUnitOfWork P6UnitOfWork { get; set; }
         decimal CurrencyConversion { get; set; }
-        Data.PROJECT CURRENTPROJECT = null;
 
         ProjectReportableDataPointsBuilder dataPointsBuilder;
         public ProjectReportableDataPointsBuilder DataPointsBuilder
@@ -134,10 +133,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             set { dataPointsBuilder = value; }
         }
 
-        public PROJECTSummaryBuilder(SummarizableObject summaryObject, IBluePrintsEntitiesUnitOfWork BluePrintsUOW = null, IP6EntitiesUnitOfWork P6UOW = null, Data.PROJECT currentPROJECT = null)
+        public PROJECTSummaryBuilder(SummarizableObject summaryObject, IEnumerable<WORKPACK> WORKPACKS, IBluePrintsEntitiesUnitOfWork BluePrintsUOW = null, IP6EntitiesUnitOfWork P6UOW = null)
         {
-            this.CURRENTPROJECT = currentPROJECT;
-
             if (summaryObject.LivePROGRESS == null || summaryObject.LiveBASELINE == null)
                 return;
             
@@ -158,9 +155,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.SummaryObject.IntervalPeriod = ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(SummaryObject.LivePROGRESS);
             this.SummaryObject.FirstAlignedDataDate = ISupportProgressReportingExtensions.GenerateFirstAlignedDataDate(SummaryObject.LivePROGRESS);
             IEnumerable<VARIATION_ITEMProjection> variation_itemProjection = GetVARIATION_ITEMProjection();
-            IEnumerable<WORKPACK> WORKPACKS = currentPROJECT.WORKPACK.ToList();
+            IEnumerable<WORKPACK> currentWORKPACKS = WORKPACKS.ToList();
 
-            DataPointsBuilder = new ProjectReportableDataPointsBuilder(SummaryObject.IntervalPeriod, SummaryObject.ReportingDataDate, SummaryObject.FirstAlignedDataDate, this.CurrencyConversion, variation_itemProjection, WORKPACKS, P6UnitOfWork, summaryObject.LiveBASELINE.P6BASELINE_NAME, summaryObject.LiveBASELINE.P6MODBASELINE_NAME, SummaryObject.LivePROGRESS.P6PROGRESS_NAME);
+            DataPointsBuilder = new ProjectReportableDataPointsBuilder(SummaryObject.IntervalPeriod, SummaryObject.ReportingDataDate, SummaryObject.FirstAlignedDataDate, this.CurrencyConversion, variation_itemProjection, currentWORKPACKS, P6UnitOfWork, summaryObject.LiveBASELINE.P6BASELINE_NAME, summaryObject.LiveBASELINE.P6MODBASELINE_NAME, SummaryObject.LivePROGRESS.P6PROGRESS_NAME);
         }
 
         public override void GroupAndAccumulateDataPointsByPeriod()

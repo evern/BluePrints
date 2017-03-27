@@ -28,16 +28,16 @@ namespace BluePrints.Common.Projections
 
         public bool IsGetModifiedWORKPACK_ASSIGNMENTS { get; set; }
 
-        public void InitializeBuilder(IEnumerable<ReportableObject> reportableObjects, PROGRESS livePROGRESS,
-            BASELINE liveBASELINE, IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork,
-            IP6EntitiesUnitOfWork p6UnitOfWork)
-        {
-            ReportableObjects = reportableObjects;
-            LiveBASELINE = liveBASELINE;
-            LivePROGRESS = livePROGRESS;
+        //public void InitializeBuilder(IEnumerable<ReportableObject> reportableObjects, PROGRESS livePROGRESS,
+        //    BASELINE liveBASELINE, IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork,
+        //    IP6EntitiesUnitOfWork p6UnitOfWork)
+        //{
+        //    ReportableObjects = reportableObjects;
+        //    LiveBASELINE = liveBASELINE;
+        //    LivePROGRESS = livePROGRESS;
 
-            SummaryBuilder = new PROJECTSummaryBuilder(this, bluePrintsUnitOfWork, p6UnitOfWork);
-        }
+        //    SummaryBuilder = new PROJECTSummaryBuilder(this, bluePrintsUnitOfWork, p6UnitOfWork);
+        //}
 
         public ICollection<WORKPACK_ASSIGNMENT> ObservableWORKPACK_ASSIGNMENTS
         {

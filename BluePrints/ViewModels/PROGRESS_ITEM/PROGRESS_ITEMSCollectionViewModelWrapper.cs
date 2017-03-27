@@ -201,7 +201,7 @@ namespace BluePrints.ViewModels
             currentPROJECTSummary.RATES = loaderCollection.GetCollection<RATE>();
             currentPROJECTSummary.ReportableObjects = entities;
 
-            var projectSummaryBuilder = new PROJECTSummaryBuilder(currentPROJECTSummary);
+            var projectSummaryBuilder = new PROJECTSummaryBuilder(currentPROJECTSummary, WORKPACKCollection);
             var summaryBackgroundWorker = new BackgroundWorker();
             summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
             summaryBackgroundWorker.WorkerSupportsCancellation = true;
@@ -780,7 +780,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            var projectSummaryBuilder = new PROJECTSummaryBuilder(currentPROJECTSummary);
+            var projectSummaryBuilder = new PROJECTSummaryBuilder(currentPROJECTSummary, WORKPACKCollection);
             CalculateStatsForReport(projectSummaryBuilder);
             //PROGRESS_ITEMProjection pItem = MainViewModel.Entities.FirstOrDefault(x => x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM == "P027-20000-DSH-ME-835");
             //string s = pItem.ToString();
