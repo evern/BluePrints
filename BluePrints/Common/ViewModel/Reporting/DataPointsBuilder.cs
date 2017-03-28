@@ -149,7 +149,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public void BuildEarnedDataPoints(ReportableObject reportableObject)
         {
             reportableObject.ReportingDataDate = this.reportingDataDate;
-            IQueryable<ProgressInfo> progressItemEarnedDataPoints = reportableObject.PROGRESS_ITEMSUpToCurrentDate.Select(x => new ProgressInfo()
+            IEnumerable<ProgressInfo> progressItemEarnedDataPoints = reportableObject.PROGRESS_ITEMSUpToCurrentDate.Select(x => new ProgressInfo()
             {
                 BudgetedUnits = reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS,
                 BudgetedCosts = reportableObject.BASELINE_ITEMJoinRATE.TOTAL_COSTS * this.currencyConversion,
@@ -157,7 +157,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 Units = x.EARNED_UNITS,
                 Costs = x.EARNED_UNITS * reportableObject.BASELINE_ITEMJoinRATE.ITEMRATE * this.currencyConversion,
                 ProgressDate = x.EARNED_DATE,
-            }).AsQueryable();
+            }).ToArray();
             reportableObject.NonCumulative_EarnedDataPoints = new ObservableCollection<ProgressInfo>(progressItemEarnedDataPoints);
         }
 
@@ -195,6 +195,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                         return;
 
                     //use end date to limit charting beyond end date
+                    if (reportableObject.NonCumulative_PlannedDataPoints == null || reportableObject.NonCumulative_PlannedDataPoints.Count == 0)
+                        return;
+
                     DateTime endDateToUse = reportableObject.NonCumulative_PlannedDataPoints.Max(x => x.ProgressDate);
                     endDateToUse = endDateToUse.AddDays(progressInterval.Days);
                     //when workpack dates are later than data date use workpack dates but have a prorate value ready for first period

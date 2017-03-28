@@ -41,7 +41,7 @@ namespace BluePrints.Common.Projections
             Func<IEnumerable<PROGRESS>> getLivePROGRESSESFunc, Func<IEnumerable<PROGRESS_ITEM>> getLivePROGRESS_ITEMFunc,
             Func<IEnumerable<BASELINE>> getLiveBASELINESFunc, Func<IEnumerable<RATE>> getRATESFunc, Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc, 
             Func<IEnumerable<VARIATION>> getApprovedVARIATIONFunc = null, Action raisePropertyChanged = null,
-            Guid? SinglePROJECTGuid = null)
+            Guid? SinglePROJECTGuid = null, bool IsShowProgress = true)
         {
             var LiveBASELINES = getLiveBASELINESFunc();
             var LivePROGRESSES = getLivePROGRESSESFunc();
@@ -104,7 +104,7 @@ namespace BluePrints.Common.Projections
             BackgroundWorker summaryBackgroundWorker = new BackgroundWorker();
             summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
             summaryBackgroundWorker.WorkerSupportsCancellation = true;
-            summaryBackgroundWorker.RunWorkerAsync(new object[] { PROJECTDashboard, raisePropertyChanged});
+            summaryBackgroundWorker.RunWorkerAsync(new object[] { PROJECTDashboard, raisePropertyChanged, IsShowProgress });
 
             return PROJECTDashboard.AsQueryable();
         }
@@ -115,10 +115,11 @@ namespace BluePrints.Common.Projections
             var summaryManufacturer = new ProjectSummarizingFactory();
             var projects = (IEnumerable<PROJECT_Dashboard>) argumentObject[0];
             var raisePropertyChanged = (Action) argumentObject[1];
+            bool isShowProgress = (bool)argumentObject[2];
 
             foreach (var project in projects)
             {
-                summaryManufacturer.Manufacture(project.SummaryBuilder);
+                summaryManufacturer.Manufacture(project.SummaryBuilder, isShowProgress);
                 if (((BackgroundWorker) sender).CancellationPending)
                 {
                     e.Cancel = true;

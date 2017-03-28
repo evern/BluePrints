@@ -74,8 +74,7 @@ namespace BluePrints.Common.Projections
                                 GUID = x.GUID,
                                 BASELINE_ITEMJoinRATE = x,
                                 ReportingDataDate = reportingDate,
-                                PROGRESS_ITEMS =
-                                    LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.BASELINE_ITEM.GUID_ORIGINAL)
+                                PROGRESS_ITEMS = LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.BASELINE_ITEM.GUID_ORIGINAL)
                             }).AsQueryable();
         }
     }

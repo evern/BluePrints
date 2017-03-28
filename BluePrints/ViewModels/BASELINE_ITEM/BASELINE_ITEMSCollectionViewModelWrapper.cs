@@ -63,7 +63,6 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operations
-
         private PROJECT _loadProject;
         public BASELINE _LoadBaseline;
         private bool _isQueryForLiveStatus;
@@ -654,7 +653,7 @@ namespace BluePrints.ViewModels
             previewWindow.WindowState = WindowState.Maximized;
             baselineReport.RequestParameters = false;
             baselineReport.CreateDocument(true);
-            previewWindow.ShowDialog();
+            previewWindow.Show();
         }
 
 

@@ -91,7 +91,7 @@
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical"
                                       dxlc:LayoutControl.AllowVerticalSizing="True">
                         <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="USER_DashboardGrid"
-                                         Style="{StaticResource AggregateViewGridTemplate}">
+                                         Style="{StaticResource AggregateViewGridTemplate}" >
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EventToCommand PassEventArgsToCommand="True"
                                                        Command="{Binding DataContext.EditCommand, ElementName=userControl}"
@@ -278,7 +278,7 @@
                             <dxg:GridControl.View>
                                 <common:TableViewEx x:Name="tableView" AllowEditing="False"
                                                Style="{StaticResource DefaultTableViewTemplate}"
-                                               NewItemRowPosition="None" ShowGroupPanel="False">
+                                               NewItemRowPosition="None" >
                                     <common:TableViewEx.RowCellMenuCustomizations>
                                         <dxb:BarButtonItem Content="Workpacks"
                                                            Command="{Binding View.DataContext.EditCommand}"

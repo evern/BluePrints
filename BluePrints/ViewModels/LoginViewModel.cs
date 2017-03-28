@@ -84,6 +84,7 @@ namespace BluePrints.ViewModels
             }
             else
                 SetUsernamePasswordError(authenticationResult);
+
         }
 
         protected IMessageBoxService MessageBoxService

@@ -16,32 +16,42 @@
                                   SelectedItem="{Binding SelectedWORKPACK, Mode=TwoWay}"
                                   ItemsSource="{Binding WORKPACKSItemSource}" />
             </dxlc:LayoutItem>
-            <dxlc:LayoutItem Height="25" Label="Activity:" IsRequired="True">
-                <dxg:LookUpEdit AutoPopulateColumns="False" x:Name="lookupActivity"
+            <dxlc:LayoutGroup Orientation="Horizontal">
+                <dxlc:LayoutItem Height="25" Label="Activity:" IsRequired="True">
+                    <dxg:LookUpEdit AutoPopulateColumns="False" x:Name="lookupActivity"
                                 SelectedItem="{Binding SelectedTASK, Mode=TwoWay}" DisplayMember="Description"
                                 ItemsSource="{Binding TASKSItemSource}">
-                    <dxmvvm:Interaction.Behaviors>
-                        <dxmvvm:EventToCommand EventName="EditValueChanging"
+                        <dxmvvm:Interaction.Behaviors>
+                            <dxmvvm:EventToCommand EventName="EditValueChanging"
                                                Command="{Binding lookupActivity_EditValueChangingCommand}"
                                                PassEventArgsToCommand="True" />
-                    </dxmvvm:Interaction.Behaviors>
-                    <dxg:LookUpEdit.PopupContentTemplate>
-                        <ControlTemplate TargetType="ContentControl">
-                            <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False">
-                                <dxg:GridControl.Columns>
-                                    <dxg:GridColumn IsSmart="True" AllowEditing="False" FieldName="Subject" />
-                                    <dxg:GridColumn IsSmart="True" AllowEditing="False" Width="500"
+                        </dxmvvm:Interaction.Behaviors>
+                        <dxg:LookUpEdit.PopupContentTemplate>
+                            <ControlTemplate TargetType="ContentControl">
+                                <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False">
+                                    <dxg:GridControl.Columns>
+                                        <dxg:GridColumn IsSmart="True" AllowEditing="False" FieldName="Subject" />
+                                        <dxg:GridColumn IsSmart="True" AllowEditing="False" Width="500"
                                                     FieldName="Description" />
-                                </dxg:GridControl.Columns>
-                                <dxg:GridControl.View>
-                                    <dxg:TreeListView Name="treeListView1" TreeDerivationMode="Selfreference"
+                                    </dxg:GridControl.Columns>
+                                    <dxg:GridControl.View>
+                                        <dxg:TreeListView Name="treeListView1" TreeDerivationMode="Selfreference"
                                                       KeyFieldName="task_id" ParentFieldName="ParentId" />
-                                </dxg:GridControl.View>
-                            </dxg:GridControl>
-                        </ControlTemplate>
-                    </dxg:LookUpEdit.PopupContentTemplate>
-                </dxg:LookUpEdit>
-            </dxlc:LayoutItem>
+                                    </dxg:GridControl.View>
+                                </dxg:GridControl>
+                            </ControlTemplate>
+                        </dxg:LookUpEdit.PopupContentTemplate>
+                    </dxg:LookUpEdit>
+                </dxlc:LayoutItem>
+                <dxlc:LayoutItem Width="30">
+                    <Button x:Name="btnMatchAssignment" VerticalAlignment="Top" Width="25" Height="25" ToolTip="Match Selected Assignment"
+                                Padding="0, 0, 0, 0" Command="{Binding MatchSelectedWORKPACK_ASSIGNMENTCommand}">
+                        <StackPanel>
+                            <Image Source="{dx:DXImageOffice2013 Image=Find_32x32.png}" />
+                        </StackPanel>
+                    </Button>
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Orientation="Horizontal">
                 <dxlc:LayoutItem Height="25" Label="From Units:" IsRequired="True">
                     <dxe:TextEdit IsReadOnly="True" EditValue="{Binding AssignmentLowValue, Mode=OneWay}"

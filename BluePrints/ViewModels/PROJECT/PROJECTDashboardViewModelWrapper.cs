@@ -115,7 +115,7 @@ namespace BluePrints.ViewModels
                 query =>
                     PROJECT_DashboardQueries.SummarizePROJECTDashboard(query.OrderBy(x => x.NUMBER), getPROGRESSESFunc,
                         getPROGRESS_ITEMSFunc, getBASELINESFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, getVARIATIONSFunc,
-                        () => RaisePropertyChanged());
+                        () => RaisePropertyChanged(), null, false);
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)

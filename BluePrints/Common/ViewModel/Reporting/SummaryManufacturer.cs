@@ -8,8 +8,24 @@ namespace BluePrints.Common.ViewModel.Reporting
 {
     public class ProjectSummarizingFactory
     {
-        public void Manufacture(PROJECTSummaryBuilder summaryBuilder)
+        public void Manufacture(PROJECTSummaryBuilder summaryBuilder, bool showProgress = true)
         {
+            if(showProgress)
+            {
+                int maxProgress = 0;
+                maxProgress += summaryBuilder.GetSummarizeVariationDataPointsMaxProgress();
+                maxProgress += summaryBuilder.GetSetReportablesP6StartUnitsMaxProgress();
+                maxProgress += summaryBuilder.GetSummarizePlannedDataPointsMaxProgress();
+                maxProgress += summaryBuilder.GetSummarizeModifiedPlannedDataPointsMaxProgress();
+                maxProgress += summaryBuilder.GetSummarizeEarnedDataPointsMaxProgress();
+                maxProgress += summaryBuilder.GetSummarizeBurnedDataPointsMaxProgress();
+                maxProgress += summaryBuilder.GetSummarizeRemainingDataPointsMaxProgress();
+                maxProgress += summaryBuilder.GetSummarizeActualDataPointsMaxProgress();
+                maxProgress += summaryBuilder.GetGroupAndAccumulateDataPointsByPeriodMaxProgress();
+                maxProgress += summaryBuilder.GetGroupAndAccumulateReportableDataPointsByPeriodMaxProgress();
+                LoadingScreenManager.ShowLoadingScreen(maxProgress);
+            }
+
             summaryBuilder.SetReportablesP6StartUnits();
             summaryBuilder.SummarizeVariationDataPoints();
             summaryBuilder.SummarizePlannedDataPoints();
@@ -28,6 +44,13 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         public void Manufacture(PROJECTSummaryBuilder summaryBuilder)
         {
+            int maxProgress = 0;
+            maxProgress += summaryBuilder.GetSetReportablesP6StartUnitsMaxProgress();
+            maxProgress += summaryBuilder.GetSummarizePlannedDataPointsMaxProgress();
+            maxProgress += summaryBuilder.GetGroupAndAccumulateReportableDataPointsByPeriodMaxProgress();
+            maxProgress += summaryBuilder.GetGroupAndAccumulateDataPointsByPeriodMaxProgress();
+
+            LoadingScreenManager.ShowLoadingScreen(maxProgress);
             summaryBuilder.SetReportablesP6StartUnits();
             summaryBuilder.SummarizePlannedDataPoints();
             summaryBuilder.GroupAndAccumulateReportableDataPointsByPeriod();
@@ -39,6 +62,16 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         public void Manufacture(GroupPROJECTReportablesByWorkpackBuilder summaryBuilder)
         {
+            //Not required, too fast
+            //int maxProgress = 0;
+            //maxProgress += summaryBuilder.GetSummarizeVariationDataPointsMaxProgress();
+            //maxProgress += summaryBuilder.GetSummarizePlannedDataPointsMaxProgress();
+            //maxProgress += summaryBuilder.GetSummarizeModifiedPlannedDataPointsMaxProgress();
+            //maxProgress += summaryBuilder.GetSummarizeEarnedDataPointsMaxProgress();
+            //maxProgress += summaryBuilder.GetSummarizeRemainingDataPointsMaxProgress();
+            //maxProgress += summaryBuilder.GetGroupAndAccumulateDataPointsByPeriodMaxProgress();
+
+            //LoadingScreenManager.ShowLoadingScreen(maxProgress);
             summaryBuilder.SummarizeVariationDataPoints();
             summaryBuilder.SummarizePlannedDataPoints();
             summaryBuilder.SummarizeModifiedPlannedDataPoints();

@@ -202,10 +202,13 @@ namespace BluePrints.ViewModels
             currentPROJECTSummary.ReportableObjects = entities;
 
             var projectSummaryBuilder = new PROJECTSummaryBuilder(currentPROJECTSummary, WORKPACKCollection, loadPROJECT.CURRENCYCONVERSION, VARIATIONCollection);
-            var summaryBackgroundWorker = new BackgroundWorker();
-            summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
-            summaryBackgroundWorker.WorkerSupportsCancellation = true;
-            summaryBackgroundWorker.RunWorkerAsync(projectSummaryBuilder);
+            var summaryManufacturer = new Progress_ItemPlannedOnlySummarizingFactory();
+            summaryManufacturer.Manufacture(projectSummaryBuilder);
+            //Remove background worker to avoid refreshing get called twice, effectively cancelling each other when Worker is busy
+            //var summaryBackgroundWorker = new BackgroundWorker();
+            //summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
+            //summaryBackgroundWorker.WorkerSupportsCancellation = true;
+            //summaryBackgroundWorker.RunWorkerAsync(projectSummaryBuilder);
         }
 
         private void summaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -258,24 +261,6 @@ namespace BluePrints.ViewModels
             return false;
         }
 
-        //protected override void OnAfterCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-        //    object sender)
-        //{
-        //    //Map the changes from PROGRESS_ITEM to BASELINE_ITEM so undo/redo operation is valid
-        //    if ((sender != null && PROGRESS_ITEMSCollectionViewModel != null) && changedType == typeof(PROGRESS_ITEM))
-        //    {
-        //        PROGRESS_ITEMProjection mappedEntity = MainViewModel.Entities.FirstOrDefault(x => x.PROGRESS_ITEMCurrent != null && x.PROGRESS_ITEMCurrent.GUID.ToString() == key.ToString());
-        //        if (mappedEntity != null)
-        //            mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(mappedEntity.GUID, EntityMessageType.Changed, this))));
-
-        //        if (MainViewModel != null)
-        //            mainThreadDispatcher.BeginInvoke(new Action(() => this.InitializePROJECTSummary(MainViewModel.Entities)));
-
-        //        return;
-        //    }
-
-        //    base.OnAfterCompulsoryEntitiesChanged(key, changedType, messageType, sender);
-        //}
         #region Collection Call Backs
 
         private bool ExistingRowAddUndoAndSaveCallBack(PROGRESS_ITEMProjection projectionEntity, CellValueChangedEventArgs e)
@@ -800,7 +785,7 @@ namespace BluePrints.ViewModels
             previewWindow.WindowState = WindowState.Maximized;
             progressReport.RequestParameters = false;
             progressReport.CreateDocument(true);
-            previewWindow.ShowDialog();
+            previewWindow.Show();
         }
 
         #endregion

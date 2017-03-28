@@ -427,7 +427,8 @@ namespace BluePrints.Common.ViewModel
 
         public virtual void OnLoaded()
         {
-            PersistentLayoutHelper.TryDeserializeLayout(LayoutSerializationService, ViewName);
+            if(IsLoading)
+                PersistentLayoutHelper.TryDeserializeLayout(LayoutSerializationService, ViewName);
         }
 
         public bool IsLoading

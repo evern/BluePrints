@@ -31,6 +31,8 @@ namespace BluePrints.Views
         {
             this.components = new System.ComponentModel.Container();
             DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
+            DevExpress.XtraGrid.GridFormatRule gridFormatRule1 = new DevExpress.XtraGrid.GridFormatRule();
+            DevExpress.XtraEditors.FormatConditionRuleExpression formatConditionRuleExpression1 = new DevExpress.XtraEditors.FormatConditionRuleExpression();
             DevExpress.XtraScheduler.TimeRuler timeRuler1 = new DevExpress.XtraScheduler.TimeRuler();
             DevExpress.XtraScheduler.TimeRuler timeRuler2 = new DevExpress.XtraScheduler.TimeRuler();
             DevExpress.XtraScheduler.TimeScaleYear timeScaleYear1 = new DevExpress.XtraScheduler.TimeScaleYear();
@@ -165,7 +167,7 @@ namespace BluePrints.Views
             this.gridControlWorkpack.MainView = this.gridViewWorkpack;
             this.gridControlWorkpack.Name = "gridControlWorkpack";
             this.gridControlWorkpack.ShowOnlyPredefinedDetails = true;
-            this.gridControlWorkpack.Size = new System.Drawing.Size(1904, 433);
+            this.gridControlWorkpack.Size = new System.Drawing.Size(1904, 202);
             this.gridControlWorkpack.TabIndex = 1;
             this.gridControlWorkpack.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridViewWorkpack,
@@ -212,6 +214,13 @@ namespace BluePrints.Views
             this.colDISCIPLINE,
             this.colBUDGETED_UNITS,
             this.colASSIGNED_UNITS});
+            gridFormatRule1.ApplyToRow = true;
+            gridFormatRule1.Column = this.colASSIGNED_UNITS;
+            gridFormatRule1.Name = "Mismatched Assigned Units";
+            formatConditionRuleExpression1.Expression = "[ASSIGNED_UNITS] <> [Final_BudgetedUnits]";
+            formatConditionRuleExpression1.PredefinedName = "Red Fill, Red Text";
+            gridFormatRule1.Rule = formatConditionRuleExpression1;
+            this.gridViewWorkpack.FormatRules.Add(gridFormatRule1);
             this.gridViewWorkpack.GridControl = this.gridControlWorkpack;
             this.gridViewWorkpack.GroupSummary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] {
             new DevExpress.XtraGrid.GridGroupSummaryItem(DevExpress.Data.SummaryItemType.Sum, "Workpack_AssignedUnits", null, "(Assigned Units: SUM={0:0.##})"),
@@ -390,7 +399,7 @@ namespace BluePrints.Views
             this.schedulerControl1.OptionsCustomization.AllowDisplayAppointmentDependencyForm = DevExpress.XtraScheduler.AllowDisplayAppointmentDependencyForm.Never;
             this.schedulerControl1.OptionsCustomization.AllowDisplayAppointmentForm = DevExpress.XtraScheduler.AllowDisplayAppointmentForm.Never;
             this.schedulerControl1.OptionsCustomization.AllowInplaceEditor = DevExpress.XtraScheduler.UsedAppointmentType.None;
-            this.schedulerControl1.Size = new System.Drawing.Size(1384, 600);
+            this.schedulerControl1.Size = new System.Drawing.Size(1384, 831);
             this.schedulerControl1.Start = new System.DateTime(2012, 1, 1, 0, 0, 0, 0);
             this.schedulerControl1.TabIndex = 2;
             this.schedulerControl1.Text = "schedulerControl1";
@@ -463,7 +472,7 @@ namespace BluePrints.Views
             this.resourcesTree1.Name = "resourcesTree1";
             this.resourcesTree1.OptionsBehavior.Editable = false;
             this.resourcesTree1.SchedulerControl = this.schedulerControl1;
-            this.resourcesTree1.Size = new System.Drawing.Size(512, 600);
+            this.resourcesTree1.Size = new System.Drawing.Size(512, 831);
             this.resourcesTree1.TabIndex = 3;
             this.resourcesTree1.TreeLevelWidth = 12;
             // 
@@ -524,7 +533,7 @@ namespace BluePrints.Views
             this.splitContainerControl1.Panel2.Controls.Add(this.gridControlWorkpack);
             this.splitContainerControl1.Panel2.Text = "Panel2";
             this.splitContainerControl1.Size = new System.Drawing.Size(1904, 1041);
-            this.splitContainerControl1.SplitterPosition = 600;
+            this.splitContainerControl1.SplitterPosition = 831;
             this.splitContainerControl1.TabIndex = 4;
             this.splitContainerControl1.Text = "splitContainerControl1";
             // 
@@ -537,7 +546,7 @@ namespace BluePrints.Views
             this.splitContainerControl2.Panel1.Text = "Panel1";
             this.splitContainerControl2.Panel2.Controls.Add(this.schedulerControl1);
             this.splitContainerControl2.Panel2.Text = "Panel2";
-            this.splitContainerControl2.Size = new System.Drawing.Size(1904, 600);
+            this.splitContainerControl2.Size = new System.Drawing.Size(1904, 831);
             this.splitContainerControl2.SplitterPosition = 512;
             this.splitContainerControl2.TabIndex = 0;
             this.splitContainerControl2.Text = "splitContainerControl2";

@@ -174,7 +174,11 @@ namespace BluePrints.ViewModels
             DataUtils.ShallowCopy(entity, projectionEntity.VARIATION);
             //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
             if (entity.CREATED.Date.Year == 1)
+            {
                 projectionEntity.VARIATION.CREATED = DateTime.Now;
+                //Although EF convention will generate this but we require it immediately in the view
+                projectionEntity.VARIATION.CREATEDBY = LoginCredentials.CurrentUserGuid();
+            }
 
             entity.CREATED = projectionEntity.VARIATION.CREATED;
         }
@@ -319,6 +323,9 @@ namespace BluePrints.ViewModels
             get
             {
                 var collection = GetEntities<USER>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+
                 return collection;
             }
         }
@@ -350,7 +357,7 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentManagerService.ShowExistingEntityDocument<VARIATION_ITEM, Guid>(this, DisplaySelectedEntity.GUID, string.Empty);
+            DocumentManagerService.ShowExistingEntityDocument<VARIATION_ITEM, Guid>(this, DisplaySelectedEntity.GUID, GetCustomDocumentTitle());
         }
 
         /// <summary>

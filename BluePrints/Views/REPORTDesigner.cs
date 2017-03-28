@@ -91,8 +91,9 @@ namespace BluePrints.Views
 
             // Save the report to a stream.
             var ms = new MemoryStream();
+            currentREPORT.Parameters.Clear();
             currentREPORT.SaveLayout(ms);
-
+            
             // Prepare the stream for reading.
             ms.Position = 0;
             // Insert the report to a database.
@@ -157,6 +158,12 @@ namespace BluePrints.Views
 
         private void barButtonResetTemplate_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
+            if (collectionViewModel.Entities.Count > 0)
+            {
+                currentPROJECT_REPORT = collectionViewModel.Entities.First();
+                collectionViewModel.Delete(currentPROJECT_REPORT);
+            }
+
             if (currentReportType == ReportType.Progress_Report)
                 currentREPORT = new XtraReportPROGRESS_ITEMS();
             else if (currentReportType == ReportType.Baseline_Report)

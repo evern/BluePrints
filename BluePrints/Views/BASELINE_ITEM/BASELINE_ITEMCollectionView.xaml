@@ -91,7 +91,7 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <dxg:GridControl x:Name="gridControl" dx:DXSerializer.SerializationID="BASELINE_ITEMSGrid" 
+                    <dxg:GridControl x:Name="gridControl" dx:DXSerializer.SerializationID="BASELINE_ITEMSGrid"
                                      Style="{StaticResource AggregateViewGridTemplate}" PreviewKeyDown="gridControl_PreviewKeyDown">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="BASELINE_ITEM.GUID_WORKPACK"

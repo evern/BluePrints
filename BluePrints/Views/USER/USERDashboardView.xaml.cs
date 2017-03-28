@@ -78,11 +78,14 @@ namespace BluePrints.Views
             lineSeriesEarned.DisplayName = lineSeriesEarned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             lineSeriesBurned.DisplayName = lineSeriesBurned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             lineSeriesActual.DisplayName = lineSeriesActual.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            lineSeriesRemainingPlanned.DisplayName = lineSeriesRemainingPlanned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             lineSeriesOriginal.ValueDataMember = lineSeriesOriginal.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             lineSeriesPlanned.ValueDataMember = lineSeriesPlanned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             lineSeriesEarned.ValueDataMember = lineSeriesEarned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             lineSeriesBurned.ValueDataMember = lineSeriesBurned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             lineSeriesActual.ValueDataMember = lineSeriesActual.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            lineSeriesRemainingPlanned.ValueDataMember = lineSeriesRemainingPlanned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+
             barSeriesOriginal.DisplayName = barSeriesOriginal.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             barSeriesPlanned.DisplayName = barSeriesPlanned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             barSeriesEarned.DisplayName = barSeriesEarned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);

@@ -13,6 +13,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace BluePrints.ViewModels
 {
@@ -131,7 +132,7 @@ namespace BluePrints.ViewModels
             set
             {
                 selectedTASK = value;
-                this.RaisePropertiesChanged();
+                this.RaisePropertyChanged(x => x.SelectedTASK);
             }
         }
 
@@ -152,19 +153,26 @@ namespace BluePrints.ViewModels
                     else
                         AssignmentHighValue = AssignmentMinValue;
 
-                    this.RaisePropertiesChanged();
+                    this.RaisePropertyChanged(x => x.SelectedWORKPACK);
                 }
             }
         }
 
         private WORKPACK_ASSIGNMENT selectedWORKPACK_ASSIGNMENT { get; set; }
 
-        public WORKPACK_ASSIGNMENT SelectedWORKPACK_ASSIGNMENT
+        public virtual WORKPACK_ASSIGNMENT SelectedWORKPACK_ASSIGNMENT { get; set; }
+
+        public bool CanMatchSelectedWORKPACK_ASSIGNMENT()
         {
-            get { return selectedWORKPACK_ASSIGNMENT; }
-            set { selectedWORKPACK_ASSIGNMENT = value; }
+            return SelectedWORKPACK_ASSIGNMENT != null;
         }
 
+        public void MatchSelectedWORKPACK_ASSIGNMENT()
+        {
+            TASK_AppointmentInfo taskAppointment = TASKSItemSource.FirstOrDefault(x => x.Subject == SelectedWORKPACK_ASSIGNMENT.P6_ACTIVITYID);
+            if (taskAppointment != null)
+                SelectedTASK = taskAppointment;
+        }
         #endregion
 
         #region Item Source

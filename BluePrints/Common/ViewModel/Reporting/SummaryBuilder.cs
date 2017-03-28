@@ -5,7 +5,9 @@ using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
+using BluePrints.View;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -27,15 +29,51 @@ namespace BluePrints.Common.ViewModel.Reporting
             set { summaryObject = value; }
         }
 
+        public int GetAllMaxProgress()
+        {
+            int maxProgress = 0;
+            maxProgress += GetSummarizeVariationDataPointsMaxProgress();
+            maxProgress += GetSetReportablesP6StartUnitsMaxProgress();
+            maxProgress += GetSummarizePlannedDataPointsMaxProgress();
+            maxProgress += GetSummarizeModifiedPlannedDataPointsMaxProgress();
+            maxProgress += GetSummarizeEarnedDataPointsMaxProgress();
+            maxProgress += GetSummarizeBurnedDataPointsMaxProgress();
+            maxProgress += GetSummarizeRemainingDataPointsMaxProgress();
+            maxProgress += GetSummarizeActualDataPointsMaxProgress();
+            maxProgress += GetGroupAndAccumulateDataPointsByPeriodMaxProgress();
+            maxProgress += GetGroupAndAccumulateReportableDataPointsByPeriodMaxProgress();
+
+            return maxProgress;
+        }
+
+        public abstract int GetSummarizeVariationDataPointsMaxProgress();
         public abstract void SummarizeVariationDataPoints();
+
+        public abstract int GetSetReportablesP6StartUnitsMaxProgress();
         public abstract void SetReportablesP6StartUnits();
+
+        public abstract int GetSummarizePlannedDataPointsMaxProgress();
         public abstract void SummarizePlannedDataPoints();
+
+        public abstract int GetSummarizeModifiedPlannedDataPointsMaxProgress();
         public abstract void SummarizeModifiedPlannedDataPoints();
+
+        public abstract int GetSummarizeEarnedDataPointsMaxProgress();
         public abstract void SummarizeEarnedDataPoints();
+
+        public abstract int GetSummarizeBurnedDataPointsMaxProgress();
         public abstract void SummarizeBurnedDataPoints();
+
+        public abstract int GetSummarizeRemainingDataPointsMaxProgress();
         public abstract void SummarizeRemainingDataPoints();
+
+        public abstract int GetSummarizeActualDataPointsMaxProgress();
         public abstract void SummarizeActualDataPoints();
+
+        public abstract int GetGroupAndAccumulateDataPointsByPeriodMaxProgress();
         public abstract void GroupAndAccumulateDataPointsByPeriod();
+
+        public abstract int GetGroupAndAccumulateReportableDataPointsByPeriodMaxProgress();
         public abstract void GroupAndAccumulateReportableDataPointsByPeriod();
 
 
@@ -68,24 +106,55 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.SummaryObject = WORKPACKDashboard;
         }
 
+        public override int GetSummarizeVariationDataPointsMaxProgress()
+        {
+            return 1;
+        }
+
         public override void SummarizeVariationDataPoints()
         {
             SummaryObject.NonCumulative_VariationAdjustments = new ObservableCollection<VariationAdjustment>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_VariationAdjustments));
+            LoadingScreenManager.Progress();
+        }
+
+        public override int GetSummarizePlannedDataPointsMaxProgress()
+        {
+            return 1;
         }
 
         public override void SummarizePlannedDataPoints()
         {
             SummaryObject.NonCumulative_OriginalDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_OriginalDataPoints));
+            LoadingScreenManager.Progress();
+        }
+
+        public override int GetSummarizeModifiedPlannedDataPointsMaxProgress()
+        {
+            return 1;
         }
 
         public override void SummarizeModifiedPlannedDataPoints()
         {
             SummaryObject.NonCumulative_PlannedDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_PlannedDataPoints));
+
+            LoadingScreenManager.Progress();
+        }
+
+        public override int GetSummarizeEarnedDataPointsMaxProgress()
+        {
+            return 1;
         }
 
         public override void SummarizeEarnedDataPoints()
         {
             SummaryObject.NonCumulative_EarnedDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_EarnedDataPoints));
+
+            LoadingScreenManager.Progress();
+        }
+
+        public override int GetSetReportablesP6StartUnitsMaxProgress()
+        {
+            return 0;
         }
 
         public override void SetReportablesP6StartUnits()
@@ -93,9 +162,19 @@ namespace BluePrints.Common.ViewModel.Reporting
             throw new InvalidOperationException("there is no need to set reportables p6 start units from ReportableObjects.");
         }
 
+        public override int GetSummarizeActualDataPointsMaxProgress()
+        {
+            return 0;
+        }
+
         public override void SummarizeActualDataPoints()
         {
             throw new InvalidOperationException("there is no need to roll up non cumulative actual data points from ReportableObjects.");
+        }
+
+        public override int GetSummarizeBurnedDataPointsMaxProgress()
+        {
+            return 0;
         }
 
         public override void SummarizeBurnedDataPoints()
@@ -103,15 +182,32 @@ namespace BluePrints.Common.ViewModel.Reporting
             throw new InvalidOperationException("there is no need to roll up non cumulative burned data points from ReportableObjects.");
         }
 
+        public override int GetSummarizeRemainingDataPointsMaxProgress()
+        {
+            return 2;
+        }
+
         public override void SummarizeRemainingDataPoints()
         {
             SummaryObject.NonCumulative_RemainingCurrentDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_RemainingCurrentDataPoints));
+            LoadingScreenManager.Progress();
             SummaryObject.NonCumulative_RemainingPlannedDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_RemainingPlannedDataPoints));
+            LoadingScreenManager.Progress();
+        }
+
+        public override int GetGroupAndAccumulateDataPointsByPeriodMaxProgress()
+        {
+            return 1;
         }
 
         public override void GroupAndAccumulateDataPointsByPeriod()
         {
             ISupportProgressReportingExtensions.GenerateCumulativeSummaryDataPoints(SummaryObject);
+        }
+
+        public override int GetGroupAndAccumulateReportableDataPointsByPeriodMaxProgress()
+        {
+            return 0;
         }
 
         public override void GroupAndAccumulateReportableDataPointsByPeriod()
@@ -162,9 +258,20 @@ namespace BluePrints.Common.ViewModel.Reporting
             DataPointsBuilder = new ProjectReportableDataPointsBuilder(SummaryObject.IntervalPeriod, SummaryObject.ReportingDataDate, SummaryObject.FirstAlignedDataDate, this.CurrencyConversion, variation_itemProjection, currentWORKPACKS, P6UnitOfWork, summaryObject.LiveBASELINE.P6BASELINE_NAME, summaryObject.LiveBASELINE.P6MODBASELINE_NAME, SummaryObject.LivePROGRESS.P6PROGRESS_NAME);
         }
 
+        public override int GetGroupAndAccumulateDataPointsByPeriodMaxProgress()
+        {
+            return 1;
+        }
+
         public override void GroupAndAccumulateDataPointsByPeriod()
         {
             ISupportProgressReportingExtensions.GenerateCumulativeSummaryDataPoints(this.SummaryObject);
+            LoadingScreenManager.Progress();
+        }
+
+        public override int GetGroupAndAccumulateReportableDataPointsByPeriodMaxProgress()
+        {
+            return SummaryObject.ReportableObjects.Count();
         }
 
         public override void GroupAndAccumulateReportableDataPointsByPeriod()
@@ -172,13 +279,24 @@ namespace BluePrints.Common.ViewModel.Reporting
             foreach (ReportableObject reportableObject in SummaryObject.ReportableObjects)
             {
                 ISupportProgressReportingExtensions.GenerateCumulativeSummaryDataPoints(reportableObject, this.SummaryObject.FirstAlignedDataDate, this.SummaryObject.IntervalPeriod);
+                LoadingScreenManager.Progress();
             }
+        }
+
+        public override int GetSummarizePlannedDataPointsMaxProgress()
+        {
+            return SummaryObject.ReportableObjects.Count();
         }
 
         public override void SummarizePlannedDataPoints()
         {
             //PlannedDataPointsBuilderFromDatabase(CURRENTPROJECT.NUMBER, false);
             SummarizePlannedDataPointsByType(true);
+        }
+
+        public override int GetSummarizeModifiedPlannedDataPointsMaxProgress()
+        {
+            return SummaryObject.ReportableObjects.Count();
         }
 
         public override void SummarizeModifiedPlannedDataPoints()
@@ -201,12 +319,18 @@ namespace BluePrints.Common.ViewModel.Reporting
             foreach (ReportableObject reportableObject in SummaryObject.ReportableObjects)
             {
                 DataPointsBuilder.BuildPlannedDataPoints(reportableObject, assignmentLoadType, DataPointsCollection);
+                LoadingScreenManager.Progress();
             }
 
             if (isOriginal)
                 SummaryObject.NonCumulative_OriginalDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_OriginalDataPoints));
             else
                 SummaryObject.NonCumulative_PlannedDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_PlannedDataPoints));
+        }
+
+        public override int GetSummarizeEarnedDataPointsMaxProgress()
+        {
+            return SummaryObject.ReportableObjects.Count();
         }
 
         /// <summary>
@@ -218,9 +342,15 @@ namespace BluePrints.Common.ViewModel.Reporting
             foreach (ReportableObject reportableObject in SummaryObject.ReportableObjects)
             {
                 DataPointsBuilder.BuildEarnedDataPoints(reportableObject);
+                LoadingScreenManager.Progress();
             }
 
             SummaryObject.NonCumulative_EarnedDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(progressItem => progressItem.NonCumulative_EarnedDataPoints));
+        }
+
+        public override int GetSummarizeRemainingDataPointsMaxProgress()
+        {
+            return SummaryObject.ReportableObjects.Count();
         }
 
         public override void SummarizeRemainingDataPoints()
@@ -229,6 +359,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             foreach (ReportableObject reportableObject in SummaryObject.ReportableObjects)
             {
                 DataPointsBuilder.BuildRemainingDataPoints(reportableObject);
+                LoadingScreenManager.Progress();
             }
 
             //extract all data points out to be used as an overall summary
@@ -236,9 +367,24 @@ namespace BluePrints.Common.ViewModel.Reporting
             SummaryObject.NonCumulative_RemainingCurrentDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(progressItem => progressItem.NonCumulative_RemainingCurrentDataPoints));
         }
 
+        public override int GetSetReportablesP6StartUnitsMaxProgress()
+        {
+            return 1;
+        }
+
         public override void SetReportablesP6StartUnits()
         {
             ISupportProgressReportingExtensions.SetWorkpackAssignmentStartUnit(this.SummaryObject.ReportableObjects);
+            LoadingScreenManager.Progress();
+        }
+
+        public override int GetSummarizeVariationDataPointsMaxProgress()
+        {
+            if (ProjectVariations == null || ProjectVariations.Count() == 0)
+                return 0;
+
+            //progress is iteration of ReportableObjects in ISupportProgressReportingExtensions.SetWorkpackAssignmentStartUnit
+            return SummaryObject.ReportableObjects.Count();
         }
 
         public override void SummarizeVariationDataPoints()
@@ -249,9 +395,15 @@ namespace BluePrints.Common.ViewModel.Reporting
             foreach (ReportableObject reportableObject in SummaryObject.ReportableObjects)
             {
                 DataPointsBuilder.BuildVariationAdjustments(reportableObject);
+                LoadingScreenManager.Progress();
             }
             
             SummaryObject.NonCumulative_VariationAdjustments = new ObservableCollection<VariationAdjustment>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_VariationAdjustments));
+        }
+
+        public override int GetSummarizeBurnedDataPointsMaxProgress()
+        {
+            return 1;
         }
 
         /// <summary>
@@ -320,8 +472,13 @@ namespace BluePrints.Common.ViewModel.Reporting
                 }
             }
 
-            
+            LoadingScreenManager.Progress();
             SummaryObject.NonCumulative_BurnedDataPoints = nonCumulative_BurnedDataPoints;
+        }
+
+        public override int GetSummarizeActualDataPointsMaxProgress()
+        {
+            return 1;
         }
 
         public override void SummarizeActualDataPoints()
@@ -342,9 +499,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                 Quantity = dataPoint.Quantity
             }));
 
+            LoadingScreenManager.Progress();
             SummaryObject.NonCumulative_ActualDataPoints = new ObservableCollection<ProgressInfo>(convertBurnedToActualDataPoints);
         }
-
 
         public enum DataPointsType
         {
