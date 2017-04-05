@@ -25,7 +25,8 @@ namespace BluePrints.Common
 
         public static void CloseLoadingScreen()
         {
-            DXSplashScreen.Close();
+            if(DXSplashScreen.IsActive)
+                DXSplashScreen.Close();
         }
 
         public static void ResetCurrentProgress()

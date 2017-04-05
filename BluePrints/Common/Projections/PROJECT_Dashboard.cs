@@ -4,6 +4,7 @@ using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.P6EntitiesDataModel;
+using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
@@ -14,24 +15,42 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    public class PROJECT_Dashboard : PROJECTSummary, IHaveGUID
+    public class PROJECT_Dashboard : IHaveGUID, IHaveSummary
     {
         public PROJECT_Dashboard()
         {
         }
 
+        public ProgressStats Stats { get; set; }
+        FullSummarizer projectSummarizer { get; set; }
         public Guid GUID { get; set; }
         public PROJECT PROJECT { get; set; }
-        public PROJECTSummaryBuilder SummaryBuilder { get; private set; }
 
-        public void InitializeBuilder(IEnumerable<ReportableObject> reportableObjects, PROGRESS livePROGRESS,
-            BASELINE liveBASELINE, IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork,
-            IP6EntitiesUnitOfWork p6UnitOfWork, PROJECT currentProject = null)
+        public void InitializeSummarizer(IEnumerable<PROGRESS_ITEMProjection> progress_items, BASELINE LiveBASELINE, PROGRESS LivePROGRESS, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENTS, IEnumerable<VARIATION> VARIATIONS, IBluePrintsEntitiesUnitOfWork BluePrintsUOW = null, IP6EntitiesUnitOfWork P6UOW = null, IPrimeroEntitiesUnitOfWork PrimeroUOW = null)
         {
-            ReportableObjects = reportableObjects;
-            LiveBASELINE = liveBASELINE;
-            LivePROGRESS = livePROGRESS;
-            SummaryBuilder = new PROJECTSummaryBuilder(this, PROJECT.WORKPACK, PROJECT.CURRENCYCONVERSION, PROJECT.VARIATION, bluePrintsUnitOfWork, p6UnitOfWork);
+            TimeSpan reportInterval = ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(LivePROGRESS);
+            DateTime firstAlignedDataDate = ISupportProgressReportingExtensions.GenerateFirstAlignedDataDate(LivePROGRESS);
+            List<VariationAdjustment> projectVariationAdjustments = ISupportProgressReportingExtensions.BuildProjectVariationAdjustments(VARIATIONS.AsQueryable(), progress_items.Select(x => x.BASELINE_ITEMJoinRATE));
+
+            FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(PROJECT, LiveBASELINE, LivePROGRESS, WORKPACKS, WORKPACK_ASSIGNMENTS, P6UOW, PrimeroUOW);
+            Stats = new ProjectSummaryStats(progress_items, LivePROGRESS, projectVariationAdjustments);
+            projectSummarizer = new FullSummarizer((ProjectSummaryStats)Stats, fullStatsBuilder);
+        }
+
+        public void BuildStats()
+        {
+            if (projectSummarizer == null)
+                return;
+
+            projectSummarizer.Build();
+        }
+
+        public void RecalculateStats(bool isCosts)
+        {
+            if (projectSummarizer == null)
+                return;
+
+            projectSummarizer.RecalculateStats(isCosts);
         }
     }
 
@@ -61,33 +80,34 @@ namespace BluePrints.Common.Projections
             var bluePrintsUnitOfWork =
                 BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             var p6UnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            var primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
 
             foreach (var localPROJECT in singleOrActivePROJECT)
             {
-                BASELINE currentPROJECTLiveBASELINE =
+                BASELINE liveBASELINE =
                     LiveBASELINES.FirstOrDefault(x => x.GUID_PROJECT == localPROJECT.GUID);
-                if (currentPROJECTLiveBASELINE == null)
+                if (liveBASELINE == null)
                     continue;
 
-                PROGRESS currentPROJECTLivePROGRESS =
+                PROGRESS livePROGRESS =
                     LivePROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == localPROJECT.GUID && x.STATUS == ProgressStatus.Live);
 
-                if (currentPROJECTLivePROGRESS == null)
+                if (livePROGRESS == null)
                     continue;
 
-                IEnumerable<PROGRESS_ITEM> LivePROGRESS_ITEMS =
+                IEnumerable<PROGRESS_ITEM> livePROGRESS_ITEM =
                     getLivePROGRESS_ITEMFunc()
-                        .Where(x => x.PROGRESS.GUID == currentPROJECTLivePROGRESS.GUID);
+                        .Where(x => x.PROGRESS.GUID == livePROGRESS.GUID);
 
-                IEnumerable<BASELINE_ITEM> LiveBASELINE_ITEMS = currentPROJECTLiveBASELINE.BASELINE_ITEM;
+                IEnumerable<BASELINE_ITEM> liveBASELINE_ITEM = liveBASELINE.BASELINE_ITEM;
                 IEnumerable<RATE> RATESByProject = AllRATES.Where(x => x.GUID_PROJECT == localPROJECT.GUID);
                 IEnumerable<VARIATION> ApprovedVARIATIONSByProject =
                     ApprovedVARIATIONS.Where(x => x.GUID_PROJECT == localPROJECT.GUID);
 
-                IEnumerable<ReportableObject> PROJECTInfos =
+                IEnumerable<PROGRESS_ITEMProjection> projectProgress_Items =
                     PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
-                        LiveBASELINE_ITEMS.AsQueryable(), () => currentPROJECTLivePROGRESS, () => currentPROJECTLiveBASELINE,
-                        () => LivePROGRESS_ITEMS, () => RATESByProject, () => getDELIVERABLES_STATUSESFunc()).ToArray().AsEnumerable();
+                        liveBASELINE_ITEM.AsQueryable(), () => livePROGRESS, () => liveBASELINE,
+                        () => livePROGRESS_ITEM, () => RATESByProject, () => getDELIVERABLES_STATUSESFunc()).ToArray().AsEnumerable();
 
                 var currentPROJECT_Dashboard = new PROJECT_Dashboard()
                 {
@@ -96,8 +116,7 @@ namespace BluePrints.Common.Projections
                     //VARIATIONS = ApprovedVARIATIONSByProject
                 };
 
-                currentPROJECT_Dashboard.InitializeBuilder(PROJECTInfos, currentPROJECTLivePROGRESS,
-                    currentPROJECTLiveBASELINE, bluePrintsUnitOfWork, p6UnitOfWork);
+                currentPROJECT_Dashboard.InitializeSummarizer(projectProgress_Items, liveBASELINE, livePROGRESS, localPROJECT.WORKPACK, localPROJECT.WORKPACK.SelectMany(x => x.WORKPACK_ASSIGNMENT), ApprovedVARIATIONSByProject, bluePrintsUnitOfWork, p6UnitOfWork, primeroUnitOfWork);
                 PROJECTDashboard.Add(currentPROJECT_Dashboard);
             }
 
@@ -112,14 +131,15 @@ namespace BluePrints.Common.Projections
         private static void summaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             var argumentObject = (object[]) e.Argument;
-            var summaryManufacturer = new ProjectSummarizingFactory();
             var projects = (IEnumerable<PROJECT_Dashboard>) argumentObject[0];
             var raisePropertyChanged = (Action) argumentObject[1];
             bool isShowProgress = (bool)argumentObject[2];
 
             foreach (var project in projects)
             {
-                summaryManufacturer.Manufacture(project.SummaryBuilder, isShowProgress);
+                project.BuildStats();
+                project.RecalculateStats(false);
+                
                 if (((BackgroundWorker) sender).CancellationPending)
                 {
                     e.Cancel = true;
@@ -137,8 +157,9 @@ namespace BluePrints.Common.Projections
             var bluePrintsUnitOfWork =
                 BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             var p6UnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            var primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
 
-            IEnumerable<ReportableObject> PROJECTInfos =
+            IEnumerable<PROGRESS_ITEMProjection> progress_item =
                 PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
                         getBASELINE_ITEMSFunc().AsQueryable(), getPROGRESSFunc, getBASELINEFunc, getPROGRESS_ITEMSFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc)
                     .ToArray()
@@ -150,11 +171,9 @@ namespace BluePrints.Common.Projections
                 PROJECT = PROJECT
             };
 
-            currentPROJECT_Dashboard.InitializeBuilder(PROJECTInfos, getPROGRESSFunc(), getBASELINEFunc(),
-                bluePrintsUnitOfWork, p6UnitOfWork);
-            var summaryManufacturer = new ProjectSummarizingFactory();
-            summaryManufacturer.Manufacture(currentPROJECT_Dashboard.SummaryBuilder);
-
+            currentPROJECT_Dashboard.InitializeSummarizer(progress_item, getBASELINEFunc(), getPROGRESSFunc(), PROJECT.WORKPACK, PROJECT.WORKPACK.SelectMany(x => x.WORKPACK_ASSIGNMENT), PROJECT.VARIATION, bluePrintsUnitOfWork, p6UnitOfWork, primeroUnitOfWork);
+            currentPROJECT_Dashboard.BuildStats();
+            currentPROJECT_Dashboard.RecalculateStats(false);
             return currentPROJECT_Dashboard;
         }
     }

@@ -10,12 +10,18 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         public DateTime AdjustmentDate { get; set; }
         public decimal AdjustmentUnits { get; set; }
-        public decimal AdjustmentRate { get; set; }
-        public Guid BaselineItemGuid { get; set; }
+        public decimal? AdjustmentRate { get; set; }
+
+        public readonly Guid DeliverableOriginalGuid;
+
+        public VariationAdjustment(Guid deliverableOriginalGuid)
+        {
+            DeliverableOriginalGuid = deliverableOriginalGuid;
+        }
 
         public decimal AdjustmentNativeCosts
         {
-            get { return AdjustmentUnits * AdjustmentRate; }
+            get { return AdjustmentUnits * AdjustmentRate == null ? 0 : (decimal)AdjustmentRate; }
         }
 
         public decimal AdjustmentCumulativeCosts { get; set; }

@@ -26,7 +26,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>150</ApplicationRevision>
+    <ApplicationRevision>154</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -203,7 +203,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Xpf.Themes.Office2016Colorful.v16.2, Version=16.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="DevExpress.Xpf.Themes.Office2016White.v16.2, Version=16.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -391,11 +391,10 @@
     <Compile Include="Common\ViewModel\ISupportCustomDocumentTypeNameAndParameter.cs" />
     <Compile Include="Common\ViewModel\ISupportViewRestoration.cs" />
     <Compile Include="Common\ViewModel\RangeObservableCollection.cs" />
+    <Compile Include="Common\ViewModel\Reporting\Classes.cs" />
     <Compile Include="Common\ViewModel\Reporting\DataPointsBuilder.cs" />
     <Compile Include="Common\ViewModel\Reporting\ISupportProgressReportingExtension.cs" />
-    <Compile Include="Common\ViewModel\Reporting\ISupportSummaryCalculation.cs" />
     <Compile Include="Common\ViewModel\Reporting\SummaryBuilder.cs" />
-    <Compile Include="Common\ViewModel\Reporting\SummaryManufacturer.cs" />
     <Compile Include="Common\Attributes\ProjectionPropertyAttribute.cs" />
     <Compile Include="Common\ViewModel\Settings\XMLSettings.cs" />
     <Compile Include="Common\ViewRestoreUserControl.cs" />
@@ -531,7 +530,6 @@
     <Compile Include="Common\ViewModel\Filtering\IFilterTreeModelPageSpecificSettings.cs" />
     <Compile Include="Common\ViewModel\Filtering\ISupportFiltering.cs" />
     <Compile Include="Common\ViewModel\Filtering\TreeViewSelectedItemBehavior.cs" />
-    <Compile Include="Common\ViewModel\Reporting\ISupportProgressReporting.cs" />
     <Compile Include="Common\ViewModel\Reporting\Period.cs" />
     <Compile Include="Common\ViewModel\Reporting\ProgressInfo.cs" />
     <Compile Include="Common\ViewModel\Reporting\ProgressReportable.cs" />

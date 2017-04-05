@@ -20,6 +20,14 @@ namespace BluePrints.Common.Projections
             VARIATION_ITEM.ACTION = VariationAction.NoAction;
         }
 
+        public VARIATION_ITEMProjection(DateTime reportingDataDate)
+            : base(reportingDataDate)
+        {
+            VARIATION_ITEM = new VARIATION_ITEM();
+            BASELINE_ITEMJoinRATE = new BASELINE_ITEMProjection();
+            VARIATION_ITEM.ACTION = VariationAction.NoAction;
+        }
+
         private VARIATION_ITEM variation_item { get; set; }
 
         public VARIATION_ITEM VARIATION_ITEM
@@ -195,7 +203,7 @@ namespace BluePrints.Common.Projections
             var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
             return
                 BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS.ToArray()
-                    .Select(x => new VARIATION_ITEMProjection()
+                    .Select(x => new VARIATION_ITEMProjection(reportingDate)
                     {
                         GUID = x.GUID,
                         VARIATION_ITEM =
@@ -205,7 +213,6 @@ namespace BluePrints.Common.Projections
                         BASELINE_ITEMJoinRATE = x.BASELINE_ITEMJoinRATE,
                         SUBMITTED = submittedDate,
                         APPROVED = approvedDate,
-                        ReportingDataDate = reportingDate,
                         PROGRESS_ITEMS =
                             LoadPROGRESS_ITEMS.Where(
                                     y => y.GUID_ORIBASEITEM == x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL)

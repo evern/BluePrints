@@ -85,37 +85,40 @@ namespace BluePrints.Reports
                 "ReportableObjects.Summary_CumulativeOriginal." + reportBy + "Percentage", "{0:0.00%}"));
 
             xrDataCumulativeEarnedUOM.DataBindings.Add(new XRBinding("Text", objectDataSource1,
-                "ReportableObjects.Summary_CumulativeEarned.Units", formatString));
+                "ReportableObjects.Summary_CumulativeEarned." + strReplaceTo, formatString));
+
             xrDataCumulativeEarnedPercentage.DataBindings.Add(new XRBinding("Text", objectDataSource1,
                 "ReportableObjects.Summary_CumulativeEarned." + reportBy + "Percentage", "{0:0.00%}"));
 
             xrDataPeriodPlannedUOM.DataBindings.Add(new XRBinding("Text", objectDataSource1,
-                "ReportableObjects.Summary_PeriodPlanned.Units", formatString));
+                "ReportableObjects.Summary_PeriodPlanned." + strReplaceTo, formatString));
+
             xrDataPeriodPlannedPercentage.DataBindings.Add(new XRBinding("Text", objectDataSource1,
                 "ReportableObjects.Summary_PeriodPlanned." + reportBy + "Percentage", "{0:0.00%}"));
 
             xrDataPeriodCurrentUOM.DataBindings.Add(new XRBinding("Text", objectDataSource1,
-                "ReportableObjects.Summary_PeriodEarned.Units", formatString));
+                "ReportableObjects.Summary_PeriodEarned." + strReplaceTo, formatString));
+
             xrDataPeriodCurrentPercentage.DataBindings.Add(new XRBinding("Text", objectDataSource1,
                 "ReportableObjects.Summary_PeriodEarned." + reportBy + "Percentage", "{0:0.00%}"));
 
-            xrChart1.Series["Planned"].ValueDataMembersSerializable = "Summary_CumulativePlannedDataPoints." +
+            xrChart1.Series["Planned"].ValueDataMembersSerializable = "Stats.Current.CumulativeDataPoints." +
                                                                            reportBy + "Percentage";
-            xrChart1.Series["Earned"].ValueDataMembersSerializable = "Summary_CumulativeEarnedDataPoints." +
+            xrChart1.Series["Earned"].ValueDataMembersSerializable = "Stats.Earned.CumulativeDataPoints." +
                                                                           reportBy + "Percentage";
-            xrChart1.Series["Burned"].ValueDataMembersSerializable = "Summary_CumulativeBurnedDataPoints." +
+            xrChart1.Series["Burned"].ValueDataMembersSerializable = "Stats.Burned.CumulativeDataPoints." +
                                                                           reportBy + "Percentage";
             xrChart1.Series["Remaining"].ValueDataMembersSerializable =
-                "Summary_CumulativeRemainingPlannedDataPoints." + reportBy + "Percentage";
+                "Stats.Remaining.CumulativeDataPoints." + reportBy + "Percentage";
 
-            xrChart1.Series["Period Planned"].ValueDataMembersSerializable = "Summary_PeriodPlannedDataPoints." +
+            xrChart1.Series["Period Planned"].ValueDataMembersSerializable = "Stats.Current.DataPoints." +
                                                                                   reportBy;
-            xrChart1.Series["Period Earned"].ValueDataMembersSerializable = "Summary_PeriodEarnedDataPoints." +
+            xrChart1.Series["Period Earned"].ValueDataMembersSerializable = "Stats.Earned.DataPoints." +
                                                                                  reportBy;
-            xrChart1.Series["Period Burned"].ValueDataMembersSerializable = "Summary_PeriodBurnedDataPoints." +
+            xrChart1.Series["Period Burned"].ValueDataMembersSerializable = "Stats.Burned.DataPoints." +
                                                                                  reportBy;
             xrChart1.Series["Period Remaining"].ValueDataMembersSerializable =
-                "Summary_PeriodRemainingPlannedDataPoints." + reportBy;
+                "Stats.Remaining.DataPoints." + reportBy;
 
             //labels
             xrLblCumulativeEarnedUOM.Text = xrLblCumulativeEarnedUOM.Text.Replace(strReplaceFrom, strReplaceTo);
@@ -152,14 +155,14 @@ namespace BluePrints.Reports
                 SummaryPeriodEarnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
         }
 
-        private SummarizableObject ReportData { get; set; }
+        private SummaryStats ReportData { get; set; }
 
-        public void AssignProperties(SummarizableObject reportData, string title)
+        public void AssignProperties(SummaryStats reportData, DateTime reportingDataDate, string title)
         {
             ReportData = reportData;
             objectDataSource1.DataSource = ReportData;
             title1.Value = title;
-            datadate1.Value = ReportData.ReportingDataDate;
+            datadate1.Value = reportingDataDate;
         }
 
         private void rptProgressItem_BeforePrint(object sender, System.Drawing.Printing.PrintEventArgs e)

@@ -20,501 +20,291 @@ using static BluePrints.Data.BluePrintsEntities;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public abstract class SummaryBuilder
+    public abstract class StatsSummarizer
     {
-        SummarizableObject summaryObject;
-        public SummarizableObject SummaryObject
+        ProgressStats summaryObject;
+        public ProgressStats SummaryStats
         {
             get { return summaryObject; }
             set { summaryObject = value; }
         }
 
-        public int GetAllMaxProgress()
+        public virtual void Build(bool showLoadingScreen = true, bool isCosts = false)
+        {
+            if(showLoadingScreen)
+                LoadingScreenManager.ShowLoadingScreen(GetAllMaxProgress());
+
+            SetP6Parameters();
+            SetBudgetDataPoints();
+            SetCurrentDataPoints();
+            SetEarnedDataPoints();
+            SetRemainingDataPoints();
+            Summarize();
+            LoadingScreenManager.CloseLoadingScreen();
+        }
+
+        protected int GetAllMaxProgress()
         {
             int maxProgress = 0;
-            maxProgress += GetSummarizeVariationDataPointsMaxProgress();
-            maxProgress += GetSetReportablesP6StartUnitsMaxProgress();
-            maxProgress += GetSummarizePlannedDataPointsMaxProgress();
-            maxProgress += GetSummarizeModifiedPlannedDataPointsMaxProgress();
-            maxProgress += GetSummarizeEarnedDataPointsMaxProgress();
-            maxProgress += GetSummarizeBurnedDataPointsMaxProgress();
-            maxProgress += GetSummarizeRemainingDataPointsMaxProgress();
-            maxProgress += GetSummarizeActualDataPointsMaxProgress();
-            maxProgress += GetGroupAndAccumulateDataPointsByPeriodMaxProgress();
-            maxProgress += GetGroupAndAccumulateReportableDataPointsByPeriodMaxProgress();
+            maxProgress += SetP6ParametersProgress();
+            maxProgress += SetBudgetDataPointsProgress();
+            maxProgress += SetCurrentDataPointsProgress();
+            maxProgress += SetEarnedDataPointsProgress();
+            maxProgress += SetRemainingDataPointsProgress();
 
             return maxProgress;
         }
 
-        public abstract int GetSummarizeVariationDataPointsMaxProgress();
-        public abstract void SummarizeVariationDataPoints();
+        public abstract int SetP6ParametersProgress();
+        public abstract void SetP6Parameters();
 
-        public abstract int GetSetReportablesP6StartUnitsMaxProgress();
-        public abstract void SetReportablesP6StartUnits();
+        public abstract int SetBudgetDataPointsProgress();
+        public abstract void SetBudgetDataPoints();
 
-        public abstract int GetSummarizePlannedDataPointsMaxProgress();
-        public abstract void SummarizePlannedDataPoints();
+        public abstract int SetCurrentDataPointsProgress();
+        public abstract void SetCurrentDataPoints();
 
-        public abstract int GetSummarizeModifiedPlannedDataPointsMaxProgress();
-        public abstract void SummarizeModifiedPlannedDataPoints();
+        public abstract int SetEarnedDataPointsProgress();
+        public abstract void SetEarnedDataPoints();
 
-        public abstract int GetSummarizeEarnedDataPointsMaxProgress();
-        public abstract void SummarizeEarnedDataPoints();
+        public abstract int SetRemainingDataPointsProgress();
+        public abstract void SetRemainingDataPoints();
 
-        public abstract int GetSummarizeBurnedDataPointsMaxProgress();
-        public abstract void SummarizeBurnedDataPoints();
-
-        public abstract int GetSummarizeRemainingDataPointsMaxProgress();
-        public abstract void SummarizeRemainingDataPoints();
-
-        public abstract int GetSummarizeActualDataPointsMaxProgress();
-        public abstract void SummarizeActualDataPoints();
-
-        public abstract int GetGroupAndAccumulateDataPointsByPeriodMaxProgress();
-        public abstract void GroupAndAccumulateDataPointsByPeriod();
-
-        public abstract int GetGroupAndAccumulateReportableDataPointsByPeriodMaxProgress();
-        public abstract void GroupAndAccumulateReportableDataPointsByPeriod();
-
-
-        public void RecalculateStats(bool isCosts = false)
+        public virtual void Summarize()
         {
-            SummaryObject.RecalculateStats(isCosts);
+            SummaryStats summaryStats = SummaryStats as SummaryStats;
+            if(summaryStats != null)
+                summaryStats.GenerateSummary();
         }
     }
 
-    public class GroupPROJECTReportablesByWorkpackBuilder : SummaryBuilder
+    public class PartialSummarizer : StatsSummarizer
     {
-        public GroupPROJECTReportablesByWorkpackBuilder(WORKPACK_Dashboard WORKPACKDashboard, PROJECT_Dashboard PROJECTDashboard)
-        {
-            WORKPACKDashboard.ReportableObjects = PROJECTDashboard.ReportableObjects.Where(x => x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK == WORKPACKDashboard.GUID);
-            string activeWORKPACKName;
-            if (PROJECTDashboard.PROJECT.USELEGACYWORKPACK)
-                activeWORKPACKName = WORKPACKDashboard.WORKPACK.INTERNAL_NAME1;
-            else
-                activeWORKPACKName = WORKPACKDashboard.WORKPACK.INTERNAL_NAME2;
+        readonly PartialStatsBuilder PartialStatsBuilder;
 
-            IEnumerable<ProgressInfo> workpackBurnedDataPoints = PROJECTDashboard.NonCumulative_BurnedDataPoints.Where(x => x.WorkpackName == activeWORKPACKName).OrderByDescending(x => x.ProgressDate);
-            IEnumerable<ProgressInfo> workpackActualDataPoints = PROJECTDashboard.NonCumulative_ActualDataPoints.Where(x => x.WorkpackName == activeWORKPACKName).OrderByDescending(x => x.ProgressDate);
-            WORKPACKDashboard.NonCumulative_BurnedDataPoints = new ObservableCollection<ProgressInfo>(workpackBurnedDataPoints);
-            WORKPACKDashboard.NonCumulative_ActualDataPoints = new ObservableCollection<ProgressInfo>(workpackActualDataPoints);
-            WORKPACKDashboard.FirstAlignedDataDate = PROJECTDashboard.FirstAlignedDataDate;
-            WORKPACKDashboard.LiveBASELINE = PROJECTDashboard.LiveBASELINE;
-            WORKPACKDashboard.LivePROGRESS = PROJECTDashboard.LivePROGRESS;
-            WORKPACKDashboard.ReportingDataDate = PROJECTDashboard.ReportingDataDate;
-            WORKPACKDashboard.IntervalPeriod = PROJECTDashboard.IntervalPeriod;
-            this.SummaryObject = WORKPACKDashboard;
+        public PartialSummarizer(SummaryStats summarizableObject, PartialStatsBuilder partialStatsBuilder)
+        {
+            this.SummaryStats = summarizableObject;
+            this.PartialStatsBuilder = partialStatsBuilder;
         }
 
-        public override int GetSummarizeVariationDataPointsMaxProgress()
+        public void BuildBudgetedOnly()
+        {
+            SetP6Parameters();
+            SetPlannedDataPoints(true);
+        }
+
+        public override int SetP6ParametersProgress()
         {
             return 1;
         }
 
-        public override void SummarizeVariationDataPoints()
+        public override void SetP6Parameters()
         {
-            SummaryObject.NonCumulative_VariationAdjustments = new ObservableCollection<VariationAdjustment>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_VariationAdjustments));
+            ISupportProgressReportingExtensions.SetWorkpackAssignmentStartUnit(((SummaryStats)this.SummaryStats).Deliverable);
             LoadingScreenManager.Progress();
         }
 
-        public override int GetSummarizePlannedDataPointsMaxProgress()
+        public override int SetBudgetDataPointsProgress()
         {
-            return 1;
+            return ((SummaryStats)this.SummaryStats).Deliverable.Count();
         }
 
-        public override void SummarizePlannedDataPoints()
-        {
-            SummaryObject.NonCumulative_OriginalDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_OriginalDataPoints));
-            LoadingScreenManager.Progress();
-        }
-
-        public override int GetSummarizeModifiedPlannedDataPointsMaxProgress()
-        {
-            return 1;
-        }
-
-        public override void SummarizeModifiedPlannedDataPoints()
-        {
-            SummaryObject.NonCumulative_PlannedDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_PlannedDataPoints));
-
-            LoadingScreenManager.Progress();
-        }
-
-        public override int GetSummarizeEarnedDataPointsMaxProgress()
-        {
-            return 1;
-        }
-
-        public override void SummarizeEarnedDataPoints()
-        {
-            SummaryObject.NonCumulative_EarnedDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_EarnedDataPoints));
-
-            LoadingScreenManager.Progress();
-        }
-
-        public override int GetSetReportablesP6StartUnitsMaxProgress()
-        {
-            return 0;
-        }
-
-        public override void SetReportablesP6StartUnits()
-        {
-            throw new InvalidOperationException("there is no need to set reportables p6 start units from ReportableObjects.");
-        }
-
-        public override int GetSummarizeActualDataPointsMaxProgress()
-        {
-            return 0;
-        }
-
-        public override void SummarizeActualDataPoints()
-        {
-            throw new InvalidOperationException("there is no need to roll up non cumulative actual data points from ReportableObjects.");
-        }
-
-        public override int GetSummarizeBurnedDataPointsMaxProgress()
-        {
-            return 0;
-        }
-
-        public override void SummarizeBurnedDataPoints()
-        {
-            throw new InvalidOperationException("there is no need to roll up non cumulative burned data points from ReportableObjects.");
-        }
-
-        public override int GetSummarizeRemainingDataPointsMaxProgress()
-        {
-            return 2;
-        }
-
-        public override void SummarizeRemainingDataPoints()
-        {
-            SummaryObject.NonCumulative_RemainingCurrentDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_RemainingCurrentDataPoints));
-            LoadingScreenManager.Progress();
-            SummaryObject.NonCumulative_RemainingPlannedDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_RemainingPlannedDataPoints));
-            LoadingScreenManager.Progress();
-        }
-
-        public override int GetGroupAndAccumulateDataPointsByPeriodMaxProgress()
-        {
-            return 1;
-        }
-
-        public override void GroupAndAccumulateDataPointsByPeriod()
-        {
-            ISupportProgressReportingExtensions.GenerateCumulativeSummaryDataPoints(SummaryObject);
-        }
-
-        public override int GetGroupAndAccumulateReportableDataPointsByPeriodMaxProgress()
-        {
-            return 0;
-        }
-
-        public override void GroupAndAccumulateReportableDataPointsByPeriod()
-        {
-            throw new InvalidOperationException("there is no need to summarize progress data points.");
-        }
-    }
-
-    public class PROJECTSummaryBuilder : SummaryBuilder
-    {
-        IBluePrintsEntitiesUnitOfWork BluePrintsUnitOfWork { get; set; }
-        IP6EntitiesUnitOfWork P6UnitOfWork { get; set; }
-        IEnumerable<VARIATION> ProjectVariations { get; set; }
-        decimal CurrencyConversion { get; set; }
-
-        ProjectReportableDataPointsBuilder dataPointsBuilder;
-        public ProjectReportableDataPointsBuilder DataPointsBuilder
-        {
-            get { return dataPointsBuilder; }
-            set { dataPointsBuilder = value; }
-        }
-
-        public PROJECTSummaryBuilder(SummarizableObject summaryObject, IEnumerable<WORKPACK> WORKPACKS, decimal currencyConversion, IEnumerable<VARIATION> VARIATIONS, IBluePrintsEntitiesUnitOfWork BluePrintsUOW = null, IP6EntitiesUnitOfWork P6UOW = null)
-        {
-            if (summaryObject.LivePROGRESS == null || summaryObject.LiveBASELINE == null)
-                return;
-
-            this.ProjectVariations = VARIATIONS;
-            this.CurrencyConversion = currencyConversion;
-            this.SummaryObject = summaryObject;
-            this.SummaryObject.ReportingDataDate = this.SummaryObject.LivePROGRESS.DATA_DATE;
-
-            if (BluePrintsUOW == null)
-                BluePrintsUOW = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-            else
-                this.BluePrintsUnitOfWork = BluePrintsUOW;
-
-            if (P6UOW == null)
-                this.P6UnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-            else
-                this.P6UnitOfWork = P6UOW;
-
-            this.SummaryObject.IntervalPeriod = ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(SummaryObject.LivePROGRESS);
-            this.SummaryObject.FirstAlignedDataDate = ISupportProgressReportingExtensions.GenerateFirstAlignedDataDate(SummaryObject.LivePROGRESS);
-            IEnumerable<VARIATION_ITEMProjection> variation_itemProjection = ISupportProgressReportingExtensions.ConvertVARIATIONITEMProjection(VARIATIONS);
-
-            IEnumerable<WORKPACK> currentWORKPACKS = WORKPACKS.ToList();
-            DataPointsBuilder = new ProjectReportableDataPointsBuilder(SummaryObject.IntervalPeriod, SummaryObject.ReportingDataDate, SummaryObject.FirstAlignedDataDate, this.CurrencyConversion, variation_itemProjection, currentWORKPACKS, P6UnitOfWork, summaryObject.LiveBASELINE.P6BASELINE_NAME, summaryObject.LiveBASELINE.P6MODBASELINE_NAME, SummaryObject.LivePROGRESS.P6PROGRESS_NAME);
-        }
-
-        public override int GetGroupAndAccumulateDataPointsByPeriodMaxProgress()
-        {
-            return 1;
-        }
-
-        public override void GroupAndAccumulateDataPointsByPeriod()
-        {
-            ISupportProgressReportingExtensions.GenerateCumulativeSummaryDataPoints(this.SummaryObject);
-            LoadingScreenManager.Progress();
-        }
-
-        public override int GetGroupAndAccumulateReportableDataPointsByPeriodMaxProgress()
-        {
-            return SummaryObject.ReportableObjects.Count();
-        }
-
-        public override void GroupAndAccumulateReportableDataPointsByPeriod()
-        {
-            foreach (ReportableObject reportableObject in SummaryObject.ReportableObjects)
-            {
-                ISupportProgressReportingExtensions.GenerateCumulativeSummaryDataPoints(reportableObject, this.SummaryObject.FirstAlignedDataDate, this.SummaryObject.IntervalPeriod);
-                LoadingScreenManager.Progress();
-            }
-        }
-
-        public override int GetSummarizePlannedDataPointsMaxProgress()
-        {
-            return SummaryObject.ReportableObjects.Count();
-        }
-
-        public override void SummarizePlannedDataPoints()
+        public override void SetBudgetDataPoints()
         {
             //PlannedDataPointsBuilderFromDatabase(CURRENTPROJECT.NUMBER, false);
-            SummarizePlannedDataPointsByType(true);
+            SetPlannedDataPoints(true);
         }
 
-        public override int GetSummarizeModifiedPlannedDataPointsMaxProgress()
+        public override int SetCurrentDataPointsProgress()
         {
-            return SummaryObject.ReportableObjects.Count();
+            return ((SummaryStats)this.SummaryStats).Deliverable.Count();
         }
 
-        public override void SummarizeModifiedPlannedDataPoints()
+        public override void SetCurrentDataPoints()
         {
             //PlannedDataPointsBuilderFromDatabase(CURRENTPROJECT.NUMBER, true);
-            SummarizePlannedDataPointsByType(false);
+            SetPlannedDataPoints(false);
         }
 
         private void SummarizePlannedDataPointsFromDatabase(string ProjectNumber, bool isOriginal)
         {
             BluePrintsEntities bluePrintDataContext = new BluePrintsEntities();
             ObjectResult<StoredProcedure_DeliverablesDataPoints> deliverablesDataPoints = bluePrintDataContext.GetDataPointsByProject(ProjectNumber, isOriginal);
-            SummarizePlannedDataPointsByType(isOriginal, deliverablesDataPoints.ToList());
+            SetPlannedDataPoints(isOriginal, deliverablesDataPoints.ToList());
         }
 
-        private void SummarizePlannedDataPointsByType(bool isOriginal, IEnumerable<StoredProcedure_DeliverablesDataPoints> DataPointsCollection = null)
+        private void SetPlannedDataPoints(bool isOriginal, IEnumerable<StoredProcedure_DeliverablesDataPoints> DataPointsCollection = null)
         {
-            AssignmentLoadType assignmentLoadType = isOriginal == true ? AssignmentLoadType.Original : assignmentLoadType = AssignmentLoadType.Modified;
+            ReportingClasses.AssignmentLoadType assignmentLoadType = isOriginal == true ? ReportingClasses.AssignmentLoadType.Original : assignmentLoadType = ReportingClasses.AssignmentLoadType.Modified;
 
-            foreach (ReportableObject reportableObject in SummaryObject.ReportableObjects)
+            foreach (PROGRESS_ITEMProjection reportableObject in ((SummaryStats)this.SummaryStats).Deliverable)
             {
-                DataPointsBuilder.BuildPlannedDataPoints(reportableObject, assignmentLoadType, DataPointsCollection);
+                PartialStatsBuilder.BuildPlannedDataPoints(reportableObject, assignmentLoadType);
                 LoadingScreenManager.Progress();
             }
-
-            if (isOriginal)
-                SummaryObject.NonCumulative_OriginalDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_OriginalDataPoints));
-            else
-                SummaryObject.NonCumulative_PlannedDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_PlannedDataPoints));
         }
 
-        public override int GetSummarizeEarnedDataPointsMaxProgress()
+        public override int SetEarnedDataPointsProgress()
         {
-            return SummaryObject.ReportableObjects.Count();
+            return ((SummaryStats)this.SummaryStats).Deliverable.Count();
         }
 
         /// <summary>
         /// Calculates each baselineItem earned data point while populating aggregate non cumulative earned data points
         /// </summary>
         /// <returns>Non cumulative earned progress data points</returns>
-        public override void SummarizeEarnedDataPoints()
+        public override void SetEarnedDataPoints()
         {
-            foreach (ReportableObject reportableObject in SummaryObject.ReportableObjects)
+            foreach (PROGRESS_ITEMProjection progressItemStat in ((SummaryStats)this.SummaryStats).Deliverable)
             {
-                DataPointsBuilder.BuildEarnedDataPoints(reportableObject);
+                PartialStatsBuilder.BuildEarnedDataPoints(progressItemStat);
                 LoadingScreenManager.Progress();
             }
-
-            SummaryObject.NonCumulative_EarnedDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(progressItem => progressItem.NonCumulative_EarnedDataPoints));
         }
 
-        public override int GetSummarizeRemainingDataPointsMaxProgress()
+        public override int SetRemainingDataPointsProgress()
         {
-            return SummaryObject.ReportableObjects.Count();
+            return ((SummaryStats)this.SummaryStats).Deliverable.Count();
         }
 
-        public override void SummarizeRemainingDataPoints()
+        public override void SetRemainingDataPoints()
         {
             //BuildProductivity();
-            foreach (ReportableObject reportableObject in SummaryObject.ReportableObjects)
+            foreach (PROGRESS_ITEMProjection progressItemStat in ((SummaryStats)this.SummaryStats).Deliverable)
             {
-                DataPointsBuilder.BuildRemainingDataPoints(reportableObject);
+                PartialStatsBuilder.BuildRemainingDataPoints(progressItemStat);
                 LoadingScreenManager.Progress();
             }
-
-            //extract all data points out to be used as an overall summary
-            SummaryObject.NonCumulative_RemainingPlannedDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(progressItem => progressItem.NonCumulative_RemainingPlannedDataPoints));
-            SummaryObject.NonCumulative_RemainingCurrentDataPoints = new ObservableCollection<ProgressInfo>(SummaryObject.ReportableObjects.SelectMany(progressItem => progressItem.NonCumulative_RemainingCurrentDataPoints));
         }
 
-        public override int GetSetReportablesP6StartUnitsMaxProgress()
+        public override void Summarize()
+        {
+            ((SummaryStats)this.SummaryStats).GenerateSummary();
+        }
+    }
+
+    public class FullSummarizer : PartialSummarizer
+    {
+        readonly FullStatsBuilder FullStatsBuilder;
+
+        public FullSummarizer(ProjectSummaryStats summaryStats, FullStatsBuilder fullStatsBuilder)
+            : base(summaryStats, fullStatsBuilder)
+        {
+            FullStatsBuilder = fullStatsBuilder;
+            FullStatsBuilder.BuildExoDataPoints(summaryStats);
+        }
+
+        public void RecalculateStats(bool isCosts)
+        {
+            ((SummaryStats)this.SummaryStats).RecalculateStats(isCosts);
+        }
+    }
+
+    public class SingleObjectSummarizer : StatsSummarizer
+    {
+        readonly PROGRESS_ITEMProjection progressItem;
+
+        PartialStatsBuilder partialStatsBuilder;
+        public PartialStatsBuilder PartialStatsBuilder
+        {
+            get { return partialStatsBuilder; }
+            set { partialStatsBuilder = value; }
+        }
+
+        public SingleObjectSummarizer(PROGRESS_ITEMProjection progressItem, PartialStatsBuilder partialStatsBuilder)
+        {
+            this.SummaryStats = progressItem.Stats;
+            this.progressItem = progressItem;
+            PartialStatsBuilder = partialStatsBuilder;
+        }
+
+        public override void Build(bool showLoadingScreen = true, bool isCosts = false)
+        {
+            SetP6Parameters();
+            SetBudgetDataPoints();
+            SetCurrentDataPoints();
+            SetEarnedDataPoints();
+            SetRemainingDataPoints();
+            Summarize();
+        }
+
+        public void BuildBudgetedOnly()
+        {
+
+            SetPlannedDataPoints(true);
+        }
+
+        public override int SetP6ParametersProgress()
+        {
+            return 0;
+        }
+
+        public override void SetP6Parameters()
+        {
+            //Needs to be populated before using summarizer
+        }
+
+        public override int SetBudgetDataPointsProgress()
         {
             return 1;
         }
 
-        public override void SetReportablesP6StartUnits()
+        public override void SetBudgetDataPoints()
         {
-            ISupportProgressReportingExtensions.SetWorkpackAssignmentStartUnit(this.SummaryObject.ReportableObjects);
+            //PlannedDataPointsBuilderFromDatabase(CURRENTPROJECT.NUMBER, false);
+            SetPlannedDataPoints(true);
+        }
+
+        public override int SetCurrentDataPointsProgress()
+        {
+            return 1;
+        }
+
+        public override void SetCurrentDataPoints()
+        {
+            //PlannedDataPointsBuilderFromDatabase(CURRENTPROJECT.NUMBER, true);
+            SetPlannedDataPoints(false);
+        }
+
+        private void SummarizePlannedDataPointsFromDatabase(string ProjectNumber, bool isOriginal)
+        {
+            BluePrintsEntities bluePrintDataContext = new BluePrintsEntities();
+            ObjectResult<StoredProcedure_DeliverablesDataPoints> deliverablesDataPoints = bluePrintDataContext.GetDataPointsByProject(ProjectNumber, isOriginal);
+            SetPlannedDataPoints(isOriginal, deliverablesDataPoints.ToList());
+        }
+
+        private void SetPlannedDataPoints(bool isOriginal, IEnumerable<StoredProcedure_DeliverablesDataPoints> DataPointsCollection = null)
+        {
+            ReportingClasses.AssignmentLoadType assignmentLoadType = isOriginal == true ? ReportingClasses.AssignmentLoadType.Original : assignmentLoadType = ReportingClasses.AssignmentLoadType.Modified;
+
+            PartialStatsBuilder.BuildPlannedDataPoints(progressItem, assignmentLoadType);
             LoadingScreenManager.Progress();
         }
 
-        public override int GetSummarizeVariationDataPointsMaxProgress()
-        {
-            if (ProjectVariations == null || ProjectVariations.Count() == 0)
-                return 0;
-
-            //progress is iteration of ReportableObjects in ISupportProgressReportingExtensions.SetWorkpackAssignmentStartUnit
-            return SummaryObject.ReportableObjects.Count();
-        }
-
-        public override void SummarizeVariationDataPoints()
-        {
-            if (ProjectVariations == null || ProjectVariations.Count() == 0)
-                return;
-
-            foreach (ReportableObject reportableObject in SummaryObject.ReportableObjects)
-            {
-                DataPointsBuilder.BuildVariationAdjustments(reportableObject);
-                LoadingScreenManager.Progress();
-            }
-            
-            SummaryObject.NonCumulative_VariationAdjustments = new ObservableCollection<VariationAdjustment>(SummaryObject.ReportableObjects.SelectMany(x => x.NonCumulative_VariationAdjustments));
-        }
-
-        public override int GetSummarizeBurnedDataPointsMaxProgress()
+        public override int SetEarnedDataPointsProgress()
         {
             return 1;
         }
 
         /// <summary>
-        /// Calculates each baselineItem burned/actual data point while populating aggregate non cumulative burned/actual data points
+        /// Calculates each baselineItem earned data point while populating aggregate non cumulative earned data points
         /// </summary>
         /// <returns>Non cumulative earned progress data points</returns>
-        public override void SummarizeBurnedDataPoints()
+        public override void SetEarnedDataPoints()
         {
-            ObservableCollection<ProgressInfo> nonCumulative_BurnedDataPoints = new ObservableCollection<ProgressInfo>();
-            DateTime firstAlignedDataDate = SummaryObject.FirstAlignedDataDate;
-            TimeSpan progressInterval = SummaryObject.IntervalPeriod;
-            DateTime loopDate = firstAlignedDataDate;
-
-            IEnumerable<WORKPACK> workpacks = SummaryObject.LiveBASELINE.PROJECT.WORKPACK.ToList();
-            string projectNumber = SummaryObject.LiveBASELINE.PROJECT.NUMBER;
-
-            IEnumerable<string> qualifiedWorkpacks = workpacks == null ? new List<string>() : workpacks.Select(x => x.INTERNAL_NAME1);
-            var PrimeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-            var jobTransactions = from JOBTRANS in PrimeroUnitOfWork.JOB_TRANSACTIONS
-                                  join JOBCOST_HDR2 in PrimeroUnitOfWork.JOBCOST_HDR
-                                  on JOBTRANS.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
-                                  join JOBCOST_HDR1 in PrimeroUnitOfWork.JOBCOST_HDR
-                                  on JOBTRANS.JOBNO equals JOBCOST_HDR1.JOBNO
-                                  join JOBCOST_RESOURCE in PrimeroUnitOfWork.JOBCOST_RESOURCE
-                                  on JOBTRANS.STAFFNO equals JOBCOST_RESOURCE.SEQNO
-                                  where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X"
-                                  select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME };
-
-            var exoWorkpacks = from JOBCOST_HDR in PrimeroUnitOfWork.JOBCOST_HDR
-                               where JOBCOST_HDR.JOBCODE.Contains(projectNumber)
-                               select new { JOBCOST_HDR.TITLE, JOBCOST_HDR.JOBCODE };
-
-            var exoWorkpacksList = exoWorkpacks.ToList();
-            SummaryObject.missingExoWorkpacks = new List<WORKPACK>();
-            foreach (WORKPACK workpack in workpacks)
-            {
-                var exoWorkpack = exoWorkpacksList.FirstOrDefault(x => x.JOBCODE == workpack.INTERNAL_NAME1 || x.JOBCODE == workpack.INTERNAL_NAME2);
-                if (exoWorkpack == null)
-                {
-                    SummaryObject.missingExoWorkpacks.Add(workpack);
-                }
-            }
-
-            var jobTransactionsList = jobTransactions.ToList();
-            if (jobTransactionsList.Count == 0)
-                return;
-
-            List<DateTime> alignedDataDates = ISupportProgressReportingExtensions.GenerateAlignedDatesCollection(firstAlignedDataDate, jobTransactionsList.Max(x => x.TRANSDATE).Value, progressInterval);
-            foreach (var jobTransaction in jobTransactionsList)
-            {
-                if (qualifiedWorkpacks.Contains(jobTransaction.JOBCODE))
-                {
-                    nonCumulative_BurnedDataPoints.Add(new ProgressInfo()
-                    {
-                        BudgetedUnits = 0,
-                        BudgetedCosts = 0,
-                        Units = (decimal)jobTransaction.QUANTITY,
-                        Costs = (decimal)jobTransaction.LINETOTAL * this.CurrencyConversion,
-                        Actuals = jobTransaction.LINECOST == null ? 0 : (decimal)jobTransaction.LINECOST,
-                        ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE),
-                        BaselineItemGuid = Guid.Empty,
-                        WorkpackName = jobTransaction.JOBCODE,
-                        ResourceName = jobTransaction.RESOURCENAME,
-                        Quantity = (decimal)jobTransaction.QUANTITY
-                    });
-                }
-            }
-
+            PartialStatsBuilder.BuildEarnedDataPoints(progressItem);
             LoadingScreenManager.Progress();
-            SummaryObject.NonCumulative_BurnedDataPoints = nonCumulative_BurnedDataPoints;
         }
 
-        public override int GetSummarizeActualDataPointsMaxProgress()
+        public override int SetRemainingDataPointsProgress()
         {
             return 1;
         }
 
-        public override void SummarizeActualDataPoints()
+        public override void SetRemainingDataPoints()
         {
-            List<ProgressInfo> convertBurnedToActualDataPoints = new List<ProgressInfo>();
-            SummaryObject.NonCumulative_BurnedDataPoints.ToList().ForEach(dataPoint => convertBurnedToActualDataPoints.Add(new ProgressInfo()
-            {
-                BudgetedCosts = dataPoint.BudgetedCosts,
-                BudgetedUnits = dataPoint.BudgetedUnits,
-                Costs = dataPoint.Actuals,
-                Actuals = dataPoint.Actuals,
-                ProgressDate = dataPoint.ProgressDate,
-                BaselineItemGuid = dataPoint.BaselineItemGuid,
-                Units = dataPoint.Units,
-                WorkpackGuid = dataPoint.WorkpackGuid,
-                WorkpackName = dataPoint.WorkpackName,
-                ResourceName = dataPoint.ResourceName,
-                Quantity = dataPoint.Quantity
-            }));
-
-            LoadingScreenManager.Progress();
-            SummaryObject.NonCumulative_ActualDataPoints = new ObservableCollection<ProgressInfo>(convertBurnedToActualDataPoints);
-        }
-
-        public enum DataPointsType
-        {
-            Planned = 0,
-            Earned = 1,
-            Remaining = 2
-        }
-
-        public enum AssignmentLoadType
-        {
-            Original,
-            Modified,
-            Both
+            PartialStatsBuilder.BuildRemainingDataPoints(progressItem);
         }
     }
 }

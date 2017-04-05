@@ -11,7 +11,19 @@ namespace BluePrints.Common
 {
     public static class LoginCredentials
     {
-        public static USER CurrentUser { get; set; }
+        static USER currentUser;
+        public static USER CurrentUser
+        {
+            get { return currentUser; }
+            set
+            {
+                currentUser = value;
+                List<ROLE_PERMISSION> user_permission = CurrentUser.ROLE.ROLE_PERMISSION.ToList();
+                CurrentUserPermission = new List<ROLE_PERMISSION>(user_permission);
+            }
+        }
+
+        public static List<ROLE_PERMISSION> CurrentUserPermission { get; set; }
 
         public static string CurrentHWID { get; set; }
 
@@ -21,13 +33,11 @@ namespace BluePrints.Common
                 return false;
             else if (CurrentUser.NAME == CommonResources.AdminUsername)
                 return true;
-            else if (CurrentUser.ROLE == null)
-                return false;
-            else if (CurrentUser.ROLE.ROLE_PERMISSION.Count == 0)
+            else if (CurrentUserPermission == null || CurrentUserPermission.Count == 0)
                 return false;
 
             var permissionKey = PermissionDictionary.First(x => x.Value == permissionName).Key;
-            return CurrentUser.ROLE.ROLE_PERMISSION.Any(x => x.PERMISSION == permissionKey);
+            return CurrentUserPermission.Any(x => x.PERMISSION == permissionKey);
         }
 
         public static Guid CurrentUserGuid()

@@ -28,7 +28,7 @@ namespace BluePrints.Common.ViewModel
             CollectionViewModel<TEntity, TProjection, TPrimaryKey, TUnitOfWork>>
         where TEntity : class, IHaveGUID
         where TUnitOfWork : IUnitOfWork
-        where TProjection : SummarizableObject, IHaveGUID, new()
+        where TProjection : class, IHaveGUID, IHaveStats, new()
     {
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> UnitOfWorkFactory;
         private DispatcherTimer dispatchTimer;
@@ -78,34 +78,20 @@ namespace BluePrints.Common.ViewModel
             }
             else
             {
-                var newEntity = ViewModelSource.Create(() => new TProjection());
-                var earliestDataDate = entities.Min(x => x.ReportingDataDate);
-                var earliestLiveProgress =
-                    entities.First(x => x.ReportingDataDate == earliestDataDate).LivePROGRESS;
-                newEntity.LivePROGRESS = earliestLiveProgress;
-                newEntity.IntervalPeriod =
-                    ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(earliestLiveProgress);
-                newEntity.ReportableObjects = entities.SelectMany(x => x.ReportableObjects);
-                newEntity.FirstAlignedDataDate = entities.Min(x => x.FirstAlignedDataDate);
-                newEntity.ReportingDataDate = earliestLiveProgress.DATA_DATE;
-                newEntity.NonCumulative_VariationAdjustments =
-                    new ObservableCollection<VariationAdjustment>(
-                        entities.SelectMany(x => x.NonCumulative_VariationAdjustments));
-                newEntity.NonCumulative_ActualDataPoints =
-                    new ObservableCollection<ProgressInfo>(entities.SelectMany(x => x.NonCumulative_ActualDataPoints));
-                newEntity.NonCumulative_BurnedDataPoints =
-                    new ObservableCollection<ProgressInfo>(entities.SelectMany(x => x.NonCumulative_BurnedDataPoints));
-                newEntity.NonCumulative_EarnedDataPoints =
-                    new ObservableCollection<ProgressInfo>(entities.SelectMany(x => x.NonCumulative_EarnedDataPoints));
-                newEntity.NonCumulative_OriginalDataPoints =
-                    new ObservableCollection<ProgressInfo>(entities.SelectMany(x => x.NonCumulative_OriginalDataPoints));
-                newEntity.NonCumulative_PlannedDataPoints =
-                    new ObservableCollection<ProgressInfo>(entities.SelectMany(x => x.NonCumulative_PlannedDataPoints));
-                newEntity.NonCumulative_RemainingPlannedDataPoints =
-                    new ObservableCollection<ProgressInfo>(
-                        entities.SelectMany(x => x.NonCumulative_RemainingPlannedDataPoints));
-                ISupportProgressReportingExtensions.GenerateCumulativeSummaryDataPoints(newEntity);
-                SummaryEntity = newEntity;
+                SummaryEntity = ViewModelSource.Create(() => new TProjection());
+                ProgressStats progressStats = entities.First().Stats as ProgressStats;
+                SummaryStats summaryStats = entities.First().Stats as SummaryStats;
+
+                if(summaryStats != null)
+                {
+                    IEnumerable<SummaryStats> entitiesSummary = entities.Select(x => (SummaryStats)x.Stats);
+                    SummaryEntity.Stats = new SummaryStats(entitiesSummary);
+                }
+                else if(progressStats != null)
+                {
+                    IEnumerable<ProgressStats> entitiesSummary = entities.Select(x => (ProgressStats)x.Stats);
+                    SummaryEntity.Stats = new ProgressStats(entitiesSummary);
+                }
             }
 
             this.RaisePropertyChanged(x => x.SummaryEntity);
@@ -124,11 +110,13 @@ namespace BluePrints.Common.ViewModel
             var calculationType = button.Name.ToUpper().Contains("COSTS")
                 ? DashboardViewType.Costs
                 : DashboardViewType.Units;
-            if (ChangeViewMemberFieldNames != null)
-                ChangeViewMemberFieldNames(calculationType);
+            ChangeViewMemberFieldNames?.Invoke(calculationType);
 
-            foreach (var summaryEntity in MainViewModel.Entities)
-                summaryEntity.RecalculateStats(calculationType == DashboardViewType.Costs);
+            IHaveSummary IHaveSummary = SummaryEntity as IHaveSummary;
+            if (IHaveSummary != null)
+                IHaveSummary.RecalculateStats(calculationType == DashboardViewType.Costs);
+            //foreach (var summaryEntity in MainViewModel.Entities)
+            //    summaryEntity.RecalculateStats(calculationType == DashboardViewType.Costs);
         }
 
         #region P6 Affinity
@@ -164,31 +152,31 @@ namespace BluePrints.Common.ViewModel
 
         public bool CanShowP6Errors()
         {
-            if (DisplaySelectedEntity == null || DisplaySelectedEntity.ReportableObjects == null)
-                return false;
-            //if (SelectionLiveBASELINE == null || SelectionLivePROGRESS == null)
+            //if (DisplaySelectedEntity == null || DisplaySelectedEntity.ReportableObjects == null)
             //    return false;
+            ////if (SelectionLiveBASELINE == null || SelectionLivePROGRESS == null)
+            ////    return false;
 
-            //if (SelectionLiveBASELINE.P6BASELINE_NAME == string.Empty && SelectionLivePROGRESS.P6PROGRESS_NAME == string.Empty)
-            //    return false;
+            ////if (SelectionLiveBASELINE.P6BASELINE_NAME == string.Empty && SelectionLivePROGRESS.P6PROGRESS_NAME == string.Empty)
+            ////    return false;
 
-            if (!DisplaySelectedEntity.ReportableObjects.Any(x => x.isPlannedDataPointsFromP6))
-                return true;
-
-            //Earned is always generated based on progress_item earned_date
-            //if (!DisplaySelectedEntity.ReportableObjects.Any(x => x.isEarnedDataPointsFromP6))
+            //if (!DisplaySelectedEntity.ReportableObjects.Any(x => x.isPlannedDataPointsFromP6))
             //    return true;
 
-            if (!DisplaySelectedEntity.ReportableObjects.Any(x => x.isRemainingDataPointsFromP6))
-                return true;
+            ////Earned is always generated based on progress_item earned_date
+            ////if (!DisplaySelectedEntity.ReportableObjects.Any(x => x.isEarnedDataPointsFromP6))
+            ////    return true;
+
+            //if (!DisplaySelectedEntity.ReportableObjects.Any(x => x.isRemainingDataPointsFromP6))
+            //    return true;
 
             return false;
         }
 
         public void ShowP6Errors()
         {
-            DialogCollectionViewModel<ReportableObject> viewModel = DialogCollectionViewModel<ReportableObject>.Create(DisplaySelectedEntity.ReportableObjects);
-            IssuesDialogService.ShowDialog(MessageButton.OK, "P6 Affinity Report", "PrimaveraAffinityReport", viewModel);
+            //DialogCollectionViewModel<PROGRESS_ITEMProjection> viewModel = DialogCollectionViewModel<PROGRESS_ITEMProjection>.Create(DisplaySelectedEntity.ReportableObjects);
+            //IssuesDialogService.ShowDialog(MessageButton.OK, "P6 Affinity Report", "PrimaveraAffinityReport", viewModel);
         }
         #endregion
 
@@ -203,8 +191,9 @@ namespace BluePrints.Common.ViewModel
             if (DisplaySelectedEntity == null)
                 return false;
 
-            SummarizableObject summarizableObject = DisplaySelectedEntity as SummarizableObject;
-            if (summarizableObject == null || summarizableObject.missingExoWorkpacks == null || summarizableObject.missingExoWorkpacks.Count == 0)
+            ProjectSummaryStats projectSummary = DisplaySelectedEntity as ProjectSummaryStats;
+            
+            if (projectSummary == null || projectSummary.ExoMissingWORKPACKS == null || projectSummary.ExoMissingWORKPACKS.Count == 0)
                 return false;
 
             return true;
@@ -212,8 +201,8 @@ namespace BluePrints.Common.ViewModel
 
         public void ShowExoErrors()
         {
-            SummarizableObject summarizableObject = DisplaySelectedEntity as SummarizableObject;
-            DialogCollectionViewModel<WORKPACK> viewModel = DialogCollectionViewModel<WORKPACK>.Create(summarizableObject.missingExoWorkpacks);
+            ProjectSummaryStats projectSummary = DisplaySelectedEntity as ProjectSummaryStats;
+            DialogCollectionViewModel<WORKPACK> viewModel = DialogCollectionViewModel<WORKPACK>.Create(projectSummary.ExoMissingWORKPACKS);
             IssuesDialogService.ShowDialog(MessageButton.OK, "Exo Affinity Report", "ExoAffinityReport", viewModel);
         }
         #endregion

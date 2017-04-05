@@ -217,7 +217,7 @@
                             <dxg:GridColumn FieldName="INTERNAL_NAME1" VisibleIndex="50" />
                             <dxg:GridColumn FieldName="INTERNAL_NAME2" VisibleIndex="60" />
                             <dxg:GridColumn x:Name="colCumulativeBudget" Header="Total Units"
-                                            FieldName="PROGRESS_ITEMInfos.Final_BudgetedUnits" ReadOnly="True"
+                                            FieldName="PROGRESS_ITEMInfos.Stats.BudgetedUnits" ReadOnly="True"
                                             AllowEditing="False" VisibleIndex="70">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings Name="colCumulativeBudgetText" MaskType="Numeric" Mask="n"

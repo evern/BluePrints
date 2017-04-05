@@ -11,33 +11,21 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    public class WORKPACK_Dashboard : PROJECTSummary, IHaveGUID
+    public class WORKPACK_Dashboard : IHaveGUID, IHaveStats
     {
         public Guid GUID { get; set; }
         public WORKPACK WORKPACK { get; set; }
 
-        public PROJECTSummaryBuilder SummaryBuilder { get; private set; }
-        public GroupPROJECTReportablesByWorkpackBuilder reportablesByWorkpackBuilder { get; private set; }
+        public ProgressStats Stats { get; set; }
 
-        public void InitializeUnpacker(PROJECT_Dashboard projectDashboard)
+        public void GroupProjectStats(ProjectSummaryStats projectStats)
         {
-            reportablesByWorkpackBuilder = new GroupPROJECTReportablesByWorkpackBuilder(this, projectDashboard);
+            Stats = projectStats.GroupBurnedStatsByWorkpack(this.WORKPACK);
         }
-
         #region WORKPACK Mapping
 
         public bool IsGetModifiedWORKPACK_ASSIGNMENTS { get; set; }
 
-        //public void InitializeBuilder(IEnumerable<ReportableObject> reportableObjects, PROGRESS livePROGRESS,
-        //    BASELINE liveBASELINE, IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork,
-        //    IP6EntitiesUnitOfWork p6UnitOfWork)
-        //{
-        //    ReportableObjects = reportableObjects;
-        //    LiveBASELINE = liveBASELINE;
-        //    LivePROGRESS = livePROGRESS;
-
-        //    SummaryBuilder = new PROJECTSummaryBuilder(this, bluePrintsUnitOfWork, p6UnitOfWork);
-        //}
 
         public ICollection<WORKPACK_ASSIGNMENT> ObservableWORKPACK_ASSIGNMENTS
         {
@@ -55,6 +43,7 @@ namespace BluePrints.Common.Projections
         {
             get { return ObservableWORKPACK_ASSIGNMENTS.Sum(x => x.HIGH_VALUE - x.LOW_VALUE + 1); }
         }
+
         #endregion
     }
 
@@ -66,31 +55,18 @@ namespace BluePrints.Common.Projections
             IEnumerable<WORKPACK_Dashboard> projectWORKPACKDashboards =
                 WORKPACKS.Where(x => x.GUID_PROJECT == projectDashboard.GUID)
                     .Select(x => new WORKPACK_Dashboard() {GUID = x.GUID, WORKPACK = x});
-            var newWORKPACKDashboards = projectWORKPACKDashboards.ToList();
-            var reportablesByWorkpackSummarizingFactory = new WorkpackSummarizingFactory();
-            foreach (var newWORKPACKDashboard in newWORKPACKDashboards)
-            {
-                newWORKPACKDashboard.InitializeUnpacker(projectDashboard);
-                reportablesByWorkpackSummarizingFactory.Manufacture(newWORKPACKDashboard.reportablesByWorkpackBuilder);
-
-                if (newWORKPACKDashboard.Summary_CumulativeEarnedDataPoints != null)
-                {
-                    foreach (ProgressInfo progressInfo in newWORKPACKDashboard.Summary_CumulativeEarnedDataPoints)
-                    {
-                        progressInfo.WorkpackGuid = newWORKPACKDashboard.GUID; //used in push to p6
-                    }
-                }
-            }
+            List<WORKPACK_Dashboard> newWORKPACKDashboards = projectWORKPACKDashboards.ToList();
+            newWORKPACKDashboards.ForEach(x => x.GroupProjectStats((ProjectSummaryStats)projectDashboard.Stats));
 
             return newWORKPACKDashboards.AsQueryable();
         }
 
-        public static IQueryable<WORKPACK_Dashboard> MappingWORKPACKDashboard(IQueryable<WORKPACK> WORKPACKS,
+        public static IQueryable<WORKPACK_Dashboard> SummarizeWORKPACKDashboard(IQueryable<WORKPACK> WORKPACKS,
             Func<PROGRESS> getPROGRESSFunc, Func<BASELINE> getBASELINEFunc,
             Func<IEnumerable<BASELINE_ITEM>> getBASELINE_ITEMFunc,
             Func<IEnumerable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc,
             Func<IEnumerable<RATE>> getRATESFunc,
-            Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc, 
+            Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc,
             bool getModifiedWORKPACK_ASSIGNMENT)
         {
             var returnWORKPACK_Dashboard = new List<WORKPACK_Dashboard>();

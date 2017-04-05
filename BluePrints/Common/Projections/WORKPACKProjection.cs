@@ -13,7 +13,7 @@ namespace BluePrints.Common.Projections
 {
     [ConstraintAttributes("WORKPACK.GUID_PROJECT, WORKPACK.INTERNAL_NAME1, WORKPACK.INTERNAL_NAME2")]
     [RequiredAttributes("WORKPACK.GUID_DDEPARTMENT, WORKPACK.GUID_DDISCIPLINE")]
-    public class WORKPACKProjection : PROJECTSummary, IHaveGUID
+    public class WORKPACKProjection : IHaveGUID
     {
         public WORKPACKProjection()
         {

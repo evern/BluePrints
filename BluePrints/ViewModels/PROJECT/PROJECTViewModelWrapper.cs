@@ -346,12 +346,12 @@ namespace BluePrints.ViewModels
 
         public object GetCustomDocumentParameter()
         {
-            return SummaryEntity;
+            return DisplaySelectedEntity;
         }
 
         public string GetCustomDocumentTitle()
         {
-            return SummaryEntity.PROJECT.NUMBER + " - WORKPACKS";
+            return DisplaySelectedEntity.PROJECT.NUMBER + " - WORKPACKS";
         }
 
         public bool IsCustomModeEnabled()

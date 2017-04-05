@@ -102,7 +102,7 @@ namespace BluePrints.ViewModels
                 if (SelectedWORKPACK == null)
                     return 0;
 
-                return SelectedWORKPACK.Final_BudgetedUnits;
+                return SelectedWORKPACK.Stats.TotalUnits;
             }
         }
 

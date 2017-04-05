@@ -1,187 +1,265 @@
-﻿using BluePrints.Common.Projections;
+﻿using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common.Projections;
 using BluePrints.Data;
+using BluePrints.Data.Helpers;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
+using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static BluePrints.Common.ViewModel.Reporting.PROJECTSummaryBuilder;
+using static BluePrints.Common.ViewModel.Reporting.FullSummarizer;
 using static BluePrints.Data.BluePrintsEntities;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public class ProjectReportableDataPointsBuilder : IBuildDataPoints
+    public class FullStatsBuilder : PartialStatsBuilder
+    {
+        readonly string ProjectNumber;
+        readonly IPrimeroEntitiesUnitOfWork PrimeroUOW;
+
+        public FullStatsBuilder(Data.PROJECT PROJECT, BASELINE liveBASELINE, string p6ProgressName, DateTime firstAlignedDataDate, TimeSpan reportInterval, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENTS, IP6EntitiesUnitOfWork p6UOW = null, IPrimeroEntitiesUnitOfWork primeroUOW = null)
+            : base(PROJECT, liveBASELINE, p6ProgressName, reportInterval, firstAlignedDataDate, WORKPACKS, WORKPACK_ASSIGNMENTS, p6UOW)
+        {
+            ProjectNumber = PROJECT.NUMBER;
+            PrimeroUOW = primeroUOW == null ? PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork() : PrimeroUOW;
+        }
+
+        public FullStatsBuilder(Data.PROJECT PROJECT, BASELINE liveBASELINE, PROGRESS LivePROGRESS, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENTS, IP6EntitiesUnitOfWork p6UOW = null, IPrimeroEntitiesUnitOfWork primeroUOW = null)
+            : base(PROJECT, liveBASELINE, LivePROGRESS, WORKPACKS, WORKPACK_ASSIGNMENTS, p6UOW)
+        {
+            ProjectNumber = PROJECT.NUMBER;
+            PrimeroUOW = primeroUOW == null ? PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork() : primeroUOW;
+        }
+
+        public void BuildExoDataPoints(ProjectSummaryStats summaryObject)
+        {
+            ProjectSummaryStats projectSummaryStats = summaryObject as ProjectSummaryStats;
+            if (projectSummaryStats == null)
+                return;
+
+            ObservableCollection<ExoDataPoint> burnedDataPoints = new ObservableCollection<ExoDataPoint>();
+            ObservableCollection<ExoDataPoint> actualDataPoints = new ObservableCollection<ExoDataPoint>();
+
+            DateTime loopDate = FirstAlignedDataDate;
+
+            IEnumerable<WORKPACK> workpacks = projectWORKPACKS;
+            string projectNumber = ProjectNumber;
+
+            IEnumerable<string> qualifiedWorkpacks = workpacks == null ? new List<string>() : workpacks.Select(x => x.INTERNAL_NAME1);
+            var PrimeroUnitOfWork = PrimeroUOW;
+            var jobTransactions = from JOBTRANS in PrimeroUnitOfWork.JOB_TRANSACTIONS
+                                  join JOBCOST_HDR2 in PrimeroUnitOfWork.JOBCOST_HDR
+                                  on JOBTRANS.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
+                                  join JOBCOST_HDR1 in PrimeroUnitOfWork.JOBCOST_HDR
+                                  on JOBTRANS.JOBNO equals JOBCOST_HDR1.JOBNO
+                                  join JOBCOST_RESOURCE in PrimeroUnitOfWork.JOBCOST_RESOURCE
+                                  on JOBTRANS.STAFFNO equals JOBCOST_RESOURCE.SEQNO
+                                  where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X"
+                                  select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME };
+
+            var exoWorkpacks = from JOBCOST_HDR in PrimeroUnitOfWork.JOBCOST_HDR
+                               where JOBCOST_HDR.JOBCODE.Contains(projectNumber)
+                               select new { JOBCOST_HDR.TITLE, JOBCOST_HDR.JOBCODE };
+
+            var exoWorkpacksList = exoWorkpacks.ToList();
+            foreach (WORKPACK workpack in workpacks)
+            {
+                var exoWorkpack = exoWorkpacksList.FirstOrDefault(x => x.JOBCODE == workpack.INTERNAL_NAME1 || x.JOBCODE == workpack.INTERNAL_NAME2);
+                if (exoWorkpack == null)
+                {
+                    projectSummaryStats.AddMissingExoWorkpack(workpack);
+                }
+            }
+
+            var jobTransactionsList = jobTransactions.ToList();
+            if (jobTransactionsList.Count == 0)
+                return;
+
+            List<DateTime> alignedDataDates = ISupportProgressReportingExtensions.GenerateAlignedDatesCollection(FirstAlignedDataDate, jobTransactionsList.Max(x => x.TRANSDATE).Value, ReportingInterval);
+            foreach (var jobTransaction in jobTransactionsList)
+            {
+                if (qualifiedWorkpacks.Contains(jobTransaction.JOBCODE))
+                {
+                    ExoDataPoint burnedDataPoint = new ExoDataPoint();
+                    burnedDataPoint.BudgetedUnits = 0;
+                    burnedDataPoint.BudgetedCosts = 0;
+                    burnedDataPoint.Units = (decimal)jobTransaction.QUANTITY;
+                    burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * this.CurrencyConversion;
+                    burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
+                    burnedDataPoint.WorkpackName = jobTransaction.JOBCODE;
+                    burnedDataPoint.ResourceName = jobTransaction.RESOURCENAME;
+                    burnedDataPoint.Quantity = (decimal)jobTransaction.QUANTITY;
+
+                    burnedDataPoints.Add(burnedDataPoint);
+
+                    ExoDataPoint actualDataPoint = new ExoDataPoint();
+                    DataUtils.ShallowCopy(actualDataPoint, burnedDataPoint);
+                    actualDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * this.CurrencyConversion;
+                    actualDataPoints.Add(actualDataPoint);
+                }
+            }
+
+            projectSummaryStats.Burned = new ProgressInfo(summaryObject);
+            projectSummaryStats.Actual = new ProgressInfo(summaryObject);
+
+            projectSummaryStats.Burned.SetData(burnedDataPoints);
+            projectSummaryStats.Actual.SetData(actualDataPoints);
+            LoadingScreenManager.Progress();
+        }
+    }
+
+    public class PartialStatsBuilder
     {
         private IEnumerable<TASK> originalBaselineP6Tasks { get; set; }
         private IEnumerable<TASK> modifiedBaselineP6Tasks { get; set; }
         private IEnumerable<TASK> progressP6Tasks { get; set; }
-        private IEnumerable<WORKPACK> projectWORKPACKS { get; set; }
-        private TimeSpan progressInterval { get; set; }
-        private DateTime reportingDataDate { get; set; }
-        private DateTime firstAlignedDataDate { get; set; }
-        private decimal currencyConversion { get; set; }
+        protected IEnumerable<WORKPACK> projectWORKPACKS { get; set; }
+        private IEnumerable<WORKPACK_ASSIGNMENT> projectWORKPACK_ASSIGNMENTS { get; set; }
+        public TimeSpan ReportingInterval { get; private set; }
+        public DateTime FirstAlignedDataDate { get; private set; }
+        protected decimal CurrencyConversion { get; private set; }
         private IEnumerable<DateTime> alignedWeekEndingDates { get; set; }
-        private IEnumerable<VARIATION_ITEMProjection> approvedVariation_Items { get; set; }
         private List<Period> exceptionPeriods { get; set; }
 
         IP6EntitiesUnitOfWork P6UnitOfWork { get; set; }
-        public ProjectReportableDataPointsBuilder(TimeSpan progressInterval, DateTime reportingDataDate, DateTime firstAlignedDataDate, decimal currencyConversion, IEnumerable<VARIATION_ITEMProjection> approvedVariation_Items, IEnumerable<WORKPACK> WORKPACKS, IP6EntitiesUnitOfWork p6UnitOfWork = null, 
-          string p6OriginalScheduleName = "", string p6ModifiedScheduleName = "", string p6ProgressScheduleName = "")
+        public PartialStatsBuilder(Data.PROJECT PROJECT, BASELINE LiveBASELINE, PROGRESS LivePROGRESS, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENTS, IP6EntitiesUnitOfWork p6UOW = null)
+            : this(PROJECT, LiveBASELINE, WORKPACKS, WORKPACK_ASSIGNMENTS, p6UOW)
         {
-            if (p6UnitOfWork == null)
+            this.progressP6Tasks = GetP6ScheduleTasks(LivePROGRESS.P6PROGRESS_NAME);
+
+            this.ReportingInterval = ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(LivePROGRESS);
+            this.FirstAlignedDataDate = ISupportProgressReportingExtensions.GenerateFirstAlignedDataDate(LivePROGRESS);
+            this.alignedWeekEndingDates = ISupportProgressReportingExtensions.GenerateAlignedDatesCollection(this.FirstAlignedDataDate, this.FirstAlignedDataDate.AddYears(Int16.Parse(CommonResources.DataPointsBuilder_MaxProjectDuration)), this.ReportingInterval);
+        }
+
+        public PartialStatsBuilder(Data.PROJECT PROJECT, BASELINE LiveBASELINE, string p6ProgressName, TimeSpan progressInterval, DateTime firstAlignedDataDate, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENTS, IP6EntitiesUnitOfWork p6UOW = null)
+            : this(PROJECT, LiveBASELINE, WORKPACKS, WORKPACK_ASSIGNMENTS, p6UOW)
+        {
+            this.progressP6Tasks = GetP6ScheduleTasks(p6ProgressName);
+
+            this.ReportingInterval = progressInterval;
+            this.FirstAlignedDataDate = firstAlignedDataDate;
+
+            this.alignedWeekEndingDates = ISupportProgressReportingExtensions.GenerateAlignedDatesCollection(this.FirstAlignedDataDate, this.FirstAlignedDataDate.AddYears(Int16.Parse(CommonResources.DataPointsBuilder_MaxProjectDuration)), this.ReportingInterval);
+        }
+
+        private PartialStatsBuilder(Data.PROJECT PROJECT, BASELINE LiveBASELINE, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENTS, IP6EntitiesUnitOfWork p6UOW = null)
+        {
+            if (p6UOW == null)
                 this.P6UnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             else
-                this.P6UnitOfWork = p6UnitOfWork;
+                this.P6UnitOfWork = p6UOW;
 
-            originalBaselineP6Tasks = GetP6ScheduleTasks(p6OriginalScheduleName);
-            modifiedBaselineP6Tasks = GetP6ScheduleTasks(p6ModifiedScheduleName);
-            progressP6Tasks = GetP6ScheduleTasks(p6ProgressScheduleName);
-            projectWORKPACKS = WORKPACKS;
+            this.originalBaselineP6Tasks = GetP6ScheduleTasks(LiveBASELINE.P6BASELINE_NAME);
+            this.modifiedBaselineP6Tasks = GetP6ScheduleTasks(LiveBASELINE.P6MODBASELINE_NAME);
+            this.projectWORKPACKS = WORKPACKS.ToList();
+            this.projectWORKPACK_ASSIGNMENTS = WORKPACK_ASSIGNMENTS.ToList();
+            this.CurrencyConversion = PROJECT.CURRENCYCONVERSION;
 
-            this.progressInterval = progressInterval;
-            this.reportingDataDate = reportingDataDate;
-            this.firstAlignedDataDate = firstAlignedDataDate;
-            this.currencyConversion = currencyConversion;
-            this.approvedVariation_Items = approvedVariation_Items;
-            alignedWeekEndingDates = ISupportProgressReportingExtensions.GenerateAlignedDatesCollection(this.firstAlignedDataDate, this.firstAlignedDataDate.AddYears(Int16.Parse(CommonResources.DataPointsBuilder_MaxProjectDuration)), this.progressInterval);
-
-            exceptionPeriods = new List<Period>();
-            exceptionPeriods.AddRange(ISupportProgressReportingExtensions.NonWorkingPeriods);
+            this.exceptionPeriods = new List<Period>();
+            this.exceptionPeriods.AddRange(ISupportProgressReportingExtensions.NonWorkingPeriods);
         }
 
-        public void BuildVariationAdjustments(ReportableObject reportableObject)
+
+        public void BuildPlannedDataPoints(PROGRESS_ITEMProjection progressItemStats, ReportingClasses.AssignmentLoadType assignmentLoadType)
         {
-            IEnumerable<VariationAdjustment> applicableVariation_Adjustment = this.approvedVariation_Items.Where(x => x.APPROVED != null &&
-            x.VARIATION_ITEM.GUID_ORIBASEITEM == reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL && (x.VARIATION_ITEM.ACTION == VariationAction.Add || x.VARIATION_ITEM.ACTION == VariationAction.Append)).Select(x => new VariationAdjustment() { AdjustmentDate = (DateTime)x.APPROVED, AdjustmentUnits = x.VARIATION_ITEM.VARIATION_UNITS, AdjustmentRate = reportableObject.BASELINE_ITEMJoinRATE.ITEMRATE, BaselineItemGuid = reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL });
+            if (progressItemStats.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK == null)
+                return;
 
-            reportableObject.NonCumulative_VariationAdjustments = new ObservableCollection<VariationAdjustment>(applicableVariation_Adjustment);
-            reportableObject.Cumulative_VariationAdjustments = ISupportProgressReportingExtensions.PopulateCumulativeVariationAdjustments(reportableObject.NonCumulative_VariationAdjustments, this.firstAlignedDataDate, this.progressInterval);
-        }
-
-        public void BuildPlannedDataPoints(ReportableObject reportableObject, AssignmentLoadType assignmentLoadType, 
-          IEnumerable<StoredProcedure_DeliverablesDataPoints> dbDataPointsCollection = null)
-        {
-            reportableObject.ReportingDataDate = this.reportingDataDate;
-
-            BASELINE_ITEMProjection currentBASELINE_ITEM = reportableObject.BASELINE_ITEMJoinRATE;
-            WORKPACK currentWORKPACK = currentBASELINE_ITEM.BASELINE_ITEM.WORKPACK;
+            WORKPACK currentWORKPACK = projectWORKPACKS.FirstOrDefault(x => x.GUID == progressItemStats.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK);
             if (currentWORKPACK == null)
                 return;
 
             //Use original P6 tasks if modified is null else follow assignment type
-            IEnumerable<TASK> p6BaselineTasks = assignmentLoadType == AssignmentLoadType.Original ? this.originalBaselineP6Tasks : this.modifiedBaselineP6Tasks == null ? this.originalBaselineP6Tasks : this.modifiedBaselineP6Tasks;
+            IEnumerable<TASK> p6BaselineTasks = assignmentLoadType == ReportingClasses.AssignmentLoadType.Original ? this.originalBaselineP6Tasks : this.modifiedBaselineP6Tasks == null ? this.originalBaselineP6Tasks : this.modifiedBaselineP6Tasks;
 
-            List<ProgressInfo> progressItemP6DataPoints;
+            List<DataPoint> progressItemP6DataPoints;
 
-            string s;
-            if (reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM == "P027-22200-MOD-ME-843")
-                s = string.Empty;
-
-
-            if (TryBuildP6DataPoints(p6BaselineTasks, reportableObject, DataPointsType.Planned, assignmentLoadType, out progressItemP6DataPoints))
+            if (TryBuildP6DataPoints(p6BaselineTasks, projectWORKPACK_ASSIGNMENTS, progressItemStats, ReportingClasses.DataPointsType.Planned, assignmentLoadType, progressItemStats.Stats.VariationAdjustments, out progressItemP6DataPoints))
             {
-                reportableObject.isPlannedDataPointsFromP6 = true;
-                if (assignmentLoadType == AssignmentLoadType.Original)
-                    reportableObject.NonCumulative_OriginalDataPoints = new ObservableCollection<ProgressInfo>(progressItemP6DataPoints);
+                progressItemStats.Stats.Budgeted.SetFromP6();
+                if (assignmentLoadType == ReportingClasses.AssignmentLoadType.Original)
+                    progressItemStats.Stats.Budgeted.SetData(new ObservableCollection<DataPoint>(progressItemP6DataPoints));
                 else
-                    reportableObject.NonCumulative_PlannedDataPoints = new ObservableCollection<ProgressInfo>(progressItemP6DataPoints);
+                    progressItemStats.Stats.Current.SetData(new ObservableCollection<DataPoint>(progressItemP6DataPoints));
             }
             else
             {
                 List<Period> workpackSuspensionPeriod = new List<Period>();
                 workpackSuspensionPeriod.Add(new Period((DateTime)currentWORKPACK.REVIEWSTARTDATE, (DateTime)currentWORKPACK.REVIEWENDDATE));
 
-                decimal BaselineItemBaseUnits = currentBASELINE_ITEM.BASELINE_ITEM.ESTIMATED_HOURS;
-                decimal BaselineItemBaseCosts = currentBASELINE_ITEM.ESTIMATED_COSTS;
-                decimal BaselineItemTotalUnits = currentBASELINE_ITEM.BASELINE_ITEM.TOTAL_HOURS;
-                decimal BaselineItemTotalCosts = currentBASELINE_ITEM.TOTAL_COSTS;
+                decimal budgetedUnits = progressItemStats.Stats.BudgetedUnits;
+                decimal budgetedCosts = progressItemStats.Stats.BudgetedCosts;
 
-                List<ProgressInfo> plannedDataPoints;
-                if (assignmentLoadType == AssignmentLoadType.Original) //if it's generating from original baseline ignore variation
+                List<DataPoint> plannedDataPoints;
+                if (assignmentLoadType == ReportingClasses.AssignmentLoadType.Original) //if it's generating from original baseline ignore variation
                 {
-                    if (dbDataPointsCollection != null)
-                    {
-                        IEnumerable<StoredProcedure_DeliverablesDataPoints> currentReportableDbDataPoints =
-                        dbDataPointsCollection.Where(x => x.GUID_ORIGINAL == reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL)
-                        .OrderBy(x => x.UniversalPeriodStartDate);
+                    TimeSpan workingBaseTimeSpan = (DateTime)currentWORKPACK.ENDDATE - (DateTime)currentWORKPACK.STARTDATE;
+                    //plannedDataPoints = ISupportProgressReportingExtensions.DataPointsGenerator(this.ReportingInterval, this.FirstAlignedDataDate, workingBaseTimeSpan, BaselineItemBaseUnits, BaselineItemBaseCosts, (DateTime)currentWORKPACK.STARTDATE, this.CurrencyConversion, workpackSuspensionPeriod, BaselineItemTotalUnits, BaselineItemTotalCosts);
 
-                        reportableObject.NonCumulative_OriginalDataPoints =
-                            new ObservableCollection<ProgressInfo>(ConvertDeliverablesDataPointToProgressInfo(currentReportableDbDataPoints, reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS, reportableObject.BASELINE_ITEMJoinRATE.TOTAL_COSTS));
-                    }
-                    else
-                    {
-                        TimeSpan workingBaseTimeSpan = (DateTime)currentWORKPACK.ENDDATE - (DateTime)currentWORKPACK.STARTDATE;
-                        plannedDataPoints = ISupportProgressReportingExtensions.DataPointsGenerator(this.progressInterval, this.firstAlignedDataDate, workingBaseTimeSpan, BaselineItemBaseUnits, BaselineItemBaseCosts, (DateTime)currentWORKPACK.STARTDATE, currentBASELINE_ITEM.BASELINE_ITEM.GUID_ORIGINAL, this.currencyConversion, workpackSuspensionPeriod, BaselineItemTotalUnits, BaselineItemTotalCosts);
-                        reportableObject.NonCumulative_OriginalDataPoints = new ObservableCollection<ProgressInfo>(plannedDataPoints);
-                    }
+                    plannedDataPoints = ISupportProgressReportingExtensions.DataPointsGenerator(this.ReportingInterval, this.FirstAlignedDataDate, workingBaseTimeSpan, budgetedUnits, budgetedCosts, (DateTime)currentWORKPACK.STARTDATE, this.CurrencyConversion, workpackSuspensionPeriod, null);
+
+                    progressItemStats.Stats.Budgeted.SetData(new ObservableCollection<DataPoint>(plannedDataPoints));
                 }
                 else
                 {
-                    if (dbDataPointsCollection != null)
-                    {
-                        IEnumerable<StoredProcedure_DeliverablesDataPoints> currentDeliverableDataPoints = dbDataPointsCollection.Where(x => x.GUID_ORIGINAL == reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL).OrderBy(x => x.UniversalPeriodStartDate);
-                        reportableObject.NonCumulative_PlannedDataPoints = new ObservableCollection<ProgressInfo>(ConvertDeliverablesDataPointToProgressInfo(currentDeliverableDataPoints, reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS, reportableObject.BASELINE_ITEMJoinRATE.TOTAL_COSTS));
-                    }
-                    else
-                    {
-                        DateTime modifiedEndDateToUse = (DateTime)currentWORKPACK.ENDDATE;
-                        if (currentWORKPACK.FORECASTENDDATE != null)
-                            modifiedEndDateToUse = (DateTime)currentWORKPACK.FORECASTENDDATE;
+                    DateTime modifiedEndDateToUse = (DateTime)currentWORKPACK.ENDDATE;
+                    if (currentWORKPACK.FORECASTENDDATE != null)
+                        modifiedEndDateToUse = (DateTime)currentWORKPACK.FORECASTENDDATE;
 
-                        TimeSpan workingModifiedTimeSpan = modifiedEndDateToUse - (DateTime)currentWORKPACK.STARTDATE;
-                        if (currentWORKPACK.FORECASTSTARTDATE != null && ((DateTime)currentWORKPACK.FORECASTSTARTDATE) > currentWORKPACK.ENDDATE)
-                            workpackSuspensionPeriod.Add(new Period(((DateTime)currentWORKPACK.ENDDATE).AddDays(1), (DateTime)currentWORKPACK.FORECASTSTARTDATE));
+                    TimeSpan workingModifiedTimeSpan = modifiedEndDateToUse - (DateTime)currentWORKPACK.STARTDATE;
+                    if (currentWORKPACK.FORECASTSTARTDATE != null && ((DateTime)currentWORKPACK.FORECASTSTARTDATE) > currentWORKPACK.ENDDATE)
+                        workpackSuspensionPeriod.Add(new Period(((DateTime)currentWORKPACK.ENDDATE).AddDays(1), (DateTime)currentWORKPACK.FORECASTSTARTDATE));
 
-                        //Used to show sharktooth on variation
-                        plannedDataPoints = ISupportProgressReportingExtensions.DataPointsGenerator(this.progressInterval, this.firstAlignedDataDate, workingModifiedTimeSpan, BaselineItemBaseUnits, BaselineItemBaseCosts, (DateTime)currentWORKPACK.STARTDATE, currentBASELINE_ITEM.BASELINE_ITEM.GUID_ORIGINAL, this.currencyConversion, workpackSuspensionPeriod, null, null, reportableObject.Cumulative_VariationAdjustments);
-
-                        //Used to show normalized variation
-                        //plannedDataPoints = DataPointsGenerator(WorkingPeriod, progressInterval, BaselineItemTotalUnits, BaselineItemTotalCosts, this.CurrencyConversion, baselineItem.WORKPACK.STARTDATE, firstAlignedDataDate, baselineItem.GUID_ORIGINAL);
-                        reportableObject.NonCumulative_PlannedDataPoints = new ObservableCollection<ProgressInfo>(plannedDataPoints);
-                    }
+                    plannedDataPoints = ISupportProgressReportingExtensions.DataPointsGenerator(this.ReportingInterval, this.FirstAlignedDataDate, workingModifiedTimeSpan, budgetedUnits, budgetedCosts, (DateTime)currentWORKPACK.STARTDATE, this.CurrencyConversion, workpackSuspensionPeriod, progressItemStats.Stats.VariationAdjustments);
+                    progressItemStats.Stats.Current.SetData(new ObservableCollection<DataPoint>(new ObservableCollection<DataPoint>(plannedDataPoints)));
                 }
             }
         }
 
-        public void BuildEarnedDataPoints(ReportableObject reportableObject)
+        public void BuildEarnedDataPoints(PROGRESS_ITEMProjection progressItemStats)
         {
-            reportableObject.ReportingDataDate = this.reportingDataDate;
-            IEnumerable<ProgressInfo> progressItemEarnedDataPoints = reportableObject.PROGRESS_ITEMSUpToCurrentDate.Select(x => new ProgressInfo()
+            IEnumerable<DataPoint> progressItemEarnedDataPoints = progressItemStats.PROGRESS_ITEMSUpToCurrentDate.Select(x => new DataPoint()
             {
-                BudgetedUnits = reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS,
-                BudgetedCosts = reportableObject.BASELINE_ITEMJoinRATE.TOTAL_COSTS * this.currencyConversion,
-                BaselineItemGuid = reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL,
+                BudgetedUnits = progressItemStats.Stats.BudgetedUnits,
+                BudgetedCosts = progressItemStats.Stats.BudgetedCosts * this.CurrencyConversion,
                 Units = x.EARNED_UNITS,
-                Costs = x.EARNED_UNITS * reportableObject.BASELINE_ITEMJoinRATE.ITEMRATE * this.currencyConversion,
+                Costs = x.EARNED_UNITS * progressItemStats.BASELINE_ITEMJoinRATE.ITEMRATE * this.CurrencyConversion,
                 ProgressDate = x.EARNED_DATE,
             }).ToArray();
-            reportableObject.NonCumulative_EarnedDataPoints = new ObservableCollection<ProgressInfo>(progressItemEarnedDataPoints);
+            progressItemStats.Stats.Earned.SetData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
         }
 
-        public void BuildRemainingDataPoints(ReportableObject reportableObject)
+        public void BuildRemainingDataPoints(PROGRESS_ITEMProjection progressItem)
         {
-            //when remaining units is more than 0 continue calculation
-            if (reportableObject.RemainingUnitsAfterDataDate > 0 && reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK != null)
-            {
-                string s;
-                if (reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM == "P027-22200-MOD-ME-843")
-                    s = string.Empty;
+            //Add earned datapoints to the collection so that % will continue after earned instead of starting from 0% abruptly
+            //Individual datapoints however is controlled through plotstartdate in ConvertCumulativeToPeriodDataPoint
+            List<DataPoint> dataPoints;
+            if (progressItem.Stats.Earned != null && progressItem.Stats.Earned != null && progressItem.Stats.Earned.DataPoints != null && progressItem.Stats.Earned.DataPoints.Count() > 0)
+                dataPoints = progressItem.Stats.Earned.DataPoints.ToList();
+            else
+                dataPoints = new List<DataPoint>();
 
-                List<ProgressInfo> progressItemP6DataPoints;
-                if (TryBuildP6DataPoints(this.progressP6Tasks, reportableObject, DataPointsType.Remaining, AssignmentLoadType.Modified, out progressItemP6DataPoints))
+            if (progressItem.RemainingUnitsAfterDataDate > 0 && progressItem.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK != null)
+            {
+                List<DataPoint> p6DataPoints;
+
+                if (TryBuildP6DataPoints(this.progressP6Tasks, projectWORKPACK_ASSIGNMENTS, progressItem, ReportingClasses.DataPointsType.Remaining, ReportingClasses.AssignmentLoadType.Modified, progressItem.Stats.VariationAdjustments, out p6DataPoints))
                 {
-                    reportableObject.isRemainingDataPointsFromP6 = true;
-                    reportableObject.NonCumulative_RemainingPlannedDataPoints = new ObservableCollection<ProgressInfo>(progressItemP6DataPoints);
+                    dataPoints.AddRange(p6DataPoints);
+                    progressItem.Stats.Remaining.SetFromP6();
+                    progressItem.Stats.Remaining.SetData(dataPoints);
                 }
                 else
                 {
                     DateTime firstAlignedWeekEndingDataDate;
 
                     decimal firstPeriodProRate;
-                    WORKPACK lookUpWORKPACK = projectWORKPACKS.FirstOrDefault(x => x.GUID == reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK);
+                    WORKPACK lookUpWORKPACK = projectWORKPACKS.FirstOrDefault(x => x.GUID == progressItem.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK);
 
                     if (lookUpWORKPACK == null)
                         return;
@@ -195,31 +273,29 @@ namespace BluePrints.Common.ViewModel.Reporting
                         return;
 
                     //use end date to limit charting beyond end date
-                    if (reportableObject.NonCumulative_PlannedDataPoints == null || reportableObject.NonCumulative_PlannedDataPoints.Count == 0)
+                    if (progressItem.Stats.Budgeted.DataPoints == null || progressItem.Stats.Budgeted.DataPoints.Count() == 0)
                         return;
 
-                    DateTime endDateToUse = reportableObject.NonCumulative_PlannedDataPoints.Max(x => x.ProgressDate);
-                    endDateToUse = endDateToUse.AddDays(progressInterval.Days);
+                    DateTime endDateToUse = progressItem.Stats.Budgeted.DataPoints.Max(x => x.ProgressDate);
+                    endDateToUse = endDateToUse.AddDays(ReportingInterval.Days);
                     //when workpack dates are later than data date use workpack dates but have a prorate value ready for first period
-                    if (startDateToUse > this.reportingDataDate)
+                    if (startDateToUse > progressItem.Stats.ReportingDataDate)
                     {
                         firstAlignedWeekEndingDataDate = alignedWeekEndingDates.FirstOrDefault(dates => dates.Date >= startDateToUse);
-                        firstPeriodProRate = Convert.ToDecimal((firstAlignedWeekEndingDataDate - startDateToUse).TotalDays / progressInterval.TotalDays);
+                        firstPeriodProRate = Convert.ToDecimal((firstAlignedWeekEndingDataDate - startDateToUse).TotalDays / ReportingInterval.TotalDays);
                     }
                     else
                     {
-                        firstAlignedWeekEndingDataDate = this.reportingDataDate.AddDays(progressInterval.Days);
+                        firstAlignedWeekEndingDataDate = progressItem.Stats.ReportingDataDate.AddDays(ReportingInterval.Days);
                         firstPeriodProRate = 1;
                     }
 
-                    reportableObject.NonCumulative_RemainingPlannedDataPoints = ISupportProgressReportingExtensions.RemainingDataPointsGenerator(progressInterval, reportableObject, firstAlignedWeekEndingDataDate, exceptionPeriods, reportableObject.RemainingUnitsAfterDataDate, 1, this.currencyConversion, firstPeriodProRate, endDateToUse);
+                    List<DataPoint> remainingDataPoint = ISupportProgressReportingExtensions.RemainingDataPointsGenerator(ReportingInterval, progressItem, firstAlignedWeekEndingDataDate, exceptionPeriods, progressItem.RemainingUnitsAfterDataDate, 1, this.CurrencyConversion, firstPeriodProRate, endDateToUse);
+                    dataPoints.AddRange(remainingDataPoint);
                 }
             }
-        }
 
-        public void BuildCumulativeSummary(ReportableObject reportableObject)
-        {
-            ISupportProgressReportingExtensions.GenerateCumulativeSummaryDataPoints(reportableObject, this.firstAlignedDataDate, this.progressInterval);
+            progressItem.Stats.Remaining.SetData(dataPoints);
         }
 
         /// <summary>
@@ -232,34 +308,39 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <param name="this.CurrencyConversion">currency conversion factor</param>
         /// <param name="nonCumulativeP6DataPoints">current progress item non cumulative data points</param>
         /// <returns>is generation success</returns>
-        private bool TryBuildP6DataPoints(IEnumerable<TASK> P6TASKS, ReportableObject reportableObject, DataPointsType processingType, AssignmentLoadType assignmentLoadType, out List<ProgressInfo> nonCumulativeP6DataPoints)
+        private bool TryBuildP6DataPoints(IEnumerable<TASK> P6TASKS, IEnumerable<WORKPACK_ASSIGNMENT> projectWORKPACKASSIGNMENTS, PROGRESS_ITEMProjection progressItem, ReportingClasses.DataPointsType processingType, ReportingClasses.AssignmentLoadType assignmentLoadType, List<VariationAdjustment> deliverableVariationAdjustments, out List<DataPoint> nonCumulativeP6DataPoints)
         {
-            nonCumulativeP6DataPoints = new List<ProgressInfo>();
-            if (reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK == null)
+            nonCumulativeP6DataPoints = new List<DataPoint>();
+            IEnumerable<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENTbyType;
+            if (assignmentLoadType == ReportingClasses.AssignmentLoadType.Modified)
+                WORKPACK_ASSIGNMENTbyType = projectWORKPACKASSIGNMENTS.Where(assignment => assignment.ISMODIFIEDBASELINE == true);
+            else
+                WORKPACK_ASSIGNMENTbyType = projectWORKPACKASSIGNMENTS.Where(assignment => assignment.ISMODIFIEDBASELINE == false);
+
+            if (assignmentLoadType == ReportingClasses.AssignmentLoadType.Modified && WORKPACK_ASSIGNMENTbyType.Count() == 0)
+            {
+                WORKPACK_ASSIGNMENTbyType = projectWORKPACKASSIGNMENTS.Where(assignment => assignment.ISMODIFIEDBASELINE == false);
+            }
+            if (progressItem.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK == null || projectWORKPACKASSIGNMENTS == null || projectWORKPACKASSIGNMENTS.Count() == 0)
                 return false;
 
-            IEnumerable<WORKPACK_ASSIGNMENT> currentWORKPACK_ASSIGNMENTS;
-            Guid currentWORKPACKGuid = (Guid)reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK;
+            Guid currentWORKPACKGuid = (Guid)progressItem.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK;
+            IEnumerable<WORKPACK_ASSIGNMENT> currentWORKPACK_ASSIGNMENTS = WORKPACK_ASSIGNMENTbyType.Where(x => x.GUID_WORKPACK == currentWORKPACKGuid);
 
-            if (assignmentLoadType == AssignmentLoadType.Modified && reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK.WORKPACK_ASSIGNMENT.Any(assignment => assignment.ISMODIFIEDBASELINE == true))
-                currentWORKPACK_ASSIGNMENTS = reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK.WORKPACK_ASSIGNMENT.Where(assignment => assignment.ISMODIFIEDBASELINE == true);
-            else
-                currentWORKPACK_ASSIGNMENTS = reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK.WORKPACK_ASSIGNMENT.Where(assignment => assignment.ISMODIFIEDBASELINE == false);
-
-            if (currentWORKPACK_ASSIGNMENTS != null && P6TASKS != null && currentWORKPACK_ASSIGNMENTS.Count() != 0 && P6TASKS.Count() != 0)
+            if (WORKPACK_ASSIGNMENTbyType != null && P6TASKS != null && currentWORKPACK_ASSIGNMENTS.Count() != 0 && P6TASKS.Count() != 0)
             {
                 currentWORKPACK_ASSIGNMENTS = currentWORKPACK_ASSIGNMENTS.OrderBy(x => x.LOW_VALUE);
-                BASELINE_ITEMProjection currentBASELINE_ITEM = reportableObject.BASELINE_ITEMJoinRATE;
-                decimal totalUnits = currentBASELINE_ITEM.BASELINE_ITEM.TOTAL_HOURS;
-                decimal totalCosts = currentBASELINE_ITEM.TOTAL_COSTS;
-                decimal reportableAssinmentStartUnitForWorkpackAssignmentPairing = reportableObject.WorkpackAssignmentStartUnit;
+                decimal totalUnits = progressItem.Stats.TotalUnits;
+                decimal totalCosts = progressItem.Stats.TotalCosts;
+                decimal reportableAssinmentStartUnitForWorkpackAssignmentPairing = progressItem.WorkpackAssignmentStartUnit;
 
                 decimal currentAssignmentRemainingUnits;
                 //because the earned units portion is generated independent of P6 tasks, we are only interested in what happens after earned units
-                if (processingType == DataPointsType.Remaining)
+                if (processingType == ReportingClasses.DataPointsType.Remaining)
                 {
-                    reportableAssinmentStartUnitForWorkpackAssignmentPairing += reportableObject.TOTAL_EARNED_UNITS;
-                    currentAssignmentRemainingUnits = totalUnits - reportableObject.TOTAL_EARNED_UNITS;
+                    decimal TotalEarnedUnits = progressItem.TOTAL_EARNED_UNITS;
+                    reportableAssinmentStartUnitForWorkpackAssignmentPairing += TotalEarnedUnits;
+                    currentAssignmentRemainingUnits = totalUnits - TotalEarnedUnits;
                 }
                 else
                     currentAssignmentRemainingUnits = totalUnits;
@@ -274,7 +355,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     {
                         TASK currentAssignmentTASK = P6TASKS.FirstOrDefault(task => task.task_code == currentWORKPACK_ASSIGNMENT.P6_ACTIVITYID);
                         DateTime CurrentAssignmentStartDate;
-                        if (processingType == DataPointsType.Planned)
+                        if (processingType == ReportingClasses.DataPointsType.Planned)
                             CurrentAssignmentStartDate = (DateTime)currentAssignmentTASK.target_start_date;
                         else
                         {
@@ -285,7 +366,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         }
 
                         DateTime CurrentAssignmentEndDate;
-                        if (processingType == DataPointsType.Planned)
+                        if (processingType == ReportingClasses.DataPointsType.Planned)
                             CurrentAssignmentEndDate = (DateTime)currentAssignmentTASK.target_end_date;
                         else
                             CurrentAssignmentEndDate = (DateTime)currentAssignmentTASK.early_end_date;
@@ -298,9 +379,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                         else
                             CurrentAssignmentUnits = (currentWORKPACK_ASSIGNMENT.HIGH_VALUE - currentWORKPACK_ASSIGNMENT.LOW_VALUE) + 1;
 
-                        decimal CurrentAssignmentCosts = CurrentAssignmentUnits * reportableObject.BASELINE_ITEMJoinRATE.ITEMRATE;
+                        decimal Rate = progressItem.BASELINE_ITEMJoinRATE.ITEMRATE;
+                        decimal CurrentAssignmentCosts = CurrentAssignmentUnits * Rate;
 
-                        List<ProgressInfo> p6ProgressInfo = ISupportProgressReportingExtensions.DataPointsGenerator(this.progressInterval, this.firstAlignedDataDate, CurrentAssignmentWorkingPeriod, CurrentAssignmentUnits, CurrentAssignmentCosts, CurrentAssignmentStartDate, currentBASELINE_ITEM.BASELINE_ITEM.GUID_ORIGINAL, this.currencyConversion, null, null, null);
+                        List<DataPoint> p6ProgressInfo = ISupportProgressReportingExtensions.DataPointsGenerator(this.ReportingInterval, this.FirstAlignedDataDate, CurrentAssignmentWorkingPeriod, CurrentAssignmentUnits, CurrentAssignmentCosts, CurrentAssignmentStartDate, this.CurrencyConversion, this.exceptionPeriods);
                         nonCumulativeP6DataPoints.AddRange(p6ProgressInfo);
                         currentAssignmentRemainingUnits -= CurrentAssignmentUnits;
                         reportableAssinmentStartUnitForWorkpackAssignmentPairing += CurrentAssignmentUnits;
@@ -330,14 +412,13 @@ namespace BluePrints.Common.ViewModel.Reporting
             return null;
         }
 
-        private IEnumerable<ProgressInfo> ConvertDeliverablesDataPointToProgressInfo(IEnumerable<StoredProcedure_DeliverablesDataPoints> deliverablesDataPoints, decimal BudgetedUnits, decimal BudgetedCosts)
+        private IEnumerable<DataPoint> ConvertDeliverablesDataPointToProgressInfo(IEnumerable<StoredProcedure_DeliverablesDataPoints> deliverablesDataPoints, decimal BudgetedUnits, decimal BudgetedCosts)
         {
-            List<ProgressInfo> progressInfoConversion = new List<ProgressInfo>();
+            List<DataPoint> progressInfoConversion = new List<DataPoint>();
             foreach (StoredProcedure_DeliverablesDataPoints deliverablesDataPoint in deliverablesDataPoints)
             {
-                progressInfoConversion.Add(new ProgressInfo
+                progressInfoConversion.Add(new DataPoint
                 {
-                    BaselineItemGuid = deliverablesDataPoint.GUID_ORIGINAL,
                     BudgetedUnits = BudgetedUnits,
                     BudgetedCosts = BudgetedCosts,
                     Costs = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedPrice),
@@ -347,17 +428,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
 
             return progressInfoConversion;
-        } 
+        }
         #endregion
-    }
 
-    public interface IBuildDataPoints
-    {
-        void BuildVariationAdjustments(ReportableObject reportableObject);
-        void BuildPlannedDataPoints(ReportableObject reportableObject, AssignmentLoadType assignmentLoadType,
-          IEnumerable<StoredProcedure_DeliverablesDataPoints> dbDataPointsCollection = null);
-        void BuildEarnedDataPoints(ReportableObject reportableObject);
-        void BuildRemainingDataPoints(ReportableObject reportableObject);
-        void BuildCumulativeSummary(ReportableObject reportableObject);
     }
 }

@@ -203,7 +203,7 @@ namespace BluePrints.ViewModels
 
             return
                 query =>
-                    WORKPACK_DashboardQueries.MappingWORKPACKDashboard(
+                    WORKPACK_DashboardQueries.SummarizeWORKPACKDashboard(
                         query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID), getPROGRESSFunc, getBASELINEFunc,
                         getBASELINE_ITEMSFunc, getPROGRESS_ITEMSFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, 
                         mappingType == BaselineMappingSelectionType.Modified);

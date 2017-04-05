@@ -32,24 +32,36 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         #region Reportables Parameter Calculation
 
-        public static IEnumerable<VARIATION_ITEMProjection> ConvertVARIATIONITEMProjection(IEnumerable<VARIATION> approvedVariations)
+        public static void InitializePROGRESS_ITEMStats(IEnumerable<PROGRESS_ITEMProjection> PROGRESS_ITEMS, IEnumerable<VariationAdjustment> variationAdjustments, PROGRESS livePROGRESS, bool progressHaveStats)
         {
-            IQueryable<VARIATION> approvedVARIATION = approvedVariations.Where(x => x.APPROVED != null).AsQueryable();
-            List<VARIATION_ITEMProjection> variation_itemProjection = new List<VARIATION_ITEMProjection>();
-            foreach (VARIATION variation in approvedVARIATION)
+            foreach (PROGRESS_ITEMProjection progressItem in PROGRESS_ITEMS)
             {
-                foreach (VARIATION_ITEM variation_item in variation.VARIATION_ITEM)
-                {
-                    if (variation_item.ACTION != VariationAction.Add && variation_item.ACTION != VariationAction.Append)
-                        continue;
+                List<VariationAdjustment> currentProgressItemAdjustments = variationAdjustments.Where(x => x.DeliverableOriginalGuid == progressItem.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL).ToList();
+                if(!progressHaveStats)
+                    progressItem.Stats = new ProgressStats(livePROGRESS, progressItem.BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS, progressItem.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS, progressItem.BASELINE_ITEMJoinRATE.ESTIMATED_COSTS, progressItem.BASELINE_ITEMJoinRATE.TOTAL_COSTS, currentProgressItemAdjustments);
+            }
+        }
 
-                    variation_itemProjection.Add(new VARIATION_ITEMProjection() { VARIATION_ITEM = variation_item, APPROVED = variation.APPROVED });
+        public static List<VariationAdjustment> BuildProjectVariationAdjustments(IQueryable<VARIATION> VARIATION, IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEM)
+        {
+            List<VariationAdjustment> variationAdjustments = new List<VariationAdjustment>();
+            IQueryable<VARIATION> ApprovedVARIATION = VARIATION.Where(x => x.APPROVED != null && x.TYPE == VariationType.External);
+            foreach (VARIATION variation in ApprovedVARIATION)
+            {
+                IEnumerable<VARIATION_ITEM> applicableVariation_Item = variation.VARIATION_ITEM.Where(x => x.ACTION == VariationAction.Add || x.ACTION == VariationAction.Append);
+                foreach (VARIATION_ITEM variation_item in applicableVariation_Item)
+                {
+                    BASELINE_ITEMProjection findBASELINE_ITEM = BASELINE_ITEM.FirstOrDefault(x => x.BASELINE_ITEM.GUID_ORIGINAL == variation_item.GUID_ORIBASEITEM);
+                    if (findBASELINE_ITEM != null)
+                    {
+                        variationAdjustments.Add(new VariationAdjustment(variation_item.GUID_ORIBASEITEM) { AdjustmentDate = (DateTime)variation.APPROVED, AdjustmentUnits = variation_item.VARIATION_UNITS, AdjustmentRate = findBASELINE_ITEM.ITEMRATE });
+                    }
                 }
             }
 
-            return variation_itemProjection;
+            return variationAdjustments;
         }
-
+        
         /// <summary>
         /// Calculates productivity
         /// </summary>
@@ -150,13 +162,13 @@ namespace BluePrints.Common.ViewModel.Reporting
             return intervalPeriod;
         }
 
-        public static void SetWorkpackAssignmentStartUnit(IEnumerable<ReportableObject> reportableObjects)
+        public static void SetWorkpackAssignmentStartUnit(IEnumerable<PROGRESS_ITEMProjection> progressStats)
         {
             Dictionary<Guid, decimal> workpackP6AssignedUnits = new Dictionary<Guid, decimal>();
-            reportableObjects = reportableObjects.OrderBy(x => x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM);
-            foreach(ReportableObject reportableObject in reportableObjects)
+            progressStats = progressStats.OrderBy(x => x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM != null);
+            foreach(PROGRESS_ITEMProjection progressStat in progressStats)
             {
-                Guid? currentWORKPACKGuid = reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK;
+                Guid? currentWORKPACKGuid = progressStat.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK;
                 if (currentWORKPACKGuid == null)
                     continue;
 
@@ -170,92 +182,12 @@ namespace BluePrints.Common.ViewModel.Reporting
                     workpackP6AssignedUnits.Remove(((KeyValuePair<Guid, decimal>)assignedWorkpack).Key);
                 }
 
-                reportableObject.WorkpackAssignmentStartUnit = workpackAssignmentStartUnit;
+                progressStat.SetWorkpackAssignmentStartUnit(workpackAssignmentStartUnit);
                 //move assignment start unit by total hours for next start unit assignment
-                workpackAssignmentStartUnit += reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
+                workpackAssignmentStartUnit += progressStat.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
                 workpackP6AssignedUnits.Add((Guid)currentWORKPACKGuid, workpackAssignmentStartUnit);
             }
         }
-        #endregion
-
-        #region Planned Calculation Methods
-
-        public static void BuildPlannedDataPoints(ReportableObject reportableObject, bool isOriginal)
-        {
-            ////Populate the progressItem variation adjustments
-            //reportableObject.NonCumulative_VariationAdjustments = new ObservableCollection<VariationAdjustment>(SummaryObject.NonCumulative_VariationAdjustments.Where(adjustment => adjustment.BaselineItemGuid == reportableObject.BASELINE_ITEM.GUID_ORIGINAL).ToList());
-            //reportableObject.Cumulative_VariationAdjustments = ISupportProgressReportingExtensions.PopulateCumulativeVariationAdjustments(reportableObject.NonCumulative_VariationAdjustments, SummaryObject.FirstAlignedDataDate, SummaryObject.IntervalPeriod);
-
-            ////Assign the report date for stats display
-            //reportableObject.ReportingDataDate = SummaryObject.ReportingDataDate;
-
-            //BASELINE_ITEMInfo baselineItem = reportableObject.BASELINE_ITEM;
-            //if (baselineItem.WORKPACK == null)
-            //    continue;
-
-            //List<ProgressInfo> progressItemP6DataPoints;
-            //WorkpackAssignmentLoadType assignmentLoadType = WorkpackAssignmentLoadType.Original;
-            //if (!fromOriginalBaseline)
-            //    assignmentLoadType = WorkpackAssignmentLoadType.Modified;
-
-            //IEnumerable<TASK> BASELINE_TASKS = null;
-            //P6Data.PROJECT BASELINE_P6PROJECT = null;
-            //if (fromOriginalBaseline)
-            //{
-            //    if (this.SummaryObject.LiveBASELINE.P6BASELINE_NAME != null && this.SummaryObject.LiveBASELINE.P6BASELINE_NAME != string.Empty)
-            //        BASELINE_TASKS = GetP6ScheduleTasks(summaryObject.LiveBASELINE.P6BASELINE_NAME, out BASELINE_P6PROJECT);
-            //}
-            //else
-            //{
-            //    if (this.SummaryObject.LiveBASELINE.P6MODBASELINE_NAME != null && this.SummaryObject.LiveBASELINE.P6MODBASELINE_NAME != string.Empty)
-            //        BASELINE_TASKS = GetP6ScheduleTasks(summaryObject.LiveBASELINE.P6MODBASELINE_NAME, out BASELINE_P6PROJECT);
-            //}
-
-            //if (SummaryObject.LivePROGRESS.P6PROGRESS_NAME != null && TryBuildP6DataPoints(BASELINE_P6PROJECT, BASELINE_TASKS, reportableObject, DataPointsType.Planned, assignmentLoadType, out progressItemP6DataPoints))
-            //{
-            //    if (fromOriginalBaseline)
-            //        reportableObject.NonCumulative_OriginalDataPoints = new ObservableCollection<ProgressInfo>(progressItemP6DataPoints);
-            //    else
-            //        reportableObject.NonCumulative_PlannedDataPoints = new ObservableCollection<ProgressInfo>(progressItemP6DataPoints);
-            //}
-            //else
-            //{
-            //    List<Period> workpackSuspensionPeriod = new List<Period>();
-            //    workpackSuspensionPeriod.Add(new Period(baselineItem.WORKPACK.REVIEWSTARTDATE, baselineItem.WORKPACK.REVIEWENDDATE));
-
-
-            //    decimal BaselineItemBaseUnits = baselineItem.ESTIMATED_HOURS;
-            //    decimal BaselineItemBaseCosts = baselineItem.ESTIMATED_COSTS;
-            //    decimal BaselineItemTotalUnits = baselineItem.TOTAL_HOURS;
-            //    decimal BaselineItemTotalCosts = baselineItem.TOTAL_COSTS;
-
-            //    List<ProgressInfo> plannedDataPoints;
-            //    if (fromOriginalBaseline) //if it's generating from original baseline ignore variation
-            //    {
-            //        TimeSpan workingBaseTimeSpan = baselineItem.WORKPACK.ENDDATE - baselineItem.WORKPACK.STARTDATE;
-            //        plannedDataPoints = ISupportProgressReportingExtensions.DataPointsGenerator(SummaryObject, workingBaseTimeSpan, BaselineItemBaseUnits, BaselineItemBaseCosts, baselineItem.WORKPACK.STARTDATE, baselineItem.GUID_ORIGINAL, this.CurrencyConversion, workpackSuspensionPeriod, BaselineItemTotalUnits, BaselineItemTotalCosts);
-            //        reportableObject.NonCumulative_OriginalDataPoints = new ObservableCollection<ProgressInfo>(plannedDataPoints);
-            //    }
-            //    else
-            //    {
-            //        DateTime modifiedEndDateToUse = baselineItem.WORKPACK.ENDDATE;
-            //        if (baselineItem.WORKPACK.FORECASTENDDATE != null)
-            //            modifiedEndDateToUse = (DateTime)baselineItem.WORKPACK.FORECASTENDDATE;
-
-            //        TimeSpan workingModifiedTimeSpan = modifiedEndDateToUse - baselineItem.WORKPACK.STARTDATE;
-            //        if (baselineItem.WORKPACK.FORECASTSTARTDATE != null && ((DateTime)baselineItem.WORKPACK.FORECASTSTARTDATE) > baselineItem.WORKPACK.ENDDATE)
-            //            workpackSuspensionPeriod.Add(new Period(baselineItem.WORKPACK.ENDDATE.AddDays(1), (DateTime)baselineItem.WORKPACK.FORECASTSTARTDATE));
-
-            //        //Used to show sharktooth on variation
-            //        plannedDataPoints = ISupportProgressReportingExtensions.DataPointsGenerator(SummaryObject, workingModifiedTimeSpan, BaselineItemBaseUnits, BaselineItemBaseCosts, baselineItem.WORKPACK.STARTDATE, baselineItem.GUID_ORIGINAL, this.CurrencyConversion, workpackSuspensionPeriod, null, null, reportableObject.Cumulative_VariationAdjustments);
-
-            //        //Used to show normalized variation
-            //        //plannedDataPoints = DataPointsGenerator(WorkingPeriod, progressInterval, BaselineItemTotalUnits, BaselineItemTotalCosts, this.CurrencyConversion, baselineItem.WORKPACK.STARTDATE, firstAlignedDataDate, baselineItem.GUID_ORIGINAL);
-            //        reportableObject.NonCumulative_PlannedDataPoints = new ObservableCollection<ProgressInfo>(plannedDataPoints);
-            //    }
-            //}
-        }
-
         #endregion
 
         #region Cumulative Calculation Methods
@@ -263,164 +195,102 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <summary>
         /// Populate summary data point for reporting S-Curve
         /// </summary>
-        public static ObservableCollection<ProgressInfo> PopulateCumulativeSummaryDataPoints(
-            ObservableCollection<ProgressInfo> flatDataPoints,
-            ObservableCollection<VariationAdjustment> variationAdjustments, decimal totalBudgetedUnits,
-            decimal totalBudgetedCosts, DateTime firstAlignedDataDate, TimeSpan progressInterval, Guid aggregateGuid)
+        public static ObservableCollection<DataPoint> GroupDataPointsByPeriod(
+            IEnumerable<DataPoint> rawDataPoints, decimal budgetedUnits,
+            decimal budgetedCosts, DateTime firstAlignedDataDate, TimeSpan progressInterval, Guid aggregateGuid,
+            IEnumerable<VariationAdjustment> rawVariationAdjustments = null)
         {
-            if (flatDataPoints == null || flatDataPoints.Count() == 0)
+            if (rawDataPoints == null || rawDataPoints.Count() == 0)
                 return null;
 
-            var summaryDataPoints = new ObservableCollection<ProgressInfo>();
-            var progressLastDataDate = flatDataPoints.Max(dataPoint => dataPoint.ProgressDate);
+            var summaryDataPoints = new ObservableCollection<DataPoint>();
+            var progressLastDataDate = rawDataPoints.Max(dataPoint => dataPoint.ProgressDate);
 
             //Add zero UOM data point so that line graph starts at 0%
-            summaryDataPoints.Add(new ProgressInfo()
+            summaryDataPoints.Add(new DataPoint()
             {
-                BudgetedUnits = totalBudgetedUnits,
-                BudgetedCosts = totalBudgetedCosts,
+                BudgetedUnits = budgetedUnits,
+                BudgetedCosts = budgetedCosts,
                 Units = 0,
                 Costs = 0,
-                ProgressDate = firstAlignedDataDate.AddDays(-1 * progressInterval.Days),
-                BaselineItemGuid = aggregateGuid
+                ProgressDate = firstAlignedDataDate.AddDays(-1 * progressInterval.Days)
             });
 
             //Start going through each progress items to retrieve cumulative data point per period
             var scanDate = firstAlignedDataDate;
-            decimal individualPeriodCumulativeUnits = 0;
-            decimal individualPeriodCumulativeCosts = 0;
+            decimal cumulativeUnits = 0;
+            decimal cumulativeCosts = 0;
             decimal cumulativeAdjustmentUnits = 0;
             decimal cumulativeAdjustmentCosts = 0;
             while (scanDate <= progressLastDataDate)
             {
-                List<ProgressInfo> progressItemScanDateDataPoints;
-                List<VariationAdjustment> progressItemAdjustments;
+                List<DataPoint> currentPeriodDataPoints;
+                List<VariationAdjustment> currentPeriodVariationAdjustments;
 
                 if (scanDate == firstAlignedDataDate)
                 {
-                    progressItemScanDateDataPoints =
-                        flatDataPoints.Where(
+                    currentPeriodDataPoints =
+                        rawDataPoints.Where(
                             DataPoint => DataPoint.ProgressDate < scanDate.AddDays(progressInterval.Days)).ToList();
-                    progressItemAdjustments = variationAdjustments == null
+                    currentPeriodVariationAdjustments = rawVariationAdjustments == null
                         ? new List<VariationAdjustment>()
-                        : variationAdjustments.Where(
+                        : rawVariationAdjustments.Where(
                             Adjustment => Adjustment.AdjustmentDate < scanDate.AddDays(progressInterval.Days)).ToList();
                 }
                 else
                 {
-                    progressItemScanDateDataPoints =
-                        flatDataPoints.Where(
+                    currentPeriodDataPoints =
+                        rawDataPoints.Where(
                             DataPoint =>
                                 DataPoint.ProgressDate >= scanDate &&
                                 DataPoint.ProgressDate < scanDate.AddDays(progressInterval.Days)).ToList();
-                    progressItemAdjustments = variationAdjustments == null
+                    currentPeriodVariationAdjustments = rawVariationAdjustments == null
                         ? new List<VariationAdjustment>()
-                        : variationAdjustments.Where(Adjustment => Adjustment.AdjustmentDate == scanDate).ToList();
+                        : rawVariationAdjustments.Where(Adjustment => Adjustment.AdjustmentDate >= scanDate &&
+                                Adjustment.AdjustmentDate < scanDate.AddDays(progressInterval.Days)).ToList();
                 }
 
-                var incrementUnits = progressItemScanDateDataPoints.Sum(dataPoint => dataPoint.Units);
-                var variationUnits = progressItemAdjustments.Sum(adjustment => adjustment.AdjustmentUnits);
-                var variationCosts = progressItemAdjustments.Sum(adjustment => adjustment.AdjustmentCumulativeCosts);
+                decimal currentPeriodUnits = currentPeriodDataPoints.Sum(dataPoint => dataPoint.Units);
+                decimal currentPeriodCosts = currentPeriodDataPoints.Sum(dataPoint => dataPoint.Costs);
+                decimal currentPeriodAdjustmentUnits = currentPeriodVariationAdjustments.Sum(adjustment => adjustment.AdjustmentUnits);
+                decimal variationCosts = currentPeriodVariationAdjustments.Sum(adjustment => adjustment.AdjustmentNativeCosts);
 
-                if (variationUnits > 0)
+                if (currentPeriodAdjustmentUnits > 0)
                 {
-                    cumulativeAdjustmentUnits += variationUnits;
+                    cumulativeAdjustmentUnits += currentPeriodAdjustmentUnits;
                     cumulativeAdjustmentCosts += variationCosts;
 
                     //for sharktooth effect, add dip on a day after the previous period
-                    summaryDataPoints.Add(new ProgressInfo()
+                    summaryDataPoints.Add(new DataPoint()
                     {
-                        BudgetedUnits = totalBudgetedUnits + cumulativeAdjustmentUnits,
-                        BudgetedCosts = totalBudgetedCosts + cumulativeAdjustmentCosts,
-                        Units = individualPeriodCumulativeUnits,
-                        Costs = individualPeriodCumulativeCosts,
-                        ProgressDate = scanDate.AddDays(-1 * progressInterval.Days).AddDays(1),
-                        BaselineItemGuid = aggregateGuid
+                        BudgetedUnits = budgetedUnits + cumulativeAdjustmentUnits,
+                        BudgetedCosts = budgetedCosts + cumulativeAdjustmentCosts,
+                        Units = cumulativeUnits,
+                        Costs = cumulativeCosts,
+                        ProgressDate = scanDate.AddDays(-1 * progressInterval.Days).AddDays(1)
                     });
                 }
 
-                if (incrementUnits > 0)
+                if (currentPeriodUnits > 0)
                 {
-                    individualPeriodCumulativeUnits += progressItemScanDateDataPoints.Sum(dataPoint => dataPoint.Units);
-                    individualPeriodCumulativeCosts += progressItemScanDateDataPoints.Sum(dataPoint => dataPoint.Costs);
+                    cumulativeUnits += currentPeriodUnits;
+                    cumulativeCosts += currentPeriodCosts;
 
-                    summaryDataPoints.Add(new ProgressInfo()
+                    summaryDataPoints.Add(new DataPoint()
                     {
-                        BudgetedUnits = totalBudgetedUnits + cumulativeAdjustmentUnits,
-                        BudgetedCosts = totalBudgetedCosts + cumulativeAdjustmentCosts,
-                        Units = individualPeriodCumulativeUnits,
-                        Costs = individualPeriodCumulativeCosts,
-                        ProgressDate = scanDate,
-                        BaselineItemGuid = aggregateGuid
+                        BudgetedUnits = budgetedUnits + cumulativeAdjustmentUnits,
+                        BudgetedCosts = budgetedCosts + cumulativeAdjustmentCosts,
+                        Units = cumulativeUnits,
+                        Costs = cumulativeCosts,
+                        ProgressDate = scanDate
                     });
                 }
 
                 scanDate = scanDate.AddDays(progressInterval.Days);
             }
 
-            return summaryDataPoints;
-        }
-
-        /// <summary>
-        /// Populate summary data point for reporting S-Curve
-        /// </summary>
-        public static ObservableCollection<VariationAdjustment> PopulateCumulativeVariationAdjustments(
-            ObservableCollection<VariationAdjustment> flatVariationAdjustments, DateTime firstAlignedDataDate,
-            TimeSpan progressInterval)
-        {
-            var summaryDataPoints =
-                new ObservableCollection<VariationAdjustment>();
-            if (flatVariationAdjustments == null || flatVariationAdjustments.Count() == 0)
-                return summaryDataPoints;
-
-            var progressLastDataDate = flatVariationAdjustments.Max(dataPoint => dataPoint.AdjustmentDate);
-
-            //Add zero UOM data point so that line graph starts at 0%
-            summaryDataPoints.Add(new VariationAdjustment()
-            {
-                AdjustmentDate = firstAlignedDataDate.AddDays(-1 * progressInterval.Days),
-                AdjustmentUnits = 0
-            });
-
-            //Start going through each progress items to retrieve cumulative data point per period
-            var scanDate = firstAlignedDataDate;
-            decimal individualPeriodValue = 0;
-            decimal individualPeriodCosts = 0;
-
-            while (scanDate <= progressLastDataDate)
-            {
-                List<VariationAdjustment> progressItemScanDateDataPoints;
-
-                if (scanDate == firstAlignedDataDate)
-                    progressItemScanDateDataPoints =
-                        flatVariationAdjustments.Where(
-                            DataPoint => DataPoint.AdjustmentDate < scanDate.AddDays(progressInterval.Days)).ToList();
-                else
-                    progressItemScanDateDataPoints =
-                        flatVariationAdjustments.Where(
-                            DataPoint =>
-                                DataPoint.AdjustmentDate >= scanDate &&
-                                DataPoint.AdjustmentDate < scanDate.AddDays(progressInterval.Days)).ToList();
-
-                var incrementUnits = progressItemScanDateDataPoints.Sum(dataPoint => dataPoint.AdjustmentUnits);
-                if (incrementUnits != 0)
-                {
-                    individualPeriodValue = progressItemScanDateDataPoints.Sum(dataPoint => dataPoint.AdjustmentUnits);
-                    individualPeriodCosts =
-                        progressItemScanDateDataPoints.Sum(dataPoint => dataPoint.AdjustmentNativeCosts);
-
-                    summaryDataPoints.Add(new VariationAdjustment()
-                    {
-                        AdjustmentDate = scanDate.AddDays(progressInterval.Days),
-                        AdjustmentUnits = individualPeriodValue,
-                        AdjustmentRate = progressItemScanDateDataPoints.First().AdjustmentRate,
-                        AdjustmentCumulativeCosts = individualPeriodCosts
-                    });
-                }
-
-                scanDate = scanDate.AddDays(progressInterval.Days);
-            }
-
+            decimal totalUnits = summaryDataPoints.Sum(x => x.Units);
+            string s = totalUnits.ToString();
             return summaryDataPoints;
         }
 
@@ -428,10 +298,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Populate remaining summary data point for reporting S-Curve
         /// </summary>
         /// <returns></returns>
-        public static ObservableCollection<ProgressInfo> PopulateCumulativeRemainingSummaryDataPoints(
-            ObservableCollection<ProgressInfo> flatDataPointsBeforeDataDate,
+        public static ObservableCollection<DataPoint> PopulateCumulativeRemainingSummaryDataPoints(
+            ObservableCollection<DataPoint> flatDataPointsBeforeDataDate,
             ObservableCollection<VariationAdjustment> variationAdjustments,
-            ObservableCollection<ProgressInfo> flatDataPointsAfterDataDate, decimal totalBudgetedUnits,
+            ObservableCollection<DataPoint> flatDataPointsAfterDataDate, decimal totalBudgetedUnits,
             decimal totalBudgetedCosts, DateTime firstAlignedDataDate, TimeSpan progressInterval, Guid aggregateGuid)
         {
             if (flatDataPointsBeforeDataDate == null || flatDataPointsBeforeDataDate.Count == 0 ||
@@ -441,19 +311,18 @@ namespace BluePrints.Common.ViewModel.Reporting
             var collectionEarnedUnits = flatDataPointsBeforeDataDate.Sum(obj => obj.Units);
             var collectionEarnedUnitsAfter = flatDataPointsAfterDataDate.Sum(obj => obj.Units);
 
-            var summaryDataPoints = new ObservableCollection<ProgressInfo>();
+            var summaryDataPoints = new ObservableCollection<DataPoint>();
             var remainingFirstDataDate = flatDataPointsAfterDataDate.Min(dataPoint => dataPoint.ProgressDate);
             var remainingLastDataDate = flatDataPointsAfterDataDate.Max(dataPoint => dataPoint.ProgressDate);
 
             //Add zero UOM data point so that line graph starts at 0%
-            summaryDataPoints.Add(new ProgressInfo()
+            summaryDataPoints.Add(new DataPoint()
             {
                 BudgetedUnits = totalBudgetedUnits,
                 BudgetedCosts = totalBudgetedCosts,
                 Units = 0,
                 Costs = 0,
-                ProgressDate = firstAlignedDataDate.AddDays(-1 * progressInterval.Days),
-                BaselineItemGuid = aggregateGuid
+                ProgressDate = firstAlignedDataDate.AddDays(-1 * progressInterval.Days)
             });
 
             //Start going through each progress items to retrieve cumulative data point per period
@@ -466,7 +335,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             while (scanDate.Date <= remainingLastDataDate)
             {
-                List<ProgressInfo> progressItemScanDateDataPoints;
+                List<DataPoint> progressItemScanDateDataPoints;
                 List<VariationAdjustment> progressItemAdjustments;
 
                 if (scanDate == firstAlignedDataDate)
@@ -506,26 +375,26 @@ namespace BluePrints.Common.ViewModel.Reporting
                                 DataPoint.ProgressDate < scanDate.AddDays(progressInterval.Days)).ToList();
                     progressItemAdjustments = variationAdjustments == null
                         ? new List<VariationAdjustment>()
-                        : variationAdjustments.Where(adjustment => adjustment.AdjustmentDate == scanDate).ToList();
+                        : variationAdjustments.Where(adjustment => adjustment.AdjustmentDate >= scanDate &&
+                                adjustment.AdjustmentDate < scanDate.AddDays(progressInterval.Days)).ToList();
                 }
 
                 var incrementUnits = progressItemScanDateDataPoints.Sum(dataPoint => dataPoint.Units);
                 var variationUnits = progressItemAdjustments.Sum(adjustment => adjustment.AdjustmentUnits);
-                var variationCosts = progressItemAdjustments.Sum(adjustment => adjustment.AdjustmentCumulativeCosts);
+                var variationCosts = progressItemAdjustments.Sum(adjustment => adjustment.AdjustmentNativeCosts);
                 if (variationUnits > 0)
                 {
                     cumulativeAdjustmentUnits += variationUnits;
                     cumulativeAdjustmentCosts += variationCosts;
 
                     //for sharktooth effect, add dip on a day after the previous period
-                    summaryDataPoints.Add(new ProgressInfo()
+                    summaryDataPoints.Add(new DataPoint()
                     {
                         BudgetedUnits = totalBudgetedUnits + cumulativeAdjustmentUnits,
                         BudgetedCosts = totalBudgetedCosts + cumulativeAdjustmentCosts,
                         Units = individualPeriodCumulativeUnits,
                         Costs = individualPeriodCumulativeCosts,
-                        ProgressDate = scanDate.AddDays(-1 * progressInterval.Days).AddDays(1),
-                        BaselineItemGuid = aggregateGuid
+                        ProgressDate = scanDate.AddDays(-1 * progressInterval.Days).AddDays(1)
                     });
                 }
 
@@ -535,14 +404,13 @@ namespace BluePrints.Common.ViewModel.Reporting
                     individualPeriodCumulativeCosts += progressItemScanDateDataPoints.Sum(dataPoint => dataPoint.Costs);
 
 
-                    summaryDataPoints.Add(new ProgressInfo()
+                    summaryDataPoints.Add(new DataPoint()
                     {
                         BudgetedUnits = totalBudgetedUnits + cumulativeAdjustmentUnits,
                         BudgetedCosts = totalBudgetedCosts + cumulativeAdjustmentCosts,
                         Units = individualPeriodCumulativeUnits,
                         Costs = individualPeriodCumulativeCosts,
-                        ProgressDate = scanDate,
-                        BaselineItemGuid = aggregateGuid
+                        ProgressDate = scanDate
                     });
                 }
 
@@ -551,282 +419,11 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             return summaryDataPoints;
         }
-
-        /// <summary>
-        /// Summarizes non-cumulative data points into cumulative data points by default period
-        /// </summary>
-        /// <param name="isAggregate">Indicate whether interface is an aggregate so that budgeted units/costs will be recalculated</param>
-        public static void GenerateCumulativeSummaryDataPoints(SummarizableObject summarizableObject)
-        {
-            var totalBudgetedUnits = summarizableObject.Total_BudgetedUnits;
-            var totalBudgetedCosts = summarizableObject.Total_BudgetedCosts;
-            var finalBudgetedUnits = summarizableObject.Final_BudgetedUnits;
-            var finalBudgetedCosts = summarizableObject.Final_BudgetedCosts;
-            var firstDataDate = summarizableObject.FirstAlignedDataDate;
-            var intervalPeriod = summarizableObject.IntervalPeriod;
-            var isPOCOViewModel = summarizableObject as IPOCOViewModel != null;
-
-            if (summarizableObject.NonCumulative_VariationAdjustments.Count > 0)
-                summarizableObject.Cumulative_VariationAdjustments =
-                    PopulateCumulativeVariationAdjustments(summarizableObject.NonCumulative_VariationAdjustments,
-                        firstDataDate, intervalPeriod);
-
-            if (summarizableObject.NonCumulative_OriginalDataPoints.Count > 0)
-            {
-                summarizableObject.Summary_CumulativeOriginalDataPoints =
-                    PopulateCumulativeSummaryDataPoints(summarizableObject.NonCumulative_OriginalDataPoints,
-                        new ObservableCollection<VariationAdjustment>(), finalBudgetedUnits, finalBudgetedCosts,
-                        firstDataDate, intervalPeriod, Guid.Empty);
-                if (isPOCOViewModel)
-                {
-                    summarizableObject.RaisePropertyChanged(x => x.Summary_CumulativeOriginalDataPoints);
-                    summarizableObject.RaisePropertyChanged(x => x.Summary_PeriodOriginalDataPoints);
-                }
-            }
-
-            if (summarizableObject.NonCumulative_PlannedDataPoints.Count > 0)
-            {
-                //Used to show normalized variation
-                //ReportableObject.Summary_CumulativePlannedDataPoints = this.ISupportProgressReportingCollection.PopulateCumulativeSummaryDataPoints(ReportableObject.NonCumulative_PlannedDataPoints, new List<VariationAdjustment>(), finalBudgetedUnits, finalBudgetedCosts, firstDataDate, intervalPeriod, Guid.Empty);
-                //Used to show sharktooth on variation
-                summarizableObject.Summary_CumulativePlannedDataPoints =
-                    PopulateCumulativeSummaryDataPoints(summarizableObject.NonCumulative_PlannedDataPoints,
-                        summarizableObject.Cumulative_VariationAdjustments, totalBudgetedUnits, totalBudgetedCosts,
-                        firstDataDate, intervalPeriod, Guid.Empty);
-                if (isPOCOViewModel)
-                {
-                    summarizableObject.RaisePropertyChanged(x => x.Summary_CumulativePlannedDataPoints);
-                    summarizableObject.RaisePropertyChanged(x => x.Summary_PeriodPlannedDataPoints);
-                }
-            }
-
-            if (summarizableObject.NonCumulative_EarnedDataPoints.Count > 0)
-            {
-                summarizableObject.Summary_CumulativeEarnedDataPoints =
-                    PopulateCumulativeSummaryDataPoints(summarizableObject.NonCumulative_EarnedDataPoints,
-                        summarizableObject.Cumulative_VariationAdjustments, totalBudgetedUnits, totalBudgetedCosts,
-                        firstDataDate, intervalPeriod, Guid.Empty);
-                if (isPOCOViewModel)
-                {
-                    summarizableObject.RaisePropertyChanged(x => x.Summary_CumulativeEarnedDataPoints);
-                    summarizableObject.RaisePropertyChanged(x => x.Summary_PeriodEarnedDataPoints);
-                }
-            }
-
-            if (summarizableObject.NonCumulative_BurnedDataPoints.Count > 0)
-            {
-                summarizableObject.Summary_CumulativeBurnedDataPoints =
-                    PopulateCumulativeSummaryDataPoints(summarizableObject.NonCumulative_BurnedDataPoints,
-                        summarizableObject.Cumulative_VariationAdjustments, totalBudgetedUnits, totalBudgetedCosts,
-                        firstDataDate, intervalPeriod, Guid.Empty);
-                if (isPOCOViewModel)
-                {
-                    summarizableObject.RaisePropertyChanged(x => x.Summary_CumulativeBurnedDataPoints);
-                    summarizableObject.RaisePropertyChanged(x => x.Summary_PeriodBurnedDataPoints);
-                }
-            }
-
-            if (summarizableObject.NonCumulative_ActualDataPoints.Count > 0)
-            {
-                summarizableObject.Summary_CumulativeActualDataPoints =
-                    PopulateCumulativeSummaryDataPoints(summarizableObject.NonCumulative_ActualDataPoints,
-                        summarizableObject.Cumulative_VariationAdjustments, totalBudgetedUnits, totalBudgetedCosts,
-                        firstDataDate, intervalPeriod, Guid.Empty);
-                if (isPOCOViewModel)
-                {
-                    summarizableObject.RaisePropertyChanged(x => x.Summary_CumulativeActualDataPoints);
-                    summarizableObject.RaisePropertyChanged(x => x.Summary_PeriodActualDataPoints);
-                }
-            }
-
-            if (summarizableObject.NonCumulative_EarnedDataPoints.Count > 0)
-            {
-                summarizableObject.Summary_CumulativeRemainingPlannedDataPoints =
-                    PopulateCumulativeRemainingSummaryDataPoints(summarizableObject.NonCumulative_EarnedDataPoints,
-                        summarizableObject.Cumulative_VariationAdjustments,
-                        summarizableObject.NonCumulative_RemainingPlannedDataPoints, totalBudgetedUnits,
-                        totalBudgetedCosts, firstDataDate, intervalPeriod, Guid.Empty);
-                if (isPOCOViewModel)
-                {
-                    summarizableObject.RaisePropertyChanged(x => x.Summary_CumulativeRemainingPlannedDataPoints);
-                    summarizableObject.RaisePropertyChanged(x => x.Summary_PeriodRemainingPlannedDataPoints);
-                }
-            }
-
-            if (summarizableObject.NonCumulative_EarnedDataPoints.Count > 0)
-            {
-                summarizableObject.Summary_CumulativeRemainingVariationDataPoints =
-                    PopulateCumulativeRemainingSummaryDataPoints(summarizableObject.NonCumulative_EarnedDataPoints,
-                        summarizableObject.Cumulative_VariationAdjustments,
-                        summarizableObject.NonCumulative_RemainingVariationDataPoints, totalBudgetedUnits,
-                        totalBudgetedCosts, firstDataDate, intervalPeriod, Guid.Empty);
-                if (isPOCOViewModel)
-                {
-                    summarizableObject.RaisePropertyChanged(x => x.Summary_CumulativeRemainingVariationDataPoints);
-                    summarizableObject.RaisePropertyChanged(x => x.Summary_PeriodRemainingVariationDataPoints);
-                }
-            }
-
-            if (summarizableObject.NonCumulative_EarnedDataPoints.Count > 0)
-            {
-                summarizableObject.Summary_CumulativeRemainingCurrentDataPoints =
-                    PopulateCumulativeRemainingSummaryDataPoints(summarizableObject.NonCumulative_EarnedDataPoints,
-                        summarizableObject.Cumulative_VariationAdjustments,
-                        summarizableObject.NonCumulative_RemainingCurrentDataPoints, totalBudgetedUnits,
-                        totalBudgetedCosts, firstDataDate, intervalPeriod, Guid.Empty);
-                if (isPOCOViewModel)
-                {
-                    summarizableObject.RaisePropertyChanged(x => x.Summary_CumulativeRemainingCurrentDataPoints);
-                    summarizableObject.RaisePropertyChanged(x => x.Summary_PeriodRemainingCurrentDataPoints);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Summarizes non-cumulative data points into cumulative data points by default period
-        /// </summary>
-        /// <param name="isAggregate">Indicate whether interface is an aggregate so that budgeted units/costs will be recalculated</param>
-        public static void GenerateCumulativeSummaryDataPoints(ReportableObject reportableObject,
-            DateTime firstAlignedDataDate, TimeSpan interval)
-        {
-            var totalBudgetedUnits = reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS;
-            var totalBudgetedCosts = reportableObject.BASELINE_ITEMJoinRATE.ESTIMATED_COSTS;
-            var finalBudgetedUnits = reportableObject.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
-            var finalBudgetedCosts = reportableObject.BASELINE_ITEMJoinRATE.TOTAL_COSTS;
-            var firstDataDate = firstAlignedDataDate;
-            var intervalPeriod = interval;
-            var isPOCOViewModel = reportableObject as IPOCOViewModel != null;
-
-            if (reportableObject.NonCumulative_VariationAdjustments.Count > 0 &&
-                reportableObject.Cumulative_VariationAdjustments == null)
-                reportableObject.Cumulative_VariationAdjustments =
-                    PopulateCumulativeVariationAdjustments(reportableObject.NonCumulative_VariationAdjustments,
-                        firstDataDate, intervalPeriod);
-
-            if (reportableObject.NonCumulative_OriginalDataPoints.Count > 0 &&
-                reportableObject.Summary_CumulativeOriginalDataPoints == null)
-            {
-                reportableObject.Summary_CumulativeOriginalDataPoints =
-                    PopulateCumulativeSummaryDataPoints(reportableObject.NonCumulative_OriginalDataPoints,
-                        new ObservableCollection<VariationAdjustment>(), finalBudgetedUnits, finalBudgetedCosts,
-                        firstDataDate, intervalPeriod, Guid.Empty);
-                if (isPOCOViewModel)
-                {
-                    reportableObject.RaisePropertyChanged(x => x.Summary_CumulativeOriginalDataPoints);
-                    reportableObject.RaisePropertyChanged(x => x.Summary_PeriodOriginalDataPoints);
-                }
-            }
-
-            if (reportableObject.NonCumulative_PlannedDataPoints.Count > 0 &&
-                reportableObject.Summary_CumulativePlannedDataPoints == null)
-            {
-                //Used to show normalized variation
-                //ReportableObject.Summary_CumulativePlannedDataPoints = this.ISupportProgressReportingCollection.PopulateCumulativeSummaryDataPoints(ReportableObject.NonCumulative_PlannedDataPoints, new List<VariationAdjustment>(), finalBudgetedUnits, finalBudgetedCosts, firstDataDate, intervalPeriod, Guid.Empty);
-                //Used to show sharktooth on variation
-                reportableObject.Summary_CumulativePlannedDataPoints =
-                    PopulateCumulativeSummaryDataPoints(reportableObject.NonCumulative_PlannedDataPoints,
-                        reportableObject.Cumulative_VariationAdjustments, totalBudgetedUnits, totalBudgetedCosts,
-                        firstDataDate, intervalPeriod, Guid.Empty);
-                if (isPOCOViewModel)
-                {
-                    reportableObject.RaisePropertyChanged(x => x.Summary_CumulativePlannedDataPoints);
-                    reportableObject.RaisePropertyChanged(x => x.Summary_PeriodPlannedDataPoints);
-                }
-            }
-
-            if (reportableObject.NonCumulative_EarnedDataPoints.Count > 0 &&
-                reportableObject.Summary_CumulativeEarnedDataPoints == null)
-            {
-                reportableObject.Summary_CumulativeEarnedDataPoints =
-                    PopulateCumulativeSummaryDataPoints(reportableObject.NonCumulative_EarnedDataPoints,
-                        reportableObject.Cumulative_VariationAdjustments, totalBudgetedUnits, totalBudgetedCosts,
-                        firstDataDate, intervalPeriod, Guid.Empty);
-                if (isPOCOViewModel)
-                {
-                    reportableObject.RaisePropertyChanged(x => x.Summary_CumulativeEarnedDataPoints);
-                    reportableObject.RaisePropertyChanged(x => x.Summary_PeriodEarnedDataPoints);
-                }
-            }
-
-            if (reportableObject.NonCumulative_BurnedDataPoints.Count > 0 &&
-                reportableObject.Summary_CumulativeBurnedDataPoints == null)
-            {
-                reportableObject.Summary_CumulativeBurnedDataPoints =
-                    PopulateCumulativeSummaryDataPoints(reportableObject.NonCumulative_BurnedDataPoints,
-                        reportableObject.Cumulative_VariationAdjustments, totalBudgetedUnits, totalBudgetedCosts,
-                        firstDataDate, intervalPeriod, Guid.Empty);
-                if (isPOCOViewModel)
-                {
-                    reportableObject.RaisePropertyChanged(x => x.Summary_CumulativeBurnedDataPoints);
-                    reportableObject.RaisePropertyChanged(x => x.Summary_PeriodBurnedDataPoints);
-                }
-            }
-
-            if (reportableObject.NonCumulative_ActualDataPoints.Count > 0 &&
-                reportableObject.Summary_CumulativeActualDataPoints == null)
-            {
-                reportableObject.Summary_CumulativeActualDataPoints =
-                    PopulateCumulativeSummaryDataPoints(reportableObject.NonCumulative_ActualDataPoints,
-                        reportableObject.Cumulative_VariationAdjustments, totalBudgetedUnits, totalBudgetedCosts,
-                        firstDataDate, intervalPeriod, Guid.Empty);
-                if (isPOCOViewModel)
-                {
-                    reportableObject.RaisePropertyChanged(x => x.Summary_CumulativeActualDataPoints);
-                    reportableObject.RaisePropertyChanged(x => x.Summary_PeriodActualDataPoints);
-                }
-            }
-
-            if (reportableObject.NonCumulative_EarnedDataPoints.Count > 0 &&
-                reportableObject.Summary_CumulativeRemainingPlannedDataPoints == null)
-            {
-                reportableObject.Summary_CumulativeRemainingPlannedDataPoints =
-                    PopulateCumulativeRemainingSummaryDataPoints(reportableObject.NonCumulative_EarnedDataPoints,
-                        reportableObject.Cumulative_VariationAdjustments,
-                        reportableObject.NonCumulative_RemainingPlannedDataPoints, totalBudgetedUnits,
-                        totalBudgetedCosts, firstDataDate, intervalPeriod, Guid.Empty);
-                if (isPOCOViewModel)
-                {
-                    reportableObject.RaisePropertyChanged(x => x.Summary_CumulativeRemainingPlannedDataPoints);
-                    reportableObject.RaisePropertyChanged(x => x.Summary_PeriodRemainingPlannedDataPoints);
-                }
-            }
-
-            if (reportableObject.NonCumulative_EarnedDataPoints.Count > 0 &&
-                reportableObject.Summary_CumulativeRemainingVariationDataPoints == null)
-            {
-                reportableObject.Summary_CumulativeRemainingVariationDataPoints =
-                    PopulateCumulativeRemainingSummaryDataPoints(reportableObject.NonCumulative_EarnedDataPoints,
-                        reportableObject.Cumulative_VariationAdjustments,
-                        reportableObject.NonCumulative_RemainingVariationDataPoints, totalBudgetedUnits,
-                        totalBudgetedCosts, firstDataDate, intervalPeriod, Guid.Empty);
-                if (isPOCOViewModel)
-                {
-                    reportableObject.RaisePropertyChanged(x => x.Summary_CumulativeRemainingVariationDataPoints);
-                    reportableObject.RaisePropertyChanged(x => x.Summary_PeriodRemainingVariationDataPoints);
-                }
-            }
-
-            if (reportableObject.NonCumulative_EarnedDataPoints.Count > 0 &&
-                reportableObject.Summary_CumulativeRemainingCurrentDataPoints == null)
-            {
-                reportableObject.Summary_CumulativeRemainingCurrentDataPoints =
-                    PopulateCumulativeRemainingSummaryDataPoints(reportableObject.NonCumulative_EarnedDataPoints,
-                        reportableObject.Cumulative_VariationAdjustments,
-                        reportableObject.NonCumulative_RemainingCurrentDataPoints, totalBudgetedUnits,
-                        totalBudgetedCosts, firstDataDate, intervalPeriod, Guid.Empty);
-                if (isPOCOViewModel)
-                {
-                    reportableObject.RaisePropertyChanged(x => x.Summary_CumulativeRemainingCurrentDataPoints);
-                    reportableObject.RaisePropertyChanged(x => x.Summary_PeriodRemainingCurrentDataPoints);
-                }
-            }
-        }
-
         #endregion
 
         #region OnDemand Calculation
 
-        public static ProgressInfo nullProgressDataPoint = new ProgressInfo()
+        public static DataPoint nullProgressDataPoint = new DataPoint()
         {
             BudgetedCosts = 0,
             BudgetedUnits = 0,
@@ -840,7 +437,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <param name="progressDataPoints">Data points collection to search</param>
         /// <param name="dataPointDate">Date to retrieve data point</param>
         /// <returns>Data point on the particular date</returns>
-        public static ProgressInfo FindDataPointByDate(ObservableCollection<ProgressInfo> progressDataPoints,
+        public static DataPoint FindDataPointByDate(ObservableCollection<DataPoint> progressDataPoints,
             DateTime dataPointDate)
         {
             if (progressDataPoints == null || progressDataPoints.Count == 0)
@@ -860,8 +457,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <param name="progressDataPoints">Data points collection to search</param>
         /// <param name="dataPointDate">Date to retrieve data point</param>
         /// <returns>Period period datapoint on the particular date</returns>
-        public static ProgressInfo GeneratePeriodDataPointFromCumulative(
-            ObservableCollection<ProgressInfo> progressDataPoints, DateTime dataPointDate)
+        public static DataPoint GeneratePeriodDataPointFromCumulative(
+            ObservableCollection<DataPoint> progressDataPoints, DateTime dataPointDate)
         {
             if (progressDataPoints == null || progressDataPoints.Count == 0)
                 return nullProgressDataPoint;
@@ -879,9 +476,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                 {
                     var PreviousPeriodIndex = CurrentPeriodIndex - 1;
                     var CumulativeProgressOnDataDatePrevious = progressDataPoints[PreviousPeriodIndex];
-                    return new ProgressInfo()
+                    return new DataPoint()
                     {
-                        BaselineItemGuid = Guid.Empty,
                         BudgetedUnits = CumulativeProgressOnDataDate.BudgetedUnits,
                         BudgetedCosts = CumulativeProgressOnDataDate.BudgetedCosts,
                         Units = CumulativeProgressOnDataDate.Units - CumulativeProgressOnDataDatePrevious.Units,
@@ -899,13 +495,13 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <summary>
         /// Convert cumulative summary collection to period summary for bar histogram construction
         /// </summary>
-        public static ObservableCollection<ProgressInfo> ConvertCumulativeToPeriodDataPoint(
-            ObservableCollection<ProgressInfo> CumulativeDataPointCollection, DateTime? plotStartDate = null)
+        public static ObservableCollection<DataPoint> ConvertCumulativeToPeriodDataPoint(
+            ObservableCollection<DataPoint> CumulativeDataPointCollection, DateTime? plotStartDate = null)
         {
             decimal periodUnits = 0;
             decimal periodCosts = 0;
 
-            var PeriodDataPointCollection = new ObservableCollection<ProgressInfo>();
+            var PeriodDataPointCollection = new ObservableCollection<DataPoint>();
 
             if (CumulativeDataPointCollection != null)
                 for (var i = 0; i < CumulativeDataPointCollection.Count; i++)
@@ -932,14 +528,13 @@ namespace BluePrints.Common.ViewModel.Reporting
                             periodCosts = 0;
                     }
 
-                    PeriodDataPointCollection.Add(new ProgressInfo
+                    PeriodDataPointCollection.Add(new DataPoint
                     {
                         BudgetedCosts = CumulativeDataPointCollection[i].BudgetedCosts,
                         BudgetedUnits = CumulativeDataPointCollection[i].BudgetedUnits,
                         Costs = periodCosts < 0 ? 0 : periodCosts,
                         Units = periodUnits < 0 ? 0 : periodUnits,
-                        ProgressDate = CumulativeDataPointCollection[i].ProgressDate,
-                        BaselineItemGuid = Guid.Empty
+                        ProgressDate = CumulativeDataPointCollection[i].ProgressDate
                     });
                 }
 
@@ -955,41 +550,35 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// </summary>
         /// <param name="workingPeriod">Period to spread units/costs across</param>
         /// <param name="progressInterval">Interval for each period</param>
-        /// <param name="assignmentUnits">Units to be spreaded</param>
-        /// <param name="assignmentCosts">Costs to be spreaded</param>
+        /// <param name="totalUnits">Units to be spreaded</param>
+        /// <param name="totalCosts">Costs to be spreaded</param>
         /// <param name="currencyConversionFactor">Factor for currency conversion</param>
         /// <param name="plotStartDate">The raw datetime of the entity to plot against</param>
         /// <param name="firstAlignedDataDate">Aligned date to correspond with other data points on chart</param>
         /// <param name="dataPointGuid">The deliverable guid</param>
-        /// <param name="originalUnits">Override the total units to produce a different percentage</param>
-        /// <param name="originalCosts">Override the total costs to produce a different percentage</param>
+        /// <param name="totalUnits">Override the total units to produce a different percentage</param>
+        /// <param name="totalCosts">Override the total costs to produce a different percentage</param>
         /// <returns></returns>
-        public static List<ProgressInfo> DataPointsGenerator(TimeSpan intervalPeriod, DateTime alignedDataDate, TimeSpan workingPeriod,
-            decimal assignmentUnits, decimal assignmentCosts, DateTime plotStartDate, Guid dataPointGuid,
-            decimal currencyConversion, IEnumerable<Period> suspensionPeriod = null, decimal? originalUnits = null,
-            decimal? originalCosts = null,
-            ObservableCollection<VariationAdjustment> cumulativeVariationAdjustment = null)
+        public static List<DataPoint> DataPointsGenerator(TimeSpan intervalPeriod, DateTime alignedDataDate, TimeSpan workingPeriod, decimal budgetedUnits, decimal budgetedCosts, DateTime plotStartDate, decimal currencyConversion, IEnumerable<Period> suspensionPeriod, IEnumerable<VariationAdjustment> variationAdjustments = null)
         {
-            var returnProgressDataPoints = new List<ProgressInfo>();
+            var returnProgressDataPoints = new List<DataPoint>();
             var progressInterval = intervalPeriod;
             DateTime firstAlignedDataDate = alignedDataDate;
 
             decimal PeriodCount = 0;
+            decimal remainingUnits = budgetedUnits;
+            decimal remainingCosts = budgetedCosts;
             PeriodCount = Convert.ToDecimal(workingPeriod.TotalDays) / Convert.ToDecimal(progressInterval.TotalDays);
 
             //don't use assignment units for total units because it comes from workpack assignment
             //workpack assignment have incomplete units because it sometimes only describe a portion of the total units
-            var TotalUnits = originalUnits == null ? assignmentUnits : (decimal) originalUnits;
-            var TotalCosts = originalCosts == null ? assignmentCosts : (decimal) originalCosts;
-            TotalCosts = TotalCosts * currencyConversion;
 
-            assignmentCosts *= currencyConversion;
-            var UnitsPerPeriod = PeriodCount == 0 ? 0 : assignmentUnits / PeriodCount;
-            var CostsPerPeriod = PeriodCount == 0 ? 0 : assignmentCosts / PeriodCount;
+            decimal convertedCosts = budgetedCosts * currencyConversion;
+            var UnitsPerPeriod = PeriodCount < 1 ? budgetedUnits : budgetedUnits / PeriodCount;
+            var CostsPerPeriod = PeriodCount < 1 ? convertedCosts : convertedCosts / PeriodCount;
 
             //because first progress date is not necessarily the next interval
             DateTime loopDate;
-
             if (firstAlignedDataDate > plotStartDate)
             {
                 loopDate = firstAlignedDataDate;
@@ -1007,38 +596,14 @@ namespace BluePrints.Common.ViewModel.Reporting
                 } while (loopDate.Date.AddDays(progressInterval.Days) < plotStartDate);
             }
 
-            var firstProgressPlanned = new ProgressInfo()
+            var firstProgressPlanned = new DataPoint()
             {
-                BudgetedUnits = TotalUnits,
-                BudgetedCosts = TotalCosts,
+                BudgetedUnits = 0,
+                BudgetedCosts = 0,
                 Units = 0,
                 Costs = 0,
-                ProgressDate = plotStartDate,
-                BaselineItemGuid = dataPointGuid
+                ProgressDate = plotStartDate
             };
-
-            List<VariationAdjustment> progressItemAdjustments;
-            decimal cumulativeAdjustmentUnits = 0;
-            decimal cumulativeAdjustmentCosts = 0;
-            decimal additionalProductivityUnits = 0;
-            decimal additionalProductivityCosts = 0;
-
-            progressItemAdjustments = cumulativeVariationAdjustment == null
-                ? new List<VariationAdjustment>()
-                : cumulativeVariationAdjustment.Where(adjustment => adjustment.AdjustmentDate <= loopDate).ToList();
-            var variationUnits = progressItemAdjustments.Sum(adjustment => adjustment.AdjustmentUnits);
-            var variationCosts = progressItemAdjustments.Sum(adjustment => adjustment.AdjustmentNativeCosts);
-
-            if (variationUnits > 0)
-            {
-                variationCosts *= currencyConversion;
-                assignmentUnits += variationUnits;
-                assignmentCosts += variationCosts;
-                TotalUnits += variationUnits;
-                TotalCosts += variationCosts;
-                cumulativeAdjustmentUnits += variationUnits;
-                cumulativeAdjustmentCosts += variationCosts;
-            }
 
             returnProgressDataPoints.Add(firstProgressPlanned);
 
@@ -1047,173 +612,119 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             //first aligned progress data point, must be checked for pro-rata
             var proRateTimeSpan = loopDate - plotStartDate;
-            //convert to 5 days week
             var proRataPeriod = Convert.ToDecimal(proRateTimeSpan.TotalDays) /
-                                    (Convert.ToDecimal(progressInterval.TotalDays) / 7 * 5);
-            if (proRataPeriod < 0)
-                proRataPeriod = 0;
-
-            if (proRataPeriod > PeriodCount)
-                proRataPeriod = PeriodCount;
+                                    (Convert.ToDecimal(progressInterval.TotalDays));
 
             PeriodCount -= proRataPeriod;
+            decimal firstPeriodProRateUnits = UnitsPerPeriod * proRataPeriod;
+            decimal firstPeriodProRateCosts = CostsPerPeriod * proRataPeriod;
 
-            decimal firstPeriodProRateUnits = 0;
-            decimal firstPeriodProRateCosts = 0;
-
-            firstPeriodProRateUnits += UnitsPerPeriod * proRataPeriod;
-            firstPeriodProRateCosts += CostsPerPeriod * proRataPeriod;
-
-            var firstPeriodAlignedProgressPlanned = new ProgressInfo()
+            remainingUnits -= firstPeriodProRateUnits;
+            remainingCosts -= firstPeriodProRateCosts;
+            var firstPeriodAlignedProgressPlanned = new DataPoint()
             {
-                BudgetedUnits = TotalUnits,
-                BudgetedCosts = TotalCosts,
+                BudgetedUnits = 0,
+                BudgetedCosts = 0,
                 Units = firstPeriodProRateUnits,
                 Costs = firstPeriodProRateCosts,
-                ProgressDate = loopDate,
-                BaselineItemGuid = dataPointGuid
+                ProgressDate = loopDate
             };
-
             returnProgressDataPoints.Add(firstPeriodAlignedProgressPlanned);
 
-            decimal adjustmentPeriodCount = 0;
-            var adjustmentLoopDate = new DateTime();
-            loopDate = loopDate.AddDays(progressInterval.TotalDays);
-            adjustmentLoopDate = loopDate;
-            adjustmentPeriodCount = PeriodCount;
+            if (PeriodCount < 1)
+            {
+                UnitsPerPeriod = remainingUnits; //first period is last period
+                CostsPerPeriod = remainingCosts;
+            }
+            //Reduced units from first period pro rate needs to be distributed across all other periods minus the first period
+            else if (proRataPeriod > 0 && PeriodCount > 1)
+            {
+                UnitsPerPeriod += (UnitsPerPeriod * (1 - proRataPeriod) / (PeriodCount));
+                CostsPerPeriod += (CostsPerPeriod * (1 - proRataPeriod) / (PeriodCount));
+            }
+
+            decimal loopPeriodCountForException = PeriodCount;
+            DateTime loopDateForException = loopDate;
 
             //Establish exception periods
-            var exceptionPeriods = new List<Period>();
+            List<Period> exceptionPeriods = new List<Period>();
             exceptionPeriods.AddRange(NonWorkingPeriods);
             if (suspensionPeriod != null)
                 exceptionPeriods.AddRange(suspensionPeriod);
 
+
             //normalize units/costs by non-effective periods
-            if (PeriodCount > 1)
+            do
             {
-                do
+                if (
+                    exceptionPeriods.Any(
+                        dates =>
+                            dates.StartDate.Date <= loopDateForException && loopDateForException <= dates.EndDate.Date))
                 {
-                    if (
-                        exceptionPeriods.Any(
-                            dates =>
-                                dates.StartDate.Date <= adjustmentLoopDate && adjustmentLoopDate <= dates.EndDate.Date))
-                    {
-                        UnitsPerPeriod += UnitsPerPeriod / PeriodCount;
-                        CostsPerPeriod += CostsPerPeriod / PeriodCount;
-                    }
-
-                    adjustmentPeriodCount -= 1;
-                    adjustmentLoopDate = adjustmentLoopDate.AddDays(progressInterval.TotalDays);
-                } while (adjustmentPeriodCount > 1);
-            }
-            else
-            {
-                UnitsPerPeriod = UnitsPerPeriod * PeriodCount; //last period pro-rate
-                CostsPerPeriod = CostsPerPeriod * PeriodCount;
-            }
-
-            if (PeriodCount > 1)
-                do
-                {
-                    var CalendarNonWorkingPeriod = false;
-
-                    if (exceptionPeriods.Any(dates => dates.StartDate.Date <= loopDate && loopDate <= dates.EndDate.Date))
-                        CalendarNonWorkingPeriod = true;
-
-                    progressItemAdjustments = cumulativeVariationAdjustment == null
-                        ? new List<VariationAdjustment>()
-                        : cumulativeVariationAdjustment.Where(adjustment => adjustment.AdjustmentDate == loopDate)
-                            .ToList();
-                    variationUnits = progressItemAdjustments.Sum(adjustment => adjustment.AdjustmentUnits);
-                    variationCosts = progressItemAdjustments.Sum(adjustment => adjustment.AdjustmentNativeCosts);
-
-                    if (!CalendarNonWorkingPeriod && cumulativeVariationAdjustment != null)
-                        if (variationUnits > 0)
-                        {
-                            variationCosts *= currencyConversion;
-                            assignmentUnits += variationUnits;
-                            assignmentCosts += variationCosts;
-                            TotalUnits += variationUnits;
-                            TotalCosts += variationCosts;
-                            cumulativeAdjustmentUnits += variationUnits;
-                            cumulativeAdjustmentCosts += variationCosts;
-                        }
-
-                    additionalProductivityUnits = cumulativeAdjustmentUnits / PeriodCount;
-                    additionalProductivityCosts = cumulativeAdjustmentCosts / PeriodCount;
-
-                    var newProgressPlanned = new ProgressInfo()
-                    {
-                        BudgetedUnits = TotalUnits,
-                        BudgetedCosts = TotalCosts,
-                        Units = CalendarNonWorkingPeriod ? 0 : UnitsPerPeriod + additionalProductivityUnits,
-                        Costs = CalendarNonWorkingPeriod ? 0 : CostsPerPeriod + additionalProductivityCosts,
-                        ProgressDate = loopDate,
-                        BaselineItemGuid = dataPointGuid
-                    };
-
-                    cumulativeAdjustmentUnits -= additionalProductivityUnits;
-                    cumulativeAdjustmentCosts -= additionalProductivityCosts;
-
-                    returnProgressDataPoints.Add(newProgressPlanned);
-                    PeriodCount -= 1;
-                    loopDate = loopDate.AddDays(progressInterval.TotalDays);
-                } while (PeriodCount > 1);
-
-            //revert the date back by 1 week because of last added interval before while look get's exited
-            loopDate = loopDate.AddDays(-1 * progressInterval.TotalDays);
-            if (PeriodCount > 0)
-            {
-                var remainingUnits = assignmentUnits - returnProgressDataPoints.Sum(dataPoint => dataPoint.Units);
-                var remainingCosts = assignmentCosts - returnProgressDataPoints.Sum(dataPoint => dataPoint.Costs);
-
-                progressItemAdjustments = cumulativeVariationAdjustment == null
-                    ? new List<VariationAdjustment>()
-                    : cumulativeVariationAdjustment.Where(adjustment => adjustment.AdjustmentDate > loopDate).ToList();
-                variationUnits = progressItemAdjustments.Sum(adjustment => adjustment.AdjustmentUnits);
-                variationCosts = progressItemAdjustments.Sum(adjustment => adjustment.AdjustmentNativeCosts);
-
-                var lastDataPointDate = loopDate.AddDays(progressInterval.TotalDays);
-                if (variationUnits > 0)
-                {
-                    variationCosts *= currencyConversion;
-                    remainingUnits += variationUnits;
-                    remainingCosts += variationCosts;
-                    TotalUnits += variationUnits;
-                    TotalCosts += variationCosts;
-                    lastDataPointDate = progressItemAdjustments.First().AdjustmentDate;
+                    UnitsPerPeriod += UnitsPerPeriod / PeriodCount; //increase all periods productivity
+                    CostsPerPeriod += CostsPerPeriod / PeriodCount;
                 }
 
+                loopPeriodCountForException -= 1;
+                loopDateForException = loopDateForException.AddDays(progressInterval.TotalDays);
+            } while (loopPeriodCountForException > 0);
 
-                //populate last period
-                var lastProgressPlanned = new ProgressInfo()
+            //first period is already added through pro-rate routine
+            loopDate = loopDate.AddDays(progressInterval.TotalDays);
+            do
+            {
+                var CalendarNonWorkingPeriod = false;
+
+                if (exceptionPeriods.Any(dates => dates.StartDate.Date <= loopDate && loopDate <= dates.EndDate.Date))
+                    CalendarNonWorkingPeriod = true;
+
+                List<VariationAdjustment> currentPeriodVariationAdjustments = variationAdjustments == null ? new List<VariationAdjustment>() : variationAdjustments.Where(
+                        Adjustment => Adjustment.AdjustmentDate >= loopDate && Adjustment.AdjustmentDate < loopDate.AddDays(progressInterval.TotalDays)).ToList();
+                decimal additionalUnitsPerPeriod = 0;
+                if (currentPeriodVariationAdjustments.Count > 0)
                 {
-                    BudgetedUnits = TotalUnits,
-                    BudgetedCosts = TotalCosts,
-                    Units = remainingUnits,
-                    Costs = remainingCosts,
-                    ProgressDate = lastDataPointDate,
-                    BaselineItemGuid = dataPointGuid
+                    decimal currentPeriodAdjustmentUnits = currentPeriodVariationAdjustments.Sum(x => x.AdjustmentUnits);
+                    additionalUnitsPerPeriod = currentPeriodAdjustmentUnits / PeriodCount;
+                    UnitsPerPeriod += additionalUnitsPerPeriod;
+                }
+
+                decimal assignUnits;
+                if (CalendarNonWorkingPeriod)
+                    assignUnits = 0;
+                else if (UnitsPerPeriod > remainingUnits)
+                    assignUnits = remainingUnits;
+                else
+                    assignUnits = UnitsPerPeriod;
+
+                var newProgressPlanned = new DataPoint()
+                {
+                    BudgetedUnits = 0,
+                    BudgetedCosts = 0,
+                    Units = assignUnits,
+                    Costs = CalendarNonWorkingPeriod ? 0 : CostsPerPeriod > remainingCosts ? remainingCosts : CostsPerPeriod,
+                    ProgressDate = loopDate
                 };
 
-                returnProgressDataPoints.Add(lastProgressPlanned);
-            }
+                remainingUnits -= assignUnits;
+                returnProgressDataPoints.Add(newProgressPlanned);
+                PeriodCount -= 1;
+                loopDate = loopDate.AddDays(progressInterval.TotalDays);
+            } while (remainingUnits > 0);
 
             return returnProgressDataPoints;
         }
-
 
         /// <summary>
         /// Generate the remaining data points based on productivity
         /// Prerequisites: this.ISupportProgressReportingCollection.FirstAlignedDataDate, this.ISupportProgressReportingCollection.IntervalPeriod and this.ISupportProgressReportingCollection.UnifiedCalculationMethod must be initialized
         /// </summary>
-        public static ObservableCollection<ProgressInfo> RemainingDataPointsGenerator(TimeSpan progressInterval,
-            ReportableObject reportableObject, DateTime firstAlignedWeekEndingDataDate, List<Period> exceptionPeriod,
+        public static List<DataPoint> RemainingDataPointsGenerator(TimeSpan progressInterval,
+            PROGRESS_ITEMProjection progressItemStats, DateTime firstAlignedWeekEndingDataDate, List<Period> exceptionPeriod,
             decimal remainingUnits, decimal unitsPerHour, decimal firstPeriodProRate, decimal currencyConversion,
             DateTime? limitDate = null)
         {
-            var remainingDataPoints = new ObservableCollection<ProgressInfo>();
-            var currentBASELINE_ITEM = reportableObject.BASELINE_ITEMJoinRATE;
+            var remainingDataPoints = new List<DataPoint>();
+            var currentBASELINE_ITEM = progressItemStats.BASELINE_ITEMJoinRATE;
             if (currentBASELINE_ITEM.BASELINE_ITEM.TOTAL_HOURS == 0 || unitsPerHour == 0)
                 return remainingDataPoints;
 
@@ -1264,13 +775,12 @@ namespace BluePrints.Common.ViewModel.Reporting
                     else
                         periodUnits = unitsPerPeriod;
 
-                    var newDataPoint = new ProgressInfo()
+                    var newDataPoint = new DataPoint()
                     {
                         BudgetedCosts = currentBASELINE_ITEM.TOTAL_COSTS,
                         BudgetedUnits = currentBASELINE_ITEM.BASELINE_ITEM.TOTAL_HOURS,
                         Units = periodUnits,
-                        ProgressDate = remainingCountDataDate,
-                        BaselineItemGuid = currentBASELINE_ITEM.BASELINE_ITEM.GUID_ORIGINAL
+                        ProgressDate = remainingCountDataDate
                     };
 
                     newDataPoint.Costs = currentBASELINE_ITEM.ITEMRATE * currencyConversion;
@@ -1279,21 +789,18 @@ namespace BluePrints.Common.ViewModel.Reporting
                 }
                 else
                 {
-                    var newDataPoint = new ProgressInfo()
+                    var newDataPoint = new DataPoint()
                     {
                         BudgetedCosts = currentBASELINE_ITEM.TOTAL_COSTS,
                         BudgetedUnits = currentBASELINE_ITEM.BASELINE_ITEM.TOTAL_HOURS,
                         Units = 0,
                         Costs = 0,
-                        ProgressDate = remainingCountDataDate,
-                        BaselineItemGuid = currentBASELINE_ITEM.BASELINE_ITEM.GUID_ORIGINAL
+                        ProgressDate = remainingCountDataDate
                     };
 
                     remainingDataPoints.Add(newDataPoint);
                 }
 
-                //if (remainingUnits > 10000)
-                //    s = string.Empty;
                 remainingCountDataDate = remainingCountDataDate.AddDays(intervalPeriod.Days);
             } while (remainingUnits > 0);
 

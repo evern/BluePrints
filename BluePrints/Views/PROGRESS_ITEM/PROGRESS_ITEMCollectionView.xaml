@@ -227,7 +227,7 @@
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:TextEdit
-                                                EditValue="{Binding RowData.Row.Summary_CumulativeOriginal.UnitsPercentage, Mode=OneTime}"
+                                                EditValue="{Binding RowData.Row.SchedulePercentage, Mode=OneTime}"
                                                 MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True"
                                                 ShowBorder="False" IsReadOnly="True" HorizontalAlignment="Right" />
                                         </DataTemplate>
@@ -375,12 +375,12 @@
                             <common:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
                                            ShowTotalSummary="True" ShowFixedTotalSummary="True"
                                            GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None">
-                                <dxmvvm:Interaction.Behaviors>
+                                <!--<dxmvvm:Interaction.Behaviors>
                                     <dxrudex:GridReportManagerService x:Name="PROGRESS_ITEMCollectionViewReportService" />
                                     <dxmvvm:EventToCommand
                                         Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}"
                                         PassEventArgsToCommand="True" EventName="CellValueChanging" />
-                                </dxmvvm:Interaction.Behaviors>
+                                </dxmvvm:Interaction.Behaviors>-->
                                 <common:TableViewEx.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Fill Up"
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}"

@@ -339,7 +339,7 @@
             this.DetailReport.Bands.AddRange(new DevExpress.XtraReports.UI.Band[] {
             this.Detail1,
             this.GroupHeader1});
-            this.DetailReport.DataMember = "ReportableObjects";
+            this.DetailReport.DataMember = "Deliverable";
             this.DetailReport.DataSource = this.objectDataSource1;
             this.DetailReport.Dpi = 100F;
             this.DetailReport.Level = 0;
@@ -373,7 +373,7 @@
             this.xrLabel7.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel7.CanGrow = false;
             this.xrLabel7.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ReportableObjects.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK.STARTDATE", "{0:dd/MM/yy}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.Stats.Budgeted.StartDate", "{0:dd/MM/yy}")});
             this.xrLabel7.Dpi = 100F;
             this.xrLabel7.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrLabel7.KeepTogether = true;
@@ -390,7 +390,7 @@
             this.xrDataPeriodCurrentUOM.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataPeriodCurrentUOM.CanGrow = false;
             this.xrDataPeriodCurrentUOM.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ReportableObjects.Summary_PeriodEarned.Units", "{0:n1}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.Stats.Earned.CurrentPeriodDataPoint.Units", "{0:n1}")});
             this.xrDataPeriodCurrentUOM.Dpi = 100F;
             this.xrDataPeriodCurrentUOM.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataPeriodCurrentUOM.KeepTogether = true;
@@ -407,7 +407,7 @@
             this.xrDataPeriodPlannedPercentage.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataPeriodPlannedPercentage.CanGrow = false;
             this.xrDataPeriodPlannedPercentage.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ReportableObjects.Summary_PeriodOriginalDataPoints.UnitsPercentage", "{0:0.00%}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage", "{0:0.00%}")});
             this.xrDataPeriodPlannedPercentage.Dpi = 100F;
             this.xrDataPeriodPlannedPercentage.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataPeriodPlannedPercentage.KeepTogether = true;
@@ -424,7 +424,7 @@
             this.xrDataPeriodPlannedUOM.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataPeriodPlannedUOM.CanGrow = false;
             this.xrDataPeriodPlannedUOM.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ReportableObjects.Summary_PeriodOriginalDataPoints.Units", "{0:n1}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.Stats.Budgeted.CurrentPeriodDataPoint.Units", "{0:n1}")});
             this.xrDataPeriodPlannedUOM.Dpi = 100F;
             this.xrDataPeriodPlannedUOM.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataPeriodPlannedUOM.KeepTogether = true;
@@ -441,7 +441,7 @@
             this.xrDataCumulativeEarnedPercentage.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataCumulativeEarnedPercentage.CanGrow = false;
             this.xrDataCumulativeEarnedPercentage.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ReportableObjects.Summary_CumulativeEarned.UnitsPercentage", "{0:0.00%}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage", "{0:0.00%}")});
             this.xrDataCumulativeEarnedPercentage.Dpi = 100F;
             this.xrDataCumulativeEarnedPercentage.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataCumulativeEarnedPercentage.FormattingRules.Add(this.ItemCumulativeEarnedEfficiency_Good);
@@ -456,9 +456,9 @@
             // 
             // ItemCumulativeEarnedEfficiency_Good
             // 
-            this.ItemCumulativeEarnedEfficiency_Good.Condition = "([Summary_CumulativeEarned.UnitsPercentage] >= [Summary_CumulativePlanned.UnitsPe" +
-    "rcentage])";
-            this.ItemCumulativeEarnedEfficiency_Good.DataMember = "Items";
+            this.ItemCumulativeEarnedEfficiency_Good.Condition = "([Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage] >= [Stats.Budget" +
+    "ed.CurrentPeriodCumulativeDataPoint.UnitsPercentage])";
+            this.ItemCumulativeEarnedEfficiency_Good.DataMember = "Deliverable";
             // 
             // 
             // 
@@ -467,9 +467,9 @@
             // 
             // ItemCumulativeEarnedEfficiency_Bad
             // 
-            this.ItemCumulativeEarnedEfficiency_Bad.Condition = "([Summary_CumulativeEarned.UnitsPercentage] < [Summary_CumulativePlanned.UnitsPer" +
-    "centage])";
-            this.ItemCumulativeEarnedEfficiency_Bad.DataMember = "Items";
+            this.ItemCumulativeEarnedEfficiency_Bad.Condition = "([Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage] < [Stats.Budgete" +
+    "d.CurrentPeriodCumulativeDataPoint.UnitsPercentage])";
+            this.ItemCumulativeEarnedEfficiency_Bad.DataMember = "Deliverable";
             // 
             // 
             // 
@@ -482,7 +482,7 @@
             this.xrDataCumulativeEarnedUOM.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataCumulativeEarnedUOM.CanGrow = false;
             this.xrDataCumulativeEarnedUOM.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ReportableObjects.Summary_CumulativeEarned.Units", "{0:n1}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.Stats.Earned.CurrentPeriodCumulativeDataPoint.Units", "{0:n1}")});
             this.xrDataCumulativeEarnedUOM.Dpi = 100F;
             this.xrDataCumulativeEarnedUOM.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataCumulativeEarnedUOM.KeepTogether = true;
@@ -499,7 +499,7 @@
             this.xrDataCumulativePlannedPercentage.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataCumulativePlannedPercentage.CanGrow = false;
             this.xrDataCumulativePlannedPercentage.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ReportableObjects.Summary_CumulativeOriginal.UnitsPercentage", "{0:0.00%}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.Stats.Budgeted.CurrentPeriodCumulativeDataPoint.UnitsPercentage", "{0:0.00%}")});
             this.xrDataCumulativePlannedPercentage.Dpi = 100F;
             this.xrDataCumulativePlannedPercentage.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataCumulativePlannedPercentage.KeepTogether = true;
@@ -516,7 +516,7 @@
             this.xrDataCumulativePlannedUOM.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataCumulativePlannedUOM.CanGrow = false;
             this.xrDataCumulativePlannedUOM.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ReportableObjects.Summary_CumulativeOriginal.Units", "{0:n1}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.Stats.Budgeted.CurrentPeriodCumulativeDataPoint.BudgetedUnits", "{0:n1}")});
             this.xrDataCumulativePlannedUOM.Dpi = 100F;
             this.xrDataCumulativePlannedUOM.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataCumulativePlannedUOM.KeepTogether = true;
@@ -533,7 +533,7 @@
             this.xrLabel9.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel9.CanGrow = false;
             this.xrLabel9.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ReportableObjects.BASELINE_ITEMJoinRATE.BASELINE_ITEM.WORKPACK.ENDDATE", "{0:dd/MM/yy}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.Stats.Budgeted.EndDate", "{0:dd/MM/yy}")});
             this.xrLabel9.Dpi = 100F;
             this.xrLabel9.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrLabel9.KeepTogether = true;
@@ -551,7 +551,7 @@
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataPeriodCurrentPercentage.CanGrow = false;
             this.xrDataPeriodCurrentPercentage.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ReportableObjects.Summary_PeriodEarned.UnitsPercentage", "{0:0.00%}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Earned.CurrentPeriodDataPoint.UnitsPercentage", "{0:0.00%}")});
             this.xrDataPeriodCurrentPercentage.Dpi = 100F;
             this.xrDataPeriodCurrentPercentage.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataPeriodCurrentPercentage.FormattingRules.Add(this.ItemPeriodEarnedEfficiency_Bad);
@@ -566,9 +566,9 @@
             // 
             // ItemPeriodEarnedEfficiency_Bad
             // 
-            this.ItemPeriodEarnedEfficiency_Bad.Condition = "([Summary_PeriodEarned.UnitsPercentage] < [Summary_PeriodPlanned.UnitsPercentage]" +
-    ")";
-            this.ItemPeriodEarnedEfficiency_Bad.DataMember = "Items";
+            this.ItemPeriodEarnedEfficiency_Bad.Condition = "([Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage] < [Stats.Budgeted.CurrentP" +
+    "eriodDataPoint.UnitsPercentage])";
+            this.ItemPeriodEarnedEfficiency_Bad.DataMember = "Deliverable";
             // 
             // 
             // 
@@ -577,9 +577,9 @@
             // 
             // ItemPeriodEarnedEfficiency_Good
             // 
-            this.ItemPeriodEarnedEfficiency_Good.Condition = "([Summary_PeriodEarned.UnitsPercentage] >= [Summary_PeriodPlanned.UnitsPercentage" +
-    "])";
-            this.ItemPeriodEarnedEfficiency_Good.DataMember = "Items";
+            this.ItemPeriodEarnedEfficiency_Good.Condition = "([Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage] >= [Stats.Budgeted.Current" +
+    "PeriodDataPoint.UnitsPercentage])";
+            this.ItemPeriodEarnedEfficiency_Good.DataMember = "Deliverable";
             // 
             // 
             // 
@@ -592,7 +592,7 @@
             this.xrLabel1.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel1.CanGrow = false;
             this.xrLabel1.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ReportableObjects.BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM")});
             this.xrLabel1.Dpi = 100F;
             this.xrLabel1.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrLabel1.KeepTogether = true;
@@ -609,7 +609,7 @@
             this.xrDataBaselineBudgeted.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataBaselineBudgeted.CanGrow = false;
             this.xrDataBaselineBudgeted.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ReportableObjects.BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS")});
             this.xrDataBaselineBudgeted.Dpi = 100F;
             this.xrDataBaselineBudgeted.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataBaselineBudgeted.KeepTogether = true;
@@ -624,7 +624,7 @@
             // 
             this.xrLabel21.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel21.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ReportableObjects.BASELINE_ITEMJoinRATE.BASELINE_ITEM.PRIMARY_TITLE")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.BASELINE_ITEMJoinRATE.BASELINE_ITEM.PRIMARY_TITLE")});
             this.xrLabel21.Dpi = 100F;
             this.xrLabel21.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrLabel21.KeepTogether = true;
@@ -651,7 +651,7 @@
             this.xrLabel43.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel43.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ReportableObjects.BASELINE_ITEMJoinRATE.BASELINE_ITEM.AREA.TITLE")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.BASELINE_ITEMJoinRATE.BASELINE_ITEM.AREA.TITLE")});
             this.xrLabel43.Dpi = 100F;
             this.xrLabel43.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrLabel43.KeepTogether = true;
@@ -666,7 +666,7 @@
             // 
             this.xrLabel42.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel42.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ReportableObjects.BASELINE_ITEMJoinRATE.BASELINE_ITEM.AREA.INTERNAL_NUM")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.BASELINE_ITEMJoinRATE.BASELINE_ITEM.AREA.INTERNAL_NUM")});
             this.xrLabel42.Dpi = 100F;
             this.xrLabel42.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrLabel42.KeepTogether = true;
@@ -679,7 +679,7 @@
             // 
             // objectDataSource1
             // 
-            this.objectDataSource1.DataSource = typeof(BluePrints.Common.ViewModel.Reporting.PROJECTSummary);
+            this.objectDataSource1.DataSource = typeof(BluePrints.Common.ViewModel.Reporting.SummaryStats);
             this.objectDataSource1.Name = "objectDataSource1";
             // 
             // PageHeader
@@ -1024,7 +1024,7 @@
             // 
             this.xrDataSummaryPeriodBurnedPercent.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataSummaryPeriodBurnedPercent.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Summary_PeriodBurned.UnitsPercentage", "{0:0.00%}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Burned.CurrentPeriodDataPoint.UnitsPercentage", "{0:0.00%}")});
             this.xrDataSummaryPeriodBurnedPercent.Dpi = 100F;
             this.xrDataSummaryPeriodBurnedPercent.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataSummaryPeriodBurnedPercent.FormattingRules.Add(this.SummaryPeriodBurnedEfficiency_Bad);
@@ -1040,8 +1040,8 @@
             // 
             // SummaryPeriodBurnedEfficiency_Bad
             // 
-            this.SummaryPeriodBurnedEfficiency_Bad.Condition = "([Summary_PeriodBurned.UnitsPercentage] > [Summary_PeriodEarned.UnitsPercentage])" +
-    "";
+            this.SummaryPeriodBurnedEfficiency_Bad.Condition = "([Burned.CurrentPeriodDataPoint.UnitsPercentage] > [Earned.CurrentPeriodDataPoint" +
+    ".UnitsPercentage])";
             // 
             // 
             // 
@@ -1050,8 +1050,8 @@
             // 
             // SummaryPeriodBurnedEfficiency_Good
             // 
-            this.SummaryPeriodBurnedEfficiency_Good.Condition = "([Summary_PeriodBurned.UnitsPercentage] <= [Summary_PeriodEarned.UnitsPercentage]" +
-    ")";
+            this.SummaryPeriodBurnedEfficiency_Good.Condition = "([Burned.CurrentPeriodDataPoint.UnitsPercentage] <= [Earned.CurrentPeriodDataPoin" +
+    "t.UnitsPercentage])";
             // 
             // 
             // 
@@ -1062,7 +1062,7 @@
             // 
             this.xrDataSummaryCumulativeBurnedPercent.Borders = DevExpress.XtraPrinting.BorderSide.Bottom;
             this.xrDataSummaryCumulativeBurnedPercent.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Summary_CumulativeBurned.UnitsPercentage", "{0:0.00%}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Burned.CurrentPeriodCumulativeDataPoint.UnitsPercentage", "{0:0.00%}")});
             this.xrDataSummaryCumulativeBurnedPercent.Dpi = 100F;
             this.xrDataSummaryCumulativeBurnedPercent.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataSummaryCumulativeBurnedPercent.FormattingRules.Add(this.SummaryCumulativeBurnedEfficiency_Bad);
@@ -1088,8 +1088,8 @@
             // 
             // SummaryCumulativeBurnedEfficiency_Good
             // 
-            this.SummaryCumulativeBurnedEfficiency_Good.Condition = "([Summary_CumulativeBurned.UnitsPercentage] <= [Summary_CumulativeEarned.UnitsPer" +
-    "centage])";
+            this.SummaryCumulativeBurnedEfficiency_Good.Condition = "([Burned.CumulativeDataPoints.UnitsPercentage] <= [Earned.CumulativeDataPoints.Un" +
+    "itsPercentage])";
             // 
             // 
             // 
@@ -1138,7 +1138,7 @@
             this.xrDataSummaryCumulativePlannedPercent.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataSummaryCumulativePlannedPercent.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Summary_CumulativeOriginal.UnitsPercentage", "{0:0.00%}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Budgeted.CurrentPeriodCumulativeDataPoint.UnitsPercentage", "{0:0.00%}")});
             this.xrDataSummaryCumulativePlannedPercent.Dpi = 100F;
             this.xrDataSummaryCumulativePlannedPercent.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataSummaryCumulativePlannedPercent.LocationFloat = new DevExpress.Utils.PointFloat(75.23969F, 41.75002F);
@@ -1172,7 +1172,7 @@
             // 
             this.xrDataSummaryCumulativeEarnedPercent.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataSummaryCumulativeEarnedPercent.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Summary_CumulativeEarned.UnitsPercentage", "{0:0.00%}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage", "{0:0.00%}")});
             this.xrDataSummaryCumulativeEarnedPercent.Dpi = 100F;
             this.xrDataSummaryCumulativeEarnedPercent.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataSummaryCumulativeEarnedPercent.FormattingRules.Add(this.SummaryCumulativeEarnedEfficiency_Bad);
@@ -1188,8 +1188,8 @@
             // 
             // SummaryCumulativeEarnedEfficiency_Bad
             // 
-            this.SummaryCumulativeEarnedEfficiency_Bad.Condition = "([Summary_CumulativeEarned.UnitsPercentage] < [Summary_CumulativePlanned.UnitsPer" +
-    "centage])";
+            this.SummaryCumulativeEarnedEfficiency_Bad.Condition = "([Earned.CumulativeDataPoints.UnitsPercentage] < [Budgeted.CumulativeDataPoints.U" +
+    "nitsPercentage])";
             // 
             // 
             // 
@@ -1198,8 +1198,8 @@
             // 
             // SummaryCumulativeEarnedEfficiency_Good
             // 
-            this.SummaryCumulativeEarnedEfficiency_Good.Condition = "([Summary_CumulativeEarned.UnitsPercentage] >= [Summary_CumulativePlanned.UnitsPe" +
-    "rcentage])";
+            this.SummaryCumulativeEarnedEfficiency_Good.Condition = "([Earned.CumulativeDataPoints.UnitsPercentage] >= [Budgeted.CumulativeDataPoints." +
+    "UnitsPercentage])";
             // 
             // 
             // 
@@ -1248,7 +1248,7 @@
             this.xrDataSummaryPeriodPlannedPercent.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataSummaryPeriodPlannedPercent.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Summary_PeriodOriginal.UnitsPercentage", "{0:0.00%}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Budgeted.CurrentPeriodDataPoint.UnitsPercentage", "{0:0.00%}")});
             this.xrDataSummaryPeriodPlannedPercent.Dpi = 100F;
             this.xrDataSummaryPeriodPlannedPercent.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataSummaryPeriodPlannedPercent.LocationFloat = new DevExpress.Utils.PointFloat(497.2399F, 41.75002F);
@@ -1264,7 +1264,7 @@
             // 
             this.xrDataSummaryPeriodEarnedPercent.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataSummaryPeriodEarnedPercent.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Summary_PeriodEarned.UnitsPercentage", "{0:0.00%}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Earned.CurrentPeriodDataPoint.UnitsPercentage", "{0:0.00%}")});
             this.xrDataSummaryPeriodEarnedPercent.Dpi = 100F;
             this.xrDataSummaryPeriodEarnedPercent.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataSummaryPeriodEarnedPercent.FormattingRules.Add(this.SummaryPeriodEarnedEfficiency_Bad);
@@ -1280,8 +1280,8 @@
             // 
             // SummaryPeriodEarnedEfficiency_Bad
             // 
-            this.SummaryPeriodEarnedEfficiency_Bad.Condition = "([Summary_PeriodEarned.UnitsPercentage] < [Summary_PeriodPlanned.UnitsPercentage]" +
-    ")";
+            this.SummaryPeriodEarnedEfficiency_Bad.Condition = "([Earned.CurrentPeriodDataPoint.UnitsPercentage]< [Burned.CurrentPeriodDataPoint." +
+    "UnitsPercentage])";
             // 
             // 
             // 
@@ -1290,8 +1290,8 @@
             // 
             // SummaryPeriodEarnedEfficiency_Good
             // 
-            this.SummaryPeriodEarnedEfficiency_Good.Condition = "([Summary_PeriodEarned.UnitsPercentage] >= [Summary_PeriodPlanned.UnitsPercentage" +
-    "])";
+            this.SummaryPeriodEarnedEfficiency_Good.Condition = "([Earned.CurrentPeriodDataPoint.UnitsPercentage] >= [Budgeted.CurrentPeriodDataPo" +
+    "int.UnitsPercentage])";
             // 
             // 
             // 
@@ -1382,11 +1382,11 @@
             this.xrChart1.Legend.Name = "Default Legend";
             this.xrChart1.LocationFloat = new DevExpress.Utils.PointFloat(10.00001F, 0F);
             this.xrChart1.Name = "xrChart1";
-            series1.ArgumentDataMember = "Summary_PeriodPlannedDataPoints.ProgressDate";
+            series1.ArgumentDataMember = "Budgeted.DataPoints.ProgressDate";
             series1.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series1.Name = "Period Planned";
             series1.ShowInLegend = false;
-            series1.ValueDataMembersSerializable = "Summary_PeriodPlannedDataPoints.Units";
+            series1.ValueDataMembersSerializable = "Budgeted.DataPoints.Units";
             sideBySideBarSeriesView1.AxisYName = "Secondary AxisY Units";
             sideBySideBarSeriesView1.BarWidth = 0.3D;
             sideBySideBarSeriesView1.Border.Visibility = DevExpress.Utils.DefaultBoolean.False;
@@ -1394,67 +1394,67 @@
             sideBySideBarSeriesView1.FillStyle.FillMode = DevExpress.XtraCharts.FillMode.Solid;
             sideBySideBarSeriesView1.Transparency = ((byte)(80));
             series1.View = sideBySideBarSeriesView1;
-            series2.ArgumentDataMember = "Summary_PeriodEarnedDataPoints.ProgressDate";
+            series2.ArgumentDataMember = "Earned.DataPoints.ProgressDate";
             series2.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series2.Name = "Period Earned";
             series2.ShowInLegend = false;
-            series2.ValueDataMembersSerializable = "Summary_PeriodEarnedDataPoints.Units";
+            series2.ValueDataMembersSerializable = "Earned.DataPoints.Units";
             sideBySideBarSeriesView2.AxisYName = "Secondary AxisY Units";
             sideBySideBarSeriesView2.BarWidth = 0.3D;
             sideBySideBarSeriesView2.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(176)))), ((int)(((byte)(80)))));
             sideBySideBarSeriesView2.FillStyle.FillMode = DevExpress.XtraCharts.FillMode.Solid;
             series2.View = sideBySideBarSeriesView2;
-            series3.ArgumentDataMember = "Summary_PeriodBurnedDataPoints.ProgressDate";
+            series3.ArgumentDataMember = "Burned.DataPoints.ProgressDate";
             series3.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series3.Name = "Period Burned";
             series3.ShowInLegend = false;
-            series3.ValueDataMembersSerializable = "Summary_PeriodBurnedDataPoints.Units";
+            series3.ValueDataMembersSerializable = "Burned.DataPoints.Units";
             sideBySideBarSeriesView3.AxisYName = "Secondary AxisY Units";
             sideBySideBarSeriesView3.BarWidth = 0.3D;
             sideBySideBarSeriesView3.Color = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(55)))), ((int)(((byte)(52)))));
             sideBySideBarSeriesView3.FillStyle.FillMode = DevExpress.XtraCharts.FillMode.Solid;
             series3.View = sideBySideBarSeriesView3;
-            series4.ArgumentDataMember = "Summary_PeriodRemainingPlannedDataPoints.ProgressDate";
+            series4.ArgumentDataMember = "Remaining.DataPoints.ProgressDate";
             series4.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series4.Name = "Period Remaining";
             series4.ShowInLegend = false;
-            series4.ValueDataMembersSerializable = "Summary_PeriodRemainingPlannedDataPoints.Units";
+            series4.ValueDataMembersSerializable = "Remaining.DataPoints.Units";
             sideBySideBarSeriesView4.AxisYName = "Secondary AxisY Units";
             sideBySideBarSeriesView4.BarWidth = 0.3D;
             sideBySideBarSeriesView4.Color = System.Drawing.Color.Indigo;
             sideBySideBarSeriesView4.FillStyle.FillMode = DevExpress.XtraCharts.FillMode.Solid;
             series4.View = sideBySideBarSeriesView4;
-            series5.ArgumentDataMember = "Summary_CumulativeRemainingPlannedDataPoints.ProgressDate";
+            series5.ArgumentDataMember = "Remaining.CumulativeDataPoints.ProgressDate";
             series5.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series5.Name = "Remaining";
-            series5.ValueDataMembersSerializable = "Summary_CumulativeRemainingPlannedDataPoints.UnitsPercentage";
+            series5.ValueDataMembersSerializable = "Remaining.CumulativeDataPoints.UnitsPercentage";
             lineSeriesView1.Color = System.Drawing.Color.Indigo;
             lineSeriesView1.LineMarkerOptions.Color = System.Drawing.Color.Indigo;
             lineSeriesView1.LineMarkerOptions.Size = 5;
             lineSeriesView1.MarkerVisibility = DevExpress.Utils.DefaultBoolean.True;
             series5.View = lineSeriesView1;
-            series6.ArgumentDataMember = "Summary_CumulativePlannedDataPoints.ProgressDate";
+            series6.ArgumentDataMember = "Budgeted.CumulativeDataPoints.ProgressDate";
             series6.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series6.Name = "Planned";
-            series6.ValueDataMembersSerializable = "Summary_CumulativePlannedDataPoints.UnitsPercentage";
+            series6.ValueDataMembersSerializable = "Budgeted.CumulativeDataPoints.UnitsPercentage";
             lineSeriesView2.Color = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(54)))), ((int)(((byte)(93)))));
             lineSeriesView2.LineMarkerOptions.Color = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(54)))), ((int)(((byte)(93)))));
             lineSeriesView2.LineMarkerOptions.Size = 5;
             lineSeriesView2.MarkerVisibility = DevExpress.Utils.DefaultBoolean.True;
             series6.View = lineSeriesView2;
-            series7.ArgumentDataMember = "Summary_CumulativeEarnedDataPoints.ProgressDate";
+            series7.ArgumentDataMember = "Earned.CumulativeDataPoints.ProgressDate";
             series7.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series7.Name = "Earned";
-            series7.ValueDataMembersSerializable = "Summary_CumulativeEarnedDataPoints.UnitsPercentage";
+            series7.ValueDataMembersSerializable = "Earned.CumulativeDataPoints.UnitsPercentage";
             lineSeriesView3.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(176)))), ((int)(((byte)(80)))));
             lineSeriesView3.LineMarkerOptions.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(176)))), ((int)(((byte)(80)))));
             lineSeriesView3.LineMarkerOptions.Size = 5;
             lineSeriesView3.MarkerVisibility = DevExpress.Utils.DefaultBoolean.True;
             series7.View = lineSeriesView3;
-            series8.ArgumentDataMember = "Summary_CumulativeBurnedDataPoints.ProgressDate";
+            series8.ArgumentDataMember = "Burned.DataPoints.ProgressDate";
             series8.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series8.Name = "Burned";
-            series8.ValueDataMembersSerializable = "Summary_CumulativeBurnedDataPoints.UnitsPercentage";
+            series8.ValueDataMembersSerializable = "Burned.CumulativeDataPoints.UnitsPercentage";
             lineSeriesView4.Color = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(55)))), ((int)(((byte)(52)))));
             lineSeriesView4.LineMarkerOptions.Color = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(55)))), ((int)(((byte)(52)))));
             lineSeriesView4.LineMarkerOptions.Size = 5;

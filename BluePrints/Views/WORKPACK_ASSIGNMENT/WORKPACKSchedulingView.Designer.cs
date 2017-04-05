@@ -217,7 +217,7 @@ namespace BluePrints.Views
             gridFormatRule1.ApplyToRow = true;
             gridFormatRule1.Column = this.colASSIGNED_UNITS;
             gridFormatRule1.Name = "Mismatched Assigned Units";
-            formatConditionRuleExpression1.Expression = "[ASSIGNED_UNITS] <> [Final_BudgetedUnits]";
+            formatConditionRuleExpression1.Expression = "[ASSIGNED_UNITS] <> [Stats.BudgetedUnits]";
             formatConditionRuleExpression1.PredefinedName = "Red Fill, Red Text";
             gridFormatRule1.Rule = formatConditionRuleExpression1;
             this.gridViewWorkpack.FormatRules.Add(gridFormatRule1);
@@ -302,7 +302,7 @@ namespace BluePrints.Views
             // colBUDGETED_UNITS
             // 
             this.colBUDGETED_UNITS.Caption = "Budgeted Units";
-            this.colBUDGETED_UNITS.FieldName = "Final_BudgetedUnits";
+            this.colBUDGETED_UNITS.FieldName = "Stats.BudgetedUnits";
             this.colBUDGETED_UNITS.Name = "colBUDGETED_UNITS";
             this.colBUDGETED_UNITS.OptionsColumn.AllowEdit = false;
             this.colBUDGETED_UNITS.OptionsColumn.ReadOnly = true;
