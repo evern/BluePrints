@@ -338,20 +338,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Common\ActiveDirectory.cs" />
+    <Compile Include="Common\Misc\ActiveDirectory.cs" />
     <Compile Include="Common\Attributes\BulkEditDisabledAttributes.cs" />
     <Compile Include="Common\Attributes\RequiredAttributes.cs" />
-    <Compile Include="Common\GridControlEx.cs" />
+    <Compile Include="Common\Misc\GridControlEx.cs" />
     <Compile Include="Common\Helpers\CommonMethods.cs" />
     <Compile Include="Common\Helpers\CustomMessageBoxService.cs" />
     <Compile Include="Common\Helpers\EntitiesLoader.cs" />
     <Compile Include="Common\Helpers\XMLHelpers.cs" />
-    <Compile Include="Common\LoginCredentials.cs" />
-    <Compile Include="Common\PermissionResources.Designer.cs">
+    <Compile Include="Common\Misc\LayoutSettings.Designer.cs">
+      <DependentUpon>LayoutSettings.settings</DependentUpon>
       <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>PermissionResources.resx</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Common\Misc\LoginCredentials.cs" />
     <Compile Include="Common\Projections\COMMODITY_CODEMasterDetailProjection.cs" />
     <Compile Include="Common\Projections\ESTIMATION_DIRECT_ITEMProjection.cs" />
     <Compile Include="Common\Projections\COMMODITY_GROUP_DIRECTProjection.cs" />
@@ -366,6 +366,12 @@
     <Compile Include="Common\Projections\WORKPACKProjection.cs" />
     <Compile Include="Common\Projections\USER_Dashboard.cs" />
     <Compile Include="Common\Projections\WORKPACK_Dashboard.cs" />
+    <Compile Include="Common\Reports\ReportDesigner.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Common\Reports\ReportDesigner.Designer.cs">
+      <DependentUpon>ReportDesigner.cs</DependentUpon>
+    </Compile>
     <Compile Include="Common\Reports\XtraReportBASELINE_ITEMS.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -378,26 +384,36 @@
     <Compile Include="Common\Reports\XtraReportPROGRESS_ITEMS.Designer.cs">
       <DependentUpon>XtraReportPROGRESS_ITEMS.cs</DependentUpon>
     </Compile>
-    <Compile Include="Common\SignalR.cs" />
+    <Compile Include="Common\Resources\CommonResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CommonResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Common\Misc\SignalR.cs" />
+    <Compile Include="Common\Resources\PermissionResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PermissionResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Common\SpellCheck\SpellCheckerHelper.cs" />
     <Compile Include="Common\SpellCheck\SpellCheckerModule.cs" />
     <Compile Include="Common\Utils\StringFormatUtils.cs" />
-    <Compile Include="Common\ViewModel\CollectionViewModelBase.cs" />
-    <Compile Include="Common\ViewModel\DashboardCollectionViewModelWrapper.cs" />
+    <Compile Include="Common\ViewModel\Base\CollectionViewModelBase.cs" />
+    <Compile Include="Common\ViewModel\Base\DashboardCollectionViewModelWrapper.cs" />
     <Compile Include="Common\ViewModel\Dialogs\DialogCollectionViewModel.cs" />
-    <Compile Include="Common\ViewModel\EntitiesCollectionsWrapper.cs" />
-    <Compile Include="Common\ViewModel\ICollectionViewModel.cs" />
-    <Compile Include="Common\ViewModel\IHaveGUID.cs" />
-    <Compile Include="Common\ViewModel\ISupportCustomDocumentTypeNameAndParameter.cs" />
-    <Compile Include="Common\ViewModel\ISupportViewRestoration.cs" />
-    <Compile Include="Common\ViewModel\RangeObservableCollection.cs" />
-    <Compile Include="Common\ViewModel\Reporting\Classes.cs" />
-    <Compile Include="Common\ViewModel\Reporting\DataPointsBuilder.cs" />
-    <Compile Include="Common\ViewModel\Reporting\ISupportProgressReportingExtension.cs" />
-    <Compile Include="Common\ViewModel\Reporting\SummaryBuilder.cs" />
+    <Compile Include="Common\ViewModel\Base\EntitiesCollectionsWrapper.cs" />
+    <Compile Include="Common\ViewModel\EntitiesViewModel.cs" />
+    <Compile Include="Common\ViewModel\InstantFeedbackCollectionViewModel.cs" />
+    <Compile Include="Common\ViewModel\Interfaces.cs" />
+    <Compile Include="Common\ViewModel\Misc\RangeObservableCollection.cs" />
+    <Compile Include="Common\ViewModel\Reporting\Builders.cs" />
+    <Compile Include="Common\ViewModel\Reporting\Helpers\DataPointsHelpers.cs" />
+    <Compile Include="Common\ViewModel\Reporting\Helpers\ChronologicalHelpers.cs" />
+    <Compile Include="Common\ViewModel\Reporting\Helpers\ProjectionHelpers.cs" />
+    <Compile Include="Common\ViewModel\Reporting\Summarizers.cs" />
     <Compile Include="Common\Attributes\ProjectionPropertyAttribute.cs" />
-    <Compile Include="Common\ViewModel\Settings\XMLSettings.cs" />
-    <Compile Include="Common\ViewRestoreUserControl.cs" />
+    <Compile Include="Common\ViewModel\Misc\XMLSettings.cs" />
+    <Compile Include="Common\Misc\ViewRestoreUserControl.cs" />
     <Compile Include="Common\View\DXSplashScreen\LoadingScreen.cs" />
     <Compile Include="Common\View\DXSplashScreen\LoadingScreen.xaml.cs">
       <DependentUpon>LoadingScreen.xaml</DependentUpon>
@@ -478,12 +494,7 @@
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\DesignTimeBluePrintsEntitiesUnitOfWork.cs" />
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\IBluePrintsEntitiesUnitOfWork.cs" />
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\BluePrintsEntitiesUnitOfWorkSource.cs" />
-    <Compile Include="Common\BluePrintsEnums.cs" />
-    <Compile Include="Common\CommonResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CommonResources.resx</DependentUpon>
-    </Compile>
+    <Compile Include="Common\Misc\BluePrintsEnums.cs" />
     <Compile Include="Common\DataModel\DbExceptions.cs" />
     <Compile Include="Common\DataModel\DesignTime\DesignTimeInstantFeedbackSource.cs" />
     <Compile Include="Common\DataModel\DesignTime\DesignTimeReadOnlyRepository.cs" />
@@ -501,26 +512,23 @@
     <Compile Include="Common\DataModel\IRepository.cs" />
     <Compile Include="Common\DataModel\IUnitOfWork.cs" />
     <Compile Include="Common\DataModel\UnitOfWorkBase.cs" />
-    <Compile Include="Common\LayoutSettings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>LayoutSettings.settings</DependentUpon>
-    </Compile>
     <Compile Include="Common\Utils\DbExtensions.cs" />
     <Compile Include="Common\Utils\ExpressionHelper.cs" />
-    <Compile Include="Common\ViewModel\AddRemoveDetailEntitiesViewModel.cs" />
-    <Compile Include="Common\ViewModel\AddRemoveJunctionDetailEntitiesViewModel.cs" />
-    <Compile Include="Common\ViewModel\CollectionViewModel.cs" />
+    <Compile Include="Views\LoginWindow.xaml.cs">
+      <DependentUpon>LoginWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="References\ViewModel\AddRemoveDetailEntitiesViewModel.cs" />
+    <Compile Include="References\ViewModel\AddRemoveJunctionDetailEntitiesViewModel.cs" />
+    <Compile Include="Common\ViewModel\Base\CollectionViewModel.cs" />
     <Compile Include="Common\ViewModel\Converters\NumericCompareToBooleanConverter .cs" />
     <Compile Include="Common\ViewModel\Converters\VariationActionToStringConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\VariationActionToImageConverter.cs" />
-    <Compile Include="Common\ViewModel\ProjectionCollectionViewModel.Partial.cs" />
+    <Compile Include="Common\ViewModel\Base\ProjectionCollectionViewModel.Partial.cs" />
     <Compile Include="Common\ViewModel\Converters\NumericCompareToVisibilityConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\QuantityExpressionConverter.cs" />
-    <Compile Include="Common\ViewModel\DetailsFilterableSingleObjectViewModel.cs" />
-    <Compile Include="Common\ViewModel\DocumentManagerServiceExtensions.cs" />
-    <Compile Include="Common\ViewModel\DocumentsViewModel.cs" />
-    <Compile Include="Common\ViewModel\EntitiesViewModel.cs" />
+    <Compile Include="References\ViewModel\DetailsFilterableSingleObjectViewModel.cs" />
+    <Compile Include="Common\ViewModel\Document\DocumentManagerServiceExtensions.cs" />
+    <Compile Include="Common\ViewModel\Document\DocumentsViewModel.cs" />
     <Compile Include="Common\ViewModel\Filtering\CustomFilterViewModel.cs" />
     <Compile Include="Common\ViewModel\Filtering\FilterInfo.cs" />
     <Compile Include="Common\ViewModel\Filtering\FilterItem.cs" />
@@ -530,19 +538,16 @@
     <Compile Include="Common\ViewModel\Filtering\IFilterTreeModelPageSpecificSettings.cs" />
     <Compile Include="Common\ViewModel\Filtering\ISupportFiltering.cs" />
     <Compile Include="Common\ViewModel\Filtering\TreeViewSelectedItemBehavior.cs" />
-    <Compile Include="Common\ViewModel\Reporting\Period.cs" />
-    <Compile Include="Common\ViewModel\Reporting\ProgressInfo.cs" />
-    <Compile Include="Common\ViewModel\Reporting\ProgressReportable.cs" />
-    <Compile Include="Common\ViewModel\Reporting\VariationAdjustment.cs" />
+    <Compile Include="Common\ViewModel\Reporting\AuxiliaryClasses.cs" />
+    <Compile Include="Common\ViewModel\Reporting\Stats.cs" />
+    <Compile Include="Common\ViewModel\Reporting\Summaries.cs" />
     <Compile Include="Common\Utils\BluePrintDataUtils.cs" />
-    <Compile Include="Common\ViewModel\InstantFeedbackCollectionViewModel.cs" />
-    <Compile Include="Common\ViewModel\ISingleObjectViewModel.cs" />
-    <Compile Include="Common\ViewModel\LookUpEntitiesViewModel.cs" />
-    <Compile Include="Common\ViewModel\Messages.cs" />
-    <Compile Include="Common\ViewModel\PeekCollectionViewModel.cs" />
-    <Compile Include="Common\ViewModel\PersistentLayoutHelper.cs" />
-    <Compile Include="Common\ViewModel\ReadOnlyCollectionViewModel.cs" />
-    <Compile Include="Common\ViewModel\SingleObjectViewModel.cs" />
+    <Compile Include="References\ViewModel\LookUpEntitiesViewModel.cs" />
+    <Compile Include="Common\ViewModel\Misc\Messages.cs" />
+    <Compile Include="References\ViewModel\PeekCollectionViewModel.cs" />
+    <Compile Include="Common\ViewModel\Misc\PersistentLayoutHelper.cs" />
+    <Compile Include="Common\ViewModel\Base\ReadOnlyCollectionViewModel.cs" />
+    <Compile Include="Common\ViewModel\Base\SingleObjectViewModel.cs" />
     <Compile Include="Common\ViewModel\UndoRedo\EntitiesUndoRedoManager.cs" />
     <Compile Include="Common\ViewModel\UndoRedo\ISupportUndoRedo.cs" />
     <Compile Include="Common\ViewModel\UndoRedo\UndoRedoEntityInfo.cs" />
@@ -1083,11 +1088,6 @@
     <Compile Include="EntityFramework\PrimeroEntitiesDataModel\IPrimeroEntitiesUnitOfWork.cs" />
     <Compile Include="EntityFramework\PrimeroEntitiesDataModel\PrimeroEntitiesUnitOfWork.cs" />
     <Compile Include="EntityFramework\PrimeroEntitiesDataModel\PrimeroEntitiesUnitOfWorkSource.cs" />
-    <Compile Include="PrintRibbonControllerResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>PrintRibbonControllerResources.resx</DependentUpon>
-    </Compile>
     <Compile Include="ViewModels\AREA\AREACollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSCollectionViewModelWrapper.cs" />
     <Compile Include="Common\ViewModel\Dialogs\BulkEditEnumsViewModel.cs" />
@@ -1127,9 +1127,6 @@
     <Compile Include="ViewModels\VARIATION\VARIATIONSCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\VARIATION_ITEMSCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\WORKPACK\WORKPACKCollectionViewModelWrapper.cs" />
-    <Compile Include="LoginWindow.xaml.cs">
-      <DependentUpon>LoginWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Common\View\BulkEditEnums.xaml.cs">
       <DependentUpon>BulkEditEnums.xaml</DependentUpon>
     </Compile>
@@ -1157,14 +1154,11 @@
     <Compile Include="Views\INDIRECT_TYPE\INDIRECT_TYPECollectionView.xaml.cs">
       <DependentUpon>INDIRECT_TYPECollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\NavigationTreeViewPanel.xaml.cs">
+    <Compile Include="References\Views\NavigationTreeViewPanel.xaml.cs">
       <DependentUpon>NavigationTreeViewPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\REPORTDesigner.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\REPORTDesigner.Designer.cs">
-      <DependentUpon>REPORTDesigner.cs</DependentUpon>
+    <Compile Include="Views\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\USER\USERDashboardView.xaml.cs">
       <DependentUpon>USERDashboardView.xaml</DependentUpon>
@@ -1214,7 +1208,7 @@
     <Compile Include="Views\COMMODITY_CODE\COMMODITY_CODECollectionView.xaml.cs">
       <DependentUpon>COMMODITY_CODECollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\CustomFilterView.xaml.cs">
+    <Compile Include="References\Views\CustomFilterView.xaml.cs">
       <DependentUpon>CustomFilterView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\DEPARTMENT\DEPARTMENTCollectionView.xaml.cs">
@@ -1229,10 +1223,10 @@
     <Compile Include="Views\ESTIMATION\ESTIMATION_DIRECTCollectionView.xaml.cs">
       <DependentUpon>ESTIMATION_DIRECTCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\FilterTreeView.xaml.cs">
+    <Compile Include="References\Views\FilterTreeView.xaml.cs">
       <DependentUpon>FilterTreeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\NavigationTreeView.xaml.cs">
+    <Compile Include="References\Views\NavigationTreeView.xaml.cs">
       <DependentUpon>NavigationTreeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROGRESS_ITEM\PROGRESS_ITEMCollectionView.xaml.cs">
@@ -1277,11 +1271,6 @@
     <Compile Include="Views\WORKPACK_ASSIGNMENT\WORKPACKAssignmentView.xaml.cs">
       <DependentUpon>WORKPACKAssignmentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="XRDesignRibbonControllerResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>XRDesignRibbonControllerResources.resx</DependentUpon>
-    </Compile>
     <Page Include="Common\View\DXSplashScreen\LoadingScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1298,7 +1287,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Views\LoginWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1306,14 +1295,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="LoginWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Common\View\BulkEditEnums.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1350,9 +1331,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\NavigationTreeViewPanel.xaml">
+    <Page Include="References\Views\NavigationTreeViewPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\USER\USERDashboardView.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -1414,7 +1399,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\CustomFilterView.xaml">
+    <Page Include="References\Views\CustomFilterView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1434,11 +1419,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\FilterTreeView.xaml">
+    <Page Include="References\Views\FilterTreeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\NavigationTreeView.xaml">
+    <Page Include="References\Views\NavigationTreeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1513,15 +1498,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="Common\CommonResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>CommonResources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Common\PermissionResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>PermissionResources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Include="Common\Reports\ReportDesigner.resx">
+      <DependentUpon>ReportDesigner.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Common\Reports\XtraReportBASELINE_ITEMS.resx">
       <DependentUpon>XtraReportBASELINE_ITEMS.cs</DependentUpon>
@@ -1531,10 +1509,14 @@
       <DependentUpon>XtraReportPROGRESS_ITEMS.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="PrintRibbonControllerResources.resx">
+    <EmbeddedResource Include="Common\Resources\CommonResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>PrintRibbonControllerResources.Designer.cs</LastGenOutput>
+      <LastGenOutput>CommonResources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Common\Resources\PermissionResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PermissionResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -1542,16 +1524,8 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\REPORTDesigner.resx">
-      <DependentUpon>REPORTDesigner.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Views\WORKPACK_ASSIGNMENT\WORKPACKSchedulingView.resx">
       <DependentUpon>WORKPACKSchedulingView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="XRDesignRibbonControllerResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>XRDesignRibbonControllerResources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="App.Debug.config">
       <DependentUpon>App.config</DependentUpon>
@@ -1566,10 +1540,6 @@
       <IsTransformFile>True</IsTransformFile>
     </None>
     <None Include="BluePrints_TemporaryKey.pfx" />
-    <None Include="Common\LayoutSettings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>LayoutSettings.Designer.cs</LastGenOutput>
-    </None>
     <EmbeddedResource Include="Data\Dictionaries\CustomEnglish.dic">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -1582,6 +1552,10 @@
     <EmbeddedResource Include="Data\Dictionaries\en\en_US.dic">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <None Include="Common\Misc\LayoutSettings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>LayoutSettings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -4249,6 +4223,7 @@
     <Resource Include="Common\View\DXSplashScreen\Image.png" />
     <Resource Include="Common\View\DXSplashScreen\Logo.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\SlowCheetah.2.5.48\build\SlowCheetah.targets" Condition="Exists('..\packages\SlowCheetah.2.5.48\build\SlowCheetah.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

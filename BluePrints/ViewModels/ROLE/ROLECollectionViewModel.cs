@@ -17,6 +17,7 @@ using DevExpress.Mvvm;
 using System.ComponentModel;
 using DevExpress.Xpf.Bars;
 using System.Windows;
+using BluePrints.Common.Resources;
 
 namespace BluePrints.ViewModels
 {

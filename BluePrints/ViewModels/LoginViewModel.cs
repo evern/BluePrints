@@ -1,6 +1,7 @@
 ﻿using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Helpers;
+using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel;
 using BluePrints.Data;
 using DevExpress.Mvvm;
@@ -34,7 +35,7 @@ namespace BluePrints.ViewModels
         private IEnumerable<USER> USERS { get; set; }
         private DispatcherTimer delayedHideDispatcher;
         bool isUsernameLoadedFromXML;
-        protected LoginViewModel()
+        public LoginViewModel()
         {
             delayedHideDispatcher = new DispatcherTimer();
             delayedHideDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
@@ -179,7 +180,6 @@ namespace BluePrints.ViewModels
         public void ShowMainWindow()
         {
             var mainWindow = new MainWindow();
-            //mainWindow.ShowLoginWindow = this.ShowThisControl;
             mainWindow.Show();
         }
 

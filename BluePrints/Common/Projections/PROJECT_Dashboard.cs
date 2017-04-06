@@ -28,9 +28,9 @@ namespace BluePrints.Common.Projections
 
         public void InitializeSummarizer(IEnumerable<PROGRESS_ITEMProjection> progress_items, BASELINE LiveBASELINE, PROGRESS LivePROGRESS, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENTS, IEnumerable<VARIATION> VARIATIONS, IBluePrintsEntitiesUnitOfWork BluePrintsUOW = null, IP6EntitiesUnitOfWork P6UOW = null, IPrimeroEntitiesUnitOfWork PrimeroUOW = null)
         {
-            TimeSpan reportInterval = ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(LivePROGRESS);
-            DateTime firstAlignedDataDate = ISupportProgressReportingExtensions.GenerateFirstAlignedDataDate(LivePROGRESS);
-            List<VariationAdjustment> projectVariationAdjustments = ISupportProgressReportingExtensions.BuildProjectVariationAdjustments(VARIATIONS.AsQueryable(), progress_items.Select(x => x.BASELINE_ITEMJoinRATE));
+            TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(LivePROGRESS);
+            DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(LivePROGRESS);
+            List<VariationAdjustment> projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONS.AsQueryable(), progress_items.Select(x => x.BASELINE_ITEMJoinRATE));
 
             FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(PROJECT, LiveBASELINE, LivePROGRESS, WORKPACKS, WORKPACK_ASSIGNMENTS, P6UOW, PrimeroUOW);
             Stats = new ProjectSummaryStats(progress_items, LivePROGRESS, projectVariationAdjustments);

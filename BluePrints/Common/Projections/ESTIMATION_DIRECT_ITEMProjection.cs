@@ -1,5 +1,6 @@
 ﻿using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.DataModel;
+using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel;
 using BluePrints.Data;
 using BluePrints.Data.Attributes;

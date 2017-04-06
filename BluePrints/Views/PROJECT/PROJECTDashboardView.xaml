@@ -376,7 +376,7 @@
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>
-                                <common:TableViewEx x:Name="tableView" AllowEditing="False"
+                                <common:TableViewEx x:Name="tableView" AllowEditing="False" UseLightweightTemplates="{x:Null}"
                                                Style="{StaticResource DefaultTableViewTemplate}"
                                                NewItemRowPosition="None" ShowGroupPanel="False">
                                     <common:TableViewEx.RowCellMenuCustomizations>

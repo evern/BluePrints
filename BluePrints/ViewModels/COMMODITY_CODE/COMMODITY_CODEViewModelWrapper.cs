@@ -17,6 +17,7 @@ using DevExpress.Xpf.Grid.TreeList;
 using System.Windows.Threading;
 using BluePrints.Common.Projections;
 using System.ComponentModel;
+using BluePrints.Common.Resources;
 
 namespace BluePrints.ViewModels
 {

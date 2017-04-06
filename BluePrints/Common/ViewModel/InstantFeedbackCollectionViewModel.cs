@@ -12,6 +12,7 @@ using DevExpress.Data.Linq;
 using System.Collections;
 using BluePrints.Common.Utils;
 using BluePrints.Common.DataModel;
+using BluePrints.Common.Resources;
 
 namespace BluePrints.Common.ViewModel
 {

@@ -15,6 +15,7 @@ using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Core;
 using DevExpress.Xpf.LayoutControl;
 using BluePrints.View;
+using BluePrints.Common.Resources;
 
 namespace BluePrints.ViewModels
 {
@@ -123,10 +124,8 @@ namespace BluePrints.ViewModels
                     .AsEnumerable();
             if (projects.Any())
             {
-                LoadingScreenManager.ShowLoadingScreen(projects.Count());
                 foreach (var project in projects)
                 {
-                    LoadingScreenManager.Progress();
                     var newModules = CreateProjectTree(project);
                     foreach (var module in newModules)
                         yield return module;

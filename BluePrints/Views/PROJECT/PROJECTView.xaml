@@ -368,7 +368,7 @@
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>
-                                <common:TableViewEx x:Name="tableView" AllowEditing="False"
+                                <common:TableViewEx x:Name="tableView" AllowEditing="False" UseLightweightTemplates="{x:Null}"
                                                Style="{StaticResource DefaultTableViewTemplate}"
                                                ShowAutoFilterRow="False"
                                                ShowGroupedColumns="False" ShowSearchPanelMode="Never"
@@ -381,7 +381,7 @@
                                                            Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                            Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                     </common:TableViewEx.RowCellMenuCustomizations>
-                                    <common:TableViewEx.FormatConditions>
+                                    <!--<common:TableViewEx.FormatConditions>
                                         <dxg:FormatCondition
                                             Expression="[Stats.Earned.CurrentPeriodCumulativeDataPoint.Units] / [Stats.Planned.CurrentPeriodCumulativeDataPoint.Units] &lt; 0.8"
                                             FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage">
@@ -424,7 +424,7 @@
                                                                     MaxValue="1" MinValue="-1">
                                             <dx:DataBarFormat FillNegative="#FFFF9B98" Fill="#FF9ACCFF" />
                                         </dxg:DataBarFormatCondition>
-                                    </common:TableViewEx.FormatConditions>
+                                    </common:TableViewEx.FormatConditions>-->
                                 </common:TableViewEx>
                             </dxg:GridControl.View>
                         </dxg:GridControl>

@@ -429,9 +429,9 @@ namespace BluePrints.Common.Projections
 
             PROJECT project = getPROJECTFunc();
             IEnumerable<VARIATION> projectVARIATIONS = getVARIATIONSFunc();
-            TimeSpan reportInterval = ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(PROGRESS);
-            DateTime firstAlignedDataDate = ISupportProgressReportingExtensions.GenerateFirstAlignedDataDate(PROGRESS);
-            List<VariationAdjustment> projectVariationAdjustments = ISupportProgressReportingExtensions.BuildProjectVariationAdjustments(projectVARIATIONS.AsQueryable(), BASELINE_ITEMJoinRATES);
+            TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(PROGRESS);
+            DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(PROGRESS);
+            List<VariationAdjustment> projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(projectVARIATIONS.AsQueryable(), BASELINE_ITEMJoinRATES);
 
             return
                 BASELINE_ITEMJoinRATES.ToArray().Select(

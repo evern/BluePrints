@@ -28,6 +28,7 @@ using DevExpress.Xpf.Printing;
 using DevExpress.Xpf.Editors;
 using DevExpress.Xpf.Editors.Settings;
 using System.ComponentModel;
+using BluePrints.Common.Resources;
 
 namespace BluePrints.ViewModels
 {

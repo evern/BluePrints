@@ -25,6 +25,7 @@ using System.ComponentModel;
 using BluePrints.Common.Projections;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
+using BluePrints.Common.Resources;
 
 namespace BluePrints.ViewModels
 {

@@ -84,8 +84,48 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl Name="gridControl" ColumnsSource="{StaticResource PROGRESSColumns}"
+                    <dxg:GridControl Name="gridControl"
                                      Style="{StaticResource AggregateViewGridTemplate}">
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn FieldName="NAME" />
+                            <dxg:GridColumn FieldName="PROGRESS_START">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="DATA_DATE">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="INTERVAL_COUNT">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="n0" MinValue="0" Increment="1" MaxValue="99"
+                                      MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="INTERVAL_TYPE">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProgressIntervalType}}" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="STATUS">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProgressStatus}}" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="COMMENTS" />
+                            <dxg:GridColumn FieldName="P6PROGRESS_NAME">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                                              ItemsSource="{Binding DataContext.P6PROJECTSCollection, ElementName=userControl}"
+                                                              DisplayMember="wbs_short_name"
+                                                              ValueMember="wbs_short_name" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                        </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.TotalSummary>

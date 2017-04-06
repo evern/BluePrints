@@ -1,4 +1,5 @@
-﻿using BluePrints.Common.ViewModel;
+﻿using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.IO;

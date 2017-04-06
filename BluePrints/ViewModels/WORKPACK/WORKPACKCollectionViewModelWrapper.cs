@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BluePrints.Common.Helpers;
 using DevExpress.Xpf.Bars;
+using BluePrints.Common.Resources;
 
 namespace BluePrints.ViewModels
 {

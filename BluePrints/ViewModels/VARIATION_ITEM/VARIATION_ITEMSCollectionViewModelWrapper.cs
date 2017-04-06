@@ -22,6 +22,7 @@ using BluePrints.Common.Projections;
 using System.Windows.Threading;
 using System.Windows;
 using DevExpress.Xpf.Bars;
+using BluePrints.Common.Resources;
 
 namespace BluePrints.ViewModels
 {

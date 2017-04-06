@@ -22,6 +22,7 @@ using System.Windows.Input;
 using System.Windows;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using BluePrints.Common.Resources;
 
 namespace BluePrints.ViewModels
 {

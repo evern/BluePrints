@@ -28,6 +28,7 @@ using DevExpress.Data.Filtering;
 using DevExpress.Xpf.Printing;
 using DevExpress.Xpf.Editors;
 using DevExpress.Xpf.Editors.Settings;
+using BluePrints.Common.Reports;
 
 namespace BluePrints.ViewModels
 {
@@ -616,7 +617,7 @@ namespace BluePrints.ViewModels
 
         public void EditReport()
         {
-            var reportDesigner = new REPORTDesigner(_loadProject,
+            var reportDesigner = new ReportDesigner(_loadProject,
                 (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
                 loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Baseline_Report);
             if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)

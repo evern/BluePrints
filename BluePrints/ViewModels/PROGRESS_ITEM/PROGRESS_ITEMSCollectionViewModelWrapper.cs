@@ -28,6 +28,8 @@ using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
 using DevExpress.Data;
 using DevExpress.Xpf.Editors;
+using BluePrints.Common.Resources;
+using BluePrints.Common.Reports;
 
 namespace BluePrints.ViewModels
 {
@@ -194,9 +196,9 @@ namespace BluePrints.ViewModels
 
         private void InitializeSummarizer(IEnumerable<PROGRESS_ITEMProjection> entities)
         {
-            TimeSpan reportInterval = ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(loadPROGRESS);
-            DateTime firstAlignedDataDate = ISupportProgressReportingExtensions.GenerateFirstAlignedDataDate(loadPROGRESS);
-            List<VariationAdjustment> projectVariationAdjustment = ISupportProgressReportingExtensions.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), entities.Select(x => x.BASELINE_ITEMJoinRATE));
+            TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
+            DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
+            List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), entities.Select(x => x.BASELINE_ITEMJoinRATE));
             projectSummary = new ProjectSummaryStats(entities, loadPROGRESS, projectVariationAdjustment);
             FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT, loadBASELINE, loadPROGRESS, WORKPACKCollection, WORKPACKCollection.SelectMany(x => x.WORKPACK_ASSIGNMENT).ToList(), p6UOW);
             fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder);
@@ -480,7 +482,7 @@ namespace BluePrints.ViewModels
 
         private void DateChange(DateNavigationType navigationType)
         {
-            var interval = ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(loadPROGRESS);
+            var interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             int multiplier;
             if (navigationType == DateNavigationType.Current)
             {
@@ -564,7 +566,7 @@ namespace BluePrints.ViewModels
             decimal assignedUnits = 0;
             List<string> processedP6Task = new List<string>();
 
-            TimeSpan intervalTimeSpan = ISupportProgressReportingExtensions.ConvertProgressIntervalToPeriod(loadPROGRESS);
+            TimeSpan intervalTimeSpan = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             foreach (WORKPACK_Dashboard workpack in entities)
             {
                 if (workpack.Stats.Earned.CumulativeDataPoints != null && workpack.Stats.Earned.CumulativeDataPoints.Count > 0)
@@ -699,7 +701,7 @@ namespace BluePrints.ViewModels
 
         public void EditReport()
         {
-            var reportDesigner = new REPORTDesigner(loadPROJECT,
+            var reportDesigner = new ReportDesigner(loadPROJECT,
                 (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
                 loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Progress_Report);
             if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)

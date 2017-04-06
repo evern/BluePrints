@@ -391,7 +391,7 @@
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>
                                 <common:TableViewEx x:Name="tableView" AllowEditing="False"
-                                               Style="{StaticResource DefaultTableViewTemplate}"
+                                               Style="{StaticResource DefaultTableViewTemplate}" UseLightweightTemplates="{x:Null}"
                                                NewItemRowPosition="None">
                                     <common:TableViewEx.RowCellMenuCustomizations>
                                         <dxb:BarButtonItem Content="Refresh"
