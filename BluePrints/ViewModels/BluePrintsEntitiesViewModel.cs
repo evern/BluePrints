@@ -301,16 +301,16 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageAreaAndPhases))
             {
-                var projectphaseModuleTreeProperty = new TreeViewProperty
-                {
-                    Id = "PHASECollectionView" + entity.NUMBER,
-                    ParentId = projectModuleTreeViewProperty.Id,
-                    Image = ModuleTreeProperty.TreeViewImage
-                };
-                moduleTitle = "Phases";
-                tabTitle = string.Format("[{0}] {1}", entity.NUMBER, moduleTitle);
-                newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle, "PHASECollectionView",
-                    new EntitiesParameter<PROJECT>(entity), projectphaseModuleTreeProperty, tabTitle));
+                //var projectphaseModuleTreeProperty = new TreeViewProperty
+                //{
+                //    Id = "PHASECollectionView" + entity.NUMBER,
+                //    ParentId = projectModuleTreeViewProperty.Id,
+                //    Image = ModuleTreeProperty.TreeViewImage
+                //};
+                //moduleTitle = "Phases";
+                //tabTitle = string.Format("[{0}] {1}", entity.NUMBER, moduleTitle);
+                //newModules.Add(BluePrintsEntitiesModuleDescription.Create(moduleTitle, "PHASECollectionView",
+                //    new EntitiesParameter<PROJECT>(entity), projectphaseModuleTreeProperty, tabTitle));
 
                 var projectareaModuleTreeProperty = new TreeViewProperty
                 {

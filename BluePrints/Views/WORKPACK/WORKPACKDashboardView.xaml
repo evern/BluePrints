@@ -90,44 +90,44 @@
                                          Style="{StaticResource WrapperGridTemplate}">
                             <dxg:GridControl.Bands>
                                 <dxg:GridControlBand Name="bandGeneral" Header="General">
-                                    <dxg:GridColumn FieldName="WORKPACK.GUID_DPHASE" Header="PHASE">
+                                    <dxg:GridColumn FieldName="Entity.GUID_DPHASE" Header="PHASE">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings
                                                 ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}"
                                                 IsTextEditable="False" DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="WORKPACK.GUID_DAREA" Header="AREA">
+                                    <dxg:GridColumn FieldName="Entity.GUID_DAREA" Header="AREA">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings
                                                 ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
                                                 IsTextEditable="False" DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="WORKPACK.GUID_DDOCTYPE" Header="DOCTYPE">
+                                    <dxg:GridColumn FieldName="Entity.GUID_DDOCTYPE" Header="DOCTYPE">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings
                                                 ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}"
                                                 IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="WORKPACK.GUID_DDISCIPLINE" Header="DISCIPLINE">
+                                    <dxg:GridColumn FieldName="Entity.GUID_DDISCIPLINE" Header="DISCIPLINE">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings
                                                 ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
                                                 IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="WORKPACK.GUID_DDEPARTMENT" Header="DEPARTMENT">
+                                    <dxg:GridColumn FieldName="Entity.GUID_DDEPARTMENT" Header="DEPARTMENT">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings
                                                 ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}"
                                                 IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="NAME 1" FieldName="WORKPACK.INTERNAL_NAME1"
+                                    <dxg:GridColumn Header="NAME 1" FieldName="Entity.INTERNAL_NAME1"
                                                     VisibleIndex="50" />
-                                    <dxg:GridColumn Header="NAME 2" FieldName="WORKPACK.INTERNAL_NAME2"
+                                    <dxg:GridColumn Header="NAME 2" FieldName="Entity.INTERNAL_NAME2"
                                                     VisibleIndex="60" />
                                     <dxg:GridColumn x:Name="colCumulativeBudget" Header="Total Units"
                                                     FieldName="Stats.BudgetedUnits" ReadOnly="True"

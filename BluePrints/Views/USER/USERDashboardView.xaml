@@ -103,17 +103,17 @@
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.Bands>
                                 <dxg:GridControlBand Name="bandProject" Header="PROJECT">
-                                    <dxg:GridColumn Header="Number" FieldName="PROJECT.NUMBER" VisibleIndex="0" />
-                                    <dxg:GridColumn Header="Name" FieldName="PROJECT.NAME" VisibleIndex="10" />
-                                    <dxg:GridColumn Header="Client" FieldName="PROJECT.CLIENT" VisibleIndex="20" />
-                                    <dxg:GridColumn Header="Contract Type" FieldName="PROJECT.CONTRACTTYPE"
+                                    <dxg:GridColumn Header="Number" FieldName="Entity.NUMBER" VisibleIndex="0" />
+                                    <dxg:GridColumn Header="Name" FieldName="Entity.NAME" VisibleIndex="10" />
+                                    <dxg:GridColumn Header="Client" FieldName="Entity.CLIENT" VisibleIndex="20" />
+                                    <dxg:GridColumn Header="Contract Type" FieldName="Entity.CONTRACTTYPE"
                                                     VisibleIndex="40">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
                                                                       ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ContractType}}" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Design Manager" FieldName="PROJECT.DESIGNMANAGER"
+                                    <dxg:GridColumn Header="Design Manager" FieldName="Entity.DESIGNMANAGER"
                                                     VisibleIndex="60">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"

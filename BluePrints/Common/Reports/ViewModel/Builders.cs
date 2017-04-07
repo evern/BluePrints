@@ -168,10 +168,10 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public void BuildPlannedDataPoints(PROGRESS_ITEMProjection progressItemStats, ReportingEnum.AssignmentLoadType assignmentLoadType)
         {
-            if (progressItemStats.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK == null)
+            if (progressItemStats.Entity.Entity.GUID_WORKPACK == null)
                 return;
 
-            WORKPACK currentWORKPACK = projectWORKPACKS.FirstOrDefault(x => x.GUID == progressItemStats.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK);
+            WORKPACK currentWORKPACK = projectWORKPACKS.FirstOrDefault(x => x.GUID == progressItemStats.Entity.Entity.GUID_WORKPACK);
             if (currentWORKPACK == null)
                 return;
 
@@ -229,7 +229,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 BudgetedUnits = progressItemStats.Stats.BudgetedUnits,
                 BudgetedCosts = progressItemStats.Stats.BudgetedCosts * this.CurrencyConversion,
                 Units = x.EARNED_UNITS,
-                Costs = x.EARNED_UNITS * progressItemStats.BASELINE_ITEMJoinRATE.ITEMRATE * this.CurrencyConversion,
+                Costs = x.EARNED_UNITS * progressItemStats.Entity.ITEMRATE * this.CurrencyConversion,
                 ProgressDate = x.EARNED_DATE,
             }).ToArray();
             progressItemStats.Stats.Earned.SetData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
@@ -245,7 +245,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             else
                 dataPoints = new List<DataPoint>();
 
-            if (progressItem.RemainingUnitsAfterDataDate > 0 && progressItem.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK != null)
+            if (progressItem.RemainingUnitsAfterDataDate > 0 && progressItem.Entity.Entity.GUID_WORKPACK != null)
             {
                 List<DataPoint> p6DataPoints;
 
@@ -260,7 +260,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     DateTime firstAlignedWeekEndingDataDate;
 
                     decimal firstPeriodProRate;
-                    WORKPACK lookUpWORKPACK = projectWORKPACKS.FirstOrDefault(x => x.GUID == progressItem.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK);
+                    WORKPACK lookUpWORKPACK = projectWORKPACKS.FirstOrDefault(x => x.GUID == progressItem.Entity.Entity.GUID_WORKPACK);
 
                     if (lookUpWORKPACK == null)
                         return;
@@ -322,10 +322,10 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 WORKPACK_ASSIGNMENTbyType = projectWORKPACKASSIGNMENTS.Where(assignment => assignment.ISMODIFIEDBASELINE == false);
             }
-            if (progressItem.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK == null || projectWORKPACKASSIGNMENTS == null || projectWORKPACKASSIGNMENTS.Count() == 0)
+            if (progressItem.Entity.Entity.GUID_WORKPACK == null || projectWORKPACKASSIGNMENTS == null || projectWORKPACKASSIGNMENTS.Count() == 0)
                 return false;
 
-            Guid currentWORKPACKGuid = (Guid)progressItem.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK;
+            Guid currentWORKPACKGuid = (Guid)progressItem.Entity.Entity.GUID_WORKPACK;
             IEnumerable<WORKPACK_ASSIGNMENT> currentWORKPACK_ASSIGNMENTS = WORKPACK_ASSIGNMENTbyType.Where(x => x.GUID_WORKPACK == currentWORKPACKGuid);
 
             if (WORKPACK_ASSIGNMENTbyType != null && P6TASKS != null && currentWORKPACK_ASSIGNMENTS.Count() != 0 && P6TASKS.Count() != 0)
@@ -380,7 +380,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         else
                             CurrentAssignmentUnits = (currentWORKPACK_ASSIGNMENT.HIGH_VALUE - currentWORKPACK_ASSIGNMENT.LOW_VALUE) + 1;
 
-                        decimal Rate = progressItem.BASELINE_ITEMJoinRATE.ITEMRATE;
+                        decimal Rate = progressItem.Entity.ITEMRATE;
                         decimal CurrentAssignmentCosts = CurrentAssignmentUnits * Rate;
 
                         List<DataPoint> p6ProgressInfo = DataPointsHelpers.DataPointsGenerator(this.ReportingInterval, this.FirstAlignedDataDate, CurrentAssignmentWorkingPeriod, CurrentAssignmentUnits, CurrentAssignmentCosts, CurrentAssignmentStartDate, this.CurrencyConversion, this.exceptionPeriods);

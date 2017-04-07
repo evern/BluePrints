@@ -121,8 +121,8 @@
                         <dxg:GridControl.Bands>
                             <dxg:GridControlBand Name="bandGeneral" Header="General">
                                 <dxg:GridColumn Name="columnWorkpack"
-                                                FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK"
-                                                Header="WORKPACK">
+                                                FieldName="Entity.Entity.GUID_WORKPACK"
+                                                Header="WORKPACK" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings
                                             ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
@@ -131,34 +131,53 @@
                                             ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnPhase"
-                                                FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.PHASE.INTERNAL_NUM"
-                                                Header="PHASE" ReadOnly="True" IsEnabled="False" />
-                                <dxg:GridColumn Name="columnArea"
-                                                FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.AREA.INTERNAL_NUM"
-                                                Header="AREA" ReadOnly="True" IsEnabled="False" />
-                                <dxg:GridColumn Name="columnDocType"
-                                                FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.DOCTYPE.NAME"
-                                                Header="DOCTYPE" ReadOnly="True" IsEnabled="False" />
-                                <dxg:GridColumn Name="columnDiscipline"
-                                                FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.DISCIPLINE.NAME"
-                                                Header="DISCIPLINE" ReadOnly="True" IsEnabled="False" />
-                                <dxg:GridColumn Name="columnDepartment"
-                                                FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.DEPARTMENT.NAME"
-                                                Header="DEPARTMENT" ReadOnly="True" IsEnabled="False" />
+                                <dxg:GridColumn Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA" ReadOnly="True">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings
+                                        ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM"
+                                        ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Name="colDOCTYPE" FieldName="Entity.Entity.GUID_DOCTYPE" Header="DOCTYPE" ReadOnly="True">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings
+                                        ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
+                                        ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.Entity.GUID_DISCIPLINE"
+                                            Header="DISCIPLINE" ReadOnly="True">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings
+                                        ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
+                                        ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Name="colDEPARTMENT" FieldName="Entity.Entity.GUID_DEPARTMENT"
+                                            Header="DEPARTMENT" ReadOnly="True">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings
+                                        ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
+                                        ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnInternalNum"
-                                                FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM"
+                                                FieldName="Entity.Entity.INTERNAL_NUM"
                                                 Header="INTERNAL NUM" ReadOnly="True" IsEnabled="False" />
                                 <dxg:GridColumn Name="columnType"
-                                                FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.DELIVERABLE_TYPE"
+                                                FieldName="Entity.Entity.DELIVERABLE_TYPE"
                                                 Header="TYPE" ReadOnly="True" IsEnabled="False" />
                                 <dxg:GridColumn Name="columnTitle"
-                                                FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.PRIMARY_TITLE"
+                                                FieldName="Entity.Entity.PRIMARY_TITLE"
                                                 Header="PRIMARY TITLE" ReadOnly="True" IsEnabled="False" />
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandBudgeted" Header="Budgeted">
                                 <dxg:GridColumn Name="columnEstimatedHours"
-                                                FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS"
+                                                FieldName="Entity.Entity.ESTIMATED_HOURS"
                                                 Header="ESTIMATED HOURS" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1"
@@ -166,7 +185,7 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnDCHours"
-                                                FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.DC_HOURS"
+                                                FieldName="Entity.Entity.DC_HOURS"
                                                 Header="DC HOURS" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" Increment="1"
@@ -174,14 +193,14 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnTotalHours"
-                                                FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS"
+                                                FieldName="Entity.Entity.TOTAL_HOURS"
                                                 Header="TOTAL HOURS" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1"
                                                               MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnRate" FieldName="BASELINE_ITEMJoinRATE.RATE.RATE1"
+                                <dxg:GridColumn Name="columnRate" FieldName="Entity.RATE.RATE1"
                                                 Header="RATE" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1"
@@ -189,7 +208,7 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnStatus"
-                                                FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_STATUS"
+                                                FieldName="Entity.Entity.GUID_STATUS"
                                                 Header="STATUS">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings
@@ -199,7 +218,7 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnUser"
-                                                FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_USER"
+                                                FieldName="Entity.Entity.GUID_USER"
                                                 Header="RESOURCE">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings
@@ -222,16 +241,19 @@
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnSchedulePercentage" Header="SCHEDULE %" ReadOnly="True"
+                                <dxg:GridColumn Name="columnSchedulePercentage" FieldName="SchedulePercentage" Header="SCHEDULE %" ReadOnly="True"
                                                 IsEnabled="False">
-                                    <dxg:GridColumn.CellTemplate>
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                    <!--<dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:TextEdit
                                                 EditValue="{Binding RowData.Row.SchedulePercentage, Mode=OneTime}"
                                                 MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True"
                                                 ShowBorder="False" IsReadOnly="True" HorizontalAlignment="Right" />
                                         </DataTemplate>
-                                    </dxg:GridColumn.CellTemplate>
+                                    </dxg:GridColumn.CellTemplate>-->
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnTotalEarnedPercentage" FieldName="TOTAL_EARNED_PERCENTAGE"
                                                 Header="CURRENT %" AllowEditing="True">
@@ -290,12 +312,9 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnTotalEarnedCost" Header="TOTAL EARNED $"
                                                 FieldName="TOTAL_EARNED_COSTS" ReadOnly="True" IsEnabled="False">
-                                    <dxg:GridColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True"
-                                                          MaskType="Numeric" Mask="c" />
-                                        </DataTemplate>
-                                    </dxg:GridColumn.CellTemplate>
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandPeriod" Header="Period">
@@ -309,17 +328,14 @@
                                 <dxg:GridColumn Name="columnPeriodEarnedUnits" Header="EARNED UNITS"
                                                 FieldName="PERIOD_EARNED_UNITS" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                        <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnCurrentEarnedCost" Header="CURRENT EARNED COSTS"
                                                 FieldName="PERIOD_EARNED_COSTS" ReadOnly="True" IsEnabled="False">
-                                    <dxg:GridColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True"
-                                                          MaskType="Numeric" Mask="c" />
-                                        </DataTemplate>
-                                    </dxg:GridColumn.CellTemplate>
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                         </dxg:GridControl.Bands>
@@ -336,15 +352,15 @@
                                                  ShowInColumn="PERIOD_EARNED_COSTS" DisplayFormat="Total: {0:c2}" />
                             <dxg:GridSummaryItem FieldName="TOTAL_EARNED_COSTS" SummaryType="Sum"
                                                  ShowInColumn="TOTAL_EARNED_COSTS" DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS"
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS"
                                                  SummaryType="Sum" DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.DC_HOURS"
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS"
                                                  SummaryType="Sum" DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS"
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.TOTAL_HOURS"
                                                  SummaryType="Sum" DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="PROGRESS_ITEMcurrent.EARNED_UNITS" SummaryType="Sum"
                                                  DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM" SummaryType="Count"
+                            <dxg:GridSummaryItem FieldName="Entity.BASELINE_ITEM" SummaryType="Count"
                                                  Alignment="Right" DisplayFormat="Total {0} Records" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.TotalSummary>
@@ -360,27 +376,21 @@
                                                  ShowInColumn="PERIOD_EARNED_COSTS" DisplayFormat="Total: {0:c2}" />
                             <dxg:GridSummaryItem FieldName="TOTAL_EARNED_COSTS" SummaryType="Sum"
                                                  ShowInColumn="TOTAL_EARNED_COSTS" DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS"
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS"
                                                  SummaryType="Sum" DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.DC_HOURS"
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS"
                                                  SummaryType="Sum" DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS"
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.TOTAL_HOURS"
                                                  SummaryType="Sum" DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="PROGRESS_ITEMcurrent.EARNED_UNITS" SummaryType="Sum"
                                                  DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM" SummaryType="Count"
+                            <dxg:GridSummaryItem FieldName="Entity.BASELINE_ITEM" SummaryType="Count"
                                                  Alignment="Right" DisplayFormat="Total {0} Records" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
                             <common:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
                                            ShowTotalSummary="True" ShowFixedTotalSummary="True"
                                            GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None">
-                                <!--<dxmvvm:Interaction.Behaviors>
-                                    <dxrudex:GridReportManagerService x:Name="PROGRESS_ITEMCollectionViewReportService" />
-                                    <dxmvvm:EventToCommand
-                                        Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}"
-                                        PassEventArgsToCommand="True" EventName="CellValueChanging" />
-                                </dxmvvm:Interaction.Behaviors>-->
                                 <common:TableViewEx.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Fill Up"
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}"

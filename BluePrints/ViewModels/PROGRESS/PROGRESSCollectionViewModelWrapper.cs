@@ -24,8 +24,7 @@ namespace BluePrints.ViewModels
     public class PROGRESSCollectionViewModelWrapper :
         CollectionViewModelsWrapper
         <PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>>,
-        ISupportCustomDocumentTypeNameAndParameter
+            CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
         /// <summary>
         /// Creates a new instance of PROGRESSCollectionViewModelWrapper as a POCO view model.
@@ -140,7 +139,7 @@ namespace BluePrints.ViewModels
 
         #endregion
 
-        #region ISupportCustomDocumentTypeNameAndParameter
+        #region ISupportCustomDocumentTypeAndParameter
 
         public bool CanEdit()
         {
@@ -160,29 +159,10 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentManagerService.ShowExistingEntityDocument<PROGRESS_ITEM, Guid>(this, DisplaySelectedEntity.GUID, string.Empty);
-        }
+            CustomDocumentInfo customDocumentInfo = new CustomDocumentInfo(new OptionalEntitiesParameter<PROJECT, PROGRESS>(null, DisplaySelectedEntity), "PROGRESS_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] PROGRESS");
 
-        public string GetCustomDocumentTypeName()
-        {
-            return "PROGRESS_ITEMCollectionView";
+            DocumentManagerService.ShowExistingEntityDocument(customDocumentInfo, this);
         }
-
-        public object GetCustomDocumentParameter()
-        {
-            return new OptionalEntitiesParameter<PROJECT, PROGRESS>(null, DisplaySelectedEntity);
-        }
-
-        public string GetCustomDocumentTitle()
-        {
-            return "[" + loadPROJECT.NUMBER + "] PROGRESS";
-        }
-
-        public bool IsCustomModeEnabled()
-        {
-            return true;
-        }
-
         #endregion
     }
 }

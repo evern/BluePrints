@@ -106,7 +106,7 @@
                         <dxg:GridControl.Bands>
                             <dxg:GridControlBand Name="bandGeneral" Header="General">
                                 <dxg:GridColumn Name="colSUPPLYWORKPACK"
-                                                FieldName="ESTIMATION_DIRECT_ITEM.GUID_SUPPLYWORKPACK"
+                                                FieldName="Entity.GUID_SUPPLYWORKPACK"
                                                 Header="SUPPLY WORKPACK" AllowSearchPanel="False" VisibleIndex="0">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings Name="PART_Editor_SupplyWORKPACK"
@@ -116,7 +116,7 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="colINSTALLWORKPACK"
-                                                FieldName="ESTIMATION_DIRECT_ITEM.GUID_INSTALLWORKPACK"
+                                                FieldName="Entity.GUID_INSTALLWORKPACK"
                                                 Header="INSTALL WORKPACK" AllowSearchPanel="False" VisibleIndex="10">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings Name="PART_Editor_InstallWORKPACK"
@@ -240,10 +240,10 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="colCOMMODITYGROUPID"
-                                                FieldName="ESTIMATION_DIRECT_ITEM.COMMODITY_GROUP_DIRECT_ID"
+                                                FieldName="Entity.COMMODITY_GROUP_DIRECT_ID"
                                                 Header="GROUP ID" AllowSearchPanel="False" ReadOnly="True"
                                                 VisibleIndex="25" />
-                                <dxg:GridColumn Name="colDISCIPLINE" FieldName="ESTIMATION_DIRECT_ITEM.GUID_DISCIPLINE"
+                                <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.GUID_DISCIPLINE"
                                                 Header="DISCIPLINE" AllowSearchPanel="False" VisibleIndex="30">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings
@@ -252,19 +252,19 @@
                                             ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colCOMMENT" FieldName="ESTIMATION_DIRECT_ITEM.COMMENTS"
+                                <dxg:GridColumn Name="colCOMMENT" FieldName="Entity.COMMENTS"
                                                 Header="COMMENTS" AllowSearchPanel="False" VisibleIndex="40" />
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandQuantity" Header="Quantity">
                                 <dxg:GridColumn Name="colESTIMATED_QUANTITY"
-                                                FieldName="ESTIMATION_DIRECT_ITEM.ESTIMATED_QUANTITY"
+                                                FieldName="Entity.ESTIMATED_QUANTITY"
                                                 Header="ESTIMATED_QUANTITY" AllowSearchPanel="False" VisibleIndex="50">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1"
                                                               MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colVAR_QUANTITY" FieldName="ESTIMATION_DIRECT_ITEM.VAR_QUANTITY"
+                                <dxg:GridColumn Name="colVAR_QUANTITY" FieldName="Entity.VAR_QUANTITY"
                                                 Header="VAR_QUANTITY" AllowSearchPanel="False" VisibleIndex="60">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
@@ -276,7 +276,7 @@
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandRate" Header="Rate">
-                                <dxg:GridColumn Name="colSUPPLY_RATE" FieldName="ESTIMATION_DIRECT_ITEM.RATE_SUPPLY"
+                                <dxg:GridColumn Name="colSUPPLY_RATE" FieldName="Entity.RATE_SUPPLY"
                                                 Header="SUPPLY RATE" AllowSearchPanel="False" VisibleIndex="70">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
@@ -286,7 +286,7 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colFREIGHT_RATE" FieldName="ESTIMATION_DIRECT_ITEM.RATE_FREIGHT"
+                                <dxg:GridColumn Name="colFREIGHT_RATE" FieldName="Entity.RATE_FREIGHT"
                                                 Header="FREIGHT RATE" AllowSearchPanel="False" VisibleIndex="100">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
@@ -307,7 +307,7 @@
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="colINSTALL_HOURS"
-                                                FieldName="ESTIMATION_DIRECT_ITEM.HOURS_INSTALL" Header="INSTALL HOURS"
+                                                FieldName="Entity.HOURS_INSTALL" Header="INSTALL HOURS"
                                                 AllowSearchPanel="False" VisibleIndex="120">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
@@ -362,7 +362,7 @@
                                     <dxg:GridControl.Bands>
                                         <dxg:GridControlBand Name="bandChildGeneral" Header="General">
                                             <dxg:GridColumn Name="colChildSUPPLYWORKPACK"
-                                                            FieldName="ESTIMATION_DIRECT_ITEM.GUID_SUPPLYWORKPACK"
+                                                            FieldName="Entity.GUID_SUPPLYWORKPACK"
                                                             Header="SUPPLY WORKPACK" AllowSearchPanel="False"
                                                             VisibleIndex="0">
                                                 <dxg:GridColumn.EditSettings>
@@ -374,7 +374,7 @@
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn Name="colChildINSTALLWORKPACK"
-                                                            FieldName="ESTIMATION_DIRECT_ITEM.GUID_INSTALLWORKPACK"
+                                                            FieldName="Entity.GUID_INSTALLWORKPACK"
                                                             Header="INSTALL WORKPACK" AllowSearchPanel="False"
                                                             VisibleIndex="10">
                                                 <dxg:GridColumn.EditSettings>
@@ -516,11 +516,11 @@
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn Name="colChildCOMMODITYGROUPID"
-                                                            FieldName="ESTIMATION_DIRECT_ITEM.COMMODITY_GROUP_DIRECT_ID"
+                                                            FieldName="Entity.COMMODITY_GROUP_DIRECT_ID"
                                                             Header="GROUP ID" AllowSearchPanel="False" ReadOnly="True"
                                                             VisibleIndex="25" />
                                             <dxg:GridColumn Name="colChildlDISCIPLINE"
-                                                            FieldName="ESTIMATION_DIRECT_ITEM.GUID_DISCIPLINE"
+                                                            FieldName="Entity.GUID_DISCIPLINE"
                                                             Header="DISCIPLINE" AllowSearchPanel="False"
                                                             VisibleIndex="30">
                                                 <dxg:GridColumn.EditSettings>
@@ -531,13 +531,13 @@
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn Name="colChildCOMMENT"
-                                                            FieldName="ESTIMATION_DIRECT_ITEM.COMMENTS"
+                                                            FieldName="Entity.COMMENTS"
                                                             Header="COMMENTS" AllowSearchPanel="False"
                                                             VisibleIndex="40" />
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Name="bandChildQuantity" Header="Quantity">
                                             <dxg:GridColumn Name="colChildESTIMATED_QUANTITY"
-                                                            FieldName="ESTIMATION_DIRECT_ITEM.ESTIMATED_QUANTITY"
+                                                            FieldName="Entity.ESTIMATED_QUANTITY"
                                                             Header="ESTIMATED_QUANTITY" AllowSearchPanel="False"
                                                             VisibleIndex="50">
                                                 <dxg:GridColumn.EditSettings>
@@ -546,7 +546,7 @@
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn Name="colChildVAR_QUANTITY"
-                                                            FieldName="ESTIMATION_DIRECT_ITEM.VAR_QUANTITY"
+                                                            FieldName="Entity.VAR_QUANTITY"
                                                             Header="VAR_QUANTITY" ReadOnly="True"
                                                             AllowSearchPanel="False" VisibleIndex="60">
                                                 <dxg:GridColumn.CellTemplate>
@@ -560,7 +560,7 @@
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Name="bandChildRate" Header="Rate">
                                             <dxg:GridColumn Name="colChildSUPPLY_RATE"
-                                                            FieldName="ESTIMATION_DIRECT_ITEM.RATE_SUPPLY"
+                                                            FieldName="Entity.RATE_SUPPLY"
                                                             Header="SUPPLY RATE" AllowSearchPanel="False"
                                                             VisibleIndex="70">
                                                 <dxg:GridColumn.CellTemplate>
@@ -572,7 +572,7 @@
                                                 </dxg:GridColumn.CellTemplate>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn Name="colChildFREIGHT_RATE"
-                                                            FieldName="ESTIMATION_DIRECT_ITEM.RATE_FREIGHT"
+                                                            FieldName="Entity.RATE_FREIGHT"
                                                             Header="FREIGHT RATE" AllowSearchPanel="False"
                                                             VisibleIndex="100">
                                                 <dxg:GridColumn.CellTemplate>
@@ -595,7 +595,7 @@
                                                 </dxg:GridColumn.CellTemplate>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn Name="colChildINSTALL_HOURS"
-                                                            FieldName="ESTIMATION_DIRECT_ITEM.HOURS_INSTALL"
+                                                            FieldName="Entity.HOURS_INSTALL"
                                                             Header="INSTALL HOURS" AllowSearchPanel="False"
                                                             VisibleIndex="120">
                                                 <dxg:GridColumn.CellTemplate>
@@ -653,29 +653,29 @@
                             </dxg:DataControlDetailDescriptor>
                         </dxg:GridControl.DetailDescriptor>
                         <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem FieldName="ESTIMATION_DIRECT_ITEM.COMMENTS" SummaryType="Count"
-                                                 ShowInColumn="ESTIMATION_DIRECT_ITEM.COMMENTS"
+                            <dxg:GridSummaryItem FieldName="Entity.COMMENTS" SummaryType="Count"
+                                                 ShowInColumn="Entity.COMMENTS"
                                                  DisplayFormat="Total {0} Records" />
-                            <dxg:GridSummaryItem FieldName="ESTIMATION_DIRECT_ITEM.ESTIMATED_QUANTITY"
+                            <dxg:GridSummaryItem FieldName="Entity.ESTIMATED_QUANTITY"
                                                  SummaryType="Sum"
-                                                 ShowInColumn="ESTIMATION_DIRECT_ITEM.ESTIMATED_QUANTITY"
+                                                 ShowInColumn="Entity.ESTIMATED_QUANTITY"
                                                  DisplayFormat="Total: {0}" />
-                            <dxg:GridSummaryItem FieldName="ESTIMATION_DIRECT_ITEM.VAR_QUANTITY" SummaryType="Sum"
-                                                 ShowInColumn="ESTIMATION_DIRECT_ITEM.VAR_QUANTITY"
+                            <dxg:GridSummaryItem FieldName="Entity.VAR_QUANTITY" SummaryType="Sum"
+                                                 ShowInColumn="Entity.VAR_QUANTITY"
                                                  DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="INSTALL_COSTS" SummaryType="Sum"
                                                  ShowInColumn="INSTALL_COSTS" DisplayFormat="Total: {0:c2}" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem FieldName="ESTIMATION_DIRECT_ITEM.COMMENTS" SummaryType="Count"
-                                                 ShowInColumn="ESTIMATION_DIRECT_ITEM.COMMENTS"
+                            <dxg:GridSummaryItem FieldName="Entity.COMMENTS" SummaryType="Count"
+                                                 ShowInColumn="Entity.COMMENTS"
                                                  DisplayFormat="Total {0} Records" />
-                            <dxg:GridSummaryItem FieldName="ESTIMATION_DIRECT_ITEM.ESTIMATED_QUANTITY"
+                            <dxg:GridSummaryItem FieldName="Entity.ESTIMATED_QUANTITY"
                                                  SummaryType="Sum"
-                                                 ShowInColumn="ESTIMATION_DIRECT_ITEM.ESTIMATED_QUANTITY"
+                                                 ShowInColumn="Entity.ESTIMATED_QUANTITY"
                                                  DisplayFormat="Total: {0}" />
-                            <dxg:GridSummaryItem FieldName="ESTIMATION_DIRECT_ITEM.VAR_QUANTITY" SummaryType="Sum"
-                                                 ShowInColumn="ESTIMATION_DIRECT_ITEM.VAR_QUANTITY"
+                            <dxg:GridSummaryItem FieldName="Entity.VAR_QUANTITY" SummaryType="Sum"
+                                                 ShowInColumn="Entity.VAR_QUANTITY"
                                                  DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="INSTALL_COSTS" SummaryType="Sum"
                                                  ShowInColumn="INSTALL_COSTS" DisplayFormat="Total: {0:c2}" />

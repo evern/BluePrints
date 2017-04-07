@@ -16,20 +16,21 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    public class PROGRESS_ITEMProjection : IHaveGUID, IHaveStats
+    public class PROGRESS_ITEMProjection : ProjectionBase<BASELINE_ITEMProjection>, IHaveStats
     {
         readonly DateTime ReportingDataDate;
 
+        #region Stats Parameters
         SingleObjectSummarizer StatSummarizer { get; set; }
         public ProgressStats Stats { get; set; }
-        #region Runtime Parameters
         public decimal WorkpackAssignmentStartUnit { get; private set; }
         #endregion
+
         public void SetWorkpackAssignmentStartUnit(decimal workpackAssignmentStartUnit)
         {
             WorkpackAssignmentStartUnit = workpackAssignmentStartUnit;
         }
-        public Guid GUID { get; set; }
+
         public PROGRESS_ITEMProjection()
         {
         }
@@ -53,12 +54,12 @@ namespace BluePrints.Common.Projections
         public PROGRESS_ITEMProjection(DateTime reportingDataDate, TimeSpan reportInterval, DateTime firstAlignedDataDate, BASELINE_ITEMProjection baseline_itemProjection, PROJECT PROJECT, BASELINE LiveBASELINE, PROGRESS LivePROGRESS, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<VariationAdjustment> projectVariationAdjustments, IP6EntitiesUnitOfWork P6UOW = null)
         {
             ReportingDataDate = reportingDataDate;
-            BASELINE_ITEMJoinRATE = baseline_itemProjection;
+            Entity = baseline_itemProjection;
 
-            List<VariationAdjustment> currentProgressItemAdjustments = projectVariationAdjustments.Where(x => x.DeliverableOriginalGuid == this.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL).ToList();
+            List<VariationAdjustment> currentProgressItemAdjustments = projectVariationAdjustments.Where(x => x.DeliverableOriginalGuid == this.Entity.Entity.GUID_ORIGINAL).ToList();
 
             PartialStatsBuilder partialStatsBuilder = new PartialStatsBuilder(PROJECT, LiveBASELINE, LivePROGRESS, WORKPACKS, WORKPACKS.SelectMany(x => x.WORKPACK_ASSIGNMENT).ToList(), P6UOW);
-            this.Stats = new ProgressStats(LivePROGRESS, this.BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS, this.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS, this.BASELINE_ITEMJoinRATE.ESTIMATED_COSTS, this.BASELINE_ITEMJoinRATE.TOTAL_COSTS, projectVariationAdjustments.Where(x => x.DeliverableOriginalGuid == this.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL).ToList());
+            this.Stats = new ProgressStats(LivePROGRESS, this.Entity.Entity.ESTIMATED_HOURS, this.Entity.Entity.TOTAL_HOURS, this.Entity.ESTIMATED_COSTS, this.Entity.TOTAL_COSTS, projectVariationAdjustments.Where(x => x.DeliverableOriginalGuid == this.Entity.Entity.GUID_ORIGINAL).ToList());
             StatSummarizer = new SingleObjectSummarizer(this, partialStatsBuilder);
         }
 
@@ -77,8 +78,6 @@ namespace BluePrints.Common.Projections
 
             StatSummarizer.BuildBudgetedOnly();
         }
-
-        public BASELINE_ITEMProjection BASELINE_ITEMJoinRATE { get; set; }
 
         private IEnumerable<VARIATION_ITEM> VARIATION_ITEMS { get; set; }
 
@@ -102,25 +101,25 @@ namespace BluePrints.Common.Projections
                         PROGRESS_ITEMCurrent =
                             value.Where(
                                 y =>
-                                    y.GUID_ORIBASEITEM == BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL &&
+                                    y.GUID_ORIBASEITEM == Entity.Entity.GUID_ORIGINAL &&
                                     y.EARNED_DATE == ReportingDataDate).OrderBy(x => x.EARNED_UNITS).FirstOrDefault();
                     if (PROGRESS_ITEMSafterreportingdate == null)
                         PROGRESS_ITEMSafterreportingdate =
                             value.Where(
                                 y =>
-                                    y.GUID_ORIBASEITEM == BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL &&
+                                    y.GUID_ORIBASEITEM == Entity.Entity.GUID_ORIGINAL &&
                                     y.EARNED_DATE > ReportingDataDate).ToList();
                     if (PROGRESS_ITEMSbeforereportingdate == null)
                         PROGRESS_ITEMSbeforereportingdate =
                             value.Where(
                                 y =>
-                                    y.GUID_ORIBASEITEM == BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL &&
+                                    y.GUID_ORIBASEITEM == Entity.Entity.GUID_ORIGINAL &&
                                     y.EARNED_DATE < ReportingDataDate).ToList();
                     if (PROGRESS_ITEMSuptocurrentdate == null)
                         PROGRESS_ITEMSuptocurrentdate =
                             value.Where(
                                 y =>
-                                    y.GUID_ORIBASEITEM == BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL &&
+                                    y.GUID_ORIBASEITEM == Entity.Entity.GUID_ORIGINAL &&
                                     y.EARNED_DATE <= ReportingDataDate).ToList();
 
                     progress_items = value;
@@ -196,18 +195,18 @@ namespace BluePrints.Common.Projections
 
         public decimal RemainingUnitsAfterDataDate
         {
-            get { return BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS - TOTAL_EARNED_UNITS; }
+            get { return Entity.Entity.TOTAL_HOURS - TOTAL_EARNED_UNITS; }
         }
 
         public decimal MinPercentage
         {
             get
             {
-                if (PROGRESS_ITEMSBeforeReportingDate == null || BASELINE_ITEMJoinRATE == null ||
-                    BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS == 0)
+                if (PROGRESS_ITEMSBeforeReportingDate == null || Entity == null ||
+                    Entity.Entity.TOTAL_HOURS == 0)
                     return 0;
                 else
-                    return PastPROGRESS_ITEMS_UNITS / BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
+                    return PastPROGRESS_ITEMS_UNITS / Entity.Entity.TOTAL_HOURS;
             }
         }
 
@@ -215,13 +214,14 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (BASELINE_ITEMJoinRATE == null)
+                if (Entity == null || Entity.Entity == null)
                     return 0;
-                else if (PROGRESS_ITEMSBeforeReportingDate == null || BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS == 0)
+
+                else if (PROGRESS_ITEMSBeforeReportingDate == null || Entity.Entity.TOTAL_HOURS == 0)
                     return 1;
                 else
-                    return (BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS - FuturePROGRESS_ITEMS_UNITS) /
-                           BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
+                    return (Entity.Entity.TOTAL_HOURS - FuturePROGRESS_ITEMS_UNITS) /
+                           Entity.Entity.TOTAL_HOURS;
             }
         }
 
@@ -229,11 +229,11 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (BASELINE_ITEMJoinRATE == null || BASELINE_ITEMJoinRATE.BASELINE_ITEM == null ||
-                    BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS == 0)
+                if (Entity == null || Entity.Entity == null ||
+                    Entity.Entity.ESTIMATED_HOURS == 0)
                     return 0;
 
-                return TOTAL_EARNED_UNITS / BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS;
+                return TOTAL_EARNED_UNITS / Entity.Entity.ESTIMATED_HOURS;
             }
         }
 
@@ -241,11 +241,11 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (BASELINE_ITEMJoinRATE == null || BASELINE_ITEMJoinRATE.BASELINE_ITEM == null ||
-                    BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS == 0)
+                if (Entity == null || Entity.Entity == null ||
+                    Entity.Entity.TOTAL_HOURS == 0)
                     return 0;
 
-                return TOTAL_EARNED_UNITS / BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
+                return TOTAL_EARNED_UNITS / Entity.Entity.TOTAL_HOURS;
             }
         }
 
@@ -253,11 +253,11 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (BASELINE_ITEMJoinRATE == null || PROGRESS_ITEMCurrent == null ||
-                    BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS == 0)
+                if (Entity == null || Entity.Entity == null || PROGRESS_ITEMCurrent == null ||
+                    Entity.Entity.TOTAL_HOURS == 0)
                     return 0;
 
-                return PROGRESS_ITEMCurrent.EARNED_UNITS / BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
+                return PROGRESS_ITEMCurrent.EARNED_UNITS / Entity.Entity.TOTAL_HOURS;
             }
         }
 
@@ -266,7 +266,7 @@ namespace BluePrints.Common.Projections
             get
             {
                 if (PROGRESS_ITEMCurrent == null)
-                    return 0;
+                    return Convert.ToDecimal(0);
 
                 return PROGRESS_ITEMCurrent.EARNED_UNITS;
             }
@@ -276,11 +276,11 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (PROGRESS_ITEMCurrent == null || BASELINE_ITEMJoinRATE == null ||
-                    BASELINE_ITEMJoinRATE.RATE == null || BASELINE_ITEMJoinRATE.RATE.RATE1 == null)
+                if (PROGRESS_ITEMCurrent == null || Entity == null ||
+                    Entity.RATE == null || Entity.RATE.RATE1 == null)
                     return 0;
 
-                return PROGRESS_ITEMCurrent.EARNED_UNITS * (decimal)BASELINE_ITEMJoinRATE.RATE.RATE1;
+                return PROGRESS_ITEMCurrent.EARNED_UNITS * (decimal)Entity.RATE.RATE1;
             }
         }
 
@@ -293,7 +293,10 @@ namespace BluePrints.Common.Projections
             {
                 if (total_earned_percentage == null)
                 {
-                    var totalUnits = BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
+                    if (Entity == null || Entity.Entity == null)
+                        return 0;
+
+                    var totalUnits = Entity.Entity.TOTAL_HOURS;
                     if (totalUnits > 0)
                     {
                         var earnedUnits = TOTAL_EARNED_UNITS;
@@ -309,10 +312,13 @@ namespace BluePrints.Common.Projections
             }
             set
             {
-                var totalUnits = BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
+                if (Entity == null || Entity.Entity == null)
+                    return;
+
+                var totalUnits = Entity.Entity.TOTAL_HOURS;
                 if (totalUnits > 0)
                 {
-                    var earnedUnits = value * BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
+                    var earnedUnits = value * Entity.Entity.TOTAL_HOURS;
                     earnedUnits -= PastPROGRESS_ITEMS_UNITS;
 
                     if (PROGRESS_ITEMCurrent == null)
@@ -340,10 +346,10 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (BASELINE_ITEMJoinRATE == null || BASELINE_ITEMJoinRATE.RATE == null)
+                if (Entity == null || Entity.RATE == null)
                     return 0;
 
-                return TOTAL_EARNED_UNITS * (decimal)BASELINE_ITEMJoinRATE.RATE.RATE1;
+                return TOTAL_EARNED_UNITS * (decimal)Entity.RATE.RATE1;
             }
         }
 
@@ -351,16 +357,16 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (BASELINE_ITEMJoinRATE.DELIVERABLE_STATUS == null)
+                if (Entity == null || Entity.DELIVERABLE_STATUS == null)
                 {
                     return MaxPercentage;
                 }
                 else
                 {
-                    if (MaxPercentage < BASELINE_ITEMJoinRATE.DELIVERABLE_STATUS.MAX_PERCENTAGE)
+                    if (MaxPercentage < Entity.DELIVERABLE_STATUS.MAX_PERCENTAGE)
                         return MaxPercentage;
                     else
-                        return BASELINE_ITEMJoinRATE.DELIVERABLE_STATUS.MAX_PERCENTAGE;
+                        return Entity.DELIVERABLE_STATUS.MAX_PERCENTAGE;
                 }
             }
         }
@@ -383,23 +389,23 @@ namespace BluePrints.Common.Projections
             else
                 LoadPROGRESS_ITEMS = getPROGRESS_ITEMSFunc();
 
-            IQueryable<BASELINE_ITEMProjection> BASELINE_ITEMJoinRATES;
+            IQueryable<BASELINE_ITEMProjection> EntityS;
             if (PROGRESS == null)
-                BASELINE_ITEMJoinRATES = new List<BASELINE_ITEMProjection>().AsQueryable();
+                EntityS = new List<BASELINE_ITEMProjection>().AsQueryable();
             else
-                BASELINE_ITEMJoinRATES = BASELINE_ITEMProjectionQueries.JoinRATESOnBASELINE_ITEMS(BASELINE_ITEMS,
+                EntityS = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS,
                     getBASELINEFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, isBASELINEQueryProcessed);
 
             var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
 
             return
-                BASELINE_ITEMJoinRATES.ToArray().Select(
+                EntityS.ToArray().Select(
                         x =>
                             new PROGRESS_ITEMProjection(reportingDate)
                             {
                                 GUID = x.GUID,
-                                BASELINE_ITEMJoinRATE = x, 
-                                PROGRESS_ITEMS = LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.BASELINE_ITEM.GUID_ORIGINAL)
+                                Entity = x, 
+                                PROGRESS_ITEMS = LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.Entity.GUID_ORIGINAL)
                             }).AsQueryable();
         }
 
@@ -418,11 +424,11 @@ namespace BluePrints.Common.Projections
             else
                 LoadPROGRESS_ITEMS = getPROGRESS_ITEMSFunc();
 
-            IQueryable<BASELINE_ITEMProjection> BASELINE_ITEMJoinRATES;
+            IQueryable<BASELINE_ITEMProjection> EntityS;
             if (PROGRESS == null)
-                BASELINE_ITEMJoinRATES = new List<BASELINE_ITEMProjection>().AsQueryable();
+                EntityS = new List<BASELINE_ITEMProjection>().AsQueryable();
             else
-                BASELINE_ITEMJoinRATES = BASELINE_ITEMProjectionQueries.JoinRATESOnBASELINE_ITEMS(BASELINE_ITEMS,
+                EntityS = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS,
                     getBASELINEFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, isBASELINEQueryProcessed);
 
             var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
@@ -431,15 +437,15 @@ namespace BluePrints.Common.Projections
             IEnumerable<VARIATION> projectVARIATIONS = getVARIATIONSFunc();
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(PROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(PROGRESS);
-            List<VariationAdjustment> projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(projectVARIATIONS.AsQueryable(), BASELINE_ITEMJoinRATES);
+            List<VariationAdjustment> projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(projectVARIATIONS.AsQueryable(), EntityS);
 
             return
-                BASELINE_ITEMJoinRATES.ToArray().Select(
+                EntityS.ToArray().Select(
                         x =>
                             new PROGRESS_ITEMProjection(reportingDate, reportInterval, firstAlignedDataDate, x, project, getBASELINEFunc(), getPROGRESSFunc(), getWORKPACKFunc(), projectVariationAdjustments, p6UOW)
                             {
                                 GUID = x.GUID,
-                                PROGRESS_ITEMS = LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.BASELINE_ITEM.GUID_ORIGINAL)
+                                PROGRESS_ITEMS = LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.Entity.GUID_ORIGINAL)
                             }).AsQueryable();
         }
     }

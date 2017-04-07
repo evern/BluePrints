@@ -14,28 +14,15 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    [ConstraintAttributes("COMMODITY_GROUP.GUID_PARENT, COMMODITY_GROUP.GUID_COMMODITYCODE")]
-    [RequiredAttributes("COMMODITY_GROUP.DESCRIPTION")]
-    public class COMMODITY_GROUP_DIRECTProjection : IHaveGUID
+    [ConstraintAttributes("Entity.GUID_PARENT, Entity.GUID_COMMODITYCODE")]
+    [RequiredAttributes("Entity.DESCRIPTION")]
+    public class COMMODITY_GROUP_DIRECTProjection : ProjectionMasterDetailBase<COMMODITY_GROUP_DIRECT, COMMODITY_GROUP_DIRECTProjection>
     {
-        public COMMODITY_GROUP_DIRECTProjection()
-        {
-            COMMODITY_GROUP = ViewModelSource.Create(() => new COMMODITY_GROUP_DIRECT());
-            CHILD_COMMODITY_GROUP = new ObservableCollection<COMMODITY_GROUP_DIRECTProjection>();
-        }
-
-        [Key]
-        public Guid GUID { get; set; }
-
         public Guid? GUID_PROJECT { get; set; }
-
-        public COMMODITY_GROUP_DIRECT COMMODITY_GROUP { get; set; }
-
-        public ObservableCollection<COMMODITY_GROUP_DIRECTProjection> CHILD_COMMODITY_GROUP { get; set; }
 
         public override string ToString()
         {
-            return COMMODITY_GROUP.DESCRIPTION;
+            return Entity.DESCRIPTION;
         }
 
         public bool ISEXPANDED { get; set; }
@@ -50,7 +37,7 @@ namespace BluePrints.Common.Projections
                 COMMODITY_GROUP_DIRECTS.OrderBy(x => x.DESCRIPTION);
             return
                 allCOMMODITY_GROUP_DIRECTS.Select(
-                    x => new COMMODITY_GROUP_DIRECTProjection() {GUID = x.GUID, COMMODITY_GROUP = x});
+                    x => new COMMODITY_GROUP_DIRECTProjection() {GUID = x.GUID, Entity = x});
         }
     }
 }

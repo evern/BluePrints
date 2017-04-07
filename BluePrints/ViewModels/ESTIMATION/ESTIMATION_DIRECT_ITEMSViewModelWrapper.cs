@@ -313,7 +313,7 @@ namespace BluePrints.ViewModels
         protected override void restoreViewState()
         {
             var restoreSelectedEntities =
-                DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.CHILD_ESTIMATION_DIRECT_ITEM))
+                DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.DetailEntities))
                     .Where(x => RestoreSelectedEntitiesGuids.Any(y => y == x.GUID));
             DisplaySelectedEntities.Clear();
             if (restoreSelectedEntities.Count() > 0)
@@ -331,7 +331,7 @@ namespace BluePrints.ViewModels
             if (RestoreSelectedEntityGuid != Guid.Empty)
             {
                 var restoreSelectedEntity =
-                    DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.CHILD_ESTIMATION_DIRECT_ITEM))
+                    DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.DetailEntities))
                         .FirstOrDefault(x => x.GUID == RestoreSelectedEntityGuid);
                 if (restoreSelectedEntity != null)
                     DisplaySelectedEntity = restoreSelectedEntity;
@@ -360,21 +360,19 @@ namespace BluePrints.ViewModels
         public void ApplyProjectionPropertiesToEntity(ESTIMATION_DIRECT_ITEMProjection projectionEntity,
             ESTIMATION_DIRECT_ITEM entity)
         {
-            projectionEntity.ESTIMATION_DIRECT_ITEM.GUID_ESTIMATION_DIRECT = loadESTIMATION_DIRECT.GUID;
-            DataUtils.ShallowCopy(entity, projectionEntity.ESTIMATION_DIRECT_ITEM);
+            projectionEntity.Entity.GUID_ESTIMATION_DIRECT = loadESTIMATION_DIRECT.GUID;
+            DataUtils.ShallowCopy(entity, projectionEntity.Entity);
             //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
             if (entity.CREATED.Date.Year == 1)
-                projectionEntity.ESTIMATION_DIRECT_ITEM.CREATED = DateTime.Now;
+                projectionEntity.Entity.CREATED = DateTime.Now;
 
-            entity.CREATED = projectionEntity.ESTIMATION_DIRECT_ITEM.CREATED;
+            entity.CREATED = projectionEntity.Entity.CREATED;
         }
 
         public void OnEntitiesSavedCallBack(Guid primaryKey, ESTIMATION_DIRECT_ITEMProjection projectionEntity,
             ESTIMATION_DIRECT_ITEM entity, bool isNewEntity)
         {
-            projectionEntity.GUID = entity.GUID;
-            projectionEntity.ESTIMATION_DIRECT_ITEM.GUID = entity.GUID;
-            projectionEntity.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL = entity.GUID_ORIGINAL;
+            projectionEntity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
         }
 
         public void OnAfterEntitySaved(ESTIMATION_DIRECT_ITEMProjection projectionEntity, bool isNewEntity)
@@ -382,7 +380,7 @@ namespace BluePrints.ViewModels
             if(isNewEntity)
             {
                 //Needs to be after so projectionEntity is guaranteed to have GUID generated
-                if (projectionEntity.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT != null)
+                if (projectionEntity.Entity.GUID_COMMODITY_GROUP_DIRECT != null)
                     AddChildrenESTIMATION_DIRECT_ITEM(projectionEntity);
             }
         }
@@ -391,15 +389,15 @@ namespace BluePrints.ViewModels
             CellValueChangedEventArgs e)
         {
             if (e.Column.FieldName ==
-                BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." +
+                BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().RATE_FREIGHT)
                 ||
                 e.Column.FieldName ==
-                BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." +
+                BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().RATE_SUPPLY)
                 ||
                 e.Column.FieldName ==
-                BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." +
+                BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().HOURS_INSTALL))
             {
                 var childrenManaged = AddProjectSpecificCOMMODITY_CODEGroup(projectionEntity);
@@ -418,51 +416,51 @@ namespace BluePrints.ViewModels
                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().COMMODITY_GROUP_CODE_SELECTION)
                 ||
                 e.Column.FieldName ==
-                BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." +
+                BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_COMMODITY_CODE))
                 NewRowAndExistingAddUndoAndSave(projectionEntity, false);
             else if (e.Column.FieldName ==
-                     BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." +
+                     BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
                      BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().ESTIMATED_QUANTITY))
                 MultiplyChildrenEntityRates(projectionEntity, (decimal) e.OldValue, (decimal) e.Value);
             else if (e.Column.FieldName ==
-                     BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." +
+                     BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
                      BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_INSTALLWORKPACK))
                 foreach (
-                    var childrenEntity in projectionEntity.CHILD_ESTIMATION_DIRECT_ITEM)
+                    var childrenEntity in projectionEntity.DetailEntities)
                 {
-                    var oldValue = childrenEntity.ESTIMATION_DIRECT_ITEM.GUID_INSTALLWORKPACK;
+                    var oldValue = childrenEntity.Entity.GUID_INSTALLWORKPACK;
                     var newValue = (Guid?) e.Value;
 
-                    childrenEntity.ESTIMATION_DIRECT_ITEM.GUID_INSTALLWORKPACK = newValue;
+                    childrenEntity.Entity.GUID_INSTALLWORKPACK = newValue;
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(childrenEntity, e.Column.FieldName, oldValue, newValue,
                         EntityMessageType.Changed);
                     MainViewModel.Save(childrenEntity);
                 }
             else if (e.Column.FieldName ==
-                     BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." +
+                     BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
                      BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_SUPPLYWORKPACK))
                 foreach (
-                    var childrenEntity in projectionEntity.CHILD_ESTIMATION_DIRECT_ITEM)
+                    var childrenEntity in projectionEntity.DetailEntities)
                 {
-                    var oldValue = childrenEntity.ESTIMATION_DIRECT_ITEM.GUID_SUPPLYWORKPACK;
+                    var oldValue = childrenEntity.Entity.GUID_SUPPLYWORKPACK;
                     var newValue = (Guid?) e.Value;
 
-                    childrenEntity.ESTIMATION_DIRECT_ITEM.GUID_SUPPLYWORKPACK = newValue;
+                    childrenEntity.Entity.GUID_SUPPLYWORKPACK = newValue;
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(childrenEntity, e.Column.FieldName, oldValue, newValue,
                         EntityMessageType.Changed);
                     MainViewModel.Save(childrenEntity);
                 }
             else if (e.Column.FieldName ==
-                     BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." +
+                     BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
                      BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_DISCIPLINE))
                 foreach (
-                    var childrenEntity in projectionEntity.CHILD_ESTIMATION_DIRECT_ITEM)
+                    var childrenEntity in projectionEntity.DetailEntities)
                 {
-                    var oldValue = childrenEntity.ESTIMATION_DIRECT_ITEM.GUID_DISCIPLINE;
+                    var oldValue = childrenEntity.Entity.GUID_DISCIPLINE;
                     var newValue = (Guid?) e.Value;
 
-                    childrenEntity.ESTIMATION_DIRECT_ITEM.GUID_DISCIPLINE = newValue;
+                    childrenEntity.Entity.GUID_DISCIPLINE = newValue;
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(childrenEntity, e.Column.FieldName, oldValue, newValue,
                         EntityMessageType.Changed);
                     MainViewModel.Save(childrenEntity);
@@ -474,64 +472,64 @@ namespace BluePrints.ViewModels
 
         private void NewRowAndExistingAddUndoAndSave(ESTIMATION_DIRECT_ITEMProjection projectionEntity, bool isNewRow)
         {
-            if (projectionEntity.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE != null)
+            if (projectionEntity.Entity.GUID_COMMODITY_CODE != null)
             {
                 COMMODITY_CODE findCOMMODITY_CODE;
                 findCOMMODITY_CODE =
                     COMMODITY_CODECollection.FirstOrDefault(
-                        x => x.GUID == projectionEntity.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE);
+                        x => x.GUID == projectionEntity.Entity.GUID_COMMODITY_CODE);
 
                 if (findCOMMODITY_CODE != null)
                 {
-                    object oldValue = projectionEntity.ESTIMATION_DIRECT_ITEM.ESTIMATED_QUANTITY;
-                    object newValue = projectionEntity.ESTIMATION_DIRECT_ITEM.ESTIMATED_QUANTITY == 0
+                    object oldValue = projectionEntity.Entity.ESTIMATED_QUANTITY;
+                    object newValue = projectionEntity.Entity.ESTIMATED_QUANTITY == 0
                         ? 1
-                        : projectionEntity.ESTIMATION_DIRECT_ITEM.ESTIMATED_QUANTITY;
+                        : projectionEntity.Entity.ESTIMATED_QUANTITY;
 
                     if (!isNewRow)
                         MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity,
                             BindableBase.GetPropertyName(
-                                () => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." +
+                                () => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
                             BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().ESTIMATED_QUANTITY),
                             oldValue, newValue, EntityMessageType.Changed);
 
-                    projectionEntity.ESTIMATION_DIRECT_ITEM.ESTIMATED_QUANTITY = 1;
+                    projectionEntity.Entity.ESTIMATED_QUANTITY = 1;
 
-                    oldValue = projectionEntity.ESTIMATION_DIRECT_ITEM.RATE_FREIGHT;
+                    oldValue = projectionEntity.Entity.RATE_FREIGHT;
                     newValue = findCOMMODITY_CODE.RATE_FREIGHT;
 
                     if (!isNewRow)
                         MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity,
                             BindableBase.GetPropertyName(
-                                () => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." +
+                                () => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
                             BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().RATE_FREIGHT), oldValue,
                             newValue, EntityMessageType.Changed);
 
-                    projectionEntity.ESTIMATION_DIRECT_ITEM.RATE_FREIGHT = findCOMMODITY_CODE.RATE_FREIGHT;
+                    projectionEntity.Entity.RATE_FREIGHT = findCOMMODITY_CODE.RATE_FREIGHT;
 
-                    oldValue = projectionEntity.ESTIMATION_DIRECT_ITEM.RATE_SUPPLY;
+                    oldValue = projectionEntity.Entity.RATE_SUPPLY;
                     newValue = findCOMMODITY_CODE.RATE_SUPPLY;
 
                     if (!isNewRow)
                         MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity,
                             BindableBase.GetPropertyName(
-                                () => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." +
+                                () => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
                             BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().RATE_SUPPLY), oldValue,
                             newValue, EntityMessageType.Changed);
 
-                    projectionEntity.ESTIMATION_DIRECT_ITEM.RATE_SUPPLY = findCOMMODITY_CODE.RATE_SUPPLY;
+                    projectionEntity.Entity.RATE_SUPPLY = findCOMMODITY_CODE.RATE_SUPPLY;
 
-                    oldValue = projectionEntity.ESTIMATION_DIRECT_ITEM.HOURS_INSTALL;
+                    oldValue = projectionEntity.Entity.HOURS_INSTALL;
                     newValue = findCOMMODITY_CODE.HOURS_INSTALL;
 
                     if (!isNewRow)
                         MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity,
                             BindableBase.GetPropertyName(
-                                () => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) + "." +
+                                () => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
                             BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().HOURS_INSTALL), oldValue,
                             newValue, EntityMessageType.Changed);
 
-                    projectionEntity.ESTIMATION_DIRECT_ITEM.HOURS_INSTALL = findCOMMODITY_CODE.HOURS_INSTALL;
+                    projectionEntity.Entity.HOURS_INSTALL = findCOMMODITY_CODE.HOURS_INSTALL;
                 }
 
                 DeleteChildrenESTIMATION_DIRECT_ITEM(projectionEntity);
@@ -545,13 +543,13 @@ namespace BluePrints.ViewModels
                 return;
 
             foreach (
-                var childrenEntity in parentProjectionEntity.CHILD_ESTIMATION_DIRECT_ITEM)
+                var childrenEntity in parentProjectionEntity.DetailEntities)
             {
-                var childOldValue = childrenEntity.ESTIMATION_DIRECT_ITEM.ESTIMATED_QUANTITY;
+                var childOldValue = childrenEntity.Entity.ESTIMATED_QUANTITY;
                 var childNewValue = childOldValue / oldValue * newValue;
-                childrenEntity.ESTIMATION_DIRECT_ITEM.ESTIMATED_QUANTITY = childNewValue;
+                childrenEntity.Entity.ESTIMATED_QUANTITY = childNewValue;
                 MainViewModel.EntitiesUndoRedoManager.AddUndo(childrenEntity,
-                    BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().ESTIMATION_DIRECT_ITEM) +
+                    BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) +
                     "." + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().ESTIMATED_QUANTITY),
                     childOldValue, childNewValue, EntityMessageType.Changed);
                 MainViewModel.Save(childrenEntity);
@@ -568,7 +566,7 @@ namespace BluePrints.ViewModels
 
             foreach (var entity in entities)
             {
-                var childrenEntitiesInTotal = entity.CHILD_ESTIMATION_DIRECT_ITEM;
+                var childrenEntitiesInTotal = entity.DetailEntities;
                 var childrenEntitiesNotInDeletionCollection =
                     new List<ESTIMATION_DIRECT_ITEMProjection>();
                 foreach (var childrenEntityInTotal in childrenEntitiesInTotal)
@@ -576,11 +574,11 @@ namespace BluePrints.ViewModels
                         childrenEntitiesNotInDeletionCollection.Add(childrenEntityInTotal);
 
                 ESTIMATION_DIRECT_ITEMProjection parentEntity = null;
-                if (entity.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT != Guid.Empty)
+                if (entity.Entity.GUID_ORIGINAL_PARENT != Guid.Empty)
                 {
                     parentEntity =
                         MainViewModel.Entities.FirstOrDefault(
-                            x => x.GUID == entity.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT);
+                            x => x.GUID == entity.Entity.GUID_ORIGINAL_PARENT);
                     if (parentEntity != null)
                         if (!entities.Any(x => x.GUID == parentEntity.GUID))
                             parentEntitiesNotInList.Add(parentEntity);
@@ -610,49 +608,49 @@ namespace BluePrints.ViewModels
         {
             var findCOMMODITY_GROUP =
                 COMMODITY_CODEMasterDetailViewModel.DisplayEntities.FirstOrDefault(
-                    x => x.CHILD_COMMODITY_CODES.Count > 0
+                    x => x.DetailEntities.Count > 0
                          &&
-                         x.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT ==
-                         parentEstimation_Direct_Item.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT
+                         x.Entity.GUID_COMMODITY_GROUP_DIRECT ==
+                         parentEstimation_Direct_Item.Entity.GUID_COMMODITY_GROUP_DIRECT
                          &&
-                         x.COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID ==
-                         parentEstimation_Direct_Item.ESTIMATION_DIRECT_ITEM.COMMODITY_GROUP_DIRECT_ID);
+                         x.Entity.COMMODITY_GROUP_DIRECT_ID ==
+                         parentEstimation_Direct_Item.Entity.COMMODITY_GROUP_DIRECT_ID);
 
             if (findCOMMODITY_GROUP != null)
-                if (findCOMMODITY_GROUP.CHILD_COMMODITY_CODES.Count > 0)
+                if (findCOMMODITY_GROUP.DetailEntities.Count > 0)
                     foreach (
                         var childCOMMODITY_CODE in
-                        findCOMMODITY_GROUP.CHILD_COMMODITY_CODES)
+                        findCOMMODITY_GROUP.DetailEntities)
                     {
                         var childESTIMATION_DIRECT_ITEM =
                             new ESTIMATION_DIRECT_ITEMProjection();
-                        childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE =
-                            childCOMMODITY_CODE.COMMODITY_CODE.GUID;
-                        childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT =
-                            parentEstimation_Direct_Item.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT;
-                        childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.COMMODITY_GROUP_DIRECT_ID =
-                            parentEstimation_Direct_Item.ESTIMATION_DIRECT_ITEM.COMMODITY_GROUP_DIRECT_ID;
-                        if (parentEstimation_Direct_Item.ESTIMATION_DIRECT_ITEM.GUID_DISCIPLINE != null)
-                            childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_DISCIPLINE =
-                                parentEstimation_Direct_Item.ESTIMATION_DIRECT_ITEM.GUID_DISCIPLINE;
+                        childESTIMATION_DIRECT_ITEM.Entity.GUID_COMMODITY_CODE =
+                            childCOMMODITY_CODE.Entity.GUID;
+                        childESTIMATION_DIRECT_ITEM.Entity.GUID_COMMODITY_GROUP_DIRECT =
+                            parentEstimation_Direct_Item.Entity.GUID_COMMODITY_GROUP_DIRECT;
+                        childESTIMATION_DIRECT_ITEM.Entity.COMMODITY_GROUP_DIRECT_ID =
+                            parentEstimation_Direct_Item.Entity.COMMODITY_GROUP_DIRECT_ID;
+                        if (parentEstimation_Direct_Item.Entity.GUID_DISCIPLINE != null)
+                            childESTIMATION_DIRECT_ITEM.Entity.GUID_DISCIPLINE =
+                                parentEstimation_Direct_Item.Entity.GUID_DISCIPLINE;
                         else
-                            childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_DISCIPLINE =
-                                childCOMMODITY_CODE.COMMODITY_CODE.GUID_DISCIPLINE;
-                        childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT =
-                            parentEstimation_Direct_Item.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL;
-                        childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.ESTIMATED_QUANTITY =
-                            parentEstimation_Direct_Item.ESTIMATION_DIRECT_ITEM.ESTIMATED_QUANTITY;
-                        childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_INSTALLWORKPACK =
-                            parentEstimation_Direct_Item.ESTIMATION_DIRECT_ITEM.GUID_INSTALLWORKPACK;
-                        childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_SUPPLYWORKPACK =
-                            parentEstimation_Direct_Item.ESTIMATION_DIRECT_ITEM.GUID_SUPPLYWORKPACK;
+                            childESTIMATION_DIRECT_ITEM.Entity.GUID_DISCIPLINE =
+                                childCOMMODITY_CODE.Entity.GUID_DISCIPLINE;
+                        childESTIMATION_DIRECT_ITEM.Entity.GUID_ORIGINAL_PARENT =
+                            parentEstimation_Direct_Item.Entity.GUID_ORIGINAL;
+                        childESTIMATION_DIRECT_ITEM.Entity.ESTIMATED_QUANTITY =
+                            parentEstimation_Direct_Item.Entity.ESTIMATED_QUANTITY;
+                        childESTIMATION_DIRECT_ITEM.Entity.GUID_INSTALLWORKPACK =
+                            parentEstimation_Direct_Item.Entity.GUID_INSTALLWORKPACK;
+                        childESTIMATION_DIRECT_ITEM.Entity.GUID_SUPPLYWORKPACK =
+                            parentEstimation_Direct_Item.Entity.GUID_SUPPLYWORKPACK;
 
-                        childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.RATE_FREIGHT =
-                            childCOMMODITY_CODE.COMMODITY_CODE.RATE_FREIGHT;
-                        childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.RATE_SUPPLY =
-                            childCOMMODITY_CODE.COMMODITY_CODE.RATE_SUPPLY;
-                        childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.HOURS_INSTALL =
-                            childCOMMODITY_CODE.COMMODITY_CODE.HOURS_INSTALL;
+                        childESTIMATION_DIRECT_ITEM.Entity.RATE_FREIGHT =
+                            childCOMMODITY_CODE.Entity.RATE_FREIGHT;
+                        childESTIMATION_DIRECT_ITEM.Entity.RATE_SUPPLY =
+                            childCOMMODITY_CODE.Entity.RATE_SUPPLY;
+                        childESTIMATION_DIRECT_ITEM.Entity.HOURS_INSTALL =
+                            childCOMMODITY_CODE.Entity.HOURS_INSTALL;
 
                         MainViewModel.EntitiesUndoRedoManager.AddUndo(childESTIMATION_DIRECT_ITEM, null, null, null,
                             EntityMessageType.Added);
@@ -664,7 +662,7 @@ namespace BluePrints.ViewModels
         {
             foreach (
                 var childESTIMATION_DIRECT_ITEM in
-                parentEstimation_Direct_Item.CHILD_ESTIMATION_DIRECT_ITEM)
+                parentEstimation_Direct_Item.DetailEntities)
             {
                 MainViewModel.EntitiesUndoRedoManager.AddUndo(childESTIMATION_DIRECT_ITEM, null, null, null,
                     EntityMessageType.Deleted);
@@ -680,16 +678,16 @@ namespace BluePrints.ViewModels
 
         private bool AddProjectSpecificCOMMODITY_CODEGroup(ESTIMATION_DIRECT_ITEMProjection editedProjectionEntity)
         {
-            if (editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT != null)
+            if (editedProjectionEntity.Entity.GUID_ORIGINAL_PARENT != null)
             {
                 var parentESTIMATION_DIRECT_ITEM =
                     DisplayEntities.First(
                         x =>
-                            x.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL ==
-                            editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT);
+                            x.Entity.GUID_ORIGINAL ==
+                            editedProjectionEntity.Entity.GUID_ORIGINAL_PARENT);
                 var findCOMMODITY_CODEforID =
                     COMMODITY_CODECollection.FirstOrDefault(
-                        x => x.GUID == editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE);
+                        x => x.GUID == editedProjectionEntity.Entity.GUID_COMMODITY_CODE);
                 if (findCOMMODITY_CODEforID == null)
                     //this will happen if commodity code is deleted for this estimation item, user will notice it from the lack of fullcode in the view
                     return false;
@@ -700,12 +698,12 @@ namespace BluePrints.ViewModels
                     var findAllCOMMODITY_GROUP =
                         COMMODITY_CODEMasterDetailViewModel.DisplayEntities.Where(
                             x =>
-                                x.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT ==
-                                parentESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT);
+                                x.Entity.GUID_COMMODITY_GROUP_DIRECT ==
+                                parentESTIMATION_DIRECT_ITEM.Entity.GUID_COMMODITY_GROUP_DIRECT);
                     var findCurrentCOMMODITY_GROUP =
                         findAllCOMMODITY_GROUP.FirstOrDefault(
                             x =>
-                                x.COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID ==
+                                x.Entity.COMMODITY_GROUP_DIRECT_ID ==
                                 findCOMMODITY_CODEforID.COMMODITY_GROUP_DIRECT_ID);
                     if (findCurrentCOMMODITY_GROUP == null)
                         //this will happen if all project specific items within the commodity group is deleted, user will notice it from the lack of fullcode in the children view
@@ -745,7 +743,7 @@ namespace BluePrints.ViewModels
                 var addedOrExistingCOMMODITY_CODE = FindOrAddStandaloneCOMMODITY_CODE(editedProjectionEntity);
                 if (addedOrExistingCOMMODITY_CODE != null)
                 {
-                    editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE =
+                    editedProjectionEntity.Entity.GUID_COMMODITY_CODE =
                         (Guid) addedOrExistingCOMMODITY_CODE;
                     return true;
                 }
@@ -761,15 +759,15 @@ namespace BluePrints.ViewModels
         {
             var parentCOMMODITY_GROUP_DIRECT =
                 COMMODITY_GROUP_DIRECTCollection.FirstOrDefault(
-                    x => x.GUID == parentProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT);
+                    x => x.GUID == parentProjectionEntity.Entity.GUID_COMMODITY_GROUP_DIRECT);
             int? groupId = null;
             foreach (
                 var childESTIMATION_DIRECT_ITEM in
-                parentProjectionEntity.CHILD_ESTIMATION_DIRECT_ITEM)
+                parentProjectionEntity.DetailEntities)
             {
                 var findCOMMODITY_CODEforID =
                     COMMODITY_CODECollection.FirstOrDefault(
-                        x => x.GUID == childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE);
+                        x => x.GUID == childESTIMATION_DIRECT_ITEM.Entity.GUID_COMMODITY_CODE);
                 if (findCOMMODITY_CODEforID != null)
                     if (selectedCOMMODITY_CODE_Group == null)
                     {
@@ -788,25 +786,25 @@ namespace BluePrints.ViewModels
                             groupId =
                                 COMMODITY_CODEMasterDetailViewModel.DisplayEntities.Count(
                                     x =>
-                                        x.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT == groupGuid &&
-                                        x.COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID !=
-                                        parentProjectionEntity.ESTIMATION_DIRECT_ITEM.COMMODITY_GROUP_DIRECT_ID);
+                                        x.Entity.GUID_COMMODITY_GROUP_DIRECT == groupGuid &&
+                                        x.Entity.COMMODITY_GROUP_DIRECT_ID !=
+                                        parentProjectionEntity.Entity.COMMODITY_GROUP_DIRECT_ID);
 
-                        newCOMMODITY_CODE.RATE_FREIGHT = childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.RATE_FREIGHT;
-                        newCOMMODITY_CODE.RATE_SUPPLY = childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.RATE_SUPPLY;
+                        newCOMMODITY_CODE.RATE_FREIGHT = childESTIMATION_DIRECT_ITEM.Entity.RATE_FREIGHT;
+                        newCOMMODITY_CODE.RATE_SUPPLY = childESTIMATION_DIRECT_ITEM.Entity.RATE_SUPPLY;
                         newCOMMODITY_CODE.HOURS_INSTALL =
-                            childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.HOURS_INSTALL;
+                            childESTIMATION_DIRECT_ITEM.Entity.HOURS_INSTALL;
                         newCOMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID = groupId;
                         COMMODITY_CODECollectionViewModel.Save(newCOMMODITY_CODE);
 
-                        childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE = newCOMMODITY_CODE.GUID;
+                        childESTIMATION_DIRECT_ITEM.Entity.GUID_COMMODITY_CODE = newCOMMODITY_CODE.GUID;
                         MainViewModel.Save(childESTIMATION_DIRECT_ITEM);
                     }
                     else
                     {
                         var findCOMMODITY_CODEInGroup =
-                            selectedCOMMODITY_CODE_Group.CHILD_COMMODITY_CODES.FirstOrDefault(
-                                x => x.COMMODITY_CODE.FULLCODE == findCOMMODITY_CODEforID.FULLCODE);
+                            selectedCOMMODITY_CODE_Group.DetailEntities.FirstOrDefault(
+                                x => x.Entity.FULLCODE == findCOMMODITY_CODEforID.FULLCODE);
                         if (findCOMMODITY_CODEInGroup != null)
                         {
                             var findActualCOMMODITY_CODE =
@@ -814,12 +812,12 @@ namespace BluePrints.ViewModels
                             if (findActualCOMMODITY_CODE != null)
                             {
                                 findActualCOMMODITY_CODE.RATE_FREIGHT =
-                                    childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.RATE_FREIGHT;
+                                    childESTIMATION_DIRECT_ITEM.Entity.RATE_FREIGHT;
                                 findActualCOMMODITY_CODE.RATE_SUPPLY =
-                                    childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.RATE_SUPPLY;
+                                    childESTIMATION_DIRECT_ITEM.Entity.RATE_SUPPLY;
                                 findActualCOMMODITY_CODE.HOURS_INSTALL =
-                                    childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.HOURS_INSTALL;
-                                COMMODITY_CODECollectionViewModel.Save(findCOMMODITY_CODEInGroup.COMMODITY_CODE);
+                                    childESTIMATION_DIRECT_ITEM.Entity.HOURS_INSTALL;
+                                COMMODITY_CODECollectionViewModel.Save(findCOMMODITY_CODEInGroup.Entity);
                             }
                             else
                             {
@@ -835,19 +833,19 @@ namespace BluePrints.ViewModels
                             newCOMMODITY_CODE.GUID_PARENT = Guid.Empty;
                             //this is only used in commodity group, project specific group is specified by a combination of GUID_COMMODITY_GROUP_DIRECT and COMMODITY_GROUP_DIRECT_ID
                             newCOMMODITY_CODE.COMMODITY_GROUP_DESC =
-                                selectedCOMMODITY_CODE_Group.COMMODITY_CODE.COMMODITY_GROUP_DESC;
+                                selectedCOMMODITY_CODE_Group.Entity.COMMODITY_GROUP_DESC;
                             newCOMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT =
-                                selectedCOMMODITY_CODE_Group.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT;
+                                selectedCOMMODITY_CODE_Group.Entity.GUID_COMMODITY_GROUP_DIRECT;
                             newCOMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID =
-                                selectedCOMMODITY_CODE_Group.COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID;
+                                selectedCOMMODITY_CODE_Group.Entity.COMMODITY_GROUP_DIRECT_ID;
                             newCOMMODITY_CODE.RATE_FREIGHT =
-                                childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.RATE_FREIGHT;
+                                childESTIMATION_DIRECT_ITEM.Entity.RATE_FREIGHT;
                             newCOMMODITY_CODE.RATE_SUPPLY =
-                                childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.RATE_SUPPLY;
+                                childESTIMATION_DIRECT_ITEM.Entity.RATE_SUPPLY;
                             newCOMMODITY_CODE.HOURS_INSTALL =
-                                childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.HOURS_INSTALL;
+                                childESTIMATION_DIRECT_ITEM.Entity.HOURS_INSTALL;
                             COMMODITY_CODECollectionViewModel.Save(newCOMMODITY_CODE);
-                            childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE =
+                            childESTIMATION_DIRECT_ITEM.Entity.GUID_COMMODITY_CODE =
                                 newCOMMODITY_CODE.GUID;
                             MainViewModel.Save(childESTIMATION_DIRECT_ITEM);
                         }
@@ -861,12 +859,12 @@ namespace BluePrints.ViewModels
 
         private Guid? FindOrAddStandaloneCOMMODITY_CODE(ESTIMATION_DIRECT_ITEMProjection editedProjectionEntity)
         {
-            if (editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE == null)
+            if (editedProjectionEntity.Entity.GUID_COMMODITY_CODE == null)
                 return null;
 
             var currentCOMMODITY_CODE =
                 COMMODITY_CODECollection.FirstOrDefault(
-                    x => x.GUID == (Guid) editedProjectionEntity.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE);
+                    x => x.GUID == (Guid) editedProjectionEntity.Entity.GUID_COMMODITY_CODE);
             if (currentCOMMODITY_CODE != null)
                 if (currentCOMMODITY_CODE.GUID_PROJECT != null)
                 {
@@ -925,11 +923,11 @@ namespace BluePrints.ViewModels
         {
             var findCOMMODITY_CODE =
                 COMMODITY_CODEMasterDetailViewModel.DisplayEntities.Where(
-                    x => x.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT == null);
+                    x => x.Entity.GUID_COMMODITY_GROUP_DIRECT == null);
             var sourceObjects =
                 new ObservableCollection<COMMODITY_CODEMasterDetailProjection>(findCOMMODITY_CODE);
             var currentObject =
-                sourceObjects.FirstOrDefault(x => x.COMMODITY_CODE.GUID == currentCOMMODITY_CODE.GUID);
+                sourceObjects.FirstOrDefault(x => x.Entity.GUID == currentCOMMODITY_CODE.GUID);
             var commodity_codeSelectionViewModel = COMMODITY_CODESelectionViewModel.Create(sourceObjects, currentObject,
                 DISCIPLINECollection);
             if (
@@ -940,7 +938,7 @@ namespace BluePrints.ViewModels
                 {
                     var actualCOMMODITY_CODE =
                         COMMODITY_CODECollection.FirstOrDefault(
-                            x => x.GUID == commodity_codeSelectionViewModel.SelectedItem.COMMODITY_CODE.GUID);
+                            x => x.GUID == commodity_codeSelectionViewModel.SelectedItem.Entity.GUID);
                     if (actualCOMMODITY_CODE != null)
                         return UpdateAndSaveCOMMODITY_CODE(actualCOMMODITY_CODE, null, ratesESTIMATION_DIRECT_ITEM,
                             false);
@@ -968,24 +966,24 @@ namespace BluePrints.ViewModels
                 newOrExistingCOMMODITY_CODE.GUID_PARENT = Guid.Empty;
             }
 
-            newOrExistingCOMMODITY_CODE.RATE_FREIGHT = ratesESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.RATE_FREIGHT;
-            newOrExistingCOMMODITY_CODE.RATE_SUPPLY = ratesESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.RATE_SUPPLY;
-            newOrExistingCOMMODITY_CODE.HOURS_INSTALL = ratesESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.HOURS_INSTALL;
+            newOrExistingCOMMODITY_CODE.RATE_FREIGHT = ratesESTIMATION_DIRECT_ITEM.Entity.RATE_FREIGHT;
+            newOrExistingCOMMODITY_CODE.RATE_SUPPLY = ratesESTIMATION_DIRECT_ITEM.Entity.RATE_SUPPLY;
+            newOrExistingCOMMODITY_CODE.HOURS_INSTALL = ratesESTIMATION_DIRECT_ITEM.Entity.HOURS_INSTALL;
 
-            if (ratesESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT != null)
+            if (ratesESTIMATION_DIRECT_ITEM.Entity.GUID_ORIGINAL_PARENT != null)
             {
                 var parentESTIMATION_DIRECT_ITEM =
                     DisplayEntities.FirstOrDefault(
                         x =>
-                            x.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL ==
-                            ratesESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT);
-                if (parentESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT != null)
+                            x.Entity.GUID_ORIGINAL ==
+                            ratesESTIMATION_DIRECT_ITEM.Entity.GUID_ORIGINAL_PARENT);
+                if (parentESTIMATION_DIRECT_ITEM.Entity.GUID_COMMODITY_GROUP_DIRECT != null)
                 {
                     var parentCOMMODITY_GROUP_DIRECT =
                         COMMODITY_GROUP_DIRECTCollection.FirstOrDefault(
                             x =>
                                 x.GUID ==
-                                parentESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT);
+                                parentESTIMATION_DIRECT_ITEM.Entity.GUID_COMMODITY_GROUP_DIRECT);
                     var groupDescription = parentCOMMODITY_GROUP_DIRECT.DESCRIPTION;
                     var groupGuid = parentCOMMODITY_GROUP_DIRECT.GUID;
 
@@ -996,9 +994,9 @@ namespace BluePrints.ViewModels
                         newOrExistingCOMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID =
                             COMMODITY_CODEMasterDetailViewModel.DisplayEntities.Count(
                                 x =>
-                                    x.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT == groupGuid &&
-                                    x.COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID !=
-                                    parentESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM.COMMODITY_GROUP_DIRECT_ID);
+                                    x.Entity.GUID_COMMODITY_GROUP_DIRECT == groupGuid &&
+                                    x.Entity.COMMODITY_GROUP_DIRECT_ID !=
+                                    parentESTIMATION_DIRECT_ITEM.Entity.COMMODITY_GROUP_DIRECT_ID);
                     }
                 }
             }
@@ -1130,7 +1128,7 @@ namespace BluePrints.ViewModels
                                 x =>
                                     x.ProjectionType == COMMODITY_CODEProjectionType.GeneralGrouped ||
                                     x.ProjectionType == COMMODITY_CODEProjectionType.ProjectSpecificGrouped)
-                            .SelectMany(x => x.CHILD_COMMODITY_CODES));
+                            .SelectMany(x => x.DetailEntities));
             }
         }
 
@@ -1148,10 +1146,10 @@ namespace BluePrints.ViewModels
                 {
                     displayEntities = new ObservableCollection<ESTIMATION_DIRECT_ITEMProjection>();
                     var parentESTIMATION_DIRECT_ITEMS =
-                        MainViewModel.Entities.Where(x => x.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT == null)
+                        MainViewModel.Entities.Where(x => x.Entity.GUID_ORIGINAL_PARENT == null)
                             .AsEnumerable();
                     var AllChildESTIMATION_DIRECT_ITEMS =
-                        MainViewModel.Entities.Where(x => x.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT != null)
+                        MainViewModel.Entities.Where(x => x.Entity.GUID_ORIGINAL_PARENT != null)
                             .AsEnumerable();
                     foreach (
                         var parentESTIMATION_DIRECT_ITEM in parentESTIMATION_DIRECT_ITEMS)
@@ -1159,8 +1157,8 @@ namespace BluePrints.ViewModels
                         var parentESTIMATION_DIRECT_ITEMSPOCO =
                             ViewModelSource.Create(() => new ESTIMATION_DIRECT_ITEMProjection());
                         parentESTIMATION_DIRECT_ITEMSPOCO.GUID = parentESTIMATION_DIRECT_ITEM.GUID;
-                        DataUtils.ShallowCopy(parentESTIMATION_DIRECT_ITEMSPOCO.ESTIMATION_DIRECT_ITEM,
-                            parentESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM);
+                        DataUtils.ShallowCopy(parentESTIMATION_DIRECT_ITEMSPOCO.Entity,
+                            parentESTIMATION_DIRECT_ITEM.Entity);
                         parentESTIMATION_DIRECT_ITEM.RATE = new RATE();
                         DataUtils.ShallowCopy(parentESTIMATION_DIRECT_ITEMSPOCO.RATE, parentESTIMATION_DIRECT_ITEM.RATE);
                         displayEntities.Add(parentESTIMATION_DIRECT_ITEMSPOCO);
@@ -1171,16 +1169,16 @@ namespace BluePrints.ViewModels
                         var childESTIMATION_DIRECT_ITEMS =
                             AllChildESTIMATION_DIRECT_ITEMS.Where(
                                 y =>
-                                    y.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL_PARENT ==
-                                    displayEntity.ESTIMATION_DIRECT_ITEM.GUID_ORIGINAL);
+                                    y.Entity.GUID_ORIGINAL_PARENT ==
+                                    displayEntity.Entity.GUID_ORIGINAL);
                         if (childESTIMATION_DIRECT_ITEMS.Count() > 0)
                         {
-                            displayEntity.ESTIMATION_DIRECT_ITEM.RATE_FREIGHT =
-                                childESTIMATION_DIRECT_ITEMS.Sum(x => x.ESTIMATION_DIRECT_ITEM.RATE_FREIGHT);
-                            displayEntity.ESTIMATION_DIRECT_ITEM.RATE_SUPPLY =
-                                childESTIMATION_DIRECT_ITEMS.Sum(x => x.ESTIMATION_DIRECT_ITEM.RATE_SUPPLY);
-                            displayEntity.ESTIMATION_DIRECT_ITEM.HOURS_INSTALL =
-                                childESTIMATION_DIRECT_ITEMS.Sum(x => x.ESTIMATION_DIRECT_ITEM.HOURS_INSTALL);
+                            displayEntity.Entity.RATE_FREIGHT =
+                                childESTIMATION_DIRECT_ITEMS.Sum(x => x.Entity.RATE_FREIGHT);
+                            displayEntity.Entity.RATE_SUPPLY =
+                                childESTIMATION_DIRECT_ITEMS.Sum(x => x.Entity.RATE_SUPPLY);
+                            displayEntity.Entity.HOURS_INSTALL =
+                                childESTIMATION_DIRECT_ITEMS.Sum(x => x.Entity.HOURS_INSTALL);
                             displayEntity.RATE = new RATE();
                             displayEntity.RATE.RATE1 =
                                 childESTIMATION_DIRECT_ITEMS.Where(x => x.RATE != null).Sum(y => y.RATE.RATE1);
@@ -1192,12 +1190,12 @@ namespace BluePrints.ViewModels
                                 var childESTIMATION_DIRECT_ITEMPOCO =
                                     ViewModelSource.Create(() => new ESTIMATION_DIRECT_ITEMProjection());
                                 childESTIMATION_DIRECT_ITEMPOCO.GUID = childESTIMATION_DIRECT_ITEM.GUID;
-                                DataUtils.ShallowCopy(childESTIMATION_DIRECT_ITEMPOCO.ESTIMATION_DIRECT_ITEM,
-                                    childESTIMATION_DIRECT_ITEM.ESTIMATION_DIRECT_ITEM);
+                                DataUtils.ShallowCopy(childESTIMATION_DIRECT_ITEMPOCO.Entity,
+                                    childESTIMATION_DIRECT_ITEM.Entity);
                                 childESTIMATION_DIRECT_ITEMPOCO.RATE = new RATE();
                                 DataUtils.ShallowCopy(childESTIMATION_DIRECT_ITEMPOCO.RATE,
                                     childESTIMATION_DIRECT_ITEM.RATE);
-                                displayEntity.CHILD_ESTIMATION_DIRECT_ITEM.Add(childESTIMATION_DIRECT_ITEMPOCO);
+                                displayEntity.DetailEntities.Add(childESTIMATION_DIRECT_ITEMPOCO);
                             }
                         }
                     }

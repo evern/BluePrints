@@ -191,8 +191,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             DateTime? limitDate = null)
         {
             var remainingDataPoints = new List<DataPoint>();
-            var currentBASELINE_ITEM = progressItemStats.BASELINE_ITEMJoinRATE;
-            if (currentBASELINE_ITEM.BASELINE_ITEM.TOTAL_HOURS == 0 || unitsPerHour == 0)
+            var currentBASELINE_ITEM = progressItemStats.Entity;
+            if (currentBASELINE_ITEM.Entity.TOTAL_HOURS == 0 || unitsPerHour == 0)
                 return remainingDataPoints;
 
             var unitsPerDay = unitsPerHour * int.Parse(CommonResources.ProgressReporting_DefaultHoursADay);
@@ -245,7 +245,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     var newDataPoint = new DataPoint()
                     {
                         BudgetedCosts = currentBASELINE_ITEM.TOTAL_COSTS,
-                        BudgetedUnits = currentBASELINE_ITEM.BASELINE_ITEM.TOTAL_HOURS,
+                        BudgetedUnits = currentBASELINE_ITEM.Entity.TOTAL_HOURS,
                         Units = periodUnits,
                         ProgressDate = remainingCountDataDate
                     };
@@ -259,7 +259,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     var newDataPoint = new DataPoint()
                     {
                         BudgetedCosts = currentBASELINE_ITEM.TOTAL_COSTS,
-                        BudgetedUnits = currentBASELINE_ITEM.BASELINE_ITEM.TOTAL_HOURS,
+                        BudgetedUnits = currentBASELINE_ITEM.Entity.TOTAL_HOURS,
                         Units = 0,
                         Costs = 0,
                         ProgressDate = remainingCountDataDate

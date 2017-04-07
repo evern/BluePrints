@@ -232,7 +232,7 @@ namespace BluePrints.Views
             // colINTERNAL_NAME1
             // 
             this.colINTERNAL_NAME1.Caption = "Internal Name";
-            this.colINTERNAL_NAME1.FieldName = "WORKPACK.INTERNAL_NAME1";
+            this.colINTERNAL_NAME1.FieldName = "Entity.INTERNAL_NAME1";
             this.colINTERNAL_NAME1.Name = "colINTERNAL_NAME1";
             this.colINTERNAL_NAME1.OptionsColumn.AllowEdit = false;
             this.colINTERNAL_NAME1.OptionsColumn.ReadOnly = true;
@@ -242,7 +242,7 @@ namespace BluePrints.Views
             // colINTERNAL_NAME2
             // 
             this.colINTERNAL_NAME2.Caption = "Internal Name";
-            this.colINTERNAL_NAME2.FieldName = "WORKPACK.INTERNAL_NAME2";
+            this.colINTERNAL_NAME2.FieldName = "Entity.INTERNAL_NAME2";
             this.colINTERNAL_NAME2.Name = "colINTERNAL_NAME2";
             this.colINTERNAL_NAME2.OptionsColumn.AllowEdit = false;
             this.colINTERNAL_NAME2.OptionsColumn.ReadOnly = true;
@@ -252,7 +252,7 @@ namespace BluePrints.Views
             // colPHASE
             // 
             this.colPHASE.Caption = "Phase";
-            this.colPHASE.FieldName = "WORKPACK.PHASE.INTERNAL_NUM";
+            this.colPHASE.FieldName = "Entity.PHASE.INTERNAL_NUM";
             this.colPHASE.Name = "colPHASE";
             this.colPHASE.OptionsColumn.AllowEdit = false;
             this.colPHASE.OptionsColumn.ReadOnly = true;
@@ -262,7 +262,7 @@ namespace BluePrints.Views
             // colAREA
             // 
             this.colAREA.Caption = "Area";
-            this.colAREA.FieldName = "WORKPACK.AREA.TITLE";
+            this.colAREA.FieldName = "Entity.AREA.TITLE";
             this.colAREA.Name = "colAREA";
             this.colAREA.OptionsColumn.AllowEdit = false;
             this.colAREA.OptionsColumn.ReadOnly = true;
@@ -272,7 +272,7 @@ namespace BluePrints.Views
             // colDOCTYPE
             // 
             this.colDOCTYPE.Caption = "Doc Type";
-            this.colDOCTYPE.FieldName = "WORKPACK.DOCTYPE.NAME";
+            this.colDOCTYPE.FieldName = "Entity.DOCTYPE.NAME";
             this.colDOCTYPE.Name = "colDOCTYPE";
             this.colDOCTYPE.OptionsColumn.AllowEdit = false;
             this.colDOCTYPE.OptionsColumn.ReadOnly = true;
@@ -282,7 +282,7 @@ namespace BluePrints.Views
             // colDEPARTMENT
             // 
             this.colDEPARTMENT.Caption = "Department";
-            this.colDEPARTMENT.FieldName = "WORKPACK.DEPARTMENT.NAME";
+            this.colDEPARTMENT.FieldName = "Entity.DEPARTMENT.NAME";
             this.colDEPARTMENT.Name = "colDEPARTMENT";
             this.colDEPARTMENT.OptionsColumn.AllowEdit = false;
             this.colDEPARTMENT.OptionsColumn.ReadOnly = true;
@@ -292,7 +292,7 @@ namespace BluePrints.Views
             // colDISCIPLINE
             // 
             this.colDISCIPLINE.Caption = "Discipline";
-            this.colDISCIPLINE.FieldName = "WORKPACK.DISCIPLINE.NAME";
+            this.colDISCIPLINE.FieldName = "Entity.DISCIPLINE.NAME";
             this.colDISCIPLINE.Name = "colDISCIPLINE";
             this.colDISCIPLINE.OptionsColumn.AllowEdit = false;
             this.colDISCIPLINE.OptionsColumn.ReadOnly = true;

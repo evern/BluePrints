@@ -11,59 +11,13 @@ using BluePrints.Common.ViewModel;
 
 namespace BluePrints.Common.Projections
 {
-    [ConstraintAttributes("WORKPACK.GUID_PROJECT, WORKPACK.INTERNAL_NAME1, WORKPACK.INTERNAL_NAME2")]
-    [RequiredAttributes("WORKPACK.GUID_DDEPARTMENT, WORKPACK.GUID_DDISCIPLINE")]
-    public class WORKPACKProjection : IHaveGUID
+    [ConstraintAttributes("Entity.GUID_PROJECT, Entity.INTERNAL_NAME1, Entity.INTERNAL_NAME2")]
+    [RequiredAttributes("Entity.GUID_DDEPARTMENT, Entity.GUID_DDISCIPLINE")]
+    public class WORKPACKProjection : ProjectionBase<WORKPACK>, IHaveGUID
     {
-        public WORKPACKProjection()
-        {
-            WORKPACK = new WORKPACK();
-        }
-
-        [Key]
-        public Guid GUID { get; set; }
-
-        public WORKPACK WORKPACK { get; set; }
-
         public decimal TOTAL_UNITS { get; set; }
 
         public decimal TOTAL_COSTS { get; set; }
-
-        //public decimal TOTAL_UNITS
-        //{
-        //    get
-        //    {
-        //        if (!ReportableObjects.Any())
-        //        {
-        //            return 0;
-        //        }
-        //        else
-        //        {
-        //            IEnumerable<PROGRESS_ITEMProjection> progressItemProjections =
-        //                (IEnumerable<PROGRESS_ITEMProjection>)ReportableObjects;
-
-        //            return progressItemProjections.Sum(x => x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS);
-        //        }
-        //    }
-        //}
-
-        //public decimal TOTAL_COSTS
-        //{
-        //    get
-        //    {
-        //        if (!ReportableObjects.Any())
-        //        {
-        //            return 0;
-        //        }
-        //        else
-        //        {
-        //            IEnumerable<PROGRESS_ITEMProjection> progressItemProjections =
-        //                (IEnumerable<PROGRESS_ITEMProjection>)ReportableObjects;
-
-        //            return progressItemProjections.Sum(x => x.BASELINE_ITEMJoinRATE.TOTAL_COSTS);
-        //        }
-        //    }
-        //}
     }
 
     public static class WORKPACKProjectionQueries
@@ -82,7 +36,7 @@ namespace BluePrints.Common.Projections
             if (PROGRESS == null)
                 AllBaselineItems = new List<BASELINE_ITEMProjection>().AsQueryable();
             else
-                AllBaselineItems = BASELINE_ITEMProjectionQueries.JoinRATESOnBASELINE_ITEMS(BASELINE_ITEMS.AsQueryable(),
+                AllBaselineItems = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS.AsQueryable(),
                     getBASELINEFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, isBASELINEQueryProcessed);
 
             //IQueryable<PROGRESS_ITEMProjection> reportableItems =
@@ -94,9 +48,9 @@ namespace BluePrints.Common.Projections
                 WORKPACKS.ToArray().Select(x => new WORKPACKProjection()
                 {
                     GUID = x.GUID,
-                    WORKPACK = x,
-                    TOTAL_COSTS = AllBaselineItems.Where(y => y.BASELINE_ITEM.GUID_WORKPACK == x.GUID).Sum(z => z.TOTAL_COSTS),
-                    TOTAL_UNITS = AllBaselineItems.Where(y => y.BASELINE_ITEM.GUID_WORKPACK == x.GUID).Sum(z => z.BASELINE_ITEM.TOTAL_HOURS)
+                    Entity = x,
+                    TOTAL_COSTS = AllBaselineItems.Where(y => y.Entity.GUID_WORKPACK == x.GUID).Sum(z => z.TOTAL_COSTS),
+                    TOTAL_UNITS = AllBaselineItems.Where(y => y.Entity.GUID_WORKPACK == x.GUID).Sum(z => z.Entity.TOTAL_HOURS)
                     //ReportableObjects = reportableItems.Where(y => y.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK == x.GUID)
                     //.ToArray()
                     //.AsEnumerable()

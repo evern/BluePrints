@@ -87,76 +87,76 @@
                     <dxg:GridControl Name="gridControl"
                                      Style="{StaticResource AggregateViewGridTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="PHASE" FieldName="WORKPACK.GUID_DPHASE">
+                            <dxg:GridColumn Header="PHASE" FieldName="Entity.GUID_DPHASE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}"
                                           IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM"
                                           ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="AREA" FieldName="WORKPACK.GUID_DAREA">
+                            <dxg:GridColumn Header="AREA" FieldName="Entity.GUID_DAREA">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
                                           IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM"
                                           ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="DOCTYPE" FieldName="WORKPACK.GUID_DDOCTYPE">
+                            <dxg:GridColumn Header="DOCTYPE" FieldName="Entity.GUID_DDOCTYPE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                     ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}"
                                     IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="DISCIPLINE" FieldName="WORKPACK.GUID_DDISCIPLINE">
+                            <dxg:GridColumn Header="DISCIPLINE" FieldName="Entity.GUID_DDISCIPLINE">
                                 <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings
                                     ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
                                     IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="DEPARTMENT" FieldName="WORKPACK.GUID_DDEPARTMENT">
+                            <dxg:GridColumn Header="DEPARTMENT" FieldName="Entity.GUID_DDEPARTMENT">
                                 <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings
                                     ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}"
                                     IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="INTERNAL NAME" FieldName="WORKPACK.INTERNAL_NAME1" />
-                            <dxg:GridColumn Header="INTERNAL NAME" FieldName="WORKPACK.INTERNAL_NAME2" />
-                            <dxg:GridColumn Header="COMMENTS" FieldName="WORKPACK.COMMENTS" />
-                            <dxg:GridColumn Header="START DATE" FieldName="WORKPACK.STARTDATE">
+                            <dxg:GridColumn Header="INTERNAL NAME" FieldName="Entity.INTERNAL_NAME1" />
+                            <dxg:GridColumn Header="INTERNAL NAME" FieldName="Entity.INTERNAL_NAME2" />
+                            <dxg:GridColumn Header="COMMENTS" FieldName="Entity.COMMENTS" />
+                            <dxg:GridColumn Header="START DATE" FieldName="Entity.STARTDATE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="END DATE" FieldName="WORKPACK.ENDDATE">
+                            <dxg:GridColumn Header="END DATE" FieldName="Entity.ENDDATE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="REVIEW START DATE" FieldName="WORKPACK.REVIEWSTARTDATE">
+                            <dxg:GridColumn Header="REVIEW START DATE" FieldName="Entity.REVIEWSTARTDATE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="REVIEW END DATE" FieldName="WORKPACK.REVIEWENDDATE">
+                            <dxg:GridColumn Header="REVIEW END DATE" FieldName="Entity.REVIEWENDDATE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="FORECAST START DATE" FieldName="WORKPACK.FORECASTSTARTDATE">
+                            <dxg:GridColumn Header="FORECAST START DATE" FieldName="Entity.FORECASTSTARTDATE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="FORECAST END DATE" FieldName="WORKPACK.FORECASTENDDATE">
+                            <dxg:GridColumn Header="FORECAST END DATE" FieldName="Entity.FORECASTENDDATE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings MinValue="1753-01-01" MaxValue="12/31/9999 23:59:59" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="AUTO GENERATED" FieldName="WORKPACK.AUTOGENERATED" ReadOnly="True" />
-                            <dxg:GridColumn Header="TYPE" FieldName="WORKPACK.TYPE" ReadOnly="True">
+                            <dxg:GridColumn Header="AUTO GENERATED" FieldName="Entity.AUTOGENERATED" ReadOnly="True" />
+                            <dxg:GridColumn Header="TYPE" FieldName="Entity.TYPE" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
                                           ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:WorkpackType}}" />

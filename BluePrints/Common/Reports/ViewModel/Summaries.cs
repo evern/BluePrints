@@ -30,7 +30,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public SummaryStats GroupBurnedStatsByWorkpack(WORKPACK workpack)
         {
-            IEnumerable<PROGRESS_ITEMProjection> progressItemStatsByWorkpack = Deliverable.Where(x => x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK == workpack.GUID);
+            IEnumerable<PROGRESS_ITEMProjection> progressItemStatsByWorkpack = Deliverable.Where(x => x.Entity.Entity.GUID_WORKPACK == workpack.GUID);
 
             DateTime progressItemReportingDataDate = this.ReportingDataDate;
             List<VariationAdjustment> workpackVariationAdjustments = progressItemStatsByWorkpack.SelectMany(x => x.Stats.VariationAdjustments).ToList();
@@ -80,7 +80,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <param name="projectVariationAdjustments">Project variation adjustments that will be matched against each deliverable projection</param>
         /// <param name="progressItemHaveStats">Deliverable projection stats area already generated</param>
         public SummaryStats(IEnumerable<PROGRESS_ITEMProjection> progressItem, PROGRESS livePROGRESS, IEnumerable<VariationAdjustment> projectVariationAdjustments)
-            : base(livePROGRESS, progressItem.Sum(x => x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS), progressItem.Sum(x => x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS), progressItem.Sum(x => x.BASELINE_ITEMJoinRATE.ESTIMATED_COSTS), progressItem.Sum(x => x.BASELINE_ITEMJoinRATE.TOTAL_COSTS), projectVariationAdjustments)
+            : base(livePROGRESS, progressItem.Sum(x => x.Entity.Entity.ESTIMATED_HOURS), progressItem.Sum(x => x.Entity.Entity.TOTAL_HOURS), progressItem.Sum(x => x.Entity.ESTIMATED_COSTS), progressItem.Sum(x => x.Entity.TOTAL_COSTS), projectVariationAdjustments)
         {
             Deliverable = progressItem;
 

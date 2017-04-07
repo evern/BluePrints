@@ -194,14 +194,6 @@ namespace BluePrints.ViewModels
             get { return this.GetService<IDocumentManagerService>(); }
         }
 
-        public void Edit(USER_Dashboard entity)
-        {
-            if (entity == null)
-                return;
-
-            DocumentManagerService.ShowExistingEntityDocument<WORKPACK_Dashboard, Guid>(this, entity.GUID, string.Empty);
-        }
-
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>

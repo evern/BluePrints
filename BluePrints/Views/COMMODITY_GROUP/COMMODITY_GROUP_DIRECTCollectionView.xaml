@@ -102,7 +102,7 @@
                                 PassEventArgsToCommand="True" EventName="MasterRowCollapsed" />
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="COMMODITY_GROUP.DESCRIPTION" Header="DESCRIPTION"
+                            <dxg:GridColumn FieldName="Entity.DESCRIPTION" Header="DESCRIPTION"
                                             VisibleIndex="0" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.DetailDescriptor>
@@ -111,9 +111,9 @@
                                                  CurrentItem="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}"
                                                  SelectedItems="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}">
                                     <dxg:GridControl.Columns>
-                                        <dxg:GridColumn FieldName="COMMODITY_GROUP.DESCRIPTION" Header="DESCRIPTION"
+                                        <dxg:GridColumn FieldName="Entity.DESCRIPTION" Header="DESCRIPTION"
                                                         VisibleIndex="0" />
-                                        <dxg:GridColumn FieldName="COMMODITY_GROUP.GUID_COMMODITYCODE"
+                                        <dxg:GridColumn FieldName="Entity.GUID_COMMODITYCODE"
                                                         Header="COMMODITY_CODE" VisibleIndex="5">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxg:LookUpEditSettings
@@ -186,7 +186,7 @@
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
                             <common:TableViewEx x:Name="tableView"
-                                           IsDetailButtonVisibleBinding="{Binding Row.COMMODITY_GROUP.ISQUANTIFIABLE, Converter={StaticResource BooleanNegationConverter}}"
+                                           IsDetailButtonVisibleBinding="{Binding Row.Entity.ISQUANTIFIABLE, Converter={StaticResource BooleanNegationConverter}}"
                                            Style="{StaticResource DefaultTableViewTemplate}">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand

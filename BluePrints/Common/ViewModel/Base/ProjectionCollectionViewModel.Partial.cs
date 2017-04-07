@@ -868,18 +868,24 @@ namespace BluePrints.Common.ViewModel
                                 copyColumnEditSettings.DisplayMember);
                         if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Select Item to assign",
                                 "BulkEditEnums", bulkEditEnumsViewModel) == MessageResult.OK)
+                        {
                             if (bulkEditEnumsViewModel.SelectedItem != null)
+                            {
                                 if (columnPropertyInfo.PropertyType.BaseType == typeof(Enum))
                                 {
                                     var selectedEnum = (EnumMemberInfo)bulkEditEnumsViewModel.SelectedItem;
                                     newValue = Enum.Parse(columnPropertyInfo.PropertyType, selectedEnum.Id.ToString());
                                 }
                                 else
-                                    newValue =
-                                        (Guid)
-                                        bulkEditEnumsViewModel.SelectedItem.GetType()
-                                            .GetProperty("GUID")
-                                            .GetValue(bulkEditEnumsViewModel.SelectedItem);
+                                {
+                                    IHaveGUID entityWithGuid = bulkEditEnumsViewModel.SelectedItem as IHaveGUID;
+                                    if(entityWithGuid != null)
+                                    {
+                                        newValue = entityWithGuid.GUID;
+                                    }
+                                }
+                            }
+                        }
 
                         bulkEditEnumsViewModel = null;
                     }
@@ -1189,9 +1195,9 @@ namespace BluePrints.Common.ViewModel
             this.ValidateFillDownCallBack = null;
 
             //Entities view model call backs
-            //this.OnEntitiesLoadedCallBack = null;
-            //this.OnBeforeEntitiesChangedCallBack = null;
-            //this.OnAfterEntitiesChangedCallBack = null;
+            this.OnEntitiesLoadedCallBack = null;
+            this.OnBeforeEntitiesChangedCallBack = null;
+            this.OnAfterEntitiesChangedCallBack = null;
         }
     }
 

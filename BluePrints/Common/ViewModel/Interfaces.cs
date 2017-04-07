@@ -2,6 +2,7 @@
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,7 +25,18 @@ namespace BluePrints.Common.ViewModel
     public interface IProjection<TEntity> : IHaveGUID
         where TEntity : class, new()
     {
-        TEntity entity { get; set; }
+        //Entity
+
+        TEntity Entity { get; set; }
+    }
+
+    public interface IProjectionMasterDetail<TEntity, TProjection> : IProjection<TEntity>
+        where TEntity : class, IHaveGUID, new()
+        where TProjection : class, IHaveGUID, new()
+    {
+        //DetailEntities
+
+        ObservableCollection<TProjection> DetailEntities { get; set; }
     }
 
     public interface IHaveSummary : IHaveStats
@@ -50,12 +62,11 @@ namespace BluePrints.Common.ViewModel
     /// <summary>
     /// The interface for supporting children document other than using TEntity type name.
     /// </summary>
-    public interface ISupportCustomDocumentTypeNameAndParameter
+    public interface ISupportCustomDocument
     {
-        string GetCustomDocumentTypeName();
-        object GetCustomDocumentParameter();
-        string GetCustomDocumentTitle();
-        bool IsCustomModeEnabled();
+        string CustomDocumentType();
+        object CustomDocumentParameter();
+        string CustomDocumentTitle();
     }
 
     /// <summary>

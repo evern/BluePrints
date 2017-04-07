@@ -18,10 +18,10 @@ namespace BluePrints.Views
         {
             InitializeComponent();
             InitializeViewControl(gridControl, tableView);
-            ((BASELINE_ITEMSCollectionViewModelWrapper)DataContext).ShowWORKPACKInternalName1 =
-                ShowWorkpackInternalName1;
-            ((BASELINE_ITEMSCollectionViewModelWrapper)DataContext).ShowWORKPACKInternalName2 =
-                ShowWorkpackInternalName2;
+            //((BASELINE_ITEMSCollectionViewModelWrapper)DataContext).ShowWORKPACKInternalName1 =
+            //    ShowWorkpackInternalName1;
+            //((BASELINE_ITEMSCollectionViewModelWrapper)DataContext).ShowWORKPACKInternalName2 =
+            //    ShowWorkpackInternalName2;
             ((BASELINE_ITEMSCollectionViewModelWrapper)DataContext).GetGridVisibleRows =
                 GetGridVisibleRows;
         }

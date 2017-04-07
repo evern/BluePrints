@@ -11,28 +11,23 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    public class WORKPACK_Dashboard : IHaveGUID, IHaveStats
+    public class WORKPACK_Dashboard : ProjectionBase<WORKPACK>, IHaveStats
     {
-        public Guid GUID { get; set; }
-        public WORKPACK WORKPACK { get; set; }
-
         public ProgressStats Stats { get; set; }
 
         public void GroupProjectStats(ProjectSummaryStats projectStats)
         {
-            Stats = projectStats.GroupBurnedStatsByWorkpack(this.WORKPACK);
+            Stats = projectStats.GroupBurnedStatsByWorkpack(this.Entity);
         }
         #region WORKPACK Mapping
 
         public bool IsGetModifiedWORKPACK_ASSIGNMENTS { get; set; }
-
-
         public ICollection<WORKPACK_ASSIGNMENT> ObservableWORKPACK_ASSIGNMENTS
         {
             get
             {
                 return
-                    WORKPACK.WORKPACK_ASSIGNMENT.Where(x => x.ISMODIFIEDBASELINE == IsGetModifiedWORKPACK_ASSIGNMENTS)
+                    Entity.WORKPACK_ASSIGNMENT.Where(x => x.ISMODIFIEDBASELINE == IsGetModifiedWORKPACK_ASSIGNMENTS)
                         .ToList();
             }
         }
@@ -54,7 +49,7 @@ namespace BluePrints.Common.Projections
         {
             IEnumerable<WORKPACK_Dashboard> projectWORKPACKDashboards =
                 WORKPACKS.Where(x => x.GUID_PROJECT == projectDashboard.GUID)
-                    .Select(x => new WORKPACK_Dashboard() {GUID = x.GUID, WORKPACK = x});
+                    .Select(x => new WORKPACK_Dashboard() {GUID = x.GUID, Entity = x});
             List<WORKPACK_Dashboard> newWORKPACKDashboards = projectWORKPACKDashboards.ToList();
             newWORKPACKDashboards.ForEach(x => x.GroupProjectStats((ProjectSummaryStats)projectDashboard.Stats));
 

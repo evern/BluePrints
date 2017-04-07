@@ -86,6 +86,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, x => loadBASELINE = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, SetPROGRESStoCurrentDateOnLoaded);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, false);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
@@ -134,6 +135,11 @@ namespace BluePrints.ViewModels
         }
 
         private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
@@ -198,7 +204,7 @@ namespace BluePrints.ViewModels
         {
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-            List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), entities.Select(x => x.BASELINE_ITEMJoinRATE));
+            List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), entities.Select(x => x.Entity));
             projectSummary = new ProjectSummaryStats(entities, loadPROGRESS, projectVariationAdjustment);
             FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT, loadBASELINE, loadPROGRESS, WORKPACKCollection, WORKPACKCollection.SelectMany(x => x.WORKPACK_ASSIGNMENT).ToList(), p6UOW);
             fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder);
@@ -235,13 +241,13 @@ namespace BluePrints.ViewModels
             }
             else if (
                 e.Column.FieldName ==
-                BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().BASELINE_ITEMJoinRATE) + "." +
-                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().BASELINE_ITEM) + "." +
+                BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_STATUS)
                 ||
                 e.Column.FieldName ==
-                BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().BASELINE_ITEMJoinRATE) + "." +
-                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().BASELINE_ITEM) + "." +
+                BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_USER))
             {
                 return true;
@@ -252,7 +258,7 @@ namespace BluePrints.ViewModels
 
         private void ApplyProjectionPropertiesToEntityCallBack(PROGRESS_ITEMProjection projectionEntity, BASELINE_ITEM entity)
         {
-            entity = projectionEntity.BASELINE_ITEMJoinRATE.BASELINE_ITEM;
+            entity = projectionEntity.Entity.Entity;
         }
 
         /// <summary>
@@ -274,7 +280,7 @@ namespace BluePrints.ViewModels
             var findPROGRESS_ITEM =
                 PROGRESS_ITEMSCollectionViewModel.Entities.FirstOrDefault(
                     x =>
-                        x.GUID_ORIBASEITEM == projectionEntity.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL &&
+                        x.GUID_ORIBASEITEM == projectionEntity.Entity.Entity.GUID_ORIGINAL &&
                         x.EARNED_DATE == loadPROGRESS.DATA_DATE);
             PROGRESS_ITEM savePROGRESS_ITEM;
             if (findPROGRESS_ITEM == null)
@@ -292,7 +298,7 @@ namespace BluePrints.ViewModels
 
             savePROGRESS_ITEM.EARNED_DATE = loadPROGRESS.DATA_DATE;
             savePROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
-            savePROGRESS_ITEM.GUID_ORIBASEITEM = projectionEntity.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL;
+            savePROGRESS_ITEM.GUID_ORIBASEITEM = projectionEntity.Entity.Entity.GUID_ORIGINAL;
             //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
             if (savePROGRESS_ITEM.CREATED.Date.Year == 1)
                 savePROGRESS_ITEM.CREATED = DateTime.Now;
@@ -397,6 +403,50 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<AREA> AREACollection
+        {
+            get
+            {
+                var collection = GetEntities<AREA>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
+                return collection;
+            }
+        }
+
+        public IEnumerable<DEPARTMENT> DEPARTMENTCollection
+        {
+            get
+            {
+                var collection = GetEntities<DEPARTMENT>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
+        public IEnumerable<DISCIPLINE> DISCIPLINECollection
+        {
+            get
+            {
+                var collection = GetEntities<DISCIPLINE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
+        public IEnumerable<DOCTYPE> DOCTYPECollection
+        {
+            get
+            {
+                var collection = GetEntities<DOCTYPE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.CODE);
+                return collection;
+            }
+        }
+
         public IEnumerable<VARIATION> VARIATIONCollection
         {
             get
@@ -477,7 +527,7 @@ namespace BluePrints.ViewModels
                 (CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>)
                 loaderCollection.GetViewModel<PROGRESS>();
             mainThreadDispatcher.BeginInvoke(new Action(() => PROGRESSCollectionViewModel.Save(loadPROGRESS)));
-            this.RaisePropertyChanged(x => x.DataDate);
+            FullRefresh();
         }
 
         private void DateChange(DateNavigationType navigationType)
@@ -575,7 +625,7 @@ namespace BluePrints.ViewModels
                     DataPoint firstWorkpackEarned = workpackEarnedDataPoints.First();
                     DataPoint lastWorkpackEarned = workpackEarnedDataPoints.LastOrDefault(x => x.ProgressDate <= loadPROGRESS.DATA_DATE);
 
-                    List<WORKPACK_ASSIGNMENT> workpackAssignments = workpack.WORKPACK.WORKPACK_ASSIGNMENT.Where(assignment => assignment.LOW_VALUE <= lastWorkpackEarned.Units).OrderBy(assignment => assignment.LOW_VALUE).ToList();
+                    List<WORKPACK_ASSIGNMENT> workpackAssignments = workpack.Entity.WORKPACK_ASSIGNMENT.Where(assignment => assignment.LOW_VALUE <= lastWorkpackEarned.Units).OrderBy(assignment => assignment.LOW_VALUE).ToList();
 
                     for (int i = 0; i < workpackAssignments.Count; i++)
                     {
@@ -663,7 +713,7 @@ namespace BluePrints.ViewModels
                     if (((GridSummaryItem)e.Item).FieldName == "TOTAL_EARNED_PERCENTAGE")
                     {
                         var budgetedUnits =
-                            ((PROGRESS_ITEMProjection)e.Row).BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
+                            ((PROGRESS_ITEMProjection)e.Row).Entity.Entity.TOTAL_HOURS;
                         var previousUnits =
                             ((PROGRESS_ITEMProjection)e.Row).PROGRESS_ITEMSBeforeReportingDate.Sum(x => x.EARNED_UNITS);
                         var currentUnits = ((PROGRESS_ITEMProjection)e.Row).PROGRESS_ITEMCurrent == null
@@ -678,7 +728,7 @@ namespace BluePrints.ViewModels
                     else if (((GridSummaryItem)e.Item).FieldName == "PERIOD_EARNED_PERCENTAGE")
                     {
                         var totalUnits =
-                            ((PROGRESS_ITEMProjection)e.Row).BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
+                            ((PROGRESS_ITEMProjection)e.Row).Entity.Entity.TOTAL_HOURS;
                         var currentUnits = ((PROGRESS_ITEMProjection)e.Row).PROGRESS_ITEMCurrent == null
                             ? 0
                             : ((PROGRESS_ITEMProjection)e.Row).PROGRESS_ITEMCurrent.EARNED_UNITS;

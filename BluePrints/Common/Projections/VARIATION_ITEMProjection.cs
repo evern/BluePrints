@@ -14,17 +14,16 @@ namespace BluePrints.Common.Projections
     public class VARIATION_ITEMProjection : PROGRESS_ITEMProjection
     {
         public VARIATION_ITEMProjection()
+            : base()
         {
-            VARIATION_ITEM = new VARIATION_ITEM();
-            BASELINE_ITEMJoinRATE = new BASELINE_ITEMProjection();
+            variation_item = new VARIATION_ITEM();
             VARIATION_ITEM.ACTION = VariationAction.NoAction;
         }
 
         public VARIATION_ITEMProjection(DateTime reportingDataDate)
             : base(reportingDataDate)
         {
-            VARIATION_ITEM = new VARIATION_ITEM();
-            BASELINE_ITEMJoinRATE = new BASELINE_ITEMProjection();
+            variation_item = new VARIATION_ITEM();
             VARIATION_ITEM.ACTION = VariationAction.NoAction;
         }
 
@@ -126,12 +125,12 @@ namespace BluePrints.Common.Projections
             get
             {
                 if (PROGRESS_ITEMSBeforeReportingDate == null ||
-                    BASELINE_ITEMJoinRATE == null || BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS == 0)
+                    Entity == null || Entity.Entity.TOTAL_HOURS == 0)
                     return 0;
                 if (PROGRESS_ITEMCurrent == null)
-                    return -1 * BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS;
+                    return -1 * Entity.Entity.TOTAL_HOURS;
                 else
-                    return -1 * (BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS - (PROGRESS_ITEMCurrent.EARNED_UNITS + PastPROGRESS_ITEMS_UNITS));
+                    return -1 * (Entity.Entity.TOTAL_HOURS - (PROGRESS_ITEMCurrent.EARNED_UNITS + PastPROGRESS_ITEMS_UNITS));
             }
         }
 
@@ -144,8 +143,8 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                return (BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS + VARIATION_ITEM.VARIATION_UNITS) *
-                       BASELINE_ITEMJoinRATE.ITEMRATE;
+                return (Entity.Entity.TOTAL_HOURS + VARIATION_ITEM.VARIATION_UNITS) *
+                       Entity.ITEMRATE;
             }
         }
 
@@ -153,7 +152,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                return FORECAST_UNITS * BASELINE_ITEMJoinRATE.ITEMRATE;
+                return FORECAST_UNITS * Entity.ITEMRATE;
             }
         }
     }
@@ -208,14 +207,14 @@ namespace BluePrints.Common.Projections
                         GUID = x.GUID,
                         VARIATION_ITEM =
                             LoadVARIATION_ITEMS.Where(
-                                    y => y.GUID_ORIBASEITEM == x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL)
+                                    y => y.GUID_ORIBASEITEM == x.Entity.Entity.GUID_ORIGINAL)
                                 .FirstOrDefault(),
-                        BASELINE_ITEMJoinRATE = x.BASELINE_ITEMJoinRATE,
+                        Entity = x.Entity,
                         SUBMITTED = submittedDate,
                         APPROVED = approvedDate,
                         PROGRESS_ITEMS =
                             LoadPROGRESS_ITEMS.Where(
-                                    y => y.GUID_ORIBASEITEM == x.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_ORIGINAL)
+                                    y => y.GUID_ORIBASEITEM == x.Entity.Entity.GUID_ORIGINAL)
                     }).AsQueryable();
         }
     }

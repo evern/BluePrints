@@ -108,29 +108,29 @@
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.Bands>
                                 <dxg:GridControlBand Name="bandGeneral" Header="General">
-                                    <dxg:GridColumn Header="Number" FieldName="PROJECT.NUMBER" VisibleIndex="0" />
-                                    <dxg:GridColumn Header="Name" FieldName="PROJECT.NAME" VisibleIndex="10" />
-                                    <dxg:GridColumn Header="Client" FieldName="PROJECT.CLIENT" VisibleIndex="20" />
-                                    <dxg:GridColumn Header="Status" FieldName="PROJECT.STATUS" VisibleIndex="30">
+                                    <dxg:GridColumn Header="Number" FieldName="Entity.NUMBER" VisibleIndex="0" />
+                                    <dxg:GridColumn Header="Name" FieldName="Entity.NAME" VisibleIndex="10" />
+                                    <dxg:GridColumn Header="Client" FieldName="Entity.CLIENT" VisibleIndex="20" />
+                                    <dxg:GridColumn Header="Status" FieldName="Entity.STATUS" VisibleIndex="30">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
                                                                       ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectStatus}}" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Contract Type" FieldName="PROJECT.CONTRACTTYPE"
+                                    <dxg:GridColumn Header="Contract Type" FieldName="Entity.CONTRACTTYPE"
                                                     VisibleIndex="40">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
                                                                       ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ContractType}}" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Type" FieldName="PROJECT.TYPE" VisibleIndex="50">
+                                    <dxg:GridColumn Header="Type" FieldName="Entity.TYPE" VisibleIndex="50">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
                                                                       ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectType}}" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Design Manager" FieldName="PROJECT.DESIGNMANAGER"
+                                    <dxg:GridColumn Header="Design Manager" FieldName="Entity.DESIGNMANAGER"
                                                     VisibleIndex="60">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"

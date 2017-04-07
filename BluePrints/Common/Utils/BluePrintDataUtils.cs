@@ -80,8 +80,8 @@ namespace BluePrints.Common.ViewModel.Utils
                     BASELINE_ITEMEntities.Where(x => x.GUID != excludeGUID)
                         .Count(
                             x =>
-                                x.BASELINE_ITEM.INTERNAL_NUM != null &&
-                                x.BASELINE_ITEM.INTERNAL_NUM.Contains(InternalNum));
+                                x.Entity.INTERNAL_NUM != null &&
+                                x.Entity.INTERNAL_NUM.Contains(InternalNum));
                 internalNameCount += 1;
 
                 var countString = string.Empty;

@@ -125,7 +125,6 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.OnBeforeEntitiesDeleteCallBack = EntitiesBeforeDeletion;
             MainViewModel.IsContinueNewRowFromViewCallBack = NewRowAddUndoAndSave;
-            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
             MainViewModel.IsValidFromViewCallBack = AdditionalCellValidation;
             MainViewModel.AdditionalValidateRowCallBack = AdditionalRowValidation;
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntity;
@@ -195,7 +194,7 @@ namespace BluePrints.ViewModels
         protected override void restoreViewState()
         {
             var restoreSelectedEntities =
-                DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.CHILD_COMMODITY_GROUP))
+                DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.DetailEntities))
                     .Where(x => RestoreSelectedEntitiesGuids.Any(y => y == x.GUID));
             DisplaySelectedEntities.Clear();
             if (restoreSelectedEntities.Count() > 0)
@@ -213,7 +212,7 @@ namespace BluePrints.ViewModels
             if (RestoreSelectedEntityGuid != Guid.Empty)
             {
                 var restoreSelectedEntity =
-                    DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.CHILD_COMMODITY_GROUP))
+                    DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.DetailEntities))
                         .FirstOrDefault(x => x.GUID == RestoreSelectedEntityGuid);
                 if (restoreSelectedEntity != null)
                     DisplaySelectedEntity = restoreSelectedEntity;
@@ -235,13 +234,13 @@ namespace BluePrints.ViewModels
                 var masterRowHandle = grid.GetMasterRowHandle();
                 var masterEntity =
                     (COMMODITY_GROUP_DIRECTProjection) masterGrid.GetRow(masterRowHandle);
-                if (masterEntity.COMMODITY_GROUP.GUID_COMMODITYCODE == null)
+                if (masterEntity.Entity.GUID_COMMODITYCODE == null)
                 {
-                    projectionEntity.COMMODITY_GROUP.GUID_PARENT = masterEntity.GUID;
+                    projectionEntity.Entity.GUID_PARENT = masterEntity.GUID;
                 }
                 else
                 {
-                    masterEntity.CHILD_COMMODITY_GROUP.Remove(projectionEntity);
+                    masterEntity.DetailEntities.Remove(projectionEntity);
                     MessageBoxService.ShowMessage(CommonResources.CommodityGroup_CannotAddChild);
                     return false;
                 }
@@ -258,7 +257,7 @@ namespace BluePrints.ViewModels
             if (masterGrid != null)
             {
                 var editingCOMMODITY_GROUP = (COMMODITY_GROUP_DIRECTProjection) e.Row;
-                if (editingCOMMODITY_GROUP.COMMODITY_GROUP.GUID_COMMODITYCODE == null)
+                if (editingCOMMODITY_GROUP.Entity.GUID_COMMODITYCODE == null)
                 {
                     e.IsValid = false;
                     e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
@@ -275,8 +274,8 @@ namespace BluePrints.ViewModels
             if (e.Column.FieldName == "COMMODITY_GROUP.GUID_COMMODITYCODE")
             {
                 var editingCOMMODITY_GROUP = (COMMODITY_GROUP_DIRECTProjection)e.Row;
-                if (editingCOMMODITY_GROUP.CHILD_COMMODITY_GROUP != null &&
-                    editingCOMMODITY_GROUP.CHILD_COMMODITY_GROUP.Count > 0)
+                if (editingCOMMODITY_GROUP.DetailEntities != null &&
+                    editingCOMMODITY_GROUP.DetailEntities.Count > 0)
                 {
                     e.IsValid = false;
                     e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
@@ -314,18 +313,12 @@ namespace BluePrints.ViewModels
         private void ApplyProjectionPropertiesToEntity(COMMODITY_GROUP_DIRECTProjection projectionEntity,
             COMMODITY_GROUP_DIRECT entity)
         {
-            DataUtils.ShallowCopy(entity, projectionEntity.COMMODITY_GROUP);
+            DataUtils.ShallowCopy(entity, projectionEntity.Entity);
             //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
             if (entity.CREATED.Date.Year == 1)
-                projectionEntity.COMMODITY_GROUP.CREATED = DateTime.Now;
+                projectionEntity.Entity.CREATED = DateTime.Now;
 
-            entity.CREATED = projectionEntity.COMMODITY_GROUP.CREATED;
-        }
-
-        private void OnEntitiesSavedCallBack(Guid primaryKey, COMMODITY_GROUP_DIRECTProjection projectionEntity,
-            COMMODITY_GROUP_DIRECT entity, bool isNewEntity)
-        {
-            projectionEntity.COMMODITY_GROUP.GUID = entity.GUID;
+            entity.CREATED = projectionEntity.Entity.CREATED;
         }
 
         //Remove children before parent deletion
@@ -338,7 +331,7 @@ namespace BluePrints.ViewModels
 
             foreach (var entity in entities)
             {
-                var childrenEntitiesInTotal = entity.CHILD_COMMODITY_GROUP;
+                var childrenEntitiesInTotal = entity.DetailEntities;
                 var childrenEntitiesNotInDeletionCollection =
                     new List<COMMODITY_GROUP_DIRECTProjection>();
                 foreach (var childrenEntityInTotal in childrenEntitiesInTotal)
@@ -346,10 +339,10 @@ namespace BluePrints.ViewModels
                         childrenEntitiesNotInDeletionCollection.Add(childrenEntityInTotal);
 
                 COMMODITY_GROUP_DIRECTProjection parentEntity = null;
-                if (entity.COMMODITY_GROUP.GUID_PARENT != Guid.Empty)
+                if (entity.Entity.GUID_PARENT != Guid.Empty)
                 {
                     parentEntity =
-                        MainViewModel.Entities.FirstOrDefault(x => x.GUID == entity.COMMODITY_GROUP.GUID_PARENT);
+                        MainViewModel.Entities.FirstOrDefault(x => x.GUID == entity.Entity.GUID_PARENT);
                     if (parentEntity != null)
                         if (!entities.Any(x => x.GUID == parentEntity.GUID))
                             parentEntitiesNotInList.Add(parentEntity);
@@ -413,17 +406,17 @@ namespace BluePrints.ViewModels
                 {
                     displayEntities = new ObservableCollection<COMMODITY_GROUP_DIRECTProjection>();
                     var parentCOMMODITY_GROUP_DIRECTS =
-                        MainViewModel.Entities.Where(x => x.COMMODITY_GROUP.GUID_PARENT == null).AsEnumerable();
+                        MainViewModel.Entities.Where(x => x.Entity.GUID_PARENT == null).AsEnumerable();
                     var allChildCOMMODITY_GROUP_DIRECTS =
-                        MainViewModel.Entities.Where(x => x.COMMODITY_GROUP.GUID_PARENT != null).AsEnumerable();
+                        MainViewModel.Entities.Where(x => x.Entity.GUID_PARENT != null).AsEnumerable();
                     foreach (
                         var parentCOMMODITY_GROUP_DIRECT in parentCOMMODITY_GROUP_DIRECTS)
                     {
                         var parentCOMMODITY_GROUP_DIRECTPOCO =
                             ViewModelSource.Create(() => new COMMODITY_GROUP_DIRECTProjection());
                         parentCOMMODITY_GROUP_DIRECTPOCO.GUID = parentCOMMODITY_GROUP_DIRECT.GUID;
-                        DataUtils.ShallowCopy(parentCOMMODITY_GROUP_DIRECTPOCO.COMMODITY_GROUP,
-                            parentCOMMODITY_GROUP_DIRECT.COMMODITY_GROUP);
+                        DataUtils.ShallowCopy(parentCOMMODITY_GROUP_DIRECTPOCO.Entity,
+                            parentCOMMODITY_GROUP_DIRECT.Entity);
                         displayEntities.Add(parentCOMMODITY_GROUP_DIRECTPOCO);
                     }
 
@@ -432,7 +425,7 @@ namespace BluePrints.ViewModels
                     {
                         var childCOMMODITY_GROUP_DIRECTS =
                             allChildCOMMODITY_GROUP_DIRECTS.Where(
-                                y => y.COMMODITY_GROUP.GUID_PARENT == displayEntity.GUID);
+                                y => y.Entity.GUID_PARENT == displayEntity.GUID);
                         foreach (
                             var childCOMMODITY_GROUP_DIRECT in childCOMMODITY_GROUP_DIRECTS
                         )
@@ -440,9 +433,9 @@ namespace BluePrints.ViewModels
                             var childCOMMODITY_GROUP_DIRECTPOCO =
                                 ViewModelSource.Create(() => new COMMODITY_GROUP_DIRECTProjection());
                             childCOMMODITY_GROUP_DIRECTPOCO.GUID = childCOMMODITY_GROUP_DIRECT.GUID;
-                            DataUtils.ShallowCopy(childCOMMODITY_GROUP_DIRECTPOCO.COMMODITY_GROUP,
-                                childCOMMODITY_GROUP_DIRECT.COMMODITY_GROUP);
-                            displayEntity.CHILD_COMMODITY_GROUP.Add(childCOMMODITY_GROUP_DIRECTPOCO);
+                            DataUtils.ShallowCopy(childCOMMODITY_GROUP_DIRECTPOCO.Entity,
+                                childCOMMODITY_GROUP_DIRECT.Entity);
+                            displayEntity.DetailEntities.Add(childCOMMODITY_GROUP_DIRECTPOCO);
                         }
                     }
 
@@ -554,14 +547,14 @@ namespace BluePrints.ViewModels
 
             var activeCOMMODITY_GROUP_DIRECT = (COMMODITY_GROUP_DIRECTProjection) e.Row;
             if (e.Column.FieldName ==
-                BindableBase.GetPropertyName(() => new COMMODITY_GROUP_DIRECTProjection().COMMODITY_GROUP) + "." +
+                BindableBase.GetPropertyName(() => new COMMODITY_GROUP_DIRECTProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new COMMODITY_GROUP_DIRECT().GUID_COMMODITYCODE))
             {
                 var chosenCOMMODITY_CODE =
                     COMMODITY_CODECollection.FirstOrDefault(entity => entity.GUID == (Guid) e.Value);
                 if (chosenCOMMODITY_CODE != null)
                 {
-                    activeCOMMODITY_GROUP_DIRECT.COMMODITY_GROUP.GUID_DISCIPLINE = chosenCOMMODITY_CODE.GUID_DISCIPLINE;
+                    activeCOMMODITY_GROUP_DIRECT.Entity.GUID_DISCIPLINE = chosenCOMMODITY_CODE.GUID_DISCIPLINE;
                     this.RaisePropertyChanged(x => x.DisplayEntities);
                 }
             }
@@ -581,18 +574,18 @@ namespace BluePrints.ViewModels
 
                 var targetCOMMODITY_GROUP = e.TargetRow as COMMODITY_GROUP_DIRECTProjection;
                 var newCOMMODITY_GROUP_DIRECT = new COMMODITY_GROUP_DIRECTProjection();
-                newCOMMODITY_GROUP_DIRECT.COMMODITY_GROUP.DESCRIPTION = CommonResources.CommodityCodeGroup_New;
+                newCOMMODITY_GROUP_DIRECT.Entity.DESCRIPTION = CommonResources.CommodityCodeGroup_New;
 
                 if (targetCOMMODITY_GROUP != null)
                 {
-                    if (targetCOMMODITY_GROUP.COMMODITY_GROUP.GUID_COMMODITYCODE != null)
+                    if (targetCOMMODITY_GROUP.Entity.GUID_COMMODITYCODE != null)
                     {
                         MessageBoxService.ShowMessage(CommonResources.CommodityGroup_CannotAssignCommodity);
                         continue;
                     }
 
-                    newCOMMODITY_GROUP_DIRECT.COMMODITY_GROUP.GUID_PARENT = targetCOMMODITY_GROUP.GUID;
-                    newCOMMODITY_GROUP_DIRECT.COMMODITY_GROUP.GUID_COMMODITYCODE = droppedCOMMODITY_CODE.GUID;
+                    newCOMMODITY_GROUP_DIRECT.Entity.GUID_PARENT = targetCOMMODITY_GROUP.GUID;
+                    newCOMMODITY_GROUP_DIRECT.Entity.GUID_COMMODITYCODE = droppedCOMMODITY_CODE.GUID;
 
                     var errorMessage = string.Empty;
                     if (MainViewModel.IsValidEntity(newCOMMODITY_GROUP_DIRECT, ref errorMessage))

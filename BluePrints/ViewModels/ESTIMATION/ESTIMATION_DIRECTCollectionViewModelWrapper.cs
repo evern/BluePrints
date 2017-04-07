@@ -24,8 +24,7 @@ namespace BluePrints.ViewModels
     public class ESTIMATION_DIRECTCollectionViewModelWrapper :
         CollectionViewModelsWrapper
         <ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork>>,
-        ISupportCustomDocumentTypeNameAndParameter
+            CollectionViewModel<ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
         /// <summary>
         /// Creates a new instance of ESTIMATION_DIRECT_ITEMSViewModelWrapper as a POCO view model.
@@ -136,7 +135,7 @@ namespace BluePrints.ViewModels
 
         #endregion
 
-        #region ISupportCustomDocumentTypeNameAndParameter
+        #region ISupportCustomDocumentTypeAndParameter
 
         public bool CanEdit()
         {
@@ -156,29 +155,10 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentManagerService.ShowExistingEntityDocument<ESTIMATION_DIRECT_ITEM, Guid>(this, DisplaySelectedEntity.GUID,
-                string.Empty);
-        }
+            CustomDocumentInfo customDocumentInfo = new CustomDocumentInfo(new OptionalEntitiesParameter<Data.PROJECT, ESTIMATION_DIRECT>(null,
+                DisplaySelectedEntity), "ESTIMATION_DIRECT_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] ESTIMATION_DIRECT");
 
-        public string GetCustomDocumentTypeName()
-        {
-            return "ESTIMATION_DIRECT_ITEMCollectionView";
-        }
-
-        public object GetCustomDocumentParameter()
-        {
-            return new OptionalEntitiesParameter<Data.PROJECT, ESTIMATION_DIRECT>(null,
-                DisplaySelectedEntity);
-        }
-
-        public string GetCustomDocumentTitle()
-        {
-            return "[" + loadPROJECT.NUMBER + "] ESTIMATION_DIRECT";
-        }
-
-        public bool IsCustomModeEnabled()
-        {
-            return true;
+            DocumentManagerService.ShowExistingEntityDocument(customDocumentInfo, this);
         }
 
         #endregion

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BluePrints.Common.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,7 +28,14 @@ namespace BluePrints.Common.Projections
         public override string ToString()
         {
             if (entity != null)
-                return entity.GetType().GetProperty("GUID").GetValue(entity).ToString();
+            {
+                IHaveGUID entityWithGuid = entity as IHaveGUID;
+                if (entityWithGuid != null)
+                    return entityWithGuid.GUID.ToString();
+                else
+                    return string.Empty;
+            }
+
             else
                 return string.Empty;
         }
@@ -59,15 +67,22 @@ namespace BluePrints.Common.Projections
         public override string ToString()
         {
             if (entity != null)
-                if (entity.GetType().GetProperty("GUID") != null)
-                    return entity.GetType().GetProperty("GUID").GetValue(entity).ToString();
+            {
+                IHaveGUID entityWithGuid = entity as IHaveGUID;
+
+                if (entityWithGuid != null)
+                    return entityWithGuid.GUID.ToString();
                 else
                     return string.Empty;
+            }
             else if (secondEntity != null)
-                if (secondEntity.GetType().GetProperty("GUID") != null)
-                    return secondEntity.GetType().GetProperty("GUID").GetValue(entity).ToString();
+            {
+                IHaveGUID entityWithGuid = secondEntity as IHaveGUID;
+                if (entityWithGuid != null)
+                    return entityWithGuid.GUID.ToString();
                 else
                     return string.Empty;
+            }
             else
                 return string.Empty;
         }

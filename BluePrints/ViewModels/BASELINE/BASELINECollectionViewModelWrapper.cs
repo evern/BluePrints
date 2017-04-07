@@ -23,8 +23,7 @@ namespace BluePrints.ViewModels
     public class BASELINECollectionViewModelWrapper :
         CollectionViewModelsWrapper
         <BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>>,
-        ISupportCustomDocumentTypeNameAndParameter
+            CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
         /// <summary>
         /// Creates a new instance of BASELINECollectionViewModelWrapper as a POCO view model.
@@ -71,9 +70,6 @@ namespace BluePrints.ViewModels
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJWBS, P6PROJECTProjectionFunc);
-            //loaderCollection.AddEntitiesLoader<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>(2, bluePrintsUnitOfWorkFactory, x => x.WORKPACK_ASSIGNMENTS, WORKPACK_ASSIGNMENTProjectionFunc, typeof(BluePrints.Data.PROJECT));
-            //loaderCollection.AddEntitiesLoader<TASKRSRC, TASKRSRC, Guid, IBluePrintsEntitiesUnitOfWork>(3, bluePrintsUnitOfWorkFactory, x => x.WORKPACK_ASSIGNMENTS, TASKRSRCProjectionFunc, typeof(BluePrints.P6Data.PROJECT));
-            //loaderCollection.AddEntitiesLoader<TASK, TASK, Guid, IBluePrintsEntitiesUnitOfWork>(4, bluePrintsUnitOfWorkFactory, x => x.WORKPACK_ASSIGNMENTS, TASKProjectionFunc, typeof(BluePrints.P6Data.PROJECT));
             InvokeEntitiesLoaderDescriptionLoading();
         }
         
@@ -143,7 +139,7 @@ namespace BluePrints.ViewModels
 
         #endregion
 
-        #region ISupportCustomDocumentTypeNameAndParameter
+        #region ISupportCustomDocumentTypeAndParameter
 
         public bool CanEdit()
         {
@@ -163,10 +159,14 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentManagerService.ShowExistingEntityDocument<BASELINE_ITEM, Guid>(this, DisplaySelectedEntity.GUID, string.Empty);
-        }
+            CustomDocumentInfo customDocumentInfo = new CustomDocumentInfo(
+                new OptionalEntitiesParameter<Data.PROJECT, BASELINE>(null,
+                    DisplaySelectedEntity), 
+                    "BASELINE_ITEMCollectionView", 
+                    "[" + loadPROJECT.NUMBER + "] BASELINE");
 
-        private BaselineMappingSelectionType mappingSelectionType = new BaselineMappingSelectionType();
+            DocumentManagerService.ShowExistingEntityDocument(customDocumentInfo, this);
+        }
 
         public bool CanP6BASELINE_ASSIGN()
         {
@@ -176,9 +176,12 @@ namespace BluePrints.ViewModels
 
         public void P6BASELINE_ASSIGN()
         {
-            mappingSelectionType = BaselineMappingSelectionType.Original;
-            Edit();
-            mappingSelectionType = BaselineMappingSelectionType.None;
+            CustomDocumentInfo customDocumentInfo = new CustomDocumentInfo(
+                new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original }, 
+                "WORKPACKSchedulingViewHost", 
+                DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping");
+
+            DocumentManagerService.ShowExistingEntityDocument(customDocumentInfo, this);
         }
 
         public bool CanP6MODBASELINE_ASSIGN()
@@ -189,45 +192,13 @@ namespace BluePrints.ViewModels
 
         public void P6MODBASELINE_ASSIGN()
         {
-            mappingSelectionType = BaselineMappingSelectionType.Modified;
-            Edit();
-            mappingSelectionType = BaselineMappingSelectionType.None;
+            CustomDocumentInfo customDocumentInfo = new CustomDocumentInfo(
+                new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Modified },
+                "WORKPACKSchedulingViewHost",
+                DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6MODBASELINE_NAME + " Mapping");
+
+            DocumentManagerService.ShowExistingEntityDocument(customDocumentInfo, this);
         }
-
-        public string GetCustomDocumentTypeName()
-        {
-            if (mappingSelectionType == BaselineMappingSelectionType.None)
-                return "BASELINE_ITEMCollectionView";
-
-            return "WORKPACKSchedulingViewHost";
-        }
-
-        public object GetCustomDocumentParameter()
-        {
-            if (mappingSelectionType == BaselineMappingSelectionType.None)
-                return new OptionalEntitiesParameter<Data.PROJECT, BASELINE>(null,
-                    DisplaySelectedEntity);
-
-            return new object[] { DisplaySelectedEntity, mappingSelectionType};
-        }
-
-        public string GetCustomDocumentTitle()
-        {
-            if (mappingSelectionType == BaselineMappingSelectionType.Original)
-                return DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME +
-                       " Mapping";
-            else if (mappingSelectionType == BaselineMappingSelectionType.Modified)
-                return DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6MODBASELINE_NAME +
-                       " Mapping";
-            else
-                return "[" + loadPROJECT.NUMBER + "] BASELINE";
-        }
-
-        public bool IsCustomModeEnabled()
-        {
-            return true;
-        }
-
         #endregion
     }
 }

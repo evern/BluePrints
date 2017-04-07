@@ -103,29 +103,29 @@
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.Bands>
                                 <dxg:GridControlBand Name="bandGeneral" Header="General">
-                                    <dxg:GridColumn Header="Number" FieldName="PROJECT.NUMBER" VisibleIndex="0" />
-                                    <dxg:GridColumn Header="Name" FieldName="PROJECT.NAME" VisibleIndex="10" />
-                                    <dxg:GridColumn Header="Client" FieldName="PROJECT.CLIENT" VisibleIndex="20" />
-                                    <dxg:GridColumn Header="Status" FieldName="PROJECT.STATUS" VisibleIndex="30">
+                                    <dxg:GridColumn Header="Number" FieldName="Entity.NUMBER" VisibleIndex="0" />
+                                    <dxg:GridColumn Header="Name" FieldName="Entity.NAME" VisibleIndex="10" />
+                                    <dxg:GridColumn Header="Client" FieldName="Entity.CLIENT" VisibleIndex="20" />
+                                    <dxg:GridColumn Header="Status" FieldName="Entity.STATUS" VisibleIndex="30">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
                                                                       ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectStatus}}" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Contract Type" FieldName="PROJECT.CONTRACTTYPE"
+                                    <dxg:GridColumn Header="Contract Type" FieldName="Entity.CONTRACTTYPE"
                                                     VisibleIndex="40">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
                                                                       ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ContractType}}" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Type" FieldName="PROJECT.TYPE" VisibleIndex="50">
+                                    <dxg:GridColumn Header="Type" FieldName="Entity.TYPE" VisibleIndex="50">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
                                                                       ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectType}}" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Design Manager" FieldName="PROJECT.DESIGNMANAGER"
+                                    <dxg:GridColumn Header="Design Manager" FieldName="Entity.DESIGNMANAGER"
                                                     VisibleIndex="60">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
@@ -264,109 +264,6 @@
                                     </dxg:GridColumn>
                                 </dxg:GridControlBand>
                             </dxg:GridControl.Bands>
-                            <dxg:GridControl.GroupSummary>
-                                <dxg:GridSummaryItem x:Name="groupSummaryBudgeted"
-                                                     ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
-                                                     FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum"
-                                                     DisplayFormat="{}{0:n}" />
-                                <!--<dxg:GridSummaryItem x:Name="groupSummaryCumulativeEarnedPercentage"
-                                                     ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
-                                                     FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
-                                                     SummaryType="Custom" DisplayFormat="{}{0:p}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryPeriodEarnedPercentage"
-                                                     ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage"
-                                                     FieldName="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage"
-                                                     SummaryType="Custom" DisplayFormat="{}{0:p}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryGrossProfit"
-                                                     FieldName="GrossProfit" SummaryType="Custom"
-                                                     ShowInColumn="GrossProfit"
-                                                     DisplayFormat="{}{0:p}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryEfficiencyRatio"
-                                                     FieldName="EfficiencyRatio" SummaryType="Custom"
-                                                     DisplayFormat="{}{0:p}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryProgressRatio"
-                                                     FieldName="ProgressRatio" SummaryType="Custom"
-                                                     DisplayFormat="{}{0:p}" />-->
-                                <dxg:GridSummaryItem x:Name="groupSummaryCumulativeEarned"
-                                                     ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
-                                                     FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryCumulativeBurned"
-                                                     ShowInColumn="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
-                                                     FieldName="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryCumulativeActual"
-                                                     ShowInColumn="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
-                                                     FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryPeriodPlanned"
-                                                     ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.Units"
-                                                     FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryPeriodEarned"
-                                                     ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.Units"
-                                                     FieldName="Stats.Earned.CurrentPeriodDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryPeriodBurned"
-                                                     ShowInColumn="Stats.Burned.CurrentPeriodDataPoint.Units"
-                                                     FieldName="Stats.Burned.CurrentPeriodDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryPeriodActual"
-                                                     ShowInColumn="Stats.Actual.CurrentPeriodDataPoint.Units"
-                                                     FieldName="Stats.Actual.CurrentPeriodDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            </dxg:GridControl.GroupSummary>
-                            <dxg:GridControl.TotalSummary>
-                                <dxg:GridSummaryItem x:Name="totalSummaryBudgeted"
-                                                     ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
-                                                     FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum"
-                                                     DisplayFormat="{}{0:n}" />
-                                <!--<dxg:GridSummaryItem x:Name="totalSummaryCumulativeEarnedPercentage"
-                                                     ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
-                                                     FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
-                                                     SummaryType="Custom" DisplayFormat="{}{0:p}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryPeriodEarnedPercentage"
-                                                     ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage"
-                                                     FieldName="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage"
-                                                     SummaryType="Custom" DisplayFormat="{}{0:p}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryGrossProfit"
-                                                     FieldName="GrossProfit" SummaryType="Custom"
-                                                     DisplayFormat="{}{0:p}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryEfficiencyRatio"
-                                                     FieldName="EfficiencyRatio" SummaryType="Custom"
-                                                     DisplayFormat="{}{0:p}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryProgressRatio"
-                                                     FieldName="ProgressRatio" SummaryType="Custom"
-                                                     DisplayFormat="{}{0:p}" />-->
-                                <dxg:GridSummaryItem x:Name="totalSummaryCumulativeEarned"
-                                                     ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
-                                                     FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryCumulativeBurned"
-                                                     ShowInColumn="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
-                                                     FieldName="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryCumulativeActual"
-                                                     ShowInColumn="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
-                                                     FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryPeriodPlanned"
-                                                     ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.Units"
-                                                     FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryPeriodEarned"
-                                                     ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.Units"
-                                                     FieldName="Stats.Earned.CurrentPeriodDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryPeriodBurned"
-                                                     ShowInColumn="Stats.Burned.CurrentPeriodDataPoint.Units"
-                                                     FieldName="Stats.Burned.CurrentPeriodDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryPeriodActual"
-                                                     ShowInColumn="Stats.Actual.CurrentPeriodDataPoint.Units"
-                                                     FieldName="Stats.Actual.CurrentPeriodDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>
                                 <common:TableViewEx x:Name="tableView" AllowEditing="False" UseLightweightTemplates="{x:Null}"
                                                Style="{StaticResource DefaultTableViewTemplate}"
@@ -429,7 +326,7 @@
                             </dxg:GridControl.View>
                         </dxg:GridControl>
                     </dxlc:LayoutGroup>
-                    <dxlc:LayoutGroup Name="LayoutGroupChart" dxlc:LayoutControl.AllowVerticalSizing="True"
+                    <dxlc:LayoutGroup Name="LayoutGroupChart" dxlc:LayoutControl.AllowVerticalSizing="False"
                                       DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
                                       View="Group" Orientation="Vertical">
                         <dxc:ChartControl Name="chartSCurve" Padding="0" Margin="0" dx:DXSerializer.Enabled="False">
@@ -524,8 +421,8 @@
                         </dxc:ChartControl>
                     </dxlc:LayoutGroup>
                     <!-- UI will lag if max height doesn't exists -->
-                    <dxlc:LayoutGroup x:Name="Tabs" dxlc:LayoutControl.AllowVerticalSizing="True" View="Tabs"
-                                      MinHeight="250" MaxHeight="350">
+                    <dxlc:LayoutGroup x:Name="Tabs" dxlc:LayoutControl.AllowVerticalSizing="false" View="Tabs"
+                                      MinHeight="300" MaxHeight="300">
                         <Grid DataContext="{Binding DataContext.BASELINEViewModel, ElementName=userControl}"
                               dxlc:LayoutControl.TabHeader="BASELINES">
                             <Grid.RowDefinitions>
@@ -550,7 +447,7 @@
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
                             <dxg:GridControl Name="gridControlBASELINE" dx:DXSerializer.SerializationID="BASELINEGrid"
-                                             Style="{StaticResource AggregateNestedViewGridTemplate}" Grid.Row="1">
+                                             Style="{StaticResource AggregateNestedViewGridTemplate}" Grid.Row="1" MaxHeight="300">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="NAME" />
                                     <dxg:GridColumn FieldName="REVISION" />
@@ -683,7 +580,7 @@
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
                             <dxg:GridControl Name="gridControlPROGRESS" dx:DXSerializer.SerializationID="PROGRESSGrid"
-                                             Style="{StaticResource AggregateNestedViewGridTemplate}" Grid.Row="1">
+                                             Style="{StaticResource AggregateNestedViewGridTemplate}" Grid.Row="1" MaxHeight="300">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="NAME" />
                                     <dxg:GridColumn FieldName="PROGRESS_START">
@@ -788,7 +685,7 @@
                             </dxb:ToolBarControl>
                             <dxg:GridControl Name="gridControlPHASE" dx:DXSerializer.SerializationID="PHASEGrid"
                                              ColumnsSource="{StaticResource PHASEColumns}"
-                                             Style="{StaticResource AggregateNestedViewGridTemplate}" Grid.Row="1">
+                                             Style="{StaticResource AggregateNestedViewGridTemplate}" Grid.Row="1" MaxHeight="300">
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                                 </dxg:GridControl.TotalSummary>
@@ -847,7 +744,7 @@
                             </dxb:ToolBarControl>
                             <dxg:GridControl Name="gridControlAREA" dx:DXSerializer.SerializationID="AREAGrid"
                                              ColumnsSource="{StaticResource AREAColumns}"
-                                             Style="{StaticResource AggregateNestedViewGridTemplate}" Grid.Row="1">
+                                             Style="{StaticResource AggregateNestedViewGridTemplate}" Grid.Row="1" MaxHeight="300">
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                                 </dxg:GridControl.TotalSummary>
@@ -905,7 +802,7 @@
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
                             <dxg:GridControl Name="gridControlRATE" dx:DXSerializer.SerializationID="RATEGrid"
-                                             Style="{StaticResource AggregateNestedViewGridTemplate}" Grid.Row="1">
+                                             Style="{StaticResource AggregateNestedViewGridTemplate}" Grid.Row="1" MaxHeight="300">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn Header="DEPARTMENT" FieldName="GUID_DEPARTMENT">
                                         <dxg:GridColumn.EditSettings>

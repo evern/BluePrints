@@ -87,7 +87,7 @@
                                      Style="{StaticResource AggregateViewGridTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Name="colWORKPACKInternalName1"
-                                            FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK"
+                                            FieldName="Entity.Entity.GUID_WORKPACK"
                                             Header="WORKPACK 1" Visible="False" VisibleIndex="0">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
@@ -106,7 +106,7 @@
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn Name="colWORKPACKInternalName2"
-                                            FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK"
+                                            FieldName="Entity.Entity.GUID_WORKPACK"
                                             Header="WORKPACK 2" Visible="False" VisibleIndex="1">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
@@ -124,7 +124,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_PHASE" Header="PHASE">
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" Header="PHASE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}"
@@ -141,7 +141,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_AREA" Header="AREA">
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_AREA" Header="AREA">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
@@ -158,7 +158,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_DOCTYPE"
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DOCTYPE"
                                             Header="DOCTYPE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
@@ -176,7 +176,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_DISCIPLINE"
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE"
                                             Header="DISCIPLINE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
@@ -194,7 +194,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_DEPARTMENT"
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DEPARTMENT"
                                             Header="DEPARTMENT">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
@@ -212,7 +212,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM"
+                            <dxg:GridColumn FieldName="Entity.Entity.INTERNAL_NUM"
                                             Header="INTERNAL NUM">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
@@ -221,7 +221,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.CLIENT_NUM"
+                            <dxg:GridColumn FieldName="Entity.Entity.CLIENT_NUM"
                                             Header="CLIENT NUM">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
@@ -229,7 +229,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.REVISION_NUMBER"
+                            <dxg:GridColumn FieldName="Entity.Entity.REVISION_NUMBER"
                                             Header="REVISION NUM">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
@@ -237,7 +237,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.DELIVERABLE_TYPE"
+                            <dxg:GridColumn FieldName="Entity.Entity.DELIVERABLE_TYPE"
                                             Header="TYPE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings Name="PART_Editor"
@@ -253,7 +253,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.PRIMARY_TITLE"
+                            <dxg:GridColumn FieldName="Entity.Entity.PRIMARY_TITLE"
                                             Header="PRIMARY TITLE">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
@@ -261,7 +261,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.SECONDARY_TITLE"
+                            <dxg:GridColumn FieldName="Entity.Entity.SECONDARY_TITLE"
                                             Header="SECONDARY TITLE">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
@@ -269,14 +269,14 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.COMMENTS" Header="COMMENTS">
+                            <dxg:GridColumn FieldName="Entity.Entity.COMMENTS" Header="COMMENTS">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.ISENABLED}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS"
+                            <dxg:GridColumn FieldName="Entity.Entity.TOTAL_HOURS"
                                             Header="TOTAL HOURS" ReadOnly="True" IsEnabled="False">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1"
@@ -350,9 +350,9 @@
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS"
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.TOTAL_HOURS"
                                                  SummaryType="SUM"
-                                                 ShowInColumn="BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS"
+                                                 ShowInColumn="Entity.Entity.TOTAL_HOURS"
                                                  DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="VARIATION_ITEM.VARIATION_UNITS" SummaryType="SUM"
                                                  ShowInColumn="VARIATION_ITEM.VARIATION_UNITS"
@@ -366,9 +366,9 @@
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem FieldName="BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS"
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.TOTAL_HOURS"
                                                  SummaryType="SUM"
-                                                 ShowInColumn="BASELINE_ITEMJoinRATE.BASELINE_ITEM.TOTAL_HOURS"
+                                                 ShowInColumn="Entity.Entity.TOTAL_HOURS"
                                                  DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="VARIATION_ITEM.VARIATION_UNITS" SummaryType="SUM"
                                                  ShowInColumn="VARIATION_ITEM.VARIATION_UNITS"

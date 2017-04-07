@@ -9,20 +9,8 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    public class COMMODITY_CODEMasterDetailProjection : IHaveGUID
+    public class COMMODITY_CODEMasterDetailProjection : ProjectionMasterDetailBase<COMMODITY_CODE, COMMODITY_CODEMasterDetailProjection>
     {
-        public COMMODITY_CODEMasterDetailProjection()
-        {
-            COMMODITY_CODE = new COMMODITY_CODE();
-            CHILD_COMMODITY_CODES = new ObservableCollection<COMMODITY_CODEMasterDetailProjection>();
-        }
-
-        public Guid GUID { get; set; }
-
-        public COMMODITY_CODE COMMODITY_CODE { get; set; }
-
-        public ObservableCollection<COMMODITY_CODEMasterDetailProjection> CHILD_COMMODITY_CODES { get; set; }
-
         public bool ISEXPANDED { get; set; }
 
         public COMMODITY_CODEProjectionType ProjectionType { get; set; }
@@ -31,12 +19,12 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT == null ||
-                    COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID == null)
+                if (Entity.GUID_COMMODITY_GROUP_DIRECT == null ||
+                    Entity.COMMODITY_GROUP_DIRECT_ID == null)
                     return string.Empty;
                 else
-                    return COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT.ToString() +
-                           COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID.ToString();
+                    return Entity.GUID_COMMODITY_GROUP_DIRECT.ToString() +
+                           Entity.COMMODITY_GROUP_DIRECT_ID.ToString();
             }
         }
 
@@ -44,18 +32,18 @@ namespace BluePrints.Common.Projections
 
         public bool HAS_CHILDREN
         {
-            get { return CHILD_COMMODITY_CODES.Count > 0; }
+            get { return DetailEntities.Count > 0; }
         }
 
         public string COMMODITY_GROUP_CODE_SELECTION
         {
             get
             {
-                return COMMODITY_CODE.GUID.ToString() +
-                       (COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT == null
+                return Entity.GUID.ToString() +
+                       (Entity.GUID_COMMODITY_GROUP_DIRECT == null
                            ? Guid.Empty.ToString()
-                           : COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT.ToString()) +
-                       COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID.ToString();
+                           : Entity.GUID_COMMODITY_GROUP_DIRECT.ToString()) +
+                       Entity.COMMODITY_GROUP_DIRECT_ID.ToString();
             }
         }
     }
@@ -67,7 +55,7 @@ namespace BluePrints.Common.Projections
         {
             return
                 COMMODITY_CODES
-                    .Select(x => new COMMODITY_CODEMasterDetailProjection() {GUID = x.GUID, COMMODITY_CODE = x});
+                    .Select(x => new COMMODITY_CODEMasterDetailProjection() {GUID = x.GUID, Entity = x});
         }
     }
 }

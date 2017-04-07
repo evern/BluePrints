@@ -7,23 +7,16 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 
 namespace BluePrints.Common.Projections
 {
-    public class VARIATIONProjection : BindableBase, IHaveGUID
+    public class VARIATIONProjection : ProjectionMasterDetailBase<VARIATION, VARIATION_ITEMProjection>, IHaveGUID
     {
-        public VARIATIONProjection()
+        public override ObservableCollection<VARIATION_ITEMProjection> DetailEntities
         {
-            VARIATION = new VARIATION();
-        }
-
-        [Key]
-        public Guid GUID { get; set; }
-        public VARIATION VARIATION { get; set; }
-        public IEnumerable<VARIATION_ITEMProjection> VARIATION_ITEMS
-        {
-            get { return GetProperty(() => VARIATION_ITEMS); }
-            set { SetProperty(() => VARIATION_ITEMS, value, OnVARIATION_ITEMSChanged); }
+            get { return GetProperty(() => DetailEntities); }
+            set { SetProperty(() => DetailEntities, value, OnVARIATION_ITEMSChanged); }
         }
 
         void OnVARIATION_ITEMSChanged()
@@ -36,10 +29,10 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (VARIATION_ITEMS == null)
+                if (DetailEntities == null)
                     return 0;
 
-                return VARIATION_ITEMS.Sum(x => x.FORECAST_UNITS);
+                return DetailEntities.Sum(x => x.FORECAST_UNITS);
             }
         }
 
@@ -47,10 +40,10 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (VARIATION_ITEMS == null)
+                if (DetailEntities == null)
                     return 0;
 
-                return VARIATION_ITEMS.Sum(x => x.VARIATION_COST);
+                return DetailEntities.Sum(x => x.VARIATION_COST);
             }
         }
     }
@@ -60,7 +53,7 @@ namespace BluePrints.Common.Projections
         public static IQueryable<VARIATIONProjection> JoinVARIATION_ITEMSOnVARIATIONS(
             IQueryable<VARIATION> VARIATIONS)
         {
-            return VARIATIONS.Select(x => new VARIATIONProjection() { GUID = x.GUID, VARIATION = x });
+            return VARIATIONS.Select(x => new VARIATIONProjection() { GUID = x.GUID, Entity = x });
         }
     }
 }

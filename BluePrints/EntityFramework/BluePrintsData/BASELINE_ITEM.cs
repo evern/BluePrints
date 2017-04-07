@@ -1,6 +1,7 @@
 namespace BluePrints.Data
 {
     using Common;
+    using Common.ViewModel;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;

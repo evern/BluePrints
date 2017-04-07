@@ -80,12 +80,12 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == projectDashboard.PROJECT.GUID);
+            return query => query.Where(x => x.GUID_PROJECT == projectDashboard.Entity.GUID);
         }
 
         private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == projectDashboard.PROJECT.GUID);
+            return query => query.Where(x => x.GUID_PROJECT == projectDashboard.Entity.GUID);
         }
 
         protected override Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK_Dashboard>>

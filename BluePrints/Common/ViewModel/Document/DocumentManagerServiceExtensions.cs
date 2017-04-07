@@ -13,16 +13,32 @@ namespace BluePrints.Common.ViewModel
     public static class DocumentManagerServiceExtensions
     {
         /// <summary>
+        /// Creates and shows a document based upon custom parameter selection from CollectionViewModelWrapper
+        /// </summary>
+        /// <param name="documentManagerService">An instance of the IDocumentManager interface used to create and show the document.</param>
+        /// <param name="customDocumentInfo">A custom document info to search and show document</param>
+        /// <param name="parentViewModel">An object that is passed to the view model of the created view.</param>
+        public static IDocument ShowExistingEntityDocument(
+            this IDocumentManagerService documentManagerService, CustomDocumentInfo customDocumentInfo, object parentViewModel)
+        {
+            var document = FindCustomDocument(documentManagerService, customDocumentInfo.Title) ??
+                                 CreateCustomDocument(documentManagerService, customDocumentInfo, parentViewModel);
+            if (document != null)
+                document.Show();
+
+            return document;
+        }
+
+        /// <summary>
         /// Creates and shows a document containing a single object view model for the existing entity.
         /// </summary>
         /// <param name="documentManagerService">An instance of the IDocumentManager interface used to create and show the document.</param>
         /// <param name="parentViewModel">An object that is passed to the view model of the created view.</param>
         /// <param name="primaryKey">An entity primary key.</param>
         public static IDocument ShowExistingEntityDocument<TEntity, TPrimaryKey>(
-            this IDocumentManagerService documentManagerService, object parentViewModel, TPrimaryKey primaryKey,
-            string title = "")
+            this IDocumentManagerService documentManagerService, object parentViewModel, TPrimaryKey primaryKey)
         {
-            var document = FindEntityDocument<TEntity, TPrimaryKey>(documentManagerService, primaryKey, title) ??
+            var document = FindEntityDocument<TEntity, TPrimaryKey>(documentManagerService, primaryKey) ??
                                  CreateDocument<TEntity>(documentManagerService, primaryKey, parentViewModel);
             if (document != null)
                 document.Show();
@@ -45,32 +61,45 @@ namespace BluePrints.Common.ViewModel
         }
 
         /// <summary>
-        /// Searches for a document that contains a single object view model editing entity with a specified primary key.
+        /// Searches for a custom document that contains the title.
         /// </summary>
         /// <param name="documentManagerService">An instance of the IDocumentManager interface used to find a document.</param>
-        /// <param name="primaryKey">An entity primary key.</param>
-        public static IDocument FindEntityDocument<TEntity, TPrimaryKey>(
-            this IDocumentManagerService documentManagerService, TPrimaryKey primaryKey, string title = "")
+        /// <param name="title">A document title.</param>
+        public static IDocument FindCustomDocument(
+            this IDocumentManagerService documentManagerService, string title = "")
         {
             if (documentManagerService == null)
                 return null;
             foreach (var document in documentManagerService.Documents)
                 if (title != string.Empty)
                 {
-                    if (document.Title == null)
-                        return null;
                     //BluePrints Customization Start
-                    if (document.Title.ToString() == title)
+                    if (document.Title != null && document.Title.ToString() == title)
                         return document;
                     //BluePrints Customization End
                 }
-                else
-                {
-                    var entityViewModel =
-                        document.Content as ISingleObjectViewModel<TEntity, TPrimaryKey>;
-                    if (entityViewModel != null && Equals(entityViewModel.PrimaryKey, primaryKey))
-                        return document;
-                }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Searches for a document that contains a single object view model editing entity with a specified primary key.
+        /// </summary>
+        /// <param name="documentManagerService">An instance of the IDocumentManager interface used to find a document.</param>
+        /// <param name="primaryKey">An entity primary key.</param>
+        public static IDocument FindEntityDocument<TEntity, TPrimaryKey>(
+            this IDocumentManagerService documentManagerService, TPrimaryKey primaryKey)
+        {
+            if (documentManagerService == null)
+                return null;
+            foreach (var document in documentManagerService.Documents)
+            {
+                var entityViewModel =
+                    document.Content as ISingleObjectViewModel<TEntity, TPrimaryKey>;
+                if (entityViewModel != null && Equals(entityViewModel.PrimaryKey, primaryKey))
+                    return document;
+            }
+
             return null;
         }
 
@@ -78,35 +107,28 @@ namespace BluePrints.Common.ViewModel
         {
         }
 
-        private static IDocument CreateDocument<TEntity>(IDocumentManagerService documentManagerService, object parameter,
-            object parentViewModel)
+        private static IDocument CreateCustomDocument(IDocumentManagerService documentManagerService, CustomDocumentInfo customDocumentInfo, object parentViewModel)
         {
             if (documentManagerService == null)
                 return null;
 
-            //BluePrints Customization Start
-            //var document = documentManagerService.CreateDocument(GetDocumentTypeName<TEntity>(), parameter, parentViewModel);
             IDocument document;
-            var CustomDocumentTypeViewModel = parentViewModel as ISupportCustomDocumentTypeNameAndParameter;
-            if (CustomDocumentTypeViewModel != null && CustomDocumentTypeViewModel.IsCustomModeEnabled())
-            {
-                document = documentManagerService.CreateDocument(
-                    CustomDocumentTypeViewModel.GetCustomDocumentTypeName(),
-                    CustomDocumentTypeViewModel.GetCustomDocumentParameter(), parentViewModel);
-                document.Title = CustomDocumentTypeViewModel.GetCustomDocumentTitle();
-            }
-            else
-            {
-                document = documentManagerService.CreateDocument(GetDocumentTypeName<TEntity>(), parameter,
-                    parentViewModel);
-            }
-            //BluePrints Customization End
-
-            document.Id = "_" + Guid.NewGuid().ToString().Replace('-', '_');
-
-            //BluePrints Customization Start
+            document = documentManagerService.CreateDocument(customDocumentInfo.DocumentType, customDocumentInfo.Parameter, parentViewModel);
+            document.Title = customDocumentInfo.Title;
             document.DestroyOnClose = true;
-            //BluePrints Customization End
+
+            return document;
+        }
+
+        private static IDocument CreateDocument<TEntity>(IDocumentManagerService documentManagerService, object parameter,
+            object parentViewModel, string customDocumentName = "", string uniqueIdentifier = "")
+        {
+            if (documentManagerService == null)
+                return null;
+
+            var document = documentManagerService.CreateDocument(GetDocumentTypeName<TEntity>(), parameter, parentViewModel);
+            document.DestroyOnClose = true;
+
             return document;
         }
 

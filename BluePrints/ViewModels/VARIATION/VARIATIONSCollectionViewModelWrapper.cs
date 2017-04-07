@@ -24,8 +24,7 @@ namespace BluePrints.ViewModels
     public class VARIATIONSCollectionViewModelWrapper :
         CollectionViewModelsWrapper
         <VARIATION, VARIATIONProjection, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<VARIATION, VARIATIONProjection, Guid, IBluePrintsEntitiesUnitOfWork>>,
-        ISupportCustomDocumentTypeNameAndParameter
+            CollectionViewModel<VARIATION, VARIATIONProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
         /// <summary>
         /// Creates a new instance of VARIATION_ITEMSViewModelWrapper as a POCO view model.
@@ -121,7 +120,6 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntity;
             MainViewModel.IsContinueSaveCallBack = BeforeSaveValidation;
-            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
 
             variationSummaryBackgroundWorker.RunWorkerAsync(entities);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -138,7 +136,7 @@ namespace BluePrints.ViewModels
 
             foreach (var entity in entities)
             {
-                VARIATION_ITEMSCollectionViewModelWrapper variationitemsCollectionViewModelWrapper = CreateVARIATION_ITEMSViewModelWrapper(entity.VARIATION, entity.GUID, OnVARIATION_ITEMSLoadedAssign);
+                VARIATION_ITEMSCollectionViewModelWrapper variationitemsCollectionViewModelWrapper = CreateVARIATION_ITEMSViewModelWrapper(entity.Entity, entity.GUID, OnVARIATION_ITEMSLoadedAssign);
             }
         }
 
@@ -155,8 +153,7 @@ namespace BluePrints.ViewModels
                 return;
 
             VARIATIONProjection projection = MainViewModel.Entities.First(x => x.GUID == variationProjectionGuid);
-            
-            projection.VARIATION_ITEMS = projections;
+            projection.DetailEntities = new ObservableCollection<VARIATION_ITEMProjection>(projections);
             RefreshView(true);
         }
 
@@ -171,33 +168,26 @@ namespace BluePrints.ViewModels
 
         public void ApplyProjectionPropertiesToEntity(VARIATIONProjection projectionEntity, VARIATION entity)
         {
-            DataUtils.ShallowCopy(entity, projectionEntity.VARIATION);
+            DataUtils.ShallowCopy(entity, projectionEntity.Entity);
             //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
             if (entity.CREATED.Date.Year == 1)
             {
-                projectionEntity.VARIATION.CREATED = DateTime.Now;
+                projectionEntity.Entity.CREATED = DateTime.Now;
                 //Although EF convention will generate this but we require it immediately in the view
-                projectionEntity.VARIATION.CREATEDBY = LoginCredentials.CurrentUserGuid();
+                projectionEntity.Entity.CREATEDBY = LoginCredentials.CurrentUserGuid();
             }
 
-            entity.CREATED = projectionEntity.VARIATION.CREATED;
+            entity.CREATED = projectionEntity.Entity.CREATED;
         }
 
         public void OnBeforeEntitySaved(VARIATIONProjection entity)
         {
-            entity.VARIATION.GUID_PROJECT = loadPROJECT.GUID;
+            entity.Entity.GUID_PROJECT = loadPROJECT.GUID;
 
-            if (entity.VARIATION.APPROVED != null)
-                entity.VARIATION.GUID_ORIBASELINE = entity.VARIATION.GUID_ORIBASELINE ?? LiveBASELINE.GUID;
+            if (entity.Entity.APPROVED != null)
+                entity.Entity.GUID_ORIBASELINE = entity.Entity.GUID_ORIBASELINE ?? LiveBASELINE.GUID;
             else
-                entity.VARIATION.GUID_ORIBASELINE = null;
-        }
-
-        public void OnEntitiesSavedCallBack(Guid primaryKey, VARIATIONProjection projectionEntity,
-            VARIATION entity, bool isNewEntity)
-        {
-            projectionEntity.GUID = entity.GUID;
-            projectionEntity.VARIATION.GUID = entity.GUID;
+                entity.Entity.GUID_ORIBASELINE = null;
         }
         #endregion
 
@@ -357,7 +347,12 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentManagerService.ShowExistingEntityDocument<VARIATION_ITEM, Guid>(this, DisplaySelectedEntity.GUID, GetCustomDocumentTitle());
+            CustomDocumentInfo customDocumentInfo = new CustomDocumentInfo(
+                new OptionalEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, DisplaySelectedEntity.Entity),
+                "VARIATION_ITEMCollectionView",
+                "[" + loadPROJECT.NUMBER + "] VARIATION");
+
+            DocumentManagerService.ShowExistingEntityDocument(customDocumentInfo, this);
         }
 
         /// <summary>
@@ -373,13 +368,13 @@ namespace BluePrints.ViewModels
             if (LiveBASELINE == null)
                 return false;
 
-            if (DisplaySelectedEntity.VARIATION == null)
+            if (DisplaySelectedEntity.Entity == null)
                 return false;
 
-            if (DisplaySelectedEntity.VARIATION.SUBMITTED != null)
+            if (DisplaySelectedEntity.Entity.SUBMITTED != null)
                 return false;
 
-            if (DisplaySelectedEntity != null && DisplaySelectedEntity.VARIATION.APPROVED != null)
+            if (DisplaySelectedEntity != null && DisplaySelectedEntity.Entity.APPROVED != null)
                 return false;
 
             return true;
@@ -392,8 +387,8 @@ namespace BluePrints.ViewModels
         /// <param name="projectionEntity">An entity to Submit.</param>
         public void Submit()
         {
-            DisplaySelectedEntity.VARIATION.SUBMITTED = DateTime.Now;
-            DisplaySelectedEntity.VARIATION.SUBMITTEDBY = LoginCredentials.CurrentUserGuid();
+            DisplaySelectedEntity.Entity.SUBMITTED = DateTime.Now;
+            DisplaySelectedEntity.Entity.SUBMITTEDBY = LoginCredentials.CurrentUserGuid();
             MainViewModel.Save(DisplaySelectedEntity);
 
             //Full refresh is required to pick up summary
@@ -410,13 +405,13 @@ namespace BluePrints.ViewModels
             if (MainViewModel == null || DisplaySelectedEntity == null)
                 return false;
 
-            if (DisplaySelectedEntity.VARIATION == null)
+            if (DisplaySelectedEntity.Entity == null)
                 return false;
 
-            if (DisplaySelectedEntity.VARIATION.SUBMITTED == null)
+            if (DisplaySelectedEntity.Entity.SUBMITTED == null)
                 return false;
 
-            if (DisplaySelectedEntity != null && DisplaySelectedEntity.VARIATION.APPROVED != null)
+            if (DisplaySelectedEntity != null && DisplaySelectedEntity.Entity.APPROVED != null)
                 return false;
 
             return true;
@@ -447,7 +442,7 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            variation_itemsViewModelWrapperForApproval = CreateVARIATION_ITEMSViewModelWrapper(DisplaySelectedEntity.VARIATION, null, OnVARIATION_ITEMSLoaded);
+            variation_itemsViewModelWrapperForApproval = CreateVARIATION_ITEMSViewModelWrapper(DisplaySelectedEntity.Entity, null, OnVARIATION_ITEMSLoaded);
         }
 
         private void OnVARIATION_ITEMSLoaded(IEnumerable<VARIATION_ITEMProjection> projections, object parameter)
@@ -471,9 +466,9 @@ namespace BluePrints.ViewModels
             newBASELINE.STATUS = BaselineStatus.Live;
             BASELINEViewModel.Save(newBASELINE);
 
-            DisplaySelectedEntity.VARIATION.APPROVED = DateTime.Now;
-            DisplaySelectedEntity.VARIATION.GUID_ORIBASELINE = liveBASELINE.GUID;
-            DisplaySelectedEntity.VARIATION.GUID_BASELINE = newBASELINE.GUID;
+            DisplaySelectedEntity.Entity.APPROVED = DateTime.Now;
+            DisplaySelectedEntity.Entity.GUID_ORIBASELINE = liveBASELINE.GUID;
+            DisplaySelectedEntity.Entity.GUID_BASELINE = newBASELINE.GUID;
             MainViewModel.Save(DisplaySelectedEntity);
 
             //var newBASELINE_ITEMS = new ObservableCollection<BASELINE_ITEM>();
@@ -483,7 +478,7 @@ namespace BluePrints.ViewModels
             foreach (var currentVARIATION_ITEM in variation_item)
             {
                 var newBASELINE_ITEM = new BASELINE_ITEM();
-                DataUtils.ShallowCopy(newBASELINE_ITEM, currentVARIATION_ITEM.BASELINE_ITEMJoinRATE.BASELINE_ITEM);
+                DataUtils.ShallowCopy(newBASELINE_ITEM, currentVARIATION_ITEM.Entity.Entity);
 
                 if (currentVARIATION_ITEM.VARIATION_ITEM.ACTION == VariationAction.Cancel)
                 {
@@ -517,7 +512,7 @@ namespace BluePrints.ViewModels
                         loadPROJECT, baseline_itemForInternalNumberGeneration, newBASELINE_ITEM.AREA, newBASELINE_ITEM.DISCIPLINE,
                         newBASELINE_ITEM.DOCTYPE);
 
-                    if (DisplaySelectedEntity.VARIATION.TYPE == VariationType.Internal)
+                    if (DisplaySelectedEntity.Entity.TYPE == VariationType.Internal)
                         newBASELINE_ITEM.ESTIMATED_HOURS += currentVARIATION_ITEM.VARIATION_ITEM.VARIATION_UNITS;
                     else
                         newBASELINE_ITEM.DC_HOURS += currentVARIATION_ITEM.VARIATION_ITEM.VARIATION_UNITS;
@@ -536,29 +531,6 @@ namespace BluePrints.ViewModels
 
             //Full refresh is required to pick up summary
             FullRefresh();
-        }
-        #endregion
-
-        #region ISupportCustomDocumentTypeNameAndParameter
-
-        public string GetCustomDocumentTypeName()
-        {
-            return "VARIATION_ITEMCollectionView";
-        }
-
-        public object GetCustomDocumentParameter()
-        {
-            return new OptionalEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, DisplaySelectedEntity.VARIATION);
-        }
-
-        public string GetCustomDocumentTitle()
-        {
-            return "[" + loadPROJECT.NUMBER + "] VARIATION";
-        }
-
-        public bool IsCustomModeEnabled()
-        {
-            return true;
         }
         #endregion
     }

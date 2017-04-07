@@ -167,7 +167,7 @@ namespace BluePrints.ViewModels
 
             return
                 query =>
-                    BASELINE_ITEMProjectionQueries.JoinRATESOnBASELINE_ITEMS(query, getBASELINEFunc, getRATESFunc,
+                    BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(query, getBASELINEFunc, getRATESFunc,
                         getDELIVERABLES_STATUSESFunc);
         }
 
@@ -194,21 +194,19 @@ namespace BluePrints.ViewModels
 
         public void ApplyProjectionPropertiesToEntity(BASELINE_ITEMProjection projectionEntity, BASELINE_ITEM entity)
         {
-            projectionEntity.BASELINE_ITEM.GUID_BASELINE = _LoadBaseline.GUID;
-            DataUtils.ShallowCopy(entity, projectionEntity.BASELINE_ITEM);
+            projectionEntity.Entity.GUID_BASELINE = _LoadBaseline.GUID;
+            DataUtils.ShallowCopy(entity, projectionEntity.Entity);
             //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
             if (entity.CREATED.Date.Year == 1)
-                projectionEntity.BASELINE_ITEM.CREATED = DateTime.Now;
+                projectionEntity.Entity.CREATED = DateTime.Now;
 
-            entity.CREATED = projectionEntity.BASELINE_ITEM.CREATED;
+            entity.CREATED = projectionEntity.Entity.CREATED;
         }
 
         public void OnEntitiesSavedCallBack(Guid primaryKey, BASELINE_ITEMProjection projectionEntity,
             BASELINE_ITEM entity, bool isNewEntity)
         {
-            projectionEntity.GUID = entity.GUID;
-            projectionEntity.BASELINE_ITEM.GUID = entity.GUID;
-            projectionEntity.BASELINE_ITEM.GUID_ORIGINAL = entity.GUID_ORIGINAL;
+            projectionEntity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
         }
 
         #endregion
@@ -232,17 +230,17 @@ namespace BluePrints.ViewModels
 
             var activeBASELINE_ITEM = (BASELINE_ITEMProjection) e.Row;
             if (e.Column.FieldName ==
-                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().BASELINE_ITEM) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_WORKPACK))
             {
                 var chosenWORKPACK = WORKPACKCollection.FirstOrDefault(entity => entity.GUID == (Guid) e.Value);
                 if (chosenWORKPACK != null)
                 {
-                    activeBASELINE_ITEM.BASELINE_ITEM.GUID_AREA = chosenWORKPACK.GUID_DAREA;
-                    activeBASELINE_ITEM.BASELINE_ITEM.GUID_DOCTYPE = chosenWORKPACK.GUID_DDOCTYPE;
-                    activeBASELINE_ITEM.BASELINE_ITEM.GUID_DEPARTMENT = chosenWORKPACK.GUID_DDEPARTMENT;
-                    activeBASELINE_ITEM.BASELINE_ITEM.GUID_DISCIPLINE = chosenWORKPACK.GUID_DDISCIPLINE;
-                    activeBASELINE_ITEM.BASELINE_ITEM.GUID_PHASE = chosenWORKPACK.PHASE != null
+                    activeBASELINE_ITEM.Entity.GUID_AREA = chosenWORKPACK.GUID_DAREA;
+                    activeBASELINE_ITEM.Entity.GUID_DOCTYPE = chosenWORKPACK.GUID_DDOCTYPE;
+                    activeBASELINE_ITEM.Entity.GUID_DEPARTMENT = chosenWORKPACK.GUID_DDEPARTMENT;
+                    activeBASELINE_ITEM.Entity.GUID_DISCIPLINE = chosenWORKPACK.GUID_DDISCIPLINE;
+                    activeBASELINE_ITEM.Entity.GUID_PHASE = chosenWORKPACK.PHASE != null
                         ? chosenWORKPACK.GUID_DPHASE
                         : null;
                     var SelectedAREA = AREACollection.FirstOrDefault(x => x.GUID == chosenWORKPACK.GUID_DAREA);
@@ -250,20 +248,20 @@ namespace BluePrints.ViewModels
                     var SelectedDISCIPLINE =
                         DISCIPLINECollection.FirstOrDefault(x => x.GUID == chosenWORKPACK.GUID_DDISCIPLINE);
 
-                    activeBASELINE_ITEM.BASELINE_ITEM.INTERNAL_NUM =
+                    activeBASELINE_ITEM.Entity.INTERNAL_NUM =
                         BluePrintDataUtils.BASELINEITEM_Generate_InternalNumber(_loadProject, MainViewModel.Entities,
                             SelectedAREA, SelectedDISCIPLINE, SelectedDOCTYPE);
                     MainViewModel.UpdateSelectedEntity();
                 }
             }
             else if (e.Column.FieldName ==
-                     BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().BASELINE_ITEM) + "." +
+                     BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                      BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE))
             {
                 var chosenDOCTYPE = DOCTYPECollection.FirstOrDefault(entity => entity.GUID == (Guid) e.Value);
                 if (chosenDOCTYPE != null && chosenDOCTYPE.GUID_DDEPARTMENT != null)
                 {
-                    activeBASELINE_ITEM.BASELINE_ITEM.GUID_DEPARTMENT = chosenDOCTYPE.DEPARTMENT.GUID;
+                    activeBASELINE_ITEM.Entity.GUID_DEPARTMENT = chosenDOCTYPE.DEPARTMENT.GUID;
                     MainViewModel.UpdateSelectedEntity();
                 }
             }
@@ -289,16 +287,16 @@ namespace BluePrints.ViewModels
             foreach (var selectedEntity in MainViewModel.SelectedEntities)
             {
                 var newProjection = new BASELINE_ITEMProjection();
-                DataUtils.ShallowCopy(newProjection.BASELINE_ITEM, selectedEntity.BASELINE_ITEM);
-                newProjection.BASELINE_ITEM.GUID = Guid.Empty;
-                newProjection.BASELINE_ITEM.GUID_ORIGINAL = Guid.Empty;
-                newProjection.BASELINE_ITEM.DC_HOURS = 0;
-                var selectedAREA = AREACollection.FirstOrDefault(x => x.GUID == newProjection.BASELINE_ITEM.GUID_AREA);
+                DataUtils.ShallowCopy(newProjection.Entity, selectedEntity.Entity);
+                newProjection.Entity.GUID = Guid.Empty;
+                newProjection.Entity.GUID_ORIGINAL = Guid.Empty;
+                newProjection.Entity.DC_HOURS = 0;
+                var selectedAREA = AREACollection.FirstOrDefault(x => x.GUID == newProjection.Entity.GUID_AREA);
                 var selectedDISCIPLINE =
-                    DISCIPLINECollection.FirstOrDefault(x => x.GUID == newProjection.BASELINE_ITEM.GUID_DISCIPLINE);
+                    DISCIPLINECollection.FirstOrDefault(x => x.GUID == newProjection.Entity.GUID_DISCIPLINE);
                 var selectedDOCTYPE =
-                    DOCTYPECollection.FirstOrDefault(x => x.GUID == newProjection.BASELINE_ITEM.GUID_DOCTYPE);
-                newProjection.BASELINE_ITEM.INTERNAL_NUM =
+                    DOCTYPECollection.FirstOrDefault(x => x.GUID == newProjection.Entity.GUID_DOCTYPE);
+                newProjection.Entity.INTERNAL_NUM =
                     BluePrintDataUtils.BASELINEITEM_Generate_InternalNumber(_loadProject, MainViewModel.Entities,
                         selectedAREA, selectedDISCIPLINE, selectedDOCTYPE, newProjection.GUID);
                 MainViewModel.EntitiesUndoRedoManager.AddUndo(newProjection, null, null, null, EntityMessageType.Added);
@@ -348,37 +346,37 @@ namespace BluePrints.ViewModels
             var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject) button) as GridMenuInfo;
 
             var departmentFieldName =
-                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().BASELINE_ITEM) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DEPARTMENT);
             var disciplineFieldName =
-                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().BASELINE_ITEM) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DISCIPLINE);
-            var docTypeFieldName = BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().BASELINE_ITEM) +
+            var docTypeFieldName = BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) +
                                       "." + BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE);
-            var areaFieldName = BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().BASELINE_ITEM) + "." +
+            var areaFieldName = BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                                    BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA);
-            var workpackFieldName = BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().BASELINE_ITEM) +
+            var workpackFieldName = BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) +
                                        "." + BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_WORKPACK);
             var internalNumberFieldName =
-                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().BASELINE_ITEM) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().INTERNAL_NUM);
 
             var entitiesToSave = new List<BASELINE_ITEMProjection>();
             if (info.Column.FieldName == internalNumberFieldName)
                 foreach (var entity in MainViewModel.SelectedEntities)
-                    entity.BASELINE_ITEM.INTERNAL_NUM = string.Empty;
+                    entity.Entity.INTERNAL_NUM = string.Empty;
 
             foreach (var entity in MainViewModel.SelectedEntities)
             {
                 var entityWORKPACK =
-                    WORKPACKCollection.FirstOrDefault(x => x.GUID == entity.BASELINE_ITEM.GUID_WORKPACK);
+                    WORKPACKCollection.FirstOrDefault(x => x.GUID == entity.Entity.GUID_WORKPACK);
                 if (info.Column.FieldName == internalNumberFieldName)
                 {
-                    AREA currentItemAREA = AREACollection.FirstOrDefault((x => x.GUID == entity.BASELINE_ITEM.GUID_AREA));
+                    AREA currentItemAREA = AREACollection.FirstOrDefault((x => x.GUID == entity.Entity.GUID_AREA));
                     DISCIPLINE currentItemDISCIPLINE =
-                        DISCIPLINECollection.FirstOrDefault((x => x.GUID == entity.BASELINE_ITEM.GUID_DISCIPLINE));
+                        DISCIPLINECollection.FirstOrDefault((x => x.GUID == entity.Entity.GUID_DISCIPLINE));
                     DOCTYPE currentItemDOCTYPE =
-                        DOCTYPECollection.FirstOrDefault((x => x.GUID == entity.BASELINE_ITEM.GUID_DOCTYPE));
+                        DOCTYPECollection.FirstOrDefault((x => x.GUID == entity.Entity.GUID_DOCTYPE));
                     var internalNum = BluePrintDataUtils.BASELINEITEM_Generate_InternalNumber(_loadProject,
                         MainViewModel.Entities, currentItemAREA, currentItemDISCIPLINE,
                         currentItemDOCTYPE, entity.GUID);
@@ -406,31 +404,31 @@ namespace BluePrints.ViewModels
                 }
                 else if (info.Column.FieldName == workpackFieldName)
                 {
-                    if (entity.BASELINE_ITEM.GUID_DISCIPLINE == Guid.Empty ||
-                        entity.BASELINE_ITEM.GUID_DEPARTMENT == Guid.Empty ||
-                        entity.BASELINE_ITEM.GUID_DOCTYPE == Guid.Empty || entity.BASELINE_ITEM.GUID_AREA == Guid.Empty)
+                    if (entity.Entity.GUID_DISCIPLINE == Guid.Empty ||
+                        entity.Entity.GUID_DEPARTMENT == Guid.Empty ||
+                        entity.Entity.GUID_DOCTYPE == Guid.Empty || entity.Entity.GUID_AREA == Guid.Empty)
                         continue;
 
                     var findWORKPACK =
                         WORKPACKCollection.FirstOrDefault(
                             x =>
-                                x.GUID_DAREA == entity.BASELINE_ITEM.GUID_AREA &&
-                                x.GUID_DDOCTYPE == entity.BASELINE_ITEM.GUID_DOCTYPE &&
-                                x.GUID_DDISCIPLINE == entity.BASELINE_ITEM.GUID_DISCIPLINE);
+                                x.GUID_DAREA == entity.Entity.GUID_AREA &&
+                                x.GUID_DDOCTYPE == entity.Entity.GUID_DOCTYPE &&
+                                x.GUID_DDISCIPLINE == entity.Entity.GUID_DISCIPLINE);
                     if (findWORKPACK == null)
                     {
                         var newWORKPACK = new WORKPACK();
                         newWORKPACK.GUID_PROJECT = _loadProject.GUID;
-                        if (entity.BASELINE_ITEM.GUID_AREA != null)
-                            newWORKPACK.GUID_DAREA = (Guid) entity.BASELINE_ITEM.GUID_AREA;
-                        if (entity.BASELINE_ITEM.GUID_PHASE != null)
-                            newWORKPACK.GUID_DPHASE = entity.BASELINE_ITEM.GUID_PHASE;
-                        if (entity.BASELINE_ITEM.GUID_DISCIPLINE != null)
-                            newWORKPACK.GUID_DDISCIPLINE = (Guid) entity.BASELINE_ITEM.GUID_DISCIPLINE;
-                        if (entity.BASELINE_ITEM.GUID_DEPARTMENT != null)
-                            newWORKPACK.GUID_DDEPARTMENT = (Guid) entity.BASELINE_ITEM.GUID_DEPARTMENT;
-                        if (entity.BASELINE_ITEM.GUID_DOCTYPE != null)
-                            newWORKPACK.GUID_DDOCTYPE = (Guid) entity.BASELINE_ITEM.GUID_DOCTYPE;
+                        if (entity.Entity.GUID_AREA != null)
+                            newWORKPACK.GUID_DAREA = (Guid) entity.Entity.GUID_AREA;
+                        if (entity.Entity.GUID_PHASE != null)
+                            newWORKPACK.GUID_DPHASE = entity.Entity.GUID_PHASE;
+                        if (entity.Entity.GUID_DISCIPLINE != null)
+                            newWORKPACK.GUID_DDISCIPLINE = (Guid) entity.Entity.GUID_DISCIPLINE;
+                        if (entity.Entity.GUID_DEPARTMENT != null)
+                            newWORKPACK.GUID_DDEPARTMENT = (Guid) entity.Entity.GUID_DEPARTMENT;
+                        if (entity.Entity.GUID_DOCTYPE != null)
+                            newWORKPACK.GUID_DDOCTYPE = (Guid) entity.Entity.GUID_DOCTYPE;
 
                         newWORKPACK.INTERNAL_NAME1 = BluePrintDataUtils.WORKPACK_Generate_InternalNumber1(_loadProject,
                             newWORKPACK, WORKPACKCollection, AREACollection, DISCIPLINECollection, DOCTYPECollection);
@@ -662,13 +660,13 @@ namespace BluePrints.ViewModels
         {
             foreach (var projection in MainViewModel.Entities)
             {
-                if (projection.BASELINE_ITEM.GUID_DISCIPLINE != null && projection.BASELINE_ITEM.DISCIPLINE == null)
-                    projection.BASELINE_ITEM.DISCIPLINE =
-                        DISCIPLINECollection.FirstOrDefault(x => x.GUID == projection.BASELINE_ITEM.GUID_DISCIPLINE);
+                if (projection.Entity.GUID_DISCIPLINE != null && projection.Entity.DISCIPLINE == null)
+                    projection.Entity.DISCIPLINE =
+                        DISCIPLINECollection.FirstOrDefault(x => x.GUID == projection.Entity.GUID_DISCIPLINE);
 
-                if (projection.BASELINE_ITEM.GUID_AREA != null && projection.BASELINE_ITEM.AREA == null)
-                    projection.BASELINE_ITEM.AREA =
-                        AREACollection.FirstOrDefault(x => x.GUID == projection.BASELINE_ITEM.GUID_AREA);
+                if (projection.Entity.GUID_AREA != null && projection.Entity.AREA == null)
+                    projection.Entity.AREA =
+                        AREACollection.FirstOrDefault(x => x.GUID == projection.Entity.GUID_AREA);
             }
         }
 

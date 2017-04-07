@@ -421,25 +421,13 @@ namespace BluePrints.Common.ViewModel
                 else
                     Entities[index] = projectionEntity;
 
-            //BluePrints Customization Start
-            var customTitle = string.Empty;
-            var viewModel = this as ISupportCustomDocumentTypeNameAndParameter;
-            if (viewModel != null && viewModel.IsCustomModeEnabled())
-                customTitle = viewModel.GetCustomDocumentTitle();
-            //BluePrints Customization End
-
             if (projectionEntity == null)
             {
-                //BluePrints Customization Start
-                //DestroyDocument(DocumentManagerService.FindEntityDocument<TEntity, TPrimaryKey>(primaryKey));
-                DestroyDocument(DocumentManagerService.FindEntityDocument<TProjection, TPrimaryKey>(primaryKey,
-                    customTitle));
-                //BluePrints Customization End
+                DestroyDocument(DocumentManagerService.FindEntityDocument<TProjection, TPrimaryKey>(primaryKey));
                 return;
             }
 
-            DocumentManagerService.ShowExistingEntityDocument<TProjection, TPrimaryKey>(this, primaryKey, customTitle);
-            //BluePrints Customization End
+            DocumentManagerService.ShowExistingEntityDocument<TProjection, TPrimaryKey>(this, primaryKey);
         }
 
         public virtual TEntity InstantiateEntity(TEntity entity)

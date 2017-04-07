@@ -94,8 +94,8 @@
                     <dxg:GridControl x:Name="gridControl" dx:DXSerializer.SerializationID="BASELINE_ITEMSGrid"
                                      Style="{StaticResource AggregateViewGridTemplate}" PreviewKeyDown="gridControl_PreviewKeyDown">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="BASELINE_ITEM.GUID_WORKPACK"
-                                            Header="WORKPACK 1" Visible="False" VisibleIndex="0">
+                            <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="Entity.GUID_WORKPACK"
+                                            Header="WORKPACK 1" Visible="true" VisibleIndex="0">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1"
                                                               ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
@@ -103,7 +103,7 @@
                                                               DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colWORKPACKInternalName2" FieldName="BASELINE_ITEM.GUID_WORKPACK"
+                            <dxg:GridColumn Name="colWORKPACKInternalName2" FieldName="Entity.GUID_WORKPACK"
                                             Header="WORKPACK 2" Visible="False" VisibleIndex="1">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName2"
@@ -112,15 +112,7 @@
                                                               DisplayMember="INTERNAL_NAME2" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colPHASE" FieldName="BASELINE_ITEM.GUID_PHASE" Header="PHASE">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings
-                                        ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}"
-                                        IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM"
-                                        ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Name="colAREA" FieldName="BASELINE_ITEM.GUID_AREA" Header="AREA">
+                            <dxg:GridColumn Name="colAREA" FieldName="Entity.GUID_AREA" Header="AREA">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
@@ -128,7 +120,7 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colDOCTYPE" FieldName="BASELINE_ITEM.GUID_DOCTYPE" Header="DOCTYPE">
+                            <dxg:GridColumn Name="colDOCTYPE" FieldName="Entity.GUID_DOCTYPE" Header="DOCTYPE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}"
@@ -136,7 +128,7 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colDISCIPLINE" FieldName="BASELINE_ITEM.GUID_DISCIPLINE"
+                            <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.GUID_DISCIPLINE"
                                             Header="DISCIPLINE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
@@ -145,7 +137,7 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colDEPARTMENT" FieldName="BASELINE_ITEM.GUID_DEPARTMENT"
+                            <dxg:GridColumn Name="colDEPARTMENT" FieldName="Entity.GUID_DEPARTMENT"
                                             Header="DEPARTMENT">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
@@ -154,25 +146,25 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colINTERNAL_NUM" FieldName="BASELINE_ITEM.INTERNAL_NUM"
+                            <dxg:GridColumn Name="colINTERNAL_NUM" FieldName="Entity.INTERNAL_NUM"
                                             Header="INTERNAL_NUM" />
-                            <dxg:GridColumn Name="colCLIENT_NUM" FieldName="BASELINE_ITEM.CLIENT_NUM"
+                            <dxg:GridColumn Name="colCLIENT_NUM" FieldName="Entity.CLIENT_NUM"
                                             Header="CLIENT_NUM" />
-                            <dxg:GridColumn Name="colREVISION_NUMBER" FieldName="BASELINE_ITEM.REVISION_NUMBER"
+                            <dxg:GridColumn Name="colREVISION_NUMBER" FieldName="Entity.REVISION_NUMBER"
                                             Header="REVISION_NUM" />
-                            <dxg:GridColumn Name="colDELIVERABLE_TYPE" FieldName="BASELINE_ITEM.DELIVERABLE_TYPE"
+                            <dxg:GridColumn Name="colDELIVERABLE_TYPE" FieldName="Entity.DELIVERABLE_TYPE"
                                             Header="TYPE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
                                                               ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DeliverableType}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colPRIMARY_TITLE" FieldName="BASELINE_ITEM.PRIMARY_TITLE"
+                            <dxg:GridColumn Name="colPRIMARY_TITLE" FieldName="Entity.PRIMARY_TITLE"
                                             Header="PRIMARY_TITLE" />
-                            <dxg:GridColumn Name="colSECONDARY_TITLE" FieldName="BASELINE_ITEM.SECONDARY_TITLE"
+                            <dxg:GridColumn Name="colSECONDARY_TITLE" FieldName="Entity.SECONDARY_TITLE"
                                             Header="SECONDARY_TITLE" />
-                            <dxg:GridColumn Name="colCOMMENTS" FieldName="BASELINE_ITEM.COMMENTS" Header="COMMENTS" />
-                            <dxg:GridColumn Name="colSTATUS" FieldName="BASELINE_ITEM.GUID_STATUS" Header="STATUS">
+                            <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.COMMENTS" Header="COMMENTS" />
+                            <dxg:GridColumn Name="colSTATUS" FieldName="Entity.GUID_STATUS" Header="STATUS">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
                                                               ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}"
@@ -180,7 +172,7 @@
                                                               DisplayMember="NAME" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colUSER" FieldName="BASELINE_ITEM.GUID_USER" Header="RESOURCE">
+                            <dxg:GridColumn Name="colUSER" FieldName="Entity.GUID_USER" Header="RESOURCE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
                                                               ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}"
@@ -188,14 +180,14 @@
                                                               DisplayMember="NAME" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colESTIMATED_HOURS" FieldName="BASELINE_ITEM.ESTIMATED_HOURS"
+                            <dxg:GridColumn Name="colESTIMATED_HOURS" FieldName="Entity.ESTIMATED_HOURS"
                                             Header="ESTIMATED_HOURS">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1"
                                                           MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colDC_HOURS" FieldName="BASELINE_ITEM.DC_HOURS" Header="DC_HOURS"
+                            <dxg:GridColumn Name="colDC_HOURS" FieldName="Entity.DC_HOURS" Header="DC_HOURS"
                                             ReadOnly="True" />
                             <dxg:GridColumn Name="colTOTAL_COSTS" FieldName="TOTAL_COSTS" Header="COSTS"
                                             AllowSearchPanel="False" ReadOnly="True">
@@ -208,31 +200,30 @@
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem FieldName="BASELINE_ITEM.COMMENTS" SummaryType="Count"
+                            <dxg:GridSummaryItem FieldName="Entity.COMMENTS" SummaryType="Count"
                                                  Alignment="Right" DisplayFormat="Total {0} Records" />
-                            <dxg:GridSummaryItem FieldName="BASELINE_ITEM.ESTIMATED_HOURS" SummaryType="Sum"
-                                                 ShowInColumn="BASELINE_ITEM.ESTIMATED_HOURS"
+                            <dxg:GridSummaryItem FieldName="Entity.ESTIMATED_HOURS" SummaryType="Sum"
+                                                 ShowInColumn="Entity.ESTIMATED_HOURS"
                                                  DisplayFormat="Total: {0}" />
                             <dxg:GridSummaryItem FieldName="TOTAL_COSTS" SummaryType="Sum" ShowInColumn="TOTAL_COSTS"
                                                  DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="BASELINE_ITEM.DC_HOURS" SummaryType="Sum"
-                                                 ShowInColumn="BASELINE_ITEM.DC_HOURS" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Entity.DC_HOURS" SummaryType="Sum"
+                                                 ShowInColumn="Entity.DC_HOURS" DisplayFormat="Total: {0:n}" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem FieldName="BASELINE_ITEM.COMMENTS" SummaryType="Count"
+                            <dxg:GridSummaryItem FieldName="Entity.COMMENTS" SummaryType="Count"
                                                  Alignment="Right" DisplayFormat="Total {0} Records" />
-                            <dxg:GridSummaryItem FieldName="BASELINE_ITEM.ESTIMATED_HOURS" SummaryType="Sum"
-                                                 ShowInColumn="BASELINE_ITEM.ESTIMATED_HOURS"
+                            <dxg:GridSummaryItem FieldName="Entity.ESTIMATED_HOURS" SummaryType="Sum"
+                                                 ShowInColumn="Entity.ESTIMATED_HOURS"
                                                  DisplayFormat="Total: {0}" />
                             <dxg:GridSummaryItem FieldName="TOTAL_COSTS" SummaryType="Sum" ShowInColumn="TOTAL_COSTS"
                                                  DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="BASELINE_ITEM.DC_HOURS" SummaryType="Sum"
-                                                 ShowInColumn="BASELINE_ITEM.DC_HOURS" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Entity.DC_HOURS" SummaryType="Sum"
+                                                 ShowInColumn="Entity.DC_HOURS" DisplayFormat="Total: {0:n}" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
                             <common:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
-                                           ShowGridMenu="tableView_ShowGridMenu" ShowTotalSummary="True" 
-                                           ShowFixedTotalSummary="True" GroupSummaryDisplayMode="AlignByColumns">
+                                           ShowGridMenu="tableView_ShowGridMenu" >
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand
                                         Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}"

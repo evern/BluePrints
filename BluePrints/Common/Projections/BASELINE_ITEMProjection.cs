@@ -14,21 +14,16 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    [ConstraintAttributes("BASELINE_ITEM.GUID_BASELINE, BASELINE_ITEM.INTERNAL_NUM")]
-    public class BASELINE_ITEMProjection : IHaveGUID
+    [ConstraintAttributes("Entity.GUID_BASELINE, Entity.INTERNAL_NUM")]
+    public class BASELINE_ITEMProjection : ProjectionBase<BASELINE_ITEM>
     {
         public BASELINE_ITEMProjection()
+            : base()
         {
-            BASELINE_ITEM = new BASELINE_ITEM();
+
         }
 
-        [Key]
-        public Guid GUID { get; set; }
-
-        public BASELINE_ITEM BASELINE_ITEM { get; set; }
         public RATE RATE { get; set; }
-
-        public IEnumerable<RATE> RATES { get; set; }
         public DELIVERABLES_STATUS DELIVERABLE_STATUS { get; set; }
 
         public decimal ITEMRATE
@@ -46,13 +41,13 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (BASELINE_ITEM == null)
+                if (Entity == null)
                     return 0;
 
                 if (RATE == null || RATE.RATE1 == null)
                     return 0;
 
-                return BASELINE_ITEM.ESTIMATED_HOURS * (decimal) RATE.RATE1;
+                return Entity.ESTIMATED_HOURS * (decimal) RATE.RATE1;
             }
         }
 
@@ -60,25 +55,34 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (BASELINE_ITEM == null)
+                if (Entity == null)
                     return 0;
 
                 if (RATE == null || RATE.RATE1 == null)
                     return 0;
 
-                return BASELINE_ITEM.DC_HOURS * (decimal)RATE.RATE1;
+                return Entity.DC_HOURS * (decimal)RATE.RATE1;
             }
         }
 
         public decimal TOTAL_COSTS
         {
-            get { return BASELINE_ITEM.TOTAL_HOURS * ITEMRATE; }
+            get
+            {
+                if (Entity == null)
+                    return 0;
+
+                if (RATE == null || RATE.RATE1 == null)
+                    return 0;
+
+                return Entity.TOTAL_HOURS * ITEMRATE;
+            }
         }
     }
 
     public static class BASELINE_ITEMProjectionQueries
     {
-        public static IQueryable<BASELINE_ITEMProjection> JoinRATESOnBASELINE_ITEMS(
+        public static IQueryable<BASELINE_ITEMProjection> BASELINE_ITEMProjectionQuery(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS, Func<BASELINE> getBASELINEFunc,
             Func<IEnumerable<RATE>> getRATES_ByProjectFunc,
             Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc,
@@ -106,7 +110,7 @@ namespace BluePrints.Common.Projections
                             new BASELINE_ITEMProjection()
                             {
                                 GUID = x.GUID,
-                                BASELINE_ITEM = x,
+                                Entity = x,
                                 DELIVERABLE_STATUS =
                                     (x.GUID_STATUS == null)
                                         ? null

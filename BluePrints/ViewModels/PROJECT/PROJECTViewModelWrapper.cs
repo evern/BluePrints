@@ -22,8 +22,7 @@ namespace BluePrints.ViewModels
     /// Represents the PROJECTS collection view model.
     /// </summary>
     public class PROJECTViewModelWrapper :
-        DashboardViewModelWrapper<PROJECT, PROJECT_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>,
-        ISupportCustomDocumentTypeNameAndParameter
+        DashboardViewModelWrapper<PROJECT, PROJECT_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROJECT_ITEMSViewModelWrapper as a POCO view model.
@@ -323,7 +322,12 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentManagerService.ShowExistingEntityDocument<WORKPACK_Dashboard, Guid>(this, DisplaySelectedEntity.GUID, string.Empty);
+            CustomDocumentInfo customDocumentInfo = new CustomDocumentInfo(
+                DisplaySelectedEntity,
+                "WORKPACKDashboardView",
+                "[" + DisplaySelectedEntity.Entity.NUMBER + "] WORKPACKS");
+
+            DocumentManagerService.ShowExistingEntityDocument(customDocumentInfo, this);
         }
 
 
@@ -335,29 +339,6 @@ namespace BluePrints.ViewModels
             get { return "PROJECTViewModelWrapper"; }
         }
 
-        #endregion
-
-        #region ISupportCustomDocumentTypeNameAndParameter
-
-        public string GetCustomDocumentTypeName()
-        {
-            return "WORKPACKDashboardView";
-        }
-
-        public object GetCustomDocumentParameter()
-        {
-            return DisplaySelectedEntity;
-        }
-
-        public string GetCustomDocumentTitle()
-        {
-            return DisplaySelectedEntity.PROJECT.NUMBER + " - WORKPACKS";
-        }
-
-        public bool IsCustomModeEnabled()
-        {
-            return true;
-        }
         #endregion
     }
 }

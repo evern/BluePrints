@@ -22,8 +22,7 @@ namespace BluePrints.ViewModels
     public class PROJECTCollectionViewModelWrapper :
         CollectionViewModelsWrapper
         <PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>>,
-        ISupportCustomDocumentTypeNameAndParameter
+            CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
         /// <summary>
         /// Creates a new instance of PROJECT_ITEMSViewModelWrapper as a POCO view model.
@@ -311,7 +310,7 @@ namespace BluePrints.ViewModels
 
         #endregion
 
-        #region ISupportCustomDocumentTypeNameAndParameter
+        #region ISupportCustomDocumentTypeAndParameter
 
         public bool CanEdit()
         {
@@ -331,29 +330,13 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentManagerService.ShowExistingEntityDocument<PROJECT, Guid>(this, DisplaySelectedEntity.GUID, string.Empty);
-        }
+            CustomDocumentInfo customDocumentInfo = new CustomDocumentInfo(
+                new EntitiesParameter<PROJECT>(DisplaySelectedEntity), 
+                "PROJECTView", 
+                "[" + DisplaySelectedEntity.NUMBER + "]");
 
-        public string GetCustomDocumentTypeName()
-        {
-            return "PROJECTView";
+            DocumentManagerService.ShowExistingEntityDocument(customDocumentInfo, this);
         }
-
-        public object GetCustomDocumentParameter()
-        {
-            return new EntitiesParameter<PROJECT>(DisplaySelectedEntity);
-        }
-
-        public string GetCustomDocumentTitle()
-        {
-            return "[" + DisplaySelectedEntity.NUMBER + "]";
-        }
-
-        public bool IsCustomModeEnabled()
-        {
-            return true;
-        }
-
         #endregion
     }
 }

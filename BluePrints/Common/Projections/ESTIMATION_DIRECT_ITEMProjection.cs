@@ -17,34 +17,21 @@ namespace BluePrints.Common.Projections
 {
     //[ConstraintAttributes("ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT")]
     //[RequiredAttributes("ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT")]
-    public class ESTIMATION_DIRECT_ITEMProjection : IHaveGUID
+    public class ESTIMATION_DIRECT_ITEMProjection : ProjectionMasterDetailBase<ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProjection>
     {
-        public ESTIMATION_DIRECT_ITEMProjection()
-        {
-            ESTIMATION_DIRECT_ITEM = new ESTIMATION_DIRECT_ITEM();
-            CHILD_ESTIMATION_DIRECT_ITEM = new ObservableCollection<ESTIMATION_DIRECT_ITEMProjection>();
-        }
-
-        [Key]
-        public Guid GUID { get; set; }
-
-        public ESTIMATION_DIRECT_ITEM ESTIMATION_DIRECT_ITEM { get; set; }
-
-        public ObservableCollection<ESTIMATION_DIRECT_ITEMProjection> CHILD_ESTIMATION_DIRECT_ITEM { get; set; }
-
         public RATE RATE { get; set; }
 
         public string COMMODITY_GROUP_CODE_SELECTION
         {
             get
             {
-                return (ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE == null
+                return (Entity.GUID_COMMODITY_CODE == null
                            ? Guid.Empty.ToString()
-                           : ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE.ToString()) +
-                       (ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT == null
+                           : Entity.GUID_COMMODITY_CODE.ToString()) +
+                       (Entity.GUID_COMMODITY_GROUP_DIRECT == null
                            ? Guid.Empty.ToString()
-                           : ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT.ToString()) +
-                       ESTIMATION_DIRECT_ITEM.COMMODITY_GROUP_DIRECT_ID.ToString();
+                           : Entity.GUID_COMMODITY_GROUP_DIRECT.ToString()) +
+                       Entity.COMMODITY_GROUP_DIRECT_ID.ToString();
             }
             set
             {
@@ -57,16 +44,16 @@ namespace BluePrints.Common.Projections
 
                 if (CommodityCodeGuidString != Guid.Empty.ToString())
                 {
-                    ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT = null;
-                    ESTIMATION_DIRECT_ITEM.COMMODITY_GROUP_DIRECT_ID = null;
-                    ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE = new Guid(CommodityCodeGuidString);
+                    Entity.GUID_COMMODITY_GROUP_DIRECT = null;
+                    Entity.COMMODITY_GROUP_DIRECT_ID = null;
+                    Entity.GUID_COMMODITY_CODE = new Guid(CommodityCodeGuidString);
                 }
                 else
                 {
-                    ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE = null;
-                    ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT = new Guid(CommodityGroupGuidString);
+                    Entity.GUID_COMMODITY_CODE = null;
+                    Entity.GUID_COMMODITY_GROUP_DIRECT = new Guid(CommodityGroupGuidString);
                     if (CommodityGroupIdString != string.Empty)
-                        ESTIMATION_DIRECT_ITEM.COMMODITY_GROUP_DIRECT_ID = int.Parse(CommodityGroupIdString);
+                        Entity.COMMODITY_GROUP_DIRECT_ID = int.Parse(CommodityGroupIdString);
                 }
             }
         }
@@ -75,8 +62,8 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                return GUID != null && ESTIMATION_DIRECT_ITEM != null &&
-                       ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_CODE != null;
+                return GUID != null && Entity != null &&
+                       Entity.GUID_COMMODITY_CODE != null;
             }
         }
 
@@ -95,14 +82,14 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (ESTIMATION_DIRECT_ITEM == null || ESTIMATION_DIRECT_ITEM.HOURS_INSTALL == null)
+                if (Entity == null || Entity.HOURS_INSTALL == null)
                     return 0;
 
                 if (RATE == null || RATE.RATE1 == null)
                     return 0;
 
-                return (decimal) ESTIMATION_DIRECT_ITEM.HOURS_INSTALL * (decimal) RATE.RATE1 *
-                       ESTIMATION_DIRECT_ITEM.TOTAL_QUANTITY;
+                return (decimal) Entity.HOURS_INSTALL * (decimal) RATE.RATE1 *
+                       Entity.TOTAL_QUANTITY;
             }
         }
 
@@ -110,10 +97,10 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (ESTIMATION_DIRECT_ITEM == null || ESTIMATION_DIRECT_ITEM.RATE_FREIGHT == null)
+                if (Entity == null || Entity.RATE_FREIGHT == null)
                     return 0;
 
-                return (decimal) ESTIMATION_DIRECT_ITEM.RATE_FREIGHT * ESTIMATION_DIRECT_ITEM.TOTAL_QUANTITY;
+                return (decimal) Entity.RATE_FREIGHT * Entity.TOTAL_QUANTITY;
             }
         }
 
@@ -121,16 +108,16 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (ESTIMATION_DIRECT_ITEM == null || ESTIMATION_DIRECT_ITEM.RATE_SUPPLY == null)
+                if (Entity == null || Entity.RATE_SUPPLY == null)
                     return 0;
 
-                return (decimal) ESTIMATION_DIRECT_ITEM.RATE_SUPPLY * ESTIMATION_DIRECT_ITEM.TOTAL_QUANTITY;
+                return (decimal) Entity.RATE_SUPPLY * Entity.TOTAL_QUANTITY;
             }
         }
 
         public bool HAS_CHILDREN
         {
-            get { return CHILD_ESTIMATION_DIRECT_ITEM.Count > 0; }
+            get { return DetailEntities.Count > 0; }
         }
 
         public bool ISEXPANDED { get; set; }
@@ -174,7 +161,7 @@ namespace BluePrints.Common.Projections
                             new ESTIMATION_DIRECT_ITEMProjection()
                             {
                                 GUID = x.GUID,
-                                ESTIMATION_DIRECT_ITEM = x,
+                                Entity = x,
                                 RATE = RATES == null ? null :
                                     RATES.FirstOrDefault(
                                         y =>

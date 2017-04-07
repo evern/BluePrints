@@ -193,7 +193,7 @@ namespace BluePrints.ViewModels
         protected override void restoreViewState()
         {
             var restoreSelectedEntities =
-                DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.CHILD_COMMODITY_CODES))
+                DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.DetailEntities))
                     .Where(x => RestoreSelectedEntitiesGuids.Any(y => y == x.GUID));
             DisplaySelectedEntities.Clear();
             if (restoreSelectedEntities.Count() > 0)
@@ -211,7 +211,7 @@ namespace BluePrints.ViewModels
             if (RestoreSelectedEntityGuid != Guid.Empty)
             {
                 var restoreSelectedEntity =
-                    DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.CHILD_COMMODITY_CODES))
+                    DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.DetailEntities))
                         .FirstOrDefault(x => x.GUID == RestoreSelectedEntityGuid);
                 if (restoreSelectedEntity != null)
                     DisplaySelectedEntity = restoreSelectedEntity;
@@ -226,7 +226,7 @@ namespace BluePrints.ViewModels
         private void DeleteChildrenCOMMODITY_CODE(COMMODITY_CODEMasterDetailProjection parentCOMMODITY_CODE)
         {
             foreach (
-                var childCOMMODITY_CODE in parentCOMMODITY_CODE.CHILD_COMMODITY_CODES)
+                var childCOMMODITY_CODE in parentCOMMODITY_CODE.DetailEntities)
             {
                 MainViewModel.EntitiesUndoRedoManager.AddUndo(childCOMMODITY_CODE, null, null, null,
                     EntityMessageType.Deleted);
@@ -249,7 +249,6 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.SetParentAssociationCallBack = OnBeforeEntitiesSaved;
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntity;
-            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
             MainViewModel.SetParentViewModel(this);
             var initializeCOMMODITY_GROUP = COMMODITY_GROUPCollectionViewModel;
 
@@ -275,28 +274,21 @@ namespace BluePrints.ViewModels
 
         #region Collection Call Backs
 
-        public void OnEntitiesSavedCallBack(Guid primaryKey, COMMODITY_CODEMasterDetailProjection projectionEntity,
-            COMMODITY_CODE entity, bool isNewEntity)
-        {
-            projectionEntity.GUID = entity.GUID;
-            projectionEntity.COMMODITY_CODE.GUID = entity.GUID;
-        }
-
         public void ApplyProjectionPropertiesToEntity(COMMODITY_CODEMasterDetailProjection projectionEntity,
             COMMODITY_CODE entity)
         {
             //projectionEntity.COMMODITY_CODE.GUID_PROJECT = loadPROJECT.GUID;
-            DataUtils.ShallowCopy(entity, projectionEntity.COMMODITY_CODE);
+            DataUtils.ShallowCopy(entity, projectionEntity.Entity);
             //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
             if (entity.CREATED.Date.Year == 1)
-                projectionEntity.COMMODITY_CODE.CREATED = DateTime.Now;
+                projectionEntity.Entity.CREATED = DateTime.Now;
 
-            entity.CREATED = projectionEntity.COMMODITY_CODE.CREATED;
+            entity.CREATED = projectionEntity.Entity.CREATED;
         }
 
         private void OnBeforeEntitiesSaved(COMMODITY_CODEMasterDetailProjection entity)
         {
-            entity.COMMODITY_CODE.COMMODITYCODETYPE = loadCommodityCodeType;
+            entity.Entity.COMMODITYCODETYPE = loadCommodityCodeType;
         }
 
         #endregion
@@ -337,7 +329,7 @@ namespace BluePrints.ViewModels
         {
             return MainViewModel != null && MainViewModel.Entities != null && MainViewModel.Entities.Count > 0 &&
                    !IsLoading && DisplaySelectedEntities.Count > 0 &&
-                   !DisplaySelectedEntities.Any(x => x.COMMODITY_CODE.GUID_PROJECT == null);
+                   !DisplaySelectedEntities.Any(x => x.Entity.GUID_PROJECT == null);
         }
 
         public void BulkDelete()
@@ -346,8 +338,8 @@ namespace BluePrints.ViewModels
             var deletingEntities =
                 new List<COMMODITY_CODEMasterDetailProjection>();
             foreach (var selectedEntity in DisplaySelectedEntities)
-                if (selectedEntity.COMMODITY_CODE.GUID == Guid.Empty)
-                    foreach (var childrenEntity in selectedEntity.CHILD_COMMODITY_CODES
+                if (selectedEntity.Entity.GUID == Guid.Empty)
+                    foreach (var childrenEntity in selectedEntity.DetailEntities
                     )
                         deletingEntities.Add(childrenEntity);
                 else
@@ -382,20 +374,20 @@ namespace BluePrints.ViewModels
                         MainViewModel.Entities.Where(
                             x =>
                                 (isProjectSpecific
-                                    ? x.COMMODITY_CODE.GUID_PROJECT == loadPROJECT.GUID
-                                    : x.COMMODITY_CODE.GUID_PROJECT != null) && x.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT != null && x.COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID != null).GroupBy(x => x.GROUP_ID);
+                                    ? x.Entity.GUID_PROJECT == loadPROJECT.GUID
+                                    : x.Entity.GUID_PROJECT != null) && x.Entity.GUID_COMMODITY_GROUP_DIRECT != null && x.Entity.COMMODITY_GROUP_DIRECT_ID != null).GroupBy(x => x.GROUP_ID);
 
                     var projectSpecificCOMMODITY_CODENotGrouped =
                         MainViewModel.Entities.Where(
                             x =>
                                 (isProjectSpecific
-                                    ? x.COMMODITY_CODE.GUID_PROJECT == loadPROJECT.GUID
-                                    : x.COMMODITY_CODE.GUID_PROJECT != null) &&
-                                x.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT == null &&
-                                x.COMMODITY_CODE.ISQUANTIFIABLE == true);
+                                    ? x.Entity.GUID_PROJECT == loadPROJECT.GUID
+                                    : x.Entity.GUID_PROJECT != null) &&
+                                x.Entity.GUID_COMMODITY_GROUP_DIRECT == null &&
+                                x.Entity.ISQUANTIFIABLE == true);
                     var generalCOMMODITY_CODENotGrouped =
                         MainViewModel.Entities.Where(
-                            x => x.COMMODITY_CODE.GUID_PROJECT == null && x.COMMODITY_CODE.ISQUANTIFIABLE == true);
+                            x => x.Entity.GUID_PROJECT == null && x.Entity.ISQUANTIFIABLE == true);
 
                     foreach (var group in projectSpecificCOMMODITY_CODEGrouped)
                     {
@@ -403,39 +395,39 @@ namespace BluePrints.ViewModels
                         var parentProjectionPOCO =
                             ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
                         parentProjectionPOCO.GUID = Guid.NewGuid();
-                        parentProjectionPOCO.COMMODITY_CODE.GUID = Guid.Empty;
+                        parentProjectionPOCO.Entity.GUID = Guid.Empty;
                             //this is used by COMMODITY_GROUP_CODE_SELECTION to determine whether selection is group or code
-                        parentProjectionPOCO.COMMODITY_CODE.GUID_PROJECT = firstItemInGroup.COMMODITY_CODE.GUID_PROJECT;
-                        parentProjectionPOCO.COMMODITY_CODE.FULLCODE =
-                            firstItemInGroup.COMMODITY_CODE.COMMODITY_GROUP_DESC;
-                        parentProjectionPOCO.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT =
-                            firstItemInGroup.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT;
-                        parentProjectionPOCO.COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID =
-                            firstItemInGroup.COMMODITY_CODE.COMMODITY_GROUP_DIRECT_ID;
+                        parentProjectionPOCO.Entity.GUID_PROJECT = firstItemInGroup.Entity.GUID_PROJECT;
+                        parentProjectionPOCO.Entity.FULLCODE =
+                            firstItemInGroup.Entity.COMMODITY_GROUP_DESC;
+                        parentProjectionPOCO.Entity.GUID_COMMODITY_GROUP_DIRECT =
+                            firstItemInGroup.Entity.GUID_COMMODITY_GROUP_DIRECT;
+                        parentProjectionPOCO.Entity.COMMODITY_GROUP_DIRECT_ID =
+                            firstItemInGroup.Entity.COMMODITY_GROUP_DIRECT_ID;
 
                         foreach (var item in group)
                         {
-                            var childProjectionPOCO =
+                            var projectionPOCO =
                                 ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
-                            DataUtils.ShallowCopy(childProjectionPOCO.COMMODITY_CODE, item.COMMODITY_CODE);
-                            childProjectionPOCO.GUID = item.COMMODITY_CODE.GUID;
-                            childProjectionPOCO.IsEditable = true;
-                            childProjectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.ProjectSpecificGrouped;
-                            parentProjectionPOCO.CHILD_COMMODITY_CODES.Add(childProjectionPOCO);
+                            DataUtils.ShallowCopy(projectionPOCO.Entity, item.Entity);
+                            projectionPOCO.GUID = item.Entity.GUID;
+                            projectionPOCO.IsEditable = true;
+                            projectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.ProjectSpecificGrouped;
+                            parentProjectionPOCO.DetailEntities.Add(projectionPOCO);
                         }
 
-                        parentProjectionPOCO.COMMODITY_CODE.RATE_SUPPLY =
-                            parentProjectionPOCO.CHILD_COMMODITY_CODES.Where(x => x.COMMODITY_CODE.RATE_SUPPLY != null)
-                                .Sum(x => x.COMMODITY_CODE.RATE_SUPPLY);
-                        parentProjectionPOCO.COMMODITY_CODE.RATE_FREIGHT =
-                            parentProjectionPOCO.CHILD_COMMODITY_CODES.Where(x => x.COMMODITY_CODE.RATE_FREIGHT != null)
-                                .Sum(x => x.COMMODITY_CODE.RATE_FREIGHT);
-                        parentProjectionPOCO.COMMODITY_CODE.RATE_PLANT =
-                            parentProjectionPOCO.CHILD_COMMODITY_CODES.Where(x => x.COMMODITY_CODE.RATE_PLANT != null)
-                                .Sum(x => x.COMMODITY_CODE.RATE_PLANT);
-                        parentProjectionPOCO.COMMODITY_CODE.HOURS_INSTALL =
-                            parentProjectionPOCO.CHILD_COMMODITY_CODES.Where(x => x.COMMODITY_CODE.HOURS_INSTALL != null)
-                                .Sum(x => x.COMMODITY_CODE.HOURS_INSTALL);
+                        parentProjectionPOCO.Entity.RATE_SUPPLY =
+                            parentProjectionPOCO.DetailEntities.Where(x => x.Entity.RATE_SUPPLY != null)
+                                .Sum(x => x.Entity.RATE_SUPPLY);
+                        parentProjectionPOCO.Entity.RATE_FREIGHT =
+                            parentProjectionPOCO.DetailEntities.Where(x => x.Entity.RATE_FREIGHT != null)
+                                .Sum(x => x.Entity.RATE_FREIGHT);
+                        parentProjectionPOCO.Entity.RATE_PLANT =
+                            parentProjectionPOCO.DetailEntities.Where(x => x.Entity.RATE_PLANT != null)
+                                .Sum(x => x.Entity.RATE_PLANT);
+                        parentProjectionPOCO.Entity.HOURS_INSTALL =
+                            parentProjectionPOCO.DetailEntities.Where(x => x.Entity.HOURS_INSTALL != null)
+                                .Sum(x => x.Entity.HOURS_INSTALL);
 
                         parentProjectionPOCO.IsEditable = false;
                         parentProjectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.ProjectSpecificGrouped;
@@ -448,7 +440,7 @@ namespace BluePrints.ViewModels
                     {
                         var projectionPOCO =
                             ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
-                        DataUtils.ShallowCopy(projectionPOCO.COMMODITY_CODE, COMMODITY_CODEProjection.COMMODITY_CODE);
+                        DataUtils.ShallowCopy(projectionPOCO.Entity, COMMODITY_CODEProjection.Entity);
                         projectionPOCO.GUID = COMMODITY_CODEProjection.GUID;
 
                         projectionPOCO.IsEditable = true;
@@ -463,48 +455,48 @@ namespace BluePrints.ViewModels
                         var parentProjectionPOCO =
                             ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
                         parentProjectionPOCO.GUID = Guid.NewGuid();
-                        parentProjectionPOCO.COMMODITY_CODE.GUID = Guid.Empty;
+                        parentProjectionPOCO.Entity.GUID = Guid.Empty;
                             //this is used by COMMODITY_GROUP_CODE_SELECTION to determine whether selection is group or code
-                        parentProjectionPOCO.COMMODITY_CODE.FULLCODE = COMMODITY_GROUPEntity.COMMODITY_GROUP.DESCRIPTION;
-                        parentProjectionPOCO.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT = COMMODITY_GROUPEntity.GUID;
+                        parentProjectionPOCO.Entity.FULLCODE = COMMODITY_GROUPEntity.Entity.DESCRIPTION;
+                        parentProjectionPOCO.Entity.GUID_COMMODITY_GROUP_DIRECT = COMMODITY_GROUPEntity.GUID;
 
                         foreach (
                             var childCOMMODITY_GROUPEntity in
-                            COMMODITY_GROUPEntity.CHILD_COMMODITY_GROUP)
+                            COMMODITY_GROUPEntity.DetailEntities)
                         {
                             var childProjectionPOCO =
                                 ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
                             var findCOMMODITY_CODE =
                                 generalCOMMODITY_CODENotGrouped.FirstOrDefault(
                                     x =>
-                                        x.COMMODITY_CODE.GUID ==
-                                        childCOMMODITY_GROUPEntity.COMMODITY_GROUP.GUID_COMMODITYCODE);
+                                        x.Entity.GUID ==
+                                        childCOMMODITY_GROUPEntity.Entity.GUID_COMMODITYCODE);
                             if (findCOMMODITY_CODE != null)
                             {
-                                DataUtils.ShallowCopy(childProjectionPOCO.COMMODITY_CODE,
-                                    findCOMMODITY_CODE.COMMODITY_CODE);
-                                childProjectionPOCO.GUID = findCOMMODITY_CODE.COMMODITY_CODE.GUID;
-                                childProjectionPOCO.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT =
+                                DataUtils.ShallowCopy(childProjectionPOCO.Entity,
+                                    findCOMMODITY_CODE.Entity);
+                                childProjectionPOCO.GUID = findCOMMODITY_CODE.Entity.GUID;
+                                childProjectionPOCO.Entity.GUID_COMMODITY_GROUP_DIRECT =
                                     COMMODITY_GROUPEntity.GUID;
 
                                 childProjectionPOCO.IsEditable = true;
                                 childProjectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.GeneralGrouped;
-                                parentProjectionPOCO.CHILD_COMMODITY_CODES.Add(childProjectionPOCO);
+                                parentProjectionPOCO.DetailEntities.Add(childProjectionPOCO);
                             }
                         }
 
-                        parentProjectionPOCO.COMMODITY_CODE.RATE_SUPPLY =
-                            parentProjectionPOCO.CHILD_COMMODITY_CODES.Where(x => x.COMMODITY_CODE.RATE_SUPPLY != null)
-                                .Sum(x => x.COMMODITY_CODE.RATE_SUPPLY);
-                        parentProjectionPOCO.COMMODITY_CODE.RATE_FREIGHT =
-                            parentProjectionPOCO.CHILD_COMMODITY_CODES.Where(x => x.COMMODITY_CODE.RATE_FREIGHT != null)
-                                .Sum(x => x.COMMODITY_CODE.RATE_FREIGHT);
-                        parentProjectionPOCO.COMMODITY_CODE.RATE_PLANT =
-                            parentProjectionPOCO.CHILD_COMMODITY_CODES.Where(x => x.COMMODITY_CODE.RATE_PLANT != null)
-                                .Sum(x => x.COMMODITY_CODE.RATE_PLANT);
-                        parentProjectionPOCO.COMMODITY_CODE.HOURS_INSTALL =
-                            parentProjectionPOCO.CHILD_COMMODITY_CODES.Where(x => x.COMMODITY_CODE.HOURS_INSTALL != null)
-                                .Sum(x => x.COMMODITY_CODE.HOURS_INSTALL);
+                        parentProjectionPOCO.Entity.RATE_SUPPLY =
+                            parentProjectionPOCO.DetailEntities.Where(x => x.Entity.RATE_SUPPLY != null)
+                                .Sum(x => x.Entity.RATE_SUPPLY);
+                        parentProjectionPOCO.Entity.RATE_FREIGHT =
+                            parentProjectionPOCO.DetailEntities.Where(x => x.Entity.RATE_FREIGHT != null)
+                                .Sum(x => x.Entity.RATE_FREIGHT);
+                        parentProjectionPOCO.Entity.RATE_PLANT =
+                            parentProjectionPOCO.DetailEntities.Where(x => x.Entity.RATE_PLANT != null)
+                                .Sum(x => x.Entity.RATE_PLANT);
+                        parentProjectionPOCO.Entity.HOURS_INSTALL =
+                            parentProjectionPOCO.DetailEntities.Where(x => x.Entity.HOURS_INSTALL != null)
+                                .Sum(x => x.Entity.HOURS_INSTALL);
 
                         parentProjectionPOCO.IsEditable = false;
                         parentProjectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.GeneralGrouped;
@@ -517,8 +509,8 @@ namespace BluePrints.ViewModels
                     {
                         var projectionPOCO =
                             ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
-                        DataUtils.ShallowCopy(projectionPOCO.COMMODITY_CODE, COMMODITY_CODEProjection.COMMODITY_CODE);
-                        projectionPOCO.GUID = COMMODITY_CODEProjection.COMMODITY_CODE.GUID;
+                        DataUtils.ShallowCopy(projectionPOCO.Entity, COMMODITY_CODEProjection.Entity);
+                        projectionPOCO.GUID = COMMODITY_CODEProjection.Entity.GUID;
 
                         projectionPOCO.IsEditable = true;
                         projectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.GeneralNotGrouped;

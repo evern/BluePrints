@@ -16,145 +16,122 @@ namespace BluePrints.Views
             ((PROJECTViewModelWrapper) DataContext).ChangeViewMemberFieldNames = ChangeViewMemberFieldNames;
             ((PROJECTViewModelWrapper) DataContext).Redraw = Redraw;
 
-            //((PROJECTViewModelWrapper)DataContext).AssignBASELINEDelegates = this.AssignBASELINEDelegates;
-            //((PROJECTViewModelWrapper)DataContext).AssignPROGRESSDelegates = this.AssignPROGRESSDelegates;
-            //((PROJECTViewModelWrapper)DataContext).AssignESTIMATION_DIRECTDelegates = this.AssignESTIMATION_DIRECTDelegates;
-            //((PROJECTViewModelWrapper)DataContext).AssignPHASEDelegates = this.AssignPHASEDelegates;
-            //((PROJECTViewModelWrapper)DataContext).AssignAREADelegates = this.AssignAREADelegates;
-            //((PROJECTViewModelWrapper)DataContext).AssignRATEDelegates = this.AssignRATEDelegates;
+            ((PROJECTViewModelWrapper)DataContext).AssignBASELINEDelegates = this.AssignBASELINEDelegates;
+            ((PROJECTViewModelWrapper)DataContext).AssignPROGRESSDelegates = this.AssignPROGRESSDelegates;
+            ((PROJECTViewModelWrapper)DataContext).AssignPHASEDelegates = this.AssignPHASEDelegates;
+            ((PROJECTViewModelWrapper)DataContext).AssignAREADelegates = this.AssignAREADelegates;
+            ((PROJECTViewModelWrapper)DataContext).AssignRATEDelegates = this.AssignRATEDelegates;
         }
 
         int focusedRowHandleBASELINE;
-        //ColumnBase currentColumnBASELINE;
-        //private void AssignBASELINEDelegates(BASELINECollectionViewModelWrapper viewModelWrapper)
-        //{
-        //    viewModelWrapper.StoreActiveCell = this.StoreBASELINEFocusedCell;
-        //    viewModelWrapper.RestoreActiveCell = this.RestoreBASELINEFocusedCell;
-        //}
+        ColumnBase currentColumnBASELINE;
+        private void AssignBASELINEDelegates(BASELINECollectionViewModelWrapper viewModelWrapper)
+        {
+            viewModelWrapper.StoreActiveCell = this.StoreBASELINEFocusedCell;
+            viewModelWrapper.RestoreActiveCell = this.RestoreBASELINEFocusedCell;
+        }
 
-        //protected void StoreBASELINEFocusedCell()
-        //{
-        //    focusedRowHandleBASELINE = tableViewBASELINE.FocusedRowHandle;
-        //    currentColumnBASELINE = gridControlBASELINE.CurrentColumn;
-        //}
+        protected void StoreBASELINEFocusedCell()
+        {
+            focusedRowHandleBASELINE = tableViewBASELINE.FocusedRowHandle;
+            currentColumnBASELINE = gridControlBASELINE.CurrentColumn;
+        }
 
-        //protected void RestoreBASELINEFocusedCell()
-        //{
-        //    gridControlBASELINE.CurrentColumn = currentColumnBASELINE;
-        //    tableViewBASELINE.FocusedRowHandle = focusedRowHandleBASELINE;
-        //    gridControlBASELINE.Focus();
-        //    tableViewBASELINE.ShowEditor();
-        //}
+        protected void RestoreBASELINEFocusedCell()
+        {
+            gridControlBASELINE.CurrentColumn = currentColumnBASELINE;
+            tableViewBASELINE.FocusedRowHandle = focusedRowHandleBASELINE;
+            gridControlBASELINE.Focus();
+            tableViewBASELINE.ShowEditor();
+        }
 
-        //int focusedRowHandlePROGRESS;
-        //ColumnBase currentColumnPROGRESS;
-        //private void AssignPROGRESSDelegates(PROGRESSCollectionViewModelWrapper viewModelWrapper)
-        //{
-        //    viewModelWrapper.StoreActiveCell = this.StorePROGRESSFocusedCell;
-        //    viewModelWrapper.RestoreActiveCell = this.RestorePROGRESSFocusedCell;
-        //}
+        int focusedRowHandlePROGRESS;
+        ColumnBase currentColumnPROGRESS;
+        private void AssignPROGRESSDelegates(PROGRESSCollectionViewModelWrapper viewModelWrapper)
+        {
+            viewModelWrapper.StoreActiveCell = this.StorePROGRESSFocusedCell;
+            viewModelWrapper.RestoreActiveCell = this.RestorePROGRESSFocusedCell;
+        }
 
-        //protected void StorePROGRESSFocusedCell()
-        //{
-        //    focusedRowHandlePROGRESS = tableViewPROGRESS.FocusedRowHandle;
-        //    currentColumnPROGRESS = gridControlPROGRESS.CurrentColumn;
-        //}
+        protected void StorePROGRESSFocusedCell()
+        {
+            focusedRowHandlePROGRESS = tableViewPROGRESS.FocusedRowHandle;
+            currentColumnPROGRESS = gridControlPROGRESS.CurrentColumn;
+        }
 
-        //protected void RestorePROGRESSFocusedCell()
-        //{
-        //    gridControlPROGRESS.CurrentColumn = currentColumnPROGRESS;
-        //    tableViewPROGRESS.FocusedRowHandle = focusedRowHandlePROGRESS;
-        //    gridControlPROGRESS.Focus();
-        //    tableViewPROGRESS.ShowEditor();
-        //}
+        protected void RestorePROGRESSFocusedCell()
+        {
+            gridControlPROGRESS.CurrentColumn = currentColumnPROGRESS;
+            tableViewPROGRESS.FocusedRowHandle = focusedRowHandlePROGRESS;
+            gridControlPROGRESS.Focus();
+            tableViewPROGRESS.ShowEditor();
+        }
 
-        //int focusedRowHandleESTIMATION_DIRECT;
-        //ColumnBase currentColumnESTIMATION_DIRECT;
-        //private void AssignESTIMATION_DIRECTDelegates(ESTIMATION_DIRECTCollectionViewModelWrapper viewModelWrapper)
-        //{
-        //    viewModelWrapper.StoreActiveCell = this.StoreESTIMATION_DIRECTFocusedCell;
-        //    viewModelWrapper.RestoreActiveCell = this.RestoreESTIMATION_DIRECTFocusedCell;
-        //}
+        int focusedRowHandlePHASE;
+        ColumnBase currentColumnPHASE;
+        private void AssignPHASEDelegates(PHASECollectionViewModelWrapper viewModelWrapper)
+        {
+            viewModelWrapper.StoreActiveCell = this.StorePHASEFocusedCell;
+            viewModelWrapper.RestoreActiveCell = this.RestorePHASEFocusedCell;
+        }
 
-        //protected void StoreESTIMATION_DIRECTFocusedCell()
-        //{
-        //    focusedRowHandleESTIMATION_DIRECT = tableViewESTIMATION_DIRECT.FocusedRowHandle;
-        //    currentColumnESTIMATION_DIRECT = gridControlESTIMATION_DIRECT.CurrentColumn;
-        //}
+        protected void StorePHASEFocusedCell()
+        {
+            focusedRowHandlePHASE = tableViewPHASE.FocusedRowHandle;
+            currentColumnPHASE = gridControlPHASE.CurrentColumn;
+        }
 
-        //protected void RestoreESTIMATION_DIRECTFocusedCell()
-        //{
-        //    gridControlESTIMATION_DIRECT.CurrentColumn = currentColumnESTIMATION_DIRECT;
-        //    tableViewESTIMATION_DIRECT.FocusedRowHandle = focusedRowHandleESTIMATION_DIRECT;
-        //    gridControlESTIMATION_DIRECT.Focus();
-        //    tableViewESTIMATION_DIRECT.ShowEditor();
-        //}
+        protected void RestorePHASEFocusedCell()
+        {
+            gridControlPHASE.CurrentColumn = currentColumnPHASE;
+            tableViewPHASE.FocusedRowHandle = focusedRowHandlePHASE;
+            gridControlPHASE.Focus();
+            tableViewPHASE.ShowEditor();
+        }
 
-        //int focusedRowHandlePHASE;
-        //ColumnBase currentColumnPHASE;
-        //private void AssignPHASEDelegates(PHASECollectionViewModelWrapper viewModelWrapper)
-        //{
-        //    viewModelWrapper.StoreActiveCell = this.StorePHASEFocusedCell;
-        //    viewModelWrapper.RestoreActiveCell = this.RestorePHASEFocusedCell;
-        //}
+        int focusedRowHandleAREA;
+        ColumnBase currentColumnAREA;
+        private void AssignAREADelegates(AREACollectionViewModelWrapper viewModelWrapper)
+        {
+            viewModelWrapper.StoreActiveCell = this.StoreAREAFocusedCell;
+            viewModelWrapper.RestoreActiveCell = this.RestoreAREAFocusedCell;
+        }
 
-        //protected void StorePHASEFocusedCell()
-        //{
-        //    focusedRowHandlePHASE = tableViewPHASE.FocusedRowHandle;
-        //    currentColumnPHASE = gridControlPHASE.CurrentColumn;
-        //}
+        protected void StoreAREAFocusedCell()
+        {
+            focusedRowHandleAREA = tableViewAREA.FocusedRowHandle;
+            currentColumnAREA = gridControlAREA.CurrentColumn;
+        }
 
-        //protected void RestorePHASEFocusedCell()
-        //{
-        //    gridControlPHASE.CurrentColumn = currentColumnPHASE;
-        //    tableViewPHASE.FocusedRowHandle = focusedRowHandlePHASE;
-        //    gridControlPHASE.Focus();
-        //    tableViewPHASE.ShowEditor();
-        //}
+        protected void RestoreAREAFocusedCell()
+        {
+            gridControlAREA.CurrentColumn = currentColumnAREA;
+            tableViewAREA.FocusedRowHandle = focusedRowHandleAREA;
+            gridControlAREA.Focus();
+            tableViewAREA.ShowEditor();
+        }
 
-        //int focusedRowHandleAREA;
-        //ColumnBase currentColumnAREA;
-        //private void AssignAREADelegates(AREACollectionViewModelWrapper viewModelWrapper)
-        //{
-        //    viewModelWrapper.StoreActiveCell = this.StoreAREAFocusedCell;
-        //    viewModelWrapper.RestoreActiveCell = this.RestoreAREAFocusedCell;
-        //}
+        int focusedRowHandleRATE;
+        ColumnBase currentColumnRATE;
+        private void AssignRATEDelegates(RATECollectionViewModelWrapper viewModelWrapper)
+        {
+            viewModelWrapper.StoreActiveCell = this.StoreRATEFocusedCell;
+            viewModelWrapper.RestoreActiveCell = this.RestoreRATEFocusedCell;
+        }
 
-        //protected void StoreAREAFocusedCell()
-        //{
-        //    focusedRowHandleAREA = tableViewAREA.FocusedRowHandle;
-        //    currentColumnAREA = gridControlAREA.CurrentColumn;
-        //}
+        protected void StoreRATEFocusedCell()
+        {
+            focusedRowHandleRATE = tableViewRATE.FocusedRowHandle;
+            currentColumnRATE = gridControlRATE.CurrentColumn;
+        }
 
-        //protected void RestoreAREAFocusedCell()
-        //{
-        //    gridControlAREA.CurrentColumn = currentColumnAREA;
-        //    tableViewAREA.FocusedRowHandle = focusedRowHandleAREA;
-        //    gridControlAREA.Focus();
-        //    tableViewAREA.ShowEditor();
-        //}
-
-        //int focusedRowHandleRATE;
-        //ColumnBase currentColumnRATE;
-        //private void AssignRATEDelegates(RATECollectionViewModelWrapper viewModelWrapper)
-        //{
-        //    viewModelWrapper.StoreActiveCell = this.StoreRATEFocusedCell;
-        //    viewModelWrapper.RestoreActiveCell = this.RestoreRATEFocusedCell;
-        //}
-
-        //protected void StoreRATEFocusedCell()
-        //{
-        //    focusedRowHandleRATE = tableViewRATE.FocusedRowHandle;
-        //    currentColumnRATE = gridControlRATE.CurrentColumn;
-        //}
-
-        //protected void RestoreRATEFocusedCell()
-        //{
-        //    gridControlRATE.CurrentColumn = currentColumnRATE;
-        //    tableViewRATE.FocusedRowHandle = focusedRowHandleRATE;
-        //    gridControlRATE.Focus();
-        //    tableViewRATE.ShowEditor();
-        //}
+        protected void RestoreRATEFocusedCell()
+        {
+            gridControlRATE.CurrentColumn = currentColumnRATE;
+            tableViewRATE.FocusedRowHandle = focusedRowHandleRATE;
+            gridControlRATE.Focus();
+            tableViewRATE.ShowEditor();
+        }
 
         public void Redraw()
         {
@@ -165,7 +142,6 @@ namespace BluePrints.Views
         {
             string headerTextVar;
             string maskVar;
-            string displayFormatVar;
             string fieldNameReplaceFrom;
             string fieldNameReplaceTo;
 
@@ -175,7 +151,6 @@ namespace BluePrints.Views
                 maskVar = "c";
                 fieldNameReplaceFrom = "Units";
                 fieldNameReplaceTo = "Costs";
-                displayFormatVar = "{0:c}";
             }
             else
             {
@@ -183,7 +158,6 @@ namespace BluePrints.Views
                 maskVar = "n";
                 fieldNameReplaceFrom = "Costs";
                 fieldNameReplaceTo = "Units";
-                displayFormatVar = "{0:n}";
             }
 
             colCumulativeBudget.Header = "Budgeted " + headerTextVar;
@@ -252,116 +226,7 @@ namespace BluePrints.Views
             secondaryAxisY.Title.Content = secondaryAxisY.Title.Content.ToString().Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             primaryAxisY.Title.Content = primaryAxisY.Title.Content.ToString().Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
 
-            //totalSummaryCumulativeEarnedPercentage.FieldName =
-            //    totalSummaryCumulativeEarnedPercentage.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            //totalSummaryCumulativePlanned.FieldName =
-            //    totalSummaryCumulativePlanned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryCumulativeEarned.FieldName = totalSummaryCumulativeEarned.FieldName.Replace(
-                fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryCumulativeBurned.FieldName = totalSummaryCumulativeBurned.FieldName.Replace(
-                fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryCumulativeActual.FieldName = totalSummaryCumulativeActual.FieldName.Replace(
-                fieldNameReplaceFrom, fieldNameReplaceTo);
-            //totalSummaryPeriodEarnedPercentage.FieldName =
-            //    totalSummaryPeriodEarnedPercentage.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryPeriodPlanned.FieldName = totalSummaryPeriodPlanned.FieldName.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            totalSummaryPeriodEarned.FieldName = totalSummaryPeriodEarned.FieldName.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            totalSummaryPeriodBurned.FieldName = totalSummaryPeriodBurned.FieldName.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            totalSummaryPeriodActual.FieldName = totalSummaryPeriodActual.FieldName.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-
-            groupSummaryBudgeted.FieldName = groupSummaryBudgeted.FieldName.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            //groupSummaryCumulativeEarnedPercentage.FieldName =
-            //    groupSummaryCumulativeEarnedPercentage.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            //groupSummaryCumulativePlanned.FieldName =
-            //    groupSummaryCumulativePlanned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            groupSummaryCumulativeEarned.FieldName = groupSummaryCumulativeEarned.FieldName.Replace(
-                fieldNameReplaceFrom, fieldNameReplaceTo);
-            groupSummaryCumulativeBurned.FieldName = groupSummaryCumulativeBurned.FieldName.Replace(
-                fieldNameReplaceFrom, fieldNameReplaceTo);
-            groupSummaryCumulativeActual.FieldName = groupSummaryCumulativeActual.FieldName.Replace(
-                fieldNameReplaceFrom, fieldNameReplaceTo);
-            //groupSummaryPeriodEarnedPercentage.FieldName =
-            //    groupSummaryPeriodEarnedPercentage.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            groupSummaryPeriodPlanned.FieldName = groupSummaryPeriodPlanned.FieldName.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            groupSummaryPeriodEarned.FieldName = groupSummaryPeriodEarned.FieldName.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            groupSummaryPeriodBurned.FieldName = groupSummaryPeriodBurned.FieldName.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            groupSummaryPeriodActual.FieldName = groupSummaryPeriodActual.FieldName.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-
-            totalSummaryBudgeted.ShowInColumn = totalSummaryBudgeted.ShowInColumn.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            //totalSummaryCumulativeEarnedPercentage.ShowInColumn =
-            //    totalSummaryCumulativeEarnedPercentage.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            //totalSummaryCumulativePlanned.ShowInColumn =
-            //    totalSummaryCumulativePlanned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryCumulativeEarned.ShowInColumn =
-                totalSummaryCumulativeEarned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryCumulativeBurned.ShowInColumn =
-                totalSummaryCumulativeBurned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryCumulativeActual.ShowInColumn =
-                totalSummaryCumulativeActual.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            //totalSummaryPeriodEarnedPercentage.ShowInColumn =
-            //    totalSummaryPeriodEarnedPercentage.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryPeriodPlanned.ShowInColumn = totalSummaryPeriodPlanned.ShowInColumn.Replace(
-                fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryPeriodEarned.ShowInColumn = totalSummaryPeriodEarned.ShowInColumn.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            totalSummaryPeriodBurned.ShowInColumn = totalSummaryPeriodBurned.ShowInColumn.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            totalSummaryPeriodActual.ShowInColumn = totalSummaryPeriodActual.ShowInColumn.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-
-            groupSummaryBudgeted.ShowInColumn = groupSummaryBudgeted.ShowInColumn.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            //groupSummaryCumulativeEarnedPercentage.ShowInColumn =
-            //    groupSummaryCumulativeEarnedPercentage.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            //groupSummaryCumulativePlanned.ShowInColumn =
-            //    groupSummaryCumulativePlanned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            groupSummaryCumulativeEarned.ShowInColumn =
-                groupSummaryCumulativeEarned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            groupSummaryCumulativeBurned.ShowInColumn =
-                groupSummaryCumulativeBurned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            groupSummaryCumulativeActual.ShowInColumn =
-                groupSummaryCumulativeActual.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            //groupSummaryPeriodEarnedPercentage.ShowInColumn =
-            //    groupSummaryPeriodEarnedPercentage.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            groupSummaryPeriodPlanned.ShowInColumn = groupSummaryPeriodPlanned.ShowInColumn.Replace(
-                fieldNameReplaceFrom, fieldNameReplaceTo);
-            groupSummaryPeriodEarned.ShowInColumn = groupSummaryPeriodEarned.ShowInColumn.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            groupSummaryPeriodBurned.ShowInColumn = groupSummaryPeriodBurned.ShowInColumn.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            groupSummaryPeriodActual.ShowInColumn = groupSummaryPeriodActual.ShowInColumn.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-
-            totalSummaryBudgeted.DisplayFormat = displayFormatVar;
-            //totalSummaryCumulativePlanned.DisplayFormat = displayFormatVar;
-            totalSummaryCumulativeEarned.DisplayFormat = displayFormatVar;
-            totalSummaryCumulativeBurned.DisplayFormat = displayFormatVar;
-            totalSummaryCumulativeActual.DisplayFormat = displayFormatVar;
-            totalSummaryPeriodPlanned.DisplayFormat = displayFormatVar;
-            totalSummaryPeriodEarned.DisplayFormat = displayFormatVar;
-            totalSummaryPeriodBurned.DisplayFormat = displayFormatVar;
-            totalSummaryPeriodActual.DisplayFormat = displayFormatVar;
-
-            groupSummaryBudgeted.DisplayFormat = displayFormatVar;
-            //groupSummaryCumulativePlanned.DisplayFormat = displayFormatVar;
-            groupSummaryCumulativeEarned.DisplayFormat = displayFormatVar;
-            groupSummaryCumulativeBurned.DisplayFormat = displayFormatVar;
-            groupSummaryCumulativeActual.DisplayFormat = displayFormatVar;
-            groupSummaryPeriodPlanned.DisplayFormat = displayFormatVar;
-            groupSummaryPeriodEarned.DisplayFormat = displayFormatVar;
-            groupSummaryPeriodBurned.DisplayFormat = displayFormatVar;
-            groupSummaryPeriodActual.DisplayFormat = displayFormatVar;
-
+            
             foreach (var formatCondition in tableView.FormatConditions)
                 if (formatCondition.Expression != null)
                 {
@@ -371,12 +236,6 @@ namespace BluePrints.Views
                         fieldNameReplaceTo);
                 }
 
-            groupSummaryBudgeted.FieldName = groupSummaryBudgeted.FieldName.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            groupSummaryBudgeted.DisplayFormat = displayFormatVar;
-            totalSummaryBudgeted.FieldName = totalSummaryBudgeted.FieldName.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            totalSummaryBudgeted.DisplayFormat = displayFormatVar;
         }
     }
 }
