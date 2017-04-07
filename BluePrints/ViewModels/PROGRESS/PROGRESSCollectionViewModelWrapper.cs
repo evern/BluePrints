@@ -102,30 +102,6 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        //protected override void OnAfterCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-        //    object sender)
-        //{
-        //    if (sender.ToString() == MainViewModel.ToString())
-        //        return;
-
-        //    if (loadPROJECT != null && changedType == typeof(PROJECT) &&
-        //        loadPROJECT.GUID.ToString() == key.ToString())
-        //        if (messageType == EntityMessageType.Added)
-        //            MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Restored,
-        //                StringFormatUtils.GetEntityNameByType(changedType)));
-        //        else if (messageType == EntityMessageType.Deleted)
-        //            MessageBoxService.ShowMessage(string.Format(CommonResources.Notify_View_Removed,
-        //                StringFormatUtils.GetEntityNameByType(changedType)));
-
-        //    if (loadPROJECT != null)
-        //        if (MainViewModel != null)
-        //            mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.Refresh()));
-        //        else if (loadPROJECT != null)
-        //            mainThreadDispatcher.BeginInvoke(new Action(() => InitializeAndLoadEntitiesLoaderDescription()));
-
-        //    base.OnAfterCompulsoryEntitiesChanged(key, changedType, messageType, sender);
-        //}
-
         #region Collection Call Backs
         /// <summary>
         /// CallBack to apply global convention

@@ -154,7 +154,7 @@
                                 </dxg:TreeListControl.View>
                             </dxg:TreeListControl>
                         </dxdo:LayoutPanel>
-                        <dxdo:DocumentGroup x:Name="documentGroup" BorderThickness="0" Margin="0" Padding="0">
+                        <dxdo:DocumentGroup x:Name="documentGroup" BorderThickness="0" Margin="0" Padding="0" TabContentCacheMode="CacheAllTabs" >
                             <dxmvvm:Interaction.Behaviors>
                                 <dxdo:TabbedDocumentUIService />
                             </dxmvvm:Interaction.Behaviors>

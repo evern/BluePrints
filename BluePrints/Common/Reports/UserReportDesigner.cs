@@ -8,17 +8,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DevExpress.XtraEditors;
-using DevExpress.XtraReports.UI;
 using BluePrints.Data;
-using BluePrints.Common.ViewModel;
+using DevExpress.XtraReports.UI;
 using BluePrints.BluePrintsEntitiesDataModel;
-using DevExpress.XtraReports.UserDesigner;
+using BluePrints.Common.ViewModel;
 using System.IO;
 using BluePrints.Reports;
+using DevExpress.XtraReports.UserDesigner;
 
 namespace BluePrints.Common.Reports
 {
-    public partial class ReportDesigner : XtraForm
+    public partial class UserReportDesigner : DevExpress.XtraEditors.XtraForm
     {
         private XtraReport currentREPORT;
         private PROJECT currentPROJECT;
@@ -26,7 +26,7 @@ namespace BluePrints.Common.Reports
         private ReportType currentReportType;
         private CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork> collectionViewModel;
 
-        public ReportDesigner(PROJECT currentPROJECT,
+        public UserReportDesigner(PROJECT currentPROJECT,
             CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork> collectionViewModel,
             ReportType currentReportType)
         {
@@ -34,7 +34,6 @@ namespace BluePrints.Common.Reports
             this.currentReportType = currentReportType;
             this.collectionViewModel = collectionViewModel;
             this.currentPROJECT = currentPROJECT;
-
             reportDesigner1.DesignPanelLoaded += new DesignerLoadedEventHandler(reportDesigner1_DesignPanelLoaded);
         }
 
@@ -44,14 +43,7 @@ namespace BluePrints.Common.Reports
             panel.AddCommandHandler(new SaveCommandHandler(panel, SaveReport));
         }
 
-        private void barButtonDefault_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
-        {
-            barButtonResetTemplate_ItemClick(null, null);
-            if (currentPROJECT_REPORT != null)
-                collectionViewModel.Delete(currentPROJECT_REPORT);
-        }
-
-        private void REPORTDesigner_Load(object sender, EventArgs e)
+        private void ReportDesigner_Load(object sender, EventArgs e)
         {
             if (collectionViewModel.Entities.Count > 0)
             {
@@ -113,6 +105,31 @@ namespace BluePrints.Common.Reports
             }
         }
 
+
+        private void bBtnSetDefault_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+        {
+            SetDefault();
+        }
+
+        private void SetDefault()
+        {
+            if (currentPROJECT_REPORT != null)
+                collectionViewModel.Delete(currentPROJECT_REPORT);
+
+            if (collectionViewModel.Entities.Count > 0)
+            {
+                currentPROJECT_REPORT = collectionViewModel.Entities.First();
+                collectionViewModel.Delete(currentPROJECT_REPORT);
+            }
+
+            if (currentReportType == ReportType.Progress_Report)
+                currentREPORT = new XtraReportPROGRESS_ITEMS();
+            else if (currentReportType == ReportType.Baseline_Report)
+                currentREPORT = new XtraReportBASELINE_ITEMS();
+
+            reportDesigner1.OpenReport(currentREPORT);
+        }
+
         public class SaveCommandHandler : ICommandHandler
         {
             private XRDesignPanel panel;
@@ -144,28 +161,11 @@ namespace BluePrints.Common.Reports
             private void Save()
             {
                 // For instance:
-                if (SaveDelegate != null)
-                    SaveDelegate();
+                SaveDelegate?.Invoke();
 
                 // Prevent the "Report has been changed" dialog from being shown.
                 panel.ReportState = ReportState.Saved;
             }
-        }
-
-        private void barButtonResetTemplate_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
-        {
-            if (collectionViewModel.Entities.Count > 0)
-            {
-                currentPROJECT_REPORT = collectionViewModel.Entities.First();
-                collectionViewModel.Delete(currentPROJECT_REPORT);
-            }
-
-            if (currentReportType == ReportType.Progress_Report)
-                currentREPORT = new XtraReportPROGRESS_ITEMS();
-            else if (currentReportType == ReportType.Baseline_Report)
-                currentREPORT = new XtraReportBASELINE_ITEMS();
-
-            reportDesigner1.OpenReport(currentREPORT);
         }
     }
 }

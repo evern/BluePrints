@@ -92,6 +92,16 @@
         <Setter Property="AutoExpandAllGroups" Value="False" />
         <Setter Property="ShowAllTableValuesInCheckedFilterPopup" Value="False" />
     </Style>
+    <Style x:Key="AggregateNestedViewGridTemplate" TargetType="{x:Type dxg:GridControl}">
+        <Setter Property="ShowLoadingPanel" Value="{Binding IsLoading}" />
+        <Setter Property="ItemsSource" Value="{Binding DisplayEntities}" />
+        <Setter Property="ClipboardCopyMode" Value="ExcludeHeader" />
+        <Setter Property="SelectionMode" Value="Row" />
+        <Setter Property="CurrentItem" Value="{Binding DisplaySelectedEntity, Mode=TwoWay}" />
+        <Setter Property="SelectedItems" Value="{Binding DisplaySelectedEntities, Mode=TwoWay}" />
+        <Setter Property="ShowBorder" Value="False" />
+        <Setter Property="AutoExpandAllGroups" Value="False" />
+    </Style>
     <Style x:Key="NestedWrapperTableViewTemplate" TargetType="{x:Type common:TableViewEx}">
         <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
             <Setter.Value>
@@ -185,16 +195,6 @@
                 </DataTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
-    <Style x:Key="AggregateNestedViewGridTemplate" TargetType="{x:Type dxg:GridControl}">
-        <Setter Property="ShowLoadingPanel" Value="{Binding IsLoading}" />
-        <Setter Property="ItemsSource" Value="{Binding DisplayEntities}" />
-        <Setter Property="ClipboardCopyMode" Value="ExcludeHeader" />
-        <Setter Property="SelectionMode" Value="Row" />
-        <Setter Property="CurrentItem" Value="{Binding DisplaySelectedEntity, Mode=TwoWay}" />
-        <Setter Property="SelectedItems" Value="{Binding DisplaySelectedEntities, Mode=TwoWay}" />
-        <Setter Property="ShowBorder" Value="False" />
-        <Setter Property="AutoExpandAllGroups" Value="False" />
     </Style>
     <Style x:Key="WrapperTreeTemplate" TargetType="{x:Type dxg:TreeListControl}">
         <Setter Property="ItemsSource" Value="{Binding Entities}" />

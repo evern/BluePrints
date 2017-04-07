@@ -617,7 +617,7 @@ namespace BluePrints.ViewModels
 
         public void EditReport()
         {
-            var reportDesigner = new ReportDesigner(_loadProject,
+            var reportDesigner = new UserReportDesigner(_loadProject,
                 (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
                 loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Baseline_Report);
             if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)

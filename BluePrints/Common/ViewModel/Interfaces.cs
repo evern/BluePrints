@@ -21,6 +21,12 @@ namespace BluePrints.Common.ViewModel
         Guid GUID { get; set; }
     }
 
+    public interface IProjection<TEntity> : IHaveGUID
+        where TEntity : class, new()
+    {
+        TEntity entity { get; set; }
+    }
+
     public interface IHaveSummary : IHaveStats
     {
         void BuildStats();

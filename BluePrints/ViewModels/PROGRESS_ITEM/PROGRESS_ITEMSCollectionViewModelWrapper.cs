@@ -701,7 +701,7 @@ namespace BluePrints.ViewModels
 
         public void EditReport()
         {
-            var reportDesigner = new ReportDesigner(loadPROJECT,
+            var reportDesigner = new UserReportDesigner(loadPROJECT,
                 (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
                 loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Progress_Report);
             if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -721,17 +721,17 @@ namespace BluePrints.ViewModels
                 return;
 
             var progressReport = new XtraReportPROGRESS_ITEMS();
-            //var dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
-            //if (dbProjectReport != null)
-            //{
-            //    var reportString = dbProjectReport.REPORT.ToString();
-            //    using (var sw = new StreamWriter(new MemoryStream()))
-            //    {
-            //        sw.Write(reportString);
-            //        sw.Flush();
-            //        progressReport.LoadLayout(sw.BaseStream);
-            //    }
-            //}
+            var dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
+            if (dbProjectReport != null)
+            {
+                var reportString = dbProjectReport.REPORT.ToString();
+                using (var sw = new StreamWriter(new MemoryStream()))
+                {
+                    sw.Write(reportString);
+                    sw.Flush();
+                    progressReport.LoadLayout(sw.BaseStream);
+                }
+            }
 
             fullSummarizer.Build();
             progressReport.AssignProperties(projectSummary, loadPROGRESS.DATA_DATE, loadPROGRESS.PROJECT.NAME);
