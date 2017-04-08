@@ -365,7 +365,7 @@
             this.Detail1.HeightF = 25.00002F;
             this.Detail1.Name = "Detail1";
             this.Detail1.SortFields.AddRange(new DevExpress.XtraReports.UI.GroupField[] {
-            new DevExpress.XtraReports.UI.GroupField("BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM", DevExpress.XtraReports.UI.XRColumnSortOrder.Ascending)});
+            new DevExpress.XtraReports.UI.GroupField("Entity.Entity.INTERNAL_NUM", DevExpress.XtraReports.UI.XRColumnSortOrder.Ascending)});
             // 
             // xrLabel7
             // 
@@ -592,7 +592,7 @@
             this.xrLabel1.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel1.CanGrow = false;
             this.xrLabel1.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.Entity.Entity.INTERNAL_NUM")});
             this.xrLabel1.Dpi = 100F;
             this.xrLabel1.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrLabel1.KeepTogether = true;
@@ -609,7 +609,7 @@
             this.xrDataBaselineBudgeted.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataBaselineBudgeted.CanGrow = false;
             this.xrDataBaselineBudgeted.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.Entity.Entity.ESTIMATED_HOURS")});
             this.xrDataBaselineBudgeted.Dpi = 100F;
             this.xrDataBaselineBudgeted.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataBaselineBudgeted.KeepTogether = true;
@@ -624,7 +624,7 @@
             // 
             this.xrLabel21.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel21.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.BASELINE_ITEMJoinRATE.BASELINE_ITEM.PRIMARY_TITLE")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.Entity.Entity.PRIMARY_TITLE")});
             this.xrLabel21.Dpi = 100F;
             this.xrLabel21.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrLabel21.KeepTogether = true;
@@ -642,7 +642,7 @@
             this.xrLabel42});
             this.GroupHeader1.Dpi = 100F;
             this.GroupHeader1.GroupFields.AddRange(new DevExpress.XtraReports.UI.GroupField[] {
-            new DevExpress.XtraReports.UI.GroupField("BASELINE_ITEMJoinRATE.BASELINE_ITEM.AREA.INTERNAL_NUM", DevExpress.XtraReports.UI.XRColumnSortOrder.Ascending)});
+            new DevExpress.XtraReports.UI.GroupField("Entity.Entity.AREA.INTERNAL_NUM", DevExpress.XtraReports.UI.XRColumnSortOrder.Ascending)});
             this.GroupHeader1.HeightF = 23.87497F;
             this.GroupHeader1.Name = "GroupHeader1";
             // 
@@ -651,7 +651,7 @@
             this.xrLabel43.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel43.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.BASELINE_ITEMJoinRATE.BASELINE_ITEM.AREA.TITLE")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.Entity.Entity.AREA.TITLE")});
             this.xrLabel43.Dpi = 100F;
             this.xrLabel43.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrLabel43.KeepTogether = true;
@@ -666,7 +666,7 @@
             // 
             this.xrLabel42.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel42.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.BASELINE_ITEMJoinRATE.BASELINE_ITEM.AREA.INTERNAL_NUM")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverable.Entity.Entity.AREA.INTERNAL_NUM")});
             this.xrLabel42.Dpi = 100F;
             this.xrLabel42.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrLabel42.KeepTogether = true;

@@ -345,7 +345,7 @@
     <Compile Include="Common\Misc\GridControlEx.cs" />
     <Compile Include="Common\Helpers\CommonMethods.cs" />
     <Compile Include="Common\Helpers\CustomMessageBoxService.cs" />
-    <Compile Include="Common\Helpers\EntitiesLoader.cs" />
+    <Compile Include="Common\ViewModel\Base\EntitiesLoaderDescriptionCollection.cs" />
     <Compile Include="Common\Helpers\XMLHelpers.cs" />
     <Compile Include="Common\Misc\LayoutSettings.Designer.cs">
       <DependentUpon>LayoutSettings.settings</DependentUpon>
@@ -360,7 +360,7 @@
     <Compile Include="Common\Projections\PROGRESS_ITEMProjection.cs" />
     <Compile Include="Common\Projections\VARIATIONProjection.cs" />
     <Compile Include="Common\Projections\VARIATION_ITEMProjection.cs" />
-    <Compile Include="Common\Projections\OptionalEntitiesParameter.cs" />
+    <Compile Include="Common\Misc\OptionalEntitiesParameter.cs" />
     <Compile Include="Common\Projections\PROJECT_Dashboard.cs" />
     <Compile Include="Common\Projections\ROLE_PERMISSIONInfo.cs" />
     <Compile Include="Common\Misc\TASK_AppointmentInfo.cs" />
@@ -401,7 +401,9 @@
     <Compile Include="Common\Utils\StringFormatUtils.cs" />
     <Compile Include="Common\ViewModel\Base\CollectionViewModelBase.cs" />
     <Compile Include="Common\ViewModel\Base\DashboardCollectionViewModelWrapper.cs" />
+    <Compile Include="Common\ViewModel\Base\EntitiesLoaderDescription.cs" />
     <Compile Include="Common\ViewModel\Base\ProjectionBase.cs" />
+    <Compile Include="Common\ViewModel\Base\WrapperInterfaces.cs" />
     <Compile Include="Common\ViewModel\Dialogs\DialogCollectionViewModel.cs" />
     <Compile Include="Common\ViewModel\Base\EntitiesCollectionsWrapper.cs" />
     <Compile Include="Common\ViewModel\EntitiesViewModel.cs" />
@@ -1204,7 +1206,7 @@
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMCollectionView.xaml.cs">
       <DependentUpon>BASELINE_ITEMCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\BluePrintsEntitiesView.xaml.cs">
+    <Compile Include="Common\View\ResourceDictionaries\BluePrintsEntitiesView.xaml.cs">
       <DependentUpon>BluePrintsEntitiesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\COMMODITY_CODE\COMMODITY_CODECollectionView.xaml.cs">
@@ -1261,9 +1263,6 @@
     <Compile Include="Views\UOM\UOMCollectionView.xaml.cs">
       <DependentUpon>UOMCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\UOM\UOMView.xaml.cs">
-      <DependentUpon>UOMView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\USER\USERCollectionView.xaml.cs">
       <DependentUpon>USERCollectionView.xaml</DependentUpon>
     </Compile>
@@ -1286,6 +1285,22 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Common\View\PrimaveraAffinityReport.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Common\View\ResourceDictionaries\ChartResourceDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Common\View\ResourceDictionaries\CustomControlResourceDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Common\View\ResourceDictionaries\DefaultControlResourceDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Common\View\ResourceDictionaries\GridColumnResourceDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1341,6 +1356,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Common\View\ResourceDictionaries\NestedControlResourceDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\USER\USERDashboardView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -1389,11 +1408,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\BluePrintsEntitiesView.xaml">
+    <Page Include="Common\View\ResourceDictionaries\BluePrintsEntitiesView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\BluePrintsResourceDictionary.xaml">
+    <Page Include="Common\View\ResourceDictionaries\ConverterResourceDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1466,10 +1485,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\UOM\UOMCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\UOM\UOMView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

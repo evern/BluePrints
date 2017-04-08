@@ -21,7 +21,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -85,7 +85,7 @@
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl Name="gridControl"
-                                     Style="{StaticResource AggregateViewGridTemplate}">
+                                     Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="PHASE" FieldName="Entity.GUID_DPHASE">
                                 <dxg:GridColumn.EditSettings>

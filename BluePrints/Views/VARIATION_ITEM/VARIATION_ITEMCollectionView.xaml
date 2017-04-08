@@ -21,7 +21,8 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -84,7 +85,7 @@
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="VARIATION_ITEMSGrid"
-                                     Style="{StaticResource AggregateViewGridTemplate}">
+                                     Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Name="colWORKPACKInternalName1"
                                             FieldName="Entity.Entity.GUID_WORKPACK"

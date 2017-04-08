@@ -19,6 +19,7 @@ using BluePrints.Common.ViewModel.Reporting;
 using System.Windows.Threading;
 using DevExpress.Xpf.Bars;
 using BluePrints.ViewModels;
+using BluePrints.Common.Projections;
 
 namespace BluePrints.Common.ViewModel
 {
@@ -117,63 +118,36 @@ namespace BluePrints.Common.ViewModel
         }
 
         #region P6 Affinity
-        //public PROGRESS SelectionLivePROGRESS
-        //{
-        //    get
-        //    {
-        //        if (DisplaySelectedEntity == null)
-        //            return null;
-
-        //        var collection = GetEntities<PROGRESS>();
-        //        if (collection == null)
-        //            return null;
-
-        //        return collection.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.GUID_PROJECT == DisplaySelectedEntity.GUID);
-        //    }
-        //}
-
-        //public BASELINE SelectionLiveBASELINE
-        //{
-        //    get
-        //    {
-        //        if (DisplaySelectedEntity == null)
-        //            return null;
-
-        //        var collection = GetEntities<BASELINE>();
-        //        if (collection == null)
-        //            return null;
-
-        //        return collection.FirstOrDefault(x => x.STATUS == BaselineStatus.Live && x.GUID_PROJECT == DisplaySelectedEntity.GUID);
-        //    }
-        //}
-
         public bool CanShowP6Errors()
         {
-            //if (DisplaySelectedEntity == null || DisplaySelectedEntity.ReportableObjects == null)
-            //    return false;
-            ////if (SelectionLiveBASELINE == null || SelectionLivePROGRESS == null)
-            ////    return false;
 
-            ////if (SelectionLiveBASELINE.P6BASELINE_NAME == string.Empty && SelectionLivePROGRESS.P6PROGRESS_NAME == string.Empty)
-            ////    return false;
+            if (DisplaySelectedEntity == null)
+                return false;
 
-            //if (!DisplaySelectedEntity.ReportableObjects.Any(x => x.isPlannedDataPointsFromP6))
-            //    return true;
+            SummaryStats summaryStats = DisplaySelectedEntity.Stats as SummaryStats;
+            if (summaryStats == null || summaryStats.Deliverable == null)
+                return false;
 
-            ////Earned is always generated based on progress_item earned_date
-            ////if (!DisplaySelectedEntity.ReportableObjects.Any(x => x.isEarnedDataPointsFromP6))
-            ////    return true;
+            if (!summaryStats.Deliverable.Any(x => x.Stats != null && x.Stats.Budgeted != null && x.Stats.Budgeted.FromP6))
+                return true;
 
-            //if (!DisplaySelectedEntity.ReportableObjects.Any(x => x.isRemainingDataPointsFromP6))
-            //    return true;
+            if (!summaryStats.Deliverable.Any(x => x.Stats != null && x.Stats.Remaining != null && x.Stats.Remaining.FromP6))
+                return true;
 
             return false;
         }
 
         public void ShowP6Errors()
         {
-            //DialogCollectionViewModel<PROGRESS_ITEMProjection> viewModel = DialogCollectionViewModel<PROGRESS_ITEMProjection>.Create(DisplaySelectedEntity.ReportableObjects);
-            //IssuesDialogService.ShowDialog(MessageButton.OK, "P6 Affinity Report", "PrimaveraAffinityReport", viewModel);
+            if (DisplaySelectedEntity == null)
+                return;
+
+            SummaryStats summaryStats = DisplaySelectedEntity.Stats as SummaryStats;
+            if (summaryStats == null)
+                return;
+
+            DialogCollectionViewModel<PROGRESS_ITEMProjection> viewModel = DialogCollectionViewModel<PROGRESS_ITEMProjection>.Create(summaryStats.Deliverable);
+            IssuesDialogService.ShowDialog(MessageButton.OK, "P6 Affinity Report", "PrimaveraAffinityReport", viewModel);
         }
         #endregion
 
@@ -188,8 +162,7 @@ namespace BluePrints.Common.ViewModel
             if (DisplaySelectedEntity == null)
                 return false;
 
-            ProjectSummaryStats projectSummary = DisplaySelectedEntity as ProjectSummaryStats;
-            
+            ProjectSummaryStats projectSummary = DisplaySelectedEntity.Stats as ProjectSummaryStats;
             if (projectSummary == null || projectSummary.ExoMissingWORKPACKS == null || projectSummary.ExoMissingWORKPACKS.Count == 0)
                 return false;
 
@@ -198,7 +171,10 @@ namespace BluePrints.Common.ViewModel
 
         public void ShowExoErrors()
         {
-            ProjectSummaryStats projectSummary = DisplaySelectedEntity as ProjectSummaryStats;
+            ProjectSummaryStats projectSummary = DisplaySelectedEntity.Stats as ProjectSummaryStats;
+            if (projectSummary == null || projectSummary.ExoMissingWORKPACKS == null || projectSummary.ExoMissingWORKPACKS.Count == 0)
+                return;
+
             DialogCollectionViewModel<WORKPACK> viewModel = DialogCollectionViewModel<WORKPACK>.Create(projectSummary.ExoMissingWORKPACKS);
             IssuesDialogService.ShowDialog(MessageButton.OK, "Exo Affinity Report", "ExoAffinityReport", viewModel);
         }

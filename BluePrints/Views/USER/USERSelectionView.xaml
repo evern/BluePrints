@@ -16,7 +16,8 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -26,7 +27,7 @@
         </dxmvvm:Interaction.Behaviors>
         <dxlc:LayoutControl Name="LayoutControlRoot" Orientation="Vertical">
             <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group">
-                <dxg:GridControl Name="gridControl" Style="{StaticResource BasicGridTemplate}">
+                <dxg:GridControl Name="gridControl" Style="{StaticResource BasicGridControlTemplate}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn FieldName="NAME" />
                         <dxg:GridColumn FieldName="DEPARTMENT" />

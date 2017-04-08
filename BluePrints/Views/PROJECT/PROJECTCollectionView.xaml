@@ -22,7 +22,8 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -90,8 +91,7 @@
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="PROJECTSGrid"
-                                     ColumnsSource="{StaticResource PROJECTcolumns}"
-                                     Style="{StaticResource AggregateViewGridTemplate}">
+                                     Style="{StaticResource DefaultGridControlTemplate}">
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand PassEventArgsToCommand="True"
                                                    Command="{Binding DataContext.EditCommand, ElementName=userControl}"
@@ -101,6 +101,66 @@
                                 </dxmvvm:EventToCommand.EventArgsConverter>
                             </dxmvvm:EventToCommand>
                         </dxmvvm:Interaction.Behaviors>
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn Header="Number" FieldName="NUMBER" />
+                            <dxg:GridColumn Header="Name" FieldName="NAME" />
+                            <dxg:GridColumn Header="Client" FieldName="CLIENT" />
+                            <dxg:GridColumn Header="Status" FieldName="STATUS">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectStatus}}" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Contract Type" FieldName="CONTRACTTYPE">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ContractType}}" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Type" FieldName="TYPE">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectType}}" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Design Manager" FieldName="DESIGNMANAGER">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DesignManager}}" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Legacy Workpack" FieldName="USELEGACYWORKPACK">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:CheckEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Currency Conversion" FieldName="CURRENCYCONVERSION">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings MinValue="0.1" x:Name="PART_Editor" MaskType="Numeric" Mask="n2"
+                                      MaskUseAsDisplayFormat="True" Increment="0.01" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Review %" FieldName="REVIEWPERCENTAGE">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="p2" MinValue="0" Increment="0.1" MaxValue="1"
+                                      MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Review Period" FieldName="REVIEWPERIOD">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:SpinEdit
+                        x:Name="PART_Editor"
+                        MaskUseAsDisplayFormat="True"
+                        MaskType="Numeric"
+                        Increment="1"
+                        MinValue="0"
+                        MaxValue="99"
+                        Mask="{Binding EditValue, ConverterParameter=Day, Converter={StaticResource QuantityExpressionConverter}, RelativeSource={RelativeSource Self}}" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
+                        </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.TotalSummary>

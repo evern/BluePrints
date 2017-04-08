@@ -191,8 +191,6 @@ namespace BluePrints.ViewModels
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntityCallBack;
             MainViewModel.ExistingRowAddUndoAndSaveCallBack = ExistingRowAddUndoAndSaveCallBack;
             MainViewModel.OnAfterEntitySavedCallBack = OnAfterBASELINE_ITEMEntitySaved;
-            //have to add this so that undo will have an effect on progress item
-            //MainViewModel.BulkPreSave = this.MainEntityBulkPreSave;
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             MainViewModel.BeforeShownEditor = BeforeShownEditor;
             MainViewModel.SetParentViewModel(this);

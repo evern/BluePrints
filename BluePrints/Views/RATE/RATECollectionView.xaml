@@ -21,7 +21,8 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -85,7 +86,38 @@
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl Name="gridControl" ColumnsSource="{StaticResource RATEColumns}"
-                                     Style="{StaticResource AggregateViewGridTemplate}">
+                                     Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn Header="GROUP" FieldName="COST_GROUP"
+                        DataContext="{Binding DataContext, ElementName=userControl}">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:CostGroup}}" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="DEPARTMENT" FieldName="GUID_DEPARTMENT"
+                        DataContext="{Binding DataContext, ElementName=userControl}">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings
+                    ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}"
+                    IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="DISCIPLINE" FieldName="GUID_DISCIPLINE"
+                        DataContext="{Binding DataContext, ElementName=userControl}">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings
+                    ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
+                    IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="RATE1" Header="RATE">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True"
+                                      Increment="10" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                        </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.TotalSummary>

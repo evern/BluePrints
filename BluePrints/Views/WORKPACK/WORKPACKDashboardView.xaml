@@ -21,7 +21,8 @@
         <ResourceDictionary>
             <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ChartResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -87,7 +88,7 @@
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical"
                                       dxlc:LayoutControl.AllowVerticalSizing="True">
                         <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="WORKPACKDashboardGrid"
-                                         Style="{StaticResource WrapperGridTemplate}">
+                                         Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Bands>
                                 <dxg:GridControlBand Name="bandGeneral" Header="General">
                                     <dxg:GridColumn FieldName="Entity.GUID_DPHASE" Header="PHASE">
@@ -264,21 +265,17 @@
                             <dxg:GridControl.DetailDescriptor>
                                 <dxg:DataControlDetailDescriptor
                                     ItemsSourceBinding="{Binding Stats.Burned.ExoDataPoints}">
-                                    <!--<dxg:GridControl Style="{StaticResource BasicGridTemplate}">-->
                                     <dxg:GridControl>
                                             <dxg:GridControl.Columns>
                                             <dxg:GridColumn Header="Resource Name" FieldName="ResourceName"
                                                             VisibleIndex="10" />
                                             <dxg:GridColumn FieldName="Units" VisibleIndex="20" />
-                                            <dxg:GridColumn FieldName="Costs" VisibleIndex="30" />
-                                            <dxg:GridColumn FieldName="Actuals" VisibleIndex="40" Visible="False" />
+                                            <!--<dxg:GridColumn FieldName="Costs" VisibleIndex="30" />
+                                            <dxg:GridColumn FieldName="Actuals" VisibleIndex="40" Visible="False" />-->
                                             <dxg:GridColumn Header="Transaction Date" FieldName="ProgressDate"
                                                             VisibleIndex="90" />
                                         </dxg:GridControl.Columns>
                                         <dxg:GridControl.View>
-                                            <!--<common:TableViewEx Name="detailTableView" AllowEditing="False"
-                                                           Style="{StaticResource ChildTableReadOnlyViewTemplate}"
-                                                           NewItemRowPosition="None" />-->
                                             <dxg:TableView x:Name="detailTableView" AllowEditing="False" 
                                                            NewItemRowPosition="None" />
                                         </dxg:GridControl.View>

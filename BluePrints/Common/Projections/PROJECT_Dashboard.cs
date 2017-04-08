@@ -31,16 +31,17 @@ namespace BluePrints.Common.Projections
             List<VariationAdjustment> projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONS.AsQueryable(), progress_items.Select(x => x.Entity));
 
             FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(Entity, LiveBASELINE, LivePROGRESS, WORKPACKS, WORKPACK_ASSIGNMENTS, P6UOW, PrimeroUOW);
+
             Stats = new ProjectSummaryStats(progress_items, LivePROGRESS, projectVariationAdjustments);
             projectSummarizer = new FullSummarizer((ProjectSummaryStats)Stats, fullStatsBuilder);
         }
 
-        public void BuildStats()
+        public void BuildStats(bool showLoadingScreen = true, bool isCosts = false)
         {
             if (projectSummarizer == null)
                 return;
 
-            projectSummarizer.Build();
+            projectSummarizer.Build(showLoadingScreen, isCosts);
         }
 
         public void RecalculateStats(bool isCosts)
@@ -135,7 +136,7 @@ namespace BluePrints.Common.Projections
 
             foreach (var project in projects)
             {
-                project.BuildStats();
+                project.BuildStats(false);
                 project.RecalculateStats(false);
                 
                 if (((BackgroundWorker) sender).CancellationPending)

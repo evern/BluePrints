@@ -19,7 +19,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -283,7 +283,7 @@
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.View>
                                         <common:TableViewEx x:Name="tableView1"
-                                                       Style="{StaticResource DisplayEntitiesChildTableViewTemplate}"
+                                                       Style="{StaticResource DefaultDetailTableViewTemplate}"
                                                        NewItemRowPosition="None" />
                                     </dxg:GridControl.View>
                                 </dxg:GridControl>

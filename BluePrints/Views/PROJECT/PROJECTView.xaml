@@ -22,7 +22,11 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/NestedControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ChartResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -91,7 +95,7 @@
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Orientation="Vertical"
                                       dxlc:LayoutControl.AllowVerticalSizing="False" Height="160">
                         <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="PROJECT_DashboardGrid"
-                                         Style="{StaticResource AggregateViewGridTemplate}">
+                                         Style="{StaticResource DefaultGridControlTemplate}">
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EventToCommand PassEventArgsToCommand="True"
                                                        Command="{Binding DataContext.EditCommand, ElementName=userControl}"
@@ -447,7 +451,7 @@
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
                             <dxg:GridControl Name="gridControlBASELINE" dx:DXSerializer.SerializationID="BASELINEGrid"
-                                             Style="{StaticResource AggregateNestedViewGridTemplate}" Grid.Row="1" MaxHeight="300">
+                                             Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" MaxHeight="300">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="NAME" />
                                     <dxg:GridColumn FieldName="REVISION" />
@@ -528,7 +532,7 @@
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
                                     <common:TableViewEx x:Name="tableViewBASELINE"
-                                                   Style="{StaticResource NestedWrapperTableViewTemplate}"
+                                                   Style="{StaticResource NestedTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
                                         <common:TableViewEx.RowCellMenuCustomizations>
@@ -580,7 +584,7 @@
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
                             <dxg:GridControl Name="gridControlPROGRESS" dx:DXSerializer.SerializationID="PROGRESSGrid"
-                                             Style="{StaticResource AggregateNestedViewGridTemplate}" Grid.Row="1" MaxHeight="300">
+                                             Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" MaxHeight="300">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="NAME" />
                                     <dxg:GridColumn FieldName="PROGRESS_START">
@@ -635,7 +639,7 @@
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
                                     <common:TableViewEx x:Name="tableViewPROGRESS"
-                                                   Style="{StaticResource NestedWrapperTableViewTemplate}"
+                                                   Style="{StaticResource NestedTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
                                         <common:TableViewEx.RowCellMenuCustomizations>
@@ -685,7 +689,7 @@
                             </dxb:ToolBarControl>
                             <dxg:GridControl Name="gridControlPHASE" dx:DXSerializer.SerializationID="PHASEGrid"
                                              ColumnsSource="{StaticResource PHASEColumns}"
-                                             Style="{StaticResource AggregateNestedViewGridTemplate}" Grid.Row="1" MaxHeight="300">
+                                             Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" MaxHeight="300">
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                                 </dxg:GridControl.TotalSummary>
@@ -694,7 +698,7 @@
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
                                     <common:TableViewEx x:Name="tableViewPHASE"
-                                                   Style="{StaticResource NestedWrapperTableViewTemplate}"
+                                                   Style="{StaticResource NestedTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
                                         <common:TableViewEx.RowCellMenuCustomizations>
@@ -744,7 +748,7 @@
                             </dxb:ToolBarControl>
                             <dxg:GridControl Name="gridControlAREA" dx:DXSerializer.SerializationID="AREAGrid"
                                              ColumnsSource="{StaticResource AREAColumns}"
-                                             Style="{StaticResource AggregateNestedViewGridTemplate}" Grid.Row="1" MaxHeight="300">
+                                             Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" MaxHeight="300">
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                                 </dxg:GridControl.TotalSummary>
@@ -753,7 +757,7 @@
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
                                     <common:TableViewEx x:Name="tableViewAREA"
-                                                   Style="{StaticResource NestedWrapperTableViewTemplate}"
+                                                   Style="{StaticResource NestedTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
                                         <common:TableViewEx.RowCellMenuCustomizations>
@@ -802,7 +806,7 @@
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
                             <dxg:GridControl Name="gridControlRATE" dx:DXSerializer.SerializationID="RATEGrid"
-                                             Style="{StaticResource AggregateNestedViewGridTemplate}" Grid.Row="1" MaxHeight="300">
+                                             Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" MaxHeight="300">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn Header="DEPARTMENT" FieldName="GUID_DEPARTMENT">
                                         <dxg:GridColumn.EditSettings>
@@ -833,7 +837,7 @@
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
                                     <common:TableViewEx x:Name="tableViewRATE"
-                                                   Style="{StaticResource NestedWrapperTableViewTemplate}"
+                                                   Style="{StaticResource NestedTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
                                         <common:TableViewEx.RowCellMenuCustomizations>

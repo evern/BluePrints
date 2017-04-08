@@ -21,7 +21,8 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -112,7 +113,7 @@
                 </dxr:RibbonStatusBarControl>
                 <Grid>
                     <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="PROGRESS_ITEMSGrid"
-                                     Style="{StaticResource AggregateViewGridTemplate}" >
+                                     Style="{StaticResource DefaultGridControlTemplate}" >
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand
                                 Command="{Binding DataContext.CustomSummaryCommand, ElementName=userControl}"

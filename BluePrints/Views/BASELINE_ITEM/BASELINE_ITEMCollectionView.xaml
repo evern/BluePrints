@@ -22,7 +22,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -92,7 +92,7 @@
                 </dxr:RibbonStatusBarControl>
                 <Grid>
                     <dxg:GridControl x:Name="gridControl" dx:DXSerializer.SerializationID="BASELINE_ITEMSGrid"
-                                     Style="{StaticResource AggregateViewGridTemplate}" PreviewKeyDown="gridControl_PreviewKeyDown">
+                                     Style="{StaticResource DefaultGridControlTemplate}" PreviewKeyDown="gridControl_PreviewKeyDown">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="Entity.GUID_WORKPACK"
                                             Header="WORKPACK 1" Visible="true" VisibleIndex="0">

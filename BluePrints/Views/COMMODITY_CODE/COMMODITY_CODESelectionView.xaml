@@ -9,13 +9,6 @@
     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
     xmlns:common="clr-namespace:BluePrints.Common"
     Height="100" Width="300">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
     <dxlc:LayoutControl Orientation="Vertical">
         <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
             <dxlc:LayoutGroup Height="40" Name="LayoutGroupContent" View="Group" Orientation="Horizontal">

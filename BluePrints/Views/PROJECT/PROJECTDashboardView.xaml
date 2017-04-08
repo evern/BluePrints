@@ -21,7 +21,8 @@
         <ResourceDictionary>
             <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ChartResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -96,7 +97,7 @@
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical"
                                       dxlc:LayoutControl.AllowVerticalSizing="True">
                         <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="PROJECT_DashboardGrid"
-                                         Style="{StaticResource AggregateViewGridTemplate}">
+                                         Style="{StaticResource DefaultGridControlTemplate}">
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EventToCommand PassEventArgsToCommand="True"
                                                        Command="{Binding DataContext.EditCommand, ElementName=userControl}"
@@ -388,7 +389,7 @@
                                                            Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                            Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                     </common:TableViewEx.RowCellMenuCustomizations>
-                                    <common:TableViewEx.FormatConditions>
+                                    <!--<common:TableViewEx.FormatConditions>
                                         <dxg:FormatCondition
                                             Expression="[Stats.Earned.CurrentPeriodCumulativeDataPoint.Units] / [Stats.Planned.CurrentPeriodCumulativeDataPoint.Units] &lt; 0.8"
                                             FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage">
@@ -431,7 +432,7 @@
                                                                     MaxValue="1" MinValue="-1">
                                             <dx:DataBarFormat FillNegative="#FFFF9B98" Fill="#FF9ACCFF" />
                                         </dxg:DataBarFormatCondition>
-                                    </common:TableViewEx.FormatConditions>
+                                    </common:TableViewEx.FormatConditions>-->
                                 </common:TableViewEx>
                             </dxg:GridControl.View>
                         </dxg:GridControl>

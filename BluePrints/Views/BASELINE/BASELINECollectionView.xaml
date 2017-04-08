@@ -19,8 +19,27 @@
              DataContext="{dxmvvm:ViewModelSource viewmodel:BASELINECollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
+            <ControlTemplate x:Key="Button_BASELINE_ASSIGN">
+                <Button Command="{Binding DataContext.P6BASELINE_ASSIGNCommand, ElementName=userControl}"
+                IsEnabled="{Binding Path=RowData.Row.P6BASELINE_NAME, Converter={StaticResource StringToBoolConverter}, ConverterParameter=false, FallbackValue=false}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{dx:DXImageOffice2013 Image=Edit_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0" />
+                        <TextBlock Text="Edit" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </ControlTemplate>
+            <ControlTemplate x:Key="Button_MODBASELINE_ASSIGN">
+                <Button Command="{Binding DataContext.P6MODBASELINE_ASSIGNCommand, ElementName=userControl}"
+                IsEnabled="{Binding Path=RowData.Row.P6MODBASELINE_NAME, Converter={StaticResource StringToBoolConverter}, ConverterParameter=false, FallbackValue=false}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{dx:DXImageOffice2013 Image=Edit_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0" />
+                        <TextBlock Text="Edit" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </ControlTemplate>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -87,7 +106,7 @@
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="BASELINESGrid"
-                                     Style="{StaticResource AggregateViewGridTemplate}">
+                                     Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn FieldName="NAME" />
                             <dxg:GridColumn FieldName="REVISION" />

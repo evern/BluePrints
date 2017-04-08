@@ -20,7 +20,8 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -77,7 +78,7 @@
                         <dxlc:LayoutGroup Name="LayoutGroupGrid" DataContext="{Binding ROLECollection}" View="Group"
                                           Header="Edit Value" Orientation="Horizontal"
                                           dxlc:LayoutControl.AllowVerticalSizing="True">
-                            <dxg:TreeListControl Name="treeListControl" Style="{StaticResource WrapperTreeTemplate}">
+                            <dxg:TreeListControl Name="treeListControl" Style="{StaticResource DefaultTreeListControlTemplate}">
                                 <dxg:TreeListControl.Columns>
                                     <dxg:TreeListColumn FieldName="NAME" />
                                     <dxg:TreeListColumn FieldName="SORTORDER" Visible="False" />
@@ -111,7 +112,7 @@
                                           DataContext="{Binding ROLE_PERMISSIONCollection}" View="Group"
                                           Header="Edit Value" Orientation="Horizontal"
                                           dxlc:LayoutControl.AllowVerticalSizing="True">
-                            <dxg:GridControl Style="{StaticResource BasicGridTemplate}">
+                            <dxg:GridControl Style="{StaticResource BasicGridControlTemplate}">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="PERMISSION" AllowEditing="False" MinWidth="300">
                                         <dxg:GridColumn.EditSettings>

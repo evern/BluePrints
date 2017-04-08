@@ -20,7 +20,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -77,7 +77,7 @@
                 </dxr:RibbonStatusBarControl>
                 <Grid>
                     <dxg:TreeListControl Name="treeListControl" dx:DXSerializer.SerializationID="COMMODITY_CODETree"
-                                         Style="{StaticResource WrapperTreeTemplate}">
+                                         Style="{StaticResource DefaultTreeListControlTemplate}">
                         <dxmvvm:Interaction.Behaviors>
                             <dxg:TreeListDragDropManager x:Name="dragDropManager" Dropped="dragDropManager_Dropped"
                                                          Drop="dragDropManager_Drop" />

@@ -22,9 +22,6 @@
         <ResourceDictionary>
             <dxsch:SchedulerUICommand x:Key="commands" />
             <dxsch:SchedulerControlStringIdConverter x:Key="stringIdConverter" />
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
-            </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>

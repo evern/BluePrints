@@ -19,7 +19,8 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -83,7 +84,7 @@
                 </dxr:RibbonStatusBarControl>
                 <Grid>
                     <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="ESTIMATIONSGrid"
-                                     Style="{StaticResource WrapperGridTemplate}">
+                                     Style="{StaticResource TemporaryGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn FieldName="NAME" />
                             <dxg:GridColumn FieldName="REVISION" />

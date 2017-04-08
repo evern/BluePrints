@@ -21,7 +21,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Views/BluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -84,8 +84,19 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl Name="gridControl" ColumnsSource="{StaticResource DOCTYPEColumns}"
-                                     Style="{StaticResource AggregateViewGridTemplate}">
+                    <dxg:GridControl Name="gridControl" 
+                                     Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn Header="DEPARTMENT" FieldName="GUID_DDEPARTMENT">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings
+                                        ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="CODE" />
+                            <dxg:GridColumn FieldName="NAME" />
+                        </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.TotalSummary>
