@@ -20,7 +20,13 @@ using static BluePrints.Data.BluePrintsEntities;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public abstract class StatsSummarizer
+    public interface IStatsSummarizer
+    {
+        void Build(bool showLoadingScreen = true, bool isCosts = false);
+        void Summarize();
+    }
+
+    public abstract class StatsSummarizer : IStatsSummarizer
     {
         ProgressStats summaryObject;
         public ProgressStats SummaryStats

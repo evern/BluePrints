@@ -1,4 +1,5 @@
 ﻿using BluePrints.Data;
+using DevExpress.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,9 +9,26 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public class Stats
+    public class Stats : BindableBase
     {
-        IEnumerable<DataPoint> rawDataPoints;
+        IEnumerable<DataPoint> rawDataPoints
+        {
+            get { return GetProperty(() => rawDataPoints); }
+            set { SetProperty(() => rawDataPoints, value, OnrawDataPointsChanged); }
+        }
+
+        void OnrawDataPointsChanged()
+        {
+            cumulativeDataPoints = null;
+            dataPoints = null;
+            currentPeriodDataPoint = null;
+            currentPeriodCumulativeDataPoint = null;
+            RaisePropertyChanged(() => CumulativeDataPoints);
+            RaisePropertyChanged(() => DataPoints);
+            RaisePropertyChanged(() => CurrentPeriodDataPoint);
+            RaisePropertyChanged(() => CurrentPeriodCumulativeDataPoint);
+        }
+
         readonly DateTime reportingDataDate;
         public readonly decimal BudgetedUnits;
         public readonly decimal TotalUnits;
@@ -18,8 +36,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         public readonly decimal TotalCosts;
         readonly IEnumerable<VariationAdjustment> rawVariationAdjustments;
         readonly bool hideDataPointsBeforeDataDate;
+        readonly bool alwaysBenchmarkAgainstBudgeted;
         readonly DateTime firstAlignedDataDate;
         readonly TimeSpan reportInterval;
+
         public bool FromP6 { get; private set; }
 
         /// <summary>
@@ -31,14 +51,14 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.reportingDataDate = summaryStats.ReportingDataDate;
             this.BudgetedUnits = summaryStats.BudgetedUnits;
             this.BudgetedCosts = summaryStats.BudgetedCosts;
-            this.TotalUnits = summaryStats.TotalUnits;
-            this.TotalCosts = summaryStats.TotalCosts;
+            this.TotalUnits = summaryStats.totalUnits;
+            this.TotalCosts = summaryStats.totalCosts;
             this.firstAlignedDataDate = summaryStats.FirstAlignedDataDate;
             this.reportInterval = summaryStats.ReportingInterval;
             this.rawVariationAdjustments = summaryStats.VariationAdjustments;
         }
 
-        public Stats(DateTime reportingDataDate, decimal budgetedUnits, decimal totalUnits, decimal budgetedCosts, decimal totalCosts, DateTime firstAlignedDataDate, TimeSpan reportInterval, IEnumerable<VariationAdjustment> rawVariationAdjustments = null, bool hideDataPointsBeforeDataDate = false)
+        public Stats(DateTime reportingDataDate, decimal budgetedUnits, decimal totalUnits, decimal budgetedCosts, decimal totalCosts, DateTime firstAlignedDataDate, TimeSpan reportInterval, IEnumerable<VariationAdjustment> rawVariationAdjustments = null, bool hideDataPointsBeforeDataDate = false, bool alwaysBenchmarkAgainstBudgeted = false)
         {
             this.reportingDataDate = reportingDataDate;
             this.BudgetedUnits = budgetedUnits;
@@ -49,6 +69,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.reportInterval = reportInterval;
             this.rawVariationAdjustments = rawVariationAdjustments;
             this.hideDataPointsBeforeDataDate = hideDataPointsBeforeDataDate;
+            this.alwaysBenchmarkAgainstBudgeted = alwaysBenchmarkAgainstBudgeted;
         }
 
         public void SetData(IEnumerable<DataPoint> rawDataPoints)
@@ -94,7 +115,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 if (cumulativeDataPoints == null && rawDataPoints != null && rawDataPoints.Count() > 0 && firstAlignedDataDate != null)
                 {
-                    cumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, BudgetedUnits, BudgetedCosts, firstAlignedDataDate, reportInterval, Guid.Empty, rawVariationAdjustments);
+                    cumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, BudgetedUnits, BudgetedCosts, firstAlignedDataDate, reportInterval, Guid.Empty, alwaysBenchmarkAgainstBudgeted ? null : rawVariationAdjustments);
                 }
 
                 return cumulativeDataPoints;

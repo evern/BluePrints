@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using DevExpress.Mvvm.POCO;
 using BluePrints.Common.Projections;
 using BluePrints.Data.Attributes;
+using DevExpress.Mvvm;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
@@ -86,8 +87,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             //Since this is only used by workpack to rolldown from project, progress already have stats
             ProjectionHelpers.InitializePROGRESS_ITEMStats(progressItem, projectVariationAdjustments,livePROGRESS, true);
-            Burned = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
-            Actual = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
+            Burned = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
+            Actual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
         }
 
         /// <summary>
@@ -100,10 +101,10 @@ namespace BluePrints.Common.ViewModel.Reporting
             IEnumerable<SummaryStats> cleanSummaryStats = summaryStats.Where(x => x != null);
             Deliverable = cleanSummaryStats.Where(x => x != null).SelectMany(x => x.Deliverable).ToList();
 
-            Burned = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
+            Burned = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             Burned.SetData(cleanSummaryStats.Where(x => x.Burned != null && x.Burned.DataPoints != null).SelectMany(x => x.Burned.DataPoints).ToList());
 
-            Actual = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
+            Actual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             Actual.SetData(cleanSummaryStats.Where(x => x.Actual != null && x.Actual.DataPoints != null).SelectMany(x => x.Actual.DataPoints).ToList());
         }
 
@@ -159,20 +160,40 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class ProgressStats
+    public class ProgressStats : BindableBase
     {
         #region Compulsory Parameters
         public readonly DateTime ReportingDataDate;
         public readonly TimeSpan ReportingInterval;
         public readonly DateTime FirstAlignedDataDate;
-        public Stats Budgeted { get; set; }
-        public Stats Current { get; set; }
-        public Stats Earned { get; set; }
-        public Stats Remaining { get; set; }
+        public Stats Budgeted
+        {
+            get { return GetProperty(() => Budgeted); }
+            set { SetProperty(() => Budgeted, value); }
+        }
+
+        public Stats Current
+        {
+            get { return GetProperty(() => Current); }
+            set { SetProperty(() => Current, value); }
+        }
+
+        public Stats Earned
+        {
+            get { return GetProperty(() => Earned); }
+            set { SetProperty(() => Earned, value); }
+        }
+
+        public Stats Remaining
+        {
+            get { return GetProperty(() => Remaining); }
+            set { SetProperty(() => Remaining, value); }
+        }
+
         readonly decimal budgetedUnits;
-        public readonly decimal TotalUnits;
+        public readonly decimal totalUnits;
         public readonly decimal budgetedCosts;
-        public readonly decimal TotalCosts;
+        public readonly decimal totalCosts;
         public readonly List<VariationAdjustment> VariationAdjustments;
         #endregion
 
@@ -193,11 +214,12 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.FirstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(livePROGRESS);
 
             this.budgetedUnits = budgetedUnits;
-            TotalUnits = totalUnits;
+            this.totalUnits = totalUnits;
             this.budgetedCosts = budgetedCosts;
-            TotalCosts = totalCosts;
+            this.totalCosts = totalCosts;
             this.VariationAdjustments = variationAdjustments.ToList();
-            Budgeted = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval);
+
+            Budgeted = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, true);
             Current = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments);
             Earned = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments);
             Remaining = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, true);
@@ -211,21 +233,21 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.FirstAlignedDataDate = cleanProgressStats.Min(x => x.FirstAlignedDataDate);
 
             budgetedUnits = cleanProgressStats.Sum(x => x.budgetedUnits);
-            TotalUnits = cleanProgressStats.Sum(x => x.TotalUnits);
+            totalUnits = cleanProgressStats.Sum(x => x.totalUnits);
             this.budgetedCosts = cleanProgressStats.Sum(x => x.BudgetedCosts);
-            TotalCosts = cleanProgressStats.Sum(x => x.TotalCosts);
+            totalCosts = cleanProgressStats.Sum(x => x.totalCosts);
             this.VariationAdjustments = cleanProgressStats.SelectMany(x => x.VariationAdjustments).ToList();
 
-            Budgeted = new Stats(ReportingDataDate, budgetedUnits, TotalUnits, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval);
+            Budgeted = new Stats(ReportingDataDate, budgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, false, true);
             Budgeted.SetData(cleanProgressStats.Where(x => x.Budgeted != null && x.Budgeted.DataPoints != null).SelectMany(x => x.Budgeted.GetData()).ToList());
 
-            Current = new Stats(ReportingDataDate, budgetedUnits, TotalUnits, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
+            Current = new Stats(ReportingDataDate, budgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             Current.SetData(cleanProgressStats.Where(x => x.Current != null && x.Current.DataPoints != null).SelectMany(x => x.Current.GetData()).ToList());
 
-            Earned = new Stats(ReportingDataDate, budgetedUnits, TotalUnits, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
+            Earned = new Stats(ReportingDataDate, budgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             Earned.SetData(cleanProgressStats.Where(x => x.Earned != null && x.Earned.DataPoints != null).SelectMany(x => x.Earned.GetData()).ToList());
 
-            Remaining = new Stats(ReportingDataDate, budgetedUnits, TotalUnits, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, true);
+            Remaining = new Stats(ReportingDataDate, budgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, true);
             Remaining.SetData(cleanProgressStats.Where(x => x.Remaining != null && x.Remaining.DataPoints != null).SelectMany(x => x.Remaining.GetData()).ToList());
         }
     }

@@ -21,7 +21,12 @@ namespace BluePrints.Common.Projections
         {
         }
 
-        public ProgressStats Stats { get; set; }
+        public ProgressStats Stats
+        {
+            get { return GetProperty(() => Stats); }
+            set { SetProperty(() => Stats, value); }
+        }
+
         FullSummarizer projectSummarizer { get; set; }
 
         public void InitializeSummarizer(IEnumerable<PROGRESS_ITEMProjection> progress_items, BASELINE LiveBASELINE, PROGRESS LivePROGRESS, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENTS, IEnumerable<VARIATION> VARIATIONS, IBluePrintsEntitiesUnitOfWork BluePrintsUOW = null, IP6EntitiesUnitOfWork P6UOW = null, IPrimeroEntitiesUnitOfWork PrimeroUOW = null)
@@ -116,37 +121,11 @@ namespace BluePrints.Common.Projections
                 };
 
                 currentPROJECT_Dashboard.InitializeSummarizer(projectProgress_Items, liveBASELINE, livePROGRESS, localPROJECT.WORKPACK, localPROJECT.WORKPACK.SelectMany(x => x.WORKPACK_ASSIGNMENT), ApprovedVARIATIONSByProject, bluePrintsUnitOfWork, p6UnitOfWork, primeroUnitOfWork);
+
                 PROJECTDashboard.Add(currentPROJECT_Dashboard);
             }
 
-            BackgroundWorker summaryBackgroundWorker = new BackgroundWorker();
-            summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
-            summaryBackgroundWorker.WorkerSupportsCancellation = true;
-            summaryBackgroundWorker.RunWorkerAsync(new object[] { PROJECTDashboard, raisePropertyChanged, IsShowProgress });
-
             return PROJECTDashboard.AsQueryable();
-        }
-
-        private static void summaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            var argumentObject = (object[]) e.Argument;
-            var projects = (IEnumerable<PROJECT_Dashboard>) argumentObject[0];
-            var raisePropertyChanged = (Action) argumentObject[1];
-            bool isShowProgress = (bool)argumentObject[2];
-
-            foreach (var project in projects)
-            {
-                project.BuildStats(false);
-                project.RecalculateStats(false);
-                
-                if (((BackgroundWorker) sender).CancellationPending)
-                {
-                    e.Cancel = true;
-                    return;
-                }
-
-                raisePropertyChanged?.Invoke();
-            }
         }
 
         public static PROJECT_Dashboard SummarizeSinglePROJECTDashboard(PROJECT PROJECT, Func<PROGRESS> getPROGRESSFunc,
@@ -171,8 +150,7 @@ namespace BluePrints.Common.Projections
             };
 
             currentPROJECT_Dashboard.InitializeSummarizer(progress_item, getBASELINEFunc(), getPROGRESSFunc(), PROJECT.WORKPACK, PROJECT.WORKPACK.SelectMany(x => x.WORKPACK_ASSIGNMENT), PROJECT.VARIATION, bluePrintsUnitOfWork, p6UnitOfWork, primeroUnitOfWork);
-            currentPROJECT_Dashboard.BuildStats();
-            currentPROJECT_Dashboard.RecalculateStats(false);
+
             return currentPROJECT_Dashboard;
         }
     }

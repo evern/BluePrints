@@ -18,7 +18,7 @@
                             <dxg:GridColumn Header="INTERNAL NUM" MinWidth="200" IsSmart="True" ReadOnly="True" FieldName="Entity.Entity.INTERNAL_NUM" />
                             <dxg:GridColumn Header="PLANNED FROM P6" IsSmart="True" ReadOnly="True" FieldName="Stats.Budgeted.FromP6" />
                             <!--<dxg:GridColumn Header="EARNED FROM P6" IsSmart="True" ReadOnly="True" FieldName="isEarnedDataPointsFromP6" />-->
-                            <dxg:GridColumn Header="FORECAST FROM P6" IsSmart="True" ReadOnly="True" FieldName="Stats.Remaining.FromP6" />
+                            <dxg:GridColumn Header="REMAINING FROM P6" IsSmart="True" ReadOnly="True" FieldName="Stats.Remaining.FromP6" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />

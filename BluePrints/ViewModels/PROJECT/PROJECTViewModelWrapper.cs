@@ -15,6 +15,8 @@ using BluePrints.Common.Projections;
 using BluePrints.Data.Helpers;
 using BluePrints.Common;
 using BluePrints.Common.ViewModel.Reporting;
+using System.ComponentModel;
+using System.Threading;
 
 namespace BluePrints.ViewModels
 {
@@ -148,9 +150,32 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentViewModel(this);
 
             DisplaySelectedEntities_CollectionChanged();
-            
+
+            if(entities.Count() > 0)
+            {
+                BackgroundWorker summaryBackgroundWorker = new BackgroundWorker();
+                summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
+                summaryBackgroundWorker.WorkerSupportsCancellation = true;
+                summaryBackgroundWorker.RunWorkerAsync(new object[] { entities.First() });
+            }
+
             base.OnMainViewModelLoaded(entities);
             return true;
+        }
+
+        private void summaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var argumentObject = (object[])e.Argument;
+            var project = (PROJECT_Dashboard)argumentObject[0];
+
+            project.BuildStats(false);
+            project.RecalculateStats(false);
+
+            if (((BackgroundWorker)sender).CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
         }
         #endregion
 

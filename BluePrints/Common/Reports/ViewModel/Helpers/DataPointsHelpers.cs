@@ -1,5 +1,6 @@
 ﻿using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
+using BluePrints.Data.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -46,9 +47,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             //because first progress date is not necessarily the next interval
             DateTime loopDate;
+            loopDate = firstAlignedDataDate;
             if (firstAlignedDataDate > plotStartDate)
             {
-                loopDate = firstAlignedDataDate;
                 do
                 {
                     loopDate = loopDate.AddDays(-1 * progressInterval.Days);
@@ -56,13 +57,13 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
             else
             {
-                loopDate = firstAlignedDataDate;
                 do
                 {
                     loopDate = loopDate.AddDays(progressInterval.Days);
                 } while (loopDate.Date.AddDays(progressInterval.Days) < plotStartDate);
             }
 
+            //Add first progress so that percentage begins at 0
             var firstProgressPlanned = new DataPoint()
             {
                 BudgetedUnits = 0,
@@ -96,6 +97,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 Costs = firstPeriodProRateCosts,
                 ProgressDate = loopDate
             };
+
             returnProgressDataPoints.Add(firstPeriodAlignedProgressPlanned);
 
             if (PeriodCount < 1)
@@ -119,7 +121,6 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (suspensionPeriod != null)
                 exceptionPeriods.AddRange(suspensionPeriod);
 
-
             //normalize units/costs by non-effective periods
             do
             {
@@ -137,6 +138,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             } while (loopPeriodCountForException > 0);
 
             //first period is already added through pro-rate routine
+
             loopDate = loopDate.AddDays(progressInterval.TotalDays);
             do
             {
@@ -145,38 +147,68 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (exceptionPeriods.Any(dates => dates.StartDate.Date <= loopDate && loopDate <= dates.EndDate.Date))
                     CalendarNonWorkingPeriod = true;
 
-                List<VariationAdjustment> currentPeriodVariationAdjustments = variationAdjustments == null ? new List<VariationAdjustment>() : variationAdjustments.Where(
-                        Adjustment => Adjustment.AdjustmentDate >= loopDate && Adjustment.AdjustmentDate < loopDate.AddDays(progressInterval.TotalDays)).ToList();
-                decimal additionalUnitsPerPeriod = 0;
-                if (currentPeriodVariationAdjustments.Count > 0)
-                {
-                    decimal currentPeriodAdjustmentUnits = currentPeriodVariationAdjustments.Sum(x => x.AdjustmentUnits);
-                    additionalUnitsPerPeriod = currentPeriodAdjustmentUnits / PeriodCount;
-                    UnitsPerPeriod += additionalUnitsPerPeriod;
-                }
+                //List<VariationAdjustment> currentPeriodVariationAdjustments = variationAdjustments == null ? new List<VariationAdjustment>() : variationAdjustments.Where(
+                //        Adjustment => Adjustment.AdjustmentDate >= loopDate && Adjustment.AdjustmentDate < loopDate.AddDays(progressInterval.TotalDays)).ToList();
+                //decimal additionalUnitsPerPeriod = 0;
+                //decimal additionalCostsPerPeriod = 0;
+                //if (currentPeriodVariationAdjustments.Count > 0)
+                //{
+                //    decimal currentPeriodAdjustmentUnits = currentPeriodVariationAdjustments.Sum(x => x.AdjustmentUnits);
+                //    decimal currentPeriodAdjustmentCosts = currentPeriodVariationAdjustments.Sum(x => x.AdjustmentNativeCosts);
+                //    additionalUnitsPerPeriod = currentPeriodAdjustmentUnits / PeriodCount;
+                //    additionalCostsPerPeriod = currentPeriodAdjustmentCosts / PeriodCount;
+                //    UnitsPerPeriod += additionalUnitsPerPeriod;
+                //    CostsPerPeriod += additionalCostsPerPeriod;
+
+                //    remainingUnits += currentPeriodAdjustmentUnits;
+                //    remainingCosts += currentPeriodAdjustmentCosts;
+                //}
 
                 decimal assignUnits;
+                decimal assignCosts;
                 if (CalendarNonWorkingPeriod)
+                {
                     assignUnits = 0;
+                    assignCosts = 0;
+                }
                 else if (UnitsPerPeriod > remainingUnits)
+                {
                     assignUnits = remainingUnits;
+                    assignCosts = remainingCosts;
+                }
                 else
+                {
                     assignUnits = UnitsPerPeriod;
+                    assignCosts = CostsPerPeriod;
+                }
 
                 var newProgressPlanned = new DataPoint()
                 {
                     BudgetedUnits = 0,
                     BudgetedCosts = 0,
                     Units = assignUnits,
-                    Costs = CalendarNonWorkingPeriod ? 0 : CostsPerPeriod > remainingCosts ? remainingCosts : CostsPerPeriod,
+                    Costs = assignCosts,
                     ProgressDate = loopDate
                 };
 
                 remainingUnits -= assignUnits;
+                remainingCosts -= assignCosts;
+
                 returnProgressDataPoints.Add(newProgressPlanned);
                 PeriodCount -= 1;
                 loopDate = loopDate.AddDays(progressInterval.TotalDays);
             } while (remainingUnits > 0);
+
+            DateTime? lastAdjustmentDate = null;
+            if (variationAdjustments != null && variationAdjustments.Count() > 0)
+            {
+                lastAdjustmentDate = variationAdjustments.Max(x => x.AdjustmentDate);
+                DayOfWeek projectReportingWeekDay = firstAlignedDataDate.DayOfWeek;
+                lastAdjustmentDate = ((DateTime)lastAdjustmentDate).AddDays((int)projectReportingWeekDay - (int)((DateTime)lastAdjustmentDate).DayOfWeek);
+            }
+
+            if (lastAdjustmentDate != null)
+                returnProgressDataPoints.AddRange(DataPointsGenerator(intervalPeriod, alignedDataDate, workingPeriod, variationAdjustments.Sum(x => x.AdjustmentUnits), variationAdjustments.Sum(x => x.AdjustmentNativeCosts), (DateTime)lastAdjustmentDate, currencyConversion, suspensionPeriod));
 
             return returnProgressDataPoints;
         }
@@ -337,22 +369,31 @@ namespace BluePrints.Common.ViewModel.Reporting
                 decimal currentPeriodUnits = currentPeriodDataPoints.Sum(dataPoint => dataPoint.Units);
                 decimal currentPeriodCosts = currentPeriodDataPoints.Sum(dataPoint => dataPoint.Costs);
                 decimal currentPeriodAdjustmentUnits = currentPeriodVariationAdjustments.Sum(adjustment => adjustment.AdjustmentUnits);
-                decimal variationCosts = currentPeriodVariationAdjustments.Sum(adjustment => adjustment.AdjustmentNativeCosts);
+                decimal currentPeriodAdjustmentCosts = currentPeriodVariationAdjustments.Sum(adjustment => adjustment.AdjustmentNativeCosts);
 
                 if (currentPeriodAdjustmentUnits > 0)
                 {
                     cumulativeAdjustmentUnits += currentPeriodAdjustmentUnits;
-                    cumulativeAdjustmentCosts += variationCosts;
+                    cumulativeAdjustmentCosts += currentPeriodAdjustmentCosts;
 
-                    //for sharktooth effect, add dip on a day after the previous period
-                    summaryDataPoints.Add(new DataPoint()
+                    DataPoint lastDataPoint = summaryDataPoints.Last();
+                    if(lastDataPoint != null)
                     {
-                        BudgetedUnits = budgetedUnits + cumulativeAdjustmentUnits,
-                        BudgetedCosts = budgetedCosts + cumulativeAdjustmentCosts,
-                        Units = cumulativeUnits,
-                        Costs = cumulativeCosts,
-                        ProgressDate = scanDate.AddDays(-1 * progressInterval.Days).AddDays(1)
-                    });
+                        //for sharktooth effect, add dip on a day before the adjustment occurs
+                        DataPoint newDataPoint = new DataPoint();
+                        DataUtils.ShallowCopy(newDataPoint, lastDataPoint);
+                        newDataPoint.ProgressDate = scanDate.AddDays(-1);
+                        summaryDataPoints.Add(newDataPoint);
+
+                        summaryDataPoints.Add(new DataPoint()
+                        {
+                            BudgetedUnits = budgetedUnits + cumulativeAdjustmentUnits,
+                            BudgetedCosts = budgetedCosts + cumulativeAdjustmentCosts,
+                            Units = cumulativeUnits,
+                            Costs = cumulativeCosts,
+                            ProgressDate = scanDate
+                        });
+                    }
                 }
 
                 if (currentPeriodUnits > 0)
@@ -369,12 +410,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                         ProgressDate = scanDate
                     });
                 }
-
+                
                 scanDate = scanDate.AddDays(progressInterval.Days);
             }
 
-            decimal totalUnits = summaryDataPoints.Sum(x => x.Units);
-            string s = totalUnits.ToString();
             return summaryDataPoints;
         }
 

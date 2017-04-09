@@ -193,16 +193,12 @@ namespace BluePrints.Common.ViewModel.Reporting
                 List<Period> workpackSuspensionPeriod = new List<Period>();
                 workpackSuspensionPeriod.Add(new Period((DateTime)currentWORKPACK.REVIEWSTARTDATE, (DateTime)currentWORKPACK.REVIEWENDDATE));
 
-                decimal budgetedUnits = progressItemStats.Stats.BudgetedUnits;
-                decimal budgetedCosts = progressItemStats.Stats.BudgetedCosts;
-
                 List<DataPoint> plannedDataPoints;
                 if (assignmentLoadType == ReportingEnum.AssignmentLoadType.Original) //if it's generating from original baseline ignore variation
                 {
                     TimeSpan workingBaseTimeSpan = (DateTime)currentWORKPACK.ENDDATE - (DateTime)currentWORKPACK.STARTDATE;
-                    //plannedDataPoints = ISupportProgressReportingExtensions.DataPointsGenerator(this.ReportingInterval, this.FirstAlignedDataDate, workingBaseTimeSpan, BaselineItemBaseUnits, BaselineItemBaseCosts, (DateTime)currentWORKPACK.STARTDATE, this.CurrencyConversion, workpackSuspensionPeriod, BaselineItemTotalUnits, BaselineItemTotalCosts);
 
-                    plannedDataPoints = DataPointsHelpers.DataPointsGenerator(this.ReportingInterval, this.FirstAlignedDataDate, workingBaseTimeSpan, budgetedUnits, budgetedCosts, (DateTime)currentWORKPACK.STARTDATE, this.CurrencyConversion, workpackSuspensionPeriod, null);
+                    plannedDataPoints = DataPointsHelpers.DataPointsGenerator(this.ReportingInterval, this.FirstAlignedDataDate, workingBaseTimeSpan, progressItemStats.Stats.BudgetedUnits, progressItemStats.Stats.BudgetedCosts, (DateTime)currentWORKPACK.STARTDATE, this.CurrencyConversion, workpackSuspensionPeriod, progressItemStats.Stats.VariationAdjustments);
 
                     progressItemStats.Stats.Budgeted.SetData(new ObservableCollection<DataPoint>(plannedDataPoints));
                 }
@@ -216,8 +212,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                     if (currentWORKPACK.FORECASTSTARTDATE != null && ((DateTime)currentWORKPACK.FORECASTSTARTDATE) > currentWORKPACK.ENDDATE)
                         workpackSuspensionPeriod.Add(new Period(((DateTime)currentWORKPACK.ENDDATE).AddDays(1), (DateTime)currentWORKPACK.FORECASTSTARTDATE));
 
-                    plannedDataPoints = DataPointsHelpers.DataPointsGenerator(this.ReportingInterval, this.FirstAlignedDataDate, workingModifiedTimeSpan, budgetedUnits, budgetedCosts, (DateTime)currentWORKPACK.STARTDATE, this.CurrencyConversion, workpackSuspensionPeriod, progressItemStats.Stats.VariationAdjustments);
-                    progressItemStats.Stats.Current.SetData(new ObservableCollection<DataPoint>(new ObservableCollection<DataPoint>(plannedDataPoints)));
+                    plannedDataPoints = DataPointsHelpers.DataPointsGenerator(this.ReportingInterval, this.FirstAlignedDataDate, workingModifiedTimeSpan, progressItemStats.Stats.BudgetedUnits, progressItemStats.Stats.BudgetedCosts, (DateTime)currentWORKPACK.STARTDATE, this.CurrencyConversion, workpackSuspensionPeriod, progressItemStats.Stats.VariationAdjustments);
+
+                    progressItemStats.Stats.Current.SetData(new ObservableCollection<DataPoint>(plannedDataPoints));
                 }
             }
         }
@@ -331,8 +328,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (WORKPACK_ASSIGNMENTbyType != null && P6TASKS != null && currentWORKPACK_ASSIGNMENTS.Count() != 0 && P6TASKS.Count() != 0)
             {
                 currentWORKPACK_ASSIGNMENTS = currentWORKPACK_ASSIGNMENTS.OrderBy(x => x.LOW_VALUE);
-                decimal totalUnits = progressItem.Stats.TotalUnits;
-                decimal totalCosts = progressItem.Stats.TotalCosts;
+                decimal totalUnits = progressItem.Stats.totalUnits;
+                decimal totalCosts = progressItem.Stats.totalCosts;
                 decimal reportableAssinmentStartUnitForWorkpackAssignmentPairing = progressItem.WorkpackAssignmentStartUnit;
 
                 decimal currentAssignmentRemainingUnits;

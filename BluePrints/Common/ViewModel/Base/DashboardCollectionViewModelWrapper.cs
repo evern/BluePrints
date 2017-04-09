@@ -32,7 +32,7 @@ namespace BluePrints.Common.ViewModel
         where TProjection : class, IHaveGUID, IHaveStats, new()
     {
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> UnitOfWorkFactory;
-        private DispatcherTimer dispatchTimer;
+        protected DispatcherTimer dispatchTimer;
 
         public DashboardViewModelWrapper()
         {
@@ -59,16 +59,23 @@ namespace BluePrints.Common.ViewModel
             if(DisplaySelectedEntities.Count() > 0)
                 DisplaySelectedEntity = DisplaySelectedEntities.First();
 
-            OnSelectedEntityChanged(DisplaySelectedEntities);
+            OnSelectedEntitiesChanged(DisplaySelectedEntities);
             dispatchTimer.Stop();
         }
 
         public virtual TProjection SummaryEntity { get; set; }
 
-        public void OnSelectedEntityChanged(IEnumerable<TProjection> entities)
+        public void OnSelectedEntitiesChanged(IEnumerable<TProjection> entities)
         {
             if (!entities.Any())
-                return;
+            {
+                if(MainViewModel.Entities.Count > 0)
+                {
+                    List<TProjection> firstEntity = new List<TProjection>();
+                    firstEntity.Add(MainViewModel.Entities.First());
+                    entities = firstEntity;
+                }
+            }
 
             if (entities.Count() == 1)
             {
@@ -113,8 +120,6 @@ namespace BluePrints.Common.ViewModel
             IHaveSummary IHaveSummary = SummaryEntity as IHaveSummary;
             if (IHaveSummary != null)
                 IHaveSummary.RecalculateStats(calculationType == DashboardViewType.Costs);
-            //foreach (var summaryEntity in MainViewModel.Entities)
-            //    summaryEntity.RecalculateStats(calculationType == DashboardViewType.Costs);
         }
 
         #region P6 Affinity

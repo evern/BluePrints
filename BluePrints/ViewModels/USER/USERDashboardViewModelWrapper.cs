@@ -113,6 +113,7 @@ namespace BluePrints.ViewModels
                 mainEntityLoaderDescription.GetViewModel();
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             MainViewModel.SetParentViewModel(this);
+
             return base.OnMainViewModelLoaded(entities);
         }
         #endregion

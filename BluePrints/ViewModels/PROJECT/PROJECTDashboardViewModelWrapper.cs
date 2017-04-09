@@ -20,6 +20,7 @@ using System.Windows.Threading;
 using DevExpress.Xpf.Bars;
 using System.ComponentModel;
 using BluePrints.Common.Projections;
+using System.Threading;
 
 namespace BluePrints.ViewModels
 {
@@ -124,8 +125,34 @@ namespace BluePrints.ViewModels
                 mainEntityLoaderDescription.GetViewModel();
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             MainViewModel.SetParentViewModel(this);
+
+            foreach(PROJECT_Dashboard entity in entities)
+            {
+                BackgroundWorker summaryBackgroundWorker = new BackgroundWorker();
+                summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
+                summaryBackgroundWorker.WorkerSupportsCancellation = true;
+                summaryBackgroundWorker.RunWorkerAsync(new object[] { entity });
+            }
+
             return base.OnMainViewModelLoaded(entities);
         }
+
+
+        private static void summaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var argumentObject = (object[])e.Argument;
+            var project = (PROJECT_Dashboard)argumentObject[0];
+
+            project.BuildStats(false);
+            project.RecalculateStats(false);
+
+            if (((BackgroundWorker)sender).CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+        }
+
         #endregion
 
         #region View Behavior

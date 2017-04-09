@@ -195,7 +195,13 @@ namespace BluePrints.Common.Projections
 
         public decimal RemainingUnitsAfterDataDate
         {
-            get { return Entity.Entity.TOTAL_HOURS - TOTAL_EARNED_UNITS; }
+            get
+            {
+                if (Entity == null || Entity.Entity == null)
+                    return 0;
+
+                return Entity.Entity.TOTAL_HOURS - TOTAL_EARNED_UNITS;
+            }
         }
 
         public decimal MinPercentage
@@ -266,7 +272,7 @@ namespace BluePrints.Common.Projections
             get
             {
                 if (PROGRESS_ITEMCurrent == null)
-                    return Convert.ToDecimal(0);
+                    return 0;
 
                 return PROGRESS_ITEMCurrent.EARNED_UNITS;
             }

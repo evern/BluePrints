@@ -449,7 +449,7 @@
                                                                    Brush="Green"
                                                                    DataSource="{Binding SummaryEntity.Stats.Earned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
                                         <dxc:BarSideBySideSeries2D Name="barSeriesRemainingPlanned"
-                                                                   DisplayName="Remaining Planned Units"
+                                                                   DisplayName="Remaining Units"
                                                                    Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
                                                                    Brush="Indigo"
                                                                    DataSource="{Binding SummaryEntity.Stats.Remaining.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
