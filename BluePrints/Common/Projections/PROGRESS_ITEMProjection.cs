@@ -160,6 +160,15 @@ namespace BluePrints.Common.Projections
         public bool isPlannedDataPointsFromP6 { get; set; }
         public bool isRemainingDataPointsFromP6 { get; set; }
 
+        public decimal CurrentPROGRESS_ITEM_UNITS
+        {
+            get
+            {
+                decimal currentUnits = PROGRESS_ITEMCurrent == null ? 0 : PROGRESS_ITEMCurrent.EARNED_UNITS;
+                return PastPROGRESS_ITEMS_UNITS + currentUnits;
+            }
+        }
+
         private decimal? pastPROGRESS_ITEMS_UNITS;
 
         public decimal PastPROGRESS_ITEMS_UNITS

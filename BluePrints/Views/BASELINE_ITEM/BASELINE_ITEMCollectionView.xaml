@@ -14,15 +14,19 @@
              xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
+             xmlns:converters="clr-namespace:BluePrints.Common.ViewModel.Converters"
              xmlns:common="clr-namespace:BluePrints.Common"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:helper="clr-namespace:BluePrints.Common.Helpers"
              xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
              mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
              DataContext="{dxmvvm:ViewModelSource viewmodel:BASELINE_ITEMSCollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
+            <converters:BaselineItemMaximumUnitsConverter x:Key="BaselineItemMaximumUnitsConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -94,7 +98,7 @@
                     <dxg:GridControl x:Name="gridControl" dx:DXSerializer.SerializationID="BASELINE_ITEMSGrid"
                                      Style="{StaticResource DefaultGridControlTemplate}" PreviewKeyDown="gridControl_PreviewKeyDown">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="Entity.GUID_WORKPACK"
+                            <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="Entity.Entity.GUID_WORKPACK"
                                             Header="WORKPACK 1" Visible="true" VisibleIndex="0">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1"
@@ -103,7 +107,7 @@
                                                               DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colWORKPACKInternalName2" FieldName="Entity.GUID_WORKPACK"
+                            <dxg:GridColumn Name="colWORKPACKInternalName2" FieldName="Entity.Entity.GUID_WORKPACK"
                                             Header="WORKPACK 2" Visible="False" VisibleIndex="1">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName2"
@@ -112,7 +116,7 @@
                                                               DisplayMember="INTERNAL_NAME2" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colAREA" FieldName="Entity.GUID_AREA" Header="AREA">
+                            <dxg:GridColumn Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
@@ -120,7 +124,7 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colDOCTYPE" FieldName="Entity.GUID_DOCTYPE" Header="DOCTYPE">
+                            <dxg:GridColumn Name="colDOCTYPE" FieldName="Entity.Entity.GUID_DOCTYPE" Header="DOCTYPE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}"
@@ -128,7 +132,7 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.GUID_DISCIPLINE"
+                            <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.Entity.GUID_DISCIPLINE"
                                             Header="DISCIPLINE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
@@ -137,7 +141,7 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colDEPARTMENT" FieldName="Entity.GUID_DEPARTMENT"
+                            <dxg:GridColumn Name="colDEPARTMENT" FieldName="Entity.Entity.GUID_DEPARTMENT"
                                             Header="DEPARTMENT">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
@@ -146,25 +150,25 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colINTERNAL_NUM" FieldName="Entity.INTERNAL_NUM"
+                            <dxg:GridColumn Name="colINTERNAL_NUM" FieldName="Entity.Entity.INTERNAL_NUM"
                                             Header="INTERNAL_NUM" />
-                            <dxg:GridColumn Name="colCLIENT_NUM" FieldName="Entity.CLIENT_NUM"
+                            <dxg:GridColumn Name="colCLIENT_NUM" FieldName="Entity.Entity.CLIENT_NUM"
                                             Header="CLIENT_NUM" />
-                            <dxg:GridColumn Name="colREVISION_NUMBER" FieldName="Entity.REVISION_NUMBER"
+                            <dxg:GridColumn Name="colREVISION_NUMBER" FieldName="Entity.Entity.REVISION_NUMBER"
                                             Header="REVISION_NUM" />
-                            <dxg:GridColumn Name="colDELIVERABLE_TYPE" FieldName="Entity.DELIVERABLE_TYPE"
+                            <dxg:GridColumn Name="colDELIVERABLE_TYPE" FieldName="Entity.Entity.DELIVERABLE_TYPE"
                                             Header="TYPE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
                                                               ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DeliverableType}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colPRIMARY_TITLE" FieldName="Entity.PRIMARY_TITLE"
+                            <dxg:GridColumn Name="colPRIMARY_TITLE" FieldName="Entity.Entity.PRIMARY_TITLE"
                                             Header="PRIMARY_TITLE" />
-                            <dxg:GridColumn Name="colSECONDARY_TITLE" FieldName="Entity.SECONDARY_TITLE"
+                            <dxg:GridColumn Name="colSECONDARY_TITLE" FieldName="Entity.Entity.SECONDARY_TITLE"
                                             Header="SECONDARY_TITLE" />
-                            <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.COMMENTS" Header="COMMENTS" />
-                            <dxg:GridColumn Name="colSTATUS" FieldName="Entity.GUID_STATUS" Header="STATUS">
+                            <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.Entity.COMMENTS" Header="COMMENTS" />
+                            <dxg:GridColumn Name="colSTATUS" FieldName="Entity.Entity.GUID_STATUS" Header="STATUS">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
                                                               ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}"
@@ -172,7 +176,7 @@
                                                               DisplayMember="NAME" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colUSER" FieldName="Entity.GUID_USER" Header="RESOURCE">
+                            <dxg:GridColumn Name="colUSER" FieldName="Entity.Entity.GUID_USER" Header="RESOURCE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
                                                               ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}"
@@ -180,16 +184,66 @@
                                                               DisplayMember="NAME" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colESTIMATED_HOURS" FieldName="Entity.ESTIMATED_HOURS"
+                            <dxg:GridColumn Name="colESTIMATED_HOURS" FieldName="Entity.Entity.ESTIMATED_HOURS"
                                             Header="ESTIMATED_HOURS">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1"
-                                                          MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="3" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Image
+                                                    Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}"
+                                                    ToolTip="Min Allowed Units" Grid.Column="1">
+                                                <Image.Visibility>
+                                                    <MultiBinding
+                                                            Converter="{StaticResource NumericCompareToVisibilityConverter}"
+                                                            FallbackValue="Hidden">
+                                                        <MultiBinding.ConverterParameter>
+                                                            <sys:Boolean>False</sys:Boolean>
+                                                        </MultiBinding.ConverterParameter>
+                                                        <Binding ElementName="PART_Editor" Path="MinValue" />
+                                                        <Binding ElementName="PART_Editor" Path="EditValue" />
+                                                    </MultiBinding>
+                                                </Image.Visibility>
+                                            </Image>
+                                            <Image
+                                                    Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}"
+                                                    ToolTip="Max Allowed Units" Grid.Column="1">
+                                                <Image.Visibility>
+                                                    <MultiBinding
+                                                            Converter="{StaticResource NumericCompareToVisibilityConverter}"
+                                                            FallbackValue="Hidden">
+                                                        <MultiBinding.ConverterParameter>
+                                                            <sys:Boolean>False</sys:Boolean>
+                                                        </MultiBinding.ConverterParameter>
+                                                        <Binding ElementName="PART_Editor" Path="MaxValue" />
+                                                        <Binding ElementName="PART_Editor" Path="EditValue" />
+                                                    </MultiBinding>
+                                                </Image.Visibility>
+                                            </Image>
+                                            <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n"
+                                                              MaskUseAsDisplayFormat="True" Increment="1"
+                                                              MinValue="{Binding RowData.Row.CurrentPROGRESS_ITEM_UNITS}"
+                                                              Grid.Column="2">
+                                                <dxe:SpinEdit.MaxValue>
+                                                    <MultiBinding Converter="{StaticResource BaselineItemMaximumUnitsConverter}">
+                                                        <Binding ElementName="userControl" Path="DataContext.TotalAllowedUnits" />
+                                                        <Binding ElementName="userControl" Path="DataContext.DisplayEntities" />
+                                                        <Binding Path="RowData.Row" />
+                                                        <Binding ElementName="PART_Editor" Path="EditValue" />
+                                                    </MultiBinding>
+                                                </dxe:SpinEdit.MaxValue>
+                                            </dxe:SpinEdit>
+                                        </Grid>
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colDC_HOURS" FieldName="Entity.DC_HOURS" Header="DC_HOURS"
+                            <dxg:GridColumn Name="colDC_HOURS" FieldName="Entity.Entity.DC_HOURS" Header="DC_HOURS"
                                             ReadOnly="True" />
-                            <dxg:GridColumn Name="colTOTAL_COSTS" FieldName="TOTAL_COSTS" Header="COSTS"
+                            <dxg:GridColumn Name="colTOTAL_COSTS" FieldName="Entity.TOTAL_COSTS" Header="COSTS"
                                             AllowSearchPanel="False" ReadOnly="True">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
@@ -200,26 +254,26 @@
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem FieldName="Entity.COMMENTS" SummaryType="Count"
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.COMMENTS" SummaryType="Count"
                                                  Alignment="Right" DisplayFormat="Total {0} Records" />
-                            <dxg:GridSummaryItem FieldName="Entity.ESTIMATED_HOURS" SummaryType="Sum"
-                                                 ShowInColumn="Entity.ESTIMATED_HOURS"
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS" SummaryType="Sum"
+                                                 ShowInColumn="Entity.Entity.ESTIMATED_HOURS"
                                                  DisplayFormat="Total: {0}" />
                             <dxg:GridSummaryItem FieldName="TOTAL_COSTS" SummaryType="Sum" ShowInColumn="TOTAL_COSTS"
                                                  DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="Entity.DC_HOURS" SummaryType="Sum"
-                                                 ShowInColumn="Entity.DC_HOURS" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS" SummaryType="Sum"
+                                                 ShowInColumn="Entity.Entity.DC_HOURS" DisplayFormat="Total: {0:n}" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem FieldName="Entity.COMMENTS" SummaryType="Count"
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.COMMENTS" SummaryType="Count"
                                                  Alignment="Right" DisplayFormat="Total {0} Records" />
-                            <dxg:GridSummaryItem FieldName="Entity.ESTIMATED_HOURS" SummaryType="Sum"
-                                                 ShowInColumn="Entity.ESTIMATED_HOURS"
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS" SummaryType="Sum"
+                                                 ShowInColumn="Entity.Entity.ESTIMATED_HOURS"
                                                  DisplayFormat="Total: {0}" />
                             <dxg:GridSummaryItem FieldName="TOTAL_COSTS" SummaryType="Sum" ShowInColumn="TOTAL_COSTS"
                                                  DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="Entity.DC_HOURS" SummaryType="Sum"
-                                                 ShowInColumn="Entity.DC_HOURS" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS" SummaryType="Sum"
+                                                 ShowInColumn="Entity.Entity.DC_HOURS" DisplayFormat="Total: {0:n}" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
                             <common:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"

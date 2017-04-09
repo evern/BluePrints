@@ -213,8 +213,17 @@ namespace BluePrints.Data.Helpers
             }
             else
             {
-                propertyString = propertyString.Replace(firstPropertyName + ".", string.Empty);
-                SetNestedValue(propertyString, childInstance, value);
+                string childPropertyString = string.Empty;
+                for (int i = 1; i < propertyNames.Count(); i++)
+                {
+                    childPropertyString += propertyNames[i] + ".";
+                }
+
+                if (childPropertyString != string.Empty)
+                {
+                    childPropertyString = childPropertyString.Substring(0, childPropertyString.Length - 1);
+                    SetNestedValue(childPropertyString, childInstance, value);
+                }
             }
         }
 
@@ -235,8 +244,14 @@ namespace BluePrints.Data.Helpers
             }
             else
             {
-                propertyString = propertyString.Replace(firstPropertyName + ".", string.Empty);
-                return GetNestedValue(propertyString, childInstance);
+                string childPropertyString = string.Empty;
+                for (int i = 1; i < propertyNames.Count(); i++)
+                {
+                    childPropertyString += propertyNames[i] + ".";
+                }
+
+                childPropertyString = childPropertyString.Substring(0, childPropertyString.Length - 1);
+                return GetNestedValue(childPropertyString, childInstance);
             }
         }
 
@@ -252,8 +267,14 @@ namespace BluePrints.Data.Helpers
             }
             else
             {
-                propertyString = propertyString.Replace(firstPropertyName + ".", string.Empty);
-                return GetNestedPropertyInfo(propertyString, childInstance);
+                string childPropertyString = string.Empty;
+                for (int i = 1; i < propertyNames.Count(); i++)
+                {
+                    childPropertyString += propertyNames[i] + ".";
+                }
+
+                childPropertyString = childPropertyString.Substring(0, childPropertyString.Length - 1);
+                return GetNestedPropertyInfo(childPropertyString, childInstance);
             }
         }
     }

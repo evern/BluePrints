@@ -26,12 +26,12 @@ namespace BluePrints.Views
                 GetGridVisibleRows;
         }
 
-        public IEnumerable<BASELINE_ITEMProjection> GetGridVisibleRows()
+        public IEnumerable<PROGRESS_ITEMProjection> GetGridVisibleRows()
         {
-            List<BASELINE_ITEMProjection> visibleBaselineItemProjections = new List<BASELINE_ITEMProjection>();
+            List<PROGRESS_ITEMProjection> visibleBaselineItemProjections = new List<PROGRESS_ITEMProjection>();
             for (int i = 0; i < gridControl.VisibleRowCount; i++)
             {
-                BASELINE_ITEMProjection dataRow = (BASELINE_ITEMProjection)gridControl.GetRow(gridControl.GetRowHandleByVisibleIndex(i));
+                PROGRESS_ITEMProjection dataRow = (PROGRESS_ITEMProjection)gridControl.GetRow(gridControl.GetRowHandleByVisibleIndex(i));
                 visibleBaselineItemProjections.Add(dataRow);
             }
             return visibleBaselineItemProjections;

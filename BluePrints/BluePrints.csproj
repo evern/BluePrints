@@ -404,6 +404,7 @@
     <Compile Include="Common\ViewModel\Base\EntitiesLoaderDescription.cs" />
     <Compile Include="Common\ViewModel\Base\ProjectionBase.cs" />
     <Compile Include="Common\ViewModel\Base\WrapperInterfaces.cs" />
+    <Compile Include="Common\ViewModel\Converters\BaselineItemMaximumUnitsConverter.cs" />
     <Compile Include="Common\ViewModel\Dialogs\DialogCollectionViewModel.cs" />
     <Compile Include="Common\ViewModel\Base\EntitiesCollectionsWrapper.cs" />
     <Compile Include="Common\ViewModel\EntitiesViewModel.cs" />
