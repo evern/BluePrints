@@ -45,6 +45,12 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected PROJECTDashboardViewModelWrapper()
         {
+
+        }
+
+        private void BuildStatsTimer_Tick(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         #region Database Operation
@@ -126,17 +132,21 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             MainViewModel.SetParentViewModel(this);
 
-            foreach(PROJECT_Dashboard entity in entities)
+            foreach (PROJECT_Dashboard entity in entities)
             {
-                BackgroundWorker summaryBackgroundWorker = new BackgroundWorker();
-                summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
-                summaryBackgroundWorker.WorkerSupportsCancellation = true;
-                summaryBackgroundWorker.RunWorkerAsync(new object[] { entity });
+                BuildProjectsStats(entity);
             }
 
             return base.OnMainViewModelLoaded(entities);
         }
 
+        void BuildProjectsStats(PROJECT_Dashboard entity)
+        {
+            BackgroundWorker summaryBackgroundWorker = new BackgroundWorker();
+            summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
+            summaryBackgroundWorker.WorkerSupportsCancellation = true;
+            summaryBackgroundWorker.RunWorkerAsync(new object[] { entity });
+        }
 
         private static void summaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -153,6 +163,10 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public override void FullRefresh()
+        {
+            InitializeAndLoadEntitiesLoaderDescription();
+        }
         #endregion
 
         #region View Behavior

@@ -19,7 +19,21 @@ namespace BluePrints.Common
             set
             {
                 currentUser = value;
-                List<ROLE_PERMISSION> user_permission = CurrentUser.ROLE.ROLE_PERMISSION.ToList();
+                List<ROLE_PERMISSION> user_permission = new List<ROLE_PERMISSION>();
+                if (currentUser.NAME == CommonResources.AdminUsername)
+                {
+                    Dictionary<string, string> allPermissions = GetPermissionLookUpInDictionary();
+                    foreach(KeyValuePair<string, string> permission in allPermissions)
+                    {
+                        user_permission.Add(new ROLE_PERMISSION() { GUID = Guid.Empty, PERMISSION = permission.Key.ToString() });
+                    }
+                }
+                else
+                {
+                    if(CurrentUser.ROLE != null && CurrentUser.ROLE.ROLE_PERMISSION != null && CurrentUser.ROLE.ROLE_PERMISSION.Count > 0)
+                        user_permission = CurrentUser.ROLE.ROLE_PERMISSION.ToList();
+                }
+
                 CurrentUserPermission = new List<ROLE_PERMISSION>(user_permission);
             }
         }
@@ -32,8 +46,6 @@ namespace BluePrints.Common
         {
             if (CurrentUser == null)
                 return false;
-            else if (CurrentUser.NAME == CommonResources.AdminUsername)
-                return true;
             else if (CurrentUserPermission == null || CurrentUserPermission.Count == 0)
                 return false;
 

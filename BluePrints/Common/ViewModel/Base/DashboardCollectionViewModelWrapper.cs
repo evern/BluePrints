@@ -32,7 +32,7 @@ namespace BluePrints.Common.ViewModel
         where TProjection : class, IHaveGUID, IHaveStats, new()
     {
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> UnitOfWorkFactory;
-        protected DispatcherTimer dispatchTimer;
+        private DispatcherTimer dispatchTimer;
 
         public DashboardViewModelWrapper()
         {

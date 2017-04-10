@@ -42,6 +42,7 @@ namespace BluePrints.ViewModels
     {
         public Action ShowWORKPACKInternalName1;
         public Action ShowWORKPACKInternalName2;
+        public Action<bool> SetBaselineLockUnlock;
 
         /// <summary>
         /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.
@@ -90,7 +91,7 @@ namespace BluePrints.ViewModels
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(_bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => _loadProject = x);
-            loaderCollection.AddLoaderDescription(_bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, x => _LoadBaseline = x);
+            loaderCollection.AddLoaderDescription(_bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, SetBASELINEIsLocked);
             loaderCollection.AddLoaderDescription(_bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             loaderCollection.AddLoaderDescription(_bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
             loaderCollection.AddLoaderDescription(_bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
@@ -123,6 +124,15 @@ namespace BluePrints.ViewModels
                         query.Where(x => x.GUID_PROJECT == _loadProject.GUID && x.STATUS == BaselineStatus.Live);
             else
                 return query => query.Where(x => x.GUID == _LoadBaseline.GUID);
+        }
+
+        private void SetBASELINEIsLocked(BASELINE entity)
+        {
+            _LoadBaseline = entity;
+            if (entity.BUDGETED_UNITS != null && entity.BUDGETED_UNITS > 0)
+                SetBaselineLockUnlock?.Invoke(true);
+            else
+                SetBaselineLockUnlock?.Invoke(false);
         }
 
         private void SetPROGRESStoCurrentDateOnLoaded(PROGRESS entity)
@@ -256,6 +266,7 @@ namespace BluePrints.ViewModels
             var activeBASELINE_ITEM = (PROGRESS_ITEMProjection) e.Row;
             if (e.Column.FieldName ==
                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_WORKPACK))
             {
                 var chosenWORKPACK = WORKPACKCollection.FirstOrDefault(entity => entity.GUID == (Guid) e.Value);
@@ -281,6 +292,7 @@ namespace BluePrints.ViewModels
             }
             else if (e.Column.FieldName ==
                      BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                     BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                      BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE))
             {
                 var chosenDOCTYPE = DOCTYPECollection.FirstOrDefault(entity => entity.GUID == (Guid) e.Value);
@@ -292,9 +304,50 @@ namespace BluePrints.ViewModels
             }
         }
 
+        /// <summary>
+        /// Refresh all min max units for converter to do estimated hours validation
+        /// </summary>
+        public void CellValueChanged(CellValueChangedEventArgs e)
+        {
+            if (e.Column.FieldName ==
+                                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().ESTIMATED_HOURS))
+                this.RaisePropertiesChanged();
+        }
         #endregion
 
-        #region View Commands
+            #region View Commands
+        public bool IsBASELINELocked
+        {
+            get
+            {
+                if (_LoadBaseline == null)
+                    return true;
+                else
+                    return _LoadBaseline.BUDGETED_UNITS != null && _LoadBaseline.BUDGETED_UNITS > 0;
+            }
+            set
+            {
+                LockUnlockBASELINE(value);
+            }
+        }
+
+        private void LockUnlockBASELINE(bool isLock)
+        {
+            var BASELINECollectionViewModel = (CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<BASELINE>();
+            if (!isLock)
+                _LoadBaseline.BUDGETED_UNITS = 0;
+            else
+            {
+                decimal totalEstimatedHours = MainViewModel.Entities.Sum(x => x.Entity.Entity.ESTIMATED_HOURS);
+                _LoadBaseline.BUDGETED_UNITS = totalEstimatedHours;
+            }
+
+            BASELINECollectionViewModel.Save(_LoadBaseline);
+            SetBaselineLockUnlock?.Invoke(isLock);
+            this.RaisePropertiesChanged();
+        }
 
         public bool CanDuplicate()
         {
@@ -315,6 +368,7 @@ namespace BluePrints.ViewModels
                 DataUtils.ShallowCopy(newProjection.Entity.Entity, selectedEntity.Entity.Entity);
                 newProjection.Entity.GUID = Guid.Empty;
                 newProjection.Entity.Entity.GUID_ORIGINAL = Guid.Empty;
+                newProjection.Entity.Entity.ESTIMATED_HOURS = 0;
                 newProjection.Entity.Entity.DC_HOURS = 0;
                 var selectedAREA = AREACollection.FirstOrDefault(x => x.GUID == newProjection.Entity.Entity.GUID_AREA);
                 var selectedDISCIPLINE =
@@ -369,21 +423,27 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
             var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject) button) as GridMenuInfo;
+            if (info.Column == null)
+                return;
 
             var departmentFieldName =
                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DEPARTMENT);
             var disciplineFieldName =
-                BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
-                BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DISCIPLINE);
-            var docTypeFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) +
-                                      "." + BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE);
-            var areaFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
-                                   BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA);
-            var workpackFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) +
-                                       "." + BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_WORKPACK);
+                                    BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                                    BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DISCIPLINE);
+            var docTypeFieldName =  BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +             BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE);
+            var areaFieldName =     BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                                    BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA);
+            var workpackFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +             BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_WORKPACK);
             var internalNumberFieldName =
-                BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." + 
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().INTERNAL_NUM);
 
             var entitiesToSave = new List<PROGRESS_ITEMProjection>();
@@ -500,10 +560,9 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return _LoadBaseline.BUDGETED_UNITS == null ? 9999 : (decimal)_LoadBaseline.BUDGETED_UNITS;
+                return _LoadBaseline.BUDGETED_UNITS == null ? 1000000000 : (decimal)_LoadBaseline.BUDGETED_UNITS;
             }
         }
-
 
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent

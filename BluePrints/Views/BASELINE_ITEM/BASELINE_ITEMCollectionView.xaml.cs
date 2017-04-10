@@ -14,6 +14,7 @@ namespace BluePrints.Views
 {
     public partial class BASELINE_ITEMCollectionView : ViewStateRestoreUserControl
     {
+        bool isBASELINELocked;
         public BASELINE_ITEMCollectionView()
         {
             InitializeComponent();
@@ -24,6 +25,8 @@ namespace BluePrints.Views
             //    ShowWorkpackInternalName2;
             ((BASELINE_ITEMSCollectionViewModelWrapper)DataContext).GetGridVisibleRows =
                 GetGridVisibleRows;
+            ((BASELINE_ITEMSCollectionViewModelWrapper)DataContext).SetBaselineLockUnlock =
+                SetBaselineLockUnlock;
         }
 
         public IEnumerable<PROGRESS_ITEMProjection> GetGridVisibleRows()
@@ -35,6 +38,11 @@ namespace BluePrints.Views
                 visibleBaselineItemProjections.Add(dataRow);
             }
             return visibleBaselineItemProjections;
+        }
+
+        public void SetBaselineLockUnlock(bool isLock)
+        {
+            isBASELINELocked = isLock;
         }
 
         public void ShowWorkpackInternalName1()
@@ -98,6 +106,10 @@ namespace BluePrints.Views
                 }
                 else if (menuInfo.Column == colESTIMATED_HOURS)
                 {
+                    contextMenuBulkEdit.IsVisible = !isBASELINELocked;
+                    contextMenuFillUp.IsVisible = !isBASELINELocked;
+                    contextMenuFillDown.IsVisible = !isBASELINELocked;
+
                     contextMenuPopulate.IsVisible = false;
                 }
                 else if (menuInfo.Column == colINTERNAL_NUM)
@@ -142,7 +154,8 @@ namespace BluePrints.Views
                 {
                     tableView.CommitEditing();
                     tableView.MoveNextRow();
-                    gridControl.SelectedItem = gridControl.GetRow(tableView.FocusedRowHandle);
+                    //this can't be used in filtered grid
+                    //gridControl.SelectedItem = gridControl.GetRow(tableView.FocusedRowHandle);
                 }));
             }
         }

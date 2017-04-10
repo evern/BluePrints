@@ -69,9 +69,9 @@
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
                                                    Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />
-                                <dxb:BarCheckItem Content="Auto Refresh"
+                                <!--<dxb:BarCheckItem Content="Auto Refresh"
                                                   IsChecked="{Binding DataContext.DoNotAutoRefresh, ElementName=userControl, Converter={dxmvvm:BooleanNegationConverter}}"
-                                                  Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />
+                                                  Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />-->
                                 <dxb:BarButtonItem Content="P6 Issues"
                                                Command="{Binding DataContext.ShowP6ErrorsCommand, ElementName=userControl}"
                                                LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}"

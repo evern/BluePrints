@@ -64,9 +64,9 @@
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
                                                    Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />
-                                <dxb:BarCheckItem Content="Auto Refresh"
+                                <!--<dxb:BarCheckItem Content="Auto Refresh"
                                                   IsChecked="{Binding DataContext.DoNotAutoRefresh, ElementName=userControl, Converter={dxmvvm:BooleanNegationConverter}}"
-                                                  Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />
+                                                  Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />-->
                                 <dxb:BarButtonItem Content="P6 Issues"
                                                Command="{Binding DataContext.ShowP6ErrorsCommand, ElementName=userControl}"
                                                LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}"
@@ -121,8 +121,10 @@
                                                                       ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DesignManager}}" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="PROGRESS_ITEMProjection.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK"
-                                            Header="WORKPACK" Visible="False" VisibleIndex="2">
+                                </dxg:GridControlBand>
+                                <dxg:GridControlBand Name="bandDeliverable" Header="DELIVERABLE">
+                                    <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="PROGRESS_ITEMProjection.Entity.Entity.GUID_WORKPACK"
+                                            Header="WORKPACK" VisibleIndex="10">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings 
                                                               ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
@@ -130,13 +132,11 @@
                                                               DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                </dxg:GridControlBand>
-                                <dxg:GridControlBand Name="bandDeliverable" Header="DELIVERABLE">
-                                    <dxg:GridColumn Header="Number" FieldName="PROGRESS_ITEMProjection.BASELINE_ITEMJoinRATE.BASELINE_ITEM.INTERNAL_NUM" MinWidth="150" VisibleIndex="10" />
-                                    <dxg:GridColumn Header="Primary Title" FieldName="PROGRESS_ITEMProjection.BASELINE_ITEMJoinRATE.BASELINE_ITEM.PRIMARY_TITLE" MinWidth="150" VisibleIndex="20" />
-                                    <dxg:GridColumn Header="Secondary Title" FieldName="PROGRESS_ITEMProjection.BASELINE_ITEMJoinRATE.BASELINE_ITEM.SECONDARY_TITLE" VisibleIndex="30" />
-                                    <dxg:GridColumn Header="Comments" FieldName="PROGRESS_ITEMProjection.BASELINE_ITEMJoinRATE.BASELINE_ITEM.COMMENTS" VisibleIndex="40" />
-                                    <dxg:GridColumn Header="Status" FieldName="PROGRESS_ITEMProjection.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_STATUS" VisibleIndex="50" >
+                                    <dxg:GridColumn Header="Number" FieldName="PROGRESS_ITEMProjection.Entity.Entity.INTERNAL_NUM" MinWidth="150" VisibleIndex="20" />
+                                    <dxg:GridColumn Header="Primary Title" FieldName="PROGRESS_ITEMProjection.Entity.Entity.PRIMARY_TITLE" MinWidth="150" VisibleIndex="30" />
+                                    <dxg:GridColumn Header="Secondary Title" FieldName="PROGRESS_ITEMProjection.Entity.Entity.SECONDARY_TITLE" VisibleIndex="40" />
+                                    <dxg:GridColumn Header="Comments" FieldName="PROGRESS_ITEMProjection.Entity.Entity.COMMENTS" VisibleIndex="50" />
+                                    <dxg:GridColumn Header="Status" FieldName="PROGRESS_ITEMProjection.Entity.Entity.GUID_STATUS" VisibleIndex="60" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
                                                               ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}"
@@ -155,7 +155,7 @@
                                 </dxg:GridControlBand>
                                 <dxg:GridControlBand Name="bandCumulative" Header="Cumulative">
                                     <dxg:GridColumn x:Name="colCumulativePlannedPercentage" Header="Planned %"
-                                                    FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
+                                                    FieldName="PROGRESS_ITEMProjection.Stats.Budgeted.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
                                                     ReadOnly="True" AllowEditing="False" VisibleIndex="10">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings MaskType="Numeric" Mask="p2"
@@ -163,7 +163,7 @@
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn x:Name="colCumulativeEarnedPercentage" Header="Earned %"
-                                                    FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
+                                                    FieldName="PROGRESS_ITEMProjection.Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
                                                     ReadOnly="True" AllowEditing="False" VisibleIndex="20">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings MaskType="Numeric" Mask="p2"
@@ -171,7 +171,7 @@
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn x:Name="colCumulativePlanned" Header="Planned Units"
-                                                    FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
+                                                    FieldName="PROGRESS_ITEMProjection.Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="30">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Name="colCumulativePlannedText" MaskType="Numeric"
@@ -179,7 +179,7 @@
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn x:Name="colCumulativeEarned" Header="Earned Units"
-                                                    FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
+                                                    FieldName="PROGRESS_ITEMProjection.Stats.Earned.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="40">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Name="colCumulativeEarnedText" MaskType="Numeric"
@@ -189,7 +189,7 @@
                                 </dxg:GridControlBand>
                                 <dxg:GridControlBand Name="bandPeriod" Header="Period">
                                     <dxg:GridColumn x:Name="colPeriodPlannedPercentage" Header="Planned %"
-                                                    FieldName="Stats.Budget.CurrentPeriodDataPoint.UnitsPercentage" ReadOnly="True"
+                                                    FieldName="PROGRESS_ITEMProjection.Stats.Budget.CurrentPeriodDataPoint.UnitsPercentage" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="10">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings MaskType="Numeric" Mask="p2"
@@ -197,7 +197,7 @@
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn x:Name="colPeriodEarnedPercentage" Header="Earned %"
-                                                    FieldName="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage" ReadOnly="True"
+                                                    FieldName="PROGRESS_ITEMProjection.Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="20">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings MaskType="Numeric" Mask="p2"
@@ -205,7 +205,7 @@
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn x:Name="colPeriodPlanned" Header="Planned Units"
-                                                    FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units" ReadOnly="True"
+                                                    FieldName="PROGRESS_ITEMProjection.Stats.Budgeted.CurrentPeriodDataPoint.Units" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="30">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Name="colPeriodPlannedText" MaskType="Numeric"
@@ -213,7 +213,7 @@
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn x:Name="colPeriodEarned" Header="Earned Units"
-                                                    FieldName="Stats.Earned.CurrentPeriodDataPoint.Units" ReadOnly="True"
+                                                    FieldName="PROGRESS_ITEMProjection.Stats.Earned.CurrentPeriodDataPoint.Units" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="40">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Name="colPeriodEarnedText" MaskType="Numeric"
@@ -242,38 +242,38 @@
                             </dxg:GridControl.Bands>
                             <dxg:GridControl.GroupSummary>
                                 <dxg:GridSummaryItem x:Name="groupSummaryBudgeted"
-                                                     ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
-                                                     FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum"
+                                                     ShowInColumn="PROGRESS_ITEMProjection.Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
+                                                     FieldName="PROGRESS_ITEMProjection.Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum"
                                                      DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="groupSummaryCumulativeEarned"
-                                                     ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
-                                                     FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
+                                                     ShowInColumn="PROGRESS_ITEMProjection.Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
+                                                     FieldName="PROGRESS_ITEMProjection.Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="groupSummaryPeriodPlanned"
-                                                     ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.Units"
-                                                     FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units"
+                                                     ShowInColumn="PROGRESS_ITEMProjection.Stats.Budgeted.CurrentPeriodDataPoint.Units"
+                                                     FieldName="PROGRESS_ITEMProjection.Stats.Budgeted.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="groupSummaryPeriodEarned"
-                                                     ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.Units"
-                                                     FieldName="Stats.Earned.CurrentPeriodDataPoint.Units"
+                                                     ShowInColumn="PROGRESS_ITEMProjection.Stats.Earned.CurrentPeriodDataPoint.Units"
+                                                     FieldName="PROGRESS_ITEMProjection.Stats.Earned.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.TotalSummary>
                                 <dxg:GridSummaryItem x:Name="totalSummaryBudgeted"
-                                                     ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
-                                                     FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum"
+                                                     ShowInColumn="PROGRESS_ITEMProjection.Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
+                                                     FieldName="PROGRESS_ITEMProjection.Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum"
                                                      DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="totalSummaryCumulativeEarned"
-                                                     ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
-                                                     FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
+                                                     ShowInColumn="PROGRESS_ITEMProjection.Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
+                                                     FieldName="PROGRESS_ITEMProjection.Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="totalSummaryPeriodPlanned"
-                                                     ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.Units"
-                                                     FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units"
+                                                     ShowInColumn="PROGRESS_ITEMProjection.Stats.Budgeted.CurrentPeriodDataPoint.Units"
+                                                     FieldName="PROGRESS_ITEMProjection.Stats.Budgeted.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="totalSummaryPeriodEarned"
-                                                     ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.Units"
-                                                     FieldName="Stats.Earned.CurrentPeriodDataPoint.Units"
+                                                     ShowInColumn="PROGRESS_ITEMProjection.Stats.Earned.CurrentPeriodDataPoint.Units"
+                                                     FieldName="PROGRESS_ITEMProjection.Stats.Earned.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>

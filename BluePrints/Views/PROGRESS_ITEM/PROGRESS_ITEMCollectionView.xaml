@@ -201,7 +201,7 @@
                                                               MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnRate" FieldName="Entity.RATE.RATE1"
+                                <dxg:GridColumn Name="columnRate" FieldName="Entity.ITEMRATE"
                                                 Header="RATE" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1"
@@ -320,7 +320,7 @@
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandPeriod" Header="Period">
                                 <dxg:GridColumn Name="columnPeriodEarnedPercentage" Header="EARNED %"
-                                                FieldName="PERIOD_EARNED_PERCENTAGE" UnboundType="Decimal"
+                                                FieldName="PERIOD_EARNED_PERCENTAGE" 
                                                 ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" />

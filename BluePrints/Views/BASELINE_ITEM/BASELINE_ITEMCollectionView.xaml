@@ -84,6 +84,9 @@
                                                    Command="{Binding DataContext.ViewReportCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Report_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Report_16x16.png}" />
+                                <dxb:BarCheckItem Content="Lock Baseline"
+                                                  IsChecked="{Binding DataContext.IsBASELINELocked, ElementName=userControl}"
+                                                  Glyph="{dx:DXImageOffice2013 Image=Product_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -233,7 +236,6 @@
                                                         <Binding ElementName="userControl" Path="DataContext.TotalAllowedUnits" />
                                                         <Binding ElementName="userControl" Path="DataContext.DisplayEntities" />
                                                         <Binding Path="RowData.Row" />
-                                                        <Binding ElementName="PART_Editor" Path="EditValue" />
                                                     </MultiBinding>
                                                 </dxe:SpinEdit.MaxValue>
                                             </dxe:SpinEdit>
@@ -259,7 +261,7 @@
                             <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS" SummaryType="Sum"
                                                  ShowInColumn="Entity.Entity.ESTIMATED_HOURS"
                                                  DisplayFormat="Total: {0}" />
-                            <dxg:GridSummaryItem FieldName="TOTAL_COSTS" SummaryType="Sum" ShowInColumn="TOTAL_COSTS"
+                            <dxg:GridSummaryItem FieldName="Entity.TOTAL_COSTS" SummaryType="Sum" ShowInColumn="TOTAL_COSTS"
                                                  DisplayFormat="Total: {0:c2}" />
                             <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS" SummaryType="Sum"
                                                  ShowInColumn="Entity.Entity.DC_HOURS" DisplayFormat="Total: {0:n}" />
@@ -270,7 +272,7 @@
                             <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS" SummaryType="Sum"
                                                  ShowInColumn="Entity.Entity.ESTIMATED_HOURS"
                                                  DisplayFormat="Total: {0}" />
-                            <dxg:GridSummaryItem FieldName="TOTAL_COSTS" SummaryType="Sum" ShowInColumn="TOTAL_COSTS"
+                            <dxg:GridSummaryItem FieldName="Entity.TOTAL_COSTS" SummaryType="Sum" ShowInColumn="TOTAL_COSTS"
                                                  DisplayFormat="Total: {0:c2}" />
                             <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS" SummaryType="Sum"
                                                  ShowInColumn="Entity.Entity.DC_HOURS" DisplayFormat="Total: {0:n}" />
@@ -282,17 +284,20 @@
                                     <dxmvvm:EventToCommand
                                         Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}"
                                         PassEventArgsToCommand="True" EventName="CellValueChanging" />
+                                    <dxmvvm:EventToCommand
+                                        Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}"
+                                        PassEventArgsToCommand="True" EventName="CellValueChanged" />
                                 </dxmvvm:Interaction.Behaviors>
                                 <common:TableViewEx.RowCellMenuCustomizations>
-                                    <dxb:BarButtonItem Content="Bulk Edit"
+                                    <dxb:BarButtonItem Name="contextMenuBulkEdit" Content="Bulk Edit"
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                                                        Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Fill Up"
+                                    <dxb:BarButtonItem Name="contextMenuFillUp" Content="Fill Up"
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}"
                                                        Command="{Binding View.DataContext.FillUpCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Content="Fill Down"
+                                    <dxb:BarButtonItem Name="contextMenuFillDown" Content="Fill Down"
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}"
                                                        Command="{Binding View.DataContext.FillDownCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />

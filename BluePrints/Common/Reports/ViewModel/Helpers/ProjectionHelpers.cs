@@ -44,32 +44,5 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             return variationAdjustments;
         }
-
-        public static void SetWorkpackAssignmentStartUnit(IEnumerable<PROGRESS_ITEMProjection> progressStats)
-        {
-            Dictionary<Guid, decimal> workpackP6AssignedUnits = new Dictionary<Guid, decimal>();
-            progressStats = progressStats.OrderBy(x => x.Entity.Entity.INTERNAL_NUM != null);
-            foreach(PROGRESS_ITEMProjection progressStat in progressStats)
-            {
-                Guid? currentWORKPACKGuid = progressStat.Entity.Entity.GUID_WORKPACK;
-                if (currentWORKPACKGuid == null)
-                    continue;
-
-                var assignedWorkpack = workpackP6AssignedUnits.Where(x => x.Key == currentWORKPACKGuid)
-                    .Select(e => (KeyValuePair<Guid, decimal>?)e).FirstOrDefault();
-
-                decimal workpackAssignmentStartUnit = 1;
-                if (assignedWorkpack != null)
-                {
-                    workpackAssignmentStartUnit = ((KeyValuePair<Guid, decimal>)assignedWorkpack).Value;
-                    workpackP6AssignedUnits.Remove(((KeyValuePair<Guid, decimal>)assignedWorkpack).Key);
-                }
-
-                progressStat.SetWorkpackAssignmentStartUnit(workpackAssignmentStartUnit);
-                //move assignment start unit by total hours for next start unit assignment
-                workpackAssignmentStartUnit += progressStat.Entity.Entity.TOTAL_HOURS;
-                workpackP6AssignedUnits.Add((Guid)currentWORKPACKGuid, workpackAssignmentStartUnit);
-            }
-        }
     }
 }

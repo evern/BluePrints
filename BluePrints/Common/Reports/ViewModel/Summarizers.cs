@@ -39,8 +39,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             if(showLoadingScreen)
                 LoadingScreenManager.ShowLoadingScreen(GetAllMaxProgress());
-
-            SetP6Parameters();
+            
             SetBudgetDataPoints();
             SetCurrentDataPoints();
             SetEarnedDataPoints();
@@ -52,7 +51,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         protected int GetAllMaxProgress()
         {
             int maxProgress = 0;
-            maxProgress += SetP6ParametersProgress();
             maxProgress += SetBudgetDataPointsProgress();
             maxProgress += SetCurrentDataPointsProgress();
             maxProgress += SetEarnedDataPointsProgress();
@@ -60,10 +58,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             return maxProgress;
         }
-
-        public abstract int SetP6ParametersProgress();
-        public abstract void SetP6Parameters();
-
+        
         public abstract int SetBudgetDataPointsProgress();
         public abstract void SetBudgetDataPoints();
 
@@ -96,19 +91,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public void BuildBudgetedOnly()
         {
-            SetP6Parameters();
             SetPlannedDataPoints(true);
-        }
-
-        public override int SetP6ParametersProgress()
-        {
-            return 1;
-        }
-
-        public override void SetP6Parameters()
-        {
-            ProjectionHelpers.SetWorkpackAssignmentStartUnit(((SummaryStats)this.SummaryStats).Deliverable);
-            LoadingScreenManager.Progress();
         }
 
         public override int SetBudgetDataPointsProgress()
@@ -227,7 +210,6 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public override void Build(bool showLoadingScreen = true, bool isCosts = false)
         {
-            SetP6Parameters();
             SetBudgetDataPoints();
             SetCurrentDataPoints();
             SetEarnedDataPoints();
@@ -239,16 +221,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
 
             SetPlannedDataPoints(true);
-        }
-
-        public override int SetP6ParametersProgress()
-        {
-            return 0;
-        }
-
-        public override void SetP6Parameters()
-        {
-            //Needs to be populated before using summarizer
         }
 
         public override int SetBudgetDataPointsProgress()

@@ -153,6 +153,7 @@ namespace BluePrints.ViewModels
 
             if(entities.Count() > 0)
             {
+                this.DisplaySelectedEntity = entities.First();
                 BackgroundWorker summaryBackgroundWorker = new BackgroundWorker();
                 summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
                 summaryBackgroundWorker.WorkerSupportsCancellation = true;

@@ -130,6 +130,11 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
 
+        public override void FullRefresh()
+        {
+            InitializeAndLoadEntitiesLoaderDescription();
+        }
+
         #endregion
 
         #region View Properties

@@ -23,13 +23,7 @@ namespace BluePrints.Common.Projections
         #region Stats Parameters
         SingleObjectSummarizer StatSummarizer { get; set; }
         public ProgressStats Stats { get; set; }
-        public decimal WorkpackAssignmentStartUnit { get; private set; }
         #endregion
-
-        public void SetWorkpackAssignmentStartUnit(decimal workpackAssignmentStartUnit)
-        {
-            WorkpackAssignmentStartUnit = workpackAssignmentStartUnit;
-        }
 
         public PROGRESS_ITEMProjection()
         {
@@ -231,7 +225,6 @@ namespace BluePrints.Common.Projections
             {
                 if (Entity == null || Entity.Entity == null)
                     return 0;
-
                 else if (PROGRESS_ITEMSBeforeReportingDate == null || Entity.Entity.TOTAL_HOURS == 0)
                     return 1;
                 else
@@ -404,17 +397,17 @@ namespace BluePrints.Common.Projections
             else
                 LoadPROGRESS_ITEMS = getPROGRESS_ITEMSFunc();
 
-            IQueryable<BASELINE_ITEMProjection> EntityS;
+            IQueryable<BASELINE_ITEMProjection> BASELINE_ITEMProjections;
             if (PROGRESS == null)
-                EntityS = new List<BASELINE_ITEMProjection>().AsQueryable();
+                BASELINE_ITEMProjections = new List<BASELINE_ITEMProjection>().AsQueryable();
             else
-                EntityS = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS,
+                BASELINE_ITEMProjections = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS,
                     getBASELINEFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, isBASELINEQueryProcessed);
 
             var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
 
             return
-                EntityS.ToArray().Select(
+                BASELINE_ITEMProjections.ToArray().Select(
                         x =>
                             new PROGRESS_ITEMProjection(reportingDate)
                             {
@@ -429,7 +422,7 @@ namespace BluePrints.Common.Projections
             Func<IEnumerable<WORKPACK>> getWORKPACKFunc, 
             Func<IEnumerable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc, Func<IEnumerable<RATE>> getRATESFunc,
             Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc, Func<IEnumerable<VARIATION>> getVARIATIONSFunc, IP6EntitiesUnitOfWork p6UOW,
-            bool isBASELINEQueryProcessed = false)
+            bool isBASELINEQueryProcessed = false, bool buildBudgetedOnly = false)
         {
             var PROGRESS = getPROGRESSFunc();
 
@@ -439,11 +432,11 @@ namespace BluePrints.Common.Projections
             else
                 LoadPROGRESS_ITEMS = getPROGRESS_ITEMSFunc();
 
-            IQueryable<BASELINE_ITEMProjection> EntityS;
+            IQueryable<BASELINE_ITEMProjection> BASELINE_ITEMProjections;
             if (PROGRESS == null)
-                EntityS = new List<BASELINE_ITEMProjection>().AsQueryable();
+                BASELINE_ITEMProjections = new List<BASELINE_ITEMProjection>().AsQueryable();
             else
-                EntityS = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS,
+                BASELINE_ITEMProjections = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS,
                     getBASELINEFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, isBASELINEQueryProcessed);
 
             var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
@@ -452,16 +445,27 @@ namespace BluePrints.Common.Projections
             IEnumerable<VARIATION> projectVARIATIONS = getVARIATIONSFunc();
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(PROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(PROGRESS);
-            List<VariationAdjustment> projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(projectVARIATIONS.AsQueryable(), EntityS);
+            List<VariationAdjustment> projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(projectVARIATIONS.AsQueryable(), BASELINE_ITEMProjections);
 
-            return
-                EntityS.ToArray().Select(
+
+            List<PROGRESS_ITEMProjection> progress_items = BASELINE_ITEMProjections.ToArray()
+                .Select(
                         x =>
-                            new PROGRESS_ITEMProjection(reportingDate, reportInterval, firstAlignedDataDate, x, project, getBASELINEFunc(), getPROGRESSFunc(), getWORKPACKFunc(), projectVariationAdjustments, p6UOW)
-                            {
-                                GUID = x.GUID,
-                                PROGRESS_ITEMS = LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.Entity.GUID_ORIGINAL)
-                            }).AsQueryable();
+                        new PROGRESS_ITEMProjection(reportingDate, reportInterval, firstAlignedDataDate, x, project, getBASELINEFunc(), getPROGRESSFunc(), getWORKPACKFunc(), projectVariationAdjustments, p6UOW)
+                        {
+                            GUID = x.GUID,
+                            PROGRESS_ITEMS = LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.Entity.GUID_ORIGINAL)
+                        }).ToList();
+
+            foreach(PROGRESS_ITEMProjection progress_item in progress_items)
+            {
+                if (buildBudgetedOnly)
+                    progress_item.BuildBudgetedStats();
+                else
+                    progress_item.BuildStats();
+            }
+
+            return progress_items.AsQueryable();
         }
     }
 }

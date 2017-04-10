@@ -99,7 +99,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                     ExoDataPoint actualDataPoint = new ExoDataPoint();
                     DataUtils.ShallowCopy(actualDataPoint, burnedDataPoint);
-                    actualDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * this.CurrencyConversion;
+                    actualDataPoint.Costs = jobTransaction.LINECOST == null ? 0 : (decimal)jobTransaction.LINECOST;
                     actualDataPoints.Add(actualDataPoint);
                 }
             }
@@ -330,7 +330,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                 currentWORKPACK_ASSIGNMENTS = currentWORKPACK_ASSIGNMENTS.OrderBy(x => x.LOW_VALUE);
                 decimal totalUnits = progressItem.Stats.totalUnits;
                 decimal totalCosts = progressItem.Stats.totalCosts;
-                decimal reportableAssinmentStartUnitForWorkpackAssignmentPairing = progressItem.WorkpackAssignmentStartUnit;
+                decimal? reportableAssinmentStartUnitForWorkpackAssignmentPairing = progressItem.Entity.Entity.P6_ASSIGNMENT_STARTUNIT;
+
+                if (reportableAssinmentStartUnitForWorkpackAssignmentPairing == null)
+                    return false;
 
                 decimal currentAssignmentRemainingUnits;
                 //because the earned units portion is generated independent of P6 tasks, we are only interested in what happens after earned units
@@ -348,13 +351,15 @@ namespace BluePrints.Common.ViewModel.Reporting
                     if (currentAssignmentRemainingUnits == 0)
                         break;
 
-                    decimal compareUnitsAssigned = Math.Round(reportableAssinmentStartUnitForWorkpackAssignmentPairing, 0);
+                    decimal compareUnitsAssigned = Math.Round((decimal)reportableAssinmentStartUnitForWorkpackAssignmentPairing, 0);
                     if (currentWORKPACK_ASSIGNMENT.LOW_VALUE <= compareUnitsAssigned && compareUnitsAssigned <= currentWORKPACK_ASSIGNMENT.HIGH_VALUE)
                     {
                         TASK currentAssignmentTASK = P6TASKS.FirstOrDefault(task => task.task_code == currentWORKPACK_ASSIGNMENT.P6_ACTIVITYID);
                         DateTime CurrentAssignmentStartDate;
                         if (processingType == ReportingEnum.DataPointsType.Planned)
+                        {
                             CurrentAssignmentStartDate = (DateTime)currentAssignmentTASK.target_start_date;
+                        }
                         else
                         {
                             if (currentAssignmentTASK.early_start_date == null)

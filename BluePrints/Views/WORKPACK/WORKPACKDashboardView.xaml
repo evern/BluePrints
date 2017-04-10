@@ -61,12 +61,12 @@
                                                   Glyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}"
                                                   LargeGlyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}"
                                                   IsChecked="{Binding ElementName=biCheckUnits, Path=IsChecked, Converter={StaticResource BooleanNegationConverter}}" />
-                                <dxb:BarButtonItem Content="Refresh" Command="{Binding RefreshCommand}"
+                                <!--<dxb:BarButtonItem Content="Refresh" Command="{Binding RefreshCommand}"
                                                    LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
-                                                   Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                <dxb:BarCheckItem Content="Auto Refresh"
+                                                   Glyph="{dx:DXImage Image=Refresh_16x16.png}" />-->
+                                <!--<dxb:BarCheckItem Content="Auto Refresh"
                                                   IsChecked="{Binding DataContext.DoNotAutoRefresh, ElementName=userControl, Converter={dxmvvm:BooleanNegationConverter}}"
-                                                  Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />
+                                                  Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />-->
                                 <dxb:BarButtonItem Content="P6 Issues"
                                                Command="{Binding DataContext.ShowP6ErrorsCommand, ElementName=userControl}"
                                                LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}"

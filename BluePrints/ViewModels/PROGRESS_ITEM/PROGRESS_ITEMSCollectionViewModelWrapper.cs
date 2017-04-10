@@ -57,7 +57,6 @@ namespace BluePrints.ViewModels
         private BASELINE loadBASELINE;
         private bool isQueryForLiveStatus;
         FullSummarizer fullSummarizer;
-        ProjectSummaryStats projectSummary;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private IP6EntitiesUnitOfWork p6UOW = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
@@ -178,11 +177,15 @@ namespace BluePrints.ViewModels
             var getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
             var getDELIVERABLES_STATUSESFunc =
                 loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
+            var getWORKPACKSFunc = loaderCollection.GetCollectionFunc<WORKPACK>();
+            var getVARIATIONSFunc = loaderCollection.GetCollectionFunc<VARIATION>();
+            IP6EntitiesUnitOfWork p6UOW = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+
             return
                 query =>
-                    PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
-                        query.OrderBy(x => x.INTERNAL_NUM), getPROGRESSFunc, getBASELINEFunc, getPROGRESS_ITEMSFunc,
-                        getRATESFunc, getDELIVERABLES_STATUSESFunc);
+                    PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMSWithStats(
+                        query.OrderBy(x => x.INTERNAL_NUM), () => loadPROJECT, getPROGRESSFunc, getBASELINEFunc, getWORKPACKSFunc, getPROGRESS_ITEMSFunc, 
+                        getRATESFunc, getDELIVERABLES_STATUSESFunc, getVARIATIONSFunc, p6UOW, false, true);
         }
 
         
@@ -194,19 +197,8 @@ namespace BluePrints.ViewModels
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             MainViewModel.BeforeShownEditor = BeforeShownEditor;
             MainViewModel.SetParentViewModel(this);
-            mainThreadDispatcher.BeginInvoke(new Action(() => InitializeSummarizer(entities)));
+            //mainThreadDispatcher.BeginInvoke(new Action(() => InitializeSummarizer(entities)));
             base.AssignCallBacksAndRaisePropertyChange(entities);
-        }
-
-        private void InitializeSummarizer(IEnumerable<PROGRESS_ITEMProjection> entities)
-        {
-            TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
-            DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-            List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), entities.Select(x => x.Entity));
-            projectSummary = new ProjectSummaryStats(entities, loadPROGRESS, projectVariationAdjustment);
-            FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT, loadBASELINE, loadPROGRESS, WORKPACKCollection, WORKPACKCollection.SelectMany(x => x.WORKPACK_ASSIGNMENT).ToList(), p6UOW);
-            fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder);
-            fullSummarizer.BuildBudgetedOnly();
         }
 
         protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender)
@@ -319,6 +311,10 @@ namespace BluePrints.ViewModels
             return true;
         }
 
+        public override void FullRefresh()
+        {
+            InitializeAndLoadEntitiesLoaderDescription();
+        }
         #endregion
 
         #endregion
@@ -763,10 +759,20 @@ namespace BluePrints.ViewModels
             return true;
         }
 
+        private ProjectSummaryStats GetProgressSummary()
+        {
+            TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
+            DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
+            List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), MainViewModel.Entities.Select(x => x.Entity));
+            ProjectSummaryStats projectSummary = new ProjectSummaryStats(MainViewModel.Entities, loadPROGRESS, projectVariationAdjustment);
+            FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT, loadBASELINE, loadPROGRESS, WORKPACKCollection, WORKPACKCollection.SelectMany(x => x.WORKPACK_ASSIGNMENT).ToList(), p6UOW);
+            fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder);
+            fullSummarizer.Build();
+            return projectSummary;
+        }
+
         public void ViewReport()
         {
-            if (fullSummarizer == null)
-                return;
 
             var progressReport = new XtraReportPROGRESS_ITEMS();
             var dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
@@ -781,7 +787,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            fullSummarizer.Build();
+            ProjectSummaryStats projectSummary = GetProgressSummary();
             progressReport.AssignProperties(projectSummary, loadPROGRESS.DATA_DATE, loadPROGRESS.PROJECT.NAME);
             var previewWindow = new DocumentPreviewWindow();
             previewWindow.PreviewControl.DocumentSource = progressReport;

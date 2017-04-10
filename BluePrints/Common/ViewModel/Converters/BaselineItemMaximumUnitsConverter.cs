@@ -14,15 +14,17 @@ namespace BluePrints.Common.ViewModel.Converters
         public object Convert(object[] values, Type targetType, object parameter,
             System.Globalization.CultureInfo culture)
         {
-            if (values[0] == DependencyProperty.UnsetValue || values[1] == DependencyProperty.UnsetValue || values[2] == DependencyProperty.UnsetValue || values[3] == DependencyProperty.UnsetValue)
+            if (values[0] == DependencyProperty.UnsetValue || values[1] == DependencyProperty.UnsetValue || values[2] == DependencyProperty.UnsetValue)
                 return 0;
 
             try
             {
                 var totalAllowedUnits = (decimal)values[0];
+                if (totalAllowedUnits == 0)
+                    return 1000000000;
+
                 var AllEntities = (IEnumerable<PROGRESS_ITEMProjection>)values[1];
                 PROGRESS_ITEMProjection currentRow = (PROGRESS_ITEMProjection)values[2];
-                decimal currentUnits = (decimal)values[3];
 
                 IEnumerable<PROGRESS_ITEMProjection> allEntitiesExcludingCurrent = AllEntities.Where(x => x.GUID != currentRow.GUID);
                 decimal currentAssignedUnits = allEntitiesExcludingCurrent.Count() == 0 ? 0 : allEntitiesExcludingCurrent.Sum(x => x.Entity.Entity.ESTIMATED_HOURS);

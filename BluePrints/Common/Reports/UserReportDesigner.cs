@@ -79,7 +79,8 @@ namespace BluePrints.Common.Reports
 
             // Save the report to a stream.
             var ms = new MemoryStream();
-            currentREPORT.Parameters.Clear();
+            //Prevent user from editing parameters
+            //currentREPORT.Parameters.Clear();
             currentREPORT.SaveLayout(ms);
 
             // Prepare the stream for reading.

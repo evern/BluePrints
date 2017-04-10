@@ -76,7 +76,7 @@ namespace BluePrints.ViewModels
                     //LoginCredentials.CurrentUser = new USER() { NAME = CommonResources.AdminUsername };
                     LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == "SU.BING-WEN");
                 else
-                    LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME == UserName);
+                    LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == UserName.ToUpper());
 
                 LoginCredentials.CurrentHWID = CommonMethods.GetHWID();
                 SignalR.ConnectAsync();
