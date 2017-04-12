@@ -12,7 +12,7 @@ namespace BluePrints.Common
     {
         public static void ShowLoadingScreen(int maxProgress)
         {
-            if (DXSplashScreen.IsActive)
+            if (DXSplashScreen.IsActive || maxProgress == 0)
                 return;
 
             ResetCurrentProgress();

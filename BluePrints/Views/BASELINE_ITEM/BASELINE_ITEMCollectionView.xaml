@@ -11,6 +11,7 @@
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
+             xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core"
              xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
@@ -98,7 +99,7 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <dxg:GridControl x:Name="gridControl" dx:DXSerializer.SerializationID="BASELINE_ITEMSGrid"
+                    <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM"
                                      Style="{StaticResource DefaultGridControlTemplate}" PreviewKeyDown="gridControl_PreviewKeyDown">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="Entity.Entity.GUID_WORKPACK"
@@ -261,7 +262,7 @@
                             <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS" SummaryType="Sum"
                                                  ShowInColumn="Entity.Entity.ESTIMATED_HOURS"
                                                  DisplayFormat="Total: {0}" />
-                            <dxg:GridSummaryItem FieldName="Entity.TOTAL_COSTS" SummaryType="Sum" ShowInColumn="TOTAL_COSTS"
+                            <dxg:GridSummaryItem FieldName="Entity.TOTAL_COSTS" SummaryType="Sum" ShowInColumn="Entity.TOTAL_COSTS"
                                                  DisplayFormat="Total: {0:c2}" />
                             <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS" SummaryType="Sum"
                                                  ShowInColumn="Entity.Entity.DC_HOURS" DisplayFormat="Total: {0:n}" />
@@ -272,7 +273,7 @@
                             <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS" SummaryType="Sum"
                                                  ShowInColumn="Entity.Entity.ESTIMATED_HOURS"
                                                  DisplayFormat="Total: {0}" />
-                            <dxg:GridSummaryItem FieldName="Entity.TOTAL_COSTS" SummaryType="Sum" ShowInColumn="TOTAL_COSTS"
+                            <dxg:GridSummaryItem FieldName="Entity.TOTAL_COSTS" SummaryType="Sum" ShowInColumn="Entity.TOTAL_COSTS"
                                                  DisplayFormat="Total: {0:c2}" />
                             <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS" SummaryType="Sum"
                                                  ShowInColumn="Entity.Entity.DC_HOURS" DisplayFormat="Total: {0:n}" />
@@ -340,9 +341,14 @@
                                                        Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 </common:TableViewEx.RowCellMenuCustomizations>
+                                <common:TableViewEx.FormatConditions>
+                                    <dxg:UniqueDuplicateRuleFormatCondition FieldName="Entity.Entity.INTERNAL_NUM">
+                                        <dxc:Format Background="Salmon" TextDecorations="{x:Null}"/>
+                                    </dxg:UniqueDuplicateRuleFormatCondition>
+                                </common:TableViewEx.FormatConditions>
                             </common:TableViewEx>
                         </dxg:GridControl.View>
-                    </dxg:GridControl>
+                    </common:GridControlEx>
                 </Grid>
             </DockPanel>
         </Grid>

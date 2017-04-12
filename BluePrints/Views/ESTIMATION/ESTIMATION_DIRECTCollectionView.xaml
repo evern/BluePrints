@@ -83,7 +83,7 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="ESTIMATIONSGrid"
+                    <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="ESTIMATIONSGrid"
                                      Style="{StaticResource TemporaryGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn FieldName="NAME" />
@@ -148,7 +148,7 @@
                                 </common:TableViewEx.RowCellMenuCustomizations>
                             </common:TableViewEx>
                         </dxg:GridControl.View>
-                    </dxg:GridControl>
+                    </common:GridControlEx>
                 </Grid>
             </DockPanel>
         </Grid>

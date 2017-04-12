@@ -89,8 +89,8 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl Name="gridControl" Style="{StaticResource TemporaryGridControlTemplate}"
-                                     dx:DXSerializer.SerializationID="COMMODITY_GROUP_DIRECTGrid"
+                    <common:GridControlEx x:Name="GridControl" Style="{StaticResource TemporaryGridControlTemplate}"
+                                     dx:DXSerializer.SerializationID="GridControlCOMMODITY_GROUP"
                                      ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}"
                                      CurrentItem="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}"
                                      SelectedItems="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}">
@@ -109,7 +109,8 @@
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.DetailDescriptor>
                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding CHILD_COMMODITY_GROUP}">
-                                <dxg:GridControl Name="gridControlChild"
+                                <common:GridControlEx x:Name="gridControlChild"
+                                                 dx:DXSerializer.SerializationID="GridControlChildCOMMODITY_GROUP"
                                                  CurrentItem="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}"
                                                  SelectedItems="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}">
                                     <dxg:GridControl.Columns>
@@ -130,7 +131,8 @@
                                                     ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}">
                                                     <dxg:LookUpEditSettings.PopupContentTemplate>
                                                         <ControlTemplate TargetType="ContentControl">
-                                                            <dxg:GridControl x:Name="PART_GridControl"
+                                                            <common:GridControlEx x:Name="PART_GridControl"
+                                                                             dx:DXSerializer.SerializationID="GridControlChildPartCOMMODITY_GROUP"
                                                                              ShowBorder="False">
                                                                 <dxg:GridControl.Columns>
                                                                     <dxg:GridColumn FieldName="CODE" VisibleIndex="10"
@@ -160,7 +162,7 @@
                                                                                       KeyFieldName="GUID"
                                                                                       ParentFieldName="GUID_PARENT" />
                                                                 </dxg:GridControl.View>
-                                                            </dxg:GridControl>
+                                                            </common:GridControlEx>
                                                         </ControlTemplate>
                                                     </dxg:LookUpEditSettings.PopupContentTemplate>
                                                 </dxg:LookUpEditSettings>
@@ -180,7 +182,7 @@
                                             </dxmvvm:Interaction.Behaviors>
                                         </common:TableViewEx>
                                     </dxg:GridControl.View>
-                                </dxg:GridControl>
+                                </common:GridControlEx>
                             </dxg:DataControlDetailDescriptor>
                         </dxg:GridControl.DetailDescriptor>
                         <dxg:GridControl.TotalSummary>
@@ -220,7 +222,7 @@
                                 </common:TableViewEx.RowCellMenuCustomizations>
                             </common:TableViewEx>
                         </dxg:GridControl.View>
-                    </dxg:GridControl>
+                    </common:GridControlEx>
                 </Grid>
             </DockPanel>
         </Grid>

@@ -85,7 +85,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl Name="gridControl" ColumnsSource="{StaticResource DISCIPLINEColumns}"
+                    <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDISCIPLINE" ColumnsSource="{StaticResource DISCIPLINEColumns}"
                                      Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
@@ -118,7 +118,7 @@
                                 </common:TableViewEx.RowCellMenuCustomizations>
                             </common:TableViewEx>
                         </dxg:GridControl.View>
-                    </dxg:GridControl>
+                    </common:GridControlEx>
                 </Grid>
             </DockPanel>
         </Grid>

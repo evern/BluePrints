@@ -126,6 +126,9 @@ namespace BluePrints.Common.ViewModel
                 if (!owner.IsLoaded)
                     return;
 
+                if (message.Sender == owner && message.WillPerformBulkRefresh)
+                    return;
+
                 var continueOnMessage = true;
                 if (owner.OnBeforeEntitiesChangedCallBack != null)
                     continueOnMessage = owner.OnBeforeEntitiesChangedCallBack(message.PrimaryKey, typeof(TEntity),

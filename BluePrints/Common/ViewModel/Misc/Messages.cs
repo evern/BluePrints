@@ -38,12 +38,13 @@ namespace BluePrints.Common.ViewModel
         /// <param name="primaryKey">A primary key of an entity that has been added, removed or modified.</param>
         /// <param name="messageType">An entity state change notification type.</param>
         /// /// <param name="sender">The message sender.</param>
-        public EntityMessage(TPrimaryKey primaryKey, EntityMessageType messageType, object sender = null, string hwid = "")
+        public EntityMessage(TPrimaryKey primaryKey, EntityMessageType messageType, object sender = null, string hwid = "", bool willPerformBulkRefresh = false)
         {
             PrimaryKey = primaryKey;
             MessageType = messageType;
             Sender = sender;
             HWID = hwid;
+            WillPerformBulkRefresh = willPerformBulkRefresh;
         }
 
         /// <summary>
@@ -65,6 +66,12 @@ namespace BluePrints.Common.ViewModel
         /// The messaging machine
         /// </summary>
         public string HWID { get; private set; }
+
+        /// <summary>
+        /// Sender will perform bulk refresh 
+        /// instead of holding up the save operation with individual single entity refreshes
+        /// </summary>
+        public bool WillPerformBulkRefresh { get; private set; }
     }
 
     /// <summary>

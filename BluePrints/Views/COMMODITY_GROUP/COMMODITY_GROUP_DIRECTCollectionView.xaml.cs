@@ -28,7 +28,7 @@ namespace BluePrints.Views
 
         public void Redraw()
         {
-            gridControl.RefreshData();
+            GridControl.RefreshData();
         }
 
         public void SetIsRowExpanded(COMMODITY_GROUP_DIRECTProjection row)
@@ -36,8 +36,8 @@ namespace BluePrints.Views
             if (row == null)
                 return;
 
-            var rowHandle = gridControl.DataController.FindRowByRowValue(row);
-            gridControl.SetMasterRowExpanded(rowHandle, row.ISEXPANDED);
+            var rowHandle = GridControl.DataController.FindRowByRowValue(row);
+            GridControl.SetMasterRowExpanded(rowHandle, row.ISEXPANDED);
         }
 
         //private void treeListView1_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)

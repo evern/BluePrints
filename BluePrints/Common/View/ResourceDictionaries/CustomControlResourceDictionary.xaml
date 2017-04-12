@@ -34,7 +34,7 @@
                 <DataTemplate>
                     <ItemsControl>
                         <dxmvvm:KeyToCommand Command="{Binding ShowPopUpCommand}" KeyGesture="Space"
-                                             CommandParameter="{Binding ElementName=gridControl}" />
+                                             CommandParameter="{Binding ElementName=GridControl}" />
                         <dxmvvm:EventToCommand Command="{Binding DataContext.LoadedCommand, ElementName=userControl}"
                                                EventName="Loaded" />
                     </ItemsControl>

@@ -112,7 +112,7 @@
                                           DataContext="{Binding ROLE_PERMISSIONCollection}" View="Group"
                                           Header="Edit Value" Orientation="Horizontal"
                                           dxlc:LayoutControl.AllowVerticalSizing="True">
-                            <dxg:GridControl Style="{StaticResource BasicGridControlTemplate}">
+                            <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlROLE" Style="{StaticResource BasicGridControlTemplate}">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="PERMISSION" AllowEditing="False" MinWidth="300">
                                         <dxg:GridColumn.EditSettings>
@@ -133,7 +133,7 @@
                                         </dxmvvm:Interaction.Behaviors>
                                     </common:TableViewEx>
                                 </dxg:GridControl.View>
-                            </dxg:GridControl>
+                            </common:GridControlEx>
                         </dxlc:LayoutGroup>
                     </dxlc:LayoutControl>
                 </Grid>

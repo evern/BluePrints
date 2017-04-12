@@ -198,7 +198,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl Name="gridControl" DataContext="{Binding DashboardCollection}"
+                    <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPROJECTWORKPACK" DataContext="{Binding DashboardCollection}"
                                      Style="{StaticResource BasicGridControlTemplate}">
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding EditCommand}"
@@ -353,7 +353,7 @@
                                 </common:TableViewEx.RowCellMenuCustomizations>
                             </common:TableViewEx>
                         </dxg:GridControl.View>
-                    </dxg:GridControl>
+                    </common:GridControlEx>
                 </dxlc:LayoutGroup>
             </dxlc:LayoutControl>
         </DockPanel>

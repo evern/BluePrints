@@ -473,9 +473,12 @@ namespace BluePrints.ViewModels
 
             //var newBASELINE_ITEMS = new ObservableCollection<BASELINE_ITEM>();
             List<BASELINE_ITEM> baseline_itemForInternalNumberGeneration = new List<BASELINE_ITEM>();
-            List<VARIATION_ITEMProjection> variation_item = projections.ToList();
+            List<VARIATION_ITEMProjection> variation_items = projections.ToList();
+            List<BASELINE_ITEM> newBASELINE_ITEMS = new List<BASELINE_ITEM>();
+            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
 
-            foreach (var currentVARIATION_ITEM in variation_item)
+            LoadingScreenManager.ShowLoadingScreen(variation_items.Count);
+            foreach (var currentVARIATION_ITEM in variation_items)
             {
                 var newBASELINE_ITEM = new BASELINE_ITEM();
                 DataUtils.ShallowCopy(newBASELINE_ITEM, currentVARIATION_ITEM.Entity.Entity);
@@ -508,9 +511,9 @@ namespace BluePrints.ViewModels
                 {
                     newBASELINE_ITEM.GUID = Guid.Empty;
                     newBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
-                    newBASELINE_ITEM.INTERNAL_NUM = BluePrintDataUtils.BASELINEITEM_Generate_InternalNumber(
-                        loadPROJECT, baseline_itemForInternalNumberGeneration, newBASELINE_ITEM.AREA, newBASELINE_ITEM.DISCIPLINE,
-                        newBASELINE_ITEM.DOCTYPE);
+                    //newBASELINE_ITEM.INTERNAL_NUM = BluePrintDataUtils.BASELINEITEM_Generate_InternalNumber(
+                    //    loadPROJECT, baseline_itemForInternalNumberGeneration, newBASELINE_ITEM.AREA, newBASELINE_ITEM.DISCIPLINE,
+                    //    newBASELINE_ITEM.DOCTYPE);
 
                     if (DisplaySelectedEntity.Entity.TYPE == VariationType.Internal)
                         newBASELINE_ITEM.ESTIMATED_HOURS += currentVARIATION_ITEM.VARIATION_ITEM.VARIATION_UNITS;
@@ -526,8 +529,12 @@ namespace BluePrints.ViewModels
 
                 newBASELINE_ITEM.GUID = Guid.Empty;
                 newBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
-                BASELINE_ITEMSViewModel.Save(newBASELINE_ITEM);
+                //BASELINE_ITEMSViewModel.Save(newBASELINE_ITEM);
+                bluePrintsUOW.BASELINE_ITEMS.Add(newBASELINE_ITEM);
+                LoadingScreenManager.Progress();
             }
+
+            bluePrintsUOW.SaveChanges();
 
             //Full refresh is required to pick up summary
             FullRefresh();

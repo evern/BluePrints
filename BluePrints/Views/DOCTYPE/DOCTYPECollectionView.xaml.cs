@@ -10,7 +10,7 @@ namespace BluePrints.Views
         public DOCTYPECollectionView()
         {
             InitializeComponent();
-            InitializeViewControl(gridControl, tableView);
+            InitializeViewControl(GridControl, tableView);
         }
     }
 }

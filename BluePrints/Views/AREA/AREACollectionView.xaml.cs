@@ -23,7 +23,7 @@ namespace BluePrints.Views
         public AREACollectionView()
         {
             InitializeComponent();
-            InitializeViewControl(gridControl, tableView);
+            InitializeViewControl(GridControl, tableView);
         }
     }
 }

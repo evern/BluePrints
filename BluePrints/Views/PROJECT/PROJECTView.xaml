@@ -94,7 +94,7 @@
                 <dxlc:LayoutControl x:Name="layoutControl" Orientation="Vertical">
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Orientation="Vertical"
                                       dxlc:LayoutControl.AllowVerticalSizing="False" Height="160">
-                        <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="PROJECT_DashboardGrid"
+                        <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPROJECT"
                                          Style="{StaticResource DefaultGridControlTemplate}">
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EventToCommand PassEventArgsToCommand="True"
@@ -328,7 +328,7 @@
                                     </common:TableViewEx.FormatConditions>-->
                                 </common:TableViewEx>
                             </dxg:GridControl.View>
-                        </dxg:GridControl>
+                        </common:GridControlEx>
                     </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup Name="LayoutGroupChart" dxlc:LayoutControl.AllowVerticalSizing="False"
                                       DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
@@ -450,7 +450,7 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
-                            <dxg:GridControl Name="gridControlBASELINE" dx:DXSerializer.SerializationID="BASELINEGrid"
+                            <common:GridControlEx x:Name="gridControlBASELINE" dx:DXSerializer.SerializationID="GridControlDetailBASELINE"
                                              Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" MaxHeight="300">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="NAME" />
@@ -552,7 +552,7 @@
                                         </common:TableViewEx.RowCellMenuCustomizations>
                                     </common:TableViewEx>
                                 </dxg:GridControl.View>
-                            </dxg:GridControl>
+                            </common:GridControlEx>
                         </Grid>
                         <Grid DataContext="{Binding DataContext.PROGRESSViewModel, ElementName=userControl}"
                               dxlc:LayoutControl.TabHeader="PROGRESSES">
@@ -577,7 +577,7 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
-                            <dxg:GridControl Name="gridControlPROGRESS" dx:DXSerializer.SerializationID="PROGRESSGrid"
+                            <common:GridControlEx x:Name="gridControlPROGRESS" dx:DXSerializer.SerializationID="GridControlDetailPROGRESS"
                                              Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" MaxHeight="300">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="NAME" />
@@ -659,7 +659,7 @@
                                         </common:TableViewEx.RowCellMenuCustomizations>
                                     </common:TableViewEx>
                                 </dxg:GridControl.View>
-                            </dxg:GridControl>
+                            </common:GridControlEx>
                         </Grid>
                         <Grid DataContext="{Binding DataContext.PHASEViewModel, ElementName=userControl}"
                               dxlc:LayoutControl.TabHeader="PHASES">
@@ -681,7 +681,7 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
-                            <dxg:GridControl Name="gridControlPHASE" dx:DXSerializer.SerializationID="PHASEGrid"
+                            <common:GridControlEx x:Name="gridControlPHASE" dx:DXSerializer.SerializationID="GridControlDetailPHASE"
                                              ColumnsSource="{StaticResource PHASEColumns}"
                                              Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" MaxHeight="300">
                                 <dxg:GridControl.TotalSummary>
@@ -718,7 +718,7 @@
                                         </common:TableViewEx.RowCellMenuCustomizations>
                                     </common:TableViewEx>
                                 </dxg:GridControl.View>
-                            </dxg:GridControl>
+                            </common:GridControlEx>
                         </Grid>
                         <Grid DataContext="{Binding DataContext.AREAViewModel, ElementName=userControl}"
                               dxlc:LayoutControl.TabHeader="AREAS">
@@ -740,7 +740,7 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
-                            <dxg:GridControl Name="gridControlAREA" dx:DXSerializer.SerializationID="AREAGrid"
+                            <common:GridControlEx x:Name="gridControlAREA" dx:DXSerializer.SerializationID="GridControlDetailAREA"
                                              ColumnsSource="{StaticResource AREAColumns}"
                                              Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" MaxHeight="300">
                                 <dxg:GridControl.TotalSummary>
@@ -777,7 +777,7 @@
                                         </common:TableViewEx.RowCellMenuCustomizations>
                                     </common:TableViewEx>
                                 </dxg:GridControl.View>
-                            </dxg:GridControl>
+                            </common:GridControlEx>
                         </Grid>
                         <Grid DataContext="{Binding DataContext.RATEViewModel, ElementName=userControl}"
                               dxlc:LayoutControl.TabHeader="RATES">
@@ -799,7 +799,7 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
-                            <dxg:GridControl Name="gridControlRATE" dx:DXSerializer.SerializationID="RATEGrid"
+                            <common:GridControlEx x:Name="gridControlRATE" dx:DXSerializer.SerializationID="GridControlDetailRATE"
                                              Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" MaxHeight="300">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn Header="DEPARTMENT" FieldName="GUID_DEPARTMENT">
@@ -857,7 +857,7 @@
                                         </common:TableViewEx.RowCellMenuCustomizations>
                                     </common:TableViewEx>
                                 </dxg:GridControl.View>
-                            </dxg:GridControl>
+                            </common:GridControlEx>
                         </Grid>
                     </dxlc:LayoutGroup>
                 </dxlc:LayoutControl>

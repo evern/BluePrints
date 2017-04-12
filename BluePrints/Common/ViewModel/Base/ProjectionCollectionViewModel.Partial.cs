@@ -674,33 +674,105 @@ namespace BluePrints.Common.ViewModel
         public void Fill(object button, bool isUp)
         {
             var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
-            object ValueToFillDown;
+            object valueToFill;
 
             if (isUp)
-                ValueToFillDown = DataUtils.GetNestedValue(info.Column.FieldName,
+                valueToFill = DataUtils.GetNestedValue(info.Column.FieldName,
                     SelectedEntities[selectedentities.Count - 1]);
             else
-                ValueToFillDown = DataUtils.GetNestedValue(info.Column.FieldName, SelectedEntities[0]);
+                valueToFill = DataUtils.GetNestedValue(info.Column.FieldName, SelectedEntities[0]);
 
             EntitiesUndoRedoManager.PauseActionId();
-            var SaveEntities = new List<TProjection>();
-            foreach (var SelectedEntity in SelectedEntities)
+            var bulkSaveEntities = new List<TProjection>();
+            long? enumerator = null;
+            int? numericIndex = null;
+            if (valueToFill.GetType() == typeof(string))
             {
-                if (ValidateFillDownCallBack != null &&
-                    !ValidateFillDownCallBack(SelectedEntity, info.Column.FieldName, ValueToFillDown))
-                    continue;
-
-                var OldValue = DataUtils.GetNestedValue(info.Column.FieldName, SelectedEntity);
-                EntitiesUndoRedoManager.AddUndo(SelectedEntity, info.Column.FieldName, OldValue, ValueToFillDown,
-                    EntityMessageType.Changed);
-                DataUtils.SetNestedValue(info.Column.FieldName, SelectedEntity, ValueToFillDown);
-                SaveEntities.Add(SelectedEntity);
+                string stringValueToFill = valueToFill.ToString();
+                numericIndex = GetNumericIndex(stringValueToFill);
+                if(numericIndex != null)
+                {
+                    enumerator = Int64.Parse(stringValueToFill.Substring(numericIndex.Value, stringValueToFill.Length - numericIndex.Value));
+                }
             }
 
-            BulkSave(SaveEntities);
+            if(!isUp)
+            {
+                for (int i = 1; i < SelectedEntities.Count; i++)
+                {
+                    if (enumerator != null)
+                        enumerator++;
+
+                    TProjection seletedEntity = SelectedEntities[i];
+                    setEntityProperty(seletedEntity, info, valueToFill, numericIndex, enumerator);
+                    bulkSaveEntities.Add(seletedEntity);
+                }
+            }
+            else
+            {
+                for (int i = SelectedEntities.Count - 2; i >= 0; i--)
+                {
+                    if (enumerator != null && enumerator > 0)
+                        enumerator--;
+
+                    TProjection seletedEntity = SelectedEntities[i];
+                    setEntityProperty(seletedEntity, info, valueToFill, numericIndex, enumerator);
+                    bulkSaveEntities.Add(seletedEntity);
+                }
+            }
+
+            BulkSave(bulkSaveEntities);
             EntitiesUndoRedoManager.UnpauseActionId();
 
             OnFillDownCompletedCallBack?.Invoke();
+        }
+
+        void setEntityProperty(TProjection editEntity, GridMenuInfo info, object valueToFill, int? numericIndex, long? enumerator)
+        {
+            if (numericIndex != null && enumerator != null)
+            {
+                string valueToFillString = valueToFill.ToString();
+                int actualReplacementPos = numericIndex.Value - enumerator.Value.ToString().Length + 1;
+                if(actualReplacementPos > 0)
+                {
+                    valueToFillString = valueToFillString.Substring(0, actualReplacementPos);
+                    valueToFillString = valueToFillString + enumerator.Value.ToString();
+                    valueToFill = valueToFillString;
+                }
+            }
+
+            if (ValidateFillDownCallBack != null &&
+                !ValidateFillDownCallBack(editEntity, info.Column.FieldName, valueToFill))
+                return;
+
+            var OldValue = DataUtils.GetNestedValue(info.Column.FieldName, editEntity);
+            EntitiesUndoRedoManager.AddUndo(editEntity, info.Column.FieldName, OldValue, valueToFill,
+                EntityMessageType.Changed);
+            DataUtils.SetNestedValue(info.Column.FieldName, editEntity, valueToFill);
+        }
+
+        int? GetNumericIndex(string stringToExtractNumbers)
+        {
+            //string pattern = @"\d+$";
+            //Regex rgx = new Regex(pattern);
+            //var matches = rgx.Match(stringToExtractNumbers);
+            //if (matches.Value == string.Empty)
+            //    return null;
+
+            var stack = new Stack<char>();
+            int? returnValue = null;
+            for (var i = stringToExtractNumbers.Length - 1; i >= 0; i--)
+            {
+                char extractChar = stringToExtractNumbers[i];
+                if (!char.IsNumber(extractChar) || extractChar == '0')
+                {
+                    return returnValue;
+                }
+
+                returnValue = i;
+            }
+
+            return returnValue;
         }
 
         public void SetNestedValueWithUndo(TProjection entity, string propertyName, object newValue)
@@ -717,17 +789,6 @@ namespace BluePrints.Common.ViewModel
             if (AllowEdit)
                 base.Edit(projectionEntity);
             //Do not allow edit in projection view
-        }
-
-        public override void Refresh()
-        {
-            base.Refresh();
-            EntitiesUndoRedoManager.Clear();
-        }
-
-        public void RefreshWithoutClearingUndoManager()
-        {
-            base.Refresh();
         }
 
         public void Destroy()
@@ -769,23 +830,22 @@ namespace BluePrints.Common.ViewModel
             EntitiesUndoRedoManager.PauseActionId();
             BaseBulkDelete(selectedentities);
             EntitiesUndoRedoManager.UnpauseActionId();
+            this.RaisePropertyChanged(x => x.Entities);
         }
 
+        public bool IsInBulkOperation { get; set; }
         /// <summary>
         /// Deletes a given entity from the repository and saves changes if confirmed by the user.
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the DeleteCommand property that can be used as a binding source in views.
         /// </summary>
         /// <param name="projectionEntity">An entity to edit.</param>
-        public virtual void BulkSave(IEnumerable<TProjection> entities)
+        public void BulkSave(IEnumerable<TProjection> entities)
         {
             EntitiesUndoRedoManager.PauseActionId();
-
-            foreach (var entity in entities)
-                Save(entity);
-
+            BaseBulkSave(entities);
             EntitiesUndoRedoManager.UnpauseActionId();
+            this.RaisePropertyChanged(x => x.Entities);
         }
-
         #endregion
 
         #region Bulk Edit
@@ -1200,6 +1260,4 @@ namespace BluePrints.Common.ViewModel
             this.OnAfterEntitiesChangedCallBack = null;
         }
     }
-
-
 }

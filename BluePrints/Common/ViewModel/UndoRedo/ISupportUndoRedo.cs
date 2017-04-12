@@ -10,7 +10,10 @@ namespace BluePrints.Common.ViewModel.UndoRedo
     public interface ISupportUndoRedo<TEntity>
         where TEntity : class
     {
-        //EntitiesUndoRedoManager is also required as a private property
+        /// <summary>
+        /// The EntitiesUndoRedoManager
+        /// </summary>
+        EntitiesUndoRedoManager<TEntity> EntitiesUndoRedoManager { get; }
 
         /// <summary>
         /// Callback for undoing entity changes

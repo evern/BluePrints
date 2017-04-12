@@ -92,15 +92,15 @@ namespace BluePrints.Common.Projections
                 BASELINE liveBASELINE = activePROJECT.BASELINE.FirstOrDefault(x => x.STATUS == BaselineStatus.Live);
                 if (liveBASELINE == null)
                     continue;
-
-                IEnumerable<BASELINE_ITEM> userBASELINE_ITEMS = liveBASELINE.BASELINE_ITEM.Where(x => x.GUID_USER != null && x.GUID_USER == user.GUID).ToArray();
+    
+                IQueryable<BASELINE_ITEM> userBASELINE_ITEMS = liveBASELINE.BASELINE_ITEM.Where(x => x.GUID_USER != null && x.GUID_USER == user.GUID).AsQueryable();
                 if (userBASELINE_ITEMS.Count() == 0)
                     continue;
 
                 projectUSER_DELIVERABLES.Add(activePROJECT, userBASELINE_ITEMS);
             }
 
-            LoadingScreenManager.ShowLoadingScreen(projectUSER_DELIVERABLES.Sum(x => x.Value.Count()));
+            LoadingScreenManager.ShowLoadingScreen(projectUSER_DELIVERABLES.Count());
             foreach (KeyValuePair<PROJECT, IEnumerable<BASELINE_ITEM>> projectUSER_DELIVERABLE in projectUSER_DELIVERABLES)
             {
                 PROJECT activePROJECT = projectUSER_DELIVERABLE.Key;
@@ -119,6 +119,8 @@ namespace BluePrints.Common.Projections
                 IEnumerable<PROGRESS_ITEM> livePROGRESS_ITEMS = livePROGRESS.PROGRESS_ITEM;
 
                 IEnumerable<RATE> projectRATES = activePROJECT.RATE;
+
+                LoadingScreenManager.Progress();
 
                 List<PROGRESS_ITEMProjection> PROJECT_PROGRESS_ITEMS = PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMSWithStats(userBASELINE_ITEMS.AsQueryable(), () => activePROJECT, () => livePROGRESS, () => liveBASELINE, () => projectWORKPACK, () => livePROGRESS_ITEMS, () => projectRATES, getDELIVERABLES_STATUSESFunc, () => approvedVARIATION, p6UnitOfWork).ToList();
 

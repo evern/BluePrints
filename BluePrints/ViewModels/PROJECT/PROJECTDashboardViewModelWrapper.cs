@@ -155,7 +155,6 @@ namespace BluePrints.ViewModels
 
             project.BuildStats(false);
             project.RecalculateStats(false);
-
             if (((BackgroundWorker)sender).CancellationPending)
             {
                 e.Cancel = true;

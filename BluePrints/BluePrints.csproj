@@ -26,7 +26,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>165</ApplicationRevision>
+    <ApplicationRevision>170</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -403,7 +403,6 @@
     <Compile Include="Common\ViewModel\Base\DashboardCollectionViewModelWrapper.cs" />
     <Compile Include="Common\ViewModel\Base\EntitiesLoaderDescription.cs" />
     <Compile Include="Common\ViewModel\Base\ProjectionBase.cs" />
-    <Compile Include="Common\ViewModel\Base\WrapperInterfaces.cs" />
     <Compile Include="Common\ViewModel\Converters\BaselineItemMaximumUnitsConverter.cs" />
     <Compile Include="Common\ViewModel\Dialogs\DialogCollectionViewModel.cs" />
     <Compile Include="Common\ViewModel\Base\EntitiesCollectionsWrapper.cs" />
@@ -1207,7 +1206,7 @@
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMCollectionView.xaml.cs">
       <DependentUpon>BASELINE_ITEMCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Common\View\ResourceDictionaries\BluePrintsEntitiesView.xaml.cs">
+    <Compile Include="Views\BluePrintsEntitiesView.xaml.cs">
       <DependentUpon>BluePrintsEntitiesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\COMMODITY_CODE\COMMODITY_CODECollectionView.xaml.cs">
@@ -1409,7 +1408,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Common\View\ResourceDictionaries\BluePrintsEntitiesView.xaml">
+    <Page Include="Views\BluePrintsEntitiesView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

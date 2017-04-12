@@ -54,7 +54,7 @@
                 <dxmvvm:Interaction.Behaviors>
                     <dxmvvm:LayoutSerializationService />
                 </dxmvvm:Interaction.Behaviors>
-                <dxg:GridControl Name="gridControl" ItemsSource="{Binding Entities}" ShowBorder="False"
+                <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSETTINGS_GLOBAL" ItemsSource="{Binding Entities}" ShowBorder="False"
                                  CurrentItem="{Binding SelectedEntity}" ShowLoadingPanel="{Binding IsLoading}">
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding EditCommand}"
@@ -102,7 +102,7 @@
                             </common:TableViewEx.RowCellMenuCustomizations>
                         </common:TableViewEx>
                     </dxg:GridControl.View>
-                </dxg:GridControl>
+                </common:GridControlEx>
             </Grid>
         </DockPanel>
     </Grid>

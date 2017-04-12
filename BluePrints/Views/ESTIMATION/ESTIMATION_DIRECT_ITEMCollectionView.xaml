@@ -89,8 +89,8 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <dxg:GridControl Name="gridControl"
-                                     dx:DXSerializer.SerializationID="ESTIMATION_DIRECT_ITEMSGrid"
+                    <common:GridControlEx x:Name="GridControl"
+                                     dx:DXSerializer.SerializationID="GridControlESTIMATION_DIRECT_ITEM"
                                      ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}"
                                      CurrentItem="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}"
                                      SelectedItems="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}"
@@ -141,7 +141,7 @@
                                             ItemsSource="{Binding DataContext.COMMODITY_GROUP_MasterDetailDisplayCollection, ElementName=userControl}">
                                             <dxg:LookUpEditSettings.PopupContentTemplate>
                                                 <ControlTemplate TargetType="ContentControl">
-                                                    <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False"
+                                                    <common:GridControlEx x:Name="PART_GridControl" ShowBorder="False" dx:DXSerializer.SerializationID="GridControlPopUpMasterCOMMODITY_GROUP" 
                                                                      SelectionMode="Row">
                                                         <dxg:GridControl.Columns>
                                                             <dxg:GridColumn FieldName="COMMODITY_CODE.GUID_PROJECT"
@@ -233,7 +233,7 @@
                                                                               KeyFieldName="GUID"
                                                                               ParentFieldName="GUID_PARENT" />
                                                         </dxg:GridControl.View>
-                                                    </dxg:GridControl>
+                                                    </common:GridControlEx>
                                                 </ControlTemplate>
                                             </dxg:LookUpEditSettings.PopupContentTemplate>
                                         </dxg:LookUpEditSettings>
@@ -356,7 +356,8 @@
                         <dxg:GridControl.DetailDescriptor>
                             <dxg:DataControlDetailDescriptor
                                 ItemsSourceBinding="{Binding CHILD_ESTIMATION_DIRECT_ITEM}">
-                                <dxg:GridControl Name="gridControlChild"
+                                <common:GridControlEx x:Name="gridControlChild"
+                                                 dx:DXSerializer.SerializationID="GridControlChildESTIMATION_DIRECT_ITEM" 
                                                  CurrentItem="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}"
                                                  SelectedItems="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}">
                                     <dxg:GridControl.Bands>
@@ -403,7 +404,7 @@
                                                         ItemsSource="{Binding DataContext.COMMODITY_GROUP_MasterDetailFlatProjectSpecificDisplayCollection, ElementName=userControl}">
                                                         <dxg:LookUpEditSettings.PopupContentTemplate>
                                                             <ControlTemplate TargetType="ContentControl">
-                                                                <dxg:GridControl x:Name="PART_GridControl"
+                                                                <common:GridControlEx x:Name="GridControlPopUpESTIMATION_DIRECT" dx:DXSerializer.SerializationID="EstimationDirectDetailPartGridControl" 
                                                                                  ShowBorder="False" SelectionMode="Row">
                                                                     <dxg:GridControl.Columns>
                                                                         <dxg:GridColumn
@@ -509,7 +510,7 @@
                                                                                           KeyFieldName="GUID"
                                                                                           ParentFieldName="GUID_PARENT" />
                                                                     </dxg:GridControl.View>
-                                                                </dxg:GridControl>
+                                                                </common:GridControlEx>
                                                             </ControlTemplate>
                                                         </dxg:LookUpEditSettings.PopupContentTemplate>
                                                     </dxg:LookUpEditSettings>
@@ -649,7 +650,7 @@
                                         <common:TableViewEx x:Name="tableView1"
                                                        Style="{StaticResource DefaultDetailTableViewTemplate}" />
                                     </dxg:GridControl.View>
-                                </dxg:GridControl>
+                                </common:GridControlEx>
                             </dxg:DataControlDetailDescriptor>
                         </dxg:GridControl.DetailDescriptor>
                         <dxg:GridControl.GroupSummary>
@@ -743,7 +744,7 @@
                                 </common:TableViewEx.RowCellMenuCustomizations>
                             </common:TableViewEx>
                         </dxg:GridControl.View>
-                    </dxg:GridControl>
+                    </common:GridControlEx>
                 </Grid>
             </DockPanel>
         </Grid>

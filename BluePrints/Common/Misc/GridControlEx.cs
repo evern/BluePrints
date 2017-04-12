@@ -13,9 +13,26 @@ using System.Windows.Markup;
 using System.Windows.Media.Animation;
 using DevExpress.Xpf.Grid;
 using System.Windows.Data;
+using DevExpress.Xpf.Core.Serialization;
 
 namespace BluePrints.Common
 {
+    public class GridControlEx : GridControl
+    {
+        public GridControlEx()
+        {
+            this.AddHandler(DXSerializer.AllowPropertyEvent,
+                    new AllowPropertyEventHandler(grid_AllowedProperty));
+        }
+
+        void grid_AllowedProperty(object sender, AllowPropertyEventArgs e)
+        {
+            e.Allow = e.DependencyProperty != GridControl.FilterStringProperty 
+                   && e.DependencyProperty != GridControl.GroupSummarySourceProperty 
+                   && e.DependencyProperty != GridControl.TotalSummarySourceProperty;
+        }
+    }
+
     public class TableViewEx : TableView
     {
         //public bool isEditorActive;

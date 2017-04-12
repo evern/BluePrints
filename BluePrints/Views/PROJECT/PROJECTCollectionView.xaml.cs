@@ -10,7 +10,7 @@ namespace BluePrints.Views
         public PROJECTCollectionView()
         {
             InitializeComponent();
-            InitializeViewControl(gridControl, tableView);
+            InitializeViewControl(GridControl, tableView);
         }
     }
 }

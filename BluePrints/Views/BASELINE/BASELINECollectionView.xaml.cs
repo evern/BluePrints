@@ -23,7 +23,7 @@ namespace BluePrints.Views
         public BASELINECollectionView()
         {
             InitializeComponent();
-            InitializeViewControl(gridControl, tableView);
+            InitializeViewControl(GridControl, tableView);
         }
     }
 }

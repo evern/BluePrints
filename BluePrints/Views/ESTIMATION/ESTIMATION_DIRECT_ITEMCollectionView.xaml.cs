@@ -33,8 +33,8 @@ namespace BluePrints.Views
             if (row == null)
                 return;
 
-            var rowHandle = gridControl.DataController.FindRowByRowValue(row);
-            gridControl.SetMasterRowExpanded(rowHandle, row.ISEXPANDED);
+            var rowHandle = GridControl.DataController.FindRowByRowValue(row);
+            GridControl.SetMasterRowExpanded(rowHandle, row.ISEXPANDED);
         }
     }
 }

@@ -86,8 +86,7 @@
                 <dxmvvm:Interaction.Behaviors>
                     <dxmvvm:LayoutSerializationService />
                 </dxmvvm:Interaction.Behaviors>
-                <dxg:GridControl Name="gridControl"
-                                 dx:DXSerializer.SerializationID="PROJECTVARIATIONDetailsGrid"
+                <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlVARIATION" 
                                  Style="{StaticResource DefaultGridControlTemplate}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn FieldName="Entity.NAME" Header="NAME" VisibleIndex="10" />
@@ -185,7 +184,7 @@
                             </common:TableViewEx.RowCellMenuCustomizations>
                         </common:TableViewEx>
                     </dxg:GridControl.View>
-                </dxg:GridControl>
+                </common:GridControlEx>
             </Grid>
         </DockPanel>
     </Grid>

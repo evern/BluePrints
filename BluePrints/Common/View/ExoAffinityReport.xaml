@@ -13,7 +13,7 @@
         <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
             <dxlc:LayoutGroup Height="230" Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
                 <dxlc:LayoutItem Height="230" >
-                    <dxg:GridControl Name="gridControl" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
+                    <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlExoAffinity" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="INTERNAL NUM" MinWidth="230" IsSmart="True" ReadOnly="True" FieldName="INTERNAL_NAME1" />
                         </dxg:GridControl.Columns>
@@ -23,7 +23,7 @@
                         <dxg:GridControl.View>
                             <common:TableViewEx x:Name="tableView" ShowGroupedColumns="False" ShowGroupPanel="False"/>
                         </dxg:GridControl.View>
-                    </dxg:GridControl>
+                    </common:GridControlEx>
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Height="25" HorizontalAlignment="Right" Name="LayoutGroupButtons" View="Group"

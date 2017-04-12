@@ -105,7 +105,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="BASELINESGrid"
+                    <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlBASELINE"
                                      Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn FieldName="NAME" />
@@ -162,7 +162,7 @@
                                     >
                                     <dxg:LookUpEditSettings.PopupContentTemplate>
                                         <ControlTemplate TargetType="ContentControl" >
-                                            <dxg:GridControl x:Name="PART_GridControl" ItemsSource="{Binding DataContext.P6PROJECTSCollection, ElementName=userControl}" ShowBorder="False" SelectionMode="Row">
+                                            <common:GridControlEx x:Name="PART_GridControl" ItemsSource="{Binding DataContext.P6PROJECTSCollection, ElementName=userControl}" ShowBorder="False" SelectionMode="Row">
                                                 <dxg:GridControl.Columns>
                                                     <dxg:GridColumn IsSmart="True" Header="Code" FieldName="wbs_short_name" AllowEditing="False" />
                                                     <dxg:GridColumn IsSmart="True" Header="Name" Width="500" FieldName="wbs_name" AllowEditing="False" />
@@ -170,7 +170,7 @@
                                                 <dxg:GridControl.View>
                                                     <dxg:TreeListView Name="treeListView1" TreeDerivationMode="Selfreference" KeyFieldName="wbs_id" ParentFieldName="parent_wbs_id"/>
                                                 </dxg:GridControl.View>
-                                            </dxg:GridControl>
+                                            </common:GridControlEx>
                                         </ControlTemplate>
                                     </dxg:LookUpEditSettings.PopupContentTemplate>
                                 </dxg:LookUpEditSettings>
@@ -217,7 +217,7 @@
                                 </common:TableViewEx.RowCellMenuCustomizations>
                             </common:TableViewEx>
                         </dxg:GridControl.View>
-                    </dxg:GridControl>
+                    </common:GridControlEx>
                 </Grid>
             </DockPanel>
         </Grid>

@@ -23,7 +23,7 @@
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:LookUpEdit.PopupContentTemplate>
                         <ControlTemplate TargetType="ContentControl">
-                            <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False">
+                            <common:GridControlEx x:Name="PART_GridControl" dx:DXSerializer.SerializationID="GridControlAssignmentP6ACTIVITY" ShowBorder="False">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn IsSmart="True" AllowEditing="False" FieldName="Subject" />
                                     <dxg:GridColumn IsSmart="True" AllowEditing="False" Width="500"
@@ -33,14 +33,14 @@
                                     <dxg:TreeListView Name="treeListView1" TreeDerivationMode="Selfreference"
                                                       KeyFieldName="task_id" ParentFieldName="ParentId" />
                                 </dxg:GridControl.View>
-                            </dxg:GridControl>
+                            </common:GridControlEx>
                         </ControlTemplate>
                     </dxg:LookUpEdit.PopupContentTemplate>
                 </dxg:LookUpEdit>
             </dxlc:LayoutItem>
             <dxlc:LayoutGroup View="GroupBox" Header="Assignments" Orientation="Horizontal">
                 <dxlc:LayoutItem Height="330">
-                    <dxg:GridControl x:Name="gridControlTASK_ASSIGNMENTS" SelectionMode="Row" ShowBorder="False"
+                    <common:GridControlEx x:Name="gridControlTASK_ASSIGNMENTS" dx:DXSerializer.SerializationID="GridControlTASK_ASSIGNMENTS" SelectionMode="Row" ShowBorder="False"
                                      SelectedItem="{Binding SelectedWORKPACK_ASSIGNMENT, Mode=TwoWay}"
                                      ItemsSource="{Binding TASK_ASSIGNMENTS}">
                         <dxg:GridControl.Columns>
@@ -72,7 +72,7 @@
                                            NavigationStyle="Row" ShowGroupPanel="False" AutoWidth="False"
                                            AllowEditing="False" AllowSorting="False" />
                         </dxg:GridControl.View>
-                    </dxg:GridControl>
+                    </common:GridControlEx>
                 </dxlc:LayoutItem>
                 <dxlc:LayoutGroup x:Name="assignmentNavigationLayoutGroup" HorizontalAlignment="Right"
                                   Orientation="Vertical">

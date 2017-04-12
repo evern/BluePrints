@@ -80,6 +80,9 @@ namespace BluePrints.Common.ViewModel.UndoRedo
                 var undoActionId = UndoList.Last().ActionId;
                 UndoRedoEntityInfo<TEntity> item;
 
+                int undoActionCount = UndoList.Where(x => x.ActionId == undoActionId).Count();
+                LoadingScreenManager.ShowLoadingScreen(undoActionCount);
+
                 for (var i = UndoList.Count - 1; i >= 0; i--)
                 {
                     item = UndoList.Last();
@@ -91,6 +94,7 @@ namespace BluePrints.Common.ViewModel.UndoRedo
                         // We need to copy the undo list here.
                         var copyUndoList = UndoList.ToList();
                         FuncUndo(item);
+                        LoadingScreenManager.Progress();
                         // Now repopulate the undo and redo lists.
                         UpdateRedoList(copyRedoList);
                         UndoList.Clear();
@@ -122,6 +126,8 @@ namespace BluePrints.Common.ViewModel.UndoRedo
                 var redoActionId = RedoList.Last().ActionId;
                 UndoRedoEntityInfo<TEntity> item;
 
+                int redoActionCount = UndoList.Where(x => x.ActionId == redoActionId).Count();
+                LoadingScreenManager.ShowLoadingScreen(redoActionCount);
                 for (var i = RedoList.Count - 1; i >= 0; i--)
                 {
                     item = RedoList.Last();
@@ -137,6 +143,7 @@ namespace BluePrints.Common.ViewModel.UndoRedo
                         SetActionId(item.ActionId);
                         // Redo the last operation.
                         FuncRedo(item);
+                        LoadingScreenManager.Progress();
                         // Add the last redo item into undo list
                         AddUndo(item.ChangedEntity, item.PropertyName, item.OldValue, item.NewValue, item.MessageType);
                         // Now reset the redo list.

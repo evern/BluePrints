@@ -18,7 +18,7 @@ namespace BluePrints.Views
         public BASELINE_ITEMCollectionView()
         {
             InitializeComponent();
-            InitializeViewControl(gridControl, tableView);
+            InitializeViewControl(GridControl, tableView);
             //((BASELINE_ITEMSCollectionViewModelWrapper)DataContext).ShowWORKPACKInternalName1 =
             //    ShowWorkpackInternalName1;
             //((BASELINE_ITEMSCollectionViewModelWrapper)DataContext).ShowWORKPACKInternalName2 =
@@ -32,9 +32,9 @@ namespace BluePrints.Views
         public IEnumerable<PROGRESS_ITEMProjection> GetGridVisibleRows()
         {
             List<PROGRESS_ITEMProjection> visibleBaselineItemProjections = new List<PROGRESS_ITEMProjection>();
-            for (int i = 0; i < gridControl.VisibleRowCount; i++)
+            for (int i = 0; i < GridControl.VisibleRowCount; i++)
             {
-                PROGRESS_ITEMProjection dataRow = (PROGRESS_ITEMProjection)gridControl.GetRow(gridControl.GetRowHandleByVisibleIndex(i));
+                PROGRESS_ITEMProjection dataRow = (PROGRESS_ITEMProjection)GridControl.GetRow(GridControl.GetRowHandleByVisibleIndex(i));
                 visibleBaselineItemProjections.Add(dataRow);
             }
             return visibleBaselineItemProjections;

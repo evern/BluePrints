@@ -19,7 +19,7 @@ namespace BluePrints.Views
 
         public void Redraw()
         {
-            gridControl.RefreshData();
+            GridControl.RefreshData();
         }
 
         public void ChangeViewMemberFieldNames(DashboardViewType DashboardViewType)

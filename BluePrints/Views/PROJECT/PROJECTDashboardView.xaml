@@ -96,7 +96,7 @@
                     </dxmvvm:Interaction.Behaviors>
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical"
                                       dxlc:LayoutControl.AllowVerticalSizing="True">
-                        <dxg:GridControl Name="gridControl" dx:DXSerializer.SerializationID="PROJECT_DashboardGrid"
+                        <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDashboardPROJECT"
                                          Style="{StaticResource DefaultGridControlTemplate}">
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EventToCommand PassEventArgsToCommand="True"
@@ -435,7 +435,7 @@
                                     </common:TableViewEx.FormatConditions>-->
                                 </common:TableViewEx>
                             </dxg:GridControl.View>
-                        </dxg:GridControl>
+                        </common:GridControlEx>
                     </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup Name="LayoutGroupChart"
                                       DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"

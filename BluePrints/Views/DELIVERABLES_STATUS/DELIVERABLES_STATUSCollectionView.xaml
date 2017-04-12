@@ -84,7 +84,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl Name="gridControl" Style="{StaticResource DefaultGridControlTemplate}">
+                    <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDELIVERABLE_STATUS" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn FieldName="NAME" VisibleIndex="10" />
                             <dxg:GridColumn FieldName="MAX_PERCENTAGE" VisibleIndex="20">
@@ -126,7 +126,7 @@
                                 </common:TableViewEx.RowCellMenuCustomizations>
                             </common:TableViewEx>
                         </dxg:GridControl.View>
-                    </dxg:GridControl>
+                    </common:GridControlEx>
                 </Grid>
             </DockPanel>
         </Grid>

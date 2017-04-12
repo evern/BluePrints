@@ -10,7 +10,7 @@ namespace BluePrints.Views
         public DISCIPLINECollectionView()
         {
             InitializeComponent();
-            InitializeViewControl(gridControl, tableView);
+            InitializeViewControl(GridControl, tableView);
         }
     }
 }

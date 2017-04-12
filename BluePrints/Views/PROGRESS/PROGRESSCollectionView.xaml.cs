@@ -23,7 +23,7 @@ namespace BluePrints.Views
         public PROGRESSCollectionView()
         {
             InitializeComponent();
-            InitializeViewControl(gridControl, tableView);
+            InitializeViewControl(GridControl, tableView);
         }
     }
 }

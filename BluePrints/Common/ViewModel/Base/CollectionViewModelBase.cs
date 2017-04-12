@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BluePrints.Common.ViewModel.UndoRedo;
 
 namespace BluePrints.Common.ViewModel
 {
@@ -161,22 +162,22 @@ namespace BluePrints.Common.ViewModel
 
         }
 
-        protected virtual void OnEntityDeleted(TPrimaryKey primaryKey, TEntity entity)
+        protected virtual void OnEntityDeleted(TPrimaryKey primaryKey, TEntity entity, bool willPerformBulkRefresh = false)
         {
             SignalR.HubSendMessage(typeof(TEntity).ToString(), primaryKey.ToString(),
                 EntityMessageType.Deleted.ToString(), ToString(), LoginCredentials.CurrentHWID);
-            Messenger.Default.Send(new EntityMessage<TEntity, TPrimaryKey>(primaryKey, EntityMessageType.Deleted, this, LoginCredentials.CurrentHWID));
+            Messenger.Default.Send(new EntityMessage<TEntity, TPrimaryKey>(primaryKey, EntityMessageType.Deleted, this, LoginCredentials.CurrentHWID, willPerformBulkRefresh));
         }
 
         protected virtual void OnEntitySaved(TPrimaryKey primaryKey, TProjection projectionEntity, TEntity entity,
-            bool isNewEntity)
+            bool isNewEntity, bool willPerformBulkRefresh = false)
         {
             ApplyEntityPropertiesToProjectionCallBack?.Invoke(primaryKey, projectionEntity, entity, isNewEntity);
 
             SignalR.HubSendMessage(typeof(TEntity).ToString(), primaryKey.ToString(),
                 isNewEntity ? EntityMessageType.Added.ToString() : EntityMessageType.Changed.ToString(), ToString(), LoginCredentials.CurrentHWID);
             Messenger.Default.Send(new EntityMessage<TEntity, TPrimaryKey>(primaryKey,
-                isNewEntity ? EntityMessageType.Added : EntityMessageType.Changed, this));
+                isNewEntity ? EntityMessageType.Added : EntityMessageType.Changed, this, string.Empty, willPerformBulkRefresh));
         }
 
         protected override void OnIsLoadingChanged()
@@ -252,6 +253,7 @@ namespace BluePrints.Common.ViewModel
 
             try
             {
+                LoadingScreenManager.ShowLoadingScreen(projectionEntitiesWithTag.Count);
                 foreach (var projectionEntityWithTag in projectionEntitiesWithTag)
                 {
                     var primaryKey = Repository.GetProjectionPrimaryKey(projectionEntityWithTag.Value);
@@ -264,6 +266,8 @@ namespace BluePrints.Common.ViewModel
                         OnBeforeEntityDeleted(primaryKey, entity);
                         Repository.Remove(entity);
                     }
+
+                    LoadingScreenManager.Progress();
                 }
 
                 Repository.UnitOfWork.SaveChanges();
@@ -271,7 +275,7 @@ namespace BluePrints.Common.ViewModel
                 foreach (var entityWithTag in entitiesWithTag)
                 {
                     var findPrimaryKey = primaryKeysWithTag.First(x => x.Key == entityWithTag.Key).Value;
-                    OnEntityDeleted(findPrimaryKey, entityWithTag.Value);
+                    OnEntityDeleted(findPrimaryKey, entityWithTag.Value, true);
                 }
 
                 var entitiesDeleted = entitiesWithTag.Select(x => x.Value).ToList();
@@ -281,7 +285,11 @@ namespace BluePrints.Common.ViewModel
             {
                 MessageBoxService.ShowMessage(e.ErrorMessage, e.ErrorCaption, MessageButton.OK, MessageIcon.Error);
             }
+
+            FullRefreshCallBack?.Invoke();
         }
+
+        public Action FullRefreshCallBack;
 
         public virtual void BaseBulkSave(IEnumerable<TProjection> projectionEntities)
         {
@@ -294,6 +302,7 @@ namespace BluePrints.Common.ViewModel
             for (var i = 0; i < projectionEntitiesList.Count; i++)
                 projectionEntitiesWithTag.Add(new KeyValuePair<int, TProjection>(i, projectionEntitiesList[i]));
 
+            LoadingScreenManager.ShowLoadingScreen(projectionEntitiesWithTag.Count);
             foreach (var projectionEntityWithTag in projectionEntitiesWithTag)
             {
                 bool isNewEntity;
@@ -303,6 +312,7 @@ namespace BluePrints.Common.ViewModel
                 entitiesWithTag.Add(new KeyValuePair<int, TEntity>(projectionEntityWithTag.Key, findOrAddNewEntity));
                 isNewEntityWithTag.Add(new KeyValuePair<int, bool>(projectionEntityWithTag.Key, isNewEntity));
                 OnBeforeEntitySaved(findOrAddNewEntity);
+                LoadingScreenManager.Progress();
             }
 
             try
@@ -315,13 +325,29 @@ namespace BluePrints.Common.ViewModel
                     var projectionEntity = projectionEntitiesWithTag.First(x => x.Key == entityWithTag.Key).Value;
                     var isNewEntity = isNewEntityWithTag.First(x => x.Key == entityWithTag.Key).Value;
                     Repository.SetProjectionPrimaryKey(projectionEntity, primaryKey);
-                    OnEntitySaved(primaryKey, projectionEntity, entityWithTag.Value, isNewEntity);
+                    OnEntitySaved(primaryKey, projectionEntity, entityWithTag.Value, isNewEntity, true);
                 }
             }
             catch (DbException e)
             {
                 MessageBoxService.ShowMessage(e.ErrorMessage, e.ErrorCaption, MessageButton.OK, MessageIcon.Error);
             }
+
+            FullRefreshCallBack?.Invoke();
+        }
+
+        public override void Refresh()
+        {
+            ISupportUndoRedo<TEntity> ISupportUndoRedoViewModel = this as ISupportUndoRedo<TEntity>;
+            if (ISupportUndoRedoViewModel != null)
+                ISupportUndoRedoViewModel.EntitiesUndoRedoManager.Clear();
+
+            base.Refresh();
+        }
+
+        public virtual void RefreshWithoutClearingUndoManager()
+        {
+            base.Refresh();
         }
 
         /// <summary>

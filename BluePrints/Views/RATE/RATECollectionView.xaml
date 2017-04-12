@@ -85,7 +85,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl Name="gridControl" ColumnsSource="{StaticResource RATEColumns}"
+                    <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlRATE" ColumnsSource="{StaticResource RATEColumns}"
                                      Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="GROUP" FieldName="COST_GROUP"
@@ -149,7 +149,7 @@
                                 </common:TableViewEx.RowCellMenuCustomizations>
                             </common:TableViewEx>
                         </dxg:GridControl.View>
-                    </dxg:GridControl>
+                    </common:GridControlEx>
                 </Grid>
             </DockPanel>
         </Grid>

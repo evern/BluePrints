@@ -33,18 +33,10 @@ namespace BluePrints.Views
                 viewRestoration.ForceGridRefresh = this.ForceGridRefresh;
             }
 
-            this.gridControl.AddHandler(DXSerializer.AllowPropertyEvent,
-                    new AllowPropertyEventHandler(grid_AllowedProperty));
-
             foreach(GridColumn gridColumn in gridControl.Columns)
             {
                 gridColumn.FilterPopupMode = FilterPopupMode.CheckedList;
             }
-        }
-
-        void grid_AllowedProperty(object sender, AllowPropertyEventArgs e)
-        {
-            e.Allow = e.DependencyProperty != GridControl.FilterStringProperty;
         }
 
         protected virtual void ForceGridRefresh()

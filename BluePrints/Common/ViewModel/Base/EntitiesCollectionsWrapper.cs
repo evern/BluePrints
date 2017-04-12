@@ -141,6 +141,7 @@ namespace BluePrints.Common.ViewModel
         protected virtual void AssignCallBacksAndRaisePropertyChange(IEnumerable<TMainProjectionEntity> entities)
         {
             MainViewModel.SelectedEntities = this.DisplaySelectedEntities;
+            MainViewModel.FullRefreshCallBack = this.FullRefresh;
             RefreshView();
         }
 
@@ -291,6 +292,7 @@ namespace BluePrints.Common.ViewModel
             if (MainViewModel == null)
                 return;
 
+            mainThreadDispatcher.BeginInvoke(new Action(() => StoreViewState()));
             MainViewModel.Refresh();
             RefreshView();
         }

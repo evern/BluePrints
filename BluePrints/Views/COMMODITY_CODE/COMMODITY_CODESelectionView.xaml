@@ -25,7 +25,7 @@
                         ItemsSource="{Binding SourceObjects}">
                         <dxg:LookUpEdit.PopupContentTemplate>
                             <ControlTemplate TargetType="ContentControl">
-                                <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False" SelectionMode="Row">
+                                <common:GridControlEx x:Name="PART_GridControl" dx:DXSerializer.SerializationID="GridControlSelectionCOMMODITY_CODE" ShowBorder="False" SelectionMode="Row">
                                     <dxg:GridControl.Columns>
                                         <dxg:GridColumn FieldName="COMMODITY_CODE.FULLCODE" Header="FULLCODE"
                                                         ReadOnly="True" VisibleIndex="10" />
@@ -85,7 +85,7 @@
                                     <dxg:GridControl.DetailDescriptor>
                                         <dxg:DataControlDetailDescriptor
                                             ItemsSourceBinding="{Binding CHILD_COMMODITY_CODES}">
-                                            <dxg:GridControl x:Name="PART_GridControl1" ShowBorder="False"
+                                            <common:GridControlEx x:Name="PART_GridControl1" dx:DXSerializer.SerializationID="GridControlDetailCOMMODITY_CODE" ShowBorder="False"
                                                              SelectionMode="Row">
                                                 <dxg:GridControl.Columns>
                                                     <dxg:GridColumn FieldName="COMMODITY_CODE.FULLCODE"
@@ -147,13 +147,13 @@
                                                         </dxg:GridColumn.CellTemplate>
                                                     </dxg:GridColumn>
                                                 </dxg:GridControl.Columns>
-                                            </dxg:GridControl>
+                                            </common:GridControlEx>
                                         </dxg:DataControlDetailDescriptor>
                                     </dxg:GridControl.DetailDescriptor>
                                     <dxg:GridControl.View>
                                         <common:TableViewEx x:Name="tableView" />
                                     </dxg:GridControl.View>
-                                </dxg:GridControl>
+                                </common:GridControlEx>
                             </ControlTemplate>
                         </dxg:LookUpEdit.PopupContentTemplate>
                     </dxg:LookUpEdit>
