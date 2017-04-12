@@ -225,6 +225,7 @@ namespace BluePrints.ViewModels
         #region View Properties
         public override void FullRefresh()
         {
+            mainThreadDispatcher.BeginInvoke(new Action(() => StoreViewState()));
             InitializeAndLoadEntitiesLoaderDescription();
         }
         /// <summary>

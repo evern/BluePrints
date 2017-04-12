@@ -132,6 +132,7 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
+            mainThreadDispatcher.BeginInvoke(new Action(() => StoreViewState()));
             InitializeAndLoadEntitiesLoaderDescription();
         }
 

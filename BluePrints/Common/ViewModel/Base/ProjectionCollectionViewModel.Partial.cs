@@ -686,7 +686,7 @@ namespace BluePrints.Common.ViewModel
             var bulkSaveEntities = new List<TProjection>();
             long? enumerator = null;
             int? numericIndex = null;
-            if (valueToFill.GetType() == typeof(string))
+            if (valueToFill != null && valueToFill.GetType() == typeof(string))
             {
                 string stringValueToFill = valueToFill.ToString();
                 numericIndex = GetNumericIndex(stringValueToFill);
@@ -830,7 +830,6 @@ namespace BluePrints.Common.ViewModel
             EntitiesUndoRedoManager.PauseActionId();
             BaseBulkDelete(selectedentities);
             EntitiesUndoRedoManager.UnpauseActionId();
-            this.RaisePropertyChanged(x => x.Entities);
         }
 
         public bool IsInBulkOperation { get; set; }
@@ -844,7 +843,6 @@ namespace BluePrints.Common.ViewModel
             EntitiesUndoRedoManager.PauseActionId();
             BaseBulkSave(entities);
             EntitiesUndoRedoManager.UnpauseActionId();
-            this.RaisePropertyChanged(x => x.Entities);
         }
         #endregion
 

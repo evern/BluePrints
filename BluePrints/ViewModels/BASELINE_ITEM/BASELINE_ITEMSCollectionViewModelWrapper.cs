@@ -362,6 +362,15 @@ namespace BluePrints.ViewModels
             if (!_isProcessingMultipleDuplicates)
                 MainViewModel.EntitiesUndoRedoManager.PauseActionId();
 
+            List<PROGRESS_ITEMProjection> newSaveEntities = getNewDuplicateEntities();
+            MainViewModel.BulkSave(newSaveEntities);
+            if (!_isProcessingMultipleDuplicates)
+                MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        List<PROGRESS_ITEMProjection> getNewDuplicateEntities()
+        {
+            List<PROGRESS_ITEMProjection> saveEntities = new List<PROGRESS_ITEMProjection>();
             foreach (var selectedEntity in MainViewModel.SelectedEntities)
             {
                 var newProjection = new PROGRESS_ITEMProjection();
@@ -375,15 +384,16 @@ namespace BluePrints.ViewModels
                     DISCIPLINECollection.FirstOrDefault(x => x.GUID == newProjection.Entity.Entity.GUID_DISCIPLINE);
                 var selectedDOCTYPE =
                     DOCTYPECollection.FirstOrDefault(x => x.GUID == newProjection.Entity.Entity.GUID_DOCTYPE);
-                newProjection.Entity.Entity.INTERNAL_NUM =
-                    BluePrintDataUtils.BASELINEITEM_Generate_InternalNumber(_loadProject, MainViewModel.Entities.Select(x => x.Entity),
-                        selectedAREA, selectedDISCIPLINE, selectedDOCTYPE, newProjection.GUID);
+                //newProjection.Entity.Entity.INTERNAL_NUM =
+                //    BluePrintDataUtils.BASELINEITEM_Generate_InternalNumber(_loadProject, MainViewModel.Entities.Select(x => x.Entity),
+                //        selectedAREA, selectedDISCIPLINE, selectedDOCTYPE, newProjection.GUID);
+                newProjection.Entity.Entity.INTERNAL_NUM = string.Empty;
+
                 MainViewModel.EntitiesUndoRedoManager.AddUndo(newProjection, null, null, null, EntityMessageType.Added);
-                MainViewModel.Save(newProjection);
+                saveEntities.Add(newProjection);
             }
 
-            if (!_isProcessingMultipleDuplicates)
-                MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+            return saveEntities;
         }
 
         public bool CanDuplicateMultiple(BarEditItem barEdit)
@@ -404,9 +414,15 @@ namespace BluePrints.ViewModels
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
             _isProcessingMultipleDuplicates = true;
             var timesToDuplicate = 0;
+            List<PROGRESS_ITEMProjection> newSaveEntities = new List<PROGRESS_ITEMProjection>();
             if (int.TryParse(barEdit.EditValue.ToString(), out timesToDuplicate))
                 for (var i = 0; i < timesToDuplicate; i++)
-                    Duplicate();
+                {
+                    List<PROGRESS_ITEMProjection> currentEnumerationSaveEntities = getNewDuplicateEntities();
+                    newSaveEntities.AddRange(currentEnumerationSaveEntities);
+                }
+
+            MainViewModel.BulkSave(newSaveEntities);
             _isProcessingMultipleDuplicates = false;
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }
