@@ -592,6 +592,11 @@ namespace BluePrints.ViewModels
 
         private void PushToP6(BaselineMappingSelectionType mappingSelectionType)
         {
+            //foreach(PROGRESS_ITEMProjection entity in MainViewModel.Entities)
+            //{
+            //    entity.BuildStats();
+            //}
+
             WORKPACK_DashboardViewModel = WORKPACKSchedulingViewModelWrapper.Create();
             WORKPACK_DashboardViewModel.OnPROJECTWORKPACKSMappingViewModelLoaded =
                 OnPROJECTWORKPACKSMappingViewModelLoaded;
@@ -608,19 +613,23 @@ namespace BluePrints.ViewModels
             ICollectionViewModel<TASK> P6TASKCollectionViewModel = WORKPACK_DashboardViewModel.P6TASKCollectionViewModel;
             bool isError = false;
 
-            decimal assignedUnits = 0;
             List<string> processedP6Task = new List<string>();
 
             TimeSpan intervalTimeSpan = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             foreach (WORKPACK_Dashboard workpack in entities)
             {
-                if (workpack.Stats.Earned.CumulativeDataPoints != null && workpack.Stats.Earned.CumulativeDataPoints.Count > 0)
+                decimal totalWorkpackAssignedUnits = 0;
+                decimal previouslyAssignedUnits = 0;
+                decimal totalUnits = workpack.Stats.totalUnits;
+
+                if (totalUnits != 0 && workpack.Stats.Earned.CumulativeDataPoints != null && workpack.Stats.Earned.CumulativeDataPoints.Count > 0)
                 {
                     List<DataPoint> workpackEarnedDataPoints = workpack.Stats.Earned.CumulativeDataPoints.ToList().Where(x => x.Units > 0).OrderBy(x => x.ProgressDate).ToList();
                     DataPoint firstWorkpackEarned = workpackEarnedDataPoints.First();
                     DataPoint lastWorkpackEarned = workpackEarnedDataPoints.LastOrDefault(x => x.ProgressDate <= loadPROGRESS.DATA_DATE);
 
-                    List<WORKPACK_ASSIGNMENT> workpackAssignments = workpack.Entity.WORKPACK_ASSIGNMENT.Where(assignment => assignment.LOW_VALUE <= lastWorkpackEarned.Units).OrderBy(assignment => assignment.LOW_VALUE).ToList();
+                    decimal workpackEarnedPercentage = lastWorkpackEarned.Units / totalUnits;
+                    List<WORKPACK_ASSIGNMENT> workpackAssignments = workpack.ObservableWORKPACK_ASSIGNMENTS.Where(assignment => assignment.LOW_VALUE <= workpackEarnedPercentage).OrderBy(assignment => assignment.LOW_VALUE).ToList();
 
                     for (int i = 0; i < workpackAssignments.Count; i++)
                     {
@@ -632,9 +641,11 @@ namespace BluePrints.ViewModels
                             if (P6TASK.act_start_date == null || P6TASK.act_start_date > proposedStartDate)
                                 P6TASK.act_start_date = proposedStartDate;
 
-                            decimal actUnits = lastWorkpackEarned.Units < workpackAssignment.HIGH_VALUE ? lastWorkpackEarned.Units : workpackAssignment.HIGH_VALUE;
-                            decimal actWorkUnitNormalize = i == 0 ? actUnits : (actUnits - workpackAssignments[i - 1].HIGH_VALUE);
-                            assignedUnits += actWorkUnitNormalize;
+                            decimal currentAssignmentUnits = ((workpackAssignment.HIGH_VALUE - workpackAssignment.LOW_VALUE) + 0.01m) * totalUnits;
+                            decimal unitsUpToCurrentAssignment = currentAssignmentUnits + totalWorkpackAssignedUnits < lastWorkpackEarned.Units ? currentAssignmentUnits : lastWorkpackEarned.Units;
+                            decimal actWorkUnitNormalize = previouslyAssignedUnits == 0 ? unitsUpToCurrentAssignment : (unitsUpToCurrentAssignment - previouslyAssignedUnits);
+
+                            totalWorkpackAssignedUnits += actWorkUnitNormalize;
 
                             //if this is the first time processing the task
                             if(!processedP6Task.Any(x => x == P6TASK.task_code))
@@ -676,6 +687,7 @@ namespace BluePrints.ViewModels
                                 P6TASK.status_code = P6TASKSTATUS.TK_Active.ToString();
 
                             P6TASKCollectionViewModel.Save(P6TASK);
+                            previouslyAssignedUnits = actWorkUnitNormalize;
                         }
                         else
                         {

@@ -53,7 +53,7 @@ namespace BluePrints.Views
             ISMODIFIED = IsModified;
             this.WORKPACK_ASSIGNMENTSViewModel = WORKPACK_ASSIGNMENTSViewModel;
             TASK_Appointments =
-                TASKS.OrderBy(x => x.task_id).Select(x => new TASK_AppointmentInfo(x)).ToArray().AsEnumerable();
+                TASKS.OrderBy(x => x.target_start_date).Select(x => new TASK_AppointmentInfo(x)).ToArray().AsEnumerable();
             WBS_Appointments =
                 WBSS.OrderBy(x => x.wbs_id).Select(x => new TASK_AppointmentInfo(x)).ToArray().AsEnumerable();
             TASK_WBSAppointments = TASK_Appointments.Concat(WBS_Appointments);
@@ -196,7 +196,7 @@ namespace BluePrints.Views
                         x =>
                             x.ObservableWORKPACK_ASSIGNMENTS.Where(
                                     obj2 => obj2.P6_ACTIVITYID == WBSTASKAppointmentInfo.Subject)
-                                .Sum(obj3 => obj3.HIGH_VALUE - obj3.LOW_VALUE + 1));
+                                .Sum(obj3 => ((obj3.HIGH_VALUE - obj3.LOW_VALUE) + 0.01m) * x.Stats.totalUnits));
                 WBSTASKAppointmentInfo.AssignedUnits = P6ActivityAssignedUnits;
             }
 

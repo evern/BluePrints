@@ -309,6 +309,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         private bool TryBuildP6DataPoints(IEnumerable<TASK> P6TASKS, IEnumerable<WORKPACK_ASSIGNMENT> projectWORKPACKASSIGNMENTS, PROGRESS_ITEMProjection progressItem, ReportingEnum.DataPointsType processingType, ReportingEnum.AssignmentLoadType assignmentLoadType, List<VariationAdjustment> deliverableVariationAdjustments, out List<DataPoint> nonCumulativeP6DataPoints)
         {
             nonCumulativeP6DataPoints = new List<DataPoint>();
+
+            if (progressItem.Stats.totalUnits == 0)
+                return false;
+
             IEnumerable<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENTbyType;
             if (assignmentLoadType == ReportingEnum.AssignmentLoadType.Modified)
                 WORKPACK_ASSIGNMENTbyType = projectWORKPACKASSIGNMENTS.Where(assignment => assignment.ISMODIFIEDBASELINE == true);
@@ -329,69 +333,55 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 currentWORKPACK_ASSIGNMENTS = currentWORKPACK_ASSIGNMENTS.OrderBy(x => x.LOW_VALUE);
                 decimal totalUnits = progressItem.Stats.totalUnits;
-                decimal totalCosts = progressItem.Stats.totalCosts;
-                decimal? reportableAssinmentStartUnitForWorkpackAssignmentPairing = progressItem.Entity.Entity.P6_ASSIGNMENT_STARTUNIT;
-
-                if (reportableAssinmentStartUnitForWorkpackAssignmentPairing == null)
-                    return false;
-
-                decimal currentAssignmentRemainingUnits;
+                //decimal currentAssignmentRemainingUnits;
+                decimal earnedPercentage;
                 //because the earned units portion is generated independent of P6 tasks, we are only interested in what happens after earned units
                 if (processingType == ReportingEnum.DataPointsType.Remaining)
-                {
-                    decimal TotalEarnedUnits = progressItem.TOTAL_EARNED_UNITS;
-                    reportableAssinmentStartUnitForWorkpackAssignmentPairing += TotalEarnedUnits;
-                    currentAssignmentRemainingUnits = totalUnits - TotalEarnedUnits;
-                }
+                    earnedPercentage = progressItem.TOTAL_EARNED_UNITS / totalUnits;
                 else
-                    currentAssignmentRemainingUnits = totalUnits;
+                    earnedPercentage = 0;
 
-                foreach (WORKPACK_ASSIGNMENT currentWORKPACK_ASSIGNMENT in currentWORKPACK_ASSIGNMENTS)
+                IEnumerable<WORKPACK_ASSIGNMENT> applicableWORKPACK_ASSIGNMENTS = currentWORKPACK_ASSIGNMENTS.Where(x => x.HIGH_VALUE > earnedPercentage);
+
+                foreach (WORKPACK_ASSIGNMENT applicableWORKPACK_ASSIGNMENT in applicableWORKPACK_ASSIGNMENTS)
                 {
-                    if (currentAssignmentRemainingUnits == 0)
-                        break;
-
-                    decimal compareUnitsAssigned = Math.Round((decimal)reportableAssinmentStartUnitForWorkpackAssignmentPairing, 0);
-                    if (currentWORKPACK_ASSIGNMENT.LOW_VALUE <= compareUnitsAssigned && compareUnitsAssigned <= currentWORKPACK_ASSIGNMENT.HIGH_VALUE)
+                    TASK currentAssignmentTASK = P6TASKS.FirstOrDefault(task => task.task_code == applicableWORKPACK_ASSIGNMENT.P6_ACTIVITYID);
+                    DateTime CurrentAssignmentStartDate;
+                    if (processingType == ReportingEnum.DataPointsType.Planned)
                     {
-                        TASK currentAssignmentTASK = P6TASKS.FirstOrDefault(task => task.task_code == currentWORKPACK_ASSIGNMENT.P6_ACTIVITYID);
-                        DateTime CurrentAssignmentStartDate;
-                        if (processingType == ReportingEnum.DataPointsType.Planned)
-                        {
-                            CurrentAssignmentStartDate = (DateTime)currentAssignmentTASK.target_start_date;
-                        }
-                        else
-                        {
-                            if (currentAssignmentTASK.early_start_date == null)
-                                return false;
-
-                            CurrentAssignmentStartDate = (DateTime)currentAssignmentTASK.early_start_date;
-                        }
-
-                        DateTime CurrentAssignmentEndDate;
-                        if (processingType == ReportingEnum.DataPointsType.Planned)
-                            CurrentAssignmentEndDate = (DateTime)currentAssignmentTASK.target_end_date;
-                        else
-                            CurrentAssignmentEndDate = (DateTime)currentAssignmentTASK.early_end_date;
-
-                        TimeSpan CurrentAssignmentWorkingPeriod = CurrentAssignmentEndDate - CurrentAssignmentStartDate;
-                        decimal CurrentAssignmentUnits;
-
-                        if (currentAssignmentRemainingUnits < currentWORKPACK_ASSIGNMENT.HIGH_VALUE)
-                            CurrentAssignmentUnits = currentAssignmentRemainingUnits;
-                        else
-                            CurrentAssignmentUnits = (currentWORKPACK_ASSIGNMENT.HIGH_VALUE - currentWORKPACK_ASSIGNMENT.LOW_VALUE) + 1;
-
-                        decimal Rate = progressItem.Entity.ITEMRATE;
-                        decimal CurrentAssignmentCosts = CurrentAssignmentUnits * Rate;
-
-                        List<DataPoint> p6ProgressInfo = DataPointsHelpers.DataPointsGenerator(this.ReportingInterval, this.FirstAlignedDataDate, CurrentAssignmentWorkingPeriod, CurrentAssignmentUnits, CurrentAssignmentCosts, CurrentAssignmentStartDate, this.CurrencyConversion, this.exceptionPeriods);
-                        nonCumulativeP6DataPoints.AddRange(p6ProgressInfo);
-                        currentAssignmentRemainingUnits -= CurrentAssignmentUnits;
-                        reportableAssinmentStartUnitForWorkpackAssignmentPairing += CurrentAssignmentUnits;
+                        CurrentAssignmentStartDate = (DateTime)currentAssignmentTASK.target_start_date;
                     }
+                    else
+                    {
+                        if (currentAssignmentTASK.early_start_date == null)
+                            return false;
+
+                        CurrentAssignmentStartDate = (DateTime)currentAssignmentTASK.early_start_date;
+                    }
+
+                    DateTime CurrentAssignmentEndDate;
+                    if (processingType == ReportingEnum.DataPointsType.Planned)
+                        CurrentAssignmentEndDate = (DateTime)currentAssignmentTASK.target_end_date;
+                    else
+                        CurrentAssignmentEndDate = (DateTime)currentAssignmentTASK.early_end_date;
+
+                    TimeSpan CurrentAssignmentWorkingPeriod = CurrentAssignmentEndDate - CurrentAssignmentStartDate;
+                    decimal remainingLowValue = applicableWORKPACK_ASSIGNMENT.LOW_VALUE > earnedPercentage ? applicableWORKPACK_ASSIGNMENT.LOW_VALUE : earnedPercentage + 0.01m;
+
+                    decimal currentAssignmentPercentage = (applicableWORKPACK_ASSIGNMENT.HIGH_VALUE - remainingLowValue) + 0.01m;
+                    decimal currentAssignmentUnits = currentAssignmentPercentage * totalUnits;
+
+                    decimal Rate = progressItem.Entity.ITEMRATE;
+                    decimal CurrentAssignmentCosts = currentAssignmentUnits * Rate;
+
+                    List<DataPoint> p6ProgressInfo = DataPointsHelpers.DataPointsGenerator(this.ReportingInterval, this.FirstAlignedDataDate, CurrentAssignmentWorkingPeriod, currentAssignmentUnits, CurrentAssignmentCosts, CurrentAssignmentStartDate, this.CurrencyConversion, this.exceptionPeriods);
+                    nonCumulativeP6DataPoints.AddRange(p6ProgressInfo);
                 }
 
+                if (processingType == ReportingEnum.DataPointsType.Remaining && (nonCumulativeP6DataPoints.Sum(x => x.Units) + progressItem.TOTAL_EARNED_UNITS) < totalUnits)
+                {
+                    string s = string.Empty;
+                }
                 return true;
             }
             else

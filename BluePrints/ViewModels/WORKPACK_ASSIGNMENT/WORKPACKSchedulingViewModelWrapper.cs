@@ -273,6 +273,25 @@ namespace BluePrints.ViewModels
             get { return (ICollectionViewModel<BluePrints.P6Data.TASK>) loaderCollection.GetViewModel<TASK>(); }
         }
 
+        public void Fix()
+        {
+            LoadingScreenManager.ShowLoadingScreen(MainViewModel.Entities.Count);
+            foreach (WORKPACK_Dashboard workpack in MainViewModel.Entities)
+            {
+                IEnumerable<WORKPACK_ASSIGNMENT> projectWORKPACK_ASSIGNMENTS = workpack.ObservableWORKPACK_ASSIGNMENTS;
+                foreach (WORKPACK_ASSIGNMENT WORKPACK_ASSIGNMENT in projectWORKPACK_ASSIGNMENTS)
+                {
+                    WORKPACK_ASSIGNMENT.LOW_VALUE = ((WORKPACK_ASSIGNMENT.LOW_VALUE - 1) / workpack.Stats.totalUnits) + 0.01m;
+                    WORKPACK_ASSIGNMENT.HIGH_VALUE = ((WORKPACK_ASSIGNMENT.HIGH_VALUE) / workpack.Stats.totalUnits);
+                    WORKPACK_ASSIGNMENTSCollectionViewModel.Save(WORKPACK_ASSIGNMENT);
+                }
+
+                LoadingScreenManager.Progress();
+            }
+
+            MessageBoxService.ShowMessage("Fix complete");
+        }
+
         public void PushToP6()
         {
             var IBluePrintsEntitiesUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
@@ -284,11 +303,10 @@ namespace BluePrints.ViewModels
             else
                 ProjectName = loadBASELINE.P6BASELINE_NAME;
 
+
             BluePrints.P6Data.PROJECT P6PROJECT = IP6EntitiesUnitOfWork.PROJECT.FirstOrDefault(x => x.proj_short_name == ProjectName && x.delete_date == null);
             if (P6PROJECT != null)
             {
-                IEnumerable<WORKPACK_ASSIGNMENT> currentPROJECTWORKPACK_ASSIGNMENTS = loadPROJECT.WORKPACK.Where(x => x.DELETED == null).SelectMany(x => x.WORKPACK_ASSIGNMENT.Where(y => y.DELETED == null && y.ISMODIFIEDBASELINE == (mappingType == BaselineMappingSelectionType.Modified))).ToArray().AsEnumerable();
-                IEnumerable<TASKRSRC> ExistingTaskResource = P6PROJECT.TASKRSRC.ToArray().AsEnumerable();
                 IEnumerable<TASK> P6Tasks = P6PROJECT.TASK.ToArray().AsEnumerable();
                 foreach (TASK Task in P6Tasks)
                 {
@@ -297,6 +315,8 @@ namespace BluePrints.ViewModels
                     Task.target_work_qty = 0;
                 }
 
+                IEnumerable<TASKRSRC> ExistingTaskResource = P6PROJECT.TASKRSRC.ToArray().AsEnumerable();
+
                 double taskrsrcCount = ExistingTaskResource.Count();
                 foreach (var TaskRsrc in ExistingTaskResource)
                 {
@@ -304,28 +324,30 @@ namespace BluePrints.ViewModels
                 }
 
                 List<MissingP6Activities> missingActivities = new List<MissingP6Activities>();
-
-                foreach (WORKPACK_ASSIGNMENT WORKPACK_ASSIGNMENT in currentPROJECTWORKPACK_ASSIGNMENTS)
+                foreach(WORKPACK_Dashboard workpack in MainViewModel.Entities)
                 {
-                    TASK existingTask = P6Tasks.FirstOrDefault(x => x.task_code == WORKPACK_ASSIGNMENT.P6_ACTIVITYID);
-                    decimal remainingValue = (WORKPACK_ASSIGNMENT.HIGH_VALUE - WORKPACK_ASSIGNMENT.LOW_VALUE) + 1;
+                    IEnumerable<WORKPACK_ASSIGNMENT> projectWORKPACK_ASSIGNMENTS = workpack.ObservableWORKPACK_ASSIGNMENTS;
+                    decimal workpackTotalUnits = workpack.Stats.totalUnits;
 
-                    if (existingTask != null)
+                    foreach (WORKPACK_ASSIGNMENT WORKPACK_ASSIGNMENT in projectWORKPACK_ASSIGNMENTS)
                     {
-                        decimal remainingProductivity = (decimal)((existingTask.target_drtn_hr_cnt == null || existingTask.target_drtn_hr_cnt == 0) ? remainingValue : (remainingValue / existingTask.target_drtn_hr_cnt));
+                        TASK existingTask = P6Tasks.FirstOrDefault(x => x.task_code == WORKPACK_ASSIGNMENT.P6_ACTIVITYID);
+                        decimal currentAssignmentUnits = ((WORKPACK_ASSIGNMENT.HIGH_VALUE - WORKPACK_ASSIGNMENT.LOW_VALUE) + 0.01m) * workpackTotalUnits;
 
-                        existingTask.target_work_qty += remainingValue;
-                        existingTask.remain_work_qty += remainingValue;
-                    }
-                    else
-                    {
-                        WORKPACK missingWORKPACK = WORKPACKCollection.FirstOrDefault(x => x.GUID == WORKPACK_ASSIGNMENT.GUID_WORKPACK);
-                        missingActivities.Add(new MissingP6Activities() { INTERNAL_NUM = missingWORKPACK == null ? string.Empty : missingWORKPACK.INTERNAL_NAME1, P6_ACTIVITY = WORKPACK_ASSIGNMENT.P6_ACTIVITYID, UNITS = remainingValue });
+                        if (existingTask != null)
+                        {
+                            existingTask.target_work_qty += currentAssignmentUnits;
+                            existingTask.remain_work_qty += currentAssignmentUnits;
+                        }
+                        else
+                        {
+                            WORKPACK missingWORKPACK = WORKPACKCollection.FirstOrDefault(x => x.GUID == WORKPACK_ASSIGNMENT.GUID_WORKPACK);
+                            missingActivities.Add(new MissingP6Activities() { INTERNAL_NUM = missingWORKPACK == null ? string.Empty : missingWORKPACK.INTERNAL_NAME1, P6_ACTIVITY = WORKPACK_ASSIGNMENT.P6_ACTIVITYID, UNITS = currentAssignmentUnits });
+                        }
                     }
                 }
 
                 ((P6EntitiesUnitOfWork)IP6EntitiesUnitOfWork).Context.SaveChanges();
-                SetDeliverableAssignmentStartUnits();
                 if (missingActivities.Count > 0)
                 {
                     DialogCollectionViewModel<MissingP6Activities> missingActivitiesViewModel = DialogCollectionViewModel<MissingP6Activities>.Create(missingActivities);
@@ -335,48 +357,6 @@ namespace BluePrints.ViewModels
                 else
                     MessageBoxService.ShowMessage(CommonResources.WORKPACK_ASSIGNMENT_P6WriteComplete);
             }
-        }
-
-        private void SetDeliverableAssignmentStartUnits()
-        {
-            
-            Dictionary<Guid, decimal> workpackP6AssignedUnits = new Dictionary<Guid, decimal>();
-            List<BASELINE_ITEM> baseline_items = loaderCollection.GetCollection<BASELINE_ITEM>().OrderBy(x => x.INTERNAL_NUM != null).ToList();
-
-            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-
-            LoadingScreenManager.ShowLoadingScreen(baseline_items.Count);
-            foreach (BASELINE_ITEM baseline_item in baseline_items)
-            {
-                Guid? currentWORKPACKGuid = baseline_item.GUID_WORKPACK;
-                if (currentWORKPACKGuid == null)
-                    continue;
-
-                var assignedWorkpack = workpackP6AssignedUnits.Where(x => x.Key == currentWORKPACKGuid)
-                    .Select(e => (KeyValuePair<Guid, decimal>?)e).FirstOrDefault();
-
-                decimal workpackAssignmentStartUnit = 1;
-                if (assignedWorkpack != null)
-                {
-                    workpackAssignmentStartUnit = ((KeyValuePair<Guid, decimal>)assignedWorkpack).Value;
-                    workpackP6AssignedUnits.Remove(((KeyValuePair<Guid, decimal>)assignedWorkpack).Key);
-                }
-
-                //baseline_item.P6_ASSIGNMENT_STARTUNIT = workpackAssignmentStartUnit;
-                IQueryable<BASELINE_ITEM> actualBASELINE_ITEMS = bluePrintsUOW.BASELINE_ITEMS.Where(x => x.GUID_ORIGINAL == baseline_item.GUID_ORIGINAL);
-
-                foreach(BASELINE_ITEM actualBaseline_Item in actualBASELINE_ITEMS)
-                {
-                    actualBaseline_Item.P6_ASSIGNMENT_STARTUNIT = workpackAssignmentStartUnit;
-                }
-
-                //move assignment start unit by total hours for next start unit assignment
-                workpackAssignmentStartUnit += baseline_item.TOTAL_HOURS;
-                workpackP6AssignedUnits.Add((Guid)currentWORKPACKGuid, workpackAssignmentStartUnit);
-                LoadingScreenManager.Progress();
-            }
-
-            bluePrintsUOW.SaveChanges();
         }
 
         public CollectionViewModel<BASELINE_ITEM, BASELINE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>
@@ -390,6 +370,19 @@ namespace BluePrints.ViewModels
                 return
                     (CollectionViewModel<BASELINE_ITEM, BASELINE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<BASELINE_ITEM>();
+            }
+        }
+
+        public CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACK_ASSIGNMENTSCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<WORKPACK_ASSIGNMENT>();
             }
         }
         #endregion

@@ -686,11 +686,12 @@ namespace BluePrints.Common.ViewModel
             var bulkSaveEntities = new List<TProjection>();
             long? enumerator = null;
             int? numericIndex = null;
+            int numericFieldLength = 0;
             if (valueToFill != null && valueToFill.GetType() == typeof(string))
             {
                 string stringValueToFill = valueToFill.ToString();
-                numericIndex = GetNumericIndex(stringValueToFill);
-                if(numericIndex != null)
+                numericIndex = GetNumericIndex(stringValueToFill, out numericFieldLength);
+                if (numericIndex != null)
                 {
                     enumerator = Int64.Parse(stringValueToFill.Substring(numericIndex.Value, stringValueToFill.Length - numericIndex.Value));
                 }
@@ -704,7 +705,7 @@ namespace BluePrints.Common.ViewModel
                         enumerator++;
 
                     TProjection seletedEntity = SelectedEntities[i];
-                    setEntityProperty(seletedEntity, info, valueToFill, numericIndex, enumerator);
+                    setEntityProperty(seletedEntity, info, valueToFill, numericIndex, enumerator, numericFieldLength);
                     bulkSaveEntities.Add(seletedEntity);
                 }
             }
@@ -716,7 +717,7 @@ namespace BluePrints.Common.ViewModel
                         enumerator--;
 
                     TProjection seletedEntity = SelectedEntities[i];
-                    setEntityProperty(seletedEntity, info, valueToFill, numericIndex, enumerator);
+                    setEntityProperty(seletedEntity, info, valueToFill, numericIndex, enumerator, numericFieldLength);
                     bulkSaveEntities.Add(seletedEntity);
                 }
             }
@@ -727,18 +728,31 @@ namespace BluePrints.Common.ViewModel
             OnFillDownCompletedCallBack?.Invoke();
         }
 
-        void setEntityProperty(TProjection editEntity, GridMenuInfo info, object valueToFill, int? numericIndex, long? enumerator)
+        void setEntityProperty(TProjection editEntity, GridMenuInfo info, object valueToFill, int? numericIndex, long? enumerator, int numericFieldLength)
         {
             if (numericIndex != null && enumerator != null)
             {
-                string valueToFillString = valueToFill.ToString();
-                int actualReplacementPos = numericIndex.Value - enumerator.Value.ToString().Length + 1;
-                if(actualReplacementPos > 0)
+                string valueToFillStringOnly = valueToFill.ToString().Substring(0, valueToFill.ToString().Length - numericFieldLength);
+                string enumeratorString = enumerator.ToString();
+                int numberOfLeadingZeros = numericFieldLength - enumeratorString.Length;
+                for(int i = 0;i < numberOfLeadingZeros;i++)
                 {
-                    valueToFillString = valueToFillString.Substring(0, actualReplacementPos);
-                    valueToFillString = valueToFillString + enumerator.Value.ToString();
-                    valueToFill = valueToFillString;
+                    valueToFillStringOnly += "0";
                 }
+                valueToFillStringOnly += enumeratorString;
+                valueToFill = valueToFillStringOnly;
+                //int actualReplacementPos;
+                //if (enumeratorString.Length <= numericFieldLength)
+                //    actualReplacementPos = valueToFillStringOnly.Length - enumeratorString.Length;
+                //else
+                //    actualReplacementPos = numericIndex.Value;
+
+                //if (actualReplacementPos > 0)
+                //{
+                //    valueToFillString = valueToFillString.Substring(0, actualReplacementPos);
+                //    valueToFillString = valueToFillString + enumerator.Value.ToString();
+                //    valueToFill = valueToFillString;
+                //}
             }
 
             if (ValidateFillDownCallBack != null &&
@@ -751,7 +765,7 @@ namespace BluePrints.Common.ViewModel
             DataUtils.SetNestedValue(info.Column.FieldName, editEntity, valueToFill);
         }
 
-        int? GetNumericIndex(string stringToExtractNumbers)
+        int? GetNumericIndex(string stringToExtractNumbers, out int numericFieldLength)
         {
             //string pattern = @"\d+$";
             //Regex rgx = new Regex(pattern);
@@ -759,17 +773,25 @@ namespace BluePrints.Common.ViewModel
             //if (matches.Value == string.Empty)
             //    return null;
 
+            numericFieldLength = 0;
             var stack = new Stack<char>();
             int? returnValue = null;
+            bool isLeadingZeros = false;
             for (var i = stringToExtractNumbers.Length - 1; i >= 0; i--)
             {
                 char extractChar = stringToExtractNumbers[i];
-                if (!char.IsNumber(extractChar) || extractChar == '0')
-                {
+                if (!char.IsNumber(extractChar))
                     return returnValue;
-                }
 
-                returnValue = i;
+                numericFieldLength += 1;
+                if (extractChar == '0' && isLeadingZeros)
+                    continue;
+                else
+                {
+                    //any zeros from here onwards are classified as leading zeros
+                    isLeadingZeros = true;
+                    returnValue = i;
+                }
             }
 
             return returnValue;

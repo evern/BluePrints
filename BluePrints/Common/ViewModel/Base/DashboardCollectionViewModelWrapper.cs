@@ -81,7 +81,7 @@ namespace BluePrints.Common.ViewModel
             {
                 SummaryEntity = entities.First();
             }
-            else
+            else if(entities.Count() > 0)
             {
                 SummaryEntity = ViewModelSource.Create(() => new TProjection());
                 ProgressStats progressStats = entities.First().Stats as ProgressStats;

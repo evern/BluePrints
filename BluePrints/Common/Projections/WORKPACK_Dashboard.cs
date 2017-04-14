@@ -27,7 +27,7 @@ namespace BluePrints.Common.Projections
             get
             {
                 return
-                    Entity.WORKPACK_ASSIGNMENT.Where(x => x.ISMODIFIEDBASELINE == IsGetModifiedWORKPACK_ASSIGNMENTS)
+                    Entity.WORKPACK_ASSIGNMENT.Where(x => x.ISMODIFIEDBASELINE == IsGetModifiedWORKPACK_ASSIGNMENTS).OrderBy(x => x.LOW_VALUE)
                         .ToList();
             }
         }
@@ -36,9 +36,19 @@ namespace BluePrints.Common.Projections
 
         public decimal ASSIGNED_UNITS
         {
-            get { return ObservableWORKPACK_ASSIGNMENTS.Sum(x => x.HIGH_VALUE - x.LOW_VALUE + 1); }
+            get
+            {
+                return Stats.totalUnits * ObservableWORKPACK_ASSIGNMENTS.Sum(x => (x.HIGH_VALUE - x.LOW_VALUE) + 0.01m);
+            }
         }
 
+        public decimal ASSIGNED_PERCENTAGE
+        {
+            get
+            {
+                return ObservableWORKPACK_ASSIGNMENTS.Sum(x => (x.HIGH_VALUE - x.LOW_VALUE) + 0.01m);
+            }
+        }
         #endregion
     }
 
@@ -68,7 +78,7 @@ namespace BluePrints.Common.Projections
 
             var projectDashboard =
                 PROJECT_DashboardQueries.SummarizeSinglePROJECTDashboard(getBASELINEFunc().PROJECT, getPROGRESSFunc,
-                    getPROGRESS_ITEMSFunc, getBASELINE_ITEMFunc, getBASELINEFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc);
+                    getPROGRESS_ITEMSFunc, getBASELINE_ITEMFunc, getBASELINEFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, true);
             return SummarizeWORKPACKDashboard(WORKPACKS, projectDashboard);
         }
     }

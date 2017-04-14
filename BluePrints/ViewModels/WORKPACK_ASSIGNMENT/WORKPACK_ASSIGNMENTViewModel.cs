@@ -74,11 +74,11 @@ namespace BluePrints.ViewModels
                 if (SelectedWORKPACK == null)
                     return 0;
 
-                var assignedValue = SelectedWORKPACK.ASSIGNED_UNITS;
+                var assignedValue = SelectedWORKPACK.ASSIGNED_PERCENTAGE;
                 if (assignedValue >= AssignmentMaxValue)
                     return 0;
                 else
-                    return assignedValue + 1;
+                    return assignedValue + 0.01m;
             }
         }
 
@@ -86,12 +86,12 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (AssignmentLowValue == 0)
+                if (AssignmentLowValue == 0 || SelectedWORKPACK.Stats.totalUnits == 0)
                     return 0;
                 else if (AssignmentLowValue >= AssignmentMaxValue)
                     return AssignmentMaxValue;
                 else
-                    return AssignmentLowValue + 1;
+                    return (AssignmentLowValue + 0.01m);
             }
         }
 
@@ -102,7 +102,8 @@ namespace BluePrints.ViewModels
                 if (SelectedWORKPACK == null)
                     return 0;
 
-                return SelectedWORKPACK.Stats.totalUnits;
+                //return SelectedWORKPACK.Stats.totalUnits;
+                return 1;
             }
         }
 
@@ -157,8 +158,6 @@ namespace BluePrints.ViewModels
                 }
             }
         }
-
-        private WORKPACK_ASSIGNMENT selectedWORKPACK_ASSIGNMENT { get; set; }
 
         public virtual WORKPACK_ASSIGNMENT SelectedWORKPACK_ASSIGNMENT { get; set; }
 
@@ -219,7 +218,6 @@ namespace BluePrints.ViewModels
                 HIGH_VALUE = AssignmentHighValue,
                 LOW_VALUE = AssignmentLowValue,
                 P6_ACTIVITYID = SelectedTASK.Subject,
-                PRIORITY = SelectedWORKPACK.ObservableWORKPACK_ASSIGNMENTS.Count + 1,
                 GUID_WORKPACK = SelectedWORKPACK.GUID,
                 ISMODIFIEDBASELINE = IsModified
             };
@@ -284,7 +282,7 @@ namespace BluePrints.ViewModels
 
             var workpackAssignmentsInOrder =
                 activeWORKPACK.ObservableWORKPACK_ASSIGNMENTS.Where(
-                    x => x.LOW_VALUE > removingWORKPACK_ASSIGNMENTLowValue).OrderBy(x => x.PRIORITY).ToList();
+                    x => x.LOW_VALUE > removingWORKPACK_ASSIGNMENTLowValue).OrderBy(x => x.LOW_VALUE).ToList();
             for (var i = 0; i < workpackAssignmentsInOrder.Count; i++)
             {
                 var currentWORKPACK_ASSIGNMENTAmount = workpackAssignmentsInOrder[i].HIGH_VALUE -
@@ -293,7 +291,6 @@ namespace BluePrints.ViewModels
                 workpackAssignmentsInOrder[i].HIGH_VALUE = removingWORKPACK_ASSIGNMENTLowValue +
                                                            currentWORKPACK_ASSIGNMENTAmount - 1;
                 removingWORKPACK_ASSIGNMENTLowValue = workpackAssignmentsInOrder[i].HIGH_VALUE + 1;
-                workpackAssignmentsInOrder[i].PRIORITY = workpackAssignmentsInOrder[i].PRIORITY - 1;
             }
 
             WORKPACK_ASSIGNMENTSViewModel.BulkSave(
@@ -322,7 +319,7 @@ namespace BluePrints.ViewModels
         private void MovePriority(bool isUp)
         {
             var WORKPACK_ASSIGNMENTSInOrder =
-                SelectedWORKPACK.ObservableWORKPACK_ASSIGNMENTS.OrderBy(x => x.PRIORITY).ToList();
+                SelectedWORKPACK.ObservableWORKPACK_ASSIGNMENTS.OrderBy(x => x.LOW_VALUE).ToList();
             var selectionIndex = WORKPACK_ASSIGNMENTSInOrder.IndexOf(SelectedWORKPACK_ASSIGNMENT);
             var swapWORKPACK_ASSIGNMENT =
                 WORKPACK_ASSIGNMENTSInOrder[selectionIndex + (isUp == true ? -1 : 1)];
@@ -332,14 +329,14 @@ namespace BluePrints.ViewModels
             WORKPACK_ASSIGNMENTSViewModel.BulkSave(
                 new ObservableCollection<WORKPACK_ASSIGNMENT>(WORKPACK_ASSIGNMENTSInOrder));
 
-            SelectedWORKPACK_ASSIGNMENT = swapWORKPACK_ASSIGNMENT;
             Refresh();
+            SelectedWORKPACK_ASSIGNMENT = swapWORKPACK_ASSIGNMENT;
         }
 
         public bool CanPriorityUp()
         {
-            if (selectedWORKPACK_ASSIGNMENT == null || SelectedWORKPACK.ObservableWORKPACK_ASSIGNMENTS.Count == 0 ||
-                selectedWORKPACK_ASSIGNMENT == SelectedWORKPACK.ObservableWORKPACK_ASSIGNMENTS.First())
+            if (SelectedWORKPACK_ASSIGNMENT == null || SelectedWORKPACK.ObservableWORKPACK_ASSIGNMENTS.Count == 0 ||
+                SelectedWORKPACK_ASSIGNMENT == SelectedWORKPACK.ObservableWORKPACK_ASSIGNMENTS.First())
                 return false;
 
             return true;
@@ -352,8 +349,8 @@ namespace BluePrints.ViewModels
 
         public bool CanPriorityDown()
         {
-            if (selectedWORKPACK_ASSIGNMENT == null || SelectedWORKPACK.ObservableWORKPACK_ASSIGNMENTS.Count == 0 ||
-                selectedWORKPACK_ASSIGNMENT == SelectedWORKPACK.ObservableWORKPACK_ASSIGNMENTS.Last())
+            if (SelectedWORKPACK_ASSIGNMENT == null || SelectedWORKPACK.ObservableWORKPACK_ASSIGNMENTS.Count == 0 ||
+                SelectedWORKPACK_ASSIGNMENT == SelectedWORKPACK.ObservableWORKPACK_ASSIGNMENTS.Last())
                 return false;
 
             return true;

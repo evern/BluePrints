@@ -130,7 +130,7 @@ namespace BluePrints.Common.Projections
 
         public static PROJECT_Dashboard SummarizeSinglePROJECTDashboard(PROJECT PROJECT, Func<PROGRESS> getPROGRESSFunc,
             Func<IEnumerable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc, Func<IEnumerable<BASELINE_ITEM>> getBASELINE_ITEMSFunc,
-            Func<BASELINE> getBASELINEFunc, Func<IEnumerable<RATE>> getRATESFunc, Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc)
+            Func<BASELINE> getBASELINEFunc, Func<IEnumerable<RATE>> getRATESFunc, Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc, bool buildStatsImmediately = false)
         {
             var bluePrintsUnitOfWork =
                 BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
@@ -150,6 +150,9 @@ namespace BluePrints.Common.Projections
             };
 
             currentPROJECT_Dashboard.InitializeSummarizer(progress_item, getBASELINEFunc(), getPROGRESSFunc(), PROJECT.WORKPACK, PROJECT.WORKPACK.SelectMany(x => x.WORKPACK_ASSIGNMENT), PROJECT.VARIATION, bluePrintsUnitOfWork, p6UnitOfWork, primeroUnitOfWork);
+
+            if (buildStatsImmediately)
+                currentPROJECT_Dashboard.BuildStats(false);
 
             return currentPROJECT_Dashboard;
         }

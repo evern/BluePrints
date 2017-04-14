@@ -87,7 +87,7 @@
                     </dxmvvm:Interaction.Behaviors>
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical"
                                       dxlc:LayoutControl.AllowVerticalSizing="True">
-                        <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDashboardWORKPACK"
+                        <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDashboardWORKPACK"
                                          Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Bands>
                                 <dxg:GridControlBand Name="bandGeneral" Header="General">
@@ -265,7 +265,7 @@
                             <dxg:GridControl.DetailDescriptor>
                                 <dxg:DataControlDetailDescriptor
                                     ItemsSourceBinding="{Binding Stats.Burned.ExoDataPoints}">
-                                    <common:GridControlEx x:Name="detailExoGridControl" dx:DXSerializer.SerializationID="GridControlDetailExo">
+                                    <dxg:GridControl x:Name="detailExoGridControl" dx:DXSerializer.SerializationID="GridControlDetailExo">
                                             <dxg:GridControl.Columns>
                                             <dxg:GridColumn Header="Resource Name" FieldName="ResourceName"
                                                             VisibleIndex="10" />
@@ -276,10 +276,10 @@
                                                             VisibleIndex="90" />
                                         </dxg:GridControl.Columns>
                                         <dxg:GridControl.View>
-                                            <common:TableViewEx x:Name="detailTableView" AllowEditing="False" 
+                                            <dxg:TableView x:Name="detailTableView" AllowEditing="False" 
                                                            NewItemRowPosition="None" />
                                         </dxg:GridControl.View>
-                                    </common:GridControlEx>
+                                    </dxg:GridControl>
                                 </dxg:DataControlDetailDescriptor>
                             </dxg:GridControl.DetailDescriptor>
                             <dxg:GridControl.GroupSummary>
@@ -397,7 +397,7 @@
                                     </common:TableViewEx.RowCellMenuCustomizations>
                                 </common:TableViewEx>
                             </dxg:GridControl.View>
-                        </common:GridControlEx>
+                        </dxg:GridControl>
                     </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup Name="LayoutGroupChart"
                                       DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"

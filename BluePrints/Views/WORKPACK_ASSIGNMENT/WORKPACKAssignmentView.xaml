@@ -12,7 +12,7 @@
         <dxlc:LayoutGroup Name="LayoutGroupWorkpackSelection" View="GroupBox" Header="Current Workpack"
                           Orientation="Vertical">
             <dxlc:LayoutItem Height="25" Label="Workpack:">
-                <dxe:ComboBoxEdit x:Name="cmbWorkpack" DisplayMember="WORKPACK.INTERNAL_NAME1"
+                <dxe:ComboBoxEdit x:Name="cmbWorkpack" DisplayMember="Entity.INTERNAL_NAME1"
                                   SelectedItem="{Binding SelectedWORKPACK, Mode=TwoWay}"
                                   ItemsSource="{Binding WORKPACKSItemSource}" />
             </dxlc:LayoutItem>
@@ -53,15 +53,15 @@
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Orientation="Horizontal">
-                <dxlc:LayoutItem Height="25" Label="From Units:" IsRequired="True">
+                <dxlc:LayoutItem Height="25" Label="From Percentage:" IsRequired="True">
                     <dxe:TextEdit IsReadOnly="True" EditValue="{Binding AssignmentLowValue, Mode=OneWay}"
-                                  DisplayFormatString="n2" />
+                                  MaskType="Numeric" Mask="p2" MaskUseAsDisplayFormat="True" />
                 </dxlc:LayoutItem>
-                <dxlc:LayoutItem Height="25" Label="To Units:" IsRequired="True">
+                <dxlc:LayoutItem Height="25" Label="To Percentage:" IsRequired="True">
                     <dxe:SpinEdit
                         EditValue="{Binding AssignmentHighValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        MinValue="{Binding AssignmentMinValue}" MaxValue="{Binding AssignmentMaxValue}" Increment="1"
-                        DisplayFormatString="n2" />
+                        MinValue="{Binding AssignmentMinValue}" MaxValue="{Binding AssignmentMaxValue}" Increment="0.01"
+                        MaskType="Numeric" Mask="p2" MaskUseAsDisplayFormat="True" />
                 </dxlc:LayoutItem>
                 <dxlc:LayoutItem HorizontalAlignment="Right">
                     <Button Height="25" x:Name="btnMaxUnits" Command="{Binding MaxUnitsCommand}">
@@ -100,13 +100,13 @@
                             <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="Low Value"
                                             FieldName="LOW_VALUE" VisibleIndex="2">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings DisplayFormat="n2" />
+                                    <dxe:TextEditSettings DisplayFormat="p2" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="High Value"
                                             FieldName="HIGH_VALUE" VisibleIndex="3">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings DisplayFormat="n2" />
+                                    <dxe:TextEditSettings DisplayFormat="p2" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>

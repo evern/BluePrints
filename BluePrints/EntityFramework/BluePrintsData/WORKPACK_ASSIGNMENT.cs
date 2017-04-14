@@ -23,8 +23,6 @@ namespace BluePrints.Data
 
         public decimal HIGH_VALUE { get; set; }
 
-        public int PRIORITY { get; set; }
-
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

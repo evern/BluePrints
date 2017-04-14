@@ -57,6 +57,7 @@ namespace BluePrints.ViewModels
 
         public void EVERNPCLogin()
         {
+#if DEBUG
             if (Environment.MachineName == "EVERN-PC")
             {
                 UserName = CommonResources.AdminUsername;
@@ -64,6 +65,7 @@ namespace BluePrints.ViewModels
                 delayedHideDispatcher.Start();
                 Login();
             }
+#endif
         }
 
         public void Login()
@@ -73,8 +75,8 @@ namespace BluePrints.ViewModels
             if (authenticationResult == UserAuthenticationResult.Authenticated || UserName == CommonResources.AdminUsername && UserPassword == CommonResources.AdminPassword)
             {
                 if (UserName == CommonResources.AdminUsername)
-                    //LoginCredentials.CurrentUser = new USER() { NAME = CommonResources.AdminUsername };
-                    LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == "SU.BING-WEN");
+                    LoginCredentials.CurrentUser = new USER() { NAME = CommonResources.AdminUsername };
+                    //LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == "SU.BING-WEN");
                 else
                     LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == UserName.ToUpper());
 
