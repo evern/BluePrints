@@ -1,4 +1,6 @@
-﻿using BluePrints.Data.Helpers;
+﻿using BluePrints.Common.Projections;
+using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.Data.Helpers;
 using EntityFramework.Functions;
 using System;
 using System.Collections.Generic;
@@ -83,15 +85,115 @@ namespace BluePrints.Data
         }
 
         public const string dbo = nameof(dbo);
-        [Function(FunctionType.StoredProcedure, nameof(GetDataPointsByProject), Schema = dbo)]
-        public ObjectResult<StoredProcedure_DeliverablesDataPoints> GetDataPointsByProject(string ProjectNumber, bool TryUsingForecast)
+        [Function(FunctionType.StoredProcedure, nameof(GetDeliverablePlannedDataPoints), Schema = dbo)]
+        public ObjectResult<StoredProcedure_PlannedDataPoint> GetDeliverablePlannedDataPoints(string p6BaselineProjectName, DateTime dataDate, Guid baseline_itemKey, Guid baseline_item_originalKey, Guid workpackKey, decimal totalUnits, decimal rate)
         {
-            ObjectParameter projectNumberParameter = new ObjectParameter(nameof(ProjectNumber), ProjectNumber);
-            ObjectParameter tryUsingForecastParameter = new ObjectParameter(nameof(TryUsingForecast), TryUsingForecast);
-            ObjectParameter[] parameterArray = new ObjectParameter[] { projectNumberParameter, tryUsingForecastParameter };
+            ObjectParameter p6BaselineProjectNameParameter = new ObjectParameter("P6_BASELINE_NAME", p6BaselineProjectName);
+            ObjectParameter dataDateParameter = new ObjectParameter("DATA_DATE", dataDate);
+            ObjectParameter baselineItemGuidParameter = new ObjectParameter("GUID_BASELINE_ITEM", baseline_itemKey);
+            ObjectParameter originalGuidParameter = new ObjectParameter("GUID_ORIGINAL", baseline_item_originalKey);
+            ObjectParameter workpackGuidParameter = new ObjectParameter("GUID_WORKPACK", workpackKey);
+            ObjectParameter totalUnitsParameter = new ObjectParameter("TOTAL_UNITS", totalUnits);
+            ObjectParameter rateParameter = new ObjectParameter("RATE", rate);
 
-            return this.ObjectContext().ExecuteFunction<StoredProcedure_DeliverablesDataPoints>(
-                nameof(this.GetDataPointsByProject), parameterArray);
+            ObjectParameter[] parameterArray = new ObjectParameter[] 
+            {
+                p6BaselineProjectNameParameter,
+                baselineItemGuidParameter,
+                originalGuidParameter,
+                workpackGuidParameter,
+                dataDateParameter,
+                totalUnitsParameter,
+                rateParameter
+            };
+
+            ObjectResult<StoredProcedure_PlannedDataPoint> result = null;
+
+            result = this.ObjectContext().ExecuteFunction<StoredProcedure_PlannedDataPoint>(
+                nameof(this.GetDeliverablePlannedDataPoints), parameterArray);
+
+            return result;
+        }
+
+        [Function(FunctionType.StoredProcedure, nameof(GetDeliverableRemainingDataPoints), Schema = dbo)]
+        public ObjectResult<StoredProcedure_RemainingDataPoint> GetDeliverableRemainingDataPoints(string p6BaselineProjectName, DateTime dataDate, Guid baseline_itemKey, Guid baseline_item_originalKey, Guid workpackKey, decimal totalUnits, decimal totalEarnedUnits, decimal rate)
+        {
+            ObjectResult<StoredProcedure_RemainingDataPoint> result = null;
+            if (totalUnits == 0)
+                return result;
+
+            ObjectParameter p6ProgressProjectNameParameter = new ObjectParameter("P6_PROGRESS_NAME", p6BaselineProjectName);
+            ObjectParameter dataDateParameter = new ObjectParameter("DATA_DATE", dataDate);
+            ObjectParameter baselineItemGuidParameter = new ObjectParameter("GUID_BASELINE_ITEM", baseline_itemKey);
+            ObjectParameter originalGuidParameter = new ObjectParameter("GUID_ORIGINAL", baseline_item_originalKey);
+            ObjectParameter workpackGuidParameter = new ObjectParameter("GUID_WORKPACK", workpackKey);
+            ObjectParameter totalUnitsParameter = new ObjectParameter("TOTAL_UNITS", totalUnits);
+            ObjectParameter totalEarnedUnitsParameter = new ObjectParameter("TOTAL_EARNED_UNITS", totalEarnedUnits);
+            ObjectParameter rateParameter = new ObjectParameter("RATE", rate);
+
+            ObjectParameter[] parameterArray = new ObjectParameter[]
+            {
+                p6ProgressProjectNameParameter,
+                baselineItemGuidParameter,
+                originalGuidParameter,
+                workpackGuidParameter,
+                dataDateParameter,
+                totalUnitsParameter,
+                totalEarnedUnitsParameter, 
+                rateParameter
+            };
+
+            result = this.ObjectContext().ExecuteFunction<StoredProcedure_RemainingDataPoint>(
+                nameof(this.GetDeliverableRemainingDataPoints), parameterArray);
+
+            return result;
+        }
+
+        [Function(FunctionType.StoredProcedure, nameof(GetDeliverablesPlannedDataPointsByProject), Schema = dbo)]
+        public ObjectResult<StoredProcedure_PlannedDataPoint> GetDeliverablesPlannedDataPointsByProject(string projectNumber)
+        {
+            ObjectParameter projectNumberParameter = new ObjectParameter("PROJECT_NUMBER", projectNumber);
+            ObjectParameter[] parameterArray = new ObjectParameter[]
+            {
+                projectNumberParameter
+            };
+
+            ObjectResult<StoredProcedure_PlannedDataPoint> result = null;
+            try
+            {
+                result = this.ObjectContext().ExecuteFunction<StoredProcedure_PlannedDataPoint>(
+                nameof(this.GetDeliverablesPlannedDataPointsByProject), parameterArray);
+            }
+            catch(Exception e)
+            {
+                string s = e.ToString();
+            }
+
+            return result;
+        }
+
+        [Function(FunctionType.StoredProcedure, nameof(GetDeliverablesRemainingDataPointsByProject), Schema = dbo)]
+        public ObjectResult<StoredProcedure_RemainingDataPoint> GetDeliverablesRemainingDataPointsByProject(string projectNumber)
+        {
+            ObjectParameter projectNumberParameter = new ObjectParameter("PROJECT_NUMBER", projectNumber);
+            ObjectParameter[] parameterArray = new ObjectParameter[]
+            {
+                projectNumberParameter
+            };
+
+            ObjectResult<StoredProcedure_RemainingDataPoint> result = null;
+
+            try
+            {
+                result = this.ObjectContext().ExecuteFunction<StoredProcedure_RemainingDataPoint>(
+                nameof(this.GetDeliverablesRemainingDataPointsByProject), parameterArray);
+            }
+            catch (Exception e)
+            {
+                string s = e.ToString();
+            }
+
+            return result;
         }
 
         [ComplexType]
@@ -108,6 +210,30 @@ namespace BluePrints.Data
             public double PeriodPlannedPrice { get; set; }
             public double PeriodEarnedPrice { get; set; }
             public double PeriodRemainingPrice { get; set; }
+        }
+
+        [ComplexType]
+        public class StoredProcedure_PlannedDataPoint
+        {
+            public Guid Deliverable_Guid { get; set; }
+            public Guid Original_Guid { get; set; }
+            public DateTime UniversalPeriodStartDate { get; set; }
+            public DateTime UniversalPeriodEndDate { get; set; }
+            public double PeriodPlannedUnits { get; set; }
+            public double PeriodPlannedPrice { get; set; }
+            public bool IsFromP6 { get; set; }
+        }
+
+        [ComplexType]
+        public class StoredProcedure_RemainingDataPoint
+        {
+            public Guid Deliverable_Guid { get; set; }
+            public Guid Original_Guid { get; set; }
+            public DateTime UniversalPeriodStartDate { get; set; }
+            public DateTime UniversalPeriodEndDate { get; set; }
+            public double PeriodRemainingUnits { get; set; }
+            public double PeriodRemainingPrice { get; set; }
+            public bool IsFromP6 { get; set; }
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static BluePrints.Data.BluePrintsEntities;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
@@ -652,6 +653,46 @@ namespace BluePrints.Common.ViewModel.Reporting
                 }
 
             return PeriodDataPointCollection;
+        }
+
+        public static IEnumerable<DataPoint> ConvertStoredProcedurePlannedDataPointToDataPoints(IEnumerable<StoredProcedure_PlannedDataPoint> deliverablesDataPoints)
+        {
+            List<DataPoint> progressInfoConversion = new List<DataPoint>();
+            foreach (StoredProcedure_PlannedDataPoint deliverablesDataPoint in deliverablesDataPoints)
+            {
+                progressInfoConversion.Add(new DataPoint
+                {
+                    DeliverableGuid = deliverablesDataPoint.Deliverable_Guid, 
+                    BudgetedUnits = 0,
+                    BudgetedCosts = 0,
+                    Costs = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedPrice),
+                    Units = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedUnits),
+                    ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate, 
+                    IsFromP6 = deliverablesDataPoint.IsFromP6
+                });
+            }
+
+            return progressInfoConversion;
+        }
+
+        public static IEnumerable<DataPoint> ConvertStoredProcedureRemainingDataPointToDataPoints(IEnumerable<StoredProcedure_RemainingDataPoint> deliverablesDataPoints)
+        {
+            List<DataPoint> progressInfoConversion = new List<DataPoint>();
+            foreach (StoredProcedure_RemainingDataPoint deliverablesDataPoint in deliverablesDataPoints)
+            {
+                progressInfoConversion.Add(new DataPoint
+                {
+                    DeliverableGuid = deliverablesDataPoint.Deliverable_Guid,
+                    BudgetedUnits = 0,
+                    BudgetedCosts = 0,
+                    Costs = Convert.ToDecimal(deliverablesDataPoint.PeriodRemainingPrice),
+                    Units = Convert.ToDecimal(deliverablesDataPoint.PeriodRemainingUnits),
+                    ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate,
+                    IsFromP6 = deliverablesDataPoint.IsFromP6
+                });
+            }
+
+            return progressInfoConversion;
         }
 
         public static DataPoint nullProgressDataPoint = new DataPoint()

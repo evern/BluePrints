@@ -25,6 +25,14 @@ namespace BluePrints.Common.Projections
         public ProgressStats Stats { get; set; }
         #endregion
 
+        /// <summary>
+        /// Refreshes current row when stats budgeted datapoints are set
+        /// </summary>
+        public void Update()
+        {
+            RaisePropertyChanged();
+        }
+
         public PROGRESS_ITEMProjection()
         {
         }
@@ -149,10 +157,6 @@ namespace BluePrints.Common.Projections
         {
             get { return PROGRESS_ITEMSuptocurrentdate; }
         }
-
-        public bool isEarnedDataPointsFromP6 { get; set; }
-        public bool isPlannedDataPointsFromP6 { get; set; }
-        public bool isRemainingDataPointsFromP6 { get; set; }
 
         public decimal CurrentPROGRESS_ITEM_UNITS
         {
@@ -447,8 +451,7 @@ namespace BluePrints.Common.Projections
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(PROGRESS);
             List<VariationAdjustment> projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(projectVARIATIONS.AsQueryable(), BASELINE_ITEMProjections);
 
-
-            List<PROGRESS_ITEMProjection> progress_items = BASELINE_ITEMProjections.ToArray()
+            List<PROGRESS_ITEMProjection> progress_items = BASELINE_ITEMProjections
                 .Select(
                         x =>
                         new PROGRESS_ITEMProjection(reportingDate, reportInterval, firstAlignedDataDate, x, project, getBASELINEFunc(), getPROGRESSFunc(), getWORKPACKFunc(), projectVariationAdjustments, p6UOW)
@@ -459,10 +462,13 @@ namespace BluePrints.Common.Projections
 
             foreach(PROGRESS_ITEMProjection progress_item in progress_items)
             {
-                if (buildBudgetedOnly)
-                    progress_item.BuildBudgetedStats();
-                else
-                    progress_item.BuildStats();
+                if(progress_item.Stats == null)
+                {
+                    if (buildBudgetedOnly)
+                        progress_item.BuildBudgetedStats();
+                    else
+                        progress_item.BuildStats();
+                }
             }
 
             return progress_items.AsQueryable();

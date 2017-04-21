@@ -29,7 +29,7 @@ namespace BluePrints.Common.Projections
 
         FullSummarizer projectSummarizer { get; set; }
 
-        public void InitializeSummarizer(IEnumerable<PROGRESS_ITEMProjection> progress_items, BASELINE LiveBASELINE, PROGRESS LivePROGRESS, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENTS, IEnumerable<VARIATION> VARIATIONS, IBluePrintsEntitiesUnitOfWork BluePrintsUOW = null, IP6EntitiesUnitOfWork P6UOW = null, IPrimeroEntitiesUnitOfWork PrimeroUOW = null)
+        public void InitializeSummarizer(IEnumerable<PROGRESS_ITEMProjection> progress_items, BASELINE LiveBASELINE, PROGRESS LivePROGRESS, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENTS, IEnumerable<VARIATION> VARIATIONS, IBluePrintsEntitiesUnitOfWork BluePrintsUOW = null, IP6EntitiesUnitOfWork P6UOW = null, IPrimeroEntitiesUnitOfWork PrimeroUOW = null, string projectNumber = "")
         {
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(LivePROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(LivePROGRESS);
@@ -38,7 +38,7 @@ namespace BluePrints.Common.Projections
             FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(Entity, LiveBASELINE, LivePROGRESS, WORKPACKS, WORKPACK_ASSIGNMENTS, P6UOW, PrimeroUOW);
 
             Stats = new ProjectSummaryStats(progress_items, LivePROGRESS, projectVariationAdjustments);
-            projectSummarizer = new FullSummarizer((ProjectSummaryStats)Stats, fullStatsBuilder);
+            projectSummarizer = new FullSummarizer((ProjectSummaryStats)Stats, fullStatsBuilder, projectNumber);
         }
 
         public void BuildStats(bool showLoadingScreen = true, bool isCosts = false)
@@ -47,6 +47,7 @@ namespace BluePrints.Common.Projections
                 return;
 
             projectSummarizer.Build(showLoadingScreen, isCosts);
+            this.RaisePropertiesChanged();
         }
 
         public void RecalculateStats(bool isCosts)
@@ -120,7 +121,7 @@ namespace BluePrints.Common.Projections
                     //VARIATIONS = ApprovedVARIATIONSByProject
                 };
 
-                currentPROJECT_Dashboard.InitializeSummarizer(projectProgress_Items, liveBASELINE, livePROGRESS, localPROJECT.WORKPACK, localPROJECT.WORKPACK.SelectMany(x => x.WORKPACK_ASSIGNMENT), ApprovedVARIATIONSByProject, bluePrintsUnitOfWork, p6UnitOfWork, primeroUnitOfWork);
+                currentPROJECT_Dashboard.InitializeSummarizer(projectProgress_Items, liveBASELINE, livePROGRESS, localPROJECT.WORKPACK, localPROJECT.WORKPACK.SelectMany(x => x.WORKPACK_ASSIGNMENT), ApprovedVARIATIONSByProject, bluePrintsUnitOfWork, p6UnitOfWork, primeroUnitOfWork, localPROJECT.NUMBER);
 
                 PROJECTDashboard.Add(currentPROJECT_Dashboard);
             }
@@ -149,7 +150,7 @@ namespace BluePrints.Common.Projections
                 Entity = PROJECT
             };
 
-            currentPROJECT_Dashboard.InitializeSummarizer(progress_item, getBASELINEFunc(), getPROGRESSFunc(), PROJECT.WORKPACK, PROJECT.WORKPACK.SelectMany(x => x.WORKPACK_ASSIGNMENT), PROJECT.VARIATION, bluePrintsUnitOfWork, p6UnitOfWork, primeroUnitOfWork);
+            currentPROJECT_Dashboard.InitializeSummarizer(progress_item, getBASELINEFunc(), getPROGRESSFunc(), PROJECT.WORKPACK, PROJECT.WORKPACK.SelectMany(x => x.WORKPACK_ASSIGNMENT), PROJECT.VARIATION, bluePrintsUnitOfWork, p6UnitOfWork, primeroUnitOfWork, PROJECT.NUMBER);
 
             if (buildStatsImmediately)
                 currentPROJECT_Dashboard.BuildStats(false);

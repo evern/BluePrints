@@ -51,7 +51,6 @@
                             <dxr:RibbonPageGroup Caption="PROJECT Tasks">
                                 <dxb:BarButtonItem Content="Workpacks"
                                                    Command="{Binding DataContext.EditCommand, ElementName=userControl}"
-                                                   CommandParameter="{Binding DataContext.DisplaySelectedEntity, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Line_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Line_32x32.png}" />
                                 <dxb:BarCheckItem x:Name="biCheckUnits" Content="Units"

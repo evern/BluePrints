@@ -9,6 +9,8 @@ using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data.Entity.Core.Objects;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,13 +23,6 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         readonly string ProjectNumber;
         readonly IPrimeroEntitiesUnitOfWork PrimeroUOW;
-
-        public FullStatsBuilder(Data.PROJECT PROJECT, BASELINE liveBASELINE, string p6ProgressName, DateTime firstAlignedDataDate, TimeSpan reportInterval, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENTS, IP6EntitiesUnitOfWork p6UOW = null, IPrimeroEntitiesUnitOfWork primeroUOW = null)
-            : base(PROJECT, liveBASELINE, p6ProgressName, reportInterval, firstAlignedDataDate, WORKPACKS, WORKPACK_ASSIGNMENTS, p6UOW)
-        {
-            ProjectNumber = PROJECT.NUMBER;
-            PrimeroUOW = primeroUOW == null ? PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork() : PrimeroUOW;
-        }
 
         public FullStatsBuilder(Data.PROJECT PROJECT, BASELINE liveBASELINE, PROGRESS LivePROGRESS, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENTS, IP6EntitiesUnitOfWork p6UOW = null, IPrimeroEntitiesUnitOfWork primeroUOW = null)
             : base(PROJECT, liveBASELINE, LivePROGRESS, WORKPACKS, WORKPACK_ASSIGNMENTS, p6UOW)
@@ -126,35 +121,28 @@ namespace BluePrints.Common.ViewModel.Reporting
         private IEnumerable<DateTime> alignedWeekEndingDates { get; set; }
         private List<Period> exceptionPeriods { get; set; }
 
+        readonly string p6BaselineName;
+        readonly string p6ProgressProjectName;
+        readonly DateTime dataDate;
+
         IP6EntitiesUnitOfWork P6UnitOfWork { get; set; }
         public PartialStatsBuilder(Data.PROJECT PROJECT, BASELINE LiveBASELINE, PROGRESS LivePROGRESS, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENTS, IP6EntitiesUnitOfWork p6UOW = null)
-            : this(PROJECT, LiveBASELINE, WORKPACKS, WORKPACK_ASSIGNMENTS, p6UOW)
-        {
-            this.progressP6Tasks = GetP6ScheduleTasks(LivePROGRESS.P6PROGRESS_NAME);
-
-            this.ReportingInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(LivePROGRESS);
-            this.FirstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(LivePROGRESS);
-            this.alignedWeekEndingDates = ChronologicalHelpers.GenerateAlignedDatesCollection(this.FirstAlignedDataDate, this.FirstAlignedDataDate.AddYears(Int16.Parse(CommonResources.DataPointsBuilder_MaxProjectDuration)), this.ReportingInterval);
-        }
-
-        public PartialStatsBuilder(Data.PROJECT PROJECT, BASELINE LiveBASELINE, string p6ProgressName, TimeSpan progressInterval, DateTime firstAlignedDataDate, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENTS, IP6EntitiesUnitOfWork p6UOW = null)
-            : this(PROJECT, LiveBASELINE, WORKPACKS, WORKPACK_ASSIGNMENTS, p6UOW)
-        {
-            this.progressP6Tasks = GetP6ScheduleTasks(p6ProgressName);
-
-            this.ReportingInterval = progressInterval;
-            this.FirstAlignedDataDate = firstAlignedDataDate;
-
-            this.alignedWeekEndingDates = ChronologicalHelpers.GenerateAlignedDatesCollection(this.FirstAlignedDataDate, this.FirstAlignedDataDate.AddYears(Int16.Parse(CommonResources.DataPointsBuilder_MaxProjectDuration)), this.ReportingInterval);
-        }
-
-        private PartialStatsBuilder(Data.PROJECT PROJECT, BASELINE LiveBASELINE, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENTS, IP6EntitiesUnitOfWork p6UOW = null)
         {
             if (p6UOW == null)
                 this.P6UnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             else
                 this.P6UnitOfWork = p6UOW;
 
+            this.p6ProgressProjectName = LivePROGRESS.P6PROGRESS_NAME;
+            this.progressP6Tasks = GetP6ScheduleTasks(LivePROGRESS.P6PROGRESS_NAME);
+            this.dataDate = LivePROGRESS.DATA_DATE;
+
+            this.ReportingInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(LivePROGRESS);
+            this.FirstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(LivePROGRESS);
+            this.alignedWeekEndingDates = ChronologicalHelpers.GenerateAlignedDatesCollection(this.FirstAlignedDataDate, this.FirstAlignedDataDate.AddYears(Int16.Parse(CommonResources.DataPointsBuilder_MaxProjectDuration)), this.ReportingInterval);
+
+
+            this.p6BaselineName = LiveBASELINE.P6BASELINE_NAME;
             this.originalBaselineP6Tasks = GetP6ScheduleTasks(LiveBASELINE.P6BASELINE_NAME);
             this.modifiedBaselineP6Tasks = GetP6ScheduleTasks(LiveBASELINE.P6MODBASELINE_NAME);
             this.projectWORKPACKS = WORKPACKS.ToList();
@@ -165,6 +153,63 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.exceptionPeriods.AddRange(ChronologicalHelpers.NonWorkingPeriods);
         }
 
+        public void BuildPlannedDataPointsFromStoredProcedure(PROGRESS_ITEMProjection progressItemStats)
+        {
+            BluePrintsEntities bluePrintDataContext = new BluePrintsEntities();
+            decimal totalUnits = progressItemStats.Stats == null ? 0 : progressItemStats.Stats.totalUnits;
+            decimal rate = progressItemStats.Entity.RATE == null ? 0 : progressItemStats.Entity.RATE.RATE1 == null ? 0 :
+                (decimal)progressItemStats.Entity.RATE.RATE1;
+            Guid workpackKey = progressItemStats.Entity.Entity.GUID_WORKPACK == null ? Guid.Empty : (Guid)progressItemStats.Entity.Entity.GUID_WORKPACK;
+
+            ObjectResult<StoredProcedure_PlannedDataPoint> deliverablesDataPoints = bluePrintDataContext.GetDeliverablePlannedDataPoints(this.p6BaselineName, this.dataDate, progressItemStats.Entity.GUID, progressItemStats.Entity.Entity.GUID_ORIGINAL, workpackKey, totalUnits, rate);
+
+            
+            List<StoredProcedure_PlannedDataPoint> plannedDataPoints = new List<StoredProcedure_PlannedDataPoint>();
+            //circumvent EF issue when ObjectResult is null
+            try
+            {
+                plannedDataPoints.AddRange(deliverablesDataPoints);
+            }
+            catch
+            {
+                return;
+            }
+
+            progressItemStats.Stats.Budgeted.SetPlannedData(plannedDataPoints);
+            progressItemStats.Stats.Current.SetPlannedData(plannedDataPoints);
+        }
+
+
+        public void BuildRemainingDataPointsFromStoredProcedure(PROGRESS_ITEMProjection progressItemStats)
+        {
+            BluePrintsEntities bluePrintDataContext = new BluePrintsEntities();
+            decimal totalUnits = progressItemStats.Stats == null ? 0 : progressItemStats.Stats.totalUnits;
+            decimal rate = progressItemStats.Entity.RATE == null ? 0 : progressItemStats.Entity.RATE.RATE1 == null ? 0 :
+                (decimal)progressItemStats.Entity.RATE.RATE1;
+            Guid workpackKey = progressItemStats.Entity.Entity.GUID_WORKPACK == null ? Guid.Empty : (Guid)progressItemStats.Entity.Entity.GUID_WORKPACK;
+
+            decimal totalEarnedUnits = 0;
+            if(progressItemStats.Stats.Earned.DataPoints != null && progressItemStats.Stats.Earned.DataPoints.Count > 0)
+                totalEarnedUnits = progressItemStats.Stats.Earned.DataPoints.Sum(x => x.Units);
+
+            ObjectResult<StoredProcedure_RemainingDataPoint> deliverablesDataPoints = bluePrintDataContext.GetDeliverableRemainingDataPoints(this.p6ProgressProjectName, this.dataDate, progressItemStats.Entity.GUID, progressItemStats.Entity.Entity.GUID_ORIGINAL, workpackKey, totalUnits, totalEarnedUnits, rate);
+
+            List<StoredProcedure_RemainingDataPoint> RemainingDataPoints = new List<StoredProcedure_RemainingDataPoint>();
+            //circumvent EF issue when ObjectResult is null
+            try
+            {
+                RemainingDataPoints.AddRange(deliverablesDataPoints);
+            }
+            catch
+            {
+                return;
+            }
+
+            //if (RemainingDataPoints != null && RemainingDataPoints.Count > 0)
+            //    Debug.Print(progressItemStats.Entity.Entity.INTERNAL_NUM + "|" + progressItemStats.Stats.totalUnits + "|" + RemainingDataPoints.Sum(x => x.PeriodRemainingUnits));
+
+            progressItemStats.Stats.Remaining.SetRemainingData(RemainingDataPoints, progressItemStats.Stats.Earned.DataPoints);
+        }
 
         public void BuildPlannedDataPoints(PROGRESS_ITEMProjection progressItemStats, ReportingEnum.AssignmentLoadType assignmentLoadType)
         {
@@ -403,24 +448,6 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
 
             return null;
-        }
-
-        private IEnumerable<DataPoint> ConvertDeliverablesDataPointToProgressInfo(IEnumerable<StoredProcedure_DeliverablesDataPoints> deliverablesDataPoints, decimal BudgetedUnits, decimal BudgetedCosts)
-        {
-            List<DataPoint> progressInfoConversion = new List<DataPoint>();
-            foreach (StoredProcedure_DeliverablesDataPoints deliverablesDataPoint in deliverablesDataPoints)
-            {
-                progressInfoConversion.Add(new DataPoint
-                {
-                    BudgetedUnits = BudgetedUnits,
-                    BudgetedCosts = BudgetedCosts,
-                    Costs = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedPrice),
-                    Units = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedUnits),
-                    ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate
-                });
-            }
-
-            return progressInfoConversion;
         }
         #endregion
 

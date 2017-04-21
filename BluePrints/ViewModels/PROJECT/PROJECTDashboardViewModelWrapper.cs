@@ -30,6 +30,11 @@ namespace BluePrints.ViewModels
     public class PROJECTDashboardViewModelWrapper :
         DashboardViewModelWrapper<PROJECT, PROJECT_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>
     {
+        //ensure mainviewmodel is loaded before calling background worker
+        private DispatcherTimer onMainViewModelFirstLoadedTimer;
+        //allow background worker to be cancelled
+        List<BackgroundWorker> backgroundWorkerCollection = new List<BackgroundWorker>();
+
         /// <summary>
         /// Creates a new instance of PROJECT_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
@@ -45,7 +50,9 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected PROJECTDashboardViewModelWrapper()
         {
-
+            onMainViewModelFirstLoadedTimer = new DispatcherTimer();
+            onMainViewModelFirstLoadedTimer.Interval = new TimeSpan(0, 0, 0, 1);
+            onMainViewModelFirstLoadedTimer.Tick += onMainViewModelFirstLoaded;
         }
 
         private void BuildStatsTimer_Tick(object sender, EventArgs e)
@@ -131,18 +138,24 @@ namespace BluePrints.ViewModels
                 mainEntityLoaderDescription.GetViewModel();
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             MainViewModel.SetParentViewModel(this);
+            onMainViewModelFirstLoadedTimer.Start();
+            return base.OnMainViewModelLoaded(entities);
+        }
 
-            foreach (PROJECT_Dashboard entity in entities)
+        private void onMainViewModelFirstLoaded(object sender, EventArgs e)
+        {
+            onMainViewModelFirstLoadedTimer.Stop();
+            backgroundWorkerCollection.Clear();
+            foreach (PROJECT_Dashboard entity in MainViewModel.Entities)
             {
                 BuildProjectsStats(entity);
             }
-
-            return base.OnMainViewModelLoaded(entities);
         }
 
         void BuildProjectsStats(PROJECT_Dashboard entity)
         {
             BackgroundWorker summaryBackgroundWorker = new BackgroundWorker();
+            backgroundWorkerCollection.Add(summaryBackgroundWorker);
             summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
             summaryBackgroundWorker.WorkerSupportsCancellation = true;
             summaryBackgroundWorker.RunWorkerAsync(new object[] { entity });
@@ -200,7 +213,7 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public bool CanEdit(PROJECT_Dashboard entity)
+        public bool CanEdit()
         {
             if (DisplaySelectedEntity == null)
                 return false;
@@ -213,9 +226,9 @@ namespace BluePrints.ViewModels
             get { return this.GetService<IDocumentManagerService>(); }
         }
 
-        public void Edit(PROJECT_Dashboard entity)
+        public void Edit()
         {
-            if (entity == null)
+            if (DisplaySelectedEntity == null)
                 return;
 
             CustomDocumentInfo customDocumentInfo = new CustomDocumentInfo(
@@ -234,6 +247,15 @@ namespace BluePrints.ViewModels
             get { return "PROJECTDashboardViewModelWrapper"; }
         }
 
+        #endregion
+
+        #region Dispose
+        protected override void OnClose(CancelEventArgs e)
+        {
+            backgroundWorkerCollection.ForEach(x => x.CancelAsync());
+            backgroundWorkerCollection.Clear();
+            base.OnClose(e);
+        }
         #endregion
     }
 }

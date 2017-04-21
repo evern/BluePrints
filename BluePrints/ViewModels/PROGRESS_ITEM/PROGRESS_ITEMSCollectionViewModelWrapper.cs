@@ -41,6 +41,11 @@ namespace BluePrints.ViewModels
         <BASELINE_ITEM, PROGRESS_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork,
             CollectionViewModel<BASELINE_ITEM, PROGRESS_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
     {
+        //ensure mainviewmodel is loaded before calling background worker
+        private DispatcherTimer onMainViewModelFirstLoadedTimer;
+        //calculates the planned values only for each deliverables
+        BackgroundWorker calculatePlannedBackgroundWorker;
+
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
@@ -50,6 +55,15 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new PROGRESS_ITEMSCollectionViewModelWrapper());
         }
 
+        public PROGRESS_ITEMSCollectionViewModelWrapper()
+        {
+            onMainViewModelFirstLoadedTimer = new DispatcherTimer();
+            onMainViewModelFirstLoadedTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
+            onMainViewModelFirstLoadedTimer.Tick += onMainViewModelFirstLoaded;
+            calculatePlannedBackgroundWorker = new BackgroundWorker();
+            calculatePlannedBackgroundWorker.DoWork += calculatePlannedBackgroundWorker_DoWork;
+            calculatePlannedBackgroundWorker.WorkerSupportsCancellation = true;
+        }
         #region Database Operation
 
         private Data.PROJECT loadPROJECT;
@@ -183,9 +197,9 @@ namespace BluePrints.ViewModels
 
             return
                 query =>
-                    PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMSWithStats(
-                        query.OrderBy(x => x.INTERNAL_NUM), () => loadPROJECT, getPROGRESSFunc, getBASELINEFunc, getWORKPACKSFunc, getPROGRESS_ITEMSFunc, 
-                        getRATESFunc, getDELIVERABLES_STATUSESFunc, getVARIATIONSFunc, p6UOW, false, true);
+                    PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
+                        query.OrderBy(x => x.INTERNAL_NUM), getPROGRESSFunc, getBASELINEFunc, getPROGRESS_ITEMSFunc, 
+                        getRATESFunc, getDELIVERABLES_STATUSESFunc);
         }
 
         
@@ -198,7 +212,46 @@ namespace BluePrints.ViewModels
             MainViewModel.BeforeShownEditor = BeforeShownEditor;
             MainViewModel.SetParentViewModel(this);
             //mainThreadDispatcher.BeginInvoke(new Action(() => InitializeSummarizer(entities)));
+            onMainViewModelFirstLoadedTimer.Start();
             base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
+
+        ProjectSummaryStats projectSummary;
+        private void onMainViewModelFirstLoaded(object sender, EventArgs e)
+        {
+            onMainViewModelFirstLoadedTimer.Stop();
+            InitializeSummarizer();
+            calculatePlannedBackgroundWorker.RunWorkerAsync();
+        }
+
+        private void InitializeSummarizer()
+        {
+            TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
+            DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
+            List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), MainViewModel.Entities.Select(x => x.Entity));
+            projectSummary = new ProjectSummaryStats(MainViewModel.Entities, loadPROGRESS, projectVariationAdjustment);
+            FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT, loadBASELINE, loadPROGRESS, WORKPACKCollection, WORKPACKCollection.SelectMany(x => x.WORKPACK_ASSIGNMENT).ToList(), p6UOW);
+            fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER);
+        }
+
+        private void calculatePlannedBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            if (calculatePlannedBackgroundWorker.CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            fullSummarizer.BuildBudgetedOnly();
+        }
+
+        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        {
+            //do no perform any refresh when progress is changed from here
+            if (sender == PROGRESS_ITEMSCollectionViewModel)
+                return;
+
+            base.OnAfterAffectingEntitiesChanged(key, changedType, messageType, sender);
         }
 
         protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender)
@@ -613,90 +666,106 @@ namespace BluePrints.ViewModels
             ICollectionViewModel<TASK> P6TASKCollectionViewModel = WORKPACK_DashboardViewModel.P6TASKCollectionViewModel;
             bool isError = false;
 
-            List<string> processedP6Task = new List<string>();
+            if (PROJECTTASK.Count() == 0)
+                return;
 
+            List<string> processedP6Task = new List<string>();
             TimeSpan intervalTimeSpan = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
-            foreach (WORKPACK_Dashboard workpack in entities)
+
+            IEnumerable<WORKPACK_Dashboard> workpackWithStats = entities.Where(x => x.Stats.totalUnits > 0 && x.Stats.Earned.CumulativeDataPoints != null && x.Stats.Earned.CumulativeDataPoints.Count > 0);
+
+            LoadingScreenManager.ShowLoadingScreen(workpackWithStats.Count());
+            foreach (WORKPACK_Dashboard workpack in workpackWithStats)
             {
                 decimal totalWorkpackAssignedUnits = 0;
-                decimal previouslyAssignedUnits = 0;
+                if (workpack.Stats == null || workpack.Stats.totalUnits == 0)
+                    continue;
+
                 decimal totalUnits = workpack.Stats.totalUnits;
+                if (workpack.Stats.Earned == null || workpack.Stats.Earned.CumulativeDataPoints.Count == 0)
+                    continue;
 
-                if (totalUnits != 0 && workpack.Stats.Earned.CumulativeDataPoints != null && workpack.Stats.Earned.CumulativeDataPoints.Count > 0)
+                List<DataPoint> workpackEarnedDataPoints = workpack.Stats.Earned.CumulativeDataPoints.ToList().Where(x => x.Units > 0).OrderBy(x => x.ProgressDate).ToList();
+                if (workpackEarnedDataPoints.Count == 0)
+                    continue;
+
+                DataPoint firstWorkpackEarned = workpackEarnedDataPoints.First();
+                DataPoint lastWorkpackEarned = workpackEarnedDataPoints.LastOrDefault(x => x.ProgressDate <= loadPROGRESS.DATA_DATE);
+
+                decimal workpackEarnedPercentage = lastWorkpackEarned.Units / totalUnits;
+                if (workpack.ObservableWORKPACK_ASSIGNMENTS.Count == 0)
+                    continue;
+
+                List<WORKPACK_ASSIGNMENT> workpackAssignments = workpack.ObservableWORKPACK_ASSIGNMENTS.Where(assignment => assignment.LOW_VALUE <= workpackEarnedPercentage).OrderBy(assignment => assignment.LOW_VALUE).ToList();
+
+                for (int i = 0; i < workpackAssignments.Count; i++)
                 {
-                    List<DataPoint> workpackEarnedDataPoints = workpack.Stats.Earned.CumulativeDataPoints.ToList().Where(x => x.Units > 0).OrderBy(x => x.ProgressDate).ToList();
-                    DataPoint firstWorkpackEarned = workpackEarnedDataPoints.First();
-                    DataPoint lastWorkpackEarned = workpackEarnedDataPoints.LastOrDefault(x => x.ProgressDate <= loadPROGRESS.DATA_DATE);
-
-                    decimal workpackEarnedPercentage = lastWorkpackEarned.Units / totalUnits;
-                    List<WORKPACK_ASSIGNMENT> workpackAssignments = workpack.ObservableWORKPACK_ASSIGNMENTS.Where(assignment => assignment.LOW_VALUE <= workpackEarnedPercentage).OrderBy(assignment => assignment.LOW_VALUE).ToList();
-
-                    for (int i = 0; i < workpackAssignments.Count; i++)
+                    WORKPACK_ASSIGNMENT workpackAssignment = workpackAssignments[i];
+                    TASK P6TASK = PROJECTTASK.FirstOrDefault(P6Task => P6Task.task_code == workpackAssignment.P6_ACTIVITYID);
+                    if (P6TASK != null)
                     {
-                        WORKPACK_ASSIGNMENT workpackAssignment = workpackAssignments[i];
-                        TASK P6TASK = PROJECTTASK.FirstOrDefault(P6Task => P6Task.task_code == workpackAssignment.P6_ACTIVITYID);
-                        if (P6TASK != null)
+                        DateTime proposedStartDate = firstWorkpackEarned.ProgressDate.AddDays(-1 * intervalTimeSpan.Days).AddSeconds(1);
+                        if (P6TASK.act_start_date == null || P6TASK.act_start_date > proposedStartDate)
+                            P6TASK.act_start_date = proposedStartDate;
+
+                        decimal highValueToUse = workpackAssignment.HIGH_VALUE > workpackEarnedPercentage ? workpackEarnedPercentage : workpackAssignment.HIGH_VALUE;
+
+                        decimal currentAssignmentUnits = ((highValueToUse - workpackAssignment.LOW_VALUE) + 0.01m) * totalUnits;
+
+                        totalWorkpackAssignedUnits += currentAssignmentUnits;
+
+                        //if this is the first time processing the task
+                        if(!processedP6Task.Any(x => x == P6TASK.task_code))
                         {
-                            DateTime proposedStartDate = firstWorkpackEarned.ProgressDate.AddDays(-1 * intervalTimeSpan.Days).AddSeconds(1);
-                            if (P6TASK.act_start_date == null || P6TASK.act_start_date > proposedStartDate)
-                                P6TASK.act_start_date = proposedStartDate;
-
-                            decimal currentAssignmentUnits = ((workpackAssignment.HIGH_VALUE - workpackAssignment.LOW_VALUE) + 0.01m) * totalUnits;
-                            decimal unitsUpToCurrentAssignment = currentAssignmentUnits + totalWorkpackAssignedUnits < lastWorkpackEarned.Units ? currentAssignmentUnits : lastWorkpackEarned.Units;
-                            decimal actWorkUnitNormalize = previouslyAssignedUnits == 0 ? unitsUpToCurrentAssignment : (unitsUpToCurrentAssignment - previouslyAssignedUnits);
-
-                            totalWorkpackAssignedUnits += actWorkUnitNormalize;
-
-                            //if this is the first time processing the task
-                            if(!processedP6Task.Any(x => x == P6TASK.task_code))
-                            {
-                                P6TASK.act_work_qty = actWorkUnitNormalize;
-                                processedP6Task.Add(P6TASK.task_code);
-                            }
-                            else
-                                P6TASK.act_work_qty += actWorkUnitNormalize;
-
-                            if (P6TASK.target_work_qty <= 0)
-                            {
-                                isError = true;
-                                break;
-                            }
-
-                            if (P6TASK.remain_work_qty >= 0)
-                                P6TASK.remain_work_qty = P6TASK.target_work_qty - P6TASK.act_work_qty;
-
-                            if (P6TASK.remain_work_qty < 0)
-                            {
-                                isError = true;
-                                break;
-                            }
-
-                            P6TASK.remain_drtn_hr_cnt = P6TASK.target_drtn_hr_cnt * (P6TASK.remain_work_qty / P6TASK.target_work_qty);
-
-                            if (P6TASK.remain_work_qty == 0)
-                            {
-                                P6TASK.status_code = P6TASKSTATUS.TK_Complete.ToString();
-                                P6TASK.act_end_date = lastWorkpackEarned.ProgressDate;
-                            }
-                            else if (P6TASK.remain_work_qty > 0)
-                            {
-                                P6TASK.status_code = P6TASKSTATUS.TK_Active.ToString();
-                                P6TASK.act_end_date = null;
-                            }
-                            else if (P6TASK.status_code == P6TASKSTATUS.TK_NotStart.ToString())
-                                P6TASK.status_code = P6TASKSTATUS.TK_Active.ToString();
-
-                            P6TASKCollectionViewModel.Save(P6TASK);
-                            previouslyAssignedUnits = actWorkUnitNormalize;
+                            P6TASK.act_work_qty = currentAssignmentUnits;
+                            processedP6Task.Add(P6TASK.task_code);
                         }
                         else
+                            P6TASK.act_work_qty += currentAssignmentUnits;
+
+                        if (P6TASK.target_work_qty <= 0)
                         {
                             isError = true;
                             break;
                         }
+
+                        if (P6TASK.remain_work_qty >= 0)
+                            P6TASK.remain_work_qty = P6TASK.target_work_qty - P6TASK.act_work_qty;
+
+                        if (P6TASK.remain_work_qty < 0)
+                        {
+                            isError = true;
+                            break;
+                        }
+
+                        P6TASK.remain_drtn_hr_cnt = P6TASK.target_drtn_hr_cnt * (P6TASK.remain_work_qty / P6TASK.target_work_qty);
+
+                        if (P6TASK.remain_work_qty == 0)
+                        {
+                            P6TASK.status_code = P6TASKSTATUS.TK_Complete.ToString();
+                            P6TASK.act_end_date = lastWorkpackEarned.ProgressDate;
+                        }
+                        else if (P6TASK.remain_work_qty > 0)
+                        {
+                            P6TASK.status_code = P6TASKSTATUS.TK_Active.ToString();
+                            P6TASK.act_end_date = null;
+                        }
+                        else if (P6TASK.status_code == P6TASKSTATUS.TK_NotStart.ToString())
+                            P6TASK.status_code = P6TASKSTATUS.TK_Active.ToString();
+
+                        P6TASKCollectionViewModel.Save(P6TASK);
                     }
+                    else
+                    {
+                        isError = true;
+                        break;
+                    }
+
+                    LoadingScreenManager.Progress();
                 }
             }
+
+            LoadingScreenManager.CloseLoadingScreen();
 
             if (!isError)
                 MessageBoxService.ShowMessage(CommonResources.WORKPACK_ASSIGNMENT_P6ProgressWriteSuccess);
@@ -811,6 +880,16 @@ namespace BluePrints.ViewModels
             previewWindow.Show();
         }
 
+        #endregion
+
+        #region Disposing
+        protected override void OnClose(CancelEventArgs e)
+        {
+            if (calculatePlannedBackgroundWorker != null)
+                calculatePlannedBackgroundWorker.CancelAsync();
+
+            base.OnClose(e);
+        }
         #endregion
     }
 }

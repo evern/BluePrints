@@ -85,7 +85,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlRATE" ColumnsSource="{StaticResource RATEColumns}"
+                    <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlRATE" 
                                      Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="GROUP" FieldName="COST_GROUP"
@@ -96,11 +96,11 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="DEPARTMENT" FieldName="GUID_DEPARTMENT"
-                        DataContext="{Binding DataContext, ElementName=userControl}">
+                                    DataContext="{Binding DataContext, ElementName=userControl}">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
-                    ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}"
-                    IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                                        ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="DISCIPLINE" FieldName="GUID_DISCIPLINE"

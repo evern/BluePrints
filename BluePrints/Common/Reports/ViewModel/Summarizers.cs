@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Entity.Core.Objects;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -81,17 +82,26 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public class PartialSummarizer : StatsSummarizer
     {
-        readonly PartialStatsBuilder PartialStatsBuilder;
+        readonly PartialStatsBuilder partialStatsBuilder;
+        readonly string projectNumber;
 
-        public PartialSummarizer(SummaryStats summarizableObject, PartialStatsBuilder partialStatsBuilder)
+        public PartialSummarizer(SummaryStats summarizableObject, PartialStatsBuilder partialStatsBuilder, string projectNumber = "")
         {
             this.SummaryStats = summarizableObject;
-            this.PartialStatsBuilder = partialStatsBuilder;
+            this.partialStatsBuilder = partialStatsBuilder;
+            this.projectNumber = projectNumber;
         }
 
         public void BuildBudgetedOnly()
         {
-            SetPlannedDataPoints(true);
+            SetBudgetDataPoints();
+        }
+
+        public void BuildEarnedAndRemaining()
+        {
+            SetEarnedDataPoints();
+            SetRemainingDataPoints();
+            Summarize();
         }
 
         public override int SetBudgetDataPointsProgress()
@@ -101,26 +111,92 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public override void SetBudgetDataPoints()
         {
+            if (projectNumber == string.Empty)
+                SetPlannedDataPoints(true);
+            else
+                SummarizePlannedDataPointsFromStoredProcedure(this.projectNumber);
             //PlannedDataPointsBuilderFromDatabase(CURRENTPROJECT.NUMBER, false);
-            SetPlannedDataPoints(true);
         }
 
         public override int SetCurrentDataPointsProgress()
         {
-            return ((SummaryStats)this.SummaryStats).Deliverable.Count();
+            if (projectNumber == string.Empty)
+                return ((SummaryStats)this.SummaryStats).Deliverable.Count();
+            else
+                return 0;
         }
 
         public override void SetCurrentDataPoints()
         {
             //PlannedDataPointsBuilderFromDatabase(CURRENTPROJECT.NUMBER, true);
-            SetPlannedDataPoints(false);
+            if (projectNumber == string.Empty)
+                SetPlannedDataPoints(false);
         }
 
-        private void SummarizePlannedDataPointsFromDatabase(string ProjectNumber, bool isOriginal)
+        private void SummarizePlannedDataPointsFromStoredProcedure(string ProjectNumber)
         {
             BluePrintsEntities bluePrintDataContext = new BluePrintsEntities();
-            ObjectResult<StoredProcedure_DeliverablesDataPoints> deliverablesDataPoints = bluePrintDataContext.GetDataPointsByProject(ProjectNumber, isOriginal);
-            SetPlannedDataPoints(isOriginal, deliverablesDataPoints.ToList());
+            ObjectResult<StoredProcedure_PlannedDataPoint> deliverablesDataPoints = bluePrintDataContext.GetDeliverablesPlannedDataPointsByProject(ProjectNumber);
+
+            List<StoredProcedure_PlannedDataPoint> plannedDataPoints = new List<StoredProcedure_PlannedDataPoint>();
+
+            //circumvent EF issue when ObjectResult is null
+            try
+            {
+                plannedDataPoints.AddRange(deliverablesDataPoints);
+            }
+            catch
+            {
+                return;
+            }
+
+            foreach (PROGRESS_ITEMProjection reportableObject in ((SummaryStats)this.SummaryStats).Deliverable)
+            {
+                List<StoredProcedure_PlannedDataPoint> currentDeliverableDataPoints = new List<StoredProcedure_PlannedDataPoint>();
+
+                currentDeliverableDataPoints.AddRange(plannedDataPoints.Where(x => x.Deliverable_Guid == reportableObject.Entity.GUID));
+
+                reportableObject.Stats.Budgeted.SetPlannedData(currentDeliverableDataPoints);
+                reportableObject.Stats.Current.SetPlannedData(currentDeliverableDataPoints);
+                reportableObject.Update();
+                //reportableObject.SetBudgeted(currentDeliverableDataPoints.ToList());
+                //reportableObject.SetCurrent(currentDeliverableDataPoints.ToList());
+
+                LoadingScreenManager.Progress();
+            }
+        }
+
+        private void SummarizeRemainingDataPointsFromStoredProcedure(string ProjectNumber)
+        {
+            BluePrintsEntities bluePrintDataContext = new BluePrintsEntities();
+            ObjectResult<StoredProcedure_RemainingDataPoint> deliverablesDataPoints = bluePrintDataContext.GetDeliverablesRemainingDataPointsByProject(ProjectNumber);
+
+            List<StoredProcedure_RemainingDataPoint> remainingDataPoints = new List<StoredProcedure_RemainingDataPoint>();
+            
+            //circumvent EF issue when ObjectResult is null
+            try
+            {
+                remainingDataPoints.AddRange(deliverablesDataPoints);
+            }
+            catch
+            {
+                return;
+            }
+
+            foreach (PROGRESS_ITEMProjection reportableObject in ((SummaryStats)this.SummaryStats).Deliverable)
+            {
+                List<StoredProcedure_RemainingDataPoint> currentDeliverableDataPoints = new List<StoredProcedure_RemainingDataPoint>();
+
+                currentDeliverableDataPoints.AddRange(remainingDataPoints.Where(x => x.Deliverable_Guid == reportableObject.Entity.GUID));
+
+                reportableObject.Stats.Remaining.SetRemainingData(currentDeliverableDataPoints, reportableObject.Stats.Earned.DataPoints);
+                reportableObject.Update();
+
+                //if (reportableObject.Stats.Remaining != null && reportableObject.Stats.Remaining.DataPoints != null)
+                //    Debug.Print(reportableObject.Entity.Entity.INTERNAL_NUM + "|" + reportableObject.Stats.totalUnits + "|" + reportableObject.Stats.Remaining.DataPoints.Sum(x => x.Units));
+
+                LoadingScreenManager.Progress();
+            }
         }
 
         private void SetPlannedDataPoints(bool isOriginal, IEnumerable<StoredProcedure_DeliverablesDataPoints> DataPointsCollection = null)
@@ -129,7 +205,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             foreach (PROGRESS_ITEMProjection reportableObject in ((SummaryStats)this.SummaryStats).Deliverable)
             {
-                PartialStatsBuilder.BuildPlannedDataPoints(reportableObject, assignmentLoadType);
+                partialStatsBuilder.BuildPlannedDataPoints(reportableObject, assignmentLoadType);
                 LoadingScreenManager.Progress();
             }
         }
@@ -147,7 +223,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             foreach (PROGRESS_ITEMProjection progressItemStat in ((SummaryStats)this.SummaryStats).Deliverable)
             {
-                PartialStatsBuilder.BuildEarnedDataPoints(progressItemStat);
+                partialStatsBuilder.BuildEarnedDataPoints(progressItemStat);
                 LoadingScreenManager.Progress();
             }
         }
@@ -159,11 +235,17 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public override void SetRemainingDataPoints()
         {
-            //BuildProductivity();
-            foreach (PROGRESS_ITEMProjection progressItemStat in ((SummaryStats)this.SummaryStats).Deliverable)
+            if(this.projectNumber == "")
             {
-                PartialStatsBuilder.BuildRemainingDataPoints(progressItemStat);
-                LoadingScreenManager.Progress();
+                foreach (PROGRESS_ITEMProjection progressItemStat in ((SummaryStats)this.SummaryStats).Deliverable)
+                {
+                    partialStatsBuilder.BuildRemainingDataPoints(progressItemStat);
+                    LoadingScreenManager.Progress();
+                }
+            }
+            else
+            {
+                SummarizeRemainingDataPointsFromStoredProcedure(this.projectNumber);
             }
         }
 
@@ -177,8 +259,8 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         readonly FullStatsBuilder FullStatsBuilder;
 
-        public FullSummarizer(ProjectSummaryStats summaryStats, FullStatsBuilder fullStatsBuilder)
-            : base(summaryStats, fullStatsBuilder)
+        public FullSummarizer(ProjectSummaryStats summaryStats, FullStatsBuilder fullStatsBuilder, string projectNumber = "")
+            : base(summaryStats, fullStatsBuilder, projectNumber)
         {
             FullStatsBuilder = fullStatsBuilder;
             FullStatsBuilder.BuildExoDataPoints(summaryStats);
@@ -219,8 +301,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public void BuildBudgetedOnly()
         {
-
-            SetPlannedDataPoints(true);
+            SetPlannedDataPointsFromStoredProcedure();
+            //SetPlannedDataPoints(true);
         }
 
         public override int SetBudgetDataPointsProgress()
@@ -231,25 +313,19 @@ namespace BluePrints.Common.ViewModel.Reporting
         public override void SetBudgetDataPoints()
         {
             //PlannedDataPointsBuilderFromDatabase(CURRENTPROJECT.NUMBER, false);
-            SetPlannedDataPoints(true);
+            SetPlannedDataPointsFromStoredProcedure();
+            //SetPlannedDataPoints(true);
         }
 
         public override int SetCurrentDataPointsProgress()
         {
-            return 1;
+            return 0;
         }
 
         public override void SetCurrentDataPoints()
         {
             //PlannedDataPointsBuilderFromDatabase(CURRENTPROJECT.NUMBER, true);
-            SetPlannedDataPoints(false);
-        }
-
-        private void SummarizePlannedDataPointsFromDatabase(string ProjectNumber, bool isOriginal)
-        {
-            BluePrintsEntities bluePrintDataContext = new BluePrintsEntities();
-            ObjectResult<StoredProcedure_DeliverablesDataPoints> deliverablesDataPoints = bluePrintDataContext.GetDataPointsByProject(ProjectNumber, isOriginal);
-            SetPlannedDataPoints(isOriginal, deliverablesDataPoints.ToList());
+            //SetPlannedDataPoints(false);
         }
 
         private void SetPlannedDataPoints(bool isOriginal, IEnumerable<StoredProcedure_DeliverablesDataPoints> DataPointsCollection = null)
@@ -257,6 +333,12 @@ namespace BluePrints.Common.ViewModel.Reporting
             ReportingEnum.AssignmentLoadType assignmentLoadType = isOriginal == true ? ReportingEnum.AssignmentLoadType.Original : assignmentLoadType = ReportingEnum.AssignmentLoadType.Modified;
 
             PartialStatsBuilder.BuildPlannedDataPoints(progressItem, assignmentLoadType);
+            LoadingScreenManager.Progress();
+        }
+
+        private void SetPlannedDataPointsFromStoredProcedure()
+        {
+            PartialStatsBuilder.BuildPlannedDataPointsFromStoredProcedure(this.progressItem);
             LoadingScreenManager.Progress();
         }
 
@@ -282,7 +364,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public override void SetRemainingDataPoints()
         {
-            PartialStatsBuilder.BuildRemainingDataPoints(progressItem);
+            PartialStatsBuilder.BuildRemainingDataPointsFromStoredProcedure(progressItem);
+            LoadingScreenManager.Progress();
+            //PartialStatsBuilder.BuildRemainingDataPoints(progressItem);
         }
     }
 }

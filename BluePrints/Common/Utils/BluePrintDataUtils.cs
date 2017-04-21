@@ -1,4 +1,5 @@
 ﻿using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common.Helpers;
 using BluePrints.Common.Projections;
 using BluePrints.Data;
 using System;
@@ -58,10 +59,66 @@ namespace BluePrints.Common.ViewModel.Utils
             EndDate = ReviewEndDate.Date;
         }
 
+        public static string Duplicate_InternalNumber(IEnumerable<BASELINE_ITEMProjection> originalEntities, IEnumerable<BASELINE_ITEMProjection> unsavedEntities, string duplicateInternalNumber)
+        {
+            if (duplicateInternalNumber != string.Empty)
+            {
+                string stringValueToFill = duplicateInternalNumber;
+                int numericFieldLength = 0;
+                int? numericIndex = StringFormatUtils.GetNumericIndex(stringValueToFill, out numericFieldLength);
+                if (numericIndex == null)
+                    return duplicateInternalNumber;
+
+                string valueToFillStringOnly = stringValueToFill.Substring(0, stringValueToFill.Length - numericFieldLength);
+
+                long valueToFillNumberOnly = Int64.Parse(stringValueToFill.Substring(numericIndex.Value, duplicateInternalNumber.Length - numericIndex.Value));
+
+                List<BASELINE_ITEMProjection> allEntities = new List<BASELINE_ITEMProjection>(originalEntities);
+                allEntities.AddRange(unsavedEntities);
+
+                List<string> originalEntitiesSimilarNames =
+                originalEntities.Where(x => x.Entity.INTERNAL_NUM.Contains(valueToFillStringOnly)).Select(x => x.Entity.INTERNAL_NUM).ToList();
+
+                List<string> allEntitiesSimilarNames =
+                allEntities.Where(x => x.Entity.INTERNAL_NUM.Contains(valueToFillStringOnly)).Select(x => x.Entity.INTERNAL_NUM).ToList();
+
+                do
+                {
+                    valueToFillNumberOnly += 1;
+
+                    string nextName = StringFormatUtils.AppendStringWithEnumerator(valueToFillStringOnly, valueToFillNumberOnly, numericFieldLength);
+
+                    bool isExistsInAll = allEntitiesSimilarNames.Any(x => x == nextName);
+                    bool isExistsInOriginal = originalEntitiesSimilarNames.Any(x => x == nextName);
+
+                    //when current name exists in original do not keep adding so user can identify that this issue needs to be addressed
+                    if (isExistsInOriginal)
+                        return nextName;
+                    //when it doesn't exists in all and doesn't exists is original it means that this number is save to be used
+                    else if (!isExistsInAll)
+                        return nextName;
+                    //when it doesn't exist in original (no need to be identified for maximum series sequence) but exists in all means that it needs a new number not existing in the unsaved set yet
+                    else
+                        continue;
+
+                } while (valueToFillNumberOnly < 1000000);
+            }
+
+            return string.Empty;
+        }
 
         /// <summary>
         /// Generate internal number1 when all required fields are populated
         /// </summary>
+        /// <param name="fromPROJECT">project to generate parts of the internal number</param>
+        /// <param name="BASELINE_ITEMEntities">the context to calculate the ending number</param>
+        /// <param name="selectedAREA">area to generate parts of the internal number</param>
+        /// <param name="selectedDISCIPLINE">discipline to generate parts of the internal number</param>
+        /// <param name="selectedDOCTYPE">doctype to generate parts of the internal number</param>
+        /// <param name="excludeGUID">id to exclude count when generating enumerated parts= of the internal number</param>
+        /// <param name="duplicateInternalNumber">internal number used during duplication to specify where to enumerate onwards for generating enumerated part of the internal number</param>
+        /// <param name="limitCompareIndexForExistingEntities">the numeric context to compare existing entity to, ignoring entity</param>
+        /// <returns></returns>
         public static string BASELINEITEM_Generate_InternalNumber(PROJECT fromPROJECT,
             IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMEntities, AREA selectedAREA, DISCIPLINE selectedDISCIPLINE,
             DOCTYPE selectedDOCTYPE, Guid? excludeGUID = null)
@@ -96,9 +153,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 return InternalNum;
             }
             else
-            {
                 return string.Empty;
-            }
         }
 
         public static string BASELINEITEM_Generate_InternalNumber(PROJECT fromPROJECT,

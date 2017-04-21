@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static BluePrints.Data.BluePrintsEntities;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
@@ -75,6 +76,29 @@ namespace BluePrints.Common.ViewModel.Reporting
         public void SetData(IEnumerable<DataPoint> rawDataPoints)
         {
             this.rawDataPoints = rawDataPoints;
+        }
+
+        public void SetPlannedData(IEnumerable<StoredProcedure_PlannedDataPoint> rawStoredProcedureDataPoints)
+        {
+            List<DataPoint> convertedDataPoints = DataPointsHelpers.ConvertStoredProcedurePlannedDataPointToDataPoints(rawStoredProcedureDataPoints).ToList();
+
+            if (convertedDataPoints.All(x => x.IsFromP6))
+                SetFromP6();
+
+            this.rawDataPoints = convertedDataPoints;
+        }
+
+        public void SetRemainingData(IEnumerable<StoredProcedure_RemainingDataPoint> rawStoredProcedureDataPoints, IEnumerable<DataPoint> earnedDataPoints)
+        {
+            List<DataPoint> convertedDataPoints = DataPointsHelpers.ConvertStoredProcedureRemainingDataPointToDataPoints(rawStoredProcedureDataPoints).ToList();
+
+            if(earnedDataPoints != null)
+                convertedDataPoints.AddRange(earnedDataPoints.ToList());
+
+            if (convertedDataPoints.All(x => x.IsFromP6))
+                SetFromP6();
+
+            this.rawDataPoints = convertedDataPoints;
         }
 
         public IEnumerable<ExoDataPoint> ExoDataPoints
@@ -202,6 +226,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal BudgetedCosts { get; set; }
 
         public decimal Quantity { get; set; }
+
+        public Guid DeliverableGuid { get; set; }
+        public bool IsFromP6 { get; set; }
 
         public decimal UnitsPercentage
         {
