@@ -67,7 +67,7 @@
                                 <dxb:BarButtonItem Content="Forward"
                                                    Command="{Binding DataContext.DateForwardCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}"
-                                                   Glyph="{dx:DXImage Image=HistoryItem_16x16.png}">
+                                                   Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" >
                                     <dxb:BarButtonItem.GlyphTemplate>
                                         <DataTemplate>
                                             <Image

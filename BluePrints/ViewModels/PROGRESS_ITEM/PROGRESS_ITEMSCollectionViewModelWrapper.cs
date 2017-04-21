@@ -62,8 +62,10 @@ namespace BluePrints.ViewModels
             onMainViewModelFirstLoadedTimer.Tick += onMainViewModelFirstLoaded;
             calculatePlannedBackgroundWorker = new BackgroundWorker();
             calculatePlannedBackgroundWorker.DoWork += calculatePlannedBackgroundWorker_DoWork;
+            calculatePlannedBackgroundWorker.RunWorkerCompleted += CalculatePlannedBackgroundWorker_RunWorkerCompleted;
             calculatePlannedBackgroundWorker.WorkerSupportsCancellation = true;
         }
+
         #region Database Operation
 
         private Data.PROJECT loadPROJECT;
@@ -116,6 +118,7 @@ namespace BluePrints.ViewModels
         private void SetPROGRESStoCurrentDateOnLoaded(PROGRESS entity)
         {
             loadPROGRESS = entity;
+            if(!isFirstLoaded)
             mainThreadDispatcher.BeginInvoke(new Action(() => DateChange(DateNavigationType.Current)));
         }
 
@@ -202,7 +205,7 @@ namespace BluePrints.ViewModels
                         getRATESFunc, getDELIVERABLES_STATUSESFunc);
         }
 
-        
+        bool isFirstLoaded;
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROGRESS_ITEMProjection> entities)
         {
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntityCallBack;
@@ -214,6 +217,7 @@ namespace BluePrints.ViewModels
             //mainThreadDispatcher.BeginInvoke(new Action(() => InitializeSummarizer(entities)));
             onMainViewModelFirstLoadedTimer.Start();
             base.AssignCallBacksAndRaisePropertyChange(entities);
+            isFirstLoaded = true;
         }
 
         ProjectSummaryStats projectSummary;
@@ -236,6 +240,7 @@ namespace BluePrints.ViewModels
 
         private void calculatePlannedBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            isBusy = true;
             if (calculatePlannedBackgroundWorker.CancellationPending)
             {
                 e.Cancel = true;
@@ -243,6 +248,13 @@ namespace BluePrints.ViewModels
             }
 
             fullSummarizer.BuildBudgetedOnly();
+        }
+
+        public bool isBusy { get; set; }
+        private void CalculatePlannedBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            isBusy = false;
+            mainThreadDispatcher.BeginInvoke(new Action(() => RefreshView()));
         }
 
         public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
@@ -539,6 +551,9 @@ namespace BluePrints.ViewModels
 
         public bool CanDateBackward()
         {
+            //if (isBusy)
+            //    return false;
+
             if (MainViewModel == null || MainViewModel.IsLoading)
                 return false;
 
@@ -550,6 +565,9 @@ namespace BluePrints.ViewModels
 
         public bool CanDateForward()
         {
+            //if (isBusy)
+            //    return false;
+
             if (MainViewModel == null || MainViewModel.IsLoading)
                 return false;
 
@@ -575,11 +593,15 @@ namespace BluePrints.ViewModels
                 (CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>)
                 loaderCollection.GetViewModel<PROGRESS>();
             mainThreadDispatcher.BeginInvoke(new Action(() => PROGRESSCollectionViewModel.Save(loadPROGRESS)));
+            CancelBackgroundWorker();
             FullRefresh();
         }
 
         private void DateChange(DateNavigationType navigationType)
         {
+            if (isBusy)
+                return;
+
             var interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             int multiplier;
             if (navigationType == DateNavigationType.Current)
@@ -885,10 +907,14 @@ namespace BluePrints.ViewModels
         #region Disposing
         protected override void OnClose(CancelEventArgs e)
         {
+            CancelBackgroundWorker();
+            base.OnClose(e);
+        }
+
+        private void CancelBackgroundWorker()
+        {
             if (calculatePlannedBackgroundWorker != null)
                 calculatePlannedBackgroundWorker.CancelAsync();
-
-            base.OnClose(e);
         }
         #endregion
     }
