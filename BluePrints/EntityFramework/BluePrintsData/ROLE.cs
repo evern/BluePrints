@@ -9,6 +9,7 @@ namespace BluePrints.Data
     [Table("ROLE")]
     public partial class ROLE
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ROLE()
         {
             ROLE_PERMISSION = new HashSet<ROLE_PERMISSION>();
@@ -38,8 +39,10 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ROLE_PERMISSION> ROLE_PERMISSION { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<USER> USER { get; set; }
     }
 }

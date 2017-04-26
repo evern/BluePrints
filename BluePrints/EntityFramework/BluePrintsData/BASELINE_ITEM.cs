@@ -1,7 +1,6 @@
 namespace BluePrints.Data
 {
     using Common;
-    using Common.ViewModel;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -81,8 +80,6 @@ namespace BluePrints.Data
 
         public virtual DELIVERABLES_STATUS DELIVERABLES_STATUS { get; set; }
 
-        public virtual USER USER { get; set; }
-
         public virtual DEPARTMENT DEPARTMENT { get; set; }
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
@@ -90,6 +87,8 @@ namespace BluePrints.Data
         public virtual DOCTYPE DOCTYPE { get; set; }
 
         public virtual PHASE PHASE { get; set; }
+
+        public virtual USER USER { get; set; }
 
         public virtual VARIATION VARIATION { get; set; }
 

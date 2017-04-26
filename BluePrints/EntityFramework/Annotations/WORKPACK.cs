@@ -11,6 +11,7 @@ namespace BluePrints.Data
     [ConstraintAttributes("GUID_PROJECT, INTERNAL_NAME1, INTERNAL_NAME2")]
     public partial class WORKPACK : IHaveGUID
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public WORKPACK()
         {
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();

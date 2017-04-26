@@ -1,6 +1,5 @@
 namespace BluePrints.Data
 {
-    using Attributes;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -9,6 +8,7 @@ namespace BluePrints.Data
 
     public partial class DELIVERABLES_STATUS
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public DELIVERABLES_STATUS()
         {
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
@@ -35,6 +35,7 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
     }
 }

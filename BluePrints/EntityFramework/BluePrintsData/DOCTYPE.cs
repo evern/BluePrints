@@ -9,6 +9,7 @@ namespace BluePrints.Data
     [Table("DOCTYPE")]
     public partial class DOCTYPE
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public DOCTYPE()
         {
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
@@ -40,10 +41,12 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
 
         public virtual DEPARTMENT DEPARTMENT { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<WORKPACK> WORKPACK { get; set; }
     }
 }

@@ -8,6 +8,7 @@ namespace BluePrints.Data
 
     public partial class ESTIMATION_INDIRECT
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ESTIMATION_INDIRECT()
         {
             ESTIMATION_INDIRECT_ITEM = new HashSet<ESTIMATION_INDIRECT_ITEM>();
@@ -43,6 +44,7 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ESTIMATION_INDIRECT_ITEM> ESTIMATION_INDIRECT_ITEM { get; set; }
 
         public virtual PROJECT PROJECT { get; set; }

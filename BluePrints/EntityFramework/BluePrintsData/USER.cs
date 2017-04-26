@@ -9,10 +9,11 @@ namespace BluePrints.Data
     [Table("USER")]
     public partial class USER
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public USER()
         {
-            BASELINE_ITEM_WORK = new HashSet<BASELINE_ITEM_WORK>();
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
+            BASELINE_ITEM_WORK = new HashSet<BASELINE_ITEM_WORK>();
         }
 
         [Key]
@@ -45,9 +46,11 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual ICollection<BASELINE_ITEM_WORK> BASELINE_ITEM_WORK { get; set; }
-
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<BASELINE_ITEM_WORK> BASELINE_ITEM_WORK { get; set; }
 
         public virtual ROLE ROLE { get; set; }
     }

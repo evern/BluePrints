@@ -16,6 +16,7 @@ namespace BluePrints.Data
         public virtual DbSet<AREA> AREA { get; set; }
         public virtual DbSet<BASELINE> BASELINE { get; set; }
         public virtual DbSet<BASELINE_ITEM> BASELINE_ITEM { get; set; }
+        public virtual DbSet<BASELINE_ITEM_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENT { get; set; }
         public virtual DbSet<BASELINE_ITEM_WORK> BASELINE_ITEM_WORK { get; set; }
         public virtual DbSet<COMMODITY_CODE> COMMODITY_CODE { get; set; }
         public virtual DbSet<COMMODITY_GROUP_DIRECT> COMMODITY_GROUP_DIRECT { get; set; }
@@ -92,6 +93,14 @@ namespace BluePrints.Data
                 .HasMany(e => e.VARIATION1)
                 .WithOptional(e => e.BASELINE1)
                 .HasForeignKey(e => e.GUID_ORIBASELINE);
+
+            modelBuilder.Entity<BASELINE_ITEM_ASSIGNMENT>()
+                .Property(e => e.LOW_VALUE)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<BASELINE_ITEM_ASSIGNMENT>()
+                .Property(e => e.HIGH_VALUE)
+                .HasPrecision(10, 2);
 
             modelBuilder.Entity<BASELINE_ITEM_WORK>()
                 .Property(e => e.WEIGHTING)
@@ -346,6 +355,12 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.BASELINE_ITEM_ASSIGNMENT)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.COMMODITY_CODE)
                 .WithOptional(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT);
@@ -447,13 +462,12 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_TIMEGROUP);
 
             modelBuilder.Entity<USER>()
-                .HasMany(e => e.BASELINE_ITEM_WORK)
-                .WithRequired(e => e.USER)
-                .HasForeignKey(e => e.GUID_USER)
-                .WillCascadeOnDelete(false);
+                .HasMany(e => e.BASELINE_ITEM)
+                .WithOptional(e => e.USER)
+                .HasForeignKey(e => e.GUID_USER);
 
             modelBuilder.Entity<USER>()
-                .HasMany(e => e.BASELINE_ITEM)
+                .HasMany(e => e.BASELINE_ITEM_WORK)
                 .WithRequired(e => e.USER)
                 .HasForeignKey(e => e.GUID_USER)
                 .WillCascadeOnDelete(false);

@@ -8,6 +8,7 @@ namespace BluePrints.Data
 
     public partial class INDIRECT_TYPE
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public INDIRECT_TYPE()
         {
             COMMODITY_CODE = new HashSet<COMMODITY_CODE>();
@@ -36,6 +37,7 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<COMMODITY_CODE> COMMODITY_CODE { get; set; }
     }
 }

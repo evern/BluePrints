@@ -10,6 +10,7 @@ namespace BluePrints.Data
 
     public partial class PROGRESS : IHaveGUID
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PROGRESS()
         {
             PROGRESS_ITEM = new HashSet<PROGRESS_ITEM>();

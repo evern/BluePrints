@@ -1,7 +1,6 @@
 namespace BluePrints.Data
 {
     using Common;
-    using DevExpress.Mvvm;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -11,6 +10,7 @@ namespace BluePrints.Data
     [Table("VARIATION")]
     public partial class VARIATION
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public VARIATION()
         {
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
@@ -29,11 +29,6 @@ namespace BluePrints.Data
         [Required]
         [StringLength(100)]
         public string NAME { get; set; }
-        //public string NAME
-        //{
-        //    get { return GetProperty(() => NAME); }
-        //    set { SetProperty(() => NAME, value); }
-        //}
 
         [StringLength(500)]
         public string COMMENTS { get; set; }
@@ -64,10 +59,12 @@ namespace BluePrints.Data
 
         public virtual BASELINE BASELINE1 { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
 
         public virtual PROJECT PROJECT { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<VARIATION_ITEM> VARIATION_ITEM { get; set; }
     }
 }
