@@ -649,7 +649,7 @@ namespace BluePrints.ViewModels
 
         private bool CanPushToP6()
         {
-            if (loadPROGRESS == null || loadPROGRESS.P6PROGRESS_NAME == string.Empty)
+            if (isPushingToP6 || loadPROGRESS == null || loadPROGRESS.P6PROGRESS_NAME == string.Empty)
                 return false;
 
             return true;
@@ -665,13 +665,11 @@ namespace BluePrints.ViewModels
             PushToP6(BaselineMappingSelectionType.Modified);
         }
 
+        bool isPushingToP6;
         private void PushToP6(BaselineMappingSelectionType mappingSelectionType)
         {
-            //foreach(PROGRESS_ITEMProjection entity in MainViewModel.Entities)
-            //{
-            //    entity.BuildStats();
-            //}
-
+            isPushingToP6 = true;
+            //Stats will be built in SummarizeSinglePROJECTDashboard within SummarizeWORKPACKDashboard in ConstructMainViewModelProjection
             WORKPACK_DashboardViewModel = WORKPACKSchedulingViewModelWrapper.Create();
             WORKPACK_DashboardViewModel.OnPROJECTWORKPACKSMappingViewModelLoaded =
                 OnPROJECTWORKPACKSMappingViewModelLoaded;
@@ -699,6 +697,10 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.ShowLoadingScreen(workpackWithStats.Count());
             foreach (WORKPACK_Dashboard workpack in workpackWithStats)
             {
+                string s = string.Empty;
+                if (workpack.Entity.INTERNAL_NAME1 == "14401-000EVLME1")
+                    s = string.Empty;
+
                 decimal totalWorkpackAssignedUnits = 0;
                 if (workpack.Stats == null || workpack.Stats.totalUnits == 0)
                     continue;
@@ -793,6 +795,8 @@ namespace BluePrints.ViewModels
                 MessageBoxService.ShowMessage(CommonResources.WORKPACK_ASSIGNMENT_P6ProgressWriteSuccess);
             else
                 MessageBoxService.ShowMessage(CommonResources.WORKPACK_ASSIGNMENT_P6ProgressWriteFailed);
+
+            isPushingToP6 = false;
         }
 
         private decimal cumulativePrincipalUnits = 0;

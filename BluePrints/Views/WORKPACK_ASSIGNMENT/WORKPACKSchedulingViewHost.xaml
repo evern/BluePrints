@@ -53,10 +53,10 @@
                                                    Command="{Binding DataContext.PushToP6Command, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}"
                                                    Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" />
-                                <dxb:BarButtonItem Content="Fix Assignments"
+                                <!--<dxb:BarButtonItem Content="Fix Assignments"
                                                    Command="{Binding DataContext.FixCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImageOffice2013 Image=SavePageSetup_32x32.png}"
-                                                   Glyph="{dx:DXImage Image=SavePageSetup_16x16.png}" />
+                                                   Glyph="{dx:DXImage Image=SavePageSetup_16x16.png}" />-->
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

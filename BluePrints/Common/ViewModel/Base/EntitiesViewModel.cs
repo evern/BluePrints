@@ -90,15 +90,7 @@ namespace BluePrints.Common.ViewModel
 
             void IEntitiesChangeTracker.UnregisterMessageHandler()
             {
-                string s = string.Empty;
-                try
-                {
-                    Messenger.Default.Unregister(this);
-                }
-                catch(Exception e)
-                {
-                    s = e.ToString();
-                }
+                Messenger.Default.Unregister(this);
             }
 
             public TProjection FindLocalProjectionByKey(TPrimaryKey primaryKey)
@@ -129,12 +121,8 @@ namespace BluePrints.Common.ViewModel
                 if (message.Sender == owner && message.WillPerformBulkRefresh)
                     return;
 
-                var continueOnMessage = true;
-                if (owner.OnBeforeEntitiesChangedCallBack != null)
-                    continueOnMessage = owner.OnBeforeEntitiesChangedCallBack(message.PrimaryKey, typeof(TEntity),
-                        message.MessageType, message.Sender);
-
-                if (!continueOnMessage)
+                if (owner.OnBeforeEntitiesChangedCallBack != null && !owner.OnBeforeEntitiesChangedCallBack(message.PrimaryKey, typeof(TEntity),
+                        message.MessageType, message.Sender))
                     return;
 
                 switch (message.MessageType)

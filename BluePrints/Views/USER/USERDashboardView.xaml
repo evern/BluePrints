@@ -93,15 +93,6 @@
                                       dxlc:LayoutControl.AllowVerticalSizing="True">
                         <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDashboardUSER"
                                          Style="{StaticResource DefaultGridControlTemplate}" >
-                            <dxmvvm:Interaction.Behaviors>
-                                <dxmvvm:EventToCommand PassEventArgsToCommand="True"
-                                                       Command="{Binding DataContext.EditCommand, ElementName=userControl}"
-                                                       EventName="MouseDoubleClick" MarkRoutedEventsAsHandled="True">
-                                    <dxmvvm:EventToCommand.EventArgsConverter>
-                                        <dx:EventArgsToDataRowConverter />
-                                    </dxmvvm:EventToCommand.EventArgsConverter>
-                                </dxmvvm:EventToCommand>
-                            </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.Bands>
                                 <dxg:GridControlBand Name="bandProject" Header="PROJECT">
                                     <dxg:GridColumn Header="Number" FieldName="Entity.NUMBER" VisibleIndex="0" />
@@ -281,10 +272,6 @@
                                                Style="{StaticResource DefaultTableViewTemplate}"
                                                NewItemRowPosition="None" >
                                     <common:TableViewEx.RowCellMenuCustomizations>
-                                        <dxb:BarButtonItem Content="Workpacks"
-                                                           Command="{Binding View.DataContext.EditCommand}"
-                                                           CommandParameter="{Binding Row.Row}"
-                                                           Glyph="{dx:DXImage Image=Line_32x32.png}" />
                                         <dxb:BarButtonItem Content="Refresh"
                                                            Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                            Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
@@ -379,14 +366,6 @@
                                                                    Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
                                                                    Brush="Indigo"
                                                                    DataSource="{Binding SummaryEntity.Stats.Remaining.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
-                                        <dxc:BarSideBySideSeries2D Name="barSeriesBurned" DisplayName="Burned Units"
-                                                                   Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
-                                                                   Brush="Red"
-                                                                   DataSource="{Binding SummaryEntity.Stats.Burned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
-                                        <dxc:BarSideBySideSeries2D Name="barSeriesActual" DisplayName="Actual Units"
-                                                                   Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
-                                                                   Brush="#FFFFA200"
-                                                                   DataSource="{Binding SummaryEntity.Stats.Actual.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
                                         <dxc:LineSeries2D Name="lineSeriesOriginal"
                                                           DisplayName="Baseline Planned Units %"
                                                           Style="{StaticResource DefaultLineSeries2DTemplate}"
@@ -406,14 +385,6 @@
                                                           Style="{StaticResource DefaultLineSeries2DTemplate}"
                                                           Brush="Green"
                                                           DataSource="{Binding SummaryEntity.Stats.Earned.CumulativeDataPoints}" />
-                                        <dxc:LineSeries2D Name="lineSeriesBurned" DisplayName="Burned Units %"
-                                                          Style="{StaticResource DefaultLineSeries2DTemplate}"
-                                                          Brush="Red"
-                                                          DataSource="{Binding SummaryEntity.Stats.Burned.CumulativeDataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
-                                        <dxc:LineSeries2D Name="lineSeriesActual" DisplayName="Actual Units %"
-                                                          Style="{StaticResource DefaultLineSeries2DTemplate}"
-                                                          Brush="Red"
-                                                          DataSource="{Binding SummaryEntity.Stats.Actual.CumulativeDataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
                                     </dxc:XYDiagram2D.Series>
                                 </dxc:XYDiagram2D>
                             </dxc:ChartControl.Diagram>

@@ -115,7 +115,6 @@ namespace BluePrints.Common.ViewModel.Reporting
                 SetPlannedDataPoints(true);
             else
                 SummarizePlannedDataPointsFromStoredProcedure(this.projectNumber);
-            //PlannedDataPointsBuilderFromDatabase(CURRENTPROJECT.NUMBER, false);
         }
 
         public override int SetCurrentDataPointsProgress()
@@ -128,7 +127,6 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public override void SetCurrentDataPoints()
         {
-            //PlannedDataPointsBuilderFromDatabase(CURRENTPROJECT.NUMBER, true);
             if (projectNumber == string.Empty)
                 SetPlannedDataPoints(false);
         }

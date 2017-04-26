@@ -78,6 +78,22 @@ namespace BluePrints.Common.Projections
                 return Entity.TOTAL_HOURS * ITEMRATE;
             }
         }
+
+        private List<BASELINE_ITEM_ASSIGNMENT> baseline_item_assignments;
+        public List<BASELINE_ITEM_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENTS
+        {
+            get
+            {
+                return baseline_item_assignments;
+            }
+            set
+            {
+                if (baseline_item_assignments == null)
+                    baseline_item_assignments = new List<BASELINE_ITEM_ASSIGNMENT>();
+
+                baseline_item_assignments = value;
+            }
+        }
     }
 
     public static class BASELINE_ITEMProjectionQueries

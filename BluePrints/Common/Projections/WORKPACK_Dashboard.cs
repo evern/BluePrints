@@ -79,6 +79,7 @@ namespace BluePrints.Common.Projections
             var projectDashboard =
                 PROJECT_DashboardQueries.SummarizeSinglePROJECTDashboard(getBASELINEFunc().PROJECT, getPROGRESSFunc,
                     getPROGRESS_ITEMSFunc, getBASELINE_ITEMFunc, getBASELINEFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, true);
+
             return SummarizeWORKPACKDashboard(WORKPACKS, projectDashboard);
         }
     }

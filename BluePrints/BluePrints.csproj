@@ -406,7 +406,7 @@
     <Compile Include="Common\ViewModel\Converters\BaselineItemMaximumUnitsConverter.cs" />
     <Compile Include="Common\ViewModel\Dialogs\DialogCollectionViewModel.cs" />
     <Compile Include="Common\ViewModel\Base\EntitiesCollectionsWrapper.cs" />
-    <Compile Include="Common\ViewModel\EntitiesViewModel.cs" />
+    <Compile Include="Common\ViewModel\Base\EntitiesViewModel.cs" />
     <Compile Include="Common\ViewModel\InstantFeedbackCollectionViewModel.cs" />
     <Compile Include="Common\ViewModel\Interfaces.cs" />
     <Compile Include="Common\ViewModel\Misc\RangeObservableCollection.cs" />
@@ -431,6 +431,7 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\BASELINE_ITEM_ASSIGNMENT.cs" />
     <Compile Include="EntityFramework\Annotations\BluePrintsEntities.cs" />
     <Compile Include="EntityFramework\Annotations\COMMODITY_GROUP_DIRECT.cs" />
     <Compile Include="EntityFramework\Annotations\DELIVERABLES_STATUS.cs" />
@@ -470,6 +471,7 @@
     <Compile Include="EntityFramework\BluePrintsData\VARIATION.cs" />
     <Compile Include="EntityFramework\BluePrintsData\VARIATION_ITEM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\WORKPACK.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\BASELINE_ITEM_ASSIGNMENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\WORKPACK_ASSIGNMENT.cs" />
     <Compile Include="EntityFramework\Annotations\AREA.cs" />
     <Compile Include="EntityFramework\Annotations\BASELINE.cs" />
@@ -518,6 +520,12 @@
     <Compile Include="Common\DataModel\UnitOfWorkBase.cs" />
     <Compile Include="Common\Utils\DbExtensions.cs" />
     <Compile Include="Common\Utils\ExpressionHelper.cs" />
+    <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.Designer.cs">
+      <DependentUpon>BASELINE_ITEMSchedulingView.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
@@ -1540,6 +1548,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.resx">
+      <DependentUpon>BASELINE_ITEMSchedulingView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\WORKPACK_ASSIGNMENT\WORKPACKSchedulingView.resx">
       <DependentUpon>WORKPACKSchedulingView.cs</DependentUpon>

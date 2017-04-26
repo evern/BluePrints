@@ -141,7 +141,7 @@ namespace BluePrints.Common.ViewModel
         protected virtual void AssignCallBacksAndRaisePropertyChange(IEnumerable<TMainProjectionEntity> entities)
         {
             MainViewModel.SelectedEntities = this.DisplaySelectedEntities;
-            MainViewModel.FullRefreshCallBack = this.FullRefresh;
+            MainViewModel.FullRefreshCallBack += this.FullRefresh;
             RefreshView();
         }
 
@@ -405,8 +405,6 @@ namespace BluePrints.Common.ViewModel
             if(viewModel != null)
             {
                 this.RaisePropertiesChanged();
-                //this.RaisePropertyChanged(x => x.DisplaySelectedEntity);
-                //this.RaisePropertyChanged(x => x.DisplayEntities);
                 if (isForceGridRefresh && ForceGridRefresh != null)
                     ForceGridRefresh();
                 restoreViewState();
@@ -520,9 +518,7 @@ namespace BluePrints.Common.ViewModel
 
         public void ResetLayout()
         {
-            if (
-                MessageBoxService.ShowMessage(CommonResources.Confirmation_ResetLayout,
-                    CommonResources.Confirmation_Caption, MessageButton.YesNo) != MessageResult.Yes)
+            if (MessageBoxService.ShowMessage(CommonResources.Confirmation_ResetLayout, CommonResources.Confirmation_Caption, MessageButton.YesNo) != MessageResult.Yes)
                 return;
 
             PersistentLayoutHelper.ResetLayout(ViewName);

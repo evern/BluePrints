@@ -93,14 +93,14 @@
                                 <dxb:BarItemSeparator />
                                 <dxb:BarStaticItem Content="Data Date" />
                                 <dxb:BarStaticItem Content="{Binding DataContext.DataDate, ElementName=userControl}" />
-                                <dxb:BarButtonItem Content="Populate P6 Original Units"
+                                <dxb:BarButtonItem Content="Progress P6"
                                                    Command="{Binding DataContext.PushToP6OriginalCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}"
                                                    Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" />
-                                <dxb:BarButtonItem Content="Populate P6 Modified Units"
+                                <!--<dxb:BarButtonItem Content="Populate P6 Modified Units"
                                                    Command="{Binding DataContext.PushToP6ModifiedCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}"
-                                                   Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" />
+                                                   Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" />-->
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

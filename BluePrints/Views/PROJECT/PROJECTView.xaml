@@ -495,7 +495,7 @@
                                             </DataTemplate>
                                         </dxg:GridColumn.CellTemplate>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="P6MODBASELINE_NAME" MinWidth="200">
+                                    <!--<dxg:GridColumn FieldName="P6MODBASELINE_NAME" MinWidth="200">
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
                                                 <dxlc:LayoutGroup Orientation="Horizontal">
@@ -516,7 +516,7 @@
                                                 </dxlc:LayoutGroup>
                                             </DataTemplate>
                                         </dxg:GridColumn.CellTemplate>
-                                    </dxg:GridColumn>
+                                    </dxg:GridColumn>-->
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
