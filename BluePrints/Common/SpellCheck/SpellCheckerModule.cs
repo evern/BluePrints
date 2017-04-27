@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Windows;
-using DevExpress.Xpf.SpellChecker;
-using DevExpress.XtraSpellChecker.Native;
-using DevExpress.XtraRichEdit.SpellChecker;
-using System.Globalization;
+﻿using DevExpress.Xpf.SpellChecker;
 using DevExpress.XtraRichEdit;
+using DevExpress.XtraRichEdit.SpellChecker;
 using DevExpress.XtraSpellChecker;
+using DevExpress.XtraSpellChecker.Native;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Windows;
 
 namespace BluePrints.Common
 {

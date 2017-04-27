@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace BluePrints.Common.DataModel
+﻿namespace BluePrints.Common.DataModel
 {
     /// <summary>
     /// Represents the state of the entity relative to the unit of work.

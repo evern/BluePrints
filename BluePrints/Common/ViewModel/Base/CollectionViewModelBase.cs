@@ -1,13 +1,11 @@
 ﻿using BluePrints.Common.DataModel;
+using BluePrints.Common.ViewModel.UndoRedo;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BluePrints.Common.ViewModel.UndoRedo;
 
 namespace BluePrints.Common.ViewModel
 {

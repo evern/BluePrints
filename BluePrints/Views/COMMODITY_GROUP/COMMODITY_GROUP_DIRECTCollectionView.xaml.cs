@@ -1,13 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Windows.Controls;
-using System.Collections.Generic;
+﻿using BluePrints.Common.Projections;
 using BluePrints.ViewModels;
-using BluePrints.Common.Projections;
-using DevExpress.Xpf.Grid;
-using System.Windows;
-using DevExpress.Xpf.Grid.TreeList;
-using BluePrints.Data;
+using System.Windows.Controls;
 
 namespace BluePrints.Views
 {

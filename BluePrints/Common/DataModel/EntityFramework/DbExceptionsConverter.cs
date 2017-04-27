@@ -2,7 +2,6 @@
 using System;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
-using System.Linq;
 using System.Text;
 
 namespace BluePrints.Common.DataModel.EntityFramework

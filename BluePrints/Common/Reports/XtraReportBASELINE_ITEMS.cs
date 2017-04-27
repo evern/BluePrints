@@ -1,11 +1,9 @@
-﻿using System;
-using DevExpress.XtraEditors;
-using DevExpress.XtraEditors.Controls;
-using DevExpress.XtraReports.UI;
-using DevExpress.XtraReports.Parameters;
-using System.Collections.Generic;
-using BluePrints.Common.Projections;
+﻿using BluePrints.Common.Projections;
 using BluePrints.Data;
+using DevExpress.XtraReports.Parameters;
+using DevExpress.XtraReports.UI;
+using System;
+using System.Collections.Generic;
 
 
 namespace BluePrints.Reports

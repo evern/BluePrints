@@ -1,14 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Windows.Controls;
-using System.Collections.Generic;
+﻿using BluePrints.Common.Projections;
 using BluePrints.ViewModels;
 using DevExpress.Xpf.Grid;
+using System;
+using System.Collections.Generic;
 using System.Windows.Input;
-using BluePrints.Common.Projections;
-using DevExpress.Xpf.Editors;
-using DevExpress.Data.Filtering;
-using DevExpress.Data.Helpers;
 
 namespace BluePrints.Views
 {

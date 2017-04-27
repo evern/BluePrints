@@ -1,11 +1,4 @@
-﻿using BluePrints.Common.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BluePrints.Common.ViewModel.UndoRedo
+﻿namespace BluePrints.Common.ViewModel.UndoRedo
 {
     public class UndoRedoEntityInfo<TEntity>
     {

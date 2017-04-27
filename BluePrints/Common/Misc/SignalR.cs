@@ -1,14 +1,9 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
-using BluePrints.Common.ViewModel;
+﻿using BluePrints.Common.ViewModel;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using Microsoft.AspNet.SignalR.Client;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace BluePrints.Common

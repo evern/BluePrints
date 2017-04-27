@@ -1,16 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Data;
-using System.Linq.Expressions;
-using System.Collections.Generic;
-using BluePrints.Common.Utils;
-using BluePrints.Common.DataModel;
-using DevExpress.Mvvm;
-using System.Collections;
-using System.ComponentModel;
-using DevExpress.Data.Linq;
-using DevExpress.Data.Linq.Helpers;
-using DevExpress.Data.Async.Helpers;
 
 namespace BluePrints.Common.DataModel.DesignTime
 {

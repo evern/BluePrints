@@ -1,10 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Collections.Generic;
+﻿using BluePrints.Common.Utils;
 using DevExpress.Mvvm;
-using BluePrints.Common.Utils;
-using BluePrints.Common.DataModel;
+using System;
+using System.Linq.Expressions;
 
 namespace BluePrints.Common.DataModel.DesignTime
 {

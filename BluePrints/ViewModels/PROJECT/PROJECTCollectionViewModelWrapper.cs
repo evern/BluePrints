@@ -5,17 +5,13 @@ using BluePrints.Common.Helpers;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel;
-using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.Data.Helpers;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
-using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BluePrints.ViewModels
 {

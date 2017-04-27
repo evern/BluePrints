@@ -1,14 +1,13 @@
-﻿using System;
-using System.Globalization;
-using System.IO;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media.Imaging;
-using DevExpress.Utils.Zip;
+﻿using DevExpress.Utils.Zip;
 using DevExpress.Xpf.Core;
 using DevExpress.Xpf.SpellChecker;
 using DevExpress.XtraSpellChecker;
+using System;
+using System.Globalization;
+using System.IO;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace BluePrints.Common
 {

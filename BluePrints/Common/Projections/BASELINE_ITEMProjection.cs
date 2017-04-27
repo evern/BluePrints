@@ -1,16 +1,8 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
-using BluePrints.Common.DataModel;
-using BluePrints.Common.ViewModel;
-using BluePrints.Data;
+﻿using BluePrints.Data;
 using BluePrints.Data.Attributes;
-using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
@@ -62,6 +54,17 @@ namespace BluePrints.Common.Projections
                     return 0;
 
                 return Entity.DC_HOURS * (decimal)RATE.RATE1;
+            }
+        }
+
+        public decimal TOTAL_UNITS
+        {
+            get
+            {
+                if (Entity == null)
+                    return 0;
+
+                return Entity.TOTAL_HOURS + Entity.DC_HOURS;
             }
         }
 
@@ -136,6 +139,40 @@ namespace BluePrints.Common.Projections
                                         y =>
                                             y.GUID_DEPARTMENT == x.GUID_DEPARTMENT &&
                                             y.GUID_DISCIPLINE == x.GUID_DISCIPLINE)
+                            }).AsQueryable();
+        }
+
+        public static IQueryable<BASELINE_ITEMProjection> BASELINE_ITEMProjectionQuery(
+            IQueryable<BASELINE_ITEM> BASELINE_ITEMS, BASELINE BASELINE,
+            IEnumerable<RATE> RATES,
+            IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSES, IEnumerable<BASELINE_ITEM_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENTS)
+        {
+            IQueryable<BASELINE_ITEM> contextBASELINE_ITEMS;
+            if (BASELINE == null)
+                contextBASELINE_ITEMS = new List<BASELINE_ITEM>().AsQueryable();
+            else
+            {
+                contextBASELINE_ITEMS = BASELINE_ITEMS.Where(x => x.GUID_BASELINE == BASELINE.GUID);
+            }
+
+            return
+                contextBASELINE_ITEMS.ToArray()
+                    .Select(
+                        x =>
+                            new BASELINE_ITEMProjection()
+                            {
+                                GUID = x.GUID,
+                                Entity = x,
+                                DELIVERABLE_STATUS =
+                                    (x.GUID_STATUS == null)
+                                        ? null
+                                        : DELIVERABLES_STATUSES.FirstOrDefault(z => z.GUID == x.GUID_STATUS),
+                                RATE =
+                                    RATES.FirstOrDefault(
+                                        y =>
+                                            y.GUID_DEPARTMENT == x.GUID_DEPARTMENT &&
+                                            y.GUID_DISCIPLINE == x.GUID_DISCIPLINE), 
+                                BASELINE_ITEM_ASSIGNMENTS = BASELINE_ITEM_ASSIGNMENTS.Where(y => y.GUID_ORIGINAL == x.GUID_ORIGINAL).ToList()
                             }).AsQueryable();
         }
     }

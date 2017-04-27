@@ -1,5 +1,4 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
-using BluePrints.Common.Projections;
+﻿using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Data;
 using BluePrints.Data.Helpers;
@@ -10,11 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Entity.Core.Objects;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static BluePrints.Common.ViewModel.Reporting.FullSummarizer;
 using static BluePrints.Data.BluePrintsEntities;
 
 namespace BluePrints.Common.ViewModel.Reporting

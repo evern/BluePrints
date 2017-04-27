@@ -1,22 +1,18 @@
-﻿using System;
-using System.Linq;
+﻿using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common;
+using BluePrints.Common.DataModel;
+using BluePrints.Common.Projections;
+using BluePrints.Common.ViewModel;
+using BluePrints.Data;
+using BluePrints.Data.Helpers;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
-using BluePrints.Common.Utils;
-using BluePrints.BluePrintsEntitiesDataModel;
-using BluePrints.Common.DataModel;
-using BluePrints.Data;
-using BluePrints.Common.ViewModel;
 using DevExpress.Xpf.Grid;
-using BluePrints.Common;
-using BluePrints.Common.Helpers;
+using System;
 using System.Collections.Generic;
-using BluePrints.Data.Helpers;
 using System.Collections.ObjectModel;
-using DevExpress.Xpf.Grid.TreeList;
-using System.Windows.Threading;
-using BluePrints.Common.Projections;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BluePrints.ViewModels
 {

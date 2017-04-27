@@ -1,9 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Windows.Controls;
-using System.Collections.Generic;
-using BluePrints.ViewModels;
-using BluePrints.Common;
+﻿using BluePrints.ViewModels;
 
 namespace BluePrints.Views
 {

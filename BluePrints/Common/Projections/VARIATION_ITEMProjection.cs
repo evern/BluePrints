@@ -1,13 +1,7 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
-using BluePrints.Common.DataModel;
-using BluePrints.Common.ViewModel;
-using BluePrints.Data;
-using DevExpress.Mvvm.POCO;
+﻿using BluePrints.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {

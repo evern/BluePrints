@@ -1,18 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Collections;
-using System.Collections.Generic;
+﻿using BluePrints.Common.DataModel;
+using DevExpress.Mvvm;
+using DevExpress.Mvvm.DataAnnotations;
+using DevExpress.Mvvm.POCO;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using DevExpress.Mvvm;
-using DevExpress.Mvvm.POCO;
-using DevExpress.Mvvm.DataAnnotations;
-using System.Collections.ObjectModel;
-using System.Threading;
-using System.Threading.Tasks;
-using BluePrints.Common.Utils;
-using BluePrints.Common.DataModel;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace BluePrints.Common.ViewModel
 {

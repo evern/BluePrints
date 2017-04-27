@@ -1,11 +1,5 @@
-﻿using System;
+﻿using DevExpress.Mvvm.POCO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DevExpress.Mvvm;
-using DevExpress.Mvvm.POCO;
-using BluePrints.Common;
 
 namespace BluePrints.ViewModels
 {

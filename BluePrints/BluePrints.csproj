@@ -520,11 +520,15 @@
     <Compile Include="Common\DataModel\UnitOfWorkBase.cs" />
     <Compile Include="Common\Utils\DbExtensions.cs" />
     <Compile Include="Common\Utils\ExpressionHelper.cs" />
+    <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.Designer.cs">
       <DependentUpon>BASELINE_ITEMSchedulingView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingViewHost.xaml.cs">
+      <DependentUpon>BASELINE_ITEMSchedulingViewHost.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
@@ -1311,6 +1315,10 @@
     <Page Include="Common\View\ResourceDictionaries\GridColumnResourceDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingViewHost.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\LoginWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

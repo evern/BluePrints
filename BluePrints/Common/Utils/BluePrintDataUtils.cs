@@ -1,12 +1,9 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
-using BluePrints.Common.Helpers;
+﻿using BluePrints.Common.Helpers;
 using BluePrints.Common.Projections;
 using BluePrints.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel.Utils
 {

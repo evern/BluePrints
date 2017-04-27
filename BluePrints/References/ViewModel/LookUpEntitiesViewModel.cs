@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.ComponentModel;
+﻿using BluePrints.Common.DataModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
-using System.Collections.ObjectModel;
-using BluePrints.Common.Utils;
-using BluePrints.Common.DataModel;
+using System;
+using System.Linq;
 
 namespace BluePrints.Common.ViewModel
 {

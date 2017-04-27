@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using DevExpress.XtraEditors;
-using BluePrints.Data;
-using DevExpress.XtraReports.UI;
-using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.ViewModel;
-using System.IO;
+using BluePrints.Data;
 using BluePrints.Reports;
+using DevExpress.XtraReports.UI;
 using DevExpress.XtraReports.UserDesigner;
+using System;
+using System.IO;
+using System.Linq;
 
 namespace BluePrints.Common.Reports
 {

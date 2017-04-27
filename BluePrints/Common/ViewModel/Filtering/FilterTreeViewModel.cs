@@ -1,16 +1,14 @@
-﻿using BluePrints.Common;
+﻿using BluePrints.Data.Helpers;
+using DevExpress.Data.Filtering;
+using DevExpress.Data.Utils;
+using DevExpress.Mvvm;
+using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
-using DevExpress.Data.Filtering;
-using DevExpress.Data.Utils;
-using DevExpress.Mvvm;
-using DevExpress.Mvvm.POCO;
-using System.Reflection;
-using BluePrints.Data.Helpers;
 
 namespace BluePrints.Common.ViewModel.Filtering
 {

@@ -1,24 +1,16 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
-using BluePrints.Common.DataModel;
+﻿using BluePrints.Common.DataModel;
 using BluePrints.Common.Helpers;
-using BluePrints.Common.Projections;
+using BluePrints.Common.Resources;
 using BluePrints.Data.Helpers;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
-using DevExpress.Xpf.Bars;
-using DevExpress.Xpf.Editors.Settings;
-using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
-using BluePrints.ViewModels;
-using BluePrints.Common.Resources;
 
 namespace BluePrints.Common.ViewModel
 {

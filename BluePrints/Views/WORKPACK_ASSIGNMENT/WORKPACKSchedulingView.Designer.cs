@@ -1,5 +1,4 @@
-﻿using BluePrints.Common.Projections;
-namespace BluePrints.Views
+﻿namespace BluePrints.Views
 {
     partial class PROJECTWORKPACKDetailsMappingView
     {

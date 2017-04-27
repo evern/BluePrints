@@ -1,9 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using BluePrints.ViewModels;
+using System;
 using System.Windows.Controls;
-using System.Collections.Generic;
 using System.Windows.Threading;
-using BluePrints.ViewModels;
 
 namespace BluePrints.Views
 {

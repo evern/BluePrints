@@ -1,14 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Data;
-using System.Linq.Expressions;
+﻿using BluePrints.Common.Utils;
+using System;
 using System.Collections.Generic;
-using BluePrints.Common.Utils;
-using BluePrints.Common.DataModel;
-using BluePrints.Common.DataModel.DesignTime;
+using System.Data;
 using System.Data.Entity;
-using System.Data.Entity.Validation;
 using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Validation;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace BluePrints.Common.DataModel.EntityFramework

@@ -3,7 +3,6 @@ using BluePrints.Common;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel;
 using BluePrints.Data;
-using BluePrints.P6Data;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Editors;
 using DevExpress.XtraScheduler;
@@ -11,9 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace BluePrints.ViewModels
 {

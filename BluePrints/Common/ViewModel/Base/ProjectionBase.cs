@@ -1,12 +1,8 @@
-﻿using System;
-using BluePrints.Common.ViewModel;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations;
-using System.Collections.ObjectModel;
+﻿using BluePrints.Common.ViewModel;
 using DevExpress.Mvvm;
+using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace BluePrints.Common.Projections
 {

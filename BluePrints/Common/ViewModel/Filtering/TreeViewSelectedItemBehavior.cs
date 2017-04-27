@@ -1,11 +1,11 @@
-﻿using System;
+﻿using BluePrints.ViewModels;
+using DevExpress.Mvvm.UI.Interactivity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using DevExpress.Mvvm.UI.Interactivity;
-using BluePrints.ViewModels;
 
 namespace BluePrints.Common.ViewModel.Filtering
 {

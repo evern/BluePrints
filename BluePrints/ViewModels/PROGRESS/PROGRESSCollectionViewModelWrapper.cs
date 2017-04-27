@@ -1,22 +1,16 @@
 ﻿using BluePrints.BluePrintsEntitiesDataModel;
-using BluePrints.Common;
 using BluePrints.Common.DataModel;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel;
-using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.Data.Helpers;
-using DevExpress.Mvvm.POCO;
+using BluePrints.P6Data;
+using BluePrints.P6EntitiesDataModel;
 using DevExpress.Mvvm;
-using DevExpress.Xpf.Grid;
+using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BluePrints.Common.Helpers;
-using BluePrints.P6Data;
-using BluePrints.P6EntitiesDataModel;
 using PROJECT = BluePrints.Data.PROJECT;
 
 namespace BluePrints.ViewModels

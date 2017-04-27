@@ -1,11 +1,7 @@
-﻿using System;
-using System.Drawing;
-using System.Collections;
-using System.ComponentModel;
-using DevExpress.XtraReports.UI;
+﻿using BluePrints.Common.ViewModel.Reporting;
 using DevExpress.XtraReports.Parameters;
-using DevExpress.XtraSplashScreen;
-using BluePrints.Common.ViewModel.Reporting;
+using DevExpress.XtraReports.UI;
+using System;
 
 namespace BluePrints.Reports
 {

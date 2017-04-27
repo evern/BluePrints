@@ -1,12 +1,6 @@
 ﻿using BluePrints.Common;
 using BluePrints.Common.ViewModel;
-using DevExpress.Xpf.Core.Serialization;
 using DevExpress.Xpf.Grid;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace BluePrints.Views

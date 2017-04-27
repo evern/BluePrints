@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BluePrints.Common.ViewModel
+﻿namespace BluePrints.Common.ViewModel
 {
     /// <summary>
     /// Parameter for IDocumentManagerServiceExtensions to search and show document

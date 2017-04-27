@@ -1,9 +1,7 @@
-﻿using System;
+﻿using DevExpress.Mvvm;
+using System;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using DevExpress.Mvvm;
 
 namespace BluePrints.Common.DataModel.DesignTime
 {

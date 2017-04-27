@@ -1,18 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Data;
-using System.Linq.Expressions;
-using System.Collections.Generic;
-using BluePrints.Common.Utils;
-using BluePrints.Common.DataModel;
-using BluePrints.Common.DataModel.DesignTime;
-using DevExpress.Mvvm;
-using System.Collections;
-using System.ComponentModel;
+﻿using BluePrints.Common.Utils;
 using DevExpress.Data.Linq;
 using DevExpress.Data.Linq.Helpers;
-using DevExpress.Data.Async.Helpers;
-using DevExpress.Xpf.Core.ServerMode;
+using System;
+using System.ComponentModel;
+using System.Data;
+using System.Linq;
 
 namespace BluePrints.Common.DataModel.EntityFramework
 {

@@ -1,9 +1,5 @@
-﻿using System;
+﻿using DevExpress.Mvvm;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using DevExpress.Mvvm;
 
 namespace BluePrints.Common.ViewModel
 {

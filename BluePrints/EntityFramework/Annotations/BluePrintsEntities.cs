@@ -1,17 +1,10 @@
-﻿using BluePrints.Common.Projections;
-using BluePrints.Common.ViewModel.Reporting;
-using BluePrints.Data.Helpers;
+﻿using BluePrints.Data.Helpers;
 using EntityFramework.Functions;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BluePrints.Data
 {

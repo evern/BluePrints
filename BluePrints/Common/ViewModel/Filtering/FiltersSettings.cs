@@ -1,14 +1,9 @@
 ﻿using BluePrints.BluePrintsEntitiesDataModel;
-using BluePrints.Common.ViewModel;
+using BluePrints.Data;
+using BluePrints.Properties;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using BluePrints.Data;
-using BluePrints.Properties;
-using BluePrints.ViewModels;
 
 namespace BluePrints.Common.ViewModel.Filtering
 {

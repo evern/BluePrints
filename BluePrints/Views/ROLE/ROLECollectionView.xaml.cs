@@ -1,9 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using BluePrints.ViewModels;
 using System.Windows.Controls;
-using System.Collections.Generic;
-using DevExpress.Xpf.Grid;
-using BluePrints.ViewModels;
 
 namespace BluePrints.Views
 {

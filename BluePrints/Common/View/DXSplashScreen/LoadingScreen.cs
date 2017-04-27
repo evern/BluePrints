@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BluePrints.View;
 using DevExpress.Xpf.Core;
-using BluePrints.View;
 
 namespace BluePrints.Common
 {

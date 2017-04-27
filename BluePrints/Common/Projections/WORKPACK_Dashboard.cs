@@ -1,13 +1,9 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
-using BluePrints.Common.ViewModel;
+﻿using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
-using BluePrints.P6EntitiesDataModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {

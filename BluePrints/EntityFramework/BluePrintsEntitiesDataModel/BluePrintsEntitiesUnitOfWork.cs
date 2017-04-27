@@ -1,13 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Data;
-using System.Linq.Expressions;
-using System.Collections.Generic;
-using BluePrints.Common.Utils;
-using BluePrints.Common.DataModel;
-using BluePrints.Common.DataModel.DesignTime;
+﻿using BluePrints.Common.DataModel;
 using BluePrints.Common.DataModel.EntityFramework;
 using BluePrints.Data;
+using System;
 
 namespace BluePrints.BluePrintsEntitiesDataModel
 {
