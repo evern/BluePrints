@@ -1,4 +1,4 @@
-﻿using BluePrints.Common.DataModel;
+﻿using BaseModel.DataModel;
 using BluePrints.Data;
 using System;
 

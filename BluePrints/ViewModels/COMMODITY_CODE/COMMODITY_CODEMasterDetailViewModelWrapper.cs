@@ -1,10 +1,11 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
+using BaseModel.Misc;
+using BaseModel.ViewModel.Loader;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
-using BluePrints.Common.DataModel;
 using BluePrints.Common.Projections;
-using BluePrints.Common.ViewModel;
 using BluePrints.Data;
-using BluePrints.Data.Helpers;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
@@ -21,9 +22,7 @@ namespace BluePrints.ViewModels
     /// </summary>
     public partial class COMMODITY_CODEMasterDetailViewModelWrapper :
         CollectionViewModelsWrapper
-        <COMMODITY_CODE, COMMODITY_CODEMasterDetailProjection, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel
-            <COMMODITY_CODE, COMMODITY_CODEMasterDetailProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
+        <COMMODITY_CODE, COMMODITY_CODEMasterDetailProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of COMMODITY_CODESCollectionViewModel as a POCO view model.
@@ -176,21 +175,21 @@ namespace BluePrints.ViewModels
             RestoreExpandedGuids.Clear();
 
             foreach (var selectedEntity in DisplaySelectedEntities)
-                RestoreSelectedEntitiesGuids.Add(new Guid(selectedEntity.GUID.ToString()));
+                RestoreSelectedEntitiesGuids.Add(new Guid(selectedEntity.EntityKey.ToString()));
 
             foreach (var entity in DisplayEntities)
                 if (entity.ISEXPANDED)
-                    RestoreExpandedGuids.Add(entity.GUID);
+                    RestoreExpandedGuids.Add(entity.EntityKey);
 
             if (DisplaySelectedEntity != null)
-                RestoreSelectedEntityGuid = DisplaySelectedEntity.GUID;
+                RestoreSelectedEntityGuid = DisplaySelectedEntity.EntityKey;
         }
 
         protected override void restoreViewState()
         {
             var restoreSelectedEntities =
                 DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.DetailEntities))
-                    .Where(x => RestoreSelectedEntitiesGuids.Any(y => y == x.GUID));
+                    .Where(x => RestoreSelectedEntitiesGuids.Any(y => y == x.EntityKey));
             DisplaySelectedEntities.Clear();
             if (restoreSelectedEntities.Count() > 0)
                 foreach (var restoreSelectedEntity in restoreSelectedEntities)
@@ -199,7 +198,7 @@ namespace BluePrints.ViewModels
             foreach (var expandedGuid in RestoreExpandedGuids)
             {
                 var restoreExpandedEntity =
-                    DisplayEntities.FirstOrDefault(x => x.GUID == expandedGuid);
+                    DisplayEntities.FirstOrDefault(x => x.EntityKey == expandedGuid);
                 if (restoreExpandedEntity != null)
                     ExpandDisplayRow(restoreExpandedEntity);
             }
@@ -208,7 +207,7 @@ namespace BluePrints.ViewModels
             {
                 var restoreSelectedEntity =
                     DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.DetailEntities))
-                        .FirstOrDefault(x => x.GUID == RestoreSelectedEntityGuid);
+                        .FirstOrDefault(x => x.EntityKey == RestoreSelectedEntityGuid);
                 if (restoreSelectedEntity != null)
                     DisplaySelectedEntity = restoreSelectedEntity;
             }
@@ -390,7 +389,7 @@ namespace BluePrints.ViewModels
                         var firstItemInGroup = group.First();
                         var parentProjectionPOCO =
                             ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
-                        parentProjectionPOCO.GUID = Guid.NewGuid();
+                        parentProjectionPOCO.EntityKey = Guid.NewGuid();
                         parentProjectionPOCO.Entity.GUID = Guid.Empty;
                             //this is used by COMMODITY_GROUP_CODE_SELECTION to determine whether selection is group or code
                         parentProjectionPOCO.Entity.GUID_PROJECT = firstItemInGroup.Entity.GUID_PROJECT;
@@ -406,7 +405,7 @@ namespace BluePrints.ViewModels
                             var projectionPOCO =
                                 ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
                             DataUtils.ShallowCopy(projectionPOCO.Entity, item.Entity);
-                            projectionPOCO.GUID = item.Entity.GUID;
+                            projectionPOCO.EntityKey = item.Entity.GUID;
                             projectionPOCO.IsEditable = true;
                             projectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.ProjectSpecificGrouped;
                             parentProjectionPOCO.DetailEntities.Add(projectionPOCO);
@@ -437,7 +436,7 @@ namespace BluePrints.ViewModels
                         var projectionPOCO =
                             ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
                         DataUtils.ShallowCopy(projectionPOCO.Entity, COMMODITY_CODEProjection.Entity);
-                        projectionPOCO.GUID = COMMODITY_CODEProjection.GUID;
+                        projectionPOCO.EntityKey = COMMODITY_CODEProjection.EntityKey;
 
                         projectionPOCO.IsEditable = true;
                         projectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.ProjectSpecificNotGrouped;
@@ -450,11 +449,11 @@ namespace BluePrints.ViewModels
                     {
                         var parentProjectionPOCO =
                             ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
-                        parentProjectionPOCO.GUID = Guid.NewGuid();
+                        parentProjectionPOCO.EntityKey = Guid.NewGuid();
                         parentProjectionPOCO.Entity.GUID = Guid.Empty;
                             //this is used by COMMODITY_GROUP_CODE_SELECTION to determine whether selection is group or code
                         parentProjectionPOCO.Entity.FULLCODE = COMMODITY_GROUPEntity.Entity.DESCRIPTION;
-                        parentProjectionPOCO.Entity.GUID_COMMODITY_GROUP_DIRECT = COMMODITY_GROUPEntity.GUID;
+                        parentProjectionPOCO.Entity.GUID_COMMODITY_GROUP_DIRECT = COMMODITY_GROUPEntity.EntityKey;
 
                         foreach (
                             var childCOMMODITY_GROUPEntity in
@@ -471,9 +470,9 @@ namespace BluePrints.ViewModels
                             {
                                 DataUtils.ShallowCopy(childProjectionPOCO.Entity,
                                     findCOMMODITY_CODE.Entity);
-                                childProjectionPOCO.GUID = findCOMMODITY_CODE.Entity.GUID;
+                                childProjectionPOCO.EntityKey = findCOMMODITY_CODE.Entity.GUID;
                                 childProjectionPOCO.Entity.GUID_COMMODITY_GROUP_DIRECT =
-                                    COMMODITY_GROUPEntity.GUID;
+                                    COMMODITY_GROUPEntity.EntityKey;
 
                                 childProjectionPOCO.IsEditable = true;
                                 childProjectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.GeneralGrouped;
@@ -506,7 +505,7 @@ namespace BluePrints.ViewModels
                         var projectionPOCO =
                             ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
                         DataUtils.ShallowCopy(projectionPOCO.Entity, COMMODITY_CODEProjection.Entity);
-                        projectionPOCO.GUID = COMMODITY_CODEProjection.Entity.GUID;
+                        projectionPOCO.EntityKey = COMMODITY_CODEProjection.Entity.GUID;
 
                         projectionPOCO.IsEditable = true;
                         projectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.GeneralNotGrouped;

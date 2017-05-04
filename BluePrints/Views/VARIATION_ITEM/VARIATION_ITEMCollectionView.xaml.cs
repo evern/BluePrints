@@ -1,4 +1,5 @@
-﻿using BluePrints.ViewModels;
+﻿using BaseModel.Misc;
+using BluePrints.ViewModels;
 
 namespace BluePrints.Views
 {

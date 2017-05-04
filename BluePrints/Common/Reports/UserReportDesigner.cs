@@ -1,5 +1,5 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
-using BluePrints.Common.ViewModel;
+﻿using BaseModel.ViewModel.Base;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Data;
 using BluePrints.Reports;
 using DevExpress.XtraReports.UI;

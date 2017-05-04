@@ -7,13 +7,13 @@
     xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
     xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
-    xmlns:common="clr-namespace:BluePrints.Common"
+    xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
     Height="290" Width="300">
     <dxlc:LayoutControl Orientation="Vertical">
         <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
             <dxlc:LayoutGroup Height="230" Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
                 <dxlc:LayoutItem Height="230" >
-                    <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlExoAffinity" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
+                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlExoAffinity" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="INTERNAL NUM" MinWidth="230" IsSmart="True" ReadOnly="True" FieldName="INTERNAL_NAME1" />
                         </dxg:GridControl.Columns>
@@ -21,9 +21,9 @@
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
-                            <common:TableViewEx x:Name="tableView" ShowGroupedColumns="False" ShowGroupPanel="False"/>
+                            <custom:TableViewEx x:Name="tableView" ShowGroupedColumns="False" ShowGroupPanel="False"/>
                         </dxg:GridControl.View>
-                    </common:GridControlEx>
+                    </custom:GridControlEx>
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Height="25" HorizontalAlignment="Right" Name="LayoutGroupButtons" View="Group"

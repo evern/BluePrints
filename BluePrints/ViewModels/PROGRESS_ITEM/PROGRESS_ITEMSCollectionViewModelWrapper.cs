@@ -1,13 +1,14 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.DataModel;
+using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Loader;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
-using BluePrints.Common.DataModel;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
-using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
-using BluePrints.Data.Helpers;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
 using BluePrints.Reports;
@@ -32,8 +33,7 @@ namespace BluePrints.ViewModels
     /// </summary>
     public partial class PROGRESS_ITEMSCollectionViewModelWrapper :
         CollectionViewModelsWrapper
-        <BASELINE_ITEM, PROGRESS_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<BASELINE_ITEM, PROGRESS_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
+        <BASELINE_ITEM, PROGRESS_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         //ensure mainviewmodel is loaded before calling background worker
         private DispatcherTimer onMainViewModelFirstLoadedTimer;
@@ -268,7 +268,7 @@ namespace BluePrints.ViewModels
                 if (mainEntity != null)
                 {
                     //got to make sure sender is not MainViewModel or else it'll not be refreshed
-                    mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(mainEntity.GUID, EntityMessageType.Changed, this))));
+                    mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(mainEntity.EntityKey, EntityMessageType.Changed, this))));
                     return true;
                 }
             }
@@ -786,9 +786,9 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.CloseLoadingScreen();
 
             if (!isError)
-                MessageBoxService.ShowMessage(CommonResources.WORKPACK_ASSIGNMENT_P6ProgressWriteSuccess);
+                MessageBoxService.ShowMessage(BluePrintsResources.WORKPACK_ASSIGNMENT_P6ProgressWriteSuccess);
             else
-                MessageBoxService.ShowMessage(CommonResources.WORKPACK_ASSIGNMENT_P6ProgressWriteFailed);
+                MessageBoxService.ShowMessage(BluePrintsResources.WORKPACK_ASSIGNMENT_P6ProgressWriteFailed);
 
             isPushingToP6 = false;
         }

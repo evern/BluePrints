@@ -1,6 +1,6 @@
-﻿using BluePrints.Common.DataModel;
-using BluePrints.Common.DataModel.DesignTime;
-using BluePrints.Common.DataModel.EntityFramework;
+﻿using BaseModel.DataModel;
+using BaseModel.DataModel.DesignTime;
+using BaseModel.DataModel.EntityFramework;
 using BluePrints.P6Data;
 using DevExpress.Mvvm;
 

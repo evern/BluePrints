@@ -1,5 +1,6 @@
-﻿using BluePrints.Data;
-using BluePrints.Data.Attributes;
+﻿using BaseModel.Attributes;
+using BluePrints.Common.Base;
+using BluePrints.Data;
 using System;
 using System.Linq;
 
@@ -7,7 +8,7 @@ namespace BluePrints.Common.Projections
 {
     [ConstraintAttributes("Entity.GUID_PARENT, Entity.GUID_COMMODITYCODE")]
     [RequiredAttributes("Entity.DESCRIPTION")]
-    public class COMMODITY_GROUP_DIRECTProjection : ProjectionMasterDetailBase<COMMODITY_GROUP_DIRECT, COMMODITY_GROUP_DIRECTProjection>
+    public class COMMODITY_GROUP_DIRECTProjection : BluePrintsProjectionMasterDetailBase<COMMODITY_GROUP_DIRECT, COMMODITY_GROUP_DIRECTProjection>
     {
         public Guid? GUID_PROJECT { get; set; }
 
@@ -28,7 +29,7 @@ namespace BluePrints.Common.Projections
                 COMMODITY_GROUP_DIRECTS.OrderBy(x => x.DESCRIPTION);
             return
                 allCOMMODITY_GROUP_DIRECTS.Select(
-                    x => new COMMODITY_GROUP_DIRECTProjection() {GUID = x.GUID, Entity = x});
+                    x => new COMMODITY_GROUP_DIRECTProjection() {EntityKey = x.GUID, Entity = x});
         }
     }
 }

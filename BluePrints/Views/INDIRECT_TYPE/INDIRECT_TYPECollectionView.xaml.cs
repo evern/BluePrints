@@ -1,4 +1,6 @@
-﻿namespace BluePrints.Views
+﻿using BaseModel.Misc;
+
+namespace BluePrints.Views
 {
     public partial class INDIRECT_TYPECollectionView : ViewStateRestoreUserControl
     {

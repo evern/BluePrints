@@ -12,6 +12,7 @@
              xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
+             xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
              xmlns:common="clr-namespace:BluePrints.Common"
              xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
              mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
@@ -19,28 +20,11 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <dxmvvm:Interaction.Behaviors>
-        <dx:DXMessageBoxService />
-        <dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />
-        <dx:WindowedDocumentUIService YieldToParent="True" />
-        <dx:DialogService x:Name="BulkColumnEditService">
-            <dx:DialogService.DialogStyle>
-                <Style TargetType="dx:DXDialogWindow">
-                    <Setter Property="SizeToContent" Value="WidthAndHeight" />
-                    <Setter Property="MinWidth" Value="500" />
-                    <Setter Property="MinHeight" Value="370" />
-                </Style>
-            </dx:DialogService.DialogStyle>
-        </dx:DialogService>
-    </dxmvvm:Interaction.Behaviors>
-    <Grid dx:DXSerializer.StoreLayoutMode="UI">
-        <dxmvvm:Interaction.Behaviors>
-            <dxmvvm:LayoutSerializationService />
-        </dxmvvm:Interaction.Behaviors>
+    <Grid Style="{StaticResource CollectionView.RootContainer}">
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False"
@@ -81,7 +65,7 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <common:GridControlEx x:Name="GridControl"
+                    <custom:GridControlEx x:Name="GridControl"
                                      dx:DXSerializer.SerializationID="GridControlMasterCOMMODITY_CODE"
                                      ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}"
                                      CurrentItem="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}"
@@ -190,7 +174,7 @@
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.DetailDescriptor>
                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding CHILD_COMMODITY_CODES}">
-                                <common:GridControlEx x:Name="gridControlChild"
+                                <custom:GridControlEx x:Name="gridControlChild"
                                                  dx:DXSerializer.SerializationID="GridControlChildCOMMODITY_CODE"
                                                  CurrentItem="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}"
                                                  SelectedItems="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}">
@@ -283,15 +267,15 @@
                                         </dxg:GridColumn>
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.View>
-                                        <common:TableViewEx x:Name="tableView1"
+                                        <custom:TableViewEx x:Name="tableView1"
                                                        Style="{StaticResource DefaultDetailTableViewTemplate}"
                                                        NewItemRowPosition="None" />
                                     </dxg:GridControl.View>
-                                </common:GridControlEx>
+                                </custom:GridControlEx>
                             </dxg:DataControlDetailDescriptor>
                         </dxg:GridControl.DetailDescriptor>
                         <dxg:GridControl.View>
-                            <common:TableViewEx x:Name="tableView" IsDetailButtonVisibleBinding="{Binding Row.HAS_CHILDREN}"
+                            <custom:TableViewEx x:Name="tableView" IsDetailButtonVisibleBinding="{Binding Row.HAS_CHILDREN}"
                                            Style="{StaticResource DefaultTableViewTemplate}" ShowTotalSummary="True"
                                            ShowFixedTotalSummary="True" GroupSummaryDisplayMode="AlignByColumns"
                                            NewItemRowPosition="None">
@@ -300,7 +284,7 @@
                                         Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}"
                                         PassEventArgsToCommand="True" EventName="CellValueChanging" />
                                 </dxmvvm:Interaction.Behaviors>
-                                <common:TableViewEx.RowCellMenuCustomizations>
+                                <custom:TableViewEx.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Delete"
                                                        Command="{Binding DataContext.BulkDeleteCommand, ElementName=userControl}"
                                                        CommandParameter="{Binding View.DataContext.SelectedEntities}"
@@ -309,10 +293,10 @@
                                     <dxb:BarButtonItem Content="Refresh"
                                                        Command="{Binding View.DataContext.RefreshCommand}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                </common:TableViewEx.RowCellMenuCustomizations>
-                            </common:TableViewEx>
+                                </custom:TableViewEx.RowCellMenuCustomizations>
+                            </custom:TableViewEx>
                         </dxg:GridControl.View>
-                    </common:GridControlEx>
+                    </custom:GridControlEx>
                 </Grid>
             </DockPanel>
         </Grid>

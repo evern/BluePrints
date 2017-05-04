@@ -10,13 +10,13 @@
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
-             xmlns:common="clr-namespace:BluePrints.Common"
+             xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -27,7 +27,7 @@
         </dxmvvm:Interaction.Behaviors>
         <dxlc:LayoutControl Name="LayoutControlRoot" Orientation="Vertical">
             <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group">
-                <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSelectionUSER" Style="{StaticResource BasicGridControlTemplate}">
+                <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSelectionUSER" Style="{StaticResource BasicGridControlTemplate}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn FieldName="NAME" />
                         <dxg:GridColumn FieldName="DEPARTMENT" />
@@ -42,10 +42,10 @@
                         </dxg:GridColumn>
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.View>
-                        <common:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
+                        <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
                                        AllowEditing="False" NewItemRowPosition="None" />
                     </dxg:GridControl.View>
-                </common:GridControlEx>
+                </custom:GridControlEx>
             </dxlc:LayoutGroup>
         </dxlc:LayoutControl>
     </Grid>

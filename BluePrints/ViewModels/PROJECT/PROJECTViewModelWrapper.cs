@@ -1,10 +1,13 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.DataModel;
+using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Document;
+using BaseModel.ViewModel.Loader;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
-using BluePrints.Common.DataModel;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel;
 using BluePrints.Data;
-using BluePrints.Data.Helpers;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using System;
@@ -343,12 +346,12 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            CustomDocumentInfo customDocumentInfo = new CustomDocumentInfo(
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
                 DisplaySelectedEntity,
                 "WORKPACKDashboardView",
                 "[" + DisplaySelectedEntity.Entity.NUMBER + "] WORKPACKS");
 
-            DocumentManagerService.ShowExistingEntityDocument(customDocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }
 
 

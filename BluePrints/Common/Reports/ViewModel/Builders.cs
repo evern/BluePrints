@@ -1,7 +1,7 @@
-﻿using BluePrints.Common.Projections;
+﻿using BaseModel.Data.Helpers;
+using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Data;
-using BluePrints.Data.Helpers;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
@@ -134,7 +134,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             this.ReportingInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(LivePROGRESS);
             this.FirstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(LivePROGRESS);
-            this.alignedWeekEndingDates = ChronologicalHelpers.GenerateAlignedDatesCollection(this.FirstAlignedDataDate, this.FirstAlignedDataDate.AddYears(Int16.Parse(CommonResources.DataPointsBuilder_MaxProjectDuration)), this.ReportingInterval);
+            this.alignedWeekEndingDates = ChronologicalHelpers.GenerateAlignedDatesCollection(this.FirstAlignedDataDate, this.FirstAlignedDataDate.AddYears(Int16.Parse(BluePrintsResources.DataPointsBuilder_MaxProjectDuration)), this.ReportingInterval);
 
 
             this.p6BaselineName = LiveBASELINE.P6BASELINE_NAME;
@@ -156,7 +156,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 (decimal)progressItemStats.Entity.RATE.RATE1;
             Guid workpackKey = progressItemStats.Entity.Entity.GUID_WORKPACK == null ? Guid.Empty : (Guid)progressItemStats.Entity.Entity.GUID_WORKPACK;
 
-            ObjectResult<StoredProcedure_PlannedDataPoint> deliverablesDataPoints = bluePrintDataContext.GetDeliverablePlannedDataPoints(this.p6BaselineName, this.dataDate, progressItemStats.Entity.GUID, progressItemStats.Entity.Entity.GUID_ORIGINAL, workpackKey, totalUnits, rate);
+            ObjectResult<StoredProcedure_PlannedDataPoint> deliverablesDataPoints = bluePrintDataContext.GetDeliverablePlannedDataPoints(this.p6BaselineName, this.dataDate, progressItemStats.Entity.EntityKey, progressItemStats.Entity.Entity.GUID_ORIGINAL, workpackKey, totalUnits, rate);
 
             
             List<StoredProcedure_PlannedDataPoint> plannedDataPoints = new List<StoredProcedure_PlannedDataPoint>();
@@ -187,7 +187,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             if(progressItemStats.Stats.Earned.DataPoints != null && progressItemStats.Stats.Earned.DataPoints.Count > 0)
                 totalEarnedUnits = progressItemStats.Stats.Earned.DataPoints.Sum(x => x.Units);
 
-            ObjectResult<StoredProcedure_RemainingDataPoint> deliverablesDataPoints = bluePrintDataContext.GetDeliverableRemainingDataPoints(this.p6ProgressProjectName, this.dataDate, progressItemStats.Entity.GUID, progressItemStats.Entity.Entity.GUID_ORIGINAL, workpackKey, totalUnits, totalEarnedUnits, rate);
+            ObjectResult<StoredProcedure_RemainingDataPoint> deliverablesDataPoints = bluePrintDataContext.GetDeliverableRemainingDataPoints(this.p6ProgressProjectName, this.dataDate, progressItemStats.Entity.EntityKey, progressItemStats.Entity.Entity.GUID_ORIGINAL, workpackKey, totalUnits, totalEarnedUnits, rate);
 
             List<StoredProcedure_RemainingDataPoint> RemainingDataPoints = new List<StoredProcedure_RemainingDataPoint>();
             //circumvent EF issue when ObjectResult is null

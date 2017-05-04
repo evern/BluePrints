@@ -1,12 +1,14 @@
 namespace BluePrints.Data
 {
-    using Attributes;
+    using BaseModel.Attributes;
+    using BaseModel.Misc;
     using Common;
-    using Common.ViewModel;
+    using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     [ConstraintAttributes("NUMBER")]
-    public partial class PROJECT : IHaveGUID
+    public partial class PROJECT : IGuidEntityKey
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PROJECT()
@@ -32,6 +34,20 @@ namespace BluePrints.Data
             CURRENCYCONVERSION = 1;
             REVIEWPERCENTAGE = 0.7M;
             REVIEWPERIOD = 5;
+        }
+
+        [NotMapped]
+        public Guid EntityKey
+        {
+            get
+            {
+                return GUID;
+            }
+
+            set
+            {
+                GUID = value;
+            }
         }
     }
 }

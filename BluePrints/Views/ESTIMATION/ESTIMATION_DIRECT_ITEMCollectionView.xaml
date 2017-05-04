@@ -12,35 +12,18 @@
              xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
-             xmlns:common="clr-namespace:BluePrints.Common"
+             xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
              xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
              mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
              DataContext="{dxmvvm:ViewModelSource viewmodel:ESTIMATION_DIRECT_ITEMSViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <dxmvvm:Interaction.Behaviors>
-        <dx:DXMessageBoxService />
-        <dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />
-        <dx:WindowedDocumentUIService YieldToParent="True" />
-        <dx:DialogService x:Name="BulkColumnEditService">
-            <dx:DialogService.DialogStyle>
-                <Style TargetType="dx:DXDialogWindow">
-                    <Setter Property="SizeToContent" Value="WidthAndHeight" />
-                    <Setter Property="MinWidth" Value="500" />
-                    <Setter Property="MinHeight" Value="370" />
-                </Style>
-            </dx:DialogService.DialogStyle>
-        </dx:DialogService>
-    </dxmvvm:Interaction.Behaviors>
-    <Grid dx:DXSerializer.StoreLayoutMode="UI">
-        <dxmvvm:Interaction.Behaviors>
-            <dxmvvm:LayoutSerializationService />
-        </dxmvvm:Interaction.Behaviors>
+    <Grid Style="{StaticResource CollectionView.RootContainer}">
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False"
@@ -89,7 +72,7 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <common:GridControlEx x:Name="GridControl"
+                    <custom:GridControlEx x:Name="GridControl"
                                      dx:DXSerializer.SerializationID="GridControlESTIMATION_DIRECT_ITEM"
                                      ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}"
                                      CurrentItem="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}"
@@ -141,7 +124,7 @@
                                             ItemsSource="{Binding DataContext.COMMODITY_GROUP_MasterDetailDisplayCollection, ElementName=userControl}">
                                             <dxg:LookUpEditSettings.PopupContentTemplate>
                                                 <ControlTemplate TargetType="ContentControl">
-                                                    <common:GridControlEx x:Name="PART_GridControl" ShowBorder="False" dx:DXSerializer.SerializationID="GridControlPopUpMasterCOMMODITY_GROUP" 
+                                                    <custom:GridControlEx x:Name="PART_GridControl" ShowBorder="False" dx:DXSerializer.SerializationID="GridControlPopUpMasterCOMMODITY_GROUP" 
                                                                      SelectionMode="Row">
                                                         <dxg:GridControl.Columns>
                                                             <dxg:GridColumn FieldName="COMMODITY_CODE.GUID_PROJECT"
@@ -233,7 +216,7 @@
                                                                               KeyFieldName="GUID"
                                                                               ParentFieldName="GUID_PARENT" />
                                                         </dxg:GridControl.View>
-                                                    </common:GridControlEx>
+                                                    </custom:GridControlEx>
                                                 </ControlTemplate>
                                             </dxg:LookUpEditSettings.PopupContentTemplate>
                                         </dxg:LookUpEditSettings>
@@ -356,7 +339,7 @@
                         <dxg:GridControl.DetailDescriptor>
                             <dxg:DataControlDetailDescriptor
                                 ItemsSourceBinding="{Binding CHILD_ESTIMATION_DIRECT_ITEM}">
-                                <common:GridControlEx x:Name="gridControlChild"
+                                <custom:GridControlEx x:Name="gridControlChild"
                                                  dx:DXSerializer.SerializationID="GridControlChildESTIMATION_DIRECT_ITEM" 
                                                  CurrentItem="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}"
                                                  SelectedItems="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}">
@@ -404,7 +387,7 @@
                                                         ItemsSource="{Binding DataContext.COMMODITY_GROUP_MasterDetailFlatProjectSpecificDisplayCollection, ElementName=userControl}">
                                                         <dxg:LookUpEditSettings.PopupContentTemplate>
                                                             <ControlTemplate TargetType="ContentControl">
-                                                                <common:GridControlEx x:Name="GridControlPopUpESTIMATION_DIRECT" dx:DXSerializer.SerializationID="EstimationDirectDetailPartGridControl" 
+                                                                <custom:GridControlEx x:Name="GridControlPopUpESTIMATION_DIRECT" dx:DXSerializer.SerializationID="EstimationDirectDetailPartGridControl" 
                                                                                  ShowBorder="False" SelectionMode="Row">
                                                                     <dxg:GridControl.Columns>
                                                                         <dxg:GridColumn
@@ -510,7 +493,7 @@
                                                                                           KeyFieldName="GUID"
                                                                                           ParentFieldName="GUID_PARENT" />
                                                                     </dxg:GridControl.View>
-                                                                </common:GridControlEx>
+                                                                </custom:GridControlEx>
                                                             </ControlTemplate>
                                                         </dxg:LookUpEditSettings.PopupContentTemplate>
                                                     </dxg:LookUpEditSettings>
@@ -647,10 +630,10 @@
                                         </dxg:GridControlBand>
                                     </dxg:GridControl.Bands>
                                     <dxg:GridControl.View>
-                                        <common:TableViewEx x:Name="tableView1"
+                                        <custom:TableViewEx x:Name="tableView1"
                                                        Style="{StaticResource DefaultDetailTableViewTemplate}" />
                                     </dxg:GridControl.View>
-                                </common:GridControlEx>
+                                </custom:GridControlEx>
                             </dxg:DataControlDetailDescriptor>
                         </dxg:GridControl.DetailDescriptor>
                         <dxg:GridControl.GroupSummary>
@@ -682,7 +665,7 @@
                                                  ShowInColumn="INSTALL_COSTS" DisplayFormat="Total: {0:c2}" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
-                            <common:TableViewEx x:Name="tableView" IsDetailButtonVisibleBinding="{Binding Row.HAS_CHILDREN}"
+                            <custom:TableViewEx x:Name="tableView" IsDetailButtonVisibleBinding="{Binding Row.HAS_CHILDREN}"
                                            Style="{StaticResource DefaultTableViewTemplate}" ShowTotalSummary="True"
                                            ShowFixedTotalSummary="True" GroupSummaryDisplayMode="AlignByColumns">
                                 <dxmvvm:Interaction.Behaviors>
@@ -690,7 +673,7 @@
                                         Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}"
                                         PassEventArgsToCommand="True" EventName="CellValueChanging" />
                                 </dxmvvm:Interaction.Behaviors>
-                                <common:TableViewEx.RowCellMenuCustomizations>
+                                <custom:TableViewEx.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Bulk Edit"
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
@@ -741,10 +724,10 @@
                                     <dxb:BarButtonItem Content="Refresh"
                                                        Command="{Binding View.DataContext.RefreshCommand}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                </common:TableViewEx.RowCellMenuCustomizations>
-                            </common:TableViewEx>
+                                </custom:TableViewEx.RowCellMenuCustomizations>
+                            </custom:TableViewEx>
                         </dxg:GridControl.View>
-                    </common:GridControlEx>
+                    </custom:GridControlEx>
                 </Grid>
             </DockPanel>
         </Grid>

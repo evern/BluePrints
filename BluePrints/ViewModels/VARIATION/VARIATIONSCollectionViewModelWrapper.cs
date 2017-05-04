@@ -1,10 +1,13 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
+using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Document;
+using BaseModel.ViewModel.Loader;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
-using BluePrints.Common.DataModel;
 using BluePrints.Common.Projections;
-using BluePrints.Common.ViewModel;
 using BluePrints.Data;
-using BluePrints.Data.Helpers;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using System;
@@ -17,8 +20,7 @@ namespace BluePrints.ViewModels
 {
     public class VARIATIONSCollectionViewModelWrapper :
         CollectionViewModelsWrapper
-        <VARIATION, VARIATIONProjection, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<VARIATION, VARIATIONProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
+        <VARIATION, VARIATIONProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of VARIATION_ITEMSViewModelWrapper as a POCO view model.
@@ -130,7 +132,7 @@ namespace BluePrints.ViewModels
 
             foreach (var entity in entities)
             {
-                VARIATION_ITEMSCollectionViewModelWrapper variationitemsCollectionViewModelWrapper = CreateVARIATION_ITEMSViewModelWrapper(entity.Entity, entity.GUID, OnVARIATION_ITEMSLoadedAssign);
+                VARIATION_ITEMSCollectionViewModelWrapper variationitemsCollectionViewModelWrapper = CreateVARIATION_ITEMSViewModelWrapper(entity.Entity, entity.EntityKey, OnVARIATION_ITEMSLoadedAssign);
             }
         }
 
@@ -146,7 +148,7 @@ namespace BluePrints.ViewModels
             if (MainViewModel == null)
                 return;
 
-            VARIATIONProjection projection = MainViewModel.Entities.First(x => x.GUID == variationProjectionGuid);
+            VARIATIONProjection projection = MainViewModel.Entities.First(x => x.EntityKey == variationProjectionGuid);
             projection.DetailEntities = new ObservableCollection<VARIATION_ITEMProjection>(projections);
             RefreshView(true);
         }
@@ -168,7 +170,7 @@ namespace BluePrints.ViewModels
             {
                 projectionEntity.Entity.CREATED = DateTime.Now;
                 //Although EF convention will generate this but we require it immediately in the view
-                projectionEntity.Entity.CREATEDBY = LoginCredentials.CurrentUserGuid();
+                projectionEntity.Entity.CREATEDBY = LoginCredentials.CurrentUserGuid;
             }
 
             entity.CREATED = projectionEntity.Entity.CREATED;
@@ -342,12 +344,12 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            CustomDocumentInfo customDocumentInfo = new CustomDocumentInfo(
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
                 new OptionalEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, DisplaySelectedEntity.Entity),
                 "VARIATION_ITEMCollectionView",
                 "[" + loadPROJECT.NUMBER + "] VARIATION");
 
-            DocumentManagerService.ShowExistingEntityDocument(customDocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }
 
         /// <summary>
@@ -383,7 +385,7 @@ namespace BluePrints.ViewModels
         public void Submit()
         {
             DisplaySelectedEntity.Entity.SUBMITTED = DateTime.Now;
-            DisplaySelectedEntity.Entity.SUBMITTEDBY = LoginCredentials.CurrentUserGuid();
+            DisplaySelectedEntity.Entity.SUBMITTEDBY = LoginCredentials.CurrentUserGuid;
             MainViewModel.Save(DisplaySelectedEntity);
 
             //Full refresh is required to pick up summary
@@ -506,7 +508,7 @@ namespace BluePrints.ViewModels
                 {
                     newBASELINE_ITEM.GUID = Guid.Empty;
                     newBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
-                    //newBASELINE_ITEM.INTERNAL_NUM = BluePrintDataUtils.BASELINEITEM_Generate_InternalNumber(
+                    //newBASELINE_ITEM.INTERNAL_NUM = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(
                     //    loadPROJECT, baseline_itemForInternalNumberGeneration, newBASELINE_ITEM.AREA, newBASELINE_ITEM.DISCIPLINE,
                     //    newBASELINE_ITEM.DOCTYPE);
 
@@ -515,12 +517,12 @@ namespace BluePrints.ViewModels
                     else
                         newBASELINE_ITEM.DC_HOURS += currentVARIATION_ITEM.VARIATION_ITEM.VARIATION_UNITS;
 
-                    newBASELINE_ITEM.GUID_VARIATION = DisplaySelectedEntity.GUID;
+                    newBASELINE_ITEM.GUID_VARIATION = DisplaySelectedEntity.EntityKey;
                     baseline_itemForInternalNumberGeneration.Add(newBASELINE_ITEM);
                 }
 
                 if (currentVARIATION_ITEM.VARIATION_ITEM.ACTION != VariationAction.NoAction)
-                    newBASELINE_ITEM.GUID_VARIATION = DisplaySelectedEntity.GUID;
+                    newBASELINE_ITEM.GUID_VARIATION = DisplaySelectedEntity.EntityKey;
 
                 newBASELINE_ITEM.GUID = Guid.Empty;
                 newBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;

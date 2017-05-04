@@ -1,9 +1,8 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
-using BluePrints.Common.DataModel;
-using BluePrints.Common.Projections;
-using BluePrints.Common.ViewModel;
+﻿using BaseModel.DataModel;
+using BaseModel.Misc;
+using BaseModel.ViewModel.Loader;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Data;
-using BluePrints.Data.Helpers;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
@@ -13,8 +12,7 @@ namespace BluePrints.ViewModels
 {
     public class PHASECollectionViewModelWrapper :
         CollectionViewModelsWrapper
-        <PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork>>
+        <PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PHASECollectionViewModelWrapper as a POCO view model.

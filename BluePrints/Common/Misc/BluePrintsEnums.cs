@@ -112,15 +112,6 @@ namespace BluePrints.Common
         TK_Complete = 2
     }
 
-    public enum Arithmetic
-    {
-        None,
-        Add,
-        Subtract,
-        Multiply,
-        Divide
-    }
-
     public enum DateNavigationType
     {
         Forward,
@@ -156,12 +147,6 @@ namespace BluePrints.Common
         Offsite = 0,
         [Display(Name = "Site")]
         Site = 1,
-    }
-
-    public enum PasteStatus
-    {
-        Start,
-        Stop
     }
 
     public enum COMMODITY_CODEProjectionType
@@ -209,4 +194,10 @@ namespace BluePrints.Common
         }
     }
 
+    public class MissingP6Activities
+    {
+        public string INTERNAL_NUM { get; set; }
+        public string P6_ACTIVITY { get; set; }
+        public decimal UNITS { get; set; }
+    }
 }

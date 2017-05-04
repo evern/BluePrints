@@ -1,9 +1,8 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
-using BluePrints.Common.DataModel;
-using BluePrints.Common.Projections;
-using BluePrints.Common.ViewModel;
+﻿using BaseModel.DataModel;
+using BaseModel.Misc;
+using BaseModel.ViewModel.Loader;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Data;
-using BluePrints.Data.Helpers;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
@@ -13,8 +12,7 @@ namespace BluePrints.ViewModels
 {
     public class AREACollectionViewModelWrapper :
         CollectionViewModelsWrapper
-        <AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>>
+        <AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of AREACollectionViewModelWrapper as a POCO view model.

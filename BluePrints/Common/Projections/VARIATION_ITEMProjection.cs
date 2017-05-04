@@ -198,7 +198,7 @@ namespace BluePrints.Common.Projections
                 BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS.ToArray()
                     .Select(x => new VARIATION_ITEMProjection(reportingDate)
                     {
-                        GUID = x.GUID,
+                        EntityKey = x.EntityKey,
                         VARIATION_ITEM =
                             LoadVARIATION_ITEMS.Where(
                                     y => y.GUID_ORIBASEITEM == x.Entity.Entity.GUID_ORIGINAL)

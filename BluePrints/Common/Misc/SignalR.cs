@@ -1,4 +1,4 @@
-﻿using BluePrints.Common.ViewModel;
+﻿using BaseModel.Misc;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using Microsoft.AspNet.SignalR.Client;
@@ -30,7 +30,7 @@ namespace BluePrints.Common
             }
             catch (HttpRequestException)
             {
-                //MessageBox.Show(CommonResources.SignalR_UnableToConnect);
+                //MessageBox.Show(BluePrintsResources.SignalR_UnableToConnect);
                 //System.Environment.Exit(1);
             }
         }

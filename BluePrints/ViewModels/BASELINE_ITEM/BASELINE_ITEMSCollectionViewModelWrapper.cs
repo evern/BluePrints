@@ -1,12 +1,14 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
+using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Loader;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
-using BluePrints.Common.DataModel;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Reports;
-using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
-using BluePrints.Data.Helpers;
 using BluePrints.Reports;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
@@ -26,8 +28,7 @@ namespace BluePrints.ViewModels
     /// </summary>
     public partial class BASELINE_ITEMSCollectionViewModelWrapper :
         CollectionViewModelsWrapper
-        <BASELINE_ITEM, PROGRESS_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<BASELINE_ITEM, PROGRESS_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
+        <BASELINE_ITEM, PROGRESS_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         public Action ShowWORKPACKInternalName1;
         public Action ShowWORKPACKInternalName2;
@@ -274,7 +275,7 @@ namespace BluePrints.ViewModels
                         DISCIPLINECollection.FirstOrDefault(x => x.GUID == chosenWORKPACK.GUID_DDISCIPLINE);
 
                     activeBASELINE_ITEM.Entity.Entity.INTERNAL_NUM =
-                        BluePrintDataUtils.BASELINEITEM_Generate_InternalNumber(_loadProject, MainViewModel.Entities.Select(x => x.Entity),
+                        BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(_loadProject, MainViewModel.Entities.Select(x => x.Entity),
                             SelectedAREA, SelectedDISCIPLINE, SelectedDOCTYPE);
                     MainViewModel.UpdateSelectedEntity();
                 }
@@ -306,7 +307,7 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
-            #region View Commands
+        #region View Commands
         public bool IsBASELINELocked
         {
             get
@@ -366,7 +367,7 @@ namespace BluePrints.ViewModels
                 {
                     var newProjection = new PROGRESS_ITEMProjection();
                     DataUtils.ShallowCopy(newProjection.Entity.Entity, selectedEntity.Entity.Entity);
-                    newProjection.Entity.GUID = Guid.Empty;
+                    newProjection.Entity.EntityKey = Guid.Empty;
                     newProjection.Entity.Entity.GUID_ORIGINAL = Guid.Empty;
                     newProjection.Entity.Entity.ESTIMATED_HOURS = 0;
                     newProjection.Entity.Entity.DC_HOURS = 0;
@@ -377,7 +378,7 @@ namespace BluePrints.ViewModels
                         DOCTYPECollection.FirstOrDefault(x => x.GUID == newProjection.Entity.Entity.GUID_DOCTYPE);
 
                     newProjection.Entity.Entity.INTERNAL_NUM =
-                        BluePrintDataUtils.Duplicate_InternalNumber(MainViewModel.Entities.Select(x => x.Entity), unsavedEntities.Select(x => x.Entity), selectedEntity.Entity.Entity.INTERNAL_NUM);
+                        BluePrintsDataUtils.Duplicate_InternalNumber(MainViewModel.Entities.Select(x => x.Entity), unsavedEntities.Select(x => x.Entity), selectedEntity.Entity.Entity.INTERNAL_NUM);
 
                     //newProjection.Entity.Entity.INTERNAL_NUM = string.Empty;
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(newProjection, null, null, null, EntityMessageType.Added);
@@ -469,9 +470,9 @@ namespace BluePrints.ViewModels
                         DISCIPLINECollection.FirstOrDefault((x => x.GUID == entity.Entity.Entity.GUID_DISCIPLINE));
                     DOCTYPE currentItemDOCTYPE =
                         DOCTYPECollection.FirstOrDefault((x => x.GUID == entity.Entity.Entity.GUID_DOCTYPE));
-                    var internalNum = BluePrintDataUtils.BASELINEITEM_Generate_InternalNumber(_loadProject,
+                    var internalNum = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(_loadProject,
                         MainViewModel.Entities.Select(x => x.Entity), currentItemAREA, currentItemDISCIPLINE,
-                        currentItemDOCTYPE, entity.GUID);
+                        currentItemDOCTYPE, entity.EntityKey);
                     SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName, internalNum);
                     entitiesToSave.Add(entity);
                 }
@@ -522,9 +523,9 @@ namespace BluePrints.ViewModels
                         if (entity.Entity.Entity.GUID_DOCTYPE != null)
                             newWORKPACK.GUID_DDOCTYPE = (Guid) entity.Entity.Entity.GUID_DOCTYPE;
 
-                        newWORKPACK.INTERNAL_NAME1 = BluePrintDataUtils.WORKPACK_Generate_InternalNumber1(_loadProject,
+                        newWORKPACK.INTERNAL_NAME1 = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber1(_loadProject,
                             newWORKPACK, WORKPACKCollection, AREACollection, DISCIPLINECollection, DOCTYPECollection);
-                        newWORKPACK.INTERNAL_NAME2 = BluePrintDataUtils.WORKPACK_Generate_InternalNumber2(_loadProject,
+                        newWORKPACK.INTERNAL_NAME2 = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2(_loadProject,
                             newWORKPACK, WORKPACKCollection, AREACollection, DISCIPLINECollection, PHASECollection);
 
                         if (newWORKPACK.INTERNAL_NAME1 == string.Empty && newWORKPACK.INTERNAL_NAME2 == string.Empty)
@@ -532,10 +533,10 @@ namespace BluePrints.ViewModels
 
                         newWORKPACK.STARTDATE = DateTime.Now;
                         newWORKPACK.ENDDATE =
-                            BluePrintDataUtils.WORKPACK_Calculate_EndDate((DateTime) newWORKPACK.STARTDATE, _loadProject);
+                            BluePrintsDataUtils.WORKPACK_Calculate_EndDate((DateTime) newWORKPACK.STARTDATE, _loadProject);
                         var reviewStartDate = (DateTime) newWORKPACK.STARTDATE;
                         var reviewEndDate = (DateTime) newWORKPACK.ENDDATE;
-                        BluePrintDataUtils.WORKPACK_Calculate_ReviewPeriod(ref reviewStartDate, ref reviewEndDate,
+                        BluePrintsDataUtils.WORKPACK_Calculate_ReviewPeriod(ref reviewStartDate, ref reviewEndDate,
                             _loadProject, false);
                         newWORKPACK.REVIEWSTARTDATE = reviewStartDate;
                         newWORKPACK.REVIEWENDDATE = reviewEndDate;
@@ -567,7 +568,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return _LoadBaseline.BUDGETED_UNITS == null ? 1000000000 : (decimal)_LoadBaseline.BUDGETED_UNITS;
+                return (_LoadBaseline == null || _LoadBaseline.BUDGETED_UNITS == null) ? 1000000000 : (decimal)_LoadBaseline.BUDGETED_UNITS;
             }
         }
 

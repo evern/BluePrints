@@ -1,9 +1,9 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
-using BluePrints.Common.DataModel;
-using BluePrints.Common.Projections;
-using BluePrints.Common.ViewModel;
+﻿using BaseModel.DataModel;
+using BaseModel.Misc;
+using BaseModel.ViewModel.Document;
+using BaseModel.ViewModel.Loader;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Data;
-using BluePrints.Data.Helpers;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
 using DevExpress.Mvvm;
@@ -17,8 +17,7 @@ namespace BluePrints.ViewModels
 {
     public class PROGRESSCollectionViewModelWrapper :
         CollectionViewModelsWrapper
-        <PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>>
+        <PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROGRESSCollectionViewModelWrapper as a POCO view model.
@@ -153,9 +152,9 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            CustomDocumentInfo customDocumentInfo = new CustomDocumentInfo(new OptionalEntitiesParameter<PROJECT, PROGRESS>(null, DisplaySelectedEntity), "PROGRESS_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] PROGRESS");
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new OptionalEntitiesParameter<PROJECT, PROGRESS>(null, DisplaySelectedEntity), "PROGRESS_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] PROGRESS");
 
-            DocumentManagerService.ShowExistingEntityDocument(customDocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }
         #endregion
     }

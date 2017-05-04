@@ -1,6 +1,6 @@
-﻿using BluePrints.Common.ViewModel;
-using BluePrints.Data.Attributes;
-using BluePrints.Data.Helpers;
+﻿using BaseModel.Attributes;
+using BaseModel.Data.Helpers;
+using BaseModel.Misc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,8 +9,13 @@ using System.Linq;
 
 namespace BluePrints.Data
 {
-    public class ROLE_PERMISSIONInfo : IHaveGUID
+    public class ROLE_PERMISSIONInfo : IGuidEntityKey
     {
+        public ROLE_PERMISSIONInfo()
+        {
+
+        }
+        
         public ROLE_PERMISSIONInfo(ROLE_PERMISSION systemPERMISSION,
             IEnumerable<ROLE_PERMISSION> currentAssignedROLE_PERMISSIONS)
         {
@@ -24,6 +29,20 @@ namespace BluePrints.Data
             else
             {
                 PERMISSION = systemPERMISSION.PERMISSION;
+            }
+        }
+
+        [NotMapped]
+        public Guid EntityKey
+        {
+            get
+            {
+                return GUID;
+            }
+
+            set
+            {
+                GUID = value;
             }
         }
 

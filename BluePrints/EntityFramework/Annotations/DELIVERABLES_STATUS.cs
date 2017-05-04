@@ -1,10 +1,25 @@
 namespace BluePrints.Data
 {
-    using Attributes;
-    using Common.ViewModel;
+    using BaseModel.Attributes;
+    using BaseModel.Misc;
+    using System;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     [ConstraintAttributes("MAX_PERCENTAGE")]
-    public partial class DELIVERABLES_STATUS : IHaveGUID
+    public partial class DELIVERABLES_STATUS : IGuidEntityKey
     {
+        [NotMapped]
+        public Guid EntityKey
+        {
+            get
+            {
+                return GUID;
+            }
+
+            set
+            {
+                GUID = value;
+            }
+        }
     }
 }

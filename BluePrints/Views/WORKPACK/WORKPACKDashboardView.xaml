@@ -13,7 +13,7 @@
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
              xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
-             xmlns:common="clr-namespace:BluePrints.Common"
+             xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
              xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters"
              mc:Ignorable="d" d:DesignHeight="1200" d:DesignWidth="1200"
              DataContext="{dxmvvm:ViewModelSource viewmodel:WORKPACKDashboardViewModelWrapper}">
@@ -21,28 +21,13 @@
         <ResourceDictionary>
             <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ChartResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <dxmvvm:Interaction.Behaviors>
-        <dx:DialogService x:Name="IssuesDialogService">
-            <dx:DialogService.DialogStyle>
-                <Style TargetType="dx:DXDialogWindow">
-                    <Setter Property="SizeToContent" Value="WidthAndHeight" />
-                </Style>
-            </dx:DialogService.DialogStyle>
-        </dx:DialogService>
-        <dx:DXMessageBoxService />
-        <!--<dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />-->
-        <dx:WindowedDocumentUIService YieldToParent="True" />
-    </dxmvvm:Interaction.Behaviors>
-    <Grid dx:DXSerializer.StoreLayoutMode="UI">
-        <dxmvvm:Interaction.Behaviors>
-            <dxmvvm:LayoutSerializationService />
-        </dxmvvm:Interaction.Behaviors>
-        <Grid DataContext="{Binding MainViewModel}">
+    <Grid Style="{StaticResource DashboardView.RootContainer}">
+        <Grid DataContext="{Binding MainViewModel}" >
             <DockPanel>
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False"
                                    MDIMergeStyle="Always">
@@ -387,15 +372,15 @@
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>
-                                <common:TableViewEx x:Name="tableView" AllowEditing="False"
+                                <custom:TableViewEx x:Name="tableView" AllowEditing="False"
                                                Style="{StaticResource DefaultTableViewTemplate}" UseLightweightTemplates="{x:Null}"
                                                NewItemRowPosition="None">
-                                    <common:TableViewEx.RowCellMenuCustomizations>
+                                    <custom:TableViewEx.RowCellMenuCustomizations>
                                         <dxb:BarButtonItem Content="Refresh"
                                                            Command="{Binding View.DataContext.RefreshCommand}"
                                                            Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                    </common:TableViewEx.RowCellMenuCustomizations>
-                                </common:TableViewEx>
+                                    </custom:TableViewEx.RowCellMenuCustomizations>
+                                </custom:TableViewEx>
                             </dxg:GridControl.View>
                         </dxg:GridControl>
                     </dxlc:LayoutGroup>

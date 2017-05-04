@@ -1,11 +1,13 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
+using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Loader;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
-using BluePrints.Common.DataModel;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
-using BluePrints.Common.ViewModel;
 using BluePrints.Data;
-using BluePrints.Data.Helpers;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
@@ -23,9 +25,7 @@ namespace BluePrints.ViewModels
     /// </summary>
     public partial class ESTIMATION_DIRECT_ITEMSViewModelWrapper :
         CollectionViewModelsWrapper
-        <ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel
-            <ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
+        <ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         public Action ShowWORKPACKInternalName1;
         public Action ShowWORKPACKInternalName2;
@@ -286,21 +286,21 @@ namespace BluePrints.ViewModels
             RestoreExpandedGuids.Clear();
 
             foreach (var selectedEntity in DisplaySelectedEntities)
-                RestoreSelectedEntitiesGuids.Add(new Guid(selectedEntity.GUID.ToString()));
+                RestoreSelectedEntitiesGuids.Add(new Guid(selectedEntity.EntityKey.ToString()));
 
             foreach (var entity in DisplayEntities)
                 if (entity.ISEXPANDED)
-                    RestoreExpandedGuids.Add(entity.GUID);
+                    RestoreExpandedGuids.Add(entity.EntityKey);
 
             if (DisplaySelectedEntity != null)
-                RestoreSelectedEntityGuid = DisplaySelectedEntity.GUID;
+                RestoreSelectedEntityGuid = DisplaySelectedEntity.EntityKey;
         }
 
         protected override void restoreViewState()
         {
             var restoreSelectedEntities =
                 DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.DetailEntities))
-                    .Where(x => RestoreSelectedEntitiesGuids.Any(y => y == x.GUID));
+                    .Where(x => RestoreSelectedEntitiesGuids.Any(y => y == x.EntityKey));
             DisplaySelectedEntities.Clear();
             if (restoreSelectedEntities.Count() > 0)
                 foreach (var restoreSelectedEntity in restoreSelectedEntities)
@@ -309,7 +309,7 @@ namespace BluePrints.ViewModels
             foreach (var expandedGuid in RestoreExpandedGuids)
             {
                 var restoreExpandedEntity =
-                    DisplayEntities.FirstOrDefault(x => x.GUID == expandedGuid);
+                    DisplayEntities.FirstOrDefault(x => x.EntityKey == expandedGuid);
                 if (restoreExpandedEntity != null)
                     ExpandDisplayRow(restoreExpandedEntity);
             }
@@ -318,7 +318,7 @@ namespace BluePrints.ViewModels
             {
                 var restoreSelectedEntity =
                     DisplayEntities.Concat(DisplayEntities.SelectMany(x => x.DetailEntities))
-                        .FirstOrDefault(x => x.GUID == RestoreSelectedEntityGuid);
+                        .FirstOrDefault(x => x.EntityKey == RestoreSelectedEntityGuid);
                 if (restoreSelectedEntity != null)
                     DisplaySelectedEntity = restoreSelectedEntity;
             }
@@ -556,7 +556,7 @@ namespace BluePrints.ViewModels
                 var childrenEntitiesNotInDeletionCollection =
                     new List<ESTIMATION_DIRECT_ITEMProjection>();
                 foreach (var childrenEntityInTotal in childrenEntitiesInTotal)
-                    if (!entities.Any(x => x.GUID == childrenEntityInTotal.GUID))
+                    if (!entities.Any(x => x.EntityKey == childrenEntityInTotal.EntityKey))
                         childrenEntitiesNotInDeletionCollection.Add(childrenEntityInTotal);
 
                 ESTIMATION_DIRECT_ITEMProjection parentEntity = null;
@@ -564,9 +564,9 @@ namespace BluePrints.ViewModels
                 {
                     parentEntity =
                         MainViewModel.Entities.FirstOrDefault(
-                            x => x.GUID == entity.Entity.GUID_ORIGINAL_PARENT);
+                            x => x.EntityKey == entity.Entity.GUID_ORIGINAL_PARENT);
                     if (parentEntity != null)
-                        if (!entities.Any(x => x.GUID == parentEntity.GUID))
+                        if (!entities.Any(x => x.EntityKey == parentEntity.EntityKey))
                             parentEntitiesNotInList.Add(parentEntity);
                 }
 
@@ -699,8 +699,8 @@ namespace BluePrints.ViewModels
                     //asks user if they want to create new or edit existing group
                     MessageResult selectedResult;
                     selectedResult =
-                        MessageBoxService.ShowMessage(CommonResources.Estimation_Item_Direct_EditOrAddNewCommodityCode,
-                            CommonResources.Confirmation_Caption, MessageButton.YesNoCancel);
+                        MessageBoxService.ShowMessage(BluePrintsResources.Estimation_Item_Direct_EditOrAddNewCommodityCode,
+                            BluePrintsResources.Confirmation_Caption, MessageButton.YesNoCancel);
                     if (selectedResult == MessageResult.Yes)
                         return FindOrAddGroupedCOMMODITY_CODES(parentESTIMATION_DIRECT_ITEM, findCurrentCOMMODITY_GROUP);
                     else if (selectedResult == MessageResult.No)
@@ -714,7 +714,7 @@ namespace BluePrints.ViewModels
                     if (FindOrAddGroupedCOMMODITY_CODES(parentESTIMATION_DIRECT_ITEM, null))
                     {
                         MessageBoxService.ShowMessage(
-                            CommonResources.Estimation_Item_Direct_ProjectSpecificCommodityCodeCreated);
+                            BluePrintsResources.Estimation_Item_Direct_ProjectSpecificCommodityCodeCreated);
                         return true;
                     }
                     else
@@ -794,7 +794,7 @@ namespace BluePrints.ViewModels
                         if (findCOMMODITY_CODEInGroup != null)
                         {
                             var findActualCOMMODITY_CODE =
-                                COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == findCOMMODITY_CODEInGroup.GUID);
+                                COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == findCOMMODITY_CODEInGroup.EntityKey);
                             if (findActualCOMMODITY_CODE != null)
                             {
                                 findActualCOMMODITY_CODE.RATE_FREIGHT =
@@ -855,8 +855,8 @@ namespace BluePrints.ViewModels
                 if (currentCOMMODITY_CODE.GUID_PROJECT != null)
                 {
                     if (
-                        MessageBoxService.ShowMessage(CommonResources.Estimation_Item_Direct_EditOrAddNewCommodityCode,
-                            CommonResources.Confirmation_Caption, MessageButton.YesNo) == MessageResult.Yes)
+                        MessageBoxService.ShowMessage(BluePrintsResources.Estimation_Item_Direct_EditOrAddNewCommodityCode,
+                            BluePrintsResources.Confirmation_Caption, MessageButton.YesNo) == MessageResult.Yes)
                     {
                         var projectSpecific_COMMODITY_CODES =
                             COMMODITY_CODECollection.Where(
@@ -883,8 +883,8 @@ namespace BluePrints.ViewModels
                     {
                         if (
                             MessageBoxService.ShowMessage(
-                                CommonResources.Estimation_Item_Direct_EditOrAddNewCommodityCode,
-                                CommonResources.Confirmation_Caption, MessageButton.YesNo) == MessageResult.Yes)
+                                BluePrintsResources.Estimation_Item_Direct_EditOrAddNewCommodityCode,
+                                BluePrintsResources.Confirmation_Caption, MessageButton.YesNo) == MessageResult.Yes)
                             return MultipleProjectSpecificCommodityCodeSelection(currentCOMMODITY_CODE,
                                 projectSpecific_COMMODITY_CODES, editedProjectionEntity);
                         else
@@ -894,7 +894,7 @@ namespace BluePrints.ViewModels
                     else
                     {
                         MessageBoxService.ShowMessage(
-                            CommonResources.Estimation_Item_Direct_ProjectSpecificCommodityCodeCreated);
+                            BluePrintsResources.Estimation_Item_Direct_ProjectSpecificCommodityCodeCreated);
                         return UpdateAndSaveCOMMODITY_CODE(new COMMODITY_CODE(), currentCOMMODITY_CODE,
                             editedProjectionEntity, true);
                     }
@@ -1142,7 +1142,7 @@ namespace BluePrints.ViewModels
                     {
                         var parentESTIMATION_DIRECT_ITEMSPOCO =
                             ViewModelSource.Create(() => new ESTIMATION_DIRECT_ITEMProjection());
-                        parentESTIMATION_DIRECT_ITEMSPOCO.GUID = parentESTIMATION_DIRECT_ITEM.GUID;
+                        parentESTIMATION_DIRECT_ITEMSPOCO.EntityKey = parentESTIMATION_DIRECT_ITEM.EntityKey;
                         DataUtils.ShallowCopy(parentESTIMATION_DIRECT_ITEMSPOCO.Entity,
                             parentESTIMATION_DIRECT_ITEM.Entity);
                         parentESTIMATION_DIRECT_ITEM.RATE = new RATE();
@@ -1175,7 +1175,7 @@ namespace BluePrints.ViewModels
                             {
                                 var childESTIMATION_DIRECT_ITEMPOCO =
                                     ViewModelSource.Create(() => new ESTIMATION_DIRECT_ITEMProjection());
-                                childESTIMATION_DIRECT_ITEMPOCO.GUID = childESTIMATION_DIRECT_ITEM.GUID;
+                                childESTIMATION_DIRECT_ITEMPOCO.EntityKey = childESTIMATION_DIRECT_ITEM.EntityKey;
                                 DataUtils.ShallowCopy(childESTIMATION_DIRECT_ITEMPOCO.Entity,
                                     childESTIMATION_DIRECT_ITEM.Entity);
                                 childESTIMATION_DIRECT_ITEMPOCO.RATE = new RATE();

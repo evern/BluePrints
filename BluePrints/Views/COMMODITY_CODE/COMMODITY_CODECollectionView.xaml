@@ -11,7 +11,7 @@
     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
     xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
     xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
-    xmlns:common="clr-namespace:BluePrints.Common"
+    xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
     xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
     xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
@@ -20,20 +20,11 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <dxmvvm:Interaction.Behaviors>
-        <dx:DXMessageBoxService />
-        <dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />
-        <dxmvvm:EventToCommand Event="Unloaded" Command="{Binding OnUnloadedCommand}" />
-        <dx:WindowedDocumentUIService YieldToParent="True" />
-    </dxmvvm:Interaction.Behaviors>
-    <Grid dx:DXSerializer.StoreLayoutMode="UI">
-        <dxmvvm:Interaction.Behaviors>
-            <dxmvvm:LayoutSerializationService />
-        </dxmvvm:Interaction.Behaviors>
+    <Grid Style="{StaticResource CollectionView.RootContainer}">
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False"

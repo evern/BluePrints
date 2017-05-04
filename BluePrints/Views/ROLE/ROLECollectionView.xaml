@@ -14,21 +14,18 @@
     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
     xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
     xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
-    xmlns:common="clr-namespace:BluePrints.Common"
+    xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
     mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="1200"
     DataContext="{dxmvvm:ViewModelSource viewmodel:ROLECollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
-        <dx:DXMessageBoxService />
-        <dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />
-        <dx:WindowedDocumentUIService YieldToParent="True" />
         <dx:DialogService x:Name="AddRoleDialogService">
             <dx:DialogService.DialogStyle>
                 <Style TargetType="dx:DXDialogWindow">
@@ -38,12 +35,8 @@
                 </Style>
             </dx:DialogService.DialogStyle>
         </dx:DialogService>
-        <dx:DXMessageBoxService />
     </dxmvvm:Interaction.Behaviors>
-    <Grid dx:DXSerializer.StoreLayoutMode="UI">
-        <dxmvvm:Interaction.Behaviors>
-            <dxmvvm:LayoutSerializationService />
-        </dxmvvm:Interaction.Behaviors>
+    <Grid Style="{StaticResource CollectionView.RootContainer}">
         <Grid>
             <DockPanel>
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False"
@@ -112,7 +105,7 @@
                                           DataContext="{Binding ROLE_PERMISSIONCollection}" View="Group"
                                           Header="Edit Value" Orientation="Horizontal"
                                           dxlc:LayoutControl.AllowVerticalSizing="True">
-                            <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlROLE" Style="{StaticResource BasicGridControlTemplate}">
+                            <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlROLE" Style="{StaticResource BasicGridControlTemplate}">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="PERMISSION" AllowEditing="False" MinWidth="300">
                                         <dxg:GridColumn.EditSettings>
@@ -124,16 +117,16 @@
                                     <dxg:GridColumn FieldName="ASSIGNED" />
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.View>
-                                    <common:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
+                                    <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
                                                    NewItemRowPosition="None" AutoWidth="True">
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand PassEventArgsToCommand="True"
                                                                    Command="{Binding DataContext.AssignPermissionCommand, ElementName=userControl}"
                                                                    EventName="CellValueChanging" />
                                         </dxmvvm:Interaction.Behaviors>
-                                    </common:TableViewEx>
+                                    </custom:TableViewEx>
                                 </dxg:GridControl.View>
-                            </common:GridControlEx>
+                            </custom:GridControlEx>
                         </dxlc:LayoutGroup>
                     </dxlc:LayoutControl>
                 </Grid>

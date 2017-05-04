@@ -1,7 +1,31 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+                    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+                    xmlns:dxsc="clr-namespace:DevExpress.Xpf.SpellChecker;assembly=DevExpress.Xpf.SpellChecker.v16.2"
+                    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
                     xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts"
                     xmlns:local="clr-namespace:BluePrints.Views">
+    <Style x:Key="DashboardView.RootContainer" TargetType="FrameworkElement">
+        <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <ItemsControl>
+                        <dx:DialogService x:Name="IssuesDialogService">
+                            <dx:DialogService.DialogStyle>
+                                <Style TargetType="dx:DXDialogWindow">
+                                    <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                                </Style>
+                            </dx:DialogService.DialogStyle>
+                        </dx:DialogService>
+                        <dx:DXMessageBoxService />
+                        <dx:WindowedDocumentUIService YieldToParent="True" />
+                    </ItemsControl>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="dx:DXSerializer.StoreLayoutMode" Value="UI" />
+    </Style>
     <Style x:Key="DefaultLineSeries2DTemplate" TargetType="{x:Type dxc:LineSeries2D}">
         <Setter Property="CrosshairLabelPattern" Value="{}{S} - [{V:p2}]" />
         <Setter Property="MarkerVisible" Value="False" />

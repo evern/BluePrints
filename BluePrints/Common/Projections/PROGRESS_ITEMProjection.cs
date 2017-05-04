@@ -1,4 +1,5 @@
-﻿using BluePrints.Common.ViewModel;
+﻿using BluePrints.Common.Base;
+using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.P6EntitiesDataModel;
@@ -8,7 +9,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class PROGRESS_ITEMProjection : ProjectionBase<BASELINE_ITEMProjection>, IHaveStats
+    public class PROGRESS_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEMProjection>, IHaveStats
     {
         readonly DateTime ReportingDataDate;
 
@@ -407,7 +408,7 @@ namespace BluePrints.Common.Projections
                         x =>
                             new PROGRESS_ITEMProjection(reportingDate)
                             {
-                                GUID = x.GUID,
+                                EntityKey = x.EntityKey,
                                 Entity = x, 
                                 PROGRESS_ITEMS = LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.Entity.GUID_ORIGINAL)
                             }).AsQueryable();
@@ -448,7 +449,7 @@ namespace BluePrints.Common.Projections
                         x =>
                         new PROGRESS_ITEMProjection(reportingDate, reportInterval, firstAlignedDataDate, x, project, getBASELINEFunc(), getPROGRESSFunc(), getWORKPACKFunc(), projectVariationAdjustments, p6UOW)
                         {
-                            GUID = x.GUID,
+                            EntityKey = x.EntityKey,
                             PROGRESS_ITEMS = LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.Entity.GUID_ORIGINAL)
                         }).ToList();
 

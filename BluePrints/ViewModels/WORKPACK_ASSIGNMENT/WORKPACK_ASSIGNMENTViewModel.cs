@@ -1,7 +1,7 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.ViewModel.Base;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Projections;
-using BluePrints.Common.ViewModel;
 using BluePrints.Data;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Editors;
@@ -214,7 +214,7 @@ namespace BluePrints.ViewModels
                 HIGH_VALUE = AssignmentHighValue,
                 LOW_VALUE = AssignmentLowValue,
                 P6_ACTIVITYID = SelectedTASK.Subject,
-                GUID_WORKPACK = SelectedWORKPACK.GUID,
+                GUID_WORKPACK = SelectedWORKPACK.EntityKey,
                 ISMODIFIEDBASELINE = IsModified
             };
 

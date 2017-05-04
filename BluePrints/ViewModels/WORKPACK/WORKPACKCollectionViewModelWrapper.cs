@@ -1,12 +1,13 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
+using BaseModel.Misc;
+using BaseModel.ViewModel.Loader;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
-using BluePrints.Common.DataModel;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
-using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
-using BluePrints.Data.Helpers;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Bars;
@@ -19,8 +20,7 @@ namespace BluePrints.ViewModels
 {
     public class WORKPACKCollectionViewModelWrapper :
         CollectionViewModelsWrapper
-        <WORKPACK, WORKPACKProjection, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<WORKPACK, WORKPACKProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
+        <WORKPACK, WORKPACKProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of WORKPACKCollectionViewModelWrapper as a POCO view model.
@@ -171,7 +171,7 @@ namespace BluePrints.ViewModels
         public void OnEntitySavedCallBack(Guid primaryKey, WORKPACKProjection projectionEntity,
             WORKPACK entity, bool isNewEntity)
         {
-            projectionEntity.GUID = entity.GUID;
+            projectionEntity.EntityKey = entity.GUID;
         }
         #endregion
 
@@ -252,32 +252,32 @@ namespace BluePrints.ViewModels
             var changedWORKPACK = (WORKPACKProjection)e.Row;
             if (e.Column.FieldName == "GUID_DDISCIPLINE" || e.Column.FieldName == "GUID_DDOCTYPE")
             {
-                var newInternalName = BluePrintDataUtils.WORKPACK_Generate_InternalNumber1(loadPROJECT,
+                var newInternalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber1(loadPROJECT,
                     changedWORKPACK.Entity, MainViewModel.Entities.Select(x => x.Entity), AREACollection, DISCIPLINECollection, DOCTYPECollection);
                 if (newInternalName == string.Empty)
                     return;
 
                 if (
-                    MessageBoxService.ShowMessage(CommonResources.WORKPACK_InternalNameChange,
-                        CommonResources.Confirmation_Caption, MessageButton.YesNo) != MessageResult.Yes)
+                    MessageBoxService.ShowMessage(BluePrintsResources.WORKPACK_InternalNameChange,
+                        BluePrintsResources.Confirmation_Caption, MessageButton.YesNo) != MessageResult.Yes)
                     return;
 
                 changedWORKPACK.Entity.INTERNAL_NAME1 = newInternalName;
 
                 if (e.Column.FieldName == "GUID_DDISCIPLINE")
-                    changedWORKPACK.Entity.INTERNAL_NAME2 = BluePrintDataUtils.WORKPACK_Generate_InternalNumber2(loadPROJECT,
+                    changedWORKPACK.Entity.INTERNAL_NAME2 = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2(loadPROJECT,
                         changedWORKPACK.Entity, MainViewModel.Entities.Select(x => x.Entity), AREACollection, DISCIPLINECollection, PHASECollection);
             }
             else if (e.Column.FieldName == "GUID_DPHASE" || e.Column.FieldName == "GUID_DAREA")
             {
-                var newInternalName = BluePrintDataUtils.WORKPACK_Generate_InternalNumber2(loadPROJECT,
+                var newInternalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2(loadPROJECT,
                     changedWORKPACK.Entity, MainViewModel.Entities.Select(x => x.Entity), AREACollection, DISCIPLINECollection, PHASECollection);
                 if (newInternalName == string.Empty)
                     return;
 
                 if (
-                    MessageBoxService.ShowMessage(CommonResources.WORKPACK_InternalNameChange,
-                        CommonResources.Confirmation_Caption, MessageButton.YesNo) != MessageResult.Yes)
+                    MessageBoxService.ShowMessage(BluePrintsResources.WORKPACK_InternalNameChange,
+                        BluePrintsResources.Confirmation_Caption, MessageButton.YesNo) != MessageResult.Yes)
                     return;
 
                 changedWORKPACK.Entity.INTERNAL_NAME2 = newInternalName;
@@ -316,7 +316,7 @@ namespace BluePrints.ViewModels
                     endDate = (DateTime) changingWORKPACK.ENDDATE;
                     if (endDate < startDate)
                     {
-                        endDate = BluePrintDataUtils.WORKPACK_Calculate_EndDate(startDate, loadPROJECT);
+                        endDate = BluePrintsDataUtils.WORKPACK_Calculate_EndDate(startDate, loadPROJECT);
                         changingWORKPACK.ENDDATE = endDate;
                     }
                 }
@@ -326,7 +326,7 @@ namespace BluePrints.ViewModels
                     startDate = (DateTime) changingWORKPACK.STARTDATE;
                     if (endDate < startDate)
                     {
-                        startDate = BluePrintDataUtils.WORKPACK_Calculate_StartDate(endDate, loadPROJECT);
+                        startDate = BluePrintsDataUtils.WORKPACK_Calculate_StartDate(endDate, loadPROJECT);
                         changingWORKPACK.STARTDATE = startDate;
                     }
                 }
@@ -334,7 +334,7 @@ namespace BluePrints.ViewModels
                 var reviewStartDate = startDate;
                 var reviewEndDate = endDate;
 
-                BluePrintDataUtils.WORKPACK_Calculate_ReviewPeriod(ref reviewStartDate, ref reviewEndDate, loadPROJECT,
+                BluePrintsDataUtils.WORKPACK_Calculate_ReviewPeriod(ref reviewStartDate, ref reviewEndDate, loadPROJECT,
                     false);
                 changingWORKPACK.REVIEWSTARTDATE = reviewStartDate;
 
@@ -377,12 +377,12 @@ namespace BluePrints.ViewModels
                     DOCTYPECollection.FirstOrDefault(x => x.GUID == newProjection.Entity.GUID_DPHASE);
 
                 newProjection.Entity.INTERNAL_NAME1 =
-                    BluePrintDataUtils.WORKPACK_Generate_InternalNumber1(loadPROJECT, newProjection.Entity
+                    BluePrintsDataUtils.WORKPACK_Generate_InternalNumber1(loadPROJECT, newProjection.Entity
                         , MainViewModel.Entities.Select(x => x.Entity), AREACollection, DISCIPLINECollection,
                         DOCTYPECollection);
 
                 newProjection.Entity.INTERNAL_NAME2 =
-                    BluePrintDataUtils.WORKPACK_Generate_InternalNumber2(loadPROJECT, newProjection.Entity
+                    BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2(loadPROJECT, newProjection.Entity
                         , MainViewModel.Entities.Select(x => x.Entity), AREACollection, DISCIPLINECollection,
                         PHASECollection);
 

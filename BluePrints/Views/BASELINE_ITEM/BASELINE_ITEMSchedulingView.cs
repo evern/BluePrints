@@ -1,7 +1,7 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.ViewModel.Base;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Projections;
-using BluePrints.Common.ViewModel;
 using BluePrints.Data;
 using BluePrints.P6Data;
 using DevExpress.XtraGrid.Views.Grid;
@@ -18,58 +18,55 @@ using System.Windows.Forms;
 
 namespace BluePrints.Views
 {
-    public partial class BASELINE_ITEMMappingView : UserControl
+    public partial class BASELINE_ITEMSchedulingView : UserControl
     {
-        private IEnumerable<TASK> TASKS;
-        private IEnumerable<PROJWBS> WBSS;
-        private IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMProjections;
+        readonly Data.PROJECT PROJECT;
+        readonly IEnumerable<TASK> TASKS;
+        readonly IEnumerable<PROJWBS> P6WBSS;
+        readonly IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMProjections;
 
-        private CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
-            WORKPACK_ASSIGNMENTSViewModel;
+        private CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
+            BASELINE_ITEM_ASSIGNMENTSViewModel;
 
         private IEnumerable<TASK_AppointmentInfo> TASK_Appointments;
         private IEnumerable<TASK_AppointmentInfo> WBS_Appointments;
         private IEnumerable<TASK_AppointmentInfo> TASK_WBSAppointments;
         private bool ISMODIFIED; //Specify whether the context is a original or modified P6BASELINE
 
-        public BASELINE_ITEMMappingView(Func<IEnumerable<TASK>> getTASKsFunc,
-            Func<IEnumerable<PROJWBS>> getWBSSFunc,
-            Func<IEnumerable<BASELINE_ITEMProjection>> getBASELINE_ITEMProjectionFunc,
-            CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
-                WORKPACK_ASSIGNMENTSViewModel, bool IsModified)
+        public BASELINE_ITEMSchedulingView(Data.PROJECT PROJECT, IEnumerable<TASK> TASKS,
+            IEnumerable<PROJWBS> P6WBSS,
+            IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMProjections,
+            CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
+                BASELINE_ITEM_ASSIGNMENTSViewModel, bool IsModified)
         {
             InitializeComponent();
-            TASKS = getTASKsFunc();
-            WBSS = getWBSSFunc();
-            BASELINE_ITEMProjections = getBASELINE_ITEMProjectionFunc();
+            this.PROJECT = PROJECT;
+            this.TASKS = TASKS;
+            this.P6WBSS = P6WBSS;
+            this.BASELINE_ITEMProjections = BASELINE_ITEMProjections;
             ISMODIFIED = IsModified;
-            this.WORKPACK_ASSIGNMENTSViewModel = WORKPACK_ASSIGNMENTSViewModel;
+            this.BASELINE_ITEM_ASSIGNMENTSViewModel = BASELINE_ITEM_ASSIGNMENTSViewModel;
             TASK_Appointments =
                 TASKS.OrderBy(x => x.target_start_date).Select(x => new TASK_AppointmentInfo(x)).ToArray().AsEnumerable();
             WBS_Appointments =
-                WBSS.OrderBy(x => x.wbs_id).Select(x => new TASK_AppointmentInfo(x)).ToArray().AsEnumerable();
+                P6WBSS.OrderBy(x => x.wbs_id).Select(x => new TASK_AppointmentInfo(x)).ToArray().AsEnumerable();
             TASK_WBSAppointments = TASK_Appointments.Concat(WBS_Appointments);
 
             SetDataBinding(TASK_Appointments, TASK_WBSAppointments, BASELINE_ITEMProjections);
             SubscribeEvents();
-            CalculateAppointmentsUnits();
         }
 
         private void SubscribeEvents()
         {
-            gridViewDeliverable.MouseDown += new MouseEventHandler(gridViewWorkpack_MouseDown);
-            gridViewDeliverable.MouseMove += new MouseEventHandler(gridViewWorkpack_MouseMove);
-            schedulerControl1.InitAppointmentDisplayText +=
-                new AppointmentDisplayTextEventHandler(
-                    schedulerControl1_InitAppointmentDisplayText);
+            gridViewDeliverable.MouseDown += new MouseEventHandler(gridViewDeliverable_MouseDown);
+            gridViewDeliverable.MouseMove += new MouseEventHandler(gridViewDeliverable_MouseMove);
+            schedulerControl1.InitAppointmentDisplayText +=  new AppointmentDisplayTextEventHandler(schedulerControl1_InitAppointmentDisplayText);
             schedulerControl1.DragDrop += new DragEventHandler(schedulerControl1_DragDrop);
             schedulerControl1.DragEnter += new DragEventHandler(schedulerControl1_DragEnter);
             schedulerControl1.DragOver += new DragEventHandler(schedulerControl1_DragOver);
             schedulerControl1.DoubleClick += new EventHandler(schedulerControl1_DoubleClick);
-            resourcesTree1.CustomDrawNodeCell +=
-                new DevExpress.XtraTreeList.CustomDrawNodeCellEventHandler(resourcesTree1_CustomDrawNodeCell);
-            resourcesTree1.PopupMenuShowing +=
-                new DevExpress.XtraTreeList.PopupMenuShowingEventHandler(resourcesTree1_PopupMenuShowing);
+            resourcesTree1.CustomDrawNodeCell += new DevExpress.XtraTreeList.CustomDrawNodeCellEventHandler(resourcesTree1_CustomDrawNodeCell);
+            resourcesTree1.PopupMenuShowing += new DevExpress.XtraTreeList.PopupMenuShowingEventHandler(resourcesTree1_PopupMenuShowing);
             gridControlDeliverable.DoubleClick += new EventHandler(gridControlWorkpack_DoubleClick);
         }
 
@@ -100,7 +97,7 @@ namespace BluePrints.Views
 
         private GridHitInfo downHitInfo;
 
-        private void gridViewWorkpack_MouseDown(object sender, MouseEventArgs e)
+        private void gridViewDeliverable_MouseDown(object sender, MouseEventArgs e)
         {
             var view = sender as GridView;
             downHitInfo = null;
@@ -115,7 +112,7 @@ namespace BluePrints.Views
                 downHitInfo = hitInfo;
         }
 
-        private void gridViewWorkpack_MouseMove(object sender, MouseEventArgs e)
+        private void gridViewDeliverable_MouseMove(object sender, MouseEventArgs e)
         {
             var view = sender as GridView;
             if (e.Button == MouseButtons.Left && downHitInfo != null)
@@ -132,18 +129,24 @@ namespace BluePrints.Views
             }
         }
 
-        private object GetDragData(GridView view)
+        private List<BASELINE_ITEMProjection> GetDragData(GridView view)
         {
-            var dragWorkpack = (BASELINE_ITEMProjection) view.GetFocusedRow();
-            return dragWorkpack;
+            int[] selectedRowIndex = view.GetSelectedRows();
+            List<BASELINE_ITEMProjection> selectedBASELINE_ITEMS = new List<BASELINE_ITEMProjection>();
+            foreach (int selectedIndex in selectedRowIndex)
+            {
+                selectedBASELINE_ITEMS.Add((BASELINE_ITEMProjection)view.GetRow(selectedIndex));
+            }
+
+            return selectedBASELINE_ITEMS;
         }
 
         private void schedulerControl1_DragEnter(object sender, DragEventArgs e)
         {
             try
             {
-                var dragEnterWorkpack =
-                    (BASELINE_ITEMProjection) ((DataObject) e.Data).GetData(typeof(BASELINE_ITEMProjection));
+                var dragEnterBaseline_Items =
+                    (List<BASELINE_ITEMProjection>) ((DataObject) e.Data).GetData(typeof(List<BASELINE_ITEMProjection>));
             }
             catch
             {
@@ -156,44 +159,21 @@ namespace BluePrints.Views
 
         private void schedulerControl1_DragDrop(object sender, DragEventArgs e)
         {
-            var dragDropWorkpack =
-                (BASELINE_ITEMProjection) ((DataObject) e.Data).GetData(typeof(BASELINE_ITEMProjection));
+            var dragDropBaseline_Items =
+                (List<BASELINE_ITEMProjection>) ((DataObject) e.Data).GetData(typeof(List<BASELINE_ITEMProjection>));
             var pt = schedulerControl1.PointToClient(MousePosition);
             var schHitInfo = schedulerControl1.ActiveView.ViewInfo.CalcHitInfo(pt, false);
             if (schHitInfo.HitTest == SchedulerHitTest.AppointmentContent)
             {
-                //var dropAppointment = ((AppointmentViewInfo) schHitInfo.ViewInfo).Appointment;
-                //var view = new WORKPACKAssignmentView(TASK_WBSAppointments, BASELINE_ITEMProjections,
-                //    WORKPACK_ASSIGNMENTSViewModel, ISMODIFIED, dropAppointment, dragDropWorkpack);
-                //view.ShowDialog();
-                //view.Dispose();
-
-                CalculateAppointmentsUnits();
+                var dropAppointment = ((AppointmentViewInfo)schHitInfo.ViewInfo).Appointment;
+                var view = new BASELINE_ITEMAssignmentView(PROJECT, TASK_WBSAppointments, BASELINE_ITEMProjections,
+                    BASELINE_ITEM_ASSIGNMENTSViewModel, ISMODIFIED, dropAppointment, dragDropBaseline_Items);
+                view.ShowDialog();
+                view.Dispose();
             }
         }
         #endregion
 
-        private void CalculateAppointmentsUnits()
-        {
-            //foreach (
-            //    var WBSTASKAppointmentInfo in
-            //    TASK_WBSAppointments.Where(x => x.Status == AppointmentActivityType.Activity))
-            //{
-            //    if (WBSTASKAppointmentInfo.Subject == null || WBSTASKAppointmentInfo.Subject == string.Empty)
-            //        continue;
-
-            //    var P6ActivityAssignedUnits =
-            //        BASELINE_ITEMProjections.Sum(
-            //            x =>
-            //                x.ObservableWORKPACK_ASSIGNMENTS.Where(
-            //                        obj2 => obj2.P6_ACTIVITYID == WBSTASKAppointmentInfo.Subject)
-            //                    .Sum(obj3 => ((obj3.HIGH_VALUE - obj3.LOW_VALUE) + 0.01m) * x.Stats.totalUnits));
-            //    WBSTASKAppointmentInfo.AssignedUnits = P6ActivityAssignedUnits;
-            //}
-
-            RecurseSummarizeWBS(TASK_WBSAppointments);
-            schedulerControl1.RefreshData();
-        }
 
         //Recurse childrens to sum budgeted units
         private void RecurseSummarizeWBS(IEnumerable<TASK_AppointmentInfo> ChildTASKs)
@@ -262,15 +242,15 @@ namespace BluePrints.Views
 
         private void gridControlWorkpack_DoubleClick(object sender, EventArgs e)
         {
-            var selectedWORKPACK = (BASELINE_ITEMProjection) gridViewDeliverable.GetFocusedRow();
-            if (selectedWORKPACK != null)
+            var selectedBASELINE_ITEM = (BASELINE_ITEMProjection) gridViewDeliverable.GetFocusedRow();
+            if (selectedBASELINE_ITEM != null)
             {
-                //var view = new WORKPACKAssignmentView(TASK_WBSAppointments, BASELINE_ITEMProjections,
-                //    WORKPACK_ASSIGNMENTSViewModel, ISMODIFIED, null, selectedWORKPACK);
-                //view.ShowDialog();
-                //view.Dispose();
-
-                CalculateAppointmentsUnits();
+                List<BASELINE_ITEMProjection> selectedBASELINE_ITEMS = new List<BASELINE_ITEMProjection>();
+                selectedBASELINE_ITEMS.Add(selectedBASELINE_ITEM);
+                var view = new BASELINE_ITEMAssignmentView(PROJECT, TASK_WBSAppointments, BASELINE_ITEMProjections,
+                    BASELINE_ITEM_ASSIGNMENTSViewModel, ISMODIFIED, null, selectedBASELINE_ITEMS);
+                view.ShowDialog();
+                view.Dispose();
             }
         }
 
@@ -280,14 +260,12 @@ namespace BluePrints.Views
             var schHitInfo = schedulerControl1.ActiveView.ViewInfo.CalcHitInfo(pt, false);
             if (schHitInfo.HitTest == SchedulerHitTest.AppointmentContent)
             {
-                var dropAppointment = ((AppointmentViewInfo) schHitInfo.ViewInfo).Appointment;
-                //var view = new P6ACTIVITYAssignmentView(TASK_WBSAppointments, BASELINE_ITEMProjections,
-                //    WORKPACK_ASSIGNMENTSViewModel, ISMODIFIED, dropAppointment);
+                var dropAppointment = ((AppointmentViewInfo)schHitInfo.ViewInfo).Appointment;
+                var view = new BASELINE_ITEMAssignmentActivityView(PROJECT, TASK_WBSAppointments, BASELINE_ITEMProjections,
+                    BASELINE_ITEM_ASSIGNMENTSViewModel, ISMODIFIED, dropAppointment, BASELINE_ITEMProjections);
 
-                //view.ShowDialog();
-                //view.Dispose();
-
-                CalculateAppointmentsUnits();
+                view.ShowDialog();
+                view.Dispose();
             }
         }
 

@@ -1,10 +1,11 @@
-﻿using BluePrints.Data;
+﻿using BluePrints.Common.Base;
+using BluePrints.Data;
 using System;
 using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class COMMODITY_CODEMasterDetailProjection : ProjectionMasterDetailBase<COMMODITY_CODE, COMMODITY_CODEMasterDetailProjection>
+    public class COMMODITY_CODEMasterDetailProjection : BluePrintsProjectionMasterDetailBase<COMMODITY_CODE, COMMODITY_CODEMasterDetailProjection>
     {
         public bool ISEXPANDED { get; set; }
 
@@ -50,7 +51,7 @@ namespace BluePrints.Common.Projections
         {
             return
                 COMMODITY_CODES
-                    .Select(x => new COMMODITY_CODEMasterDetailProjection() {GUID = x.GUID, Entity = x});
+                    .Select(x => new COMMODITY_CODEMasterDetailProjection() { EntityKey = x.GUID, Entity = x});
         }
     }
 }

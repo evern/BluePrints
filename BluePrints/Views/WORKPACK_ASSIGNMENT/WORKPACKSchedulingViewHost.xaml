@@ -20,14 +20,14 @@
              DataContext="{dxmvvm:ViewModelSource viewmodel:WORKPACKSchedulingViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
             <dxsch:SchedulerUICommand x:Key="commands" />
             <dxsch:SchedulerControlStringIdConverter x:Key="stringIdConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
-        <dx:DXMessageBoxService />
-        <dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />
-        <dx:WindowedDocumentUIService YieldToParent="True" />
         <dx:DialogService x:Name="MissingActivityIdDialog">
             <dx:DialogService.DialogStyle>
                 <Style TargetType="dx:DXDialogWindow">
@@ -38,11 +38,8 @@
             </dx:DialogService.DialogStyle>
         </dx:DialogService>
     </dxmvvm:Interaction.Behaviors>
-    <Grid dx:DXSerializer.StoreLayoutMode="UI">
-        <dxmvvm:Interaction.Behaviors>
-            <dxmvvm:LayoutSerializationService />
-        </dxmvvm:Interaction.Behaviors>
-        <Grid DataContext="{Binding MainViewModel}" dx:DXSerializer.StoreLayoutMode="UI">
+    <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False"
                                    MDIMergeStyle="Always">

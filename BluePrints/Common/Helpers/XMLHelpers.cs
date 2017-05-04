@@ -16,12 +16,12 @@ namespace BluePrints.Common.Helpers
         {
             var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
-            var userFilePath = Path.Combine(localAppData, CommonResources.XMLDefaultDirectory);
+            var userFilePath = Path.Combine(localAppData, BluePrintsResources.XMLDefaultDirectory);
 
             if (!Directory.Exists(userFilePath) && createDirectory)
                 Directory.CreateDirectory(userFilePath);
 
-            var destFilePath = Path.Combine(userFilePath, CommonResources.XMLFilename);
+            var destFilePath = Path.Combine(userFilePath, BluePrintsResources.XMLFilename);
 
             return destFilePath;
         }

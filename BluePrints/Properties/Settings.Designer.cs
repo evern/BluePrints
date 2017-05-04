@@ -13,7 +13,7 @@ namespace BluePrints.Properties
 
 
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "12.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -26,169 +26,13 @@ namespace BluePrints.Properties
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfFilterInfo xmlns:xsi=\"http://www" +
-            ".w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n" +
-            "  <FilterInfo>\r\n    <Name>All</Name>\r\n  </FilterInfo>\r\n</ArrayOfFilterInfo>")]
-        public global::BluePrints.Common.ViewModel.Filtering.FilterInfoList AllStaticFilters {
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ThemeName {
             get {
-                return ((global::BluePrints.Common.ViewModel.Filtering.FilterInfoList)(this["AllStaticFilters"]));
+                return ((string)(this["ThemeName"]));
             }
             set {
-                this["AllStaticFilters"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfFilterInfo xmlns:xsi=\"http://www" +
-            ".w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />" +
-            "")]
-        public global::BluePrints.Common.ViewModel.Filtering.FilterInfoList PROJECTCustomFilter {
-            get {
-                return ((global::BluePrints.Common.ViewModel.Filtering.FilterInfoList)(this["PROJECTCustomFilter"]));
-            }
-            set {
-                this["PROJECTCustomFilter"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfFilterInfo xmlns:xsi=\"http://www" +
-            ".w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />" +
-            "")]
-        public global::BluePrints.Common.ViewModel.Filtering.FilterInfoList AREACustomFilter {
-            get {
-                return ((global::BluePrints.Common.ViewModel.Filtering.FilterInfoList)(this["AREACustomFilter"]));
-            }
-            set {
-                this["AREACustomFilter"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfFilterInfo xmlns:xsi=\"http://www" +
-            ".w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />" +
-            "")]
-        public global::BluePrints.Common.ViewModel.Filtering.FilterInfoList DEPARTMENTCustomFilter {
-            get {
-                return ((global::BluePrints.Common.ViewModel.Filtering.FilterInfoList)(this["DEPARTMENTCustomFilter"]));
-            }
-            set {
-                this["DEPARTMENTCustomFilter"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfFilterInfo xmlns:xsi=\"http://www" +
-            ".w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />" +
-            "")]
-        public global::BluePrints.Common.ViewModel.Filtering.FilterInfoList DISCIPLINECustomFilter {
-            get {
-                return ((global::BluePrints.Common.ViewModel.Filtering.FilterInfoList)(this["DISCIPLINECustomFilter"]));
-            }
-            set {
-                this["DISCIPLINECustomFilter"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfFilterInfo xmlns:xsi=\"http://www" +
-            ".w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />" +
-            "")]
-        public global::BluePrints.Common.ViewModel.Filtering.FilterInfoList DOCTYPECustomFilter {
-            get {
-                return ((global::BluePrints.Common.ViewModel.Filtering.FilterInfoList)(this["DOCTYPECustomFilter"]));
-            }
-            set {
-                this["DOCTYPECustomFilter"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfFilterInfo xmlns:xsi=\"http://www" +
-            ".w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />" +
-            "")]
-        public global::BluePrints.Common.ViewModel.Filtering.FilterInfoList PHASECustomFilter {
-            get {
-                return ((global::BluePrints.Common.ViewModel.Filtering.FilterInfoList)(this["PHASECustomFilter"]));
-            }
-            set {
-                this["PHASECustomFilter"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfFilterInfo xmlns:xsi=\"http://www" +
-            ".w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />" +
-            "")]
-        public global::BluePrints.Common.ViewModel.Filtering.FilterInfoList BASELINECustomFilter {
-            get {
-                return ((global::BluePrints.Common.ViewModel.Filtering.FilterInfoList)(this["BASELINECustomFilter"]));
-            }
-            set {
-                this["BASELINECustomFilter"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfFilterInfo xmlns:xsi=\"http://www" +
-            ".w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />" +
-            "")]
-        public global::BluePrints.Common.ViewModel.Filtering.FilterInfoList RATECustomFilter {
-            get {
-                return ((global::BluePrints.Common.ViewModel.Filtering.FilterInfoList)(this["RATECustomFilter"]));
-            }
-            set {
-                this["RATECustomFilter"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfFilterInfo xmlns:xsi=\"http://www" +
-            ".w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />" +
-            "")]
-        public global::BluePrints.Common.ViewModel.Filtering.FilterInfoList WORKPACKCustomFilter {
-            get {
-                return ((global::BluePrints.Common.ViewModel.Filtering.FilterInfoList)(this["WORKPACKCustomFilter"]));
-            }
-            set {
-                this["WORKPACKCustomFilter"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfFilterInfo xmlns:xsi=\"http://www" +
-            ".w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />" +
-            "")]
-        public global::BluePrints.Common.ViewModel.Filtering.FilterInfoList PROGRESSCustomFilter {
-            get {
-                return ((global::BluePrints.Common.ViewModel.Filtering.FilterInfoList)(this["PROGRESSCustomFilter"]));
-            }
-            set {
-                this["PROGRESSCustomFilter"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfFilterInfo xmlns:xsi=\"http://www" +
-            ".w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />" +
-            "")]
-        public global::BluePrints.Common.ViewModel.Filtering.FilterInfoList VARIATIONCustomFilter {
-            get {
-                return ((global::BluePrints.Common.ViewModel.Filtering.FilterInfoList)(this["VARIATIONCustomFilter"]));
-            }
-            set {
-                this["VARIATIONCustomFilter"] = value;
+                this["ThemeName"] = value;
             }
         }
     }

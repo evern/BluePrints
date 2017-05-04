@@ -1,4 +1,5 @@
-﻿using BluePrints.Common.Resources;
+﻿using BluePrints.Common.Base;
+using BluePrints.Common.Resources;
 using BluePrints.Data;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ namespace BluePrints.Common.Projections
 {
     //[ConstraintAttributes("ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT")]
     //[RequiredAttributes("ESTIMATION_DIRECT_ITEM.GUID_COMMODITY_GROUP_DIRECT")]
-    public class ESTIMATION_DIRECT_ITEMProjection : ProjectionMasterDetailBase<ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProjection>
+    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionMasterDetailBase<ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProjection>
     {
         public RATE RATE { get; set; }
 
@@ -53,7 +54,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                return GUID != null && Entity != null &&
+                return EntityKey != null && Entity != null &&
                        Entity.GUID_COMMODITY_CODE != null;
             }
         }
@@ -138,7 +139,7 @@ namespace BluePrints.Common.Projections
             var RATES = getRATES_ByProjectFunc();
             var DEPARTMENTS = getDEPARTMENTFunc();
             var constructionDEPARTMENT =
-                DEPARTMENTS.FirstOrDefault(x => x.NAME.ToUpper() == CommonResources.DefaultConstructionDepartment);
+                DEPARTMENTS.FirstOrDefault(x => x.NAME.ToUpper() == BluePrintsResources.DefaultConstructionDepartment);
             Guid searchDEPARTMENTGuid;
             if (constructionDEPARTMENT == null)
                 searchDEPARTMENTGuid = Guid.Empty;
@@ -151,7 +152,7 @@ namespace BluePrints.Common.Projections
                         x =>
                             new ESTIMATION_DIRECT_ITEMProjection()
                             {
-                                GUID = x.GUID,
+                                EntityKey = x.GUID,
                                 Entity = x,
                                 RATE = RATES == null ? null :
                                     RATES.FirstOrDefault(

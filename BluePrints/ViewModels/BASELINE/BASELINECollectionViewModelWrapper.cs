@@ -1,10 +1,10 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.DataModel;
+using BaseModel.Misc;
+using BaseModel.ViewModel.Document;
+using BaseModel.ViewModel.Loader;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
-using BluePrints.Common.DataModel;
-using BluePrints.Common.Projections;
-using BluePrints.Common.ViewModel;
 using BluePrints.Data;
-using BluePrints.Data.Helpers;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
 using DevExpress.Mvvm;
@@ -17,8 +17,7 @@ namespace BluePrints.ViewModels
 {
     public class BASELINECollectionViewModelWrapper :
         CollectionViewModelsWrapper
-        <BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>>
+        <BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of BASELINECollectionViewModelWrapper as a POCO view model.
@@ -154,13 +153,13 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            CustomDocumentInfo customDocumentInfo = new CustomDocumentInfo(
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
                 new OptionalEntitiesParameter<Data.PROJECT, BASELINE>(null,
                     DisplaySelectedEntity), 
                     "BASELINE_ITEMCollectionView", 
                     "[" + loadPROJECT.NUMBER + "] BASELINE");
 
-            DocumentManagerService.ShowExistingEntityDocument(customDocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }
 
         public bool CanP6BASELINE_ASSIGN()
@@ -171,12 +170,12 @@ namespace BluePrints.ViewModels
 
         public void P6BASELINE_ASSIGN()
         {
-            CustomDocumentInfo customDocumentInfo = new CustomDocumentInfo(
-                new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original }, 
-                "WORKPACKSchedulingViewHost", 
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
+                new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original },
+                "BASELINE_ITEMSchedulingViewHost", 
                 DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping");
 
-            DocumentManagerService.ShowExistingEntityDocument(customDocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }
 
         public bool CanP6MODBASELINE_ASSIGN()
@@ -187,12 +186,12 @@ namespace BluePrints.ViewModels
 
         public void P6MODBASELINE_ASSIGN()
         {
-            CustomDocumentInfo customDocumentInfo = new CustomDocumentInfo(
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
                 new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Modified },
                 "WORKPACKSchedulingViewHost",
                 DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6MODBASELINE_NAME + " Mapping");
 
-            DocumentManagerService.ShowExistingEntityDocument(customDocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }
         #endregion
     }

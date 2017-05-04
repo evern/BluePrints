@@ -1,8 +1,7 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
-using BluePrints.Common.DataModel;
-using BluePrints.Common.ViewModel;
+﻿using BaseModel.DataModel;
+using BaseModel.ViewModel.Loader;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Data;
-using BluePrints.Data.Helpers;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
@@ -12,8 +11,7 @@ namespace BluePrints.ViewModels
 {
     public class DEPARTMENTCollectionViewModelWrapper :
         CollectionViewModelsWrapper
-        <DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>>
+        <DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of DEPARTMENTCollectionViewModelWrapper as a POCO view model.

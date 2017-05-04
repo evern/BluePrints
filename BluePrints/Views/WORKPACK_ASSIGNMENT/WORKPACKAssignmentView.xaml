@@ -6,7 +6,7 @@
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-             xmlns:common="clr-namespace:BluePrints.Common"
+             xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
              Height="550" Width="700" Title="Workpack's Activity Assignment" WindowStartupLocation="CenterScreen">
     <dxlc:LayoutControl Orientation="Vertical">
         <dxlc:LayoutGroup Name="LayoutGroupWorkpackSelection" View="GroupBox" Header="Current Workpack"
@@ -28,7 +28,7 @@
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:LookUpEdit.PopupContentTemplate>
                             <ControlTemplate TargetType="ContentControl">
-                                <common:GridControlEx x:Name="PART_GridControl" dx:DXSerializer.SerializationID="GridControlAssignmentWORKPACK" ShowBorder="False">
+                                <custom:GridControlEx x:Name="PART_GridControl" dx:DXSerializer.SerializationID="GridControlAssignmentWORKPACK" ShowBorder="False">
                                     <dxg:GridControl.Columns>
                                         <dxg:GridColumn IsSmart="True" AllowEditing="False" FieldName="Subject" />
                                         <dxg:GridColumn IsSmart="True" AllowEditing="False" Width="500"
@@ -38,7 +38,7 @@
                                         <dxg:TreeListView Name="treeListView1" TreeDerivationMode="Selfreference"
                                                       KeyFieldName="task_id" ParentFieldName="ParentId" />
                                     </dxg:GridControl.View>
-                                </common:GridControlEx>
+                                </custom:GridControlEx>
                             </ControlTemplate>
                         </dxg:LookUpEdit.PopupContentTemplate>
                     </dxg:LookUpEdit>
@@ -84,7 +84,7 @@
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup View="GroupBox" Header="Assignments" Orientation="Horizontal">
                 <dxlc:LayoutItem HorizontalAlignment="Left" Height="250">
-                    <common:GridControlEx x:Name="gridControlWORKPACK_ASSIGNMENTS" dx:DXSerializer.SerializationID="GridControlWORKPACK_ASSIGNMENTS" SelectionMode="Row" ShowBorder="False"
+                    <custom:GridControlEx x:Name="gridControlWORKPACK_ASSIGNMENTS" dx:DXSerializer.SerializationID="GridControlWORKPACK_ASSIGNMENTS" SelectionMode="Row" ShowBorder="False"
                                      SelectedItem="{Binding SelectedWORKPACK_ASSIGNMENT, Mode=TwoWay}"
                                      ItemsSource="{Binding SelectedWORKPACK.ObservableWORKPACK_ASSIGNMENTS}">
                         <dxg:GridControl.Columns>
@@ -111,12 +111,12 @@
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.View>
-                            <common:TableViewEx x:Name="GridViewWorkpackAssignment"
+                            <custom:TableViewEx x:Name="GridViewWorkpackAssignment"
                                            FocusedRow="{Binding SelectedWORKPACK_ASSIGNMENT, Mode=TwoWay}"
                                            NavigationStyle="Row" ShowGroupPanel="False" AutoWidth="False"
                                            AllowEditing="False" AllowSorting="False" />
                         </dxg:GridControl.View>
-                    </common:GridControlEx>
+                    </custom:GridControlEx>
                 </dxlc:LayoutItem>
                 <dxlc:LayoutGroup x:Name="assignmentNavigationLayoutGroup" HorizontalAlignment="Right"
                                   Orientation="Vertical">

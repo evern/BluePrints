@@ -1,4 +1,4 @@
-﻿<view:ViewStateRestoreUserControl x:Name="userControl" 
+﻿<custom:ViewStateRestoreUserControl x:Name="userControl" 
              x:Class="BluePrints.Views.PROGRESS_ITEMCollectionView"
              xmlns:view="clr-namespace:BluePrints.Views"
              xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
@@ -15,26 +15,18 @@
              xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
-             xmlns:common="clr-namespace:BluePrints.Common"
+             xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
              mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
              DataContext="{dxmvvm:ViewModelSource viewmodel:PROGRESS_ITEMSCollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <dxmvvm:Interaction.Behaviors>
-        <dx:DXMessageBoxService />
-        <dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />
-        <dx:WindowedDocumentUIService YieldToParent="True" />
-    </dxmvvm:Interaction.Behaviors>
-    <Grid dx:DXSerializer.StoreLayoutMode="UI">
-        <dxmvvm:Interaction.Behaviors>
-            <dxmvvm:LayoutSerializationService />
-        </dxmvvm:Interaction.Behaviors>
+    <Grid Style="{StaticResource CollectionView.RootContainer}">
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False"
@@ -112,7 +104,7 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPROGRESS_ITEM"
+                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPROGRESS_ITEM"
                                      Style="{StaticResource DefaultGridControlTemplate}" >
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand
@@ -389,10 +381,10 @@
                                                  Alignment="Right" DisplayFormat="Total {0} Records" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
-                            <common:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
+                            <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
                                            ShowTotalSummary="True" ShowFixedTotalSummary="True"
                                            GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None">
-                                <common:TableViewEx.RowCellMenuCustomizations>
+                                <custom:TableViewEx.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Fill Up"
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}"
                                                        Command="{Binding View.DataContext.FillUpCommand}"
@@ -404,12 +396,12 @@
                                     <dxb:BarButtonItem Content="Refresh"
                                                        Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                </common:TableViewEx.RowCellMenuCustomizations>
-                            </common:TableViewEx>
+                                </custom:TableViewEx.RowCellMenuCustomizations>
+                            </custom:TableViewEx>
                         </dxg:GridControl.View>
-                    </common:GridControlEx>
+                    </custom:GridControlEx>
                 </Grid>
             </DockPanel>
         </Grid>
     </Grid>
-</view:ViewStateRestoreUserControl>
+</custom:ViewStateRestoreUserControl>

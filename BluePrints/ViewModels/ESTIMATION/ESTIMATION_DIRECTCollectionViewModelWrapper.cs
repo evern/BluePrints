@@ -1,9 +1,9 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
-using BluePrints.Common.DataModel;
-using BluePrints.Common.Projections;
-using BluePrints.Common.ViewModel;
+﻿using BaseModel.DataModel;
+using BaseModel.Misc;
+using BaseModel.ViewModel.Document;
+using BaseModel.ViewModel.Loader;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Data;
-using BluePrints.Data.Helpers;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
 using DevExpress.Mvvm;
@@ -16,8 +16,7 @@ namespace BluePrints.ViewModels
 {
     public class ESTIMATION_DIRECTCollectionViewModelWrapper :
         CollectionViewModelsWrapper
-        <ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork>>
+        <ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of ESTIMATION_DIRECT_ITEMSViewModelWrapper as a POCO view model.
@@ -147,11 +146,11 @@ namespace BluePrints.ViewModels
         {
             if (DisplaySelectedEntity == null)
                 return;
-
-            CustomDocumentInfo customDocumentInfo = new CustomDocumentInfo(new OptionalEntitiesParameter<Data.PROJECT, ESTIMATION_DIRECT>(null,
+            
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new OptionalEntitiesParameter<Data.PROJECT, ESTIMATION_DIRECT>(null,
                 DisplaySelectedEntity), "ESTIMATION_DIRECT_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] ESTIMATION_DIRECT");
 
-            DocumentManagerService.ShowExistingEntityDocument(customDocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }
 
         #endregion

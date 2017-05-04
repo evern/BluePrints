@@ -1,11 +1,11 @@
-﻿using BluePrints.Common.ViewModel;
+﻿using BluePrints.Common.Base;
 using BluePrints.Data;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class VARIATIONProjection : ProjectionMasterDetailBase<VARIATION, VARIATION_ITEMProjection>, IHaveGUID
+    public class VARIATIONProjection : BluePrintsProjectionMasterDetailBase<VARIATION, VARIATION_ITEMProjection>
     {
         public override ObservableCollection<VARIATION_ITEMProjection> DetailEntities
         {
@@ -47,7 +47,7 @@ namespace BluePrints.Common.Projections
         public static IQueryable<VARIATIONProjection> JoinVARIATION_ITEMSOnVARIATIONS(
             IQueryable<VARIATION> VARIATIONS)
         {
-            return VARIATIONS.Select(x => new VARIATIONProjection() { GUID = x.GUID, Entity = x });
+            return VARIATIONS.Select(x => new VARIATIONProjection() { EntityKey = x.GUID, Entity = x });
         }
     }
 }

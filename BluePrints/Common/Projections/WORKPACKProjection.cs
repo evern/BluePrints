@@ -1,6 +1,6 @@
-﻿using BluePrints.Common.ViewModel;
+﻿using BaseModel.Attributes;
+using BluePrints.Common.Base;
 using BluePrints.Data;
-using BluePrints.Data.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ namespace BluePrints.Common.Projections
 {
     [ConstraintAttributes("Entity.GUID_PROJECT, Entity.INTERNAL_NAME1, Entity.INTERNAL_NAME2")]
     [RequiredAttributes("Entity.GUID_DDEPARTMENT, Entity.GUID_DDISCIPLINE")]
-    public class WORKPACKProjection : ProjectionBase<WORKPACK>, IHaveGUID
+    public class WORKPACKProjection : BluePrintsProjectionBase<WORKPACK>
     {
         public decimal TOTAL_UNITS { get; set; }
 
@@ -43,7 +43,7 @@ namespace BluePrints.Common.Projections
             return
                 WORKPACKS.ToArray().Select(x => new WORKPACKProjection()
                 {
-                    GUID = x.GUID,
+                    EntityKey = x.GUID,
                     Entity = x,
                     TOTAL_COSTS = AllBaselineItems.Where(y => y.Entity.GUID_WORKPACK == x.GUID).Sum(z => z.TOTAL_COSTS),
                     TOTAL_UNITS = AllBaselineItems.Where(y => y.Entity.GUID_WORKPACK == x.GUID).Sum(z => z.Entity.TOTAL_HOURS)

@@ -1,11 +1,12 @@
 namespace BluePrints.Data
 {
+    using BaseModel.Misc;
     using Common;
-    using Common.ViewModel;
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class PROGRESS : IHaveGUID
+    public partial class PROGRESS : IGuidEntityKey
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PROGRESS()
@@ -15,6 +16,20 @@ namespace BluePrints.Data
             DATA_DATE = DateTime.Now;
             INTERVAL_COUNT = 1;
             INTERVAL_TYPE = ProgressIntervalType.Weekly;
+        }
+
+        [NotMapped]
+        public Guid EntityKey
+        {
+            get
+            {
+                return GUID;
+            }
+
+            set
+            {
+                GUID = value;
+            }
         }
     }
 }

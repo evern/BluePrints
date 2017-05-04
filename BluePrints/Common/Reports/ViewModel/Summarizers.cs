@@ -138,7 +138,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 List<StoredProcedure_PlannedDataPoint> currentDeliverableDataPoints = new List<StoredProcedure_PlannedDataPoint>();
 
-                currentDeliverableDataPoints.AddRange(plannedDataPoints.Where(x => x.Deliverable_Guid == reportableObject.Entity.GUID));
+                currentDeliverableDataPoints.AddRange(plannedDataPoints.Where(x => x.Deliverable_Guid == reportableObject.Entity.EntityKey));
 
                 reportableObject.Stats.Budgeted.SetPlannedData(currentDeliverableDataPoints);
                 reportableObject.Stats.Current.SetPlannedData(currentDeliverableDataPoints);
@@ -171,7 +171,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 List<StoredProcedure_RemainingDataPoint> currentDeliverableDataPoints = new List<StoredProcedure_RemainingDataPoint>();
 
-                currentDeliverableDataPoints.AddRange(remainingDataPoints.Where(x => x.Deliverable_Guid == reportableObject.Entity.GUID));
+                currentDeliverableDataPoints.AddRange(remainingDataPoints.Where(x => x.Deliverable_Guid == reportableObject.Entity.EntityKey));
 
                 reportableObject.Stats.Remaining.SetRemainingData(currentDeliverableDataPoints, reportableObject.Stats.Earned.DataPoints);
                 reportableObject.Update();

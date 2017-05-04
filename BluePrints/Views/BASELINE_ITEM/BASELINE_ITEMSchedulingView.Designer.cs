@@ -1,6 +1,6 @@
 ﻿namespace BluePrints.Views
 {
-    partial class BASELINE_ITEMMappingView
+    partial class BASELINE_ITEMSchedulingView
     {
         /// <summary> 
         /// Required designer variable.
@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            DevExpress.XtraGrid.GridFormatRule gridFormatRule1 = new DevExpress.XtraGrid.GridFormatRule();
+            DevExpress.XtraEditors.FormatConditionRuleExpression formatConditionRuleExpression1 = new DevExpress.XtraEditors.FormatConditionRuleExpression();
             DevExpress.XtraScheduler.TimeRuler timeRuler1 = new DevExpress.XtraScheduler.TimeRuler();
             DevExpress.XtraScheduler.TimeRuler timeRuler2 = new DevExpress.XtraScheduler.TimeRuler();
             DevExpress.XtraScheduler.TimeScaleYear timeScaleYear1 = new DevExpress.XtraScheduler.TimeScaleYear();
@@ -39,32 +41,6 @@
             DevExpress.XtraScheduler.TimeScaleHour timeScaleHour1 = new DevExpress.XtraScheduler.TimeScaleHour();
             DevExpress.XtraScheduler.TimeScale15Minutes timeScale15Minutes1 = new DevExpress.XtraScheduler.TimeScale15Minutes();
             DevExpress.XtraScheduler.TimeRuler timeRuler3 = new DevExpress.XtraScheduler.TimeRuler();
-            DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
-            DevExpress.XtraGrid.GridFormatRule gridFormatRule1 = new DevExpress.XtraGrid.GridFormatRule();
-            DevExpress.XtraEditors.FormatConditionRuleExpression formatConditionRuleExpression1 = new DevExpress.XtraEditors.FormatConditionRuleExpression();
-            this.gridBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.schedulerStorage1 = new DevExpress.XtraScheduler.SchedulerStorage(this.components);
-            this.schedulerBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.barAndDockingController1 = new DevExpress.XtraBars.BarAndDockingController(this.components);
-            this.schedulerBarController1 = new DevExpress.XtraScheduler.UI.SchedulerBarController();
-            this.schedulerControl1 = new DevExpress.XtraScheduler.SchedulerControl();
-            this.resourcesTree1 = new DevExpress.XtraScheduler.UI.ResourcesTree();
-            this.resourceTreeColumn1 = new DevExpress.XtraScheduler.Native.ResourceTreeColumn();
-            this.resourceTreeColumn4 = new DevExpress.XtraScheduler.Native.ResourceTreeColumn();
-            this.resourceTreeColumn2 = new DevExpress.XtraScheduler.Native.ResourceTreeColumn();
-            this.resourceTreeColumn3 = new DevExpress.XtraScheduler.Native.ResourceTreeColumn();
-            this.splitContainerControl1 = new DevExpress.XtraEditors.SplitContainerControl();
-            this.splitContainerControl2 = new DevExpress.XtraEditors.SplitContainerControl();
-            this.gridControlDeliverable = new DevExpress.XtraGrid.GridControl();
-            this.gridViewDeliverable = new DevExpress.XtraGrid.Views.Grid.GridView();
-            this.colRATE = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colDELIVERABLE_STATUS = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colITEMRATE = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colESTIMATED_COSTS = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colDC_COSTS = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colTOTAL_COSTS = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colEntity = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colGUID = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridViewAssignments = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.colGUID1 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colISMODIFIEDBASELINE = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -78,7 +54,26 @@
             this.colUPDATEDBY = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colDELETED = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colDELETEDBY = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridControlDeliverable = new DevExpress.XtraGrid.GridControl();
+            this.gridBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.gridViewDeliverable = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.colEntity = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.schedulerStorage1 = new DevExpress.XtraScheduler.SchedulerStorage(this.components);
+            this.schedulerBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.barAndDockingController1 = new DevExpress.XtraBars.BarAndDockingController(this.components);
+            this.schedulerBarController1 = new DevExpress.XtraScheduler.UI.SchedulerBarController();
+            this.schedulerControl1 = new DevExpress.XtraScheduler.SchedulerControl();
+            this.resourcesTree1 = new DevExpress.XtraScheduler.UI.ResourcesTree();
+            this.resourceTreeColumn1 = new DevExpress.XtraScheduler.Native.ResourceTreeColumn();
+            this.resourceTreeColumn4 = new DevExpress.XtraScheduler.Native.ResourceTreeColumn();
+            this.resourceTreeColumn2 = new DevExpress.XtraScheduler.Native.ResourceTreeColumn();
+            this.resourceTreeColumn3 = new DevExpress.XtraScheduler.Native.ResourceTreeColumn();
+            this.splitContainerControl1 = new DevExpress.XtraEditors.SplitContainerControl();
+            this.splitContainerControl2 = new DevExpress.XtraEditors.SplitContainerControl();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewAssignments)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridControlDeliverable)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewDeliverable)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.schedulerStorage1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.schedulerBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.barAndDockingController1)).BeginInit();
@@ -89,14 +84,182 @@
             this.splitContainerControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerControl2)).BeginInit();
             this.splitContainerControl2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.gridControlDeliverable)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gridViewDeliverable)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gridViewAssignments)).BeginInit();
             this.SuspendLayout();
+            // 
+            // gridViewAssignments
+            // 
+            this.gridViewAssignments.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
+            this.colGUID1,
+            this.colISMODIFIEDBASELINE,
+            this.colGUID_ORIGINAL,
+            this.colP6_ACTIVITYID,
+            this.colLOW_VALUE,
+            this.colHIGH_VALUE,
+            this.colCREATED,
+            this.colCREATEDBY,
+            this.colUPDATED,
+            this.colUPDATEDBY,
+            this.colDELETED,
+            this.colDELETEDBY});
+            this.gridViewAssignments.GridControl = this.gridControlDeliverable;
+            this.gridViewAssignments.Name = "gridViewAssignments";
+            // 
+            // colGUID1
+            // 
+            this.colGUID1.FieldName = "GUID";
+            this.colGUID1.Name = "colGUID1";
+            this.colGUID1.Visible = true;
+            this.colGUID1.VisibleIndex = 0;
+            // 
+            // colISMODIFIEDBASELINE
+            // 
+            this.colISMODIFIEDBASELINE.FieldName = "ISMODIFIEDBASELINE";
+            this.colISMODIFIEDBASELINE.Name = "colISMODIFIEDBASELINE";
+            this.colISMODIFIEDBASELINE.Visible = true;
+            this.colISMODIFIEDBASELINE.VisibleIndex = 1;
+            // 
+            // colGUID_ORIGINAL
+            // 
+            this.colGUID_ORIGINAL.FieldName = "GUID_ORIGINAL";
+            this.colGUID_ORIGINAL.Name = "colGUID_ORIGINAL";
+            this.colGUID_ORIGINAL.Visible = true;
+            this.colGUID_ORIGINAL.VisibleIndex = 2;
+            // 
+            // colP6_ACTIVITYID
+            // 
+            this.colP6_ACTIVITYID.FieldName = "P6_ACTIVITYID";
+            this.colP6_ACTIVITYID.Name = "colP6_ACTIVITYID";
+            this.colP6_ACTIVITYID.Visible = true;
+            this.colP6_ACTIVITYID.VisibleIndex = 3;
+            // 
+            // colLOW_VALUE
+            // 
+            this.colLOW_VALUE.FieldName = "LOW_VALUE";
+            this.colLOW_VALUE.Name = "colLOW_VALUE";
+            this.colLOW_VALUE.Visible = true;
+            this.colLOW_VALUE.VisibleIndex = 4;
+            // 
+            // colHIGH_VALUE
+            // 
+            this.colHIGH_VALUE.FieldName = "HIGH_VALUE";
+            this.colHIGH_VALUE.Name = "colHIGH_VALUE";
+            this.colHIGH_VALUE.Visible = true;
+            this.colHIGH_VALUE.VisibleIndex = 5;
+            // 
+            // colCREATED
+            // 
+            this.colCREATED.FieldName = "CREATED";
+            this.colCREATED.Name = "colCREATED";
+            this.colCREATED.Visible = true;
+            this.colCREATED.VisibleIndex = 6;
+            // 
+            // colCREATEDBY
+            // 
+            this.colCREATEDBY.FieldName = "CREATEDBY";
+            this.colCREATEDBY.Name = "colCREATEDBY";
+            this.colCREATEDBY.Visible = true;
+            this.colCREATEDBY.VisibleIndex = 7;
+            // 
+            // colUPDATED
+            // 
+            this.colUPDATED.FieldName = "UPDATED";
+            this.colUPDATED.Name = "colUPDATED";
+            this.colUPDATED.Visible = true;
+            this.colUPDATED.VisibleIndex = 8;
+            // 
+            // colUPDATEDBY
+            // 
+            this.colUPDATEDBY.FieldName = "UPDATEDBY";
+            this.colUPDATEDBY.Name = "colUPDATEDBY";
+            this.colUPDATEDBY.Visible = true;
+            this.colUPDATEDBY.VisibleIndex = 9;
+            // 
+            // colDELETED
+            // 
+            this.colDELETED.FieldName = "DELETED";
+            this.colDELETED.Name = "colDELETED";
+            this.colDELETED.Visible = true;
+            this.colDELETED.VisibleIndex = 10;
+            // 
+            // colDELETEDBY
+            // 
+            this.colDELETEDBY.FieldName = "DELETEDBY";
+            this.colDELETEDBY.Name = "colDELETEDBY";
+            this.colDELETEDBY.Visible = true;
+            this.colDELETEDBY.VisibleIndex = 11;
+            // 
+            // gridControlDeliverable
+            // 
+            this.gridControlDeliverable.Cursor = System.Windows.Forms.Cursors.Default;
+            this.gridControlDeliverable.DataSource = this.gridBindingSource;
+            this.gridControlDeliverable.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gridControlDeliverable.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gridControlDeliverable.Location = new System.Drawing.Point(0, 0);
+            this.gridControlDeliverable.LookAndFeel.SkinName = "Visual Studio 2013 Light";
+            this.gridControlDeliverable.LookAndFeel.UseDefaultLookAndFeel = false;
+            this.gridControlDeliverable.MainView = this.gridViewDeliverable;
+            this.gridControlDeliverable.Name = "gridControlDeliverable";
+            this.gridControlDeliverable.ShowOnlyPredefinedDetails = true;
+            this.gridControlDeliverable.Size = new System.Drawing.Size(1904, 307);
+            this.gridControlDeliverable.TabIndex = 1;
+            this.gridControlDeliverable.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
+            this.gridViewDeliverable,
+            this.gridViewAssignments});
             // 
             // gridBindingSource
             // 
             this.gridBindingSource.DataSource = typeof(BluePrints.Common.Projections.BASELINE_ITEMProjection);
+            // 
+            // gridViewDeliverable
+            // 
+            this.gridViewDeliverable.Appearance.EvenRow.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.gridViewDeliverable.Appearance.EvenRow.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gridViewDeliverable.Appearance.EvenRow.Options.UseBackColor = true;
+            this.gridViewDeliverable.Appearance.EvenRow.Options.UseFont = true;
+            this.gridViewDeliverable.Appearance.FocusedCell.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gridViewDeliverable.Appearance.FocusedCell.Options.UseFont = true;
+            this.gridViewDeliverable.Appearance.FocusedRow.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gridViewDeliverable.Appearance.FocusedRow.Options.UseFont = true;
+            this.gridViewDeliverable.Appearance.GroupFooter.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gridViewDeliverable.Appearance.GroupFooter.Options.UseFont = true;
+            this.gridViewDeliverable.Appearance.GroupPanel.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gridViewDeliverable.Appearance.GroupPanel.Options.UseFont = true;
+            this.gridViewDeliverable.Appearance.GroupRow.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gridViewDeliverable.Appearance.GroupRow.Options.UseFont = true;
+            this.gridViewDeliverable.Appearance.HeaderPanel.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gridViewDeliverable.Appearance.HeaderPanel.Options.UseFont = true;
+            this.gridViewDeliverable.Appearance.OddRow.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gridViewDeliverable.Appearance.OddRow.Options.UseFont = true;
+            this.gridViewDeliverable.Appearance.Row.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gridViewDeliverable.Appearance.Row.Options.UseFont = true;
+            this.gridViewDeliverable.Appearance.SelectedRow.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gridViewDeliverable.Appearance.SelectedRow.Options.UseFont = true;
+            this.gridViewDeliverable.Appearance.ViewCaption.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gridViewDeliverable.Appearance.ViewCaption.Options.UseFont = true;
+            this.gridViewDeliverable.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
+            this.colEntity});
+            gridFormatRule1.ApplyToRow = true;
+            gridFormatRule1.Name = "Mismatched Assigned Units";
+            formatConditionRuleExpression1.Expression = "[ASSIGNED_UNITS] <> [Stats.BudgetedUnits]";
+            formatConditionRuleExpression1.PredefinedName = "Red Fill, Red Text";
+            gridFormatRule1.Rule = formatConditionRuleExpression1;
+            this.gridViewDeliverable.FormatRules.Add(gridFormatRule1);
+            this.gridViewDeliverable.GridControl = this.gridControlDeliverable;
+            this.gridViewDeliverable.GroupSummary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] {
+            new DevExpress.XtraGrid.GridGroupSummaryItem(DevExpress.Data.SummaryItemType.Sum, "Workpack_AssignedUnits", null, "(Assigned Units: SUM={0:0.##})"),
+            new DevExpress.XtraGrid.GridGroupSummaryItem(DevExpress.Data.SummaryItemType.Sum, "Total_BudgetedUnits", null, "(Budgeted Units: SUM={0:0.##})")});
+            this.gridViewDeliverable.Name = "gridViewDeliverable";
+            this.gridViewDeliverable.OptionsSelection.MultiSelect = true;
+            this.gridViewDeliverable.OptionsView.ShowFooter = true;
+            // 
+            // colEntity
+            // 
+            this.colEntity.FieldName = "Entity.INTERNAL_NUM";
+            this.colEntity.Name = "colEntity";
+            this.colEntity.OptionsColumn.AllowEdit = false;
+            this.colEntity.OptionsColumn.ReadOnly = true;
+            this.colEntity.Visible = true;
+            this.colEntity.VisibleIndex = 0;
             // 
             // schedulerStorage1
             // 
@@ -325,246 +488,16 @@
             this.splitContainerControl2.TabIndex = 0;
             this.splitContainerControl2.Text = "splitContainerControl2";
             // 
-            // gridControlDeliverable
-            // 
-            this.gridControlDeliverable.Cursor = System.Windows.Forms.Cursors.WaitCursor;
-            this.gridControlDeliverable.DataSource = this.gridBindingSource;
-            this.gridControlDeliverable.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gridControlDeliverable.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            gridLevelNode1.LevelTemplate = this.gridViewAssignments;
-            gridLevelNode1.RelationName = "BASELINE_ITEM_ASSIGNMENTS";
-            this.gridControlDeliverable.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
-            gridLevelNode1});
-            this.gridControlDeliverable.Location = new System.Drawing.Point(0, 0);
-            this.gridControlDeliverable.LookAndFeel.SkinName = "Visual Studio 2013 Light";
-            this.gridControlDeliverable.LookAndFeel.UseDefaultLookAndFeel = false;
-            this.gridControlDeliverable.MainView = this.gridViewDeliverable;
-            this.gridControlDeliverable.Name = "gridControlDeliverable";
-            this.gridControlDeliverable.ShowOnlyPredefinedDetails = true;
-            this.gridControlDeliverable.Size = new System.Drawing.Size(1904, 307);
-            this.gridControlDeliverable.TabIndex = 1;
-            this.gridControlDeliverable.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
-            this.gridViewDeliverable,
-            this.gridViewAssignments});
-            // 
-            // gridViewDeliverable
-            // 
-            this.gridViewDeliverable.Appearance.EvenRow.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
-            this.gridViewDeliverable.Appearance.EvenRow.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gridViewDeliverable.Appearance.EvenRow.Options.UseBackColor = true;
-            this.gridViewDeliverable.Appearance.EvenRow.Options.UseFont = true;
-            this.gridViewDeliverable.Appearance.FocusedCell.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gridViewDeliverable.Appearance.FocusedCell.Options.UseFont = true;
-            this.gridViewDeliverable.Appearance.FocusedRow.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gridViewDeliverable.Appearance.FocusedRow.Options.UseFont = true;
-            this.gridViewDeliverable.Appearance.GroupFooter.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gridViewDeliverable.Appearance.GroupFooter.Options.UseFont = true;
-            this.gridViewDeliverable.Appearance.GroupPanel.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gridViewDeliverable.Appearance.GroupPanel.Options.UseFont = true;
-            this.gridViewDeliverable.Appearance.GroupRow.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gridViewDeliverable.Appearance.GroupRow.Options.UseFont = true;
-            this.gridViewDeliverable.Appearance.HeaderPanel.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gridViewDeliverable.Appearance.HeaderPanel.Options.UseFont = true;
-            this.gridViewDeliverable.Appearance.OddRow.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gridViewDeliverable.Appearance.OddRow.Options.UseFont = true;
-            this.gridViewDeliverable.Appearance.Row.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gridViewDeliverable.Appearance.Row.Options.UseFont = true;
-            this.gridViewDeliverable.Appearance.SelectedRow.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gridViewDeliverable.Appearance.SelectedRow.Options.UseFont = true;
-            this.gridViewDeliverable.Appearance.ViewCaption.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gridViewDeliverable.Appearance.ViewCaption.Options.UseFont = true;
-            this.gridViewDeliverable.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.colRATE,
-            this.colDELIVERABLE_STATUS,
-            this.colITEMRATE,
-            this.colESTIMATED_COSTS,
-            this.colDC_COSTS,
-            this.colTOTAL_COSTS,
-            this.colEntity,
-            this.colGUID});
-            gridFormatRule1.ApplyToRow = true;
-            gridFormatRule1.Name = "Mismatched Assigned Units";
-            formatConditionRuleExpression1.Expression = "[ASSIGNED_UNITS] <> [Stats.BudgetedUnits]";
-            formatConditionRuleExpression1.PredefinedName = "Red Fill, Red Text";
-            gridFormatRule1.Rule = formatConditionRuleExpression1;
-            this.gridViewDeliverable.FormatRules.Add(gridFormatRule1);
-            this.gridViewDeliverable.GridControl = this.gridControlDeliverable;
-            this.gridViewDeliverable.GroupSummary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] {
-            new DevExpress.XtraGrid.GridGroupSummaryItem(DevExpress.Data.SummaryItemType.Sum, "Workpack_AssignedUnits", null, "(Assigned Units: SUM={0:0.##})"),
-            new DevExpress.XtraGrid.GridGroupSummaryItem(DevExpress.Data.SummaryItemType.Sum, "Total_BudgetedUnits", null, "(Budgeted Units: SUM={0:0.##})")});
-            this.gridViewDeliverable.Name = "gridViewDeliverable";
-            this.gridViewDeliverable.OptionsSelection.MultiSelect = true;
-            this.gridViewDeliverable.OptionsView.ShowFooter = true;
-            // 
-            // colRATE
-            // 
-            this.colRATE.FieldName = "RATE";
-            this.colRATE.Name = "colRATE";
-            this.colRATE.Visible = true;
-            this.colRATE.VisibleIndex = 0;
-            // 
-            // colDELIVERABLE_STATUS
-            // 
-            this.colDELIVERABLE_STATUS.FieldName = "DELIVERABLE_STATUS";
-            this.colDELIVERABLE_STATUS.Name = "colDELIVERABLE_STATUS";
-            this.colDELIVERABLE_STATUS.Visible = true;
-            this.colDELIVERABLE_STATUS.VisibleIndex = 1;
-            // 
-            // colITEMRATE
-            // 
-            this.colITEMRATE.FieldName = "ITEMRATE";
-            this.colITEMRATE.Name = "colITEMRATE";
-            this.colITEMRATE.OptionsColumn.ReadOnly = true;
-            this.colITEMRATE.Visible = true;
-            this.colITEMRATE.VisibleIndex = 2;
-            // 
-            // colESTIMATED_COSTS
-            // 
-            this.colESTIMATED_COSTS.FieldName = "ESTIMATED_COSTS";
-            this.colESTIMATED_COSTS.Name = "colESTIMATED_COSTS";
-            this.colESTIMATED_COSTS.OptionsColumn.ReadOnly = true;
-            this.colESTIMATED_COSTS.Visible = true;
-            this.colESTIMATED_COSTS.VisibleIndex = 3;
-            // 
-            // colDC_COSTS
-            // 
-            this.colDC_COSTS.FieldName = "DC_COSTS";
-            this.colDC_COSTS.Name = "colDC_COSTS";
-            this.colDC_COSTS.OptionsColumn.ReadOnly = true;
-            this.colDC_COSTS.Visible = true;
-            this.colDC_COSTS.VisibleIndex = 4;
-            // 
-            // colTOTAL_COSTS
-            // 
-            this.colTOTAL_COSTS.FieldName = "TOTAL_COSTS";
-            this.colTOTAL_COSTS.Name = "colTOTAL_COSTS";
-            this.colTOTAL_COSTS.OptionsColumn.ReadOnly = true;
-            this.colTOTAL_COSTS.Visible = true;
-            this.colTOTAL_COSTS.VisibleIndex = 5;
-            // 
-            // colEntity
-            // 
-            this.colEntity.FieldName = "Entity";
-            this.colEntity.Name = "colEntity";
-            this.colEntity.Visible = true;
-            this.colEntity.VisibleIndex = 6;
-            // 
-            // colGUID
-            // 
-            this.colGUID.FieldName = "GUID";
-            this.colGUID.Name = "colGUID";
-            this.colGUID.Visible = true;
-            this.colGUID.VisibleIndex = 7;
-            // 
-            // gridViewAssignments
-            // 
-            this.gridViewAssignments.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.colGUID1,
-            this.colISMODIFIEDBASELINE,
-            this.colGUID_ORIGINAL,
-            this.colP6_ACTIVITYID,
-            this.colLOW_VALUE,
-            this.colHIGH_VALUE,
-            this.colCREATED,
-            this.colCREATEDBY,
-            this.colUPDATED,
-            this.colUPDATEDBY,
-            this.colDELETED,
-            this.colDELETEDBY});
-            this.gridViewAssignments.GridControl = this.gridControlDeliverable;
-            this.gridViewAssignments.Name = "gridViewAssignments";
-            // 
-            // colGUID1
-            // 
-            this.colGUID1.FieldName = "GUID";
-            this.colGUID1.Name = "colGUID1";
-            this.colGUID1.Visible = true;
-            this.colGUID1.VisibleIndex = 0;
-            // 
-            // colISMODIFIEDBASELINE
-            // 
-            this.colISMODIFIEDBASELINE.FieldName = "ISMODIFIEDBASELINE";
-            this.colISMODIFIEDBASELINE.Name = "colISMODIFIEDBASELINE";
-            this.colISMODIFIEDBASELINE.Visible = true;
-            this.colISMODIFIEDBASELINE.VisibleIndex = 1;
-            // 
-            // colGUID_ORIGINAL
-            // 
-            this.colGUID_ORIGINAL.FieldName = "GUID_ORIGINAL";
-            this.colGUID_ORIGINAL.Name = "colGUID_ORIGINAL";
-            this.colGUID_ORIGINAL.Visible = true;
-            this.colGUID_ORIGINAL.VisibleIndex = 2;
-            // 
-            // colP6_ACTIVITYID
-            // 
-            this.colP6_ACTIVITYID.FieldName = "P6_ACTIVITYID";
-            this.colP6_ACTIVITYID.Name = "colP6_ACTIVITYID";
-            this.colP6_ACTIVITYID.Visible = true;
-            this.colP6_ACTIVITYID.VisibleIndex = 3;
-            // 
-            // colLOW_VALUE
-            // 
-            this.colLOW_VALUE.FieldName = "LOW_VALUE";
-            this.colLOW_VALUE.Name = "colLOW_VALUE";
-            this.colLOW_VALUE.Visible = true;
-            this.colLOW_VALUE.VisibleIndex = 4;
-            // 
-            // colHIGH_VALUE
-            // 
-            this.colHIGH_VALUE.FieldName = "HIGH_VALUE";
-            this.colHIGH_VALUE.Name = "colHIGH_VALUE";
-            this.colHIGH_VALUE.Visible = true;
-            this.colHIGH_VALUE.VisibleIndex = 5;
-            // 
-            // colCREATED
-            // 
-            this.colCREATED.FieldName = "CREATED";
-            this.colCREATED.Name = "colCREATED";
-            this.colCREATED.Visible = true;
-            this.colCREATED.VisibleIndex = 6;
-            // 
-            // colCREATEDBY
-            // 
-            this.colCREATEDBY.FieldName = "CREATEDBY";
-            this.colCREATEDBY.Name = "colCREATEDBY";
-            this.colCREATEDBY.Visible = true;
-            this.colCREATEDBY.VisibleIndex = 7;
-            // 
-            // colUPDATED
-            // 
-            this.colUPDATED.FieldName = "UPDATED";
-            this.colUPDATED.Name = "colUPDATED";
-            this.colUPDATED.Visible = true;
-            this.colUPDATED.VisibleIndex = 8;
-            // 
-            // colUPDATEDBY
-            // 
-            this.colUPDATEDBY.FieldName = "UPDATEDBY";
-            this.colUPDATEDBY.Name = "colUPDATEDBY";
-            this.colUPDATEDBY.Visible = true;
-            this.colUPDATEDBY.VisibleIndex = 9;
-            // 
-            // colDELETED
-            // 
-            this.colDELETED.FieldName = "DELETED";
-            this.colDELETED.Name = "colDELETED";
-            this.colDELETED.Visible = true;
-            this.colDELETED.VisibleIndex = 10;
-            // 
-            // colDELETEDBY
-            // 
-            this.colDELETEDBY.FieldName = "DELETEDBY";
-            this.colDELETEDBY.Name = "colDELETEDBY";
-            this.colDELETEDBY.Visible = true;
-            this.colDELETEDBY.VisibleIndex = 11;
-            // 
-            // BASELINE_ITEMMappingView
+            // BASELINE_ITEMSchedulingView
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.Controls.Add(this.splitContainerControl1);
-            this.Name = "BASELINE_ITEMMappingView";
+            this.Name = "BASELINE_ITEMSchedulingView";
             this.Size = new System.Drawing.Size(1904, 1041);
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewAssignments)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridControlDeliverable)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewDeliverable)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.schedulerStorage1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.schedulerBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.barAndDockingController1)).EndInit();
@@ -575,9 +508,6 @@
             this.splitContainerControl1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerControl2)).EndInit();
             this.splitContainerControl2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.gridControlDeliverable)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gridViewDeliverable)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gridViewAssignments)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -599,14 +529,7 @@
         private DevExpress.XtraEditors.SplitContainerControl splitContainerControl2;
         private DevExpress.XtraGrid.GridControl gridControlDeliverable;
         private DevExpress.XtraGrid.Views.Grid.GridView gridViewDeliverable;
-        private DevExpress.XtraGrid.Columns.GridColumn colRATE;
-        private DevExpress.XtraGrid.Columns.GridColumn colDELIVERABLE_STATUS;
-        private DevExpress.XtraGrid.Columns.GridColumn colITEMRATE;
-        private DevExpress.XtraGrid.Columns.GridColumn colESTIMATED_COSTS;
-        private DevExpress.XtraGrid.Columns.GridColumn colDC_COSTS;
-        private DevExpress.XtraGrid.Columns.GridColumn colTOTAL_COSTS;
         private DevExpress.XtraGrid.Columns.GridColumn colEntity;
-        private DevExpress.XtraGrid.Columns.GridColumn colGUID;
         private DevExpress.XtraGrid.Views.Grid.GridView gridViewAssignments;
         private DevExpress.XtraGrid.Columns.GridColumn colGUID1;
         private DevExpress.XtraGrid.Columns.GridColumn colISMODIFIEDBASELINE;

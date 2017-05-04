@@ -1,12 +1,13 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.DataModel;
+using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Document;
+using BaseModel.ViewModel.Loader;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
-using BluePrints.Common.DataModel;
 using BluePrints.Common.Helpers;
-using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
-using BluePrints.Common.ViewModel;
 using BluePrints.Data;
-using BluePrints.Data.Helpers;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using System;
@@ -17,8 +18,7 @@ namespace BluePrints.ViewModels
 {
     public class PROJECTCollectionViewModelWrapper :
         CollectionViewModelsWrapper
-        <PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>>
+        <PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROJECT_ITEMSViewModelWrapper as a POCO view model.
@@ -153,9 +153,9 @@ namespace BluePrints.ViewModels
                 newAREA.TITLE = "000";
                 AREAViewModel.Save(newAREA);
 
-                DEPARTMENT defaultDepartment = DEPARTMENTViewModel.Entities.FirstOrDefault(x => x.NAME == CommonResources.NewProject_DefaultDepartment);
-                DISCIPLINE defaultDiscipline = DISCIPLINEViewModel.Entities.FirstOrDefault(x => x.NAME == CommonResources.NewProject_DefaultDiscipline);
-                DOCTYPE defaultDocType = DOCTYPEViewModel.Entities.FirstOrDefault(x => x.NAME == CommonResources.NewProject_DefaultDocType);
+                DEPARTMENT defaultDepartment = DEPARTMENTViewModel.Entities.FirstOrDefault(x => x.NAME == BluePrintsResources.NewProject_DefaultDepartment);
+                DISCIPLINE defaultDiscipline = DISCIPLINEViewModel.Entities.FirstOrDefault(x => x.NAME == BluePrintsResources.NewProject_DefaultDiscipline);
+                DOCTYPE defaultDocType = DOCTYPEViewModel.Entities.FirstOrDefault(x => x.NAME == BluePrintsResources.NewProject_DefaultDocType);
 
                 if(defaultDepartment != null && defaultDiscipline != null)
                 {
@@ -326,12 +326,12 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            CustomDocumentInfo customDocumentInfo = new CustomDocumentInfo(
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), 
                 new EntitiesParameter<PROJECT>(DisplaySelectedEntity), 
                 "PROJECTView", 
                 "[" + DisplaySelectedEntity.NUMBER + "]");
 
-            DocumentManagerService.ShowExistingEntityDocument(customDocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }
         #endregion
     }

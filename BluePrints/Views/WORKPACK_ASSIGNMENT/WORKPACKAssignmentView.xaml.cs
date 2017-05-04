@@ -1,6 +1,6 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.ViewModel.Base;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Projections;
-using BluePrints.Common.ViewModel;
 using BluePrints.Data;
 using BluePrints.ViewModels;
 using DevExpress.Xpf.Core;

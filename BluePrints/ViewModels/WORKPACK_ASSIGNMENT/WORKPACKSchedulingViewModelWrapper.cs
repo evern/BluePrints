@@ -1,11 +1,13 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.DataModel;
+using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Dialogs;
+using BaseModel.ViewModel.Loader;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
-using BluePrints.Common.DataModel;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
-using BluePrints.Common.ViewModel;
 using BluePrints.Data;
-using BluePrints.Data.Helpers;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
 using DevExpress.Mvvm;
@@ -18,8 +20,7 @@ namespace BluePrints.ViewModels
 {
     public class WORKPACKSchedulingViewModelWrapper :
         CollectionViewModelsWrapper
-        <WORKPACK, WORKPACK_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<WORKPACK, WORKPACK_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>>
+        <WORKPACK, WORKPACK_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
@@ -342,7 +343,7 @@ namespace BluePrints.ViewModels
                     "Missing P6 Activities", "MissingAssignments", missingActivitiesViewModel);
                 }
                 else
-                    MessageBoxService.ShowMessage(CommonResources.WORKPACK_ASSIGNMENT_P6WriteComplete);
+                    MessageBoxService.ShowMessage(BluePrintsResources.WORKPACK_ASSIGNMENT_P6WriteComplete);
             }
         }
 

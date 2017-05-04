@@ -1,6 +1,6 @@
-﻿using BluePrints.Common.Projections;
+﻿using BaseModel.Data.Helpers;
+using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
-using BluePrints.Data.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -226,7 +226,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (currentBASELINE_ITEM.Entity.TOTAL_HOURS == 0 || unitsPerHour == 0)
                 return remainingDataPoints;
 
-            var unitsPerDay = unitsPerHour * int.Parse(CommonResources.ProgressReporting_DefaultHoursADay);
+            var unitsPerDay = unitsPerHour * int.Parse(BluePrintsResources.ProgressReporting_DefaultHoursADay);
             decimal unitsPerPeriod;
             TimeSpan intervalPeriod = progressInterval;
 

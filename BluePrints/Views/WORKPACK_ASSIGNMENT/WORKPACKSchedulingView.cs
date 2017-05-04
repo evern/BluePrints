@@ -1,7 +1,7 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.ViewModel.Base;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Projections;
-using BluePrints.Common.ViewModel;
 using BluePrints.Data;
 using BluePrints.P6Data;
 using DevExpress.XtraGrid.Views.Grid;

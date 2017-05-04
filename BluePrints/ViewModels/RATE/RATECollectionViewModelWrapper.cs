@@ -1,9 +1,8 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
-using BluePrints.Common.DataModel;
-using BluePrints.Common.Projections;
-using BluePrints.Common.ViewModel;
+﻿using BaseModel.DataModel;
+using BaseModel.Misc;
+using BaseModel.ViewModel.Loader;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Data;
-using BluePrints.Data.Helpers;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
@@ -13,8 +12,7 @@ namespace BluePrints.ViewModels
 {
     public class RATECollectionViewModelWrapper :
         CollectionViewModelsWrapper
-        <RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>>
+        <RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of RATECollectionViewModelWrapper as a POCO view model.

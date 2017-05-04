@@ -50,7 +50,6 @@ namespace BluePrints.Data
             Database.SetInitializer<BluePrintsEntities>(null);
             modelBuilder.Conventions.Add(new FunctionConvention<BluePrintsEntities>());
             modelBuilder.ComplexType<StoredProcedure_DeliverablesDataPoints>();
-            // Add all complex types in the assembly of AdventureWorks.
             modelBuilder.AddComplexTypesFromAssembly(typeof(BluePrintsEntities).Assembly);
 
             modelBuilder.Entity<AREA>()

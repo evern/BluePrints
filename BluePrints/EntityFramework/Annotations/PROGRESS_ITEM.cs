@@ -1,8 +1,23 @@
 namespace BluePrints.Data
 {
-    using Common.ViewModel;
+    using BaseModel.Misc;
+    using System;
+    using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class PROGRESS_ITEM : IHaveGUID
+    public partial class PROGRESS_ITEM : IGuidEntityKey
     {
+        [NotMapped]
+        public Guid EntityKey
+        {
+            get
+            {
+                return GUID;
+            }
+
+            set
+            {
+                GUID = value;
+            }
+        }
     }
 }

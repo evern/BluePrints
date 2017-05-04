@@ -1,8 +1,9 @@
-﻿<view:ViewStateRestoreUserControl x:Name="userControl" 
+﻿<custom:ViewStateRestoreUserControl x:Name="userControl" 
              x:Class="BluePrints.Views.VARIATION_ITEMCollectionView"
              xmlns:view="clr-namespace:BluePrints.Views"
              xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
              xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters"
+             xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
              xmlns:common="clr-namespace:BluePrints.Common"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -21,29 +22,12 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <dxmvvm:Interaction.Behaviors>
-        <dx:DXMessageBoxService />
-        <dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />
-        <dx:WindowedDocumentUIService YieldToParent="True" />
-        <dx:DialogService x:Name="BulkColumnEditService">
-            <dx:DialogService.DialogStyle>
-                <Style TargetType="dx:DXDialogWindow">
-                    <Setter Property="SizeToContent" Value="WidthAndHeight" />
-                    <Setter Property="MinWidth" Value="500" />
-                    <Setter Property="MinHeight" Value="370" />
-                </Style>
-            </dx:DialogService.DialogStyle>
-        </dx:DialogService>
-    </dxmvvm:Interaction.Behaviors>
-    <Grid dx:DXSerializer.StoreLayoutMode="UI">
-        <dxmvvm:Interaction.Behaviors>
-            <dxmvvm:LayoutSerializationService />
-        </dxmvvm:Interaction.Behaviors>
+    <Grid Style="{StaticResource CollectionView.RootContainer}">
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
@@ -84,7 +68,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <common:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlVARIATION_ITEM"
+                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlVARIATION_ITEM"
                                      Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Name="colWORKPACKInternalName1"
@@ -383,7 +367,7 @@
                             <dxg:GridSummaryItem SummaryType="Count" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
-                            <common:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
+                            <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
                                            NewItemRowPosition="{Binding DataContext.NewItemRowPosition, ElementName=userControl}"
                                            ShowTotalSummary="True" ShowFixedTotalSummary="True" GroupSummaryDisplayMode="AlignByColumns">
                                 <dxmvvm:Interaction.Behaviors>
@@ -391,7 +375,7 @@
                                         Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}"
                                         PassEventArgsToCommand="True" EventName="CellValueChanging" />
                                 </dxmvvm:Interaction.Behaviors>
-                                <common:TableViewEx.RowCellMenuCustomizations>
+                                <custom:TableViewEx.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Bulk Edit"
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
@@ -442,12 +426,12 @@
                                     <dxb:BarButtonItem Content="Refresh"
                                                        Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                </common:TableViewEx.RowCellMenuCustomizations>
-                            </common:TableViewEx>
+                                </custom:TableViewEx.RowCellMenuCustomizations>
+                            </custom:TableViewEx>
                         </dxg:GridControl.View>
-                    </common:GridControlEx>
+                    </custom:GridControlEx>
                 </Grid>
             </DockPanel>
         </Grid>
     </Grid>
-</view:ViewStateRestoreUserControl>
+</custom:ViewStateRestoreUserControl>

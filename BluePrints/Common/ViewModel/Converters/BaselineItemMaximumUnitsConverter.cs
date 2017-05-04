@@ -24,7 +24,7 @@ namespace BluePrints.Common.ViewModel.Converters
                 var AllEntities = (IEnumerable<PROGRESS_ITEMProjection>)values[1];
                 PROGRESS_ITEMProjection currentRow = (PROGRESS_ITEMProjection)values[2];
 
-                IEnumerable<PROGRESS_ITEMProjection> allEntitiesExcludingCurrent = AllEntities.Where(x => x.GUID != currentRow.GUID);
+                IEnumerable<PROGRESS_ITEMProjection> allEntitiesExcludingCurrent = AllEntities.Where(x => x.EntityKey != currentRow.EntityKey);
                 decimal currentAssignedUnits = allEntitiesExcludingCurrent.Count() == 0 ? 0 : allEntitiesExcludingCurrent.Sum(x => x.Entity.Entity.ESTIMATED_HOURS);
                 decimal spareUnits = totalAllowedUnits - currentAssignedUnits;
                 return spareUnits > 0 ? spareUnits : 0;

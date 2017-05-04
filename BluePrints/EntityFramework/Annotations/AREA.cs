@@ -1,10 +1,25 @@
 namespace BluePrints.Data
 {
-    using Attributes;
-    using Common.ViewModel;
+    using BaseModel.Attributes;
+    using BaseModel.Misc;
+    using System;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     [ConstraintAttributes("INTERNAL_NUM")]
-    public partial class AREA : IHaveGUID
+    public partial class AREA : IGuidEntityKey
     {
+        [NotMapped]
+        public Guid EntityKey
+        {
+            get
+            {
+                return GUID;
+            }
+
+            set
+            {
+                GUID = value;
+            }
+        }
     }
 }

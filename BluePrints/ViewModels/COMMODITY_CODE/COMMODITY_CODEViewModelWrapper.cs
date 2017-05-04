@@ -1,11 +1,10 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.DataModel;
+using BaseModel.Misc;
+using BaseModel.ViewModel.Loader;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
-using BluePrints.Common.DataModel;
-using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
-using BluePrints.Common.ViewModel;
 using BluePrints.Data;
-using BluePrints.Data.Helpers;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
@@ -23,8 +22,7 @@ namespace BluePrints.ViewModels
     /// </summary>
     public partial class COMMODITY_CODESViewModelWrapper :
         CollectionViewModelsWrapper
-        <COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork>>
+        <COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of COMMODITY_CODESCollectionViewModel as a POCO view model.
@@ -568,7 +566,7 @@ namespace BluePrints.ViewModels
         {
             if (DISCIPLINECollection.Count() == 0)
             {
-                MessageBoxService.ShowMessage(CommonResources.CommodityCode_NoDiscipline);
+                MessageBoxService.ShowMessage(BluePrintsResources.CommodityCode_NoDiscipline);
                 return;
             }
 
@@ -587,7 +585,7 @@ namespace BluePrints.ViewModels
             var newCommodityCode = new COMMODITY_CODE();
             newCommodityCode.CODE = "temp";
             newCommodityCode.FULLCODE = "temp";
-            newCommodityCode.NAME = CommonResources.CommodityCode_NewCommodity;
+            newCommodityCode.NAME = BluePrintsResources.CommodityCode_NewCommodity;
             newCommodityCode.GUID_DISCIPLINE = DisplaySelectedEntity == null
                 ? DISCIPLINECollection.First().GUID
                 : DisplaySelectedEntity.GUID_DISCIPLINE;

@@ -1,4 +1,6 @@
-﻿using BluePrints.Data.Helpers;
+﻿using BaseModel.DataModel.EntityFramework;
+using BaseModel.Misc;
+using BluePrints.Common;
 using EntityFramework.Functions;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -12,8 +14,8 @@ namespace BluePrints.Data
     {
         public EntityFrameworkConfiguration()
         {
-            AddInterceptor(new SoftDeleteInterceptor());
-            AddInterceptor(new CreatedAndUpdatedDateInterceptor());
+            AddInterceptor(new SoftDeleteInterceptor("DELETED", "DELETEDBY"));
+            AddInterceptor(new CreatedAndUpdatedDateInterceptor("CREATED", "CREATEDBY", "UPDATED", "UPDATEDBY", LoginCredentials.CurrentUserGuid));
         }
     }
 
@@ -31,42 +33,26 @@ namespace BluePrints.Data
                 ChangeTracker.Entries().Where(e => e.State == EntityState.Added);
             if (AddedDbEntries.Count() > 0)
             {
-                var entityType = AddedDbEntries.First().Entity.GetType();
-                var keyPropertyInfo = DataUtils.GetKeyPropertyInfo(entityType);
-
-                if (keyPropertyInfo != null)
-                    foreach (var dbEntry in AddedDbEntries)
+                foreach (var dbEntry in AddedDbEntries)
+                {
+                    Guid newGuid = Guid.NewGuid();
+                    IGuidEntityKey guidKeyEntity = dbEntry.Entity as IGuidEntityKey;
+                    if (guidKeyEntity != null)
                     {
-                        var entryKeyMember = dbEntry.Property(keyPropertyInfo.Name);
-                        if (entryKeyMember.CurrentValue.GetType() == typeof(Guid))
-                        {
-                            var entryKeyMemberValue = (Guid) entryKeyMember.CurrentValue;
-
-                            //If key field already has generated guid it means that record should be modified, assuming redo operation have entity with null value in deleted field
-                            //This will essentially undelete the record
-                            if (entryKeyMemberValue != Guid.Empty)
-                            {
-                                dbEntry.State = EntityState.Modified;
-                            }
-                            //Generate a new guid if record have an empty guid key field
-                            else
-                            {
-                                entryKeyMember.CurrentValue = Guid.NewGuid();
-                                if (entityType.BaseType == typeof(BASELINE_ITEM) ||
-                                    entityType.BaseType == typeof(ESTIMATION_DIRECT_ITEM) ||
-                                    entityType.BaseType == typeof(ESTIMATION_INDIRECT_ITEM))
-                                {
-                                    var OGPropertyInfo = entityType.GetProperty("GUID_ORIGINAL");
-                                    if (OGPropertyInfo.GetValue(dbEntry.Entity).ToString() == Guid.Empty.ToString())
-                                        OGPropertyInfo.SetValue(dbEntry.Entity, entryKeyMember.CurrentValue);
-                                }
-                            }
-                        }
+                        //If key field already has generated guid it means that record should be modified, assuming redo operation have entity with null value in deleted field
+                        //This will essentially undelete the record
+                        if (guidKeyEntity.EntityKey != Guid.Empty)
+                            dbEntry.State = EntityState.Modified;
                         else
-                        {
-                            break;
-                        }
+                            guidKeyEntity.EntityKey = newGuid;
                     }
+
+                    IOriginalGuidEntityKey originalGuidKeyEntity = dbEntry.Entity as IOriginalGuidEntityKey;
+                    if(originalGuidKeyEntity != null)
+                    {
+                        originalGuidKeyEntity.OriginalEntityKey = newGuid;
+                    }
+                }
             }
 
             return base.SaveChanges();

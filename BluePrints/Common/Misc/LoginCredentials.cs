@@ -17,7 +17,7 @@ namespace BluePrints.Common
             {
                 currentUser = value;
                 List<ROLE_PERMISSION> user_permission = new List<ROLE_PERMISSION>();
-                if (currentUser.NAME == CommonResources.AdminUsername)
+                if (currentUser.NAME == BluePrintsResources.AdminUsername)
                 {
                     Dictionary<string, string> allPermissions = GetPermissionLookUpInDictionary();
                     foreach(KeyValuePair<string, string> permission in allPermissions)
@@ -50,12 +50,15 @@ namespace BluePrints.Common
             return CurrentUserPermission.Any(x => x.PERMISSION == permissionKey);
         }
 
-        public static Guid CurrentUserGuid()
+        public static Guid CurrentUserGuid
         {
-            if (CurrentUser == null)
-                return Guid.Empty;
+            get
+            {
+                if (CurrentUser == null)
+                    return Guid.Empty;
 
-            return CurrentUser.GUID;
+                return CurrentUser.GUID;
+            }
         }
 
         private static Dictionary<string, string> PermissionDictionary = GetPermissionLookUpInDictionary();

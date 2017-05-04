@@ -1,4 +1,5 @@
-﻿using BluePrints.Common.Projections;
+﻿using BaseModel.Misc;
+using BluePrints.Common.Projections;
 using BluePrints.ViewModels;
 using DevExpress.Xpf.Grid;
 using System;

@@ -1,6 +1,6 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.ViewModel.Base;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Projections;
-using BluePrints.Common.ViewModel;
 using BluePrints.Data;
 using BluePrints.P6Data;
 using BluePrints.ViewModels;
@@ -18,19 +18,19 @@ namespace BluePrints.Views
         public BASELINE_ITEMSchedulingViewHost()
         {
             InitializeComponent();
-            ((WORKPACKSchedulingViewModelWrapper) DataContext).windowsFormHostViewInitialization =
+            ((BASELINE_ITEMSchedulingViewModelWrapper) DataContext).windowsFormHostViewInitialization =
                 windowsFormHostViewInitialization;
         }
 
-        public void windowsFormHostViewInitialization(Func<IEnumerable<TASK>> getTASKsFunc,
-            Func<IEnumerable<PROJWBS>> getWBSSFunc,
-            Func<IEnumerable<WORKPACK_Dashboard>> getWORKPACK_DashboardFunc,
-            CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
-                WORKPACKS_ASSIGNMENTSViewModel,
+        public void windowsFormHostViewInitialization(BluePrints.Data.PROJECT PROJECT, IEnumerable<TASK> TASKS,
+            IEnumerable<PROJWBS> P6WBSs,
+            IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMProjections,
+            CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
+                BASELINE_ITEM_ASSIGNMENTSViewModel,
             bool IsModified)
         {
-            winFormHost.Child = new PROJECTWORKPACKDetailsMappingView(getTASKsFunc, getWBSSFunc,
-                getWORKPACK_DashboardFunc, WORKPACKS_ASSIGNMENTSViewModel, IsModified);
+            winFormHost.Child = new BASELINE_ITEMSchedulingView(PROJECT, TASKS, P6WBSs,
+                BASELINE_ITEMProjections, BASELINE_ITEM_ASSIGNMENTSViewModel, IsModified);
         }
     }
 }

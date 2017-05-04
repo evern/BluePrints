@@ -1,4 +1,4 @@
-﻿using BluePrints.Common.DataModel;
+﻿using BaseModel.DataModel;
 using System;
 
 namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel

@@ -7,7 +7,7 @@
     xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
     xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
-    xmlns:common="clr-namespace:BluePrints.Common"
+    xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
     Height="100" Width="300">
     <dxlc:LayoutControl Orientation="Vertical">
         <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
@@ -25,7 +25,7 @@
                         ItemsSource="{Binding SourceObjects}">
                         <dxg:LookUpEdit.PopupContentTemplate>
                             <ControlTemplate TargetType="ContentControl">
-                                <common:GridControlEx x:Name="PART_GridControl" dx:DXSerializer.SerializationID="GridControlSelectionCOMMODITY_CODE" ShowBorder="False" SelectionMode="Row">
+                                <custom:GridControlEx x:Name="PART_GridControl" dx:DXSerializer.SerializationID="GridControlSelectionCOMMODITY_CODE" ShowBorder="False" SelectionMode="Row">
                                     <dxg:GridControl.Columns>
                                         <dxg:GridColumn FieldName="COMMODITY_CODE.FULLCODE" Header="FULLCODE"
                                                         ReadOnly="True" VisibleIndex="10" />
@@ -85,7 +85,7 @@
                                     <dxg:GridControl.DetailDescriptor>
                                         <dxg:DataControlDetailDescriptor
                                             ItemsSourceBinding="{Binding CHILD_COMMODITY_CODES}">
-                                            <common:GridControlEx x:Name="PART_GridControl1" dx:DXSerializer.SerializationID="GridControlDetailCOMMODITY_CODE" ShowBorder="False"
+                                            <custom:GridControlEx x:Name="PART_GridControl1" dx:DXSerializer.SerializationID="GridControlDetailCOMMODITY_CODE" ShowBorder="False"
                                                              SelectionMode="Row">
                                                 <dxg:GridControl.Columns>
                                                     <dxg:GridColumn FieldName="COMMODITY_CODE.FULLCODE"
@@ -147,13 +147,13 @@
                                                         </dxg:GridColumn.CellTemplate>
                                                     </dxg:GridColumn>
                                                 </dxg:GridControl.Columns>
-                                            </common:GridControlEx>
+                                            </custom:GridControlEx>
                                         </dxg:DataControlDetailDescriptor>
                                     </dxg:GridControl.DetailDescriptor>
                                     <dxg:GridControl.View>
-                                        <common:TableViewEx x:Name="tableView" />
+                                        <custom:TableViewEx x:Name="tableView" />
                                     </dxg:GridControl.View>
-                                </common:GridControlEx>
+                                </custom:GridControlEx>
                             </ControlTemplate>
                         </dxg:LookUpEdit.PopupContentTemplate>
                     </dxg:LookUpEdit>

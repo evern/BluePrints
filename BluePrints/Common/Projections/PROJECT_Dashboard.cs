@@ -1,4 +1,5 @@
 ﻿using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common.Base;
 using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
@@ -10,7 +11,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class PROJECT_Dashboard : ProjectionBase<PROJECT>, IHaveSummary
+    public class PROJECT_Dashboard : BluePrintsProjectionBase<PROJECT>, IHaveSummary
     {
         public PROJECT_Dashboard()
         {
@@ -111,7 +112,7 @@ namespace BluePrints.Common.Projections
 
                 var currentPROJECT_Dashboard = new PROJECT_Dashboard()
                 {
-                    GUID = localPROJECT.GUID,
+                    EntityKey = localPROJECT.GUID,
                     Entity = localPROJECT
                     //VARIATIONS = ApprovedVARIATIONSByProject
                 };
@@ -141,7 +142,7 @@ namespace BluePrints.Common.Projections
 
             var currentPROJECT_Dashboard = new PROJECT_Dashboard()
             {
-                GUID = PROJECT.GUID,
+                EntityKey = PROJECT.GUID,
                 Entity = PROJECT
             };
 

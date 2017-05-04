@@ -1,12 +1,14 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
+using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Loader;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
-using BluePrints.Common.DataModel;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
-using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
-using BluePrints.Data.Helpers;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Bars;
@@ -23,8 +25,7 @@ namespace BluePrints.ViewModels
     /// </summary>
     public partial class VARIATION_ITEMSCollectionViewModelWrapper :
         CollectionViewModelsWrapper
-        <BASELINE_ITEM, VARIATION_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork,
-            CollectionViewModel<BASELINE_ITEM, VARIATION_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>>
+        <BASELINE_ITEM, VARIATION_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         //Used by view to show hidden workpack columns
         public Action ShowWORKPACKInternalName1;
@@ -228,7 +229,7 @@ namespace BluePrints.ViewModels
                 if (mainEntity != null)
                 {
                     //got to make sure sender is not MainViewModel or else it'll not be refreshed
-                    mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(mainEntity.GUID, EntityMessageType.Changed, this))));
+                    mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(mainEntity.EntityKey, EntityMessageType.Changed, this))));
                     return true;
                 }
             }
@@ -528,7 +529,7 @@ namespace BluePrints.ViewModels
                 + "."
                 + BindableBase.GetPropertyName(() => new VARIATION_ITEM().VARIATION_UNITS))
             {
-                MessageBoxService.ShowMessage(CommonResources.Notify_AddBASELINE_ITEMBeforeVARIATION_UNITS);
+                MessageBoxService.ShowMessage(BluePrintsResources.Notify_AddBASELINE_ITEMBeforeVARIATION_UNITS);
                 e.Handled = true;
                 return;
             }
@@ -562,7 +563,7 @@ namespace BluePrints.ViewModels
                         MainViewModel.Entities.Select(x => x.Entity).AsEnumerable();
 
                     activeItem.Entity.Entity.INTERNAL_NUM =
-                        BluePrintDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT, BASELINE_ITEMJoinRATES,
+                        BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT, BASELINE_ITEMJoinRATES,
                             SelectedAREA, SelectedDISCIPLINE, SelectedDOCTYPE);
                     RefreshSelectedEntity();
                 }
@@ -618,8 +619,8 @@ namespace BluePrints.ViewModels
                     DOCTYPECollection.FirstOrDefault(
                         x => x.GUID == newProjection.Entity.Entity.GUID_DOCTYPE);
                 newProjection.Entity.Entity.INTERNAL_NUM =
-                    BluePrintDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT, BASELINE_ITEMS, selectedAREA,
-                        selectedDISCIPLINE, selectedDOCTYPE, newProjection.GUID);
+                    BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT, BASELINE_ITEMS, selectedAREA,
+                        selectedDISCIPLINE, selectedDOCTYPE, newProjection.EntityKey);
                 MainViewModel.Save(newProjection);
             }
 
@@ -686,10 +687,10 @@ namespace BluePrints.ViewModels
                         x => x.GUID == entity.Entity.Entity.GUID_WORKPACK);
                 if (info.Column.FieldName == internalNumberFieldName)
                 {
-                    var internalNum = BluePrintDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT,
+                    var internalNum = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT,
                         BASELINE_ITEMS, entity.Entity.Entity.AREA,
                         entity.Entity.Entity.DISCIPLINE,
-                        entity.Entity.Entity.DOCTYPE, entity.GUID);
+                        entity.Entity.Entity.DOCTYPE, entity.EntityKey);
                     MainViewModel.SetNestedValueWithUndo(entity, info.Column.FieldName, internalNum);
                     entitiesToSave.Add(entity);
                 }
@@ -742,17 +743,17 @@ namespace BluePrints.ViewModels
                         if (entity.Entity.Entity.GUID_DOCTYPE != null)
                             newWORKPACK.GUID_DDOCTYPE = (Guid) entity.Entity.Entity.GUID_DOCTYPE;
 
-                        newWORKPACK.INTERNAL_NAME1 = BluePrintDataUtils.WORKPACK_Generate_InternalNumber1(loadPROJECT,
+                        newWORKPACK.INTERNAL_NAME1 = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber1(loadPROJECT,
                             newWORKPACK, WORKPACKCollection, AREACollection, DISCIPLINECollection, DOCTYPECollection);
-                        newWORKPACK.INTERNAL_NAME2 = BluePrintDataUtils.WORKPACK_Generate_InternalNumber2(loadPROJECT,
+                        newWORKPACK.INTERNAL_NAME2 = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2(loadPROJECT,
                             newWORKPACK, WORKPACKCollection, AREACollection, DISCIPLINECollection, PHASECollection);
 
                         newWORKPACK.STARTDATE = DateTime.Now;
                         newWORKPACK.ENDDATE =
-                            BluePrintDataUtils.WORKPACK_Calculate_EndDate((DateTime) newWORKPACK.STARTDATE, loadPROJECT);
+                            BluePrintsDataUtils.WORKPACK_Calculate_EndDate((DateTime) newWORKPACK.STARTDATE, loadPROJECT);
                         var reviewStartDate = (DateTime) newWORKPACK.STARTDATE;
                         var reviewEndDate = (DateTime) newWORKPACK.ENDDATE;
-                        BluePrintDataUtils.WORKPACK_Calculate_ReviewPeriod(ref reviewStartDate, ref reviewEndDate,
+                        BluePrintsDataUtils.WORKPACK_Calculate_ReviewPeriod(ref reviewStartDate, ref reviewEndDate,
                             loadPROJECT, false);
                         newWORKPACK.REVIEWSTARTDATE = reviewStartDate;
                         newWORKPACK.REVIEWENDDATE = reviewEndDate;

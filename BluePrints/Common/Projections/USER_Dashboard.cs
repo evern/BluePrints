@@ -1,4 +1,5 @@
-﻿using BluePrints.Common.ViewModel;
+﻿using BluePrints.Common.Base;
+using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.P6EntitiesDataModel;
@@ -8,7 +9,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class USER_Dashboard : ProjectionBase<PROJECT>, IHaveStats
+    public class USER_Dashboard : BluePrintsProjectionBase<PROJECT>, IHaveStats
     {
         public PROGRESS_ITEMProjection PROGRESS_ITEMProjection { get; set; }
         public PartialStatsBuilder DataPointsBuilder { get; set; }
@@ -119,7 +120,7 @@ namespace BluePrints.Common.Projections
                 List<PROGRESS_ITEMProjection> PROJECT_PROGRESS_ITEMS = PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMSWithStats(userBASELINE_ITEMS.AsQueryable(), () => activePROJECT, () => livePROGRESS, () => liveBASELINE, () => projectWORKPACK, () => livePROGRESS_ITEMS, () => projectRATES, getDELIVERABLES_STATUSESFunc, () => approvedVARIATION, p6UnitOfWork).ToList();
 
                 PROJECT_PROGRESS_ITEMS.ForEach(x => x.BuildStats());
-                List<USER_Dashboard> userDashboard = PROJECT_PROGRESS_ITEMS.Select(x => new USER_Dashboard() { GUID = x.GUID, PROGRESS_ITEMProjection = x, Entity = activePROJECT }).ToList();
+                List<USER_Dashboard> userDashboard = PROJECT_PROGRESS_ITEMS.Select(x => new USER_Dashboard() { EntityKey = x.EntityKey, PROGRESS_ITEMProjection = x, Entity = activePROJECT }).ToList();
                 USER_Dashboards.AddRange(userDashboard);
             }
 

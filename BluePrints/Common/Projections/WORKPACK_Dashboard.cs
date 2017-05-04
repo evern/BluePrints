@@ -1,4 +1,5 @@
-﻿using BluePrints.Common.ViewModel;
+﻿using BluePrints.Common.Base;
+using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using System;
@@ -7,7 +8,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class WORKPACK_Dashboard : ProjectionBase<WORKPACK>, IHaveStats
+    public class WORKPACK_Dashboard : BluePrintsProjectionBase<WORKPACK>, IHaveStats
     {
         public ProgressStats Stats { get; set; }
 
@@ -54,8 +55,8 @@ namespace BluePrints.Common.Projections
             PROJECT_Dashboard projectDashboard)
         {
             IEnumerable<WORKPACK_Dashboard> projectWORKPACKDashboards =
-                WORKPACKS.Where(x => x.GUID_PROJECT == projectDashboard.GUID)
-                    .Select(x => new WORKPACK_Dashboard() {GUID = x.GUID, Entity = x});
+                WORKPACKS.Where(x => x.GUID_PROJECT == projectDashboard.EntityKey)
+                    .Select(x => new WORKPACK_Dashboard() {EntityKey = x.GUID, Entity = x});
             List<WORKPACK_Dashboard> newWORKPACKDashboards = projectWORKPACKDashboards.ToList();
             newWORKPACKDashboards.ForEach(x => x.GroupProjectStats((ProjectSummaryStats)projectDashboard.Stats));
 

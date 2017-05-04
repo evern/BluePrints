@@ -1,5 +1,5 @@
-﻿using BluePrints.Common.DataModel;
-using BluePrints.Common.DataModel.DesignTime;
+﻿using BaseModel.DataModel;
+using BaseModel.DataModel.DesignTime;
 using BluePrints.P6Data;
 using System;
 
