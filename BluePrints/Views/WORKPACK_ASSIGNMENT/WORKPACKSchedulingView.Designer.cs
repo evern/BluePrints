@@ -166,7 +166,7 @@
             this.gridControlWorkpack.MainView = this.gridViewWorkpack;
             this.gridControlWorkpack.Name = "gridControlWorkpack";
             this.gridControlWorkpack.ShowOnlyPredefinedDetails = true;
-            this.gridControlWorkpack.Size = new System.Drawing.Size(1904, 202);
+            this.gridControlWorkpack.Size = new System.Drawing.Size(1904, 205);
             this.gridControlWorkpack.TabIndex = 1;
             this.gridControlWorkpack.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridViewWorkpack,
@@ -398,7 +398,7 @@
             this.schedulerControl1.OptionsCustomization.AllowDisplayAppointmentDependencyForm = DevExpress.XtraScheduler.AllowDisplayAppointmentDependencyForm.Never;
             this.schedulerControl1.OptionsCustomization.AllowDisplayAppointmentForm = DevExpress.XtraScheduler.AllowDisplayAppointmentForm.Never;
             this.schedulerControl1.OptionsCustomization.AllowInplaceEditor = DevExpress.XtraScheduler.UsedAppointmentType.None;
-            this.schedulerControl1.Size = new System.Drawing.Size(1384, 831);
+            this.schedulerControl1.Size = new System.Drawing.Size(1387, 831);
             this.schedulerControl1.Start = new System.DateTime(2012, 1, 1, 0, 0, 0, 0);
             this.schedulerControl1.TabIndex = 2;
             this.schedulerControl1.Text = "schedulerControl1";
@@ -470,6 +470,7 @@
             this.resourcesTree1.Location = new System.Drawing.Point(0, 0);
             this.resourcesTree1.Name = "resourcesTree1";
             this.resourcesTree1.OptionsBehavior.Editable = false;
+            this.resourcesTree1.RefreshDataOnSchedulerChanges = false;
             this.resourcesTree1.SchedulerControl = this.schedulerControl1;
             this.resourcesTree1.Size = new System.Drawing.Size(512, 831);
             this.resourcesTree1.TabIndex = 3;

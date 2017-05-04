@@ -3,6 +3,7 @@ using BluePrints.Common.Base;
 using BluePrints.Data;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace BluePrints.Common.Projections
@@ -82,6 +83,9 @@ namespace BluePrints.Common.Projections
                 return Entity.TOTAL_HOURS * ITEMRATE;
             }
         }
+
+
+        public ICollection<BASELINE_ITEM_ASSIGNMENT> ObservableBASELINE_ITEM_ASSIGNMENT { get; set; }
 
         private List<BASELINE_ITEM_ASSIGNMENT> baseline_item_assignments;
         public List<BASELINE_ITEM_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENTS

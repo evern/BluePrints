@@ -28,9 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             DevExpress.XtraGrid.GridFormatRule gridFormatRule1 = new DevExpress.XtraGrid.GridFormatRule();
-            DevExpress.XtraEditors.FormatConditionRuleExpression formatConditionRuleExpression1 = new DevExpress.XtraEditors.FormatConditionRuleExpression();
+            DevExpress.XtraEditors.FormatConditionRuleDataBar formatConditionRuleDataBar1 = new DevExpress.XtraEditors.FormatConditionRuleDataBar();
             DevExpress.XtraScheduler.TimeRuler timeRuler1 = new DevExpress.XtraScheduler.TimeRuler();
             DevExpress.XtraScheduler.TimeRuler timeRuler2 = new DevExpress.XtraScheduler.TimeRuler();
             DevExpress.XtraScheduler.TimeScaleYear timeScaleYear1 = new DevExpress.XtraScheduler.TimeScaleYear();
@@ -41,26 +40,19 @@
             DevExpress.XtraScheduler.TimeScaleHour timeScaleHour1 = new DevExpress.XtraScheduler.TimeScaleHour();
             DevExpress.XtraScheduler.TimeScale15Minutes timeScale15Minutes1 = new DevExpress.XtraScheduler.TimeScale15Minutes();
             DevExpress.XtraScheduler.TimeRuler timeRuler3 = new DevExpress.XtraScheduler.TimeRuler();
-            this.gridViewAssignments = new DevExpress.XtraGrid.Views.Grid.GridView();
-            this.colGUID1 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colISMODIFIEDBASELINE = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colGUID_ORIGINAL = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colP6_ACTIVITYID = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colLOW_VALUE = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colHIGH_VALUE = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colCREATED = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colCREATEDBY = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colUPDATED = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colUPDATEDBY = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colDELETED = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colDELETEDBY = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridControlDeliverable = new DevExpress.XtraGrid.GridControl();
-            this.gridBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.gridBindingSource = new System.Windows.Forms.BindingSource();
             this.gridViewDeliverable = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.colEntity = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.schedulerStorage1 = new DevExpress.XtraScheduler.SchedulerStorage(this.components);
-            this.schedulerBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.barAndDockingController1 = new DevExpress.XtraBars.BarAndDockingController(this.components);
+            this.colArea = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colDocType = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colDepartment = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colDiscipline = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colWorkpack = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colAssigned = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.schedulerStorage1 = new DevExpress.XtraScheduler.SchedulerStorage();
+            this.schedulerBindingSource = new System.Windows.Forms.BindingSource();
+            this.barAndDockingController1 = new DevExpress.XtraBars.BarAndDockingController();
             this.schedulerBarController1 = new DevExpress.XtraScheduler.UI.SchedulerBarController();
             this.schedulerControl1 = new DevExpress.XtraScheduler.SchedulerControl();
             this.resourcesTree1 = new DevExpress.XtraScheduler.UI.ResourcesTree();
@@ -70,7 +62,6 @@
             this.resourceTreeColumn3 = new DevExpress.XtraScheduler.Native.ResourceTreeColumn();
             this.splitContainerControl1 = new DevExpress.XtraEditors.SplitContainerControl();
             this.splitContainerControl2 = new DevExpress.XtraEditors.SplitContainerControl();
-            ((System.ComponentModel.ISupportInitialize)(this.gridViewAssignments)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridControlDeliverable)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewDeliverable)).BeginInit();
@@ -86,108 +77,6 @@
             this.splitContainerControl2.SuspendLayout();
             this.SuspendLayout();
             // 
-            // gridViewAssignments
-            // 
-            this.gridViewAssignments.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.colGUID1,
-            this.colISMODIFIEDBASELINE,
-            this.colGUID_ORIGINAL,
-            this.colP6_ACTIVITYID,
-            this.colLOW_VALUE,
-            this.colHIGH_VALUE,
-            this.colCREATED,
-            this.colCREATEDBY,
-            this.colUPDATED,
-            this.colUPDATEDBY,
-            this.colDELETED,
-            this.colDELETEDBY});
-            this.gridViewAssignments.GridControl = this.gridControlDeliverable;
-            this.gridViewAssignments.Name = "gridViewAssignments";
-            // 
-            // colGUID1
-            // 
-            this.colGUID1.FieldName = "GUID";
-            this.colGUID1.Name = "colGUID1";
-            this.colGUID1.Visible = true;
-            this.colGUID1.VisibleIndex = 0;
-            // 
-            // colISMODIFIEDBASELINE
-            // 
-            this.colISMODIFIEDBASELINE.FieldName = "ISMODIFIEDBASELINE";
-            this.colISMODIFIEDBASELINE.Name = "colISMODIFIEDBASELINE";
-            this.colISMODIFIEDBASELINE.Visible = true;
-            this.colISMODIFIEDBASELINE.VisibleIndex = 1;
-            // 
-            // colGUID_ORIGINAL
-            // 
-            this.colGUID_ORIGINAL.FieldName = "GUID_ORIGINAL";
-            this.colGUID_ORIGINAL.Name = "colGUID_ORIGINAL";
-            this.colGUID_ORIGINAL.Visible = true;
-            this.colGUID_ORIGINAL.VisibleIndex = 2;
-            // 
-            // colP6_ACTIVITYID
-            // 
-            this.colP6_ACTIVITYID.FieldName = "P6_ACTIVITYID";
-            this.colP6_ACTIVITYID.Name = "colP6_ACTIVITYID";
-            this.colP6_ACTIVITYID.Visible = true;
-            this.colP6_ACTIVITYID.VisibleIndex = 3;
-            // 
-            // colLOW_VALUE
-            // 
-            this.colLOW_VALUE.FieldName = "LOW_VALUE";
-            this.colLOW_VALUE.Name = "colLOW_VALUE";
-            this.colLOW_VALUE.Visible = true;
-            this.colLOW_VALUE.VisibleIndex = 4;
-            // 
-            // colHIGH_VALUE
-            // 
-            this.colHIGH_VALUE.FieldName = "HIGH_VALUE";
-            this.colHIGH_VALUE.Name = "colHIGH_VALUE";
-            this.colHIGH_VALUE.Visible = true;
-            this.colHIGH_VALUE.VisibleIndex = 5;
-            // 
-            // colCREATED
-            // 
-            this.colCREATED.FieldName = "CREATED";
-            this.colCREATED.Name = "colCREATED";
-            this.colCREATED.Visible = true;
-            this.colCREATED.VisibleIndex = 6;
-            // 
-            // colCREATEDBY
-            // 
-            this.colCREATEDBY.FieldName = "CREATEDBY";
-            this.colCREATEDBY.Name = "colCREATEDBY";
-            this.colCREATEDBY.Visible = true;
-            this.colCREATEDBY.VisibleIndex = 7;
-            // 
-            // colUPDATED
-            // 
-            this.colUPDATED.FieldName = "UPDATED";
-            this.colUPDATED.Name = "colUPDATED";
-            this.colUPDATED.Visible = true;
-            this.colUPDATED.VisibleIndex = 8;
-            // 
-            // colUPDATEDBY
-            // 
-            this.colUPDATEDBY.FieldName = "UPDATEDBY";
-            this.colUPDATEDBY.Name = "colUPDATEDBY";
-            this.colUPDATEDBY.Visible = true;
-            this.colUPDATEDBY.VisibleIndex = 9;
-            // 
-            // colDELETED
-            // 
-            this.colDELETED.FieldName = "DELETED";
-            this.colDELETED.Name = "colDELETED";
-            this.colDELETED.Visible = true;
-            this.colDELETED.VisibleIndex = 10;
-            // 
-            // colDELETEDBY
-            // 
-            this.colDELETEDBY.FieldName = "DELETEDBY";
-            this.colDELETEDBY.Name = "colDELETEDBY";
-            this.colDELETEDBY.Visible = true;
-            this.colDELETEDBY.VisibleIndex = 11;
-            // 
             // gridControlDeliverable
             // 
             this.gridControlDeliverable.Cursor = System.Windows.Forms.Cursors.Default;
@@ -200,15 +89,10 @@
             this.gridControlDeliverable.MainView = this.gridViewDeliverable;
             this.gridControlDeliverable.Name = "gridControlDeliverable";
             this.gridControlDeliverable.ShowOnlyPredefinedDetails = true;
-            this.gridControlDeliverable.Size = new System.Drawing.Size(1904, 307);
+            this.gridControlDeliverable.Size = new System.Drawing.Size(1904, 308);
             this.gridControlDeliverable.TabIndex = 1;
             this.gridControlDeliverable.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
-            this.gridViewDeliverable,
-            this.gridViewAssignments});
-            // 
-            // gridBindingSource
-            // 
-            this.gridBindingSource.DataSource = typeof(BluePrints.Common.Projections.BASELINE_ITEMProjection);
+            this.gridViewDeliverable});
             // 
             // gridViewDeliverable
             // 
@@ -237,29 +121,100 @@
             this.gridViewDeliverable.Appearance.ViewCaption.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gridViewDeliverable.Appearance.ViewCaption.Options.UseFont = true;
             this.gridViewDeliverable.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.colEntity});
-            gridFormatRule1.ApplyToRow = true;
-            gridFormatRule1.Name = "Mismatched Assigned Units";
-            formatConditionRuleExpression1.Expression = "[ASSIGNED_UNITS] <> [Stats.BudgetedUnits]";
-            formatConditionRuleExpression1.PredefinedName = "Red Fill, Red Text";
-            gridFormatRule1.Rule = formatConditionRuleExpression1;
+            this.colEntity,
+            this.colArea,
+            this.colDocType,
+            this.colDepartment,
+            this.colDiscipline,
+            this.colWorkpack,
+            this.colAssigned});
+            gridFormatRule1.Column = this.colAssigned;
+            gridFormatRule1.ColumnApplyTo = this.colAssigned;
+            gridFormatRule1.Name = "Format0";
+            formatConditionRuleDataBar1.AllowNegativeAxis = false;
+            formatConditionRuleDataBar1.Appearance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            formatConditionRuleDataBar1.Appearance.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            formatConditionRuleDataBar1.Appearance.Options.UseBackColor = true;
+            formatConditionRuleDataBar1.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            formatConditionRuleDataBar1.PredefinedName = null;
+            gridFormatRule1.Rule = formatConditionRuleDataBar1;
             this.gridViewDeliverable.FormatRules.Add(gridFormatRule1);
             this.gridViewDeliverable.GridControl = this.gridControlDeliverable;
-            this.gridViewDeliverable.GroupSummary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] {
-            new DevExpress.XtraGrid.GridGroupSummaryItem(DevExpress.Data.SummaryItemType.Sum, "Workpack_AssignedUnits", null, "(Assigned Units: SUM={0:0.##})"),
-            new DevExpress.XtraGrid.GridGroupSummaryItem(DevExpress.Data.SummaryItemType.Sum, "Total_BudgetedUnits", null, "(Budgeted Units: SUM={0:0.##})")});
             this.gridViewDeliverable.Name = "gridViewDeliverable";
             this.gridViewDeliverable.OptionsSelection.MultiSelect = true;
             this.gridViewDeliverable.OptionsView.ShowFooter = true;
             // 
             // colEntity
             // 
+            this.colEntity.Caption = "Internal Number";
             this.colEntity.FieldName = "Entity.INTERNAL_NUM";
             this.colEntity.Name = "colEntity";
             this.colEntity.OptionsColumn.AllowEdit = false;
             this.colEntity.OptionsColumn.ReadOnly = true;
             this.colEntity.Visible = true;
-            this.colEntity.VisibleIndex = 0;
+            this.colEntity.VisibleIndex = 5;
+            // 
+            // colArea
+            // 
+            this.colArea.Caption = "Area";
+            this.colArea.FieldName = "Entity.AREA.INTERNAL_NUM";
+            this.colArea.Name = "colArea";
+            this.colArea.OptionsColumn.AllowEdit = false;
+            this.colArea.Visible = true;
+            this.colArea.VisibleIndex = 1;
+            // 
+            // colDocType
+            // 
+            this.colDocType.Caption = "Doc Type";
+            this.colDocType.FieldName = "Entity.DOCTYPE.NAME";
+            this.colDocType.Name = "colDocType";
+            this.colDocType.OptionsColumn.AllowEdit = false;
+            this.colDocType.Visible = true;
+            this.colDocType.VisibleIndex = 2;
+            // 
+            // colDepartment
+            // 
+            this.colDepartment.Caption = "Department";
+            this.colDepartment.FieldName = "Entity.DEPARTMENT.NAME";
+            this.colDepartment.Name = "colDepartment";
+            this.colDepartment.OptionsColumn.AllowEdit = false;
+            this.colDepartment.Visible = true;
+            this.colDepartment.VisibleIndex = 3;
+            // 
+            // colDiscipline
+            // 
+            this.colDiscipline.Caption = "Discipline";
+            this.colDiscipline.FieldName = "Entity.DISCIPLINE.NAME";
+            this.colDiscipline.Name = "colDiscipline";
+            this.colDiscipline.OptionsColumn.AllowEdit = false;
+            this.colDiscipline.Visible = true;
+            this.colDiscipline.VisibleIndex = 4;
+            // 
+            // colWorkpack
+            // 
+            this.colWorkpack.Caption = "Workpack";
+            this.colWorkpack.FieldName = "Entity.WORKPACK.INTERNAL_NAME1";
+            this.colWorkpack.Name = "colWorkpack";
+            this.colWorkpack.OptionsColumn.AllowEdit = false;
+            this.colWorkpack.OptionsColumn.ReadOnly = true;
+            this.colWorkpack.Visible = true;
+            this.colWorkpack.VisibleIndex = 0;
+            // 
+            // colAssigned
+            // 
+            this.colAssigned.Caption = "Assigned %";
+            this.colAssigned.DisplayFormat.FormatString = "p2";
+            this.colAssigned.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+            this.colAssigned.FieldName = "ASSIGNED_PERCENTAGE";
+            this.colAssigned.Name = "colAssigned";
+            this.colAssigned.OptionsColumn.AllowEdit = false;
+            this.colAssigned.OptionsColumn.ReadOnly = true;
+            this.colAssigned.Visible = true;
+            this.colAssigned.VisibleIndex = 6;
             // 
             // schedulerStorage1
             // 
@@ -300,10 +255,6 @@
             this.schedulerStorage1.Resources.Mappings.Id = "ResourceId";
             this.schedulerStorage1.Resources.Mappings.ParentId = "ParentId";
             // 
-            // schedulerBindingSource
-            // 
-            this.schedulerBindingSource.DataSource = typeof(BluePrints.Data.TASK_AppointmentInfo);
-            // 
             // barAndDockingController1
             // 
             this.barAndDockingController1.LookAndFeel.SkinName = "Visual Studio 2013 Light";
@@ -336,7 +287,7 @@
             this.schedulerControl1.OptionsCustomization.AllowDisplayAppointmentDependencyForm = DevExpress.XtraScheduler.AllowDisplayAppointmentDependencyForm.Never;
             this.schedulerControl1.OptionsCustomization.AllowDisplayAppointmentForm = DevExpress.XtraScheduler.AllowDisplayAppointmentForm.Never;
             this.schedulerControl1.OptionsCustomization.AllowInplaceEditor = DevExpress.XtraScheduler.UsedAppointmentType.None;
-            this.schedulerControl1.Size = new System.Drawing.Size(1386, 728);
+            this.schedulerControl1.Size = new System.Drawing.Size(1387, 728);
             this.schedulerControl1.Start = new System.DateTime(2012, 1, 1, 0, 0, 0, 0);
             this.schedulerControl1.TabIndex = 2;
             this.schedulerControl1.Text = "schedulerControl1";
@@ -408,6 +359,7 @@
             this.resourcesTree1.Location = new System.Drawing.Point(0, 0);
             this.resourcesTree1.Name = "resourcesTree1";
             this.resourcesTree1.OptionsBehavior.Editable = false;
+            this.resourcesTree1.RefreshDataOnSchedulerChanges = false;
             this.resourcesTree1.SchedulerControl = this.schedulerControl1;
             this.resourcesTree1.Size = new System.Drawing.Size(512, 728);
             this.resourcesTree1.TabIndex = 3;
@@ -494,7 +446,6 @@
             this.Controls.Add(this.splitContainerControl1);
             this.Name = "BASELINE_ITEMSchedulingView";
             this.Size = new System.Drawing.Size(1904, 1041);
-            ((System.ComponentModel.ISupportInitialize)(this.gridViewAssignments)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridControlDeliverable)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewDeliverable)).EndInit();
@@ -530,18 +481,11 @@
         private DevExpress.XtraGrid.GridControl gridControlDeliverable;
         private DevExpress.XtraGrid.Views.Grid.GridView gridViewDeliverable;
         private DevExpress.XtraGrid.Columns.GridColumn colEntity;
-        private DevExpress.XtraGrid.Views.Grid.GridView gridViewAssignments;
-        private DevExpress.XtraGrid.Columns.GridColumn colGUID1;
-        private DevExpress.XtraGrid.Columns.GridColumn colISMODIFIEDBASELINE;
-        private DevExpress.XtraGrid.Columns.GridColumn colGUID_ORIGINAL;
-        private DevExpress.XtraGrid.Columns.GridColumn colP6_ACTIVITYID;
-        private DevExpress.XtraGrid.Columns.GridColumn colLOW_VALUE;
-        private DevExpress.XtraGrid.Columns.GridColumn colHIGH_VALUE;
-        private DevExpress.XtraGrid.Columns.GridColumn colCREATED;
-        private DevExpress.XtraGrid.Columns.GridColumn colCREATEDBY;
-        private DevExpress.XtraGrid.Columns.GridColumn colUPDATED;
-        private DevExpress.XtraGrid.Columns.GridColumn colUPDATEDBY;
-        private DevExpress.XtraGrid.Columns.GridColumn colDELETED;
-        private DevExpress.XtraGrid.Columns.GridColumn colDELETEDBY;
+        private DevExpress.XtraGrid.Columns.GridColumn colWorkpack;
+        private DevExpress.XtraGrid.Columns.GridColumn colAssigned;
+        private DevExpress.XtraGrid.Columns.GridColumn colDiscipline;
+        private DevExpress.XtraGrid.Columns.GridColumn colArea;
+        private DevExpress.XtraGrid.Columns.GridColumn colDocType;
+        private DevExpress.XtraGrid.Columns.GridColumn colDepartment;
     }
 }

@@ -65,6 +65,7 @@ namespace BluePrints.ViewModels
         private void SelectAllDispatcherTimer_Tick(object sender, EventArgs e)
         {
             selectAllDispatcherTimer.Stop();
+            SelectedBASELINE_ITEMS.Clear();
             foreach (BASELINE_ITEMProjection contextBASELINE_ITEM in ContextBASELINE_ITEMS)
                 SelectedBASELINE_ITEMS.Add(contextBASELINE_ITEM);
         }

@@ -22,6 +22,11 @@
                                       >
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="INTERNAL NUM" FieldName="Entity.INTERNAL_NUM" VisibleIndex="0" />
+                        <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="ASSIGNED %" FieldName="ASSIGNED_PERCENTAGE" VisibleIndex="10" >
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:TextEditSettings DisplayFormat="p2" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.View>
                         <custom:TableViewEx x:Name="GridViewBaseline_Items"
@@ -110,13 +115,13 @@
                                                             ValueMember="Subject" DisplayMember="Description" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="Low Value"
+                                <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="From %"
                                         FieldName="Entity.LOW_VALUE" VisibleIndex="30">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings DisplayFormat="p2" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="High Value"
+                                <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="To %"
                                         FieldName="Entity.HIGH_VALUE" VisibleIndex="40">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings DisplayFormat="p2" />
