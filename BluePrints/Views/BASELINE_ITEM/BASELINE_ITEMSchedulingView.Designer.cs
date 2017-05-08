@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             DevExpress.XtraGrid.GridFormatRule gridFormatRule1 = new DevExpress.XtraGrid.GridFormatRule();
             DevExpress.XtraEditors.FormatConditionRuleDataBar formatConditionRuleDataBar1 = new DevExpress.XtraEditors.FormatConditionRuleDataBar();
             DevExpress.XtraScheduler.TimeRuler timeRuler1 = new DevExpress.XtraScheduler.TimeRuler();
@@ -40,8 +41,9 @@
             DevExpress.XtraScheduler.TimeScaleHour timeScaleHour1 = new DevExpress.XtraScheduler.TimeScaleHour();
             DevExpress.XtraScheduler.TimeScale15Minutes timeScale15Minutes1 = new DevExpress.XtraScheduler.TimeScale15Minutes();
             DevExpress.XtraScheduler.TimeRuler timeRuler3 = new DevExpress.XtraScheduler.TimeRuler();
+            this.colAssigned = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridControlDeliverable = new DevExpress.XtraGrid.GridControl();
-            this.gridBindingSource = new System.Windows.Forms.BindingSource();
+            this.gridBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.gridViewDeliverable = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.colEntity = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colArea = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -49,10 +51,9 @@
             this.colDepartment = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colDiscipline = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colWorkpack = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colAssigned = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.schedulerStorage1 = new DevExpress.XtraScheduler.SchedulerStorage();
-            this.schedulerBindingSource = new System.Windows.Forms.BindingSource();
-            this.barAndDockingController1 = new DevExpress.XtraBars.BarAndDockingController();
+            this.schedulerStorage1 = new DevExpress.XtraScheduler.SchedulerStorage(this.components);
+            this.schedulerBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.barAndDockingController1 = new DevExpress.XtraBars.BarAndDockingController(this.components);
             this.schedulerBarController1 = new DevExpress.XtraScheduler.UI.SchedulerBarController();
             this.schedulerControl1 = new DevExpress.XtraScheduler.SchedulerControl();
             this.resourcesTree1 = new DevExpress.XtraScheduler.UI.ResourcesTree();
@@ -62,6 +63,7 @@
             this.resourceTreeColumn3 = new DevExpress.XtraScheduler.Native.ResourceTreeColumn();
             this.splitContainerControl1 = new DevExpress.XtraEditors.SplitContainerControl();
             this.splitContainerControl2 = new DevExpress.XtraEditors.SplitContainerControl();
+            this.colPrimaryTitle = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)(this.gridControlDeliverable)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewDeliverable)).BeginInit();
@@ -77,6 +79,19 @@
             this.splitContainerControl2.SuspendLayout();
             this.SuspendLayout();
             // 
+            // colAssigned
+            // 
+            this.colAssigned.Caption = "Assigned %";
+            this.colAssigned.DisplayFormat.FormatString = "p2";
+            this.colAssigned.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+            this.colAssigned.FieldName = "ASSIGNED_PERCENTAGE";
+            this.colAssigned.Name = "colAssigned";
+            this.colAssigned.OptionsColumn.AllowEdit = false;
+            this.colAssigned.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
+            this.colAssigned.OptionsColumn.ReadOnly = true;
+            this.colAssigned.Visible = true;
+            this.colAssigned.VisibleIndex = 7;
+            // 
             // gridControlDeliverable
             // 
             this.gridControlDeliverable.Cursor = System.Windows.Forms.Cursors.Default;
@@ -89,7 +104,7 @@
             this.gridControlDeliverable.MainView = this.gridViewDeliverable;
             this.gridControlDeliverable.Name = "gridControlDeliverable";
             this.gridControlDeliverable.ShowOnlyPredefinedDetails = true;
-            this.gridControlDeliverable.Size = new System.Drawing.Size(1904, 308);
+            this.gridControlDeliverable.Size = new System.Drawing.Size(1904, 463);
             this.gridControlDeliverable.TabIndex = 1;
             this.gridControlDeliverable.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridViewDeliverable});
@@ -121,12 +136,13 @@
             this.gridViewDeliverable.Appearance.ViewCaption.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gridViewDeliverable.Appearance.ViewCaption.Options.UseFont = true;
             this.gridViewDeliverable.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.colEntity,
+            this.colWorkpack,
             this.colArea,
             this.colDocType,
             this.colDepartment,
             this.colDiscipline,
-            this.colWorkpack,
+            this.colEntity,
+            this.colPrimaryTitle,
             this.colAssigned});
             gridFormatRule1.Column = this.colAssigned;
             gridFormatRule1.ColumnApplyTo = this.colAssigned;
@@ -147,6 +163,7 @@
             this.gridViewDeliverable.Name = "gridViewDeliverable";
             this.gridViewDeliverable.OptionsSelection.MultiSelect = true;
             this.gridViewDeliverable.OptionsView.ShowFooter = true;
+            this.gridViewDeliverable.PopupMenuShowing += new DevExpress.XtraGrid.Views.Grid.PopupMenuShowingEventHandler(this.gridViewDeliverable_PopupMenuShowing);
             // 
             // colEntity
             // 
@@ -154,6 +171,7 @@
             this.colEntity.FieldName = "Entity.INTERNAL_NUM";
             this.colEntity.Name = "colEntity";
             this.colEntity.OptionsColumn.AllowEdit = false;
+            this.colEntity.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colEntity.OptionsColumn.ReadOnly = true;
             this.colEntity.Visible = true;
             this.colEntity.VisibleIndex = 5;
@@ -164,6 +182,7 @@
             this.colArea.FieldName = "Entity.AREA.INTERNAL_NUM";
             this.colArea.Name = "colArea";
             this.colArea.OptionsColumn.AllowEdit = false;
+            this.colArea.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colArea.Visible = true;
             this.colArea.VisibleIndex = 1;
             // 
@@ -173,6 +192,7 @@
             this.colDocType.FieldName = "Entity.DOCTYPE.NAME";
             this.colDocType.Name = "colDocType";
             this.colDocType.OptionsColumn.AllowEdit = false;
+            this.colDocType.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colDocType.Visible = true;
             this.colDocType.VisibleIndex = 2;
             // 
@@ -182,6 +202,7 @@
             this.colDepartment.FieldName = "Entity.DEPARTMENT.NAME";
             this.colDepartment.Name = "colDepartment";
             this.colDepartment.OptionsColumn.AllowEdit = false;
+            this.colDepartment.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colDepartment.Visible = true;
             this.colDepartment.VisibleIndex = 3;
             // 
@@ -191,6 +212,7 @@
             this.colDiscipline.FieldName = "Entity.DISCIPLINE.NAME";
             this.colDiscipline.Name = "colDiscipline";
             this.colDiscipline.OptionsColumn.AllowEdit = false;
+            this.colDiscipline.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colDiscipline.Visible = true;
             this.colDiscipline.VisibleIndex = 4;
             // 
@@ -200,21 +222,10 @@
             this.colWorkpack.FieldName = "Entity.WORKPACK.INTERNAL_NAME1";
             this.colWorkpack.Name = "colWorkpack";
             this.colWorkpack.OptionsColumn.AllowEdit = false;
+            this.colWorkpack.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colWorkpack.OptionsColumn.ReadOnly = true;
             this.colWorkpack.Visible = true;
             this.colWorkpack.VisibleIndex = 0;
-            // 
-            // colAssigned
-            // 
-            this.colAssigned.Caption = "Assigned %";
-            this.colAssigned.DisplayFormat.FormatString = "p2";
-            this.colAssigned.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            this.colAssigned.FieldName = "ASSIGNED_PERCENTAGE";
-            this.colAssigned.Name = "colAssigned";
-            this.colAssigned.OptionsColumn.AllowEdit = false;
-            this.colAssigned.OptionsColumn.ReadOnly = true;
-            this.colAssigned.Visible = true;
-            this.colAssigned.VisibleIndex = 6;
             // 
             // schedulerStorage1
             // 
@@ -287,7 +298,7 @@
             this.schedulerControl1.OptionsCustomization.AllowDisplayAppointmentDependencyForm = DevExpress.XtraScheduler.AllowDisplayAppointmentDependencyForm.Never;
             this.schedulerControl1.OptionsCustomization.AllowDisplayAppointmentForm = DevExpress.XtraScheduler.AllowDisplayAppointmentForm.Never;
             this.schedulerControl1.OptionsCustomization.AllowInplaceEditor = DevExpress.XtraScheduler.UsedAppointmentType.None;
-            this.schedulerControl1.Size = new System.Drawing.Size(1387, 728);
+            this.schedulerControl1.Size = new System.Drawing.Size(1387, 573);
             this.schedulerControl1.Start = new System.DateTime(2012, 1, 1, 0, 0, 0, 0);
             this.schedulerControl1.TabIndex = 2;
             this.schedulerControl1.Text = "schedulerControl1";
@@ -361,7 +372,7 @@
             this.resourcesTree1.OptionsBehavior.Editable = false;
             this.resourcesTree1.RefreshDataOnSchedulerChanges = false;
             this.resourcesTree1.SchedulerControl = this.schedulerControl1;
-            this.resourcesTree1.Size = new System.Drawing.Size(512, 728);
+            this.resourcesTree1.Size = new System.Drawing.Size(512, 573);
             this.resourcesTree1.TabIndex = 3;
             this.resourcesTree1.TreeLevelWidth = 12;
             // 
@@ -422,7 +433,7 @@
             this.splitContainerControl1.Panel2.Controls.Add(this.gridControlDeliverable);
             this.splitContainerControl1.Panel2.Text = "Panel2";
             this.splitContainerControl1.Size = new System.Drawing.Size(1904, 1041);
-            this.splitContainerControl1.SplitterPosition = 728;
+            this.splitContainerControl1.SplitterPosition = 573;
             this.splitContainerControl1.TabIndex = 4;
             this.splitContainerControl1.Text = "splitContainerControl1";
             // 
@@ -435,10 +446,18 @@
             this.splitContainerControl2.Panel1.Text = "Panel1";
             this.splitContainerControl2.Panel2.Controls.Add(this.schedulerControl1);
             this.splitContainerControl2.Panel2.Text = "Panel2";
-            this.splitContainerControl2.Size = new System.Drawing.Size(1904, 728);
+            this.splitContainerControl2.Size = new System.Drawing.Size(1904, 573);
             this.splitContainerControl2.SplitterPosition = 512;
             this.splitContainerControl2.TabIndex = 0;
             this.splitContainerControl2.Text = "splitContainerControl2";
+            // 
+            // colPrimaryTitle
+            // 
+            this.colPrimaryTitle.Caption = "Primary Title";
+            this.colPrimaryTitle.FieldName = "Entity.PRIMARY_TITLE";
+            this.colPrimaryTitle.Name = "colPrimaryTitle";
+            this.colPrimaryTitle.Visible = true;
+            this.colPrimaryTitle.VisibleIndex = 6;
             // 
             // BASELINE_ITEMSchedulingView
             // 
@@ -487,5 +506,6 @@
         private DevExpress.XtraGrid.Columns.GridColumn colArea;
         private DevExpress.XtraGrid.Columns.GridColumn colDocType;
         private DevExpress.XtraGrid.Columns.GridColumn colDepartment;
+        private DevExpress.XtraGrid.Columns.GridColumn colPrimaryTitle;
     }
 }

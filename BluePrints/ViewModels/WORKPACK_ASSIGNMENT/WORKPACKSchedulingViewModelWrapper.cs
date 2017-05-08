@@ -204,8 +204,22 @@ namespace BluePrints.ViewModels
                 CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>, bool
             > windowsFormHostViewInitialization { get; set; }
 
+        //Used by baseline_item scheduling view model to fix assignment
+        public Func<object> OnEntitiesLoadedParameterCallBack;
+        public Action<IEnumerable<WORKPACK_Dashboard>, object> OnEntitiesLoadedWithParameterCallBack;
+
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<WORKPACK_Dashboard> entities)
         {
+            if (OnEntitiesLoadedWithParameterCallBack != null)
+            {
+                object onLoadedParameter = OnEntitiesLoadedParameterCallBack?.Invoke();
+                OnEntitiesLoadedWithParameterCallBack?.Invoke(entities, onLoadedParameter);
+
+                //Self destruct after entities has been returned
+                CleanUpEntitiesLoader();
+                return;
+            }
+
             var
                 WORKPACK_ASSIGNMENTCollectionViewModel =
                     (CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>)

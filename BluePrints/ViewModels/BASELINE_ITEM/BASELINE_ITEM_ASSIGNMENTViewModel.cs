@@ -232,7 +232,7 @@ namespace BluePrints.ViewModels
 
             BASELINE_ITEM_ASSIGNMENTSViewModel.BulkSave(SelectedBASELINE_ITEMS.SelectMany(x => x.BASELINE_ITEM_ASSIGNMENTS.Where(y => y.GUID == Guid.Empty)));
             ResetAssignmentValue();
-            this.RaisePropertiesChanged();
+            Refresh();
         }
 
         public bool CanAddAssignment()
@@ -263,7 +263,7 @@ namespace BluePrints.ViewModels
                     }
                 }
 
-                return baseline_item_assignments.OrderBy(x => x.INTERNAL_NUM).OrderBy(x => x.Entity.LOW_VALUE);
+                return baseline_item_assignments.OrderBy(x => x.INTERNAL_NUM);
             }
         }
 
@@ -286,7 +286,7 @@ namespace BluePrints.ViewModels
             }
 
             ResetAssignmentValue();
-            this.RaisePropertiesChanged();
+            Refresh();
         }
 
         private void RemoveWorkpackAssignment(BASELINE_ITEM_ASSIGNMENTSProjection removeBASELINE_ITEM_ASSIGNMENT)
@@ -318,10 +318,10 @@ namespace BluePrints.ViewModels
         }
 
 
-        private void MovePriority(bool isUp)
+        private IEnumerable<BASELINE_ITEM_ASSIGNMENT> MovePriority(bool isUp, BASELINE_ITEM_ASSIGNMENTSProjection selectedAssignment)
         {
-            BASELINE_ITEMProjection contextBASELINE_ITEM = BASELINE_ITEMSource.First(x => x.Entity.GUID_ORIGINAL == SelectedASSIGNMENT.GUID_ORIGINAL);
-            BASELINE_ITEM_ASSIGNMENT contextASSIGNMENT = SelectedASSIGNMENT.Entity;
+            BASELINE_ITEMProjection contextBASELINE_ITEM = BASELINE_ITEMSource.First(x => x.Entity.GUID_ORIGINAL == selectedAssignment.GUID_ORIGINAL);
+            BASELINE_ITEM_ASSIGNMENT contextASSIGNMENT = selectedAssignment.Entity;
 
             var BASELINE_ITEM_ASSIGNMENTSInOrder =
                 contextBASELINE_ITEM.BASELINE_ITEM_ASSIGNMENTS.OrderBy(x => x.LOW_VALUE).ToList();
@@ -343,19 +343,20 @@ namespace BluePrints.ViewModels
                 var swapBASELINE_ITEM_ASSIGNMENTId = swapBASELINE_ITEM_ASSIGNMENT.P6_ACTIVITYID;
                 swapBASELINE_ITEM_ASSIGNMENT.P6_ACTIVITYID = contextASSIGNMENT.P6_ACTIVITYID;
                 contextASSIGNMENT.P6_ACTIVITYID = swapBASELINE_ITEM_ASSIGNMENTId;
-                BASELINE_ITEM_ASSIGNMENTSViewModel.BulkSave(
-                    new ObservableCollection<BASELINE_ITEM_ASSIGNMENT>(BASELINE_ITEM_ASSIGNMENTSInOrder));
+                return BASELINE_ITEM_ASSIGNMENTSInOrder;
 
                 //Refresh();
                 //SelectedASSIGNMENT = ContextBASELINE_ITEM_ASSIGNMENTS.FirstOrDefault(x => x.Entity.GetHashCode() == swapBASELINE_ITEM_ASSIGNMENT.GetHashCode());
                 //SetSelectedItemCallBack?.Invoke(SelectedASSIGNMENT);
-                this.RaisePropertiesChanged();
+                //this.RaisePropertiesChanged();
             }
+
+            return null;
         }
 
         public bool CanPriorityUp()
         {
-            if (SelectedASSIGNMENT == null || SelectedASSIGNMENT.Entity.LOW_VALUE <= 0.01m)
+            if (SelectedASSIGNMENTS.Count == 0)
                 return false;
 
             return true;
@@ -363,7 +364,7 @@ namespace BluePrints.ViewModels
 
         public bool CanPriorityDown()
         {
-            if (SelectedASSIGNMENT == null || SelectedASSIGNMENT.Entity.HIGH_VALUE >= 1)
+            if (SelectedASSIGNMENTS.Count == 0)
                 return false;
 
             return true;
@@ -371,12 +372,32 @@ namespace BluePrints.ViewModels
 
         public void PriorityUp()
         {
-            MovePriority(true);
+            List<BASELINE_ITEM_ASSIGNMENT> saveAssignments = new List<BASELINE_ITEM_ASSIGNMENT>();
+
+            foreach (var selectedAssignment in SelectedASSIGNMENTS)
+            {
+                IEnumerable<BASELINE_ITEM_ASSIGNMENT> editedAssignments = MovePriority(true, selectedAssignment);
+                if (editedAssignments != null)
+                    saveAssignments.AddRange(editedAssignments);
+            }
+
+            BASELINE_ITEM_ASSIGNMENTSViewModel.BulkSave(new ObservableCollection<BASELINE_ITEM_ASSIGNMENT>(saveAssignments));
+            this.RaisePropertiesChanged();
         }
 
         public void PriorityDown()
         {
-            MovePriority(false);
+            List<BASELINE_ITEM_ASSIGNMENT> saveAssignments = new List<BASELINE_ITEM_ASSIGNMENT>();
+
+            foreach (var selectedAssignment in SelectedASSIGNMENTS)
+            {
+                IEnumerable<BASELINE_ITEM_ASSIGNMENT> editedAssignments = MovePriority(false, selectedAssignment);
+                if (editedAssignments != null)
+                    saveAssignments.AddRange(editedAssignments);
+            }
+
+            BASELINE_ITEM_ASSIGNMENTSViewModel.BulkSave(new ObservableCollection<BASELINE_ITEM_ASSIGNMENT>(saveAssignments));
+            this.RaisePropertiesChanged();
         }
 
         /// <summary>
@@ -384,11 +405,14 @@ namespace BluePrints.ViewModels
         /// </summary>
         public void lookupActivity_EditValueChanging(EditValueChangingEventArgs e)
         {
-            var changingValue = (TASK_AppointmentInfo) e.NewValue;
-            if (changingValue.Status != AppointmentActivityType.Activity)
+            if(e.NewValue != null)
             {
-                e.IsCancel = true;
-                e.Handled = true;
+                var changingValue = (TASK_AppointmentInfo)e.NewValue;
+                if (changingValue.Status != AppointmentActivityType.Activity)
+                {
+                    e.IsCancel = true;
+                    e.Handled = true;
+                }
             }
         }
 

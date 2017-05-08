@@ -3,6 +3,7 @@ using BaseModel.Misc;
 using BluePrints.Common;
 using EntityFramework.Functions;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
@@ -14,8 +15,10 @@ namespace BluePrints.Data
     {
         public EntityFrameworkConfiguration()
         {
+            List<string> applicableContext = new List<string>();
+            applicableContext.Add("BluePrints.Data.BluePrintsEntities");
             AddInterceptor(new SoftDeleteInterceptor("DELETED", "DELETEDBY"));
-            AddInterceptor(new CreatedAndUpdatedDateInterceptor("CREATED", "CREATEDBY", "UPDATED", "UPDATEDBY", LoginCredentials.CurrentUserGuid));
+            AddInterceptor(new CreatedAndUpdatedDateInterceptor("CREATED", "CREATEDBY", "UPDATED", "UPDATEDBY", LoginCredentials.CurrentUserGuid, applicableContext));
         }
     }
 

@@ -4,6 +4,7 @@ using BluePrints.Common;
 using BluePrints.Common.Projections;
 using BluePrints.Data;
 using BluePrints.P6Data;
+using DevExpress.Utils.Menu;
 using DevExpress.XtraGrid.Views.Grid;
 using DevExpress.XtraGrid.Views.Grid.ViewInfo;
 using DevExpress.XtraScheduler;
@@ -54,6 +55,39 @@ namespace BluePrints.Views
 
             SetDataBinding(TASK_Appointments, TASK_WBSAppointments, BASELINE_ITEMProjections);
             SubscribeEvents();
+            InitializeMenuItems();
+            CalculateAppointmentsUnits();
+        }
+
+        DXMenuItem[] menuItems;
+        void InitializeMenuItems()
+        {
+            DXMenuItem itemEdit = new DXMenuItem("Edit", ItemEdit_Click);
+            menuItems = new DXMenuItem[] { itemEdit };
+        }
+
+        private void gridViewDeliverable_PopupMenuShowing(object sender, DevExpress.XtraGrid.Views.Grid.PopupMenuShowingEventArgs e)
+        {
+            if (e.HitInfo.InRow)
+            {
+                GridView view = sender as GridView;
+                view.FocusedRowHandle = e.HitInfo.RowHandle;
+
+                foreach (DXMenuItem item in menuItems)
+                    e.Menu.Items.Add(item);
+            }
+        }
+
+        private void ItemEdit_Click(object sender, System.EventArgs e)
+        {
+            int[] selectedIndexes = gridViewDeliverable.GetSelectedRows();
+            List<BASELINE_ITEMProjection> selectedBASELINE_ITEMS = new List<BASELINE_ITEMProjection>();
+            foreach(int selectedIndex in selectedIndexes)
+            {
+                selectedBASELINE_ITEMS.Add((BASELINE_ITEMProjection)gridViewDeliverable.GetRow(selectedIndex));
+            }
+
+            editDeliverables(selectedBASELINE_ITEMS);
         }
 
         private void SubscribeEvents()
@@ -81,16 +115,6 @@ namespace BluePrints.Views
         private void schedulerControl1_InitAppointmentDisplayText(object sender, AppointmentDisplayTextEventArgs e)
         {
             e.Text = e.Appointment.Description;
-        }
-
-        public class ModelAppointmentDependency
-        {
-            public int ParentId { get; set; }
-            public int DependentId { get; set; }
-
-            public ModelAppointmentDependency()
-            {
-            }
         }
 
         #region Drag N' Drop
@@ -170,13 +194,37 @@ namespace BluePrints.Views
                     BASELINE_ITEM_ASSIGNMENTSViewModel, ISMODIFIED, dropAppointment, dragDropBaseline_Items);
                 view.ShowDialog();
                 view.Dispose();
+                gridControlDeliverable.RefreshDataSource();
             }
+
+            CalculateAppointmentsUnits();
         }
         #endregion
 
+        private void CalculateAppointmentsUnits()
+        {
+            foreach (
+                var WBSTASKAppointmentInfo in
+                TASK_WBSAppointments.Where(x => x.Status == AppointmentActivityType.Activity))
+            {
+                if (WBSTASKAppointmentInfo.Subject == null || WBSTASKAppointmentInfo.Subject == string.Empty)
+                    continue;
+
+                var P6ActivityAssignedUnits =
+                    BASELINE_ITEMProjections.Sum(
+                        x =>
+                            x.BASELINE_ITEM_ASSIGNMENTS.Where(
+                                    obj2 => obj2.P6_ACTIVITYID == WBSTASKAppointmentInfo.Subject)
+                                .Sum(obj3 => ((obj3.HIGH_VALUE - obj3.LOW_VALUE) + 0.01m) * x.TOTAL_UNITS));
+                WBSTASKAppointmentInfo.AssignedUnits = P6ActivityAssignedUnits;
+            }
+
+            RecurseChildTasks(TASK_WBSAppointments);
+            schedulerControl1.RefreshData();
+        }
 
         //Recurse childrens to sum budgeted units
-        private void RecurseSummarizeWBS(IEnumerable<TASK_AppointmentInfo> ChildTASKs)
+        private void RecurseChildTasks(IEnumerable<TASK_AppointmentInfo> ChildTASKs)
         {
             foreach (var childTASK in ChildTASKs)
             {
@@ -242,16 +290,11 @@ namespace BluePrints.Views
 
         private void gridControlWorkpack_DoubleClick(object sender, EventArgs e)
         {
-            var selectedBASELINE_ITEM = (BASELINE_ITEMProjection) gridViewDeliverable.GetFocusedRow();
-            if (selectedBASELINE_ITEM != null)
-            {
-                List<BASELINE_ITEMProjection> selectedBASELINE_ITEMS = new List<BASELINE_ITEMProjection>();
-                selectedBASELINE_ITEMS.Add(selectedBASELINE_ITEM);
-                var view = new BASELINE_ITEMAssignmentView(PROJECT, TASK_WBSAppointments, BASELINE_ITEMProjections,
-                    BASELINE_ITEM_ASSIGNMENTSViewModel, ISMODIFIED, null, selectedBASELINE_ITEMS);
-                view.ShowDialog();
-                view.Dispose();
-            }
+            var selectedBASELINE_ITEM = (BASELINE_ITEMProjection)gridViewDeliverable.GetFocusedRow();
+            List<BASELINE_ITEMProjection> selectedBASELINE_ITEMS = new List<BASELINE_ITEMProjection>();
+            selectedBASELINE_ITEMS.Add(selectedBASELINE_ITEM);
+            editDeliverables(selectedBASELINE_ITEMS);
+            CalculateAppointmentsUnits();
         }
 
         private void schedulerControl1_DoubleClick(object sender, EventArgs e)
@@ -266,7 +309,19 @@ namespace BluePrints.Views
 
                 view.ShowDialog();
                 view.Dispose();
+                gridControlDeliverable.RefreshDataSource();
             }
+
+            CalculateAppointmentsUnits();
+        }
+
+        private void editDeliverables(List<BASELINE_ITEMProjection> selectedBASELINE_ITEMS)
+        {
+            var view = new BASELINE_ITEMAssignmentView(PROJECT, TASK_WBSAppointments, BASELINE_ITEMProjections,
+                BASELINE_ITEM_ASSIGNMENTSViewModel, ISMODIFIED, null, selectedBASELINE_ITEMS);
+            view.ShowDialog();
+            view.Dispose();
+            gridControlDeliverable.RefreshDataSource();
         }
 
         private List<Brush> predefinedWBSBrushes;
@@ -345,5 +400,6 @@ namespace BluePrints.Views
             resourcesTree1.CollapseAll();
             resourcesTree1.Nodes.First().Expanded = true;
         }
+
     }
 }

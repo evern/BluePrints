@@ -198,12 +198,21 @@ namespace BluePrints.ViewModels
                 CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>, bool
             > windowsFormHostViewInitialization { get; set; }
 
+        //Used by baseline_item scheduling view model to fix assignment
+        public Func<object> OnEntitiesLoadedParameterCallBack;
+        public Action<IEnumerable<BASELINE_ITEMProjection>, object> OnEntitiesLoadedWithParameterCallBack;
+
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProjection> entities)
         {
-            var
-                BASELINE_ITEM_ASSIGNMENTCollectionViewModel =
-                    (CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>)
-                    loaderCollection.GetViewModel<BASELINE_ITEM_ASSIGNMENT>();
+            if (OnEntitiesLoadedWithParameterCallBack != null)
+            {
+                object onLoadedParameter = OnEntitiesLoadedParameterCallBack?.Invoke();
+                OnEntitiesLoadedWithParameterCallBack?.Invoke(entities, onLoadedParameter);
+
+                //Self destruct after entities has been returned
+                CleanUpEntitiesLoader();
+                return;
+            }
 
             if (isFromPROGRESS)
                 mainThreadDispatcher.BeginInvoke(new Action(() => OnMappingViewModelLoaded(entities)));
@@ -213,7 +222,7 @@ namespace BluePrints.ViewModels
                         () =>
                             windowsFormHostViewInitialization(loadPROJECT, loaderCollection.GetCollection<TASK>(),
                                 loaderCollection.GetCollection<PROJWBS>(), entities,
-                                BASELINE_ITEM_ASSIGNMENTCollectionViewModel,
+                                BASELINE_ITEM_ASSIGNMENTSCollectionViewModel,
                                 mappingType == BaselineMappingSelectionType.Modified)));
         }
         #endregion
@@ -253,6 +262,62 @@ namespace BluePrints.ViewModels
         public ICollectionViewModel<BluePrints.P6Data.TASK> P6TASKCollectionViewModel
         {
             get { return (ICollectionViewModel<BluePrints.P6Data.TASK>) loaderCollection.GetViewModel<TASK>(); }
+        }
+
+        public void Fix()
+        {
+            BASELINE_ITEM_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(BASELINE_ITEM_ASSIGNMENTCollection);
+            CreateWORKPACKSchedulingViewModelWrapper();
+        }
+
+        public WORKPACKSchedulingViewModelWrapper CreateWORKPACKSchedulingViewModelWrapper()
+        {
+            WORKPACKSchedulingViewModelWrapper workpackSchedulingViewModelWrapper = null;
+
+            if (loadPROJECT != null)
+            {
+                workpackSchedulingViewModelWrapper = new WORKPACKSchedulingViewModelWrapper();
+                workpackSchedulingViewModelWrapper.SuppressNotification = true;
+                workpackSchedulingViewModelWrapper.OnEntitiesLoadedWithParameterCallBack = OnWorkpackDashboardLoaded;
+
+                object[] parameter = new object[] { loadBASELINE, BaselineMappingSelectionType.Original };
+                var supportParameterViewModel = workpackSchedulingViewModelWrapper as ISupportParameter;
+                supportParameterViewModel.Parameter = parameter;
+            }
+
+            return workpackSchedulingViewModelWrapper;
+        }
+
+        private void OnWorkpackDashboardLoaded(IEnumerable<WORKPACK_Dashboard> projections, object parameter)
+        {
+            LoadingScreenManager.ShowLoadingScreen(projections.Count());
+
+            List<BASELINE_ITEM_ASSIGNMENT> newAssignments = new List<BASELINE_ITEM_ASSIGNMENT>();
+            foreach (WORKPACK_Dashboard workpack in projections)
+            {
+                IEnumerable<WORKPACK_ASSIGNMENT> projectWORKPACK_ASSIGNMENTS = workpack.ObservableWORKPACK_ASSIGNMENTS;
+                foreach (WORKPACK_ASSIGNMENT WORKPACK_ASSIGNMENT in projectWORKPACK_ASSIGNMENTS)
+                {
+                    IEnumerable<BASELINE_ITEMProjection> baseline_items = MainViewModel.Entities.Where(x => x.Entity.GUID_WORKPACK == workpack.GUID);
+                    foreach(var baseline_item in baseline_items)
+                    {
+                        newAssignments.Add(new BASELINE_ITEM_ASSIGNMENT()
+                        {
+                            GUID = Guid.Empty,
+                            GUID_PROJECT = loadPROJECT.GUID,
+                            HIGH_VALUE = WORKPACK_ASSIGNMENT.HIGH_VALUE,
+                            LOW_VALUE = WORKPACK_ASSIGNMENT.LOW_VALUE,
+                            P6_ACTIVITYID = WORKPACK_ASSIGNMENT.P6_ACTIVITYID,
+                            GUID_ORIGINAL = baseline_item.Entity.GUID_ORIGINAL,
+                            ISMODIFIEDBASELINE = mappingType == BaselineMappingSelectionType.Modified
+                        });
+                    }
+                }
+
+                LoadingScreenManager.Progress();
+            }
+
+            BASELINE_ITEM_ASSIGNMENTSCollectionViewModel.BulkSave(newAssignments);
         }
 
         public void PushToP6()
@@ -313,7 +378,16 @@ namespace BluePrints.ViewModels
                     "Missing P6 Activities", "MissingAssignments", missingActivitiesViewModel);
                 }
                 else
-                    MessageBoxService.ShowMessage(BluePrintsResources.WORKPACK_ASSIGNMENT_P6WriteComplete);
+                    MessageBoxService.ShowMessage(BluePrintsResources.P6AssignmentWriteComplete);
+            }
+        }
+
+        public IEnumerable<BASELINE_ITEM_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENTCollection
+        {
+            get
+            {
+                var collection = GetEntities<BASELINE_ITEM_ASSIGNMENT>();
+                return collection;
             }
         }
 
@@ -331,7 +405,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACK_ASSIGNMENTSCollectionViewModel
+        public CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> BASELINE_ITEM_ASSIGNMENTSCollectionViewModel
         {
             get
             {
@@ -339,8 +413,8 @@ namespace BluePrints.ViewModels
                     return null;
 
                 return
-                    (CollectionViewModel<WORKPACK_ASSIGNMENT, WORKPACK_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>)
-                    loaderCollection.GetViewModel<WORKPACK_ASSIGNMENT>();
+                    (CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<BASELINE_ITEM_ASSIGNMENT>();
             }
         }
         #endregion

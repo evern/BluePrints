@@ -29,8 +29,8 @@
                         </dxg:GridColumn>
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.View>
-                        <custom:TableViewEx x:Name="GridViewBaseline_Items"
-                                        NavigationStyle="Row" ShowGroupPanel="False" AutoWidth="False"
+                        <custom:TableViewEx x:Name="GridViewBaseline_Items" AutoWidth="True"
+                                        NavigationStyle="Row" ShowGroupPanel="False" 
                                         AllowEditing="False" AllowSorting="False" />
                     </dxg:GridControl.View>
                 </custom:GridControlEx>
@@ -38,7 +38,7 @@
             <dxlc:LayoutGroup Name="LayoutGroupBaseline_ItemSelection" View="GroupBox" Header="Activity Assignments" Orientation="Vertical">
                 <dxlc:LayoutGroup Orientation="Horizontal">
                     <dxlc:LayoutItem Height="25" Label="Activity:" IsRequired="True">
-                        <dxg:LookUpEdit AutoPopulateColumns="False" x:Name="lookupActivity"
+                        <dxg:LookUpEdit AutoPopulateColumns="False" x:Name="lookupActivity" NullValueButtonPlacement="EditBox"
                             SelectedItem="{Binding SelectedTASK, Mode=TwoWay}" DisplayMember="Description"
                             ItemsSource="{Binding TASKSItemSource}">
                             <dxmvvm:Interaction.Behaviors>
@@ -76,7 +76,7 @@
                     <dxlc:LayoutItem Height="25" Label="Percentage:" IsRequired="True">
                         <dxe:SpinEdit
                     EditValue="{Binding AssignmentValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    MinValue="{Binding AssignmentMinValue}" MaxValue="{Binding AssignmentMaxValue}" Increment="0.01"
+                    MinValue="{Binding AssignmentMinValue}" MaxValue="{Binding AssignmentMaxValue}" Increment="0.1"
                     MaskType="Numeric" Mask="p2" MaskUseAsDisplayFormat="True" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Width="80" HorizontalAlignment="Right">
@@ -132,7 +132,7 @@
                                 <custom:TableViewEx x:Name="GridViewBaseline_ItemAssignment"
                                         FocusedRow="{Binding SelectedBASELINE_ITEM_ASSIGNMENT, Mode=TwoWay}"
                                         NavigationStyle="Row" ShowGroupPanel="False" AutoWidth="False"
-                                        AllowEditing="False" AllowSorting="False" />
+                                        AllowEditing="False" />
                             </dxg:GridControl.View>
                         </custom:GridControlEx>
                     </dxlc:LayoutItem>

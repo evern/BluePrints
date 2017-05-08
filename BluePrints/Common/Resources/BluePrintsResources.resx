@@ -264,4 +264,7 @@
   <data name="XMLFilename" xml:space="preserve">
     <value>Settings.config</value>
   </data>
+  <data name="P6AssignmentWriteComplete" xml:space="preserve">
+    <value>P6 units populated</value>
+  </data>
 </root>
