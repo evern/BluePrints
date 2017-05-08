@@ -27,6 +27,17 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
+    <dxmvvm:Interaction.Behaviors>
+        <dx:DialogService x:Name="MissingActivityIdDialog">
+            <dx:DialogService.DialogStyle>
+                <Style TargetType="dx:DXDialogWindow">
+                    <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                    <Setter Property="MinWidth" Value="500" />
+                    <Setter Property="MinHeight" Value="370" />
+                </Style>
+            </dx:DialogService.DialogStyle>
+        </dx:DialogService>
+    </dxmvvm:Interaction.Behaviors>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
@@ -39,10 +50,18 @@
                                                    Command="{Binding DataContext.PushToP6Command, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}"
                                                    Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" />
-                                <dxb:BarButtonItem Content="Fix Assignments"
-                                                   Command="{Binding DataContext.FixCommand, ElementName=userControl}"
+                                <dxb:BarButtonItem Content="Copy Workpack Assignments"
+                                                   Command="{Binding DataContext.CopyWorkpackAssignmentsCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImageOffice2013 Image=SavePageSetup_32x32.png}"
                                                    Glyph="{dx:DXImage Image=SavePageSetup_16x16.png}" />
+                                <dxb:BarButtonItem Content="Refresh"
+                                                   Command="{Binding DataContext.RefreshCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImageOffice2013 Image=Refresh_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                <dxb:BarButtonItem Content="Remove Invalid Assignments"
+                                                   Command="{Binding DataContext.RemoveInvalidAssignmentsCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImageOffice2013 Image=Delete_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

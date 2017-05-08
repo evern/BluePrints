@@ -715,7 +715,7 @@ namespace BluePrints.ViewModels
                 {
                     BASELINE_ITEM_ASSIGNMENT baseline_itemAssignment = baseline_itemAssignments[i];
                     TASK P6TASK = PROJECTTASK.FirstOrDefault(P6Task => P6Task.task_code == baseline_itemAssignment.P6_ACTIVITYID);
-                    if (P6TASK != null)
+                    if (P6TASK != null && P6TASK.delete_date == null)
                     {
                         //set activity start date
                         DateTime firstEarnedWeekStartingDate = firstEarnedDate.AddDays(-1 * intervalTimeSpan.Days).AddSeconds(1);
@@ -779,6 +779,11 @@ namespace BluePrints.ViewModels
             }
 
             LoadingScreenManager.CloseLoadingScreen();
+
+            //Dispose viewmodel
+            IDocumentContent documentContentViewModel = BASELINE_ITEMSchedulingViewModel as IDocumentContent;
+            documentContentViewModel.OnDestroy();
+            BASELINE_ITEMSchedulingViewModel = null;
 
             if (errorMessage == string.Empty)
                 MessageBoxService.ShowMessage(BluePrintsResources.WORKPACK_ASSIGNMENT_P6ProgressWriteSuccess);

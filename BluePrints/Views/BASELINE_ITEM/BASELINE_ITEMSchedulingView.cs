@@ -53,9 +53,17 @@ namespace BluePrints.Views
                 P6WBSS.OrderBy(x => x.wbs_id).Select(x => new TASK_AppointmentInfo(x)).ToArray().AsEnumerable();
             TASK_WBSAppointments = TASK_Appointments.Concat(WBS_Appointments);
 
-            SetDataBinding(TASK_Appointments, TASK_WBSAppointments, BASELINE_ITEMProjections);
+            if(TASK_Appointments.Count() > 0 && TASK_WBSAppointments.Count() > 0)
+                SetDataBinding(TASK_Appointments, TASK_WBSAppointments, BASELINE_ITEMProjections);
+
             SubscribeEvents();
             InitializeMenuItems();
+            CalculateAppointmentsUnits();
+        }
+
+        public void RefreshAllDataSource()
+        {
+            gridControlDeliverable.RefreshDataSource();
             CalculateAppointmentsUnits();
         }
 

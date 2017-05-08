@@ -196,7 +196,9 @@ namespace BluePrints.ViewModels
             Action
             <BluePrints.Data.PROJECT, IEnumerable<TASK>, IEnumerable<PROJWBS>, IEnumerable<BASELINE_ITEMProjection>,
                 CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>, bool
-            > windowsFormHostViewInitialization { get; set; }
+            > WinformFormHostInitialization { get; set; }
+
+        public Action RefreshWinformView { get; set; }
 
         //Used by baseline_item scheduling view model to fix assignment
         public Func<object> OnEntitiesLoadedParameterCallBack;
@@ -220,7 +222,7 @@ namespace BluePrints.ViewModels
                 mainThreadDispatcher.BeginInvoke(
                     new Action(
                         () =>
-                            windowsFormHostViewInitialization(loadPROJECT, loaderCollection.GetCollection<TASK>(),
+                            WinformFormHostInitialization(loadPROJECT, loaderCollection.GetCollection<TASK>(),
                                 loaderCollection.GetCollection<PROJWBS>(), entities,
                                 BASELINE_ITEM_ASSIGNMENTSCollectionViewModel,
                                 mappingType == BaselineMappingSelectionType.Modified)));
@@ -228,7 +230,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
-
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
@@ -264,8 +265,16 @@ namespace BluePrints.ViewModels
             get { return (ICollectionViewModel<BluePrints.P6Data.TASK>) loaderCollection.GetViewModel<TASK>(); }
         }
 
-        public void Fix()
+        public bool CanCopyWorkpackAssignments()
         {
+            return LoginCredentials.CurrentUser.NAME == BluePrintsResources.AdminUsername;
+        }
+
+        public void CopyWorkpackAssignments()
+        {
+            if (MessageBoxService.ShowMessage("This will clear current assignments and attempt to copy from workpack assignments, are you sure you want to continue?", "Warning", MessageButton.OKCancel) == MessageResult.Cancel)
+                return;
+
             BASELINE_ITEM_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(BASELINE_ITEM_ASSIGNMENTCollection);
             CreateWORKPACKSchedulingViewModelWrapper();
         }
@@ -322,7 +331,6 @@ namespace BluePrints.ViewModels
 
         public void PushToP6()
         {
-            var IBluePrintsEntitiesUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             var IP6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
 
             string ProjectName;
@@ -355,17 +363,20 @@ namespace BluePrints.ViewModels
                 foreach(BASELINE_ITEMProjection baseline_item in MainViewModel.Entities)
                 {
                     IEnumerable<BASELINE_ITEM_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = baseline_item.BASELINE_ITEM_ASSIGNMENTS;
-                    decimal totalUnits = baseline_item.TOTAL_UNITS;
 
                     foreach (BASELINE_ITEM_ASSIGNMENT BASELINE_ITEM_ASSIGNMENT in projectBASELINE_ITEM_ASSIGNMENTS)
                     {
                         TASK existingTask = P6Tasks.FirstOrDefault(x => x.task_code == BASELINE_ITEM_ASSIGNMENT.P6_ACTIVITYID);
-                        decimal currentAssignmentUnits = ((BASELINE_ITEM_ASSIGNMENT.HIGH_VALUE - BASELINE_ITEM_ASSIGNMENT.LOW_VALUE) + 0.01m) * totalUnits;
+                        decimal currentAssignmentUnits = ((BASELINE_ITEM_ASSIGNMENT.HIGH_VALUE - BASELINE_ITEM_ASSIGNMENT.LOW_VALUE) + 0.01m) * baseline_item.TOTAL_UNITS;
 
-                        if (existingTask != null)
+                        if (existingTask != null && existingTask.delete_date == null)
                         {
                             existingTask.target_work_qty += currentAssignmentUnits;
                             existingTask.remain_work_qty += currentAssignmentUnits;
+                        }
+                        else
+                        {
+                            missingActivities.Add(new MissingP6Activities() { INTERNAL_NUM = baseline_item.Entity.INTERNAL_NUM, P6_ACTIVITY = BASELINE_ITEM_ASSIGNMENT.P6_ACTIVITYID, UNITS = currentAssignmentUnits });
                         }
                     }
                 }
@@ -380,6 +391,59 @@ namespace BluePrints.ViewModels
                 else
                     MessageBoxService.ShowMessage(BluePrintsResources.P6AssignmentWriteComplete);
             }
+        }
+
+        public void RemoveInvalidAssignments()
+        {
+            var IP6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+
+            string ProjectName;
+            if (mappingType == BaselineMappingSelectionType.Modified)
+                ProjectName = loadBASELINE.P6MODBASELINE_NAME;
+            else
+                ProjectName = loadBASELINE.P6BASELINE_NAME;
+
+            List<BASELINE_ITEM_ASSIGNMENT> invalidBASELINE_ITEM_ASSIGNMENTS = new List<BASELINE_ITEM_ASSIGNMENT>();
+            BluePrints.P6Data.PROJECT P6PROJECT = IP6EntitiesUnitOfWork.PROJECT.FirstOrDefault(x => x.proj_short_name == ProjectName && x.delete_date == null);
+            if (P6PROJECT != null)
+            {
+                IEnumerable<TASK> P6Tasks = P6PROJECT.TASK.ToArray().AsEnumerable();
+                List<MissingP6Activities> missingActivities = new List<MissingP6Activities>();
+                foreach (BASELINE_ITEMProjection baseline_item in MainViewModel.Entities)
+                {
+                    IEnumerable<BASELINE_ITEM_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = baseline_item.BASELINE_ITEM_ASSIGNMENTS;
+                    foreach (BASELINE_ITEM_ASSIGNMENT BASELINE_ITEM_ASSIGNMENT in projectBASELINE_ITEM_ASSIGNMENTS)
+                    {
+                        decimal currentAssignmentUnits = ((BASELINE_ITEM_ASSIGNMENT.HIGH_VALUE - BASELINE_ITEM_ASSIGNMENT.LOW_VALUE) + 0.01m) * baseline_item.TOTAL_UNITS;
+                        TASK existingTask = P6Tasks.FirstOrDefault(x => x.task_code == BASELINE_ITEM_ASSIGNMENT.P6_ACTIVITYID);
+                        if (existingTask == null || existingTask.delete_date != null)
+                        {
+                            invalidBASELINE_ITEM_ASSIGNMENTS.Add(BASELINE_ITEM_ASSIGNMENT);
+                            missingActivities.Add(new MissingP6Activities() { INTERNAL_NUM = baseline_item.Entity.INTERNAL_NUM, P6_ACTIVITY = BASELINE_ITEM_ASSIGNMENT.P6_ACTIVITYID, UNITS = currentAssignmentUnits });
+                        }
+                    }
+                }
+
+                if (invalidBASELINE_ITEM_ASSIGNMENTS.Count > 0)
+                {
+                    DialogCollectionViewModel<MissingP6Activities> missingActivitiesViewModel = DialogCollectionViewModel<MissingP6Activities>.Create(missingActivities);
+                    MissingActivitiesDialogService.ShowDialog(MessageButton.OK,
+                    "Removed Assignments", "MissingAssignments", missingActivitiesViewModel);
+
+                    if (MessageBoxService.ShowMessage("Do you want to delete invalid assignments?", "Warning", MessageButton.OKCancel) == MessageResult.OK)
+                    {
+                        BASELINE_ITEM_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(invalidBASELINE_ITEM_ASSIGNMENTS);
+                        RefreshWinformView?.Invoke();
+                    }
+                }
+                else
+                    MessageBoxService.ShowMessage("All Assignments Valid");
+            }
+        }
+
+        public void Refresh()
+        {
+            RefreshWinformView?.Invoke();
         }
 
         public IEnumerable<BASELINE_ITEM_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENTCollection

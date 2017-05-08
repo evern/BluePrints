@@ -8,7 +8,7 @@
     xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
     xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
-    Height="250" Width="500">
+    Height="380" Width="500">
     <dxlc:LayoutControl Orientation="Vertical">
         <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
             <dxlc:LayoutGroup Height="300" Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
