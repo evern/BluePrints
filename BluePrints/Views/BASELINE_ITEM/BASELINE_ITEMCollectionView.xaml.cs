@@ -56,6 +56,9 @@ namespace BluePrints.Views
             var menuInfo = tableView.GridMenu.MenuInfo as GridCellMenuInfo;
             if (menuInfo != null && menuInfo.Row != null && menuInfo.Column != null)
             {
+                contextMenuFillUp.IsVisible = true;
+                contextMenuFillDown.IsVisible = true;
+
                 if (menuInfo.Row.ControllerVisibleIndex == DataControlBase.NewItemRowHandle)
                 {
                     contextMenuDuplicate.IsEnabled = false;
@@ -111,6 +114,8 @@ namespace BluePrints.Views
                 else if (menuInfo.Column == colINTERNAL_NUM)
                 {
                     contextMenuPopulate.IsVisible = true;
+                    contextMenuFillUp.IsVisible = false;
+                    contextMenuFillDown.IsVisible = false;
                     contextMenuPopulate.Content = "Autofill From Area/DocType/Disc/Dept Data";
                 }
                 else if (menuInfo.Column == colCLIENT_NUM)

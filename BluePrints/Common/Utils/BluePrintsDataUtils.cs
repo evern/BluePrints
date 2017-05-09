@@ -57,7 +57,103 @@ namespace BluePrints.Common.ViewModel.Utils
             EndDate = ReviewEndDate.Date;
         }
 
-        public static string Duplicate_InternalNumber(IEnumerable<BASELINE_ITEMProjection> originalEntities, IEnumerable<BASELINE_ITEMProjection> unsavedEntities, string duplicateInternalNumber)
+        public static string GetNewInternalNumber(IEnumerable<BASELINE_ITEMProjection> originalEntities, IEnumerable<BASELINE_ITEMProjection> unsavedEntities, string duplicateInternalNumber, IEnumerable<BASELINE_ITEMProjection> insertSelectedEntities, bool isInsert)
+        {
+            if (duplicateInternalNumber != string.Empty && duplicateInternalNumber != null)
+            {
+                string stringValueToFill = duplicateInternalNumber;
+                int numericFieldLength = 0;
+                long valueToFillNumberOnly = 0;
+                string valueToFillStringOnly = ParseStringIntoComponents(duplicateInternalNumber, out numericFieldLength, out valueToFillNumberOnly);
+
+                List<BASELINE_ITEMProjection> allEntities = new List<BASELINE_ITEMProjection>(originalEntities);
+                allEntities.AddRange(unsavedEntities);
+
+                List<string> originalEntitiesSimilarNames =
+                originalEntities.Where(x => x.Entity.INTERNAL_NUM != null && x.Entity.INTERNAL_NUM.Contains(valueToFillStringOnly)).Select(x => x.Entity.INTERNAL_NUM).ToList();
+
+                List<string> allEntitiesSimilarNames =
+                allEntities.Where(x => x.Entity.INTERNAL_NUM != null && x.Entity.INTERNAL_NUM.Contains(valueToFillStringOnly)).Select(x => x.Entity.INTERNAL_NUM).ToList();
+
+                List<string> unsavedEntitiesSimilarNames =
+                unsavedEntities.Where(x => x.Entity.INTERNAL_NUM != null && x.Entity.INTERNAL_NUM.Contains(valueToFillStringOnly)).Select(x => x.Entity.INTERNAL_NUM).ToList();
+
+                List<string> insertSelectedEntitiesSimilarNames = insertSelectedEntities.Where(x => x.Entity.INTERNAL_NUM.Contains(valueToFillStringOnly)).Select(x => x.Entity.INTERNAL_NUM).ToList();
+
+                do
+                {
+                    valueToFillNumberOnly += 1;
+                    string nextName = StringFormatUtils.AppendStringWithEnumerator(valueToFillStringOnly, valueToFillNumberOnly, numericFieldLength);
+
+                    bool isExistsInInsert = insertSelectedEntitiesSimilarNames.Any(x => x == nextName);
+                    bool isExistsInUnsaved = unsavedEntitiesSimilarNames.Any(x => x == nextName);
+
+                    //when inserting all names are safe to be used, existing names need to be renamed
+                    if (isInsert)
+                    {
+                        //when current name exists in unsaved it means that nextName is not safe to be used
+                        if (isExistsInUnsaved)
+                            continue;
+                        //when current name exists in insert it means that nextName is not safe to be used
+                        else if (isExistsInInsert)
+                            continue;
+                        else
+                            return nextName;
+                    }
+                    else
+                    {
+                        bool isExistsInAll = allEntitiesSimilarNames.Any(x => x == nextName);
+                        bool isExistsInOriginal = originalEntitiesSimilarNames.Any(x => x == nextName);
+
+                        //when current name exists in original it means that nextName is not safe to be used, use original duplicate internal number instead
+                        if (isExistsInOriginal)
+                        {
+                            //if current name exists in insert it means that user is aware of nextName being duplicated, continue to iterate new name
+                            if (isExistsInInsert)
+                                continue;
+                            //if it doesn't exists in insert it means that nextName is not safe to be used, use the previous name
+                            else
+                                return StringFormatUtils.AppendStringWithEnumerator(valueToFillStringOnly, valueToFillNumberOnly - 1, numericFieldLength);
+                        }
+                        //when it doesn't exists in all and doesn't exists is original it means that this number is safe to be used
+                        else if (!isExistsInAll)
+                            return nextName;
+                        //when it doesn't exist in original (no need to be identified for maximum series sequence) but exists in all means that it needs a new number not existing in the unsaved set yet
+                        else
+                            continue;
+                    }
+                } while (valueToFillNumberOnly < 1000000);
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Parse string into string only value and number only value.
+        /// </summary>
+        /// <param name="fullStringValue">String to parse.</param>
+        /// <param name="numericFieldlength">Length of number value.</param>
+        /// <param name="numberComponent">Parsed number value.</param>
+        /// <returns></returns>
+        public static string ParseStringIntoComponents(string fullStringValue, out int numericFieldlength, out long numberComponent)
+        {
+            int numberLength = 0;
+            int? numericIndex = StringFormatUtils.GetNumericIndex(fullStringValue, out numberLength);
+            //if (numericIndex == null)
+            //{
+            //    numericFieldlength = 0;
+            //    numberComponent = 0;
+            //    return fullStringValue;
+            //}
+
+            string stringOnlyValue = fullStringValue.Substring(0, fullStringValue.Length - numberLength);
+            numberComponent = Int64.Parse(fullStringValue.Substring(numericIndex.Value, fullStringValue.Length - numericIndex.Value));
+            numericFieldlength = numberLength;
+
+            return stringOnlyValue;
+        }
+
+        public static string Insert_InternalNumber(IEnumerable<BASELINE_ITEMProjection> originalEntities, IEnumerable<BASELINE_ITEMProjection> unsavedEntities, string duplicateInternalNumber)
         {
             if (duplicateInternalNumber != string.Empty && duplicateInternalNumber != null)
             {
@@ -75,10 +171,10 @@ namespace BluePrints.Common.ViewModel.Utils
                 allEntities.AddRange(unsavedEntities);
 
                 List<string> originalEntitiesSimilarNames =
-                originalEntities.Where(x => x.Entity.INTERNAL_NUM.Contains(valueToFillStringOnly)).Select(x => x.Entity.INTERNAL_NUM).ToList();
+                originalEntities.Where(x => x.Entity.INTERNAL_NUM != null && x.Entity.INTERNAL_NUM.Contains(valueToFillStringOnly)).Select(x => x.Entity.INTERNAL_NUM).ToList();
 
                 List<string> allEntitiesSimilarNames =
-                allEntities.Where(x => x.Entity.INTERNAL_NUM.Contains(valueToFillStringOnly)).Select(x => x.Entity.INTERNAL_NUM).ToList();
+                allEntities.Where(x => x.Entity.INTERNAL_NUM != null && x.Entity.INTERNAL_NUM.Contains(valueToFillStringOnly)).Select(x => x.Entity.INTERNAL_NUM).ToList();
 
                 do
                 {
@@ -91,10 +187,10 @@ namespace BluePrints.Common.ViewModel.Utils
 
                     //when current name exists in original do not keep adding so user can identify that this issue needs to be addressed
                     if (isExistsInOriginal)
-                        return nextName;
+                        return duplicateInternalNumber;
                     //when it doesn't exists in all and doesn't exists is original it means that this number is save to be used
                     else if (!isExistsInAll)
-                        return nextName;
+                        return duplicateInternalNumber;
                     //when it doesn't exist in original (no need to be identified for maximum series sequence) but exists in all means that it needs a new number not existing in the unsaved set yet
                     else
                         continue;

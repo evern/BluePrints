@@ -303,11 +303,38 @@
                                                                       MaskType="Numeric" Mask="n0"
                                                                       MaskUseAsDisplayFormat="True">
                                                     <dxe:SpinEditSettings.Buttons>
-                                                        <dxe:ButtonInfo x:Name="contextMenuPasteMultiCountBtn"
+                                                        <dxe:ButtonInfo x:Name="contextMenuDuplicateMultiCountBtn"
                                                                         GlyphKind="Apply">
                                                             <dxmvvm:Interaction.Behaviors>
                                                                 <dxmvvm:EventToCommand
                                                                     Command="{Binding DataContext.DuplicateMultipleCommand, ElementName=userControl}"
+                                                                    CommandParameter="{Binding ElementName=contextMenuDuplicateMultiCount}"
+                                                                    EventName="Click" />
+                                                            </dxmvvm:Interaction.Behaviors>
+                                                        </dxe:ButtonInfo>
+                                                    </dxe:SpinEditSettings.Buttons>
+                                                </dxe:SpinEditSettings>
+                                            </dxb:BarEditItem.EditSettings>
+                                        </dxb:BarEditItem>
+                                    </dxb:BarSubItem>
+                                    <dxb:BarButtonItem x:Name="contextMenuInsert" Content="Insert"
+                                                       Command="{Binding DataContext.InsertCommand, ElementName=userControl}"
+                                                       Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" />
+                                    <dxb:BarSubItem x:Name="contextMenuInsertMulti" Content="Insert Multiple"
+                                                    Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}">
+                                        <dxb:BarEditItem x:Name="contextMenuInsertMultiCount" Content="Count"
+                                                         EditValue="2">
+                                            <dxb:BarEditItem.EditSettings>
+                                                <dxe:SpinEditSettings IsTextEditable="True" IsFloatValue="False"
+                                                                      Increment="1" MinValue="2" MaxValue="99"
+                                                                      MaskType="Numeric" Mask="n0"
+                                                                      MaskUseAsDisplayFormat="True">
+                                                    <dxe:SpinEditSettings.Buttons>
+                                                        <dxe:ButtonInfo x:Name="contextMenuInsertMultiCountBtn"
+                                                                        GlyphKind="Apply">
+                                                            <dxmvvm:Interaction.Behaviors>
+                                                                <dxmvvm:EventToCommand
+                                                                    Command="{Binding DataContext.InsertMultipleCommand, ElementName=userControl}"
                                                                     CommandParameter="{Binding ElementName=contextMenuDuplicateMultiCount}"
                                                                     EventName="Click" />
                                                             </dxmvvm:Interaction.Behaviors>

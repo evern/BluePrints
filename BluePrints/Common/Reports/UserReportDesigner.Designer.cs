@@ -29,14 +29,24 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            DevExpress.XtraReports.UserDesigner.XRDesignPanelListener xrDesignPanelListener1 = new DevExpress.XtraReports.UserDesigner.XRDesignPanelListener();
-            DevExpress.XtraReports.UserDesigner.XRDesignPanelListener xrDesignPanelListener2 = new DevExpress.XtraReports.UserDesigner.XRDesignPanelListener();
-            DevExpress.XtraReports.UserDesigner.XRDesignPanelListener xrDesignPanelListener3 = new DevExpress.XtraReports.UserDesigner.XRDesignPanelListener();
-            DevExpress.XtraReports.UserDesigner.XRDesignPanelListener xrDesignPanelListener4 = new DevExpress.XtraReports.UserDesigner.XRDesignPanelListener();
-            DevExpress.XtraReports.UserDesigner.XRDesignPanelListener xrDesignPanelListener5 = new DevExpress.XtraReports.UserDesigner.XRDesignPanelListener();
-            DevExpress.XtraReports.UserDesigner.XRDesignPanelListener xrDesignPanelListener6 = new DevExpress.XtraReports.UserDesigner.XRDesignPanelListener();
-            DevExpress.XtraReports.UserDesigner.XRDesignPanelListener xrDesignPanelListener7 = new DevExpress.XtraReports.UserDesigner.XRDesignPanelListener();
-            DevExpress.XtraReports.UserDesigner.XRDesignPanelListener xrDesignPanelListener8 = new DevExpress.XtraReports.UserDesigner.XRDesignPanelListener();
+            DevExpress.Utils.SuperToolTip superToolTip1 = new DevExpress.Utils.SuperToolTip();
+            DevExpress.Utils.ToolTipTitleItem toolTipTitleItem1 = new DevExpress.Utils.ToolTipTitleItem();
+            DevExpress.Utils.ToolTipItem toolTipItem1 = new DevExpress.Utils.ToolTipItem();
+            DevExpress.Utils.SuperToolTip superToolTip2 = new DevExpress.Utils.SuperToolTip();
+            DevExpress.Utils.ToolTipTitleItem toolTipTitleItem2 = new DevExpress.Utils.ToolTipTitleItem();
+            DevExpress.Utils.ToolTipItem toolTipItem2 = new DevExpress.Utils.ToolTipItem();
+            DevExpress.Utils.SuperToolTip superToolTip3 = new DevExpress.Utils.SuperToolTip();
+            DevExpress.Utils.ToolTipTitleItem toolTipTitleItem3 = new DevExpress.Utils.ToolTipTitleItem();
+            DevExpress.Utils.ToolTipItem toolTipItem3 = new DevExpress.Utils.ToolTipItem();
+            DevExpress.Utils.SuperToolTip superToolTip4 = new DevExpress.Utils.SuperToolTip();
+            DevExpress.Utils.ToolTipTitleItem toolTipTitleItem4 = new DevExpress.Utils.ToolTipTitleItem();
+            DevExpress.Utils.ToolTipItem toolTipItem4 = new DevExpress.Utils.ToolTipItem();
+            DevExpress.Utils.SuperToolTip superToolTip5 = new DevExpress.Utils.SuperToolTip();
+            DevExpress.Utils.ToolTipTitleItem toolTipTitleItem5 = new DevExpress.Utils.ToolTipTitleItem();
+            DevExpress.Utils.ToolTipItem toolTipItem5 = new DevExpress.Utils.ToolTipItem();
+            DevExpress.Utils.SuperToolTip superToolTip6 = new DevExpress.Utils.SuperToolTip();
+            DevExpress.Utils.ToolTipTitleItem toolTipTitleItem6 = new DevExpress.Utils.ToolTipTitleItem();
+            DevExpress.Utils.ToolTipItem toolTipItem6 = new DevExpress.Utils.ToolTipItem();
             DevExpress.Utils.SuperToolTip superToolTip7 = new DevExpress.Utils.SuperToolTip();
             DevExpress.Utils.ToolTipTitleItem toolTipTitleItem7 = new DevExpress.Utils.ToolTipTitleItem();
             DevExpress.Utils.ToolTipItem toolTipItem7 = new DevExpress.Utils.ToolTipItem();
@@ -133,18 +143,6 @@
             DevExpress.Utils.SuperToolTip superToolTip38 = new DevExpress.Utils.SuperToolTip();
             DevExpress.Utils.ToolTipTitleItem toolTipTitleItem38 = new DevExpress.Utils.ToolTipTitleItem();
             DevExpress.Utils.ToolTipItem toolTipItem38 = new DevExpress.Utils.ToolTipItem();
-            DevExpress.Utils.SuperToolTip superToolTip1 = new DevExpress.Utils.SuperToolTip();
-            DevExpress.Utils.ToolTipTitleItem toolTipTitleItem1 = new DevExpress.Utils.ToolTipTitleItem();
-            DevExpress.Utils.ToolTipItem toolTipItem1 = new DevExpress.Utils.ToolTipItem();
-            DevExpress.Utils.SuperToolTip superToolTip3 = new DevExpress.Utils.SuperToolTip();
-            DevExpress.Utils.ToolTipTitleItem toolTipTitleItem3 = new DevExpress.Utils.ToolTipTitleItem();
-            DevExpress.Utils.ToolTipItem toolTipItem3 = new DevExpress.Utils.ToolTipItem();
-            DevExpress.Utils.SuperToolTip superToolTip4 = new DevExpress.Utils.SuperToolTip();
-            DevExpress.Utils.ToolTipTitleItem toolTipTitleItem4 = new DevExpress.Utils.ToolTipTitleItem();
-            DevExpress.Utils.ToolTipItem toolTipItem4 = new DevExpress.Utils.ToolTipItem();
-            DevExpress.Utils.SuperToolTip superToolTip2 = new DevExpress.Utils.SuperToolTip();
-            DevExpress.Utils.ToolTipTitleItem toolTipTitleItem2 = new DevExpress.Utils.ToolTipTitleItem();
-            DevExpress.Utils.ToolTipItem toolTipItem2 = new DevExpress.Utils.ToolTipItem();
             DevExpress.Utils.SuperToolTip superToolTip39 = new DevExpress.Utils.SuperToolTip();
             DevExpress.Utils.ToolTipTitleItem toolTipTitleItem39 = new DevExpress.Utils.ToolTipTitleItem();
             DevExpress.Utils.ToolTipItem toolTipItem39 = new DevExpress.Utils.ToolTipItem();
@@ -208,12 +206,6 @@
             DevExpress.Utils.SuperToolTip superToolTip59 = new DevExpress.Utils.SuperToolTip();
             DevExpress.Utils.ToolTipTitleItem toolTipTitleItem59 = new DevExpress.Utils.ToolTipTitleItem();
             DevExpress.Utils.ToolTipItem toolTipItem59 = new DevExpress.Utils.ToolTipItem();
-            DevExpress.Utils.SuperToolTip superToolTip5 = new DevExpress.Utils.SuperToolTip();
-            DevExpress.Utils.ToolTipTitleItem toolTipTitleItem5 = new DevExpress.Utils.ToolTipTitleItem();
-            DevExpress.Utils.ToolTipItem toolTipItem5 = new DevExpress.Utils.ToolTipItem();
-            DevExpress.Utils.SuperToolTip superToolTip6 = new DevExpress.Utils.SuperToolTip();
-            DevExpress.Utils.ToolTipTitleItem toolTipTitleItem6 = new DevExpress.Utils.ToolTipTitleItem();
-            DevExpress.Utils.ToolTipItem toolTipItem6 = new DevExpress.Utils.ToolTipItem();
             DevExpress.Utils.SuperToolTip superToolTip60 = new DevExpress.Utils.SuperToolTip();
             DevExpress.Utils.ToolTipTitleItem toolTipTitleItem60 = new DevExpress.Utils.ToolTipTitleItem();
             DevExpress.Utils.ToolTipItem toolTipItem60 = new DevExpress.Utils.ToolTipItem();
@@ -361,14 +353,27 @@
             DevExpress.Utils.SuperToolTip superToolTip108 = new DevExpress.Utils.SuperToolTip();
             DevExpress.Utils.ToolTipTitleItem toolTipTitleItem108 = new DevExpress.Utils.ToolTipTitleItem();
             DevExpress.Utils.ToolTipItem toolTipItem108 = new DevExpress.Utils.ToolTipItem();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UserReportDesigner));
             DevExpress.Utils.SuperToolTip superToolTip109 = new DevExpress.Utils.SuperToolTip();
             DevExpress.Utils.ToolTipTitleItem toolTipTitleItem109 = new DevExpress.Utils.ToolTipTitleItem();
             DevExpress.Utils.ToolTipItem toolTipItem109 = new DevExpress.Utils.ToolTipItem();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UserReportDesigner));
-            this.reportDesigner1 = new DevExpress.XtraReports.UserDesigner.XRDesignMdiController(this.components);
+            DevExpress.XtraReports.UserDesigner.XRDesignPanelListener xrDesignPanelListener1 = new DevExpress.XtraReports.UserDesigner.XRDesignPanelListener();
+            DevExpress.XtraReports.UserDesigner.XRDesignPanelListener xrDesignPanelListener2 = new DevExpress.XtraReports.UserDesigner.XRDesignPanelListener();
+            DevExpress.XtraReports.UserDesigner.XRDesignPanelListener xrDesignPanelListener3 = new DevExpress.XtraReports.UserDesigner.XRDesignPanelListener();
+            DevExpress.XtraReports.UserDesigner.XRDesignPanelListener xrDesignPanelListener4 = new DevExpress.XtraReports.UserDesigner.XRDesignPanelListener();
+            DevExpress.XtraReports.UserDesigner.XRDesignPanelListener xrDesignPanelListener5 = new DevExpress.XtraReports.UserDesigner.XRDesignPanelListener();
+            DevExpress.XtraReports.UserDesigner.XRDesignPanelListener xrDesignPanelListener6 = new DevExpress.XtraReports.UserDesigner.XRDesignPanelListener();
+            DevExpress.XtraReports.UserDesigner.XRDesignPanelListener xrDesignPanelListener7 = new DevExpress.XtraReports.UserDesigner.XRDesignPanelListener();
+            DevExpress.XtraReports.UserDesigner.XRDesignPanelListener xrDesignPanelListener8 = new DevExpress.XtraReports.UserDesigner.XRDesignPanelListener();
             this.xrDesignRibbonController1 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonController(this.components);
             this.ribbonControl1 = new DevExpress.XtraBars.Ribbon.RibbonControl();
-            this.ribbonStatusBar1 = new DevExpress.XtraBars.Ribbon.RibbonStatusBar();
+            this.applicationMenu1 = new DevExpress.XtraBars.Ribbon.ApplicationMenu(this.components);
+            this.commandBarItem31 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
+            this.commandBarItem34 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
+            this.commandBarItem32 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
+            this.commandBarItem33 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
+            this.commandBarItem52 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
+            this.commandBarItem53 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
             this.commandBarItem1 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
             this.commandBarItem2 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
             this.commandBarItem3 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
@@ -401,10 +406,6 @@
             this.commandBarItem28 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
             this.commandBarItem29 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
             this.commandBarItem30 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
-            this.commandBarItem31 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
-            this.commandBarItem32 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
-            this.commandBarItem33 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
-            this.commandBarItem34 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
             this.commandBarItem35 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
             this.commandBarItem36 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
             this.commandBarItem37 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
@@ -417,10 +418,10 @@
             this.commandBarItem44 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
             this.commandBarItem45 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
             this.commandBarItem46 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
-            this.recentlyUsedItemsComboBox1 = new DevExpress.XtraReports.UserDesigner.RecentlyUsedItemsComboBox();
             this.barEditItem1 = new DevExpress.XtraBars.BarEditItem();
-            this.designRepositoryItemComboBox1 = new DevExpress.XtraReports.UserDesigner.DesignRepositoryItemComboBox();
+            this.recentlyUsedItemsComboBox1 = new DevExpress.XtraReports.UserDesigner.RecentlyUsedItemsComboBox();
             this.barEditItem2 = new DevExpress.XtraBars.BarEditItem();
+            this.designRepositoryItemComboBox1 = new DevExpress.XtraReports.UserDesigner.DesignRepositoryItemComboBox();
             this.barDockPanelsListItem1 = new DevExpress.XtraReports.UserDesigner.BarDockPanelsListItem();
             this.scriptsCommandBarItem1 = new DevExpress.XtraReports.UserDesigner.ScriptsCommandBarItem();
             this.commandBarItem47 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
@@ -428,31 +429,15 @@
             this.commandBarItem49 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
             this.commandBarItem50 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
             this.commandBarItem51 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
-            this.commandBarItem52 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
-            this.commandBarItem53 = new DevExpress.XtraReports.UserDesigner.CommandBarItem();
-            this.applicationMenu1 = new DevExpress.XtraBars.Ribbon.ApplicationMenu(this.components);
-            this.ribbonPage1 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPage();
-            this.xrDesignRibbonPageGroup1 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroup();
-            this.xrDesignRibbonPageGroup2 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroup();
-            this.xrDesignRibbonPageGroup3 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroup();
             this.xrDesignBarButtonGroup1 = new DevExpress.XtraReports.UserDesigner.XRDesignBarButtonGroup();
             this.xrDesignBarButtonGroup2 = new DevExpress.XtraReports.UserDesigner.XRDesignBarButtonGroup();
             this.xrDesignBarButtonGroup3 = new DevExpress.XtraReports.UserDesigner.XRDesignBarButtonGroup();
-            this.xrDesignRibbonPageGroup4 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroup();
             this.xrDesignBarButtonGroup4 = new DevExpress.XtraReports.UserDesigner.XRDesignBarButtonGroup();
             this.xrDesignBarButtonGroup5 = new DevExpress.XtraReports.UserDesigner.XRDesignBarButtonGroup();
-            this.xrDesignRibbonPageGroup5 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroup();
             this.xrDesignBarButtonGroup6 = new DevExpress.XtraReports.UserDesigner.XRDesignBarButtonGroup();
             this.xrDesignBarButtonGroup7 = new DevExpress.XtraReports.UserDesigner.XRDesignBarButtonGroup();
             this.xrDesignBarButtonGroup8 = new DevExpress.XtraReports.UserDesigner.XRDesignBarButtonGroup();
             this.xrDesignBarButtonGroup9 = new DevExpress.XtraReports.UserDesigner.XRDesignBarButtonGroup();
-            this.xrDesignRibbonPageGroup6 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroup();
-            this.xrDesignRibbonPageGroup7 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroup();
-            this.xrDesignRibbonPageGroup8 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroup();
-            this.ribbonPage2 = new DevExpress.XtraReports.UserDesigner.XRToolboxRibbonPage();
-            this.xrToolboxPageCategory1 = new DevExpress.XtraReports.UserDesigner.XRToolboxPageCategory();
-            this.ribbonPage3 = new DevExpress.XtraReports.UserDesigner.XRHtmlRibbonPage();
-            this.xrDesignRibbonPageGroup9 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroup();
             this.printPreviewBarItem1 = new DevExpress.XtraPrinting.Preview.PrintPreviewBarItem();
             this.printPreviewBarItem2 = new DevExpress.XtraPrinting.Preview.PrintPreviewBarItem();
             this.printPreviewBarItem3 = new DevExpress.XtraPrinting.Preview.PrintPreviewBarItem();
@@ -504,13 +489,25 @@
             this.printPreviewBarItem49 = new DevExpress.XtraPrinting.Preview.PrintPreviewBarItem();
             this.printPreviewStaticItem1 = new DevExpress.XtraPrinting.Preview.PrintPreviewStaticItem();
             this.barStaticItem1 = new DevExpress.XtraBars.BarStaticItem();
-            this.repositoryItemProgressBar1 = new DevExpress.XtraEditors.Repository.RepositoryItemProgressBar();
             this.progressBarEditItem1 = new DevExpress.XtraPrinting.Preview.ProgressBarEditItem();
+            this.repositoryItemProgressBar1 = new DevExpress.XtraEditors.Repository.RepositoryItemProgressBar();
             this.printPreviewBarItem50 = new DevExpress.XtraPrinting.Preview.PrintPreviewBarItem();
             this.barButtonItem1 = new DevExpress.XtraBars.BarButtonItem();
             this.printPreviewStaticItem2 = new DevExpress.XtraPrinting.Preview.PrintPreviewStaticItem();
-            this.repositoryItemZoomTrackBar1 = new DevExpress.XtraEditors.Repository.RepositoryItemZoomTrackBar();
             this.zoomTrackBarEditItem1 = new DevExpress.XtraPrinting.Preview.ZoomTrackBarEditItem();
+            this.repositoryItemZoomTrackBar1 = new DevExpress.XtraEditors.Repository.RepositoryItemZoomTrackBar();
+            this.bBtnSetDefault = new DevExpress.XtraBars.BarButtonItem();
+            this.xrToolboxPageCategory1 = new DevExpress.XtraReports.UserDesigner.XRToolboxPageCategory();
+            this.ribbonPage2 = new DevExpress.XtraReports.UserDesigner.XRToolboxRibbonPage();
+            this.ribbonPage1 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPage();
+            this.xrDesignRibbonPageGroup1 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroup();
+            this.xrDesignRibbonPageGroup2 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroup();
+            this.xrDesignRibbonPageGroup3 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroup();
+            this.xrDesignRibbonPageGroup4 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroup();
+            this.xrDesignRibbonPageGroup5 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroup();
+            this.xrDesignRibbonPageGroup6 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroup();
+            this.xrDesignRibbonPageGroup7 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroup();
+            this.xrDesignRibbonPageGroup8 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroup();
             this.ribbonPage4 = new DevExpress.XtraPrinting.Preview.PrintPreviewRibbonPage();
             this.printPreviewRibbonPageGroup1 = new DevExpress.XtraPrinting.Preview.PrintPreviewRibbonPageGroup();
             this.printPreviewRibbonPageGroup2 = new DevExpress.XtraPrinting.Preview.PrintPreviewRibbonPageGroup();
@@ -520,63 +517,44 @@
             this.printPreviewRibbonPageGroup6 = new DevExpress.XtraPrinting.Preview.PrintPreviewRibbonPageGroup();
             this.printPreviewRibbonPageGroup7 = new DevExpress.XtraPrinting.Preview.PrintPreviewRibbonPageGroup();
             this.printPreviewRibbonPageGroup8 = new DevExpress.XtraPrinting.Preview.PrintPreviewRibbonPageGroup();
+            this.ribbonPage3 = new DevExpress.XtraReports.UserDesigner.XRHtmlRibbonPage();
+            this.xrDesignRibbonPageGroup9 = new DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroup();
+            this.ribbonStatusBar1 = new DevExpress.XtraBars.Ribbon.RibbonStatusBar();
             this.xrDesignDockManager1 = new DevExpress.XtraReports.UserDesigner.XRDesignDockManager(this.components);
-            this.fieldListDockPanel1 = new DevExpress.XtraReports.UserDesigner.FieldListDockPanel();
-            this.fieldListDockPanel1_Container = new DevExpress.XtraReports.UserDesigner.DesignControlContainer();
-            this.propertyGridDockPanel1 = new DevExpress.XtraReports.UserDesigner.PropertyGridDockPanel();
-            this.propertyGridDockPanel1_Container = new DevExpress.XtraReports.UserDesigner.DesignControlContainer();
-            this.reportExplorerDockPanel1 = new DevExpress.XtraReports.UserDesigner.ReportExplorerDockPanel();
-            this.reportExplorerDockPanel1_Container = new DevExpress.XtraReports.UserDesigner.DesignControlContainer();
-            this.toolBoxDockPanel1 = new DevExpress.XtraReports.UserDesigner.ToolBoxDockPanel();
-            this.toolBoxDockPanel1_Container = new DevExpress.XtraReports.UserDesigner.DesignControlContainer();
-            this.groupAndSortDockPanel1 = new DevExpress.XtraReports.UserDesigner.GroupAndSortDockPanel();
-            this.groupAndSortDockPanel1_Container = new DevExpress.XtraReports.UserDesigner.DesignControlContainer();
-            this.errorListDockPanel1 = new DevExpress.XtraReports.UserDesigner.ErrorListDockPanel();
-            this.errorListDockPanel1_Container = new DevExpress.XtraReports.UserDesigner.DesignControlContainer();
             this.panelContainer1 = new DevExpress.XtraBars.Docking.DockPanel();
             this.panelContainer2 = new DevExpress.XtraBars.Docking.DockPanel();
+            this.fieldListDockPanel1 = new DevExpress.XtraReports.UserDesigner.FieldListDockPanel();
+            this.fieldListDockPanel1_Container = new DevExpress.XtraReports.UserDesigner.DesignControlContainer();
+            this.reportExplorerDockPanel1 = new DevExpress.XtraReports.UserDesigner.ReportExplorerDockPanel();
+            this.reportExplorerDockPanel1_Container = new DevExpress.XtraReports.UserDesigner.DesignControlContainer();
+            this.propertyGridDockPanel1 = new DevExpress.XtraReports.UserDesigner.PropertyGridDockPanel();
+            this.propertyGridDockPanel1_Container = new DevExpress.XtraReports.UserDesigner.DesignControlContainer();
+            this.toolBoxDockPanel1 = new DevExpress.XtraReports.UserDesigner.ToolBoxDockPanel();
+            this.toolBoxDockPanel1_Container = new DevExpress.XtraReports.UserDesigner.DesignControlContainer();
             this.panelContainer3 = new DevExpress.XtraBars.Docking.DockPanel();
-            this.bBtnSetDefault = new DevExpress.XtraBars.BarButtonItem();
+            this.errorListDockPanel1 = new DevExpress.XtraReports.UserDesigner.ErrorListDockPanel();
+            this.errorListDockPanel1_Container = new DevExpress.XtraReports.UserDesigner.DesignControlContainer();
+            this.groupAndSortDockPanel1 = new DevExpress.XtraReports.UserDesigner.GroupAndSortDockPanel();
+            this.groupAndSortDockPanel1_Container = new DevExpress.XtraReports.UserDesigner.DesignControlContainer();
+            this.reportDesigner1 = new DevExpress.XtraReports.UserDesigner.XRDesignMdiController(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.xrDesignRibbonController1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ribbonControl1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.applicationMenu1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.recentlyUsedItemsComboBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.designRepositoryItemComboBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.applicationMenu1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemProgressBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemZoomTrackBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrDesignDockManager1)).BeginInit();
-            this.fieldListDockPanel1.SuspendLayout();
-            this.propertyGridDockPanel1.SuspendLayout();
-            this.reportExplorerDockPanel1.SuspendLayout();
-            this.toolBoxDockPanel1.SuspendLayout();
-            this.groupAndSortDockPanel1.SuspendLayout();
-            this.errorListDockPanel1.SuspendLayout();
             this.panelContainer1.SuspendLayout();
             this.panelContainer2.SuspendLayout();
+            this.fieldListDockPanel1.SuspendLayout();
+            this.reportExplorerDockPanel1.SuspendLayout();
+            this.propertyGridDockPanel1.SuspendLayout();
+            this.toolBoxDockPanel1.SuspendLayout();
             this.panelContainer3.SuspendLayout();
+            this.errorListDockPanel1.SuspendLayout();
+            this.groupAndSortDockPanel1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // reportDesigner1
-            // 
-            this.reportDesigner1.ContainerControl = null;
-            xrDesignPanelListener1.DesignControl = this.xrDesignRibbonController1;
-            xrDesignPanelListener2.DesignControl = this.xrDesignDockManager1;
-            xrDesignPanelListener3.DesignControl = this.fieldListDockPanel1;
-            xrDesignPanelListener4.DesignControl = this.propertyGridDockPanel1;
-            xrDesignPanelListener5.DesignControl = this.reportExplorerDockPanel1;
-            xrDesignPanelListener6.DesignControl = this.toolBoxDockPanel1;
-            xrDesignPanelListener7.DesignControl = this.groupAndSortDockPanel1;
-            xrDesignPanelListener8.DesignControl = this.errorListDockPanel1;
-            this.reportDesigner1.DesignPanelListeners.AddRange(new DevExpress.XtraReports.UserDesigner.XRDesignPanelListener[] {
-            xrDesignPanelListener1,
-            xrDesignPanelListener2,
-            xrDesignPanelListener3,
-            xrDesignPanelListener4,
-            xrDesignPanelListener5,
-            xrDesignPanelListener6,
-            xrDesignPanelListener7,
-            xrDesignPanelListener8});
-            this.reportDesigner1.Form = this;
             // 
             // xrDesignRibbonController1
             // 
@@ -717,6 +695,7 @@
             this.zoomTrackBarEditItem1,
             this.bBtnSetDefault});
             this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
+            this.ribbonControl1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ribbonControl1.MaxItemId = 126;
             this.ribbonControl1.Name = "ribbonControl1";
             this.ribbonControl1.PageCategories.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageCategory[] {
@@ -730,23 +709,124 @@
             this.designRepositoryItemComboBox1,
             this.repositoryItemProgressBar1,
             this.repositoryItemZoomTrackBar1});
-            this.ribbonControl1.Size = new System.Drawing.Size(1568, 217);
+            this.ribbonControl1.Size = new System.Drawing.Size(1045, 141);
             this.ribbonControl1.StatusBar = this.ribbonStatusBar1;
             this.ribbonControl1.TransparentEditors = true;
             // 
-            // ribbonStatusBar1
+            // applicationMenu1
             // 
-            this.ribbonStatusBar1.ItemLinks.Add(this.printPreviewStaticItem1);
-            this.ribbonStatusBar1.ItemLinks.Add(this.barStaticItem1, true);
-            this.ribbonStatusBar1.ItemLinks.Add(this.progressBarEditItem1);
-            this.ribbonStatusBar1.ItemLinks.Add(this.printPreviewBarItem50);
-            this.ribbonStatusBar1.ItemLinks.Add(this.barButtonItem1);
-            this.ribbonStatusBar1.ItemLinks.Add(this.printPreviewStaticItem2);
-            this.ribbonStatusBar1.ItemLinks.Add(this.zoomTrackBarEditItem1);
-            this.ribbonStatusBar1.Location = new System.Drawing.Point(0, 733);
-            this.ribbonStatusBar1.Name = "ribbonStatusBar1";
-            this.ribbonStatusBar1.Ribbon = this.ribbonControl1;
-            this.ribbonStatusBar1.Size = new System.Drawing.Size(1568, 42);
+            this.applicationMenu1.ItemLinks.Add(this.commandBarItem31);
+            this.applicationMenu1.ItemLinks.Add(this.commandBarItem34);
+            this.applicationMenu1.ItemLinks.Add(this.commandBarItem32);
+            this.applicationMenu1.ItemLinks.Add(this.commandBarItem33);
+            this.applicationMenu1.ItemLinks.Add(this.commandBarItem52, true);
+            this.applicationMenu1.ItemLinks.Add(this.commandBarItem53, true);
+            this.applicationMenu1.Name = "applicationMenu1";
+            this.applicationMenu1.Ribbon = this.ribbonControl1;
+            this.applicationMenu1.ShowRightPane = true;
+            // 
+            // commandBarItem31
+            // 
+            this.commandBarItem31.ButtonStyle = DevExpress.XtraBars.BarButtonStyle.DropDown;
+            this.commandBarItem31.Caption = "New Report";
+            this.commandBarItem31.Command = DevExpress.XtraReports.UserDesigner.ReportCommand.NewReport;
+            this.commandBarItem31.Description = "Create a new blank report.";
+            this.commandBarItem31.Enabled = false;
+            this.commandBarItem31.Id = 33;
+            this.commandBarItem31.Name = "commandBarItem31";
+            superToolTip1.FixedTooltipWidth = true;
+            toolTipTitleItem1.Text = "New Blank Report";
+            toolTipItem1.LeftIndent = 6;
+            toolTipItem1.Text = "Create a new blank report.";
+            superToolTip1.Items.Add(toolTipTitleItem1);
+            superToolTip1.Items.Add(toolTipItem1);
+            superToolTip1.MaxWidth = 210;
+            this.commandBarItem31.SuperTip = superToolTip1;
+            // 
+            // commandBarItem34
+            // 
+            this.commandBarItem34.Caption = "Open...";
+            this.commandBarItem34.Command = DevExpress.XtraReports.UserDesigner.ReportCommand.OpenFile;
+            this.commandBarItem34.Enabled = false;
+            this.commandBarItem34.Id = 36;
+            this.commandBarItem34.ItemShortcut = new DevExpress.XtraBars.BarShortcut((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O));
+            this.commandBarItem34.Name = "commandBarItem34";
+            superToolTip2.FixedTooltipWidth = true;
+            toolTipTitleItem2.Text = "Open Report (Ctrl+O)";
+            toolTipItem2.LeftIndent = 6;
+            toolTipItem2.Text = "Open a report.";
+            superToolTip2.Items.Add(toolTipTitleItem2);
+            superToolTip2.Items.Add(toolTipItem2);
+            superToolTip2.MaxWidth = 210;
+            this.commandBarItem34.SuperTip = superToolTip2;
+            // 
+            // commandBarItem32
+            // 
+            this.commandBarItem32.ButtonStyle = DevExpress.XtraBars.BarButtonStyle.DropDown;
+            this.commandBarItem32.Caption = "Save";
+            this.commandBarItem32.Command = DevExpress.XtraReports.UserDesigner.ReportCommand.SaveFile;
+            this.commandBarItem32.Description = "Save the current report.";
+            this.commandBarItem32.Enabled = false;
+            this.commandBarItem32.Id = 34;
+            this.commandBarItem32.Name = "commandBarItem32";
+            superToolTip3.FixedTooltipWidth = true;
+            toolTipTitleItem3.Text = "Save Report";
+            toolTipItem3.LeftIndent = 6;
+            toolTipItem3.Text = "Save the current report.";
+            superToolTip3.Items.Add(toolTipTitleItem3);
+            superToolTip3.Items.Add(toolTipItem3);
+            superToolTip3.MaxWidth = 210;
+            this.commandBarItem32.SuperTip = superToolTip3;
+            // 
+            // commandBarItem33
+            // 
+            this.commandBarItem33.Caption = "Save All";
+            this.commandBarItem33.Command = DevExpress.XtraReports.UserDesigner.ReportCommand.SaveAll;
+            this.commandBarItem33.Enabled = false;
+            this.commandBarItem33.Id = 35;
+            this.commandBarItem33.ItemShortcut = new DevExpress.XtraBars.BarShortcut((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L));
+            this.commandBarItem33.Name = "commandBarItem33";
+            superToolTip4.FixedTooltipWidth = true;
+            toolTipTitleItem4.Text = "Save All Reports (Ctrl+L)";
+            toolTipItem4.LeftIndent = 6;
+            toolTipItem4.Text = "Save all modified reports.";
+            superToolTip4.Items.Add(toolTipTitleItem4);
+            superToolTip4.Items.Add(toolTipItem4);
+            superToolTip4.MaxWidth = 210;
+            this.commandBarItem33.SuperTip = superToolTip4;
+            // 
+            // commandBarItem52
+            // 
+            this.commandBarItem52.Caption = "Close";
+            this.commandBarItem52.Command = DevExpress.XtraReports.UserDesigner.ReportCommand.Close;
+            this.commandBarItem52.Enabled = false;
+            this.commandBarItem52.Id = 58;
+            this.commandBarItem52.ItemShortcut = new DevExpress.XtraBars.BarShortcut((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F4));
+            this.commandBarItem52.Name = "commandBarItem52";
+            superToolTip5.FixedTooltipWidth = true;
+            toolTipTitleItem5.Text = "Close (Ctrl+F4)";
+            toolTipItem5.LeftIndent = 6;
+            toolTipItem5.Text = "Close the current report.";
+            superToolTip5.Items.Add(toolTipTitleItem5);
+            superToolTip5.Items.Add(toolTipItem5);
+            superToolTip5.MaxWidth = 210;
+            this.commandBarItem52.SuperTip = superToolTip5;
+            // 
+            // commandBarItem53
+            // 
+            this.commandBarItem53.Caption = "Exit";
+            this.commandBarItem53.Command = DevExpress.XtraReports.UserDesigner.ReportCommand.Exit;
+            this.commandBarItem53.Enabled = false;
+            this.commandBarItem53.Id = 59;
+            this.commandBarItem53.Name = "commandBarItem53";
+            superToolTip6.FixedTooltipWidth = true;
+            toolTipTitleItem6.Text = "Exit";
+            toolTipItem6.LeftIndent = 6;
+            toolTipItem6.Text = "Close the report designer.";
+            superToolTip6.Items.Add(toolTipTitleItem6);
+            superToolTip6.Items.Add(toolTipItem6);
+            superToolTip6.MaxWidth = 210;
+            this.commandBarItem53.SuperTip = superToolTip6;
             // 
             // commandBarItem1
             // 
@@ -1268,77 +1348,12 @@
             superToolTip38.MaxWidth = 210;
             this.commandBarItem30.SuperTip = superToolTip38;
             // 
-            // commandBarItem31
-            // 
-            this.commandBarItem31.ButtonStyle = DevExpress.XtraBars.BarButtonStyle.DropDown;
-            this.commandBarItem31.Caption = "New Report";
-            this.commandBarItem31.Command = DevExpress.XtraReports.UserDesigner.ReportCommand.NewReport;
-            this.commandBarItem31.Id = 33;
-            this.commandBarItem31.Name = "commandBarItem31";
-            superToolTip1.FixedTooltipWidth = true;
-            toolTipTitleItem1.Text = "New Blank Report";
-            toolTipItem1.LeftIndent = 6;
-            toolTipItem1.Text = "Create a new blank report.";
-            superToolTip1.Items.Add(toolTipTitleItem1);
-            superToolTip1.Items.Add(toolTipItem1);
-            superToolTip1.MaxWidth = 210;
-            this.commandBarItem31.SuperTip = superToolTip1;
-            // 
-            // commandBarItem32
-            // 
-            this.commandBarItem32.ButtonStyle = DevExpress.XtraBars.BarButtonStyle.DropDown;
-            this.commandBarItem32.Caption = "Save";
-            this.commandBarItem32.Command = DevExpress.XtraReports.UserDesigner.ReportCommand.SaveFile;
-            this.commandBarItem32.Enabled = false;
-            this.commandBarItem32.Id = 34;
-            this.commandBarItem32.Name = "commandBarItem32";
-            superToolTip3.FixedTooltipWidth = true;
-            toolTipTitleItem3.Text = "Save Report";
-            toolTipItem3.LeftIndent = 6;
-            toolTipItem3.Text = "Save the current report.";
-            superToolTip3.Items.Add(toolTipTitleItem3);
-            superToolTip3.Items.Add(toolTipItem3);
-            superToolTip3.MaxWidth = 210;
-            this.commandBarItem32.SuperTip = superToolTip3;
-            // 
-            // commandBarItem33
-            // 
-            this.commandBarItem33.Caption = "Save All";
-            this.commandBarItem33.Command = DevExpress.XtraReports.UserDesigner.ReportCommand.SaveAll;
-            this.commandBarItem33.Enabled = false;
-            this.commandBarItem33.Id = 35;
-            this.commandBarItem33.ItemShortcut = new DevExpress.XtraBars.BarShortcut((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L));
-            this.commandBarItem33.Name = "commandBarItem33";
-            superToolTip4.FixedTooltipWidth = true;
-            toolTipTitleItem4.Text = "Save All Reports (Ctrl+L)";
-            toolTipItem4.LeftIndent = 6;
-            toolTipItem4.Text = "Save all modified reports.";
-            superToolTip4.Items.Add(toolTipTitleItem4);
-            superToolTip4.Items.Add(toolTipItem4);
-            superToolTip4.MaxWidth = 210;
-            this.commandBarItem33.SuperTip = superToolTip4;
-            // 
-            // commandBarItem34
-            // 
-            this.commandBarItem34.Caption = "Open...";
-            this.commandBarItem34.Command = DevExpress.XtraReports.UserDesigner.ReportCommand.OpenFile;
-            this.commandBarItem34.Id = 36;
-            this.commandBarItem34.ItemShortcut = new DevExpress.XtraBars.BarShortcut((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O));
-            this.commandBarItem34.Name = "commandBarItem34";
-            superToolTip2.FixedTooltipWidth = true;
-            toolTipTitleItem2.Text = "Open Report (Ctrl+O)";
-            toolTipItem2.LeftIndent = 6;
-            toolTipItem2.Text = "Open a report.";
-            superToolTip2.Items.Add(toolTipTitleItem2);
-            superToolTip2.Items.Add(toolTipItem2);
-            superToolTip2.MaxWidth = 210;
-            this.commandBarItem34.SuperTip = superToolTip2;
-            // 
             // commandBarItem35
             // 
             this.commandBarItem35.Caption = "New Report";
             this.commandBarItem35.Command = DevExpress.XtraReports.UserDesigner.ReportCommand.NewReport;
             this.commandBarItem35.Description = "Create a new blank report.";
+            this.commandBarItem35.Enabled = false;
             this.commandBarItem35.Id = 37;
             this.commandBarItem35.ItemShortcut = new DevExpress.XtraBars.BarShortcut((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N));
             this.commandBarItem35.Name = "commandBarItem35";
@@ -1356,6 +1371,7 @@
             this.commandBarItem36.Caption = "New Report via Wizard...";
             this.commandBarItem36.Command = DevExpress.XtraReports.UserDesigner.ReportCommand.NewReportWizard;
             this.commandBarItem36.Description = "Launch the report wizard to create a new report.";
+            this.commandBarItem36.Enabled = false;
             this.commandBarItem36.Id = 38;
             this.commandBarItem36.ItemShortcut = new DevExpress.XtraBars.BarShortcut((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.W));
             this.commandBarItem36.Name = "commandBarItem36";
@@ -1539,15 +1555,6 @@
             superToolTip50.MaxWidth = 210;
             this.commandBarItem46.SuperTip = superToolTip50;
             // 
-            // recentlyUsedItemsComboBox1
-            // 
-            this.recentlyUsedItemsComboBox1.AppearanceDropDown.Font = new System.Drawing.Font("Tahoma", 11.25F);
-            this.recentlyUsedItemsComboBox1.AppearanceDropDown.Options.UseFont = true;
-            this.recentlyUsedItemsComboBox1.AutoHeight = false;
-            this.recentlyUsedItemsComboBox1.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.recentlyUsedItemsComboBox1.Name = "recentlyUsedItemsComboBox1";
-            // 
             // barEditItem1
             // 
             this.barEditItem1.Edit = this.recentlyUsedItemsComboBox1;
@@ -1563,12 +1570,14 @@
             superToolTip51.MaxWidth = 210;
             this.barEditItem1.SuperTip = superToolTip51;
             // 
-            // designRepositoryItemComboBox1
+            // recentlyUsedItemsComboBox1
             // 
-            this.designRepositoryItemComboBox1.AutoHeight = false;
-            this.designRepositoryItemComboBox1.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            this.recentlyUsedItemsComboBox1.AppearanceDropDown.Font = new System.Drawing.Font("Tahoma", 11.25F);
+            this.recentlyUsedItemsComboBox1.AppearanceDropDown.Options.UseFont = true;
+            this.recentlyUsedItemsComboBox1.AutoHeight = false;
+            this.recentlyUsedItemsComboBox1.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.designRepositoryItemComboBox1.Name = "designRepositoryItemComboBox1";
+            this.recentlyUsedItemsComboBox1.Name = "recentlyUsedItemsComboBox1";
             // 
             // barEditItem2
             // 
@@ -1584,6 +1593,13 @@
             superToolTip52.Items.Add(toolTipItem52);
             superToolTip52.MaxWidth = 210;
             this.barEditItem2.SuperTip = superToolTip52;
+            // 
+            // designRepositoryItemComboBox1
+            // 
+            this.designRepositoryItemComboBox1.AutoHeight = false;
+            this.designRepositoryItemComboBox1.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.designRepositoryItemComboBox1.Name = "designRepositoryItemComboBox1";
             // 
             // barDockPanelsListItem1
             // 
@@ -1699,103 +1715,6 @@
             superToolTip59.MaxWidth = 210;
             this.commandBarItem51.SuperTip = superToolTip59;
             // 
-            // commandBarItem52
-            // 
-            this.commandBarItem52.Caption = "Close";
-            this.commandBarItem52.Command = DevExpress.XtraReports.UserDesigner.ReportCommand.Close;
-            this.commandBarItem52.Enabled = false;
-            this.commandBarItem52.Id = 58;
-            this.commandBarItem52.ItemShortcut = new DevExpress.XtraBars.BarShortcut((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F4));
-            this.commandBarItem52.Name = "commandBarItem52";
-            superToolTip5.FixedTooltipWidth = true;
-            toolTipTitleItem5.Text = "Close (Ctrl+F4)";
-            toolTipItem5.LeftIndent = 6;
-            toolTipItem5.Text = "Close the current report.";
-            superToolTip5.Items.Add(toolTipTitleItem5);
-            superToolTip5.Items.Add(toolTipItem5);
-            superToolTip5.MaxWidth = 210;
-            this.commandBarItem52.SuperTip = superToolTip5;
-            // 
-            // commandBarItem53
-            // 
-            this.commandBarItem53.Caption = "Exit";
-            this.commandBarItem53.Command = DevExpress.XtraReports.UserDesigner.ReportCommand.Exit;
-            this.commandBarItem53.Id = 59;
-            this.commandBarItem53.Name = "commandBarItem53";
-            superToolTip6.FixedTooltipWidth = true;
-            toolTipTitleItem6.Text = "Exit";
-            toolTipItem6.LeftIndent = 6;
-            toolTipItem6.Text = "Close the report designer.";
-            superToolTip6.Items.Add(toolTipTitleItem6);
-            superToolTip6.Items.Add(toolTipItem6);
-            superToolTip6.MaxWidth = 210;
-            this.commandBarItem53.SuperTip = superToolTip6;
-            // 
-            // applicationMenu1
-            // 
-            this.applicationMenu1.ItemLinks.Add(this.commandBarItem31);
-            this.applicationMenu1.ItemLinks.Add(this.commandBarItem34);
-            this.applicationMenu1.ItemLinks.Add(this.commandBarItem32);
-            this.applicationMenu1.ItemLinks.Add(this.commandBarItem33);
-            this.applicationMenu1.ItemLinks.Add(this.commandBarItem52, true);
-            this.applicationMenu1.ItemLinks.Add(this.commandBarItem53, true);
-            this.applicationMenu1.Name = "applicationMenu1";
-            this.applicationMenu1.Ribbon = this.ribbonControl1;
-            this.applicationMenu1.ShowRightPane = true;
-            // 
-            // ribbonPage1
-            // 
-            this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.xrDesignRibbonPageGroup1,
-            this.xrDesignRibbonPageGroup2,
-            this.xrDesignRibbonPageGroup3,
-            this.xrDesignRibbonPageGroup4,
-            this.xrDesignRibbonPageGroup5,
-            this.xrDesignRibbonPageGroup6,
-            this.xrDesignRibbonPageGroup7,
-            this.xrDesignRibbonPageGroup8});
-            this.ribbonPage1.Name = "ribbonPage1";
-            this.ribbonPage1.Text = "Report Designer";
-            // 
-            // xrDesignRibbonPageGroup1
-            // 
-            this.xrDesignRibbonPageGroup1.AllowTextClipping = false;
-            this.xrDesignRibbonPageGroup1.ItemLinks.Add(this.commandBarItem31);
-            this.xrDesignRibbonPageGroup1.ItemLinks.Add(this.commandBarItem34);
-            this.xrDesignRibbonPageGroup1.ItemLinks.Add(this.commandBarItem32);
-            this.xrDesignRibbonPageGroup1.ItemLinks.Add(this.commandBarItem33);
-            this.xrDesignRibbonPageGroup1.ItemLinks.Add(this.bBtnSetDefault);
-            this.xrDesignRibbonPageGroup1.Kind = DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroupKind.Report;
-            this.xrDesignRibbonPageGroup1.Name = "xrDesignRibbonPageGroup1";
-            this.xrDesignRibbonPageGroup1.ShowCaptionButton = false;
-            this.xrDesignRibbonPageGroup1.Text = "Report";
-            // 
-            // xrDesignRibbonPageGroup2
-            // 
-            this.xrDesignRibbonPageGroup2.AllowTextClipping = false;
-            this.xrDesignRibbonPageGroup2.ItemLinks.Add(this.commandBarItem39);
-            this.xrDesignRibbonPageGroup2.ItemLinks.Add(this.commandBarItem40);
-            this.xrDesignRibbonPageGroup2.ItemLinks.Add(this.commandBarItem41);
-            this.xrDesignRibbonPageGroup2.ItemLinks.Add(this.commandBarItem42, true);
-            this.xrDesignRibbonPageGroup2.ItemLinks.Add(this.commandBarItem43);
-            this.xrDesignRibbonPageGroup2.Kind = DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroupKind.Edit;
-            this.xrDesignRibbonPageGroup2.Name = "xrDesignRibbonPageGroup2";
-            this.xrDesignRibbonPageGroup2.ShowCaptionButton = false;
-            this.xrDesignRibbonPageGroup2.Text = "Edit";
-            // 
-            // xrDesignRibbonPageGroup3
-            // 
-            this.xrDesignRibbonPageGroup3.AllowTextClipping = false;
-            this.xrDesignRibbonPageGroup3.ItemLinks.Add(this.barEditItem1, false, "", "", true);
-            this.xrDesignRibbonPageGroup3.ItemLinks.Add(this.xrDesignBarButtonGroup1);
-            this.xrDesignRibbonPageGroup3.ItemLinks.Add(this.barEditItem2, false, "", "", true);
-            this.xrDesignRibbonPageGroup3.ItemLinks.Add(this.xrDesignBarButtonGroup2);
-            this.xrDesignRibbonPageGroup3.ItemLinks.Add(this.xrDesignBarButtonGroup3);
-            this.xrDesignRibbonPageGroup3.Kind = DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroupKind.Font;
-            this.xrDesignRibbonPageGroup3.Name = "xrDesignRibbonPageGroup3";
-            this.xrDesignRibbonPageGroup3.ShowCaptionButton = false;
-            this.xrDesignRibbonPageGroup3.Text = "Font";
-            // 
             // xrDesignBarButtonGroup1
             // 
             this.xrDesignBarButtonGroup1.Id = 60;
@@ -1820,16 +1739,6 @@
             this.xrDesignBarButtonGroup3.ItemLinks.Add(this.commandBarItem30);
             this.xrDesignBarButtonGroup3.Name = "xrDesignBarButtonGroup3";
             // 
-            // xrDesignRibbonPageGroup4
-            // 
-            this.xrDesignRibbonPageGroup4.AllowTextClipping = false;
-            this.xrDesignRibbonPageGroup4.ItemLinks.Add(this.xrDesignBarButtonGroup4);
-            this.xrDesignRibbonPageGroup4.ItemLinks.Add(this.xrDesignBarButtonGroup5);
-            this.xrDesignRibbonPageGroup4.Kind = DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroupKind.Alignment;
-            this.xrDesignRibbonPageGroup4.Name = "xrDesignRibbonPageGroup4";
-            this.xrDesignRibbonPageGroup4.ShowCaptionButton = false;
-            this.xrDesignRibbonPageGroup4.Text = "Alignment";
-            // 
             // xrDesignBarButtonGroup4
             // 
             this.xrDesignBarButtonGroup4.Id = 63;
@@ -1846,18 +1755,6 @@
             this.xrDesignBarButtonGroup5.ItemLinks.Add(this.commandBarItem6);
             this.xrDesignBarButtonGroup5.ItemLinks.Add(this.commandBarItem7);
             this.xrDesignBarButtonGroup5.Name = "xrDesignBarButtonGroup5";
-            // 
-            // xrDesignRibbonPageGroup5
-            // 
-            this.xrDesignRibbonPageGroup5.AllowTextClipping = false;
-            this.xrDesignRibbonPageGroup5.ItemLinks.Add(this.xrDesignBarButtonGroup6);
-            this.xrDesignRibbonPageGroup5.ItemLinks.Add(this.xrDesignBarButtonGroup7);
-            this.xrDesignRibbonPageGroup5.ItemLinks.Add(this.xrDesignBarButtonGroup8);
-            this.xrDesignRibbonPageGroup5.ItemLinks.Add(this.xrDesignBarButtonGroup9);
-            this.xrDesignRibbonPageGroup5.Kind = DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroupKind.SizeAndLayout;
-            this.xrDesignRibbonPageGroup5.Name = "xrDesignRibbonPageGroup5";
-            this.xrDesignRibbonPageGroup5.ShowCaptionButton = false;
-            this.xrDesignRibbonPageGroup5.Text = "Layout";
             // 
             // xrDesignBarButtonGroup6
             // 
@@ -1894,68 +1791,6 @@
             this.xrDesignBarButtonGroup9.ItemLinks.Add(this.commandBarItem22);
             this.xrDesignBarButtonGroup9.ItemLinks.Add(this.commandBarItem23);
             this.xrDesignBarButtonGroup9.Name = "xrDesignBarButtonGroup9";
-            // 
-            // xrDesignRibbonPageGroup6
-            // 
-            this.xrDesignRibbonPageGroup6.AllowTextClipping = false;
-            this.xrDesignRibbonPageGroup6.ItemLinks.Add(this.commandBarItem46);
-            this.xrDesignRibbonPageGroup6.ItemLinks.Add(this.commandBarItem44);
-            this.xrDesignRibbonPageGroup6.ItemLinks.Add(this.commandBarItem45);
-            this.xrDesignRibbonPageGroup6.Kind = DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroupKind.Zoom;
-            this.xrDesignRibbonPageGroup6.Name = "xrDesignRibbonPageGroup6";
-            this.xrDesignRibbonPageGroup6.ShowCaptionButton = false;
-            this.xrDesignRibbonPageGroup6.Text = "Zoom";
-            // 
-            // xrDesignRibbonPageGroup7
-            // 
-            this.xrDesignRibbonPageGroup7.AllowTextClipping = false;
-            this.xrDesignRibbonPageGroup7.ItemLinks.Add(this.barDockPanelsListItem1);
-            this.xrDesignRibbonPageGroup7.Kind = DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroupKind.View;
-            this.xrDesignRibbonPageGroup7.Name = "xrDesignRibbonPageGroup7";
-            this.xrDesignRibbonPageGroup7.ShowCaptionButton = false;
-            this.xrDesignRibbonPageGroup7.Text = "View";
-            // 
-            // xrDesignRibbonPageGroup8
-            // 
-            this.xrDesignRibbonPageGroup8.AllowTextClipping = false;
-            this.xrDesignRibbonPageGroup8.ItemLinks.Add(this.scriptsCommandBarItem1);
-            this.xrDesignRibbonPageGroup8.Kind = DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroupKind.Scripts;
-            this.xrDesignRibbonPageGroup8.Name = "xrDesignRibbonPageGroup8";
-            this.xrDesignRibbonPageGroup8.ShowCaptionButton = false;
-            this.xrDesignRibbonPageGroup8.Text = "Scripts";
-            // 
-            // ribbonPage2
-            // 
-            this.ribbonPage2.Name = "ribbonPage2";
-            this.ribbonPage2.Text = "Toolbox";
-            this.ribbonPage2.Visible = false;
-            // 
-            // xrToolboxPageCategory1
-            // 
-            this.xrToolboxPageCategory1.Name = "xrToolboxPageCategory1";
-            this.xrToolboxPageCategory1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
-            this.ribbonPage2});
-            this.xrToolboxPageCategory1.Visible = false;
-            // 
-            // ribbonPage3
-            // 
-            this.ribbonPage3.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.xrDesignRibbonPageGroup9});
-            this.ribbonPage3.Name = "ribbonPage3";
-            this.ribbonPage3.Text = "HTML View";
-            // 
-            // xrDesignRibbonPageGroup9
-            // 
-            this.xrDesignRibbonPageGroup9.AllowTextClipping = false;
-            this.xrDesignRibbonPageGroup9.ItemLinks.Add(this.commandBarItem47);
-            this.xrDesignRibbonPageGroup9.ItemLinks.Add(this.commandBarItem48);
-            this.xrDesignRibbonPageGroup9.ItemLinks.Add(this.commandBarItem49, true);
-            this.xrDesignRibbonPageGroup9.ItemLinks.Add(this.commandBarItem50);
-            this.xrDesignRibbonPageGroup9.ItemLinks.Add(this.commandBarItem51, true);
-            this.xrDesignRibbonPageGroup9.Kind = DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroupKind.HtmlNavigation;
-            this.xrDesignRibbonPageGroup9.Name = "xrDesignRibbonPageGroup9";
-            this.xrDesignRibbonPageGroup9.ShowCaptionButton = false;
-            this.xrDesignRibbonPageGroup9.Text = "Navigation";
             // 
             // printPreviewBarItem1
             // 
@@ -2856,10 +2691,6 @@
             this.barStaticItem1.TextAlignment = System.Drawing.StringAlignment.Near;
             this.barStaticItem1.Visibility = DevExpress.XtraBars.BarItemVisibility.OnlyInRuntime;
             // 
-            // repositoryItemProgressBar1
-            // 
-            this.repositoryItemProgressBar1.Name = "repositoryItemProgressBar1";
-            // 
             // progressBarEditItem1
             // 
             this.progressBarEditItem1.ContextSpecifier = this.xrDesignRibbonController1;
@@ -2869,6 +2700,10 @@
             this.progressBarEditItem1.Id = 120;
             this.progressBarEditItem1.Name = "progressBarEditItem1";
             this.progressBarEditItem1.Visibility = DevExpress.XtraBars.BarItemVisibility.Never;
+            // 
+            // repositoryItemProgressBar1
+            // 
+            this.repositoryItemProgressBar1.Name = "repositoryItemProgressBar1";
             // 
             // printPreviewBarItem50
             // 
@@ -2899,15 +2734,6 @@
             this.printPreviewStaticItem2.TextAlignment = System.Drawing.StringAlignment.Near;
             this.printPreviewStaticItem2.Type = "ZoomFactorText";
             // 
-            // repositoryItemZoomTrackBar1
-            // 
-            this.repositoryItemZoomTrackBar1.Alignment = DevExpress.Utils.VertAlignment.Center;
-            this.repositoryItemZoomTrackBar1.AllowFocused = false;
-            this.repositoryItemZoomTrackBar1.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
-            this.repositoryItemZoomTrackBar1.Maximum = 180;
-            this.repositoryItemZoomTrackBar1.Name = "repositoryItemZoomTrackBar1";
-            this.repositoryItemZoomTrackBar1.ScrollThumbStyle = DevExpress.XtraEditors.Repository.ScrollThumbStyle.ArrowDownRight;
-            // 
             // zoomTrackBarEditItem1
             // 
             this.zoomTrackBarEditItem1.Alignment = DevExpress.XtraBars.BarItemLinkAlignment.Right;
@@ -2920,6 +2746,141 @@
             this.zoomTrackBarEditItem1.Range = new int[] {
         10,
         500};
+            // 
+            // repositoryItemZoomTrackBar1
+            // 
+            this.repositoryItemZoomTrackBar1.Alignment = DevExpress.Utils.VertAlignment.Center;
+            this.repositoryItemZoomTrackBar1.AllowFocused = false;
+            this.repositoryItemZoomTrackBar1.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
+            this.repositoryItemZoomTrackBar1.Maximum = 180;
+            this.repositoryItemZoomTrackBar1.Name = "repositoryItemZoomTrackBar1";
+            this.repositoryItemZoomTrackBar1.ScrollThumbStyle = DevExpress.XtraEditors.Repository.ScrollThumbStyle.ArrowDownRight;
+            // 
+            // bBtnSetDefault
+            // 
+            this.bBtnSetDefault.Caption = "Reset";
+            this.bBtnSetDefault.Id = 125;
+            this.bBtnSetDefault.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("bBtnSetDefault.ImageOptions.Image")));
+            this.bBtnSetDefault.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("bBtnSetDefault.ImageOptions.LargeImage")));
+            this.bBtnSetDefault.Name = "bBtnSetDefault";
+            this.bBtnSetDefault.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.bBtnSetDefault_ItemClick);
+            // 
+            // xrToolboxPageCategory1
+            // 
+            this.xrToolboxPageCategory1.Name = "xrToolboxPageCategory1";
+            this.xrToolboxPageCategory1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
+            this.ribbonPage2});
+            this.xrToolboxPageCategory1.Visible = false;
+            // 
+            // ribbonPage2
+            // 
+            this.ribbonPage2.Name = "ribbonPage2";
+            this.ribbonPage2.Text = "Toolbox";
+            this.ribbonPage2.Visible = false;
+            // 
+            // ribbonPage1
+            // 
+            this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
+            this.xrDesignRibbonPageGroup1,
+            this.xrDesignRibbonPageGroup2,
+            this.xrDesignRibbonPageGroup3,
+            this.xrDesignRibbonPageGroup4,
+            this.xrDesignRibbonPageGroup5,
+            this.xrDesignRibbonPageGroup6,
+            this.xrDesignRibbonPageGroup7,
+            this.xrDesignRibbonPageGroup8});
+            this.ribbonPage1.Name = "ribbonPage1";
+            this.ribbonPage1.Text = "Report Designer";
+            // 
+            // xrDesignRibbonPageGroup1
+            // 
+            this.xrDesignRibbonPageGroup1.AllowTextClipping = false;
+            this.xrDesignRibbonPageGroup1.ItemLinks.Add(this.commandBarItem31);
+            this.xrDesignRibbonPageGroup1.ItemLinks.Add(this.commandBarItem34);
+            this.xrDesignRibbonPageGroup1.ItemLinks.Add(this.commandBarItem32);
+            this.xrDesignRibbonPageGroup1.ItemLinks.Add(this.commandBarItem33);
+            this.xrDesignRibbonPageGroup1.ItemLinks.Add(this.bBtnSetDefault);
+            this.xrDesignRibbonPageGroup1.Kind = DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroupKind.Report;
+            this.xrDesignRibbonPageGroup1.Name = "xrDesignRibbonPageGroup1";
+            this.xrDesignRibbonPageGroup1.ShowCaptionButton = false;
+            this.xrDesignRibbonPageGroup1.Text = "Report";
+            // 
+            // xrDesignRibbonPageGroup2
+            // 
+            this.xrDesignRibbonPageGroup2.AllowTextClipping = false;
+            this.xrDesignRibbonPageGroup2.ItemLinks.Add(this.commandBarItem39);
+            this.xrDesignRibbonPageGroup2.ItemLinks.Add(this.commandBarItem40);
+            this.xrDesignRibbonPageGroup2.ItemLinks.Add(this.commandBarItem41);
+            this.xrDesignRibbonPageGroup2.ItemLinks.Add(this.commandBarItem42, true);
+            this.xrDesignRibbonPageGroup2.ItemLinks.Add(this.commandBarItem43);
+            this.xrDesignRibbonPageGroup2.Kind = DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroupKind.Edit;
+            this.xrDesignRibbonPageGroup2.Name = "xrDesignRibbonPageGroup2";
+            this.xrDesignRibbonPageGroup2.ShowCaptionButton = false;
+            this.xrDesignRibbonPageGroup2.Text = "Edit";
+            // 
+            // xrDesignRibbonPageGroup3
+            // 
+            this.xrDesignRibbonPageGroup3.AllowTextClipping = false;
+            this.xrDesignRibbonPageGroup3.ItemLinks.Add(this.barEditItem1, false, "", "", true);
+            this.xrDesignRibbonPageGroup3.ItemLinks.Add(this.xrDesignBarButtonGroup1);
+            this.xrDesignRibbonPageGroup3.ItemLinks.Add(this.barEditItem2, false, "", "", true);
+            this.xrDesignRibbonPageGroup3.ItemLinks.Add(this.xrDesignBarButtonGroup2);
+            this.xrDesignRibbonPageGroup3.ItemLinks.Add(this.xrDesignBarButtonGroup3);
+            this.xrDesignRibbonPageGroup3.Kind = DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroupKind.Font;
+            this.xrDesignRibbonPageGroup3.Name = "xrDesignRibbonPageGroup3";
+            this.xrDesignRibbonPageGroup3.ShowCaptionButton = false;
+            this.xrDesignRibbonPageGroup3.Text = "Font";
+            // 
+            // xrDesignRibbonPageGroup4
+            // 
+            this.xrDesignRibbonPageGroup4.AllowTextClipping = false;
+            this.xrDesignRibbonPageGroup4.ItemLinks.Add(this.xrDesignBarButtonGroup4);
+            this.xrDesignRibbonPageGroup4.ItemLinks.Add(this.xrDesignBarButtonGroup5);
+            this.xrDesignRibbonPageGroup4.Kind = DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroupKind.Alignment;
+            this.xrDesignRibbonPageGroup4.Name = "xrDesignRibbonPageGroup4";
+            this.xrDesignRibbonPageGroup4.ShowCaptionButton = false;
+            this.xrDesignRibbonPageGroup4.Text = "Alignment";
+            // 
+            // xrDesignRibbonPageGroup5
+            // 
+            this.xrDesignRibbonPageGroup5.AllowTextClipping = false;
+            this.xrDesignRibbonPageGroup5.ItemLinks.Add(this.xrDesignBarButtonGroup6);
+            this.xrDesignRibbonPageGroup5.ItemLinks.Add(this.xrDesignBarButtonGroup7);
+            this.xrDesignRibbonPageGroup5.ItemLinks.Add(this.xrDesignBarButtonGroup8);
+            this.xrDesignRibbonPageGroup5.ItemLinks.Add(this.xrDesignBarButtonGroup9);
+            this.xrDesignRibbonPageGroup5.Kind = DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroupKind.SizeAndLayout;
+            this.xrDesignRibbonPageGroup5.Name = "xrDesignRibbonPageGroup5";
+            this.xrDesignRibbonPageGroup5.ShowCaptionButton = false;
+            this.xrDesignRibbonPageGroup5.Text = "Layout";
+            // 
+            // xrDesignRibbonPageGroup6
+            // 
+            this.xrDesignRibbonPageGroup6.AllowTextClipping = false;
+            this.xrDesignRibbonPageGroup6.ItemLinks.Add(this.commandBarItem46);
+            this.xrDesignRibbonPageGroup6.ItemLinks.Add(this.commandBarItem44);
+            this.xrDesignRibbonPageGroup6.ItemLinks.Add(this.commandBarItem45);
+            this.xrDesignRibbonPageGroup6.Kind = DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroupKind.Zoom;
+            this.xrDesignRibbonPageGroup6.Name = "xrDesignRibbonPageGroup6";
+            this.xrDesignRibbonPageGroup6.ShowCaptionButton = false;
+            this.xrDesignRibbonPageGroup6.Text = "Zoom";
+            // 
+            // xrDesignRibbonPageGroup7
+            // 
+            this.xrDesignRibbonPageGroup7.AllowTextClipping = false;
+            this.xrDesignRibbonPageGroup7.ItemLinks.Add(this.barDockPanelsListItem1);
+            this.xrDesignRibbonPageGroup7.Kind = DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroupKind.View;
+            this.xrDesignRibbonPageGroup7.Name = "xrDesignRibbonPageGroup7";
+            this.xrDesignRibbonPageGroup7.ShowCaptionButton = false;
+            this.xrDesignRibbonPageGroup7.Text = "View";
+            // 
+            // xrDesignRibbonPageGroup8
+            // 
+            this.xrDesignRibbonPageGroup8.AllowTextClipping = false;
+            this.xrDesignRibbonPageGroup8.ItemLinks.Add(this.scriptsCommandBarItem1);
+            this.xrDesignRibbonPageGroup8.Kind = DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroupKind.Scripts;
+            this.xrDesignRibbonPageGroup8.Name = "xrDesignRibbonPageGroup8";
+            this.xrDesignRibbonPageGroup8.ShowCaptionButton = false;
+            this.xrDesignRibbonPageGroup8.Text = "Scripts";
             // 
             // ribbonPage4
             // 
@@ -3046,6 +3007,41 @@
             this.printPreviewRibbonPageGroup8.ShowCaptionButton = false;
             this.printPreviewRibbonPageGroup8.Text = "Close";
             // 
+            // ribbonPage3
+            // 
+            this.ribbonPage3.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
+            this.xrDesignRibbonPageGroup9});
+            this.ribbonPage3.Name = "ribbonPage3";
+            this.ribbonPage3.Text = "HTML View";
+            // 
+            // xrDesignRibbonPageGroup9
+            // 
+            this.xrDesignRibbonPageGroup9.AllowTextClipping = false;
+            this.xrDesignRibbonPageGroup9.ItemLinks.Add(this.commandBarItem47);
+            this.xrDesignRibbonPageGroup9.ItemLinks.Add(this.commandBarItem48);
+            this.xrDesignRibbonPageGroup9.ItemLinks.Add(this.commandBarItem49, true);
+            this.xrDesignRibbonPageGroup9.ItemLinks.Add(this.commandBarItem50);
+            this.xrDesignRibbonPageGroup9.ItemLinks.Add(this.commandBarItem51, true);
+            this.xrDesignRibbonPageGroup9.Kind = DevExpress.XtraReports.UserDesigner.XRDesignRibbonPageGroupKind.HtmlNavigation;
+            this.xrDesignRibbonPageGroup9.Name = "xrDesignRibbonPageGroup9";
+            this.xrDesignRibbonPageGroup9.ShowCaptionButton = false;
+            this.xrDesignRibbonPageGroup9.Text = "Navigation";
+            // 
+            // ribbonStatusBar1
+            // 
+            this.ribbonStatusBar1.ItemLinks.Add(this.printPreviewStaticItem1);
+            this.ribbonStatusBar1.ItemLinks.Add(this.barStaticItem1, true);
+            this.ribbonStatusBar1.ItemLinks.Add(this.progressBarEditItem1);
+            this.ribbonStatusBar1.ItemLinks.Add(this.printPreviewBarItem50);
+            this.ribbonStatusBar1.ItemLinks.Add(this.barButtonItem1);
+            this.ribbonStatusBar1.ItemLinks.Add(this.printPreviewStaticItem2);
+            this.ribbonStatusBar1.ItemLinks.Add(this.zoomTrackBarEditItem1);
+            this.ribbonStatusBar1.Location = new System.Drawing.Point(0, 503);
+            this.ribbonStatusBar1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ribbonStatusBar1.Name = "ribbonStatusBar1";
+            this.ribbonStatusBar1.Ribbon = this.ribbonControl1;
+            this.ribbonStatusBar1.Size = new System.Drawing.Size(1045, 27);
+            // 
             // xrDesignDockManager1
             // 
             this.xrDesignDockManager1.Form = this;
@@ -3066,124 +3062,17 @@
             "DevExpress.XtraBars.Navigation.TileNavPane",
             "DevExpress.XtraBars.TabFormControl"});
             // 
-            // fieldListDockPanel1
-            // 
-            this.fieldListDockPanel1.Controls.Add(this.fieldListDockPanel1_Container);
-            this.fieldListDockPanel1.Dock = DevExpress.XtraBars.Docking.DockingStyle.Fill;
-            this.fieldListDockPanel1.ID = new System.Guid("faf69838-a93f-4114-83e8-d0d09cc5ce95");
-            this.fieldListDockPanel1.Location = new System.Drawing.Point(9, 32);
-            this.fieldListDockPanel1.Name = "fieldListDockPanel1";
-            this.fieldListDockPanel1.OriginalSize = new System.Drawing.Size(200, 200);
-            this.fieldListDockPanel1.Size = new System.Drawing.Size(235, 177);
-            this.fieldListDockPanel1.Text = "Field List";
-            // 
-            // fieldListDockPanel1_Container
-            // 
-            this.fieldListDockPanel1_Container.Location = new System.Drawing.Point(0, 0);
-            this.fieldListDockPanel1_Container.Name = "fieldListDockPanel1_Container";
-            this.fieldListDockPanel1_Container.Size = new System.Drawing.Size(235, 177);
-            this.fieldListDockPanel1_Container.TabIndex = 0;
-            // 
-            // propertyGridDockPanel1
-            // 
-            this.propertyGridDockPanel1.Controls.Add(this.propertyGridDockPanel1_Container);
-            this.propertyGridDockPanel1.Dock = DevExpress.XtraBars.Docking.DockingStyle.Fill;
-            this.propertyGridDockPanel1.ID = new System.Guid("b38d12c3-cd06-4dec-b93d-63a0088e495a");
-            this.propertyGridDockPanel1.Location = new System.Drawing.Point(0, 258);
-            this.propertyGridDockPanel1.Name = "propertyGridDockPanel1";
-            this.propertyGridDockPanel1.OriginalSize = new System.Drawing.Size(200, 200);
-            this.propertyGridDockPanel1.Size = new System.Drawing.Size(250, 258);
-            this.propertyGridDockPanel1.Text = "Property Grid";
-            // 
-            // propertyGridDockPanel1_Container
-            // 
-            this.propertyGridDockPanel1_Container.Location = new System.Drawing.Point(9, 32);
-            this.propertyGridDockPanel1_Container.Name = "propertyGridDockPanel1_Container";
-            this.propertyGridDockPanel1_Container.Size = new System.Drawing.Size(235, 220);
-            this.propertyGridDockPanel1_Container.TabIndex = 0;
-            // 
-            // reportExplorerDockPanel1
-            // 
-            this.reportExplorerDockPanel1.Controls.Add(this.reportExplorerDockPanel1_Container);
-            this.reportExplorerDockPanel1.Dock = DevExpress.XtraBars.Docking.DockingStyle.Fill;
-            this.reportExplorerDockPanel1.ID = new System.Guid("fb3ec6cc-3b9b-4b9c-91cf-cff78c1edbf1");
-            this.reportExplorerDockPanel1.Location = new System.Drawing.Point(9, 32);
-            this.reportExplorerDockPanel1.Name = "reportExplorerDockPanel1";
-            this.reportExplorerDockPanel1.OriginalSize = new System.Drawing.Size(200, 200);
-            this.reportExplorerDockPanel1.Size = new System.Drawing.Size(235, 177);
-            this.reportExplorerDockPanel1.Text = "Report Explorer";
-            // 
-            // reportExplorerDockPanel1_Container
-            // 
-            this.reportExplorerDockPanel1_Container.Location = new System.Drawing.Point(0, 0);
-            this.reportExplorerDockPanel1_Container.Name = "reportExplorerDockPanel1_Container";
-            this.reportExplorerDockPanel1_Container.Size = new System.Drawing.Size(235, 177);
-            this.reportExplorerDockPanel1_Container.TabIndex = 0;
-            // 
-            // toolBoxDockPanel1
-            // 
-            this.toolBoxDockPanel1.Controls.Add(this.toolBoxDockPanel1_Container);
-            this.toolBoxDockPanel1.Dock = DevExpress.XtraBars.Docking.DockingStyle.Left;
-            this.toolBoxDockPanel1.ID = new System.Guid("161a5a1a-d9b9-4f06-9ac4-d0c3e507c54f");
-            this.toolBoxDockPanel1.Location = new System.Drawing.Point(0, 217);
-            this.toolBoxDockPanel1.Name = "toolBoxDockPanel1";
-            this.toolBoxDockPanel1.OriginalSize = new System.Drawing.Size(165, 200);
-            this.toolBoxDockPanel1.Size = new System.Drawing.Size(165, 516);
-            this.toolBoxDockPanel1.Text = "Toolbox";
-            // 
-            // toolBoxDockPanel1_Container
-            // 
-            this.toolBoxDockPanel1_Container.Location = new System.Drawing.Point(6, 32);
-            this.toolBoxDockPanel1_Container.Name = "toolBoxDockPanel1_Container";
-            this.toolBoxDockPanel1_Container.Size = new System.Drawing.Size(150, 478);
-            this.toolBoxDockPanel1_Container.TabIndex = 0;
-            // 
-            // groupAndSortDockPanel1
-            // 
-            this.groupAndSortDockPanel1.Controls.Add(this.groupAndSortDockPanel1_Container);
-            this.groupAndSortDockPanel1.Dock = DevExpress.XtraBars.Docking.DockingStyle.Fill;
-            this.groupAndSortDockPanel1.ID = new System.Guid("4bab159e-c495-4d67-87dc-f4e895da443e");
-            this.groupAndSortDockPanel1.Location = new System.Drawing.Point(6, 35);
-            this.groupAndSortDockPanel1.Name = "groupAndSortDockPanel1";
-            this.groupAndSortDockPanel1.OriginalSize = new System.Drawing.Size(200, 200);
-            this.groupAndSortDockPanel1.Size = new System.Drawing.Size(1141, 119);
-            this.groupAndSortDockPanel1.Text = "Group and Sort";
-            // 
-            // groupAndSortDockPanel1_Container
-            // 
-            this.groupAndSortDockPanel1_Container.Location = new System.Drawing.Point(0, 0);
-            this.groupAndSortDockPanel1_Container.Name = "groupAndSortDockPanel1_Container";
-            this.groupAndSortDockPanel1_Container.Size = new System.Drawing.Size(1141, 119);
-            this.groupAndSortDockPanel1_Container.TabIndex = 0;
-            // 
-            // errorListDockPanel1
-            // 
-            this.errorListDockPanel1.Controls.Add(this.errorListDockPanel1_Container);
-            this.errorListDockPanel1.Dock = DevExpress.XtraBars.Docking.DockingStyle.Fill;
-            this.errorListDockPanel1.ID = new System.Guid("5a9a01fd-6e95-4e81-a8c4-ac63153d7488");
-            this.errorListDockPanel1.Location = new System.Drawing.Point(6, 35);
-            this.errorListDockPanel1.Name = "errorListDockPanel1";
-            this.errorListDockPanel1.OriginalSize = new System.Drawing.Size(200, 198);
-            this.errorListDockPanel1.Size = new System.Drawing.Size(1141, 119);
-            this.errorListDockPanel1.Text = "Scripts Errors";
-            // 
-            // errorListDockPanel1_Container
-            // 
-            this.errorListDockPanel1_Container.Location = new System.Drawing.Point(0, 0);
-            this.errorListDockPanel1_Container.Name = "errorListDockPanel1_Container";
-            this.errorListDockPanel1_Container.Size = new System.Drawing.Size(1141, 119);
-            this.errorListDockPanel1_Container.TabIndex = 0;
-            // 
             // panelContainer1
             // 
             this.panelContainer1.Controls.Add(this.panelContainer2);
             this.panelContainer1.Controls.Add(this.propertyGridDockPanel1);
             this.panelContainer1.Dock = DevExpress.XtraBars.Docking.DockingStyle.Right;
             this.panelContainer1.ID = new System.Guid("c25544e7-d91f-40a9-a474-daed7133404b");
-            this.panelContainer1.Location = new System.Drawing.Point(1318, 217);
+            this.panelContainer1.Location = new System.Drawing.Point(795, 141);
+            this.panelContainer1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panelContainer1.Name = "panelContainer1";
             this.panelContainer1.OriginalSize = new System.Drawing.Size(250, 200);
-            this.panelContainer1.Size = new System.Drawing.Size(250, 516);
+            this.panelContainer1.Size = new System.Drawing.Size(250, 362);
             this.panelContainer1.Text = "panelContainer1";
             // 
             // panelContainer2
@@ -3194,11 +3083,92 @@
             this.panelContainer2.Dock = DevExpress.XtraBars.Docking.DockingStyle.Fill;
             this.panelContainer2.ID = new System.Guid("193100b0-a393-488d-8e70-2e2b9cd6b0dd");
             this.panelContainer2.Location = new System.Drawing.Point(0, 0);
+            this.panelContainer2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panelContainer2.Name = "panelContainer2";
-            this.panelContainer2.OriginalSize = new System.Drawing.Size(200, 200);
-            this.panelContainer2.Size = new System.Drawing.Size(250, 258);
+            this.panelContainer2.OriginalSize = new System.Drawing.Size(167, 177);
+            this.panelContainer2.Size = new System.Drawing.Size(250, 181);
             this.panelContainer2.Tabbed = true;
             this.panelContainer2.Text = "panelContainer2";
+            // 
+            // fieldListDockPanel1
+            // 
+            this.fieldListDockPanel1.Controls.Add(this.fieldListDockPanel1_Container);
+            this.fieldListDockPanel1.Dock = DevExpress.XtraBars.Docking.DockingStyle.Fill;
+            this.fieldListDockPanel1.ID = new System.Guid("faf69838-a93f-4114-83e8-d0d09cc5ce95");
+            this.fieldListDockPanel1.Location = new System.Drawing.Point(5, 23);
+            this.fieldListDockPanel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.fieldListDockPanel1.Name = "fieldListDockPanel1";
+            this.fieldListDockPanel1.OriginalSize = new System.Drawing.Size(157, 121);
+            this.fieldListDockPanel1.Size = new System.Drawing.Size(241, 125);
+            this.fieldListDockPanel1.Text = "Field List";
+            // 
+            // fieldListDockPanel1_Container
+            // 
+            this.fieldListDockPanel1_Container.Location = new System.Drawing.Point(0, 0);
+            this.fieldListDockPanel1_Container.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.fieldListDockPanel1_Container.Name = "fieldListDockPanel1_Container";
+            this.fieldListDockPanel1_Container.Size = new System.Drawing.Size(241, 125);
+            this.fieldListDockPanel1_Container.TabIndex = 0;
+            // 
+            // reportExplorerDockPanel1
+            // 
+            this.reportExplorerDockPanel1.Controls.Add(this.reportExplorerDockPanel1_Container);
+            this.reportExplorerDockPanel1.Dock = DevExpress.XtraBars.Docking.DockingStyle.Fill;
+            this.reportExplorerDockPanel1.ID = new System.Guid("fb3ec6cc-3b9b-4b9c-91cf-cff78c1edbf1");
+            this.reportExplorerDockPanel1.Location = new System.Drawing.Point(5, 23);
+            this.reportExplorerDockPanel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.reportExplorerDockPanel1.Name = "reportExplorerDockPanel1";
+            this.reportExplorerDockPanel1.OriginalSize = new System.Drawing.Size(157, 121);
+            this.reportExplorerDockPanel1.Size = new System.Drawing.Size(241, 125);
+            this.reportExplorerDockPanel1.Text = "Report Explorer";
+            // 
+            // reportExplorerDockPanel1_Container
+            // 
+            this.reportExplorerDockPanel1_Container.Location = new System.Drawing.Point(0, 0);
+            this.reportExplorerDockPanel1_Container.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.reportExplorerDockPanel1_Container.Name = "reportExplorerDockPanel1_Container";
+            this.reportExplorerDockPanel1_Container.Size = new System.Drawing.Size(241, 125);
+            this.reportExplorerDockPanel1_Container.TabIndex = 0;
+            // 
+            // propertyGridDockPanel1
+            // 
+            this.propertyGridDockPanel1.Controls.Add(this.propertyGridDockPanel1_Container);
+            this.propertyGridDockPanel1.Dock = DevExpress.XtraBars.Docking.DockingStyle.Fill;
+            this.propertyGridDockPanel1.ID = new System.Guid("b38d12c3-cd06-4dec-b93d-63a0088e495a");
+            this.propertyGridDockPanel1.Location = new System.Drawing.Point(0, 181);
+            this.propertyGridDockPanel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.propertyGridDockPanel1.Name = "propertyGridDockPanel1";
+            this.propertyGridDockPanel1.OriginalSize = new System.Drawing.Size(167, 177);
+            this.propertyGridDockPanel1.Size = new System.Drawing.Size(250, 181);
+            this.propertyGridDockPanel1.Text = "Property Grid";
+            // 
+            // propertyGridDockPanel1_Container
+            // 
+            this.propertyGridDockPanel1_Container.Location = new System.Drawing.Point(5, 23);
+            this.propertyGridDockPanel1_Container.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.propertyGridDockPanel1_Container.Name = "propertyGridDockPanel1_Container";
+            this.propertyGridDockPanel1_Container.Size = new System.Drawing.Size(241, 154);
+            this.propertyGridDockPanel1_Container.TabIndex = 0;
+            // 
+            // toolBoxDockPanel1
+            // 
+            this.toolBoxDockPanel1.Controls.Add(this.toolBoxDockPanel1_Container);
+            this.toolBoxDockPanel1.Dock = DevExpress.XtraBars.Docking.DockingStyle.Left;
+            this.toolBoxDockPanel1.ID = new System.Guid("161a5a1a-d9b9-4f06-9ac4-d0c3e507c54f");
+            this.toolBoxDockPanel1.Location = new System.Drawing.Point(0, 141);
+            this.toolBoxDockPanel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.toolBoxDockPanel1.Name = "toolBoxDockPanel1";
+            this.toolBoxDockPanel1.OriginalSize = new System.Drawing.Size(165, 200);
+            this.toolBoxDockPanel1.Size = new System.Drawing.Size(165, 362);
+            this.toolBoxDockPanel1.Text = "Toolbox";
+            // 
+            // toolBoxDockPanel1_Container
+            // 
+            this.toolBoxDockPanel1_Container.Location = new System.Drawing.Point(4, 23);
+            this.toolBoxDockPanel1_Container.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.toolBoxDockPanel1_Container.Name = "toolBoxDockPanel1_Container";
+            this.toolBoxDockPanel1_Container.Size = new System.Drawing.Size(156, 335);
+            this.toolBoxDockPanel1_Container.TabIndex = 0;
             // 
             // panelContainer3
             // 
@@ -3207,32 +3177,87 @@
             this.panelContainer3.Controls.Add(this.errorListDockPanel1);
             this.panelContainer3.Dock = DevExpress.XtraBars.Docking.DockingStyle.Bottom;
             this.panelContainer3.ID = new System.Guid("f658b9cd-c405-4ca7-84fc-0a3cf759947c");
-            this.panelContainer3.Location = new System.Drawing.Point(165, 533);
+            this.panelContainer3.Location = new System.Drawing.Point(165, 303);
+            this.panelContainer3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panelContainer3.Name = "panelContainer3";
             this.panelContainer3.OriginalSize = new System.Drawing.Size(200, 200);
-            this.panelContainer3.Size = new System.Drawing.Size(1153, 200);
+            this.panelContainer3.Size = new System.Drawing.Size(630, 200);
             this.panelContainer3.Tabbed = true;
             this.panelContainer3.Text = "panelContainer3";
             // 
-            // bBtnSetDefault
+            // errorListDockPanel1
             // 
-            this.bBtnSetDefault.Caption = "Reset";
-            this.bBtnSetDefault.Id = 125;
-            this.bBtnSetDefault.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("bBtnSetDefault.ImageOptions.Image")));
-            this.bBtnSetDefault.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("bBtnSetDefault.ImageOptions.LargeImage")));
-            this.bBtnSetDefault.Name = "bBtnSetDefault";
-            this.bBtnSetDefault.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.bBtnSetDefault_ItemClick);
+            this.errorListDockPanel1.Controls.Add(this.errorListDockPanel1_Container);
+            this.errorListDockPanel1.Dock = DevExpress.XtraBars.Docking.DockingStyle.Fill;
+            this.errorListDockPanel1.ID = new System.Guid("5a9a01fd-6e95-4e81-a8c4-ac63153d7488");
+            this.errorListDockPanel1.Location = new System.Drawing.Point(4, 24);
+            this.errorListDockPanel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.errorListDockPanel1.Name = "errorListDockPanel1";
+            this.errorListDockPanel1.OriginalSize = new System.Drawing.Size(761, 81);
+            this.errorListDockPanel1.Size = new System.Drawing.Size(622, 144);
+            this.errorListDockPanel1.Text = "Scripts Errors";
+            // 
+            // errorListDockPanel1_Container
+            // 
+            this.errorListDockPanel1_Container.Location = new System.Drawing.Point(0, 0);
+            this.errorListDockPanel1_Container.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.errorListDockPanel1_Container.Name = "errorListDockPanel1_Container";
+            this.errorListDockPanel1_Container.Size = new System.Drawing.Size(622, 144);
+            this.errorListDockPanel1_Container.TabIndex = 0;
+            // 
+            // groupAndSortDockPanel1
+            // 
+            this.groupAndSortDockPanel1.Controls.Add(this.groupAndSortDockPanel1_Container);
+            this.groupAndSortDockPanel1.Dock = DevExpress.XtraBars.Docking.DockingStyle.Fill;
+            this.groupAndSortDockPanel1.ID = new System.Guid("4bab159e-c495-4d67-87dc-f4e895da443e");
+            this.groupAndSortDockPanel1.Location = new System.Drawing.Point(4, 24);
+            this.groupAndSortDockPanel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupAndSortDockPanel1.Name = "groupAndSortDockPanel1";
+            this.groupAndSortDockPanel1.OriginalSize = new System.Drawing.Size(761, 81);
+            this.groupAndSortDockPanel1.Size = new System.Drawing.Size(622, 144);
+            this.groupAndSortDockPanel1.Text = "Group and Sort";
+            // 
+            // groupAndSortDockPanel1_Container
+            // 
+            this.groupAndSortDockPanel1_Container.Location = new System.Drawing.Point(0, 0);
+            this.groupAndSortDockPanel1_Container.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupAndSortDockPanel1_Container.Name = "groupAndSortDockPanel1_Container";
+            this.groupAndSortDockPanel1_Container.Size = new System.Drawing.Size(622, 144);
+            this.groupAndSortDockPanel1_Container.TabIndex = 0;
+            // 
+            // reportDesigner1
+            // 
+            this.reportDesigner1.ContainerControl = null;
+            xrDesignPanelListener1.DesignControl = this.xrDesignRibbonController1;
+            xrDesignPanelListener2.DesignControl = this.xrDesignDockManager1;
+            xrDesignPanelListener3.DesignControl = this.fieldListDockPanel1;
+            xrDesignPanelListener4.DesignControl = this.propertyGridDockPanel1;
+            xrDesignPanelListener5.DesignControl = this.reportExplorerDockPanel1;
+            xrDesignPanelListener6.DesignControl = this.toolBoxDockPanel1;
+            xrDesignPanelListener7.DesignControl = this.groupAndSortDockPanel1;
+            xrDesignPanelListener8.DesignControl = this.errorListDockPanel1;
+            this.reportDesigner1.DesignPanelListeners.AddRange(new DevExpress.XtraReports.UserDesigner.XRDesignPanelListener[] {
+            xrDesignPanelListener1,
+            xrDesignPanelListener2,
+            xrDesignPanelListener3,
+            xrDesignPanelListener4,
+            xrDesignPanelListener5,
+            xrDesignPanelListener6,
+            xrDesignPanelListener7,
+            xrDesignPanelListener8});
+            this.reportDesigner1.Form = this;
             // 
             // UserReportDesigner
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 19F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1568, 775);
+            this.ClientSize = new System.Drawing.Size(1045, 530);
+            this.Controls.Add(this.panelContainer1);
             this.Controls.Add(this.panelContainer3);
             this.Controls.Add(this.toolBoxDockPanel1);
-            this.Controls.Add(this.panelContainer1);
             this.Controls.Add(this.ribbonStatusBar1);
             this.Controls.Add(this.ribbonControl1);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "UserReportDesigner";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "UserReportDesigner";
@@ -3240,21 +3265,21 @@
             this.Load += new System.EventHandler(this.ReportDesigner_Load);
             ((System.ComponentModel.ISupportInitialize)(this.xrDesignRibbonController1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ribbonControl1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.applicationMenu1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.recentlyUsedItemsComboBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.designRepositoryItemComboBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.applicationMenu1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemProgressBar1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemZoomTrackBar1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrDesignDockManager1)).EndInit();
-            this.fieldListDockPanel1.ResumeLayout(false);
-            this.propertyGridDockPanel1.ResumeLayout(false);
-            this.reportExplorerDockPanel1.ResumeLayout(false);
-            this.toolBoxDockPanel1.ResumeLayout(false);
-            this.groupAndSortDockPanel1.ResumeLayout(false);
-            this.errorListDockPanel1.ResumeLayout(false);
             this.panelContainer1.ResumeLayout(false);
             this.panelContainer2.ResumeLayout(false);
+            this.fieldListDockPanel1.ResumeLayout(false);
+            this.reportExplorerDockPanel1.ResumeLayout(false);
+            this.propertyGridDockPanel1.ResumeLayout(false);
+            this.toolBoxDockPanel1.ResumeLayout(false);
             this.panelContainer3.ResumeLayout(false);
+            this.errorListDockPanel1.ResumeLayout(false);
+            this.groupAndSortDockPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

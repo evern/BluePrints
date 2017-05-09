@@ -1,5 +1,6 @@
 ﻿using BaseModel.Data.Helpers;
 using BaseModel.DataModel;
+using BaseModel.Helpers;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
@@ -192,7 +193,7 @@ namespace BluePrints.ViewModels
             return
                 query =>
                     PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
-                        query.OrderBy(x => x.INTERNAL_NUM), getPROGRESSFunc, getBASELINEFunc, getPROGRESS_ITEMSFunc,
+                        query.OrderBy(x => x.CREATED), getPROGRESSFunc, getBASELINEFunc, getPROGRESS_ITEMSFunc,
                         getRATESFunc, getDELIVERABLES_STATUSESFunc);
         }
 
@@ -347,18 +348,100 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public void Duplicate()
+        public bool CanInsert()
         {
-            if (!_isProcessingMultipleDuplicates)
+            return CanDuplicate();
+        }
+        
+        public void Insert()
+        {
+            if (!_isProcessingMultiple)
                 MainViewModel.EntitiesUndoRedoManager.PauseActionId();
 
-            List<PROGRESS_ITEMProjection> newSaveEntities = getNewDuplicateEntities(1);
-            MainViewModel.BulkSave(newSaveEntities);
-            if (!_isProcessingMultipleDuplicates)
+            List<PROGRESS_ITEMProjection> newEntities = getNewEntities(1, true);
+            newEntities = concatenateNewEntitiesWithExistingRenameEntities(newEntities);
+            MainViewModel.BulkSave(newEntities);
+            if (!_isProcessingMultiple)
                 MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }
 
-        List<PROGRESS_ITEMProjection> getNewDuplicateEntities(int timesToDuplicate)
+        /// <summary>
+        /// Concatenate entities to be saved and entities to be renamed.
+        /// </summary>
+        /// <param name="newEntities">Entities to be saved.</param>
+        /// <returns></returns>
+        private List<PROGRESS_ITEMProjection> concatenateNewEntitiesWithExistingRenameEntities(List<PROGRESS_ITEMProjection> newEntities)
+        {
+            List<PROGRESS_ITEMProjection> concatenatedEntities = new List<PROGRESS_ITEMProjection>();
+            concatenatedEntities.AddRange(newEntities);
+
+            if (newEntities.Count > 0)
+            {
+                long lowestUnsavedNumericValue = 0;
+                long highestUnsavedNumericValue = 0;
+
+                int numericFieldLength = 0;
+                string valueToFill = newEntities.First().Entity.Entity.INTERNAL_NUM;
+                if (valueToFill == string.Empty)
+                    return concatenatedEntities;
+
+                string valueToFillStringOnly = BluePrintsDataUtils.ParseStringIntoComponents(newEntities.First().Entity.Entity.INTERNAL_NUM, out numericFieldLength, out lowestUnsavedNumericValue);
+                valueToFillStringOnly = BluePrintsDataUtils.ParseStringIntoComponents(newEntities.Last().Entity.Entity.INTERNAL_NUM, out numericFieldLength, out highestUnsavedNumericValue);
+                List<PROGRESS_ITEMProjection> renameEntities = getRenameExistingEntities(valueToFillStringOnly, lowestUnsavedNumericValue, highestUnsavedNumericValue);
+                
+                concatenatedEntities.AddRange(renameEntities);
+            }
+
+            return concatenatedEntities;
+        }
+
+        public void Duplicate()
+        {
+            if (!_isProcessingMultiple)
+                MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+
+            List<PROGRESS_ITEMProjection> newEntities = getNewEntities(1, false);
+            MainViewModel.BulkSave(newEntities);
+            if (!_isProcessingMultiple)
+                MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        /// <summary>
+        /// Identify entities which internal number require to be named.
+        /// </summary>
+        /// <param name="renameStringOnly">Rename internal number string component only.</param>
+        /// <param name="startNumber">Start of internal number to be named</param>
+        /// <param name="endNumber">End if internal number to be named</param>
+        /// <returns></returns>
+        private List<PROGRESS_ITEMProjection> getRenameExistingEntities(string renameStringOnly, long startNumber, long endNumber)
+        {
+            long valueToAdd = (endNumber - startNumber) + 1;
+            List<PROGRESS_ITEMProjection> renameEntities = new List<PROGRESS_ITEMProjection>();
+            foreach (PROGRESS_ITEMProjection entity in MainViewModel.Entities)
+            {
+                string stringValueToFill = entity.Entity.Entity.INTERNAL_NUM;
+                if (stringValueToFill == null)
+                    continue;
+
+                if (!stringValueToFill.Contains(renameStringOnly))
+                    continue;
+
+                int numericFieldLength = 0;
+                long valueToFillNumberOnly = 0;
+                string valueToFillStringOnly = BluePrintsDataUtils.ParseStringIntoComponents(stringValueToFill, out numericFieldLength, out valueToFillNumberOnly);
+
+                if (valueToFillNumberOnly >= startNumber)
+                {
+                    long increasedNumber = valueToFillNumberOnly + valueToAdd;
+                    entity.Entity.Entity.INTERNAL_NUM = StringFormatUtils.AppendStringWithEnumerator(valueToFillStringOnly, increasedNumber, numericFieldLength);
+                    renameEntities.Add(entity);
+                }
+            }
+
+            return renameEntities;
+        }
+
+        List<PROGRESS_ITEMProjection> getNewEntities(int timesToDuplicate, bool isInsert)
         {
             List<PROGRESS_ITEMProjection> unsavedEntities = new List<PROGRESS_ITEMProjection>();
             for(int i = 0; i < timesToDuplicate; i++)
@@ -369,16 +452,17 @@ namespace BluePrints.ViewModels
                     DataUtils.ShallowCopy(newProjection.Entity.Entity, selectedEntity.Entity.Entity);
                     newProjection.Entity.EntityKey = Guid.Empty;
                     newProjection.Entity.Entity.GUID_ORIGINAL = Guid.Empty;
-                    newProjection.Entity.Entity.ESTIMATED_HOURS = 0;
+                    newProjection.Entity.Entity.ESTIMATED_HOURS = IsBASELINELocked ? 0 : selectedEntity.Entity.Entity.ESTIMATED_HOURS;
                     newProjection.Entity.Entity.DC_HOURS = 0;
+
                     var selectedAREA = AREACollection.FirstOrDefault(x => x.GUID == newProjection.Entity.Entity.GUID_AREA);
                     var selectedDISCIPLINE =
                         DISCIPLINECollection.FirstOrDefault(x => x.GUID == newProjection.Entity.Entity.GUID_DISCIPLINE);
                     var selectedDOCTYPE =
                         DOCTYPECollection.FirstOrDefault(x => x.GUID == newProjection.Entity.Entity.GUID_DOCTYPE);
 
-                    newProjection.Entity.Entity.INTERNAL_NUM =
-                        BluePrintsDataUtils.Duplicate_InternalNumber(MainViewModel.Entities.Select(x => x.Entity), unsavedEntities.Select(x => x.Entity), selectedEntity.Entity.Entity.INTERNAL_NUM);
+                    newProjection.Entity.Entity.INTERNAL_NUM = 
+                        BluePrintsDataUtils.GetNewInternalNumber(MainViewModel.Entities.Select(x => x.Entity), unsavedEntities.Select(x => x.Entity), selectedEntity.Entity.Entity.INTERNAL_NUM, MainViewModel.SelectedEntities.Select(x => x.Entity), isInsert);
 
                     //newProjection.Entity.Entity.INTERNAL_NUM = string.Empty;
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(newProjection, null, null, null, EntityMessageType.Added);
@@ -397,25 +481,46 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        private bool _isProcessingMultipleDuplicates;
+        public bool CanInsertMultiple(BarEditItem barEdit)
+        {
+            return CanDuplicateMultiple(barEdit);
+        }
 
-        /// <summary>
-        /// Paste clipboard data multiple times
-        /// </summary>
+        private bool _isProcessingMultiple;
+
         public void DuplicateMultiple(BarEditItem barEdit)
         {
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-            _isProcessingMultipleDuplicates = true;
+            _isProcessingMultiple = true;
             var timesToDuplicate = 0;
-            List<PROGRESS_ITEMProjection> newSaveEntities = new List<PROGRESS_ITEMProjection>();
+            List<PROGRESS_ITEMProjection> newEntities = new List<PROGRESS_ITEMProjection>();
             if (int.TryParse(barEdit.EditValue.ToString(), out timesToDuplicate))
             {
-                List<PROGRESS_ITEMProjection> currentEnumerationSaveEntities = getNewDuplicateEntities(timesToDuplicate);
-                newSaveEntities.AddRange(currentEnumerationSaveEntities);
+                List<PROGRESS_ITEMProjection> currentEnumerationSaveEntities = getNewEntities(timesToDuplicate, false);
+                newEntities.AddRange(currentEnumerationSaveEntities);
             }
 
-            MainViewModel.BulkSave(newSaveEntities);
-            _isProcessingMultipleDuplicates = false;
+            MainViewModel.BulkSave(newEntities);
+            _isProcessingMultiple = false;
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        public void InsertMultiple(BarEditItem barEdit)
+        {
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            _isProcessingMultiple = true;
+            var timesToInsert = 0;
+            List<PROGRESS_ITEMProjection> newEntities = new List<PROGRESS_ITEMProjection>();
+            if (int.TryParse(barEdit.EditValue.ToString(), out timesToInsert))
+            {
+                List<PROGRESS_ITEMProjection> currentEnumerationSaveEntities = getNewEntities(timesToInsert, true);
+                newEntities.AddRange(currentEnumerationSaveEntities);
+            }
+
+            newEntities = concatenateNewEntitiesWithExistingRenameEntities(newEntities);
+
+            MainViewModel.BulkSave(newEntities);
+            _isProcessingMultiple = false;
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }
 
