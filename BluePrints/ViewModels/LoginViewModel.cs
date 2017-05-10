@@ -75,8 +75,8 @@ namespace BluePrints.ViewModels
             if (authenticationResult == UserAuthenticationResult.Authenticated || UserName == BluePrintsResources.AdminUsername && UserPassword == BluePrintsResources.AdminPassword)
             {
                 if (UserName == BluePrintsResources.AdminUsername)
-                    //LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.AdminUsername };
-                    LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == "SU.BING-WEN");
+                    LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.AdminUsername };
+                    //LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == "SU.BING-WEN");
                 else
                     LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == UserName.ToUpper());
 
