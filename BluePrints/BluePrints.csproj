@@ -358,6 +358,7 @@
     <Compile Include="Common\Projections\PROJECT_Dashboard.cs" />
     <Compile Include="Common\Projections\ROLE_PERMISSIONInfo.cs" />
     <Compile Include="Common\Misc\TASK_AppointmentInfo.cs" />
+    <Compile Include="Common\Projections\ROLEProjection.cs" />
     <Compile Include="Common\Projections\WORKPACKProjection.cs" />
     <Compile Include="Common\Projections\USER_Dashboard.cs" />
     <Compile Include="Common\Projections\WORKPACK_Dashboard.cs" />
@@ -1071,7 +1072,7 @@
     <Compile Include="ViewModels\PROJECT\PROJECTDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTViewModelWrapper.cs" />
     <Compile Include="ViewModels\RATE\RATECollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\ROLE\ROLECollectionViewModel.cs" />
+    <Compile Include="ViewModels\ROLE\ROLECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\UOM\UOMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\USERCollectionViewModel.cs" />
     <Compile Include="ViewModels\VARIATION\VARIATIONSCollectionViewModelWrapper.cs" />

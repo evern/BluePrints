@@ -24,6 +24,9 @@ namespace BluePrints.Data
         [StringLength(100)]
         public string NAME { get; set; }
 
+        [NotMapped]
+        public int? OLDSORTORDER { get; set; }
+
         public int SORTORDER { get; set; }
 
         public DateTime CREATED { get; set; }

@@ -1,6 +1,8 @@
 ﻿using BaseModel.DataModel;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common;
+using BluePrints.Common.Resources;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
@@ -62,7 +64,24 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<USER>, IQueryable<USER>> ConstructMainViewModelProjection()
         {
-            return query => query;
+            if (LoginCredentials.CurrentUser.NAME == BluePrintsResources.AdminUsername)
+                return query => query.OrderBy(x => x.NAME);
+            else if (LoginCredentials.CurrentUser.GUID_ROLE == null)
+                return query => query.Where(x => x.GUID == Guid.Empty);
+            else
+                return query => query.ToArray().Where(x => x.GUID_ROLE == null || x.GUID_ROLE == LoginCredentials.CurrentUser.GUID_ROLE || ChildrenRoles((Guid)LoginCredentials.CurrentUser.GUID_ROLE).Contains((Guid)x.GUID_ROLE)).AsQueryable();
+        }
+
+        public IEnumerable<Guid> ChildrenRoles(Guid roleGuid)
+        {
+            foreach (var role in ROLECollection)
+                if (role.PARENTGUID == roleGuid)
+                {
+                    yield return role.GUID;
+
+                    foreach (var entityChild in ChildrenRoles(role.GUID))
+                        yield return entityChild;
+                }
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<USER> entities)
@@ -93,6 +112,16 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<ROLE> RestrictedROLECollection
+        {
+            get
+            {
+                var collection = GetEntities<ROLE>();
+                if (collection != null)
+                    collection = collection.Where(x => x.GUID == LoginCredentials.CurrentUser.GUID_ROLE || ChildrenRoles((Guid)LoginCredentials.CurrentUser.GUID_ROLE).Contains((Guid)x.GUID)).OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
         #endregion
 
         #region View Commands

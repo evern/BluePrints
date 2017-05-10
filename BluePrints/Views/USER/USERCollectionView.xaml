@@ -90,8 +90,8 @@
                             <dxg:GridColumn FieldName="DESCRIPTION" />
                             <dxg:GridColumn Header="ROLE" FieldName="GUID_ROLE">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings
-                                        ItemsSource="{Binding DataContext.ROLECollection, ElementName=userControl}"
+                                    <dxe:ComboBoxEditSettings NullValueButtonPlacement="Popup"
+                                        ItemsSource="{Binding DataContext.RestrictedROLECollection, ElementName=userControl}"
                                         IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
