@@ -224,7 +224,7 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString() + "WorkpackDashboardView",
                 DisplaySelectedEntity,
                 "WORKPACKDashboardView",
                 "[" + DisplaySelectedEntity.Entity.NUMBER + "] WORKPACK Dashboard");
