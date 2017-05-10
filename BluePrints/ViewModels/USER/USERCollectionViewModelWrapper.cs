@@ -118,7 +118,15 @@ namespace BluePrints.ViewModels
             {
                 var collection = GetEntities<ROLE>();
                 if (collection != null)
-                    collection = collection.Where(x => x.GUID == LoginCredentials.CurrentUser.GUID_ROLE || ChildrenRoles((Guid)LoginCredentials.CurrentUser.GUID_ROLE).Contains((Guid)x.GUID)).OrderBy(x => x.NAME);
+                {
+                    if (LoginCredentials.CurrentUser.NAME == BluePrintsResources.AdminUsername)
+                        collection = collection.OrderBy(x => x.NAME);
+                    else if (LoginCredentials.CurrentUser.GUID_ROLE == null)
+                        collection = collection.Where(x => x.GUID == Guid.Empty);
+                    else
+                        collection = collection.Where(x => x.GUID == LoginCredentials.CurrentUser.GUID_ROLE || ChildrenRoles((Guid)LoginCredentials.CurrentUser.GUID_ROLE).Contains((Guid)x.GUID)).OrderBy(x => x.NAME);
+                }
+
                 return collection;
             }
         }
