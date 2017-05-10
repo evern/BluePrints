@@ -375,21 +375,35 @@ namespace BluePrints.ViewModels
             List<PROGRESS_ITEMProjection> concatenatedEntities = new List<PROGRESS_ITEMProjection>();
             concatenatedEntities.AddRange(newEntities);
 
-            if (newEntities.Count > 0)
+            List<string> processedValueToFillStringOnly = new List<string>();
+            foreach(PROGRESS_ITEMProjection entity in newEntities.OrderBy(x => x.Entity.Entity.INTERNAL_NUM))
             {
                 long lowestUnsavedNumericValue = 0;
                 long highestUnsavedNumericValue = 0;
 
                 int numericFieldLength = 0;
-                string valueToFill = newEntities.First().Entity.Entity.INTERNAL_NUM;
+                long arbitraryNumericValue = 0;
+                string valueToFill = entity.Entity.Entity.INTERNAL_NUM;
                 if (valueToFill == string.Empty)
                     return concatenatedEntities;
 
-                string valueToFillStringOnly = BluePrintsDataUtils.ParseStringIntoComponents(newEntities.First().Entity.Entity.INTERNAL_NUM, out numericFieldLength, out lowestUnsavedNumericValue);
-                valueToFillStringOnly = BluePrintsDataUtils.ParseStringIntoComponents(newEntities.Last().Entity.Entity.INTERNAL_NUM, out numericFieldLength, out highestUnsavedNumericValue);
-                List<PROGRESS_ITEMProjection> renameEntities = getRenameExistingEntities(valueToFillStringOnly, lowestUnsavedNumericValue, highestUnsavedNumericValue);
-                
-                concatenatedEntities.AddRange(renameEntities);
+                string valueToFillStringOnly = BluePrintsDataUtils.ParseStringIntoComponents(valueToFill, out numericFieldLength, out arbitraryNumericValue);
+
+                List<PROGRESS_ITEMProjection> relatedNewEntities = newEntities.Where(x => x.Entity.Entity.INTERNAL_NUM.Contains(valueToFillStringOnly)).ToList();
+                PROGRESS_ITEMProjection smallestNumberEntity = relatedNewEntities.First();
+                PROGRESS_ITEMProjection largestNumberEntity = relatedNewEntities.Last();
+
+                string smallestInternalNum = smallestNumberEntity.Entity.Entity.INTERNAL_NUM;
+                string largestInternalNum = largestNumberEntity.Entity.Entity.INTERNAL_NUM;
+
+                valueToFillStringOnly = BluePrintsDataUtils.ParseStringIntoComponents(smallestInternalNum, out numericFieldLength, out lowestUnsavedNumericValue);
+                valueToFillStringOnly = BluePrintsDataUtils.ParseStringIntoComponents(largestInternalNum, out numericFieldLength, out highestUnsavedNumericValue);
+                if(!processedValueToFillStringOnly.Contains(valueToFillStringOnly))
+                {
+                    processedValueToFillStringOnly.Add(valueToFillStringOnly);
+                    List<PROGRESS_ITEMProjection> renameEntities = getRenameExistingEntities(valueToFillStringOnly, lowestUnsavedNumericValue, highestUnsavedNumericValue);
+                    concatenatedEntities.AddRange(renameEntities);
+                }
             }
 
             return concatenatedEntities;
@@ -433,7 +447,9 @@ namespace BluePrints.ViewModels
                 if (valueToFillNumberOnly >= startNumber)
                 {
                     long increasedNumber = valueToFillNumberOnly + valueToAdd;
+                    string oldInternalNum = entity.Entity.Entity.INTERNAL_NUM;
                     entity.Entity.Entity.INTERNAL_NUM = StringFormatUtils.AppendStringWithEnumerator(valueToFillStringOnly, increasedNumber, numericFieldLength);
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, "Entity.Entity.INTERNAL_NUM", oldInternalNum, entity.Entity.Entity.INTERNAL_NUM, EntityMessageType.Changed);
                     renameEntities.Add(entity);
                 }
             }
