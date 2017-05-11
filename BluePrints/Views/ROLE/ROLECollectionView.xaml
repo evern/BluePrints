@@ -78,7 +78,7 @@
                 </dxr:RibbonStatusBarControl>
                 <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Orientation="Horizontal">
                     <dxlc:LayoutGroup>
-                        <dxg:TreeListControl Name="treeListControl" dx:DXSerializer.SerializationID="ROLETree" MaxHeight="2000" 
+                        <dxg:TreeListControl Name="treeListControl" dx:DXSerializer.SerializationID="ROLETree" MaxHeight="2000" MouseUp="treeListControl_MouseUp" SelectionMode="Cell"
                                          Style="{StaticResource DefaultTreeListControlTemplate}">
                             <dxmvvm:Interaction.Behaviors>
                                 <dxg:TreeListDragDropManager x:Name="dragDropManager" Dropped="dragDropManager_Dropped"
@@ -101,6 +101,9 @@
                                         <dxmvvm:EventToCommand PassEventArgsToCommand="True"
                                                            Command="{Binding TreelistExistingRowAddUndoAndSaveCommand}"
                                                            EventName="CellValueChanged" />
+                                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                                           Command="{Binding DataContext.TreeListImmediateSaveCommand, ElementName=userControl}"
+                                                           EventName="CellValueChanging" />
                                         <dxmvvm:EventToCommand PassEventArgsToCommand="True"
                                                            Command="{Binding ValidateCellCommand}"
                                                            EventName="ValidateCell" />

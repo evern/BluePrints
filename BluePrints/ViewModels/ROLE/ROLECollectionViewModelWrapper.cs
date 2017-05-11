@@ -167,6 +167,30 @@ namespace BluePrints.ViewModels
         private Guid Parent_GuidOldValue;
         private List<Guid> uniqueParent_Guids; //stores dropping entity parent guid before it gets reassigned
 
+
+        /// <summary>
+        /// Remembers an entity property old value for undoing
+        /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the AddUndoCommand property that can be used as a binding source in views.
+        /// </summary>
+        public void TreeListImmediateSave(TreeListCellValueChangedEventArgs e)
+        {
+            if (e.Column.FieldName != "Entity.ISMANAGER")
+                return;
+
+            var projection = (ROLEProjection)e.Row;
+
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, e.Column.FieldName, e.OldValue, e.Value,
+                EntityMessageType.Changed);
+            DataUtils.SetNestedValue(e.Column.FieldName, projection, e.Value);
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+
+            ROLEProjection selectedEntity = DisplaySelectedEntity;
+            MainViewModel.Save(projection);
+            DisplaySelectedEntity = selectedEntity;
+            this.RaisePropertyChanged(x => x.DisplaySelectedEntity);
+        }
+
         #region Permissions
         public RolePermissionAssignment SelectedPermission { get; set; }
         public IEnumerable<RolePermissionAssignment> Permissions
