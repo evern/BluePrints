@@ -74,6 +74,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.RATES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc);
             loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
+            loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -117,6 +118,7 @@ namespace BluePrints.ViewModels
             var getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
             var getVARIATIONSFunc = loaderCollection.GetCollectionFunc<VARIATION>();
             var getDELIVERABLES_STATUSESFunc = loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
+
             return
                 query =>
                     PROJECT_DashboardQueries.SummarizePROJECTDashboard(query.OrderBy(x => x.NUMBER), getPROGRESSESFunc,
@@ -190,6 +192,17 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        public IEnumerable<USER> MANAGERCollection
+        {
+            get
+            {
+                var collection = GetEntities<USER>();
+                if (collection != null)
+                    collection = collection.Where(x => x.ROLE != null && x.ROLE.ISMANAGER).OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
         public bool CanEditReport()
         {
             if (DisplaySelectedEntities.Count > 0)

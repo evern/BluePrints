@@ -36,6 +36,8 @@ namespace BluePrints.Common.ViewModel
 
         protected override bool OnMainViewModelLoaded(IEnumerable<TProjection> entities)
         {
+            //because dashboards are generally heavy we just want manual refreshes to take place
+            MainViewModel.ManualUnregisterMessageHandler();
             OnSelectedEntitiesChangedCallBack = DisplaySelectedEntities_CollectionChanged;
             return base.OnMainViewModelLoaded(entities);
         }
@@ -113,6 +115,11 @@ namespace BluePrints.Common.ViewModel
             IHaveSummary IHaveSummary = SummaryEntity as IHaveSummary;
             if (IHaveSummary != null)
                 IHaveSummary.RecalculateStats(calculationType == DashboardViewType.Costs);
+        }
+
+        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        {
+            
         }
 
         #region P6 Affinity

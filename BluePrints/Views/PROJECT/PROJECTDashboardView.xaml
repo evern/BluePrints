@@ -116,11 +116,12 @@
                                                                       ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectType}}" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Design Manager" FieldName="Entity.DESIGNMANAGER"
-                                                    VisibleIndex="60">
+                                    <dxg:GridColumn Header="Design Manager" FieldName="Entity.GUID_MANAGEUSER">
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
-                                                                      ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DesignManager}}" />
+                                            <dxe:ComboBoxEditSettings
+                                        ItemsSource="{Binding DataContext.MANAGERCollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
+                                        ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn x:Name="colCumulativeBudget" Header="Total Units"
