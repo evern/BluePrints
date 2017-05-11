@@ -197,7 +197,7 @@ namespace BluePrints.ViewModels
             {
                 var collection = GetEntities<USER>();
                 if (collection != null)
-                    collection = collection.Where(x => x.ROLE.ISMANAGER).OrderBy(x => x.NAME);
+                    collection = collection.Where(x => x.ROLE != null && x.ROLE.ISMANAGER).OrderBy(x => x.NAME);
                 return collection;
             }
         }
