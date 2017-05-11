@@ -107,12 +107,6 @@
                                           ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectType}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Design Manager" FieldName="DESIGNMANAGER">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
-                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DesignManager}}" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
                             <dxg:GridColumn Header="Design Manager" FieldName="GUID_MANAGEUSER">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings

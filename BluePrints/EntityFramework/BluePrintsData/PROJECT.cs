@@ -28,8 +28,6 @@ namespace BluePrints.Data
 
         public ProjectType TYPE { get; set; }
 
-        public DesignManager DESIGNMANAGER { get; set; }
-
         public Guid? GUID_MANAGEUSER { get; set; }
 
         public decimal CURRENCYCONVERSION { get; set; }
