@@ -2,6 +2,7 @@
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
+using BluePrints.Common.Base;
 using BluePrints.Common.Resources;
 using BluePrints.Data;
 using DevExpress.Mvvm;
@@ -13,7 +14,7 @@ using System.Linq;
 namespace BluePrints.ViewModels
 {
     public class USERCollectionViewModelWrapper :
-        CollectionViewModelsWrapper
+        BluePrintsEntitiesCollectionWrapper
         <USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>

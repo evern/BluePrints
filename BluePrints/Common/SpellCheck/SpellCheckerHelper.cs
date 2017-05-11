@@ -16,6 +16,9 @@ namespace BluePrints.Common
         public static readonly string PathToDemoData = @"\\Fileserver\General\BLUEPRINTS\";
         public static readonly string PathToDictionaries = PathToDemoData + @"Data\";
 
+        public static readonly string PathToDemoDataDebug = @"D:\Sources\Repo\BluePrints\";
+        public static readonly string PathToDictionariesDebug = PathToDemoDataDebug + @"Data\";
+
         public static string GetPathToResource(string path, string name)
         {
             return string.Format("{0}{1}", path, name);
@@ -60,11 +63,8 @@ namespace BluePrints.Common
 
         public static void RegisterDefaultDictionaries(SpellChecker spellChecker)
         {
-            if (Environment.MachineName != "EVERN-PC")
-            {
-                spellChecker.Dictionaries.Add(GetDefaultDictionary());
-                spellChecker.Dictionaries.Add(GetCustomDictionary());
-            }
+            spellChecker.Dictionaries.Add(GetDefaultDictionary());
+            spellChecker.Dictionaries.Add(GetCustomDictionary());
         }
 
         public static void RegisterHunspellDictionaries(SpellChecker spellChecker)
@@ -134,12 +134,19 @@ namespace BluePrints.Common
         private static ISpellCheckerDictionary GetDefaultDictionary()
         {
             var dic = new SpellCheckerISpellDictionary();
-            using (var stream = SpellCheckerHelper.GetDataStream(SpellCheckerHelper.PathToDictionaries, "default.zip"))
+            string pathToDictionaries;
+#if DEBUG
+            pathToDictionaries = SpellCheckerHelper.PathToDictionariesDebug;
+#else
+            pathToDictionaries = SpellCheckerHelper.PathToDictionaries;
+#endif
+
+            using (var stream = SpellCheckerHelper.GetDataStream(pathToDictionaries, "default.zip"))
             {
                 var files = InternalZipArchive.Open(stream);
                 var dictionaryStream = GetFileStream(files, "american.xlg");
                 var grammarStream = GetFileStream(files, "english.aff");
-                var alphabetStream = SpellCheckerHelper.GetDataStream(SpellCheckerHelper.PathToDictionaries, "EnglishAlphabet.txt");
+                var alphabetStream = SpellCheckerHelper.GetDataStream(pathToDictionaries, "EnglishAlphabet.txt");
                 try
                 {
                     dic.LoadFromStream(dictionaryStream, grammarStream, alphabetStream);
@@ -154,6 +161,7 @@ namespace BluePrints.Common
                     alphabetStream.Close();
                 }
             }
+
             dic.Culture = new CultureInfo("en-US");
             return dic;
         }
@@ -161,20 +169,15 @@ namespace BluePrints.Common
         private static ISpellCheckerDictionary GetCustomDictionary()
         {
             var result = new SpellCheckerCustomDictionary();
-            var dictionaryStream = SpellCheckerHelper.GetDataStream(SpellCheckerHelper.PathToDictionaries, "CustomEnglish.dic");
-            var alphabetStream = SpellCheckerHelper.GetDataStream(SpellCheckerHelper.PathToDictionaries, "EnglishAlphabet.txt");
-            try
-            {
-                result.Load(dictionaryStream, alphabetStream);
-            }
-            catch
-            {
-            }
-            finally
-            {
-                dictionaryStream.Close();
-                alphabetStream.Close();
-            }
+            string pathToDictionaries;
+#if DEBUG
+            pathToDictionaries = SpellCheckerHelper.PathToDictionariesDebug;
+#else
+            pathToDictionaries = SpellCheckerHelper.PathToDictionaries;
+#endif
+
+            result.AlphabetPath = GetPathToResource(pathToDictionaries, "EnglishAlphabet.txt");
+            result.DictionaryPath = GetPathToResource(pathToDictionaries, "CustomEnglish.dic");
             result.Culture = new CultureInfo("en-US");
             return result;
         }

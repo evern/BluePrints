@@ -5,6 +5,7 @@ using BaseModel.ViewModel.Document;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
+using BluePrints.Common.Base;
 using BluePrints.Common.Helpers;
 using BluePrints.Common.Resources;
 using BluePrints.Data;
@@ -17,7 +18,7 @@ using System.Linq;
 namespace BluePrints.ViewModels
 {
     public class PROJECTCollectionViewModelWrapper :
-        CollectionViewModelsWrapper
+        BluePrintsEntitiesCollectionWrapper
         <PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
@@ -63,6 +64,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
+            loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -189,6 +191,16 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        public IEnumerable<USER> MANAGERCollection
+        {
+            get
+            {
+                var collection = GetEntities<USER>();
+                if (collection != null)
+                    collection = collection.Where(x => x.ROLE.ISMANAGER).OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
 
         public CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork> BASELINEViewModel
         {

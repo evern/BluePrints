@@ -5,6 +5,7 @@ using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
+using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Data;
@@ -19,7 +20,7 @@ using System.Linq;
 namespace BluePrints.ViewModels
 {
     public class BASELINE_ITEMSchedulingViewModelWrapper :
-        CollectionViewModelsWrapper
+        BluePrintsEntitiesCollectionWrapper
         <BASELINE_ITEM, BASELINE_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>

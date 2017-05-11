@@ -3,6 +3,7 @@ using BaseModel.Misc;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
+using BluePrints.Common.Base;
 using BluePrints.Common.Resources;
 using BluePrints.Data;
 using DevExpress.Mvvm;
@@ -21,7 +22,7 @@ namespace BluePrints.ViewModels
     /// Represents the COMMODITY_CODES collection view model.
     /// </summary>
     public partial class COMMODITY_CODESViewModelWrapper :
-        CollectionViewModelsWrapper
+        BluePrintsEntitiesCollectionWrapper
         <COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>

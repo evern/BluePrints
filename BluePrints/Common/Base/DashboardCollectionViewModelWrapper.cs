@@ -3,6 +3,7 @@ using BaseModel.Misc;
 using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
@@ -17,7 +18,7 @@ using System.Windows.Threading;
 namespace BluePrints.Common.ViewModel
 {
     public abstract class DashboardViewModelWrapper<TEntity, TProjection, TPrimaryKey, TUnitOfWork> :
-        CollectionViewModelsWrapper
+        BluePrintsEntitiesCollectionWrapper
         <TEntity, TProjection, TPrimaryKey, TUnitOfWork>
         where TEntity : class, IGuidEntityKey, new()
         where TUnitOfWork : IUnitOfWork

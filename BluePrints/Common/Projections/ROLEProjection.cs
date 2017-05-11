@@ -26,6 +26,12 @@ namespace BluePrints.Common.Projections
             get { return Entity.PARENTGUID; }
             set { Entity.PARENTGUID = value; }
         }
+
+        public bool IsExpanded
+        {
+            get { return Entity.ISEXPANDED; }
+            set { Entity.ISEXPANDED = value; }
+        }
     }
 
     public static class ROLEProjectionQueries

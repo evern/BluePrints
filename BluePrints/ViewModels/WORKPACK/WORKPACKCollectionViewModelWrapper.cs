@@ -4,6 +4,7 @@ using BaseModel.Misc;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
+using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Utils;
@@ -19,7 +20,7 @@ using System.Linq;
 namespace BluePrints.ViewModels
 {
     public class WORKPACKCollectionViewModelWrapper :
-        CollectionViewModelsWrapper
+        BluePrintsEntitiesCollectionWrapper
         <WORKPACK, WORKPACKProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>

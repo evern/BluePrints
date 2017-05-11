@@ -45,7 +45,7 @@ namespace BluePrints.ViewModels
 
         protected override void InitializeParameters(object parameter)
         {
-            projectDashboard = (PROJECT_Dashboard) parameter;
+            projectDashboard = (PROJECT_Dashboard)parameter;
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()

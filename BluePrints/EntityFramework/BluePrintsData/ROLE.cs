@@ -24,6 +24,10 @@ namespace BluePrints.Data
         [StringLength(100)]
         public string NAME { get; set; }
 
+        public bool ISMANAGER { get; set; }
+
+        public bool ISEXPANDED { get; set; }
+
         [NotMapped]
         public int? OLDSORTORDER { get; set; }
 

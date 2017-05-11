@@ -5,6 +5,7 @@ using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
+using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Utils;
@@ -24,7 +25,7 @@ namespace BluePrints.ViewModels
     /// Represents the single VARIATION object view model.
     /// </summary>
     public partial class VARIATION_ITEMSCollectionViewModelWrapper :
-        CollectionViewModelsWrapper
+        BluePrintsEntitiesCollectionWrapper
         <BASELINE_ITEM, VARIATION_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         //Used by view to show hidden workpack columns

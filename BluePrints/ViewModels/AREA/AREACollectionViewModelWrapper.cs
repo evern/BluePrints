@@ -2,6 +2,7 @@
 using BaseModel.Misc;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common.Base;
 using BluePrints.Data;
 using DevExpress.Mvvm.POCO;
 using System;
@@ -11,7 +12,7 @@ using System.Linq;
 namespace BluePrints.ViewModels
 {
     public class AREACollectionViewModelWrapper :
-        CollectionViewModelsWrapper
+        BluePrintsEntitiesCollectionWrapper
         <AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>

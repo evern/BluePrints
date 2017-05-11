@@ -1,7 +1,10 @@
 ﻿using BaseModel.Misc;
 using BluePrints.ViewModels;
+using DevExpress.Xpf.Editors;
+using DevExpress.Xpf.Editors.Settings;
 using System;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Threading;
 
 namespace BluePrints.Views
@@ -28,7 +31,6 @@ namespace BluePrints.Views
         private void NativeTreeListRefresh()
         {
             treeListControl.RefreshData();
-            treeListView.ExpandAllNodes();
         }
 
         private void dragDropManager_Dropped(object sender, DevExpress.Xpf.Grid.DragDrop.TreeListDroppedEventArgs e)

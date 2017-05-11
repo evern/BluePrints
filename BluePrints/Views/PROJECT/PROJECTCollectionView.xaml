@@ -113,6 +113,14 @@
                                           ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DesignManager}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn Header="Design Manager" FieldName="GUID_MANAGEUSER">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings
+                                        ItemsSource="{Binding DataContext.MANAGERCollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
+                                        ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn Header="Legacy Workpack" FieldName="USELEGACYWORKPACK">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:CheckEditSettings />

@@ -468,6 +468,12 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_USER)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<USER>()
+                .HasMany(e => e.PROJECTS)
+                .WithOptional(e => e.USER)
+                .HasForeignKey(e => e.GUID_MANAGEUSER);
+
+
             modelBuilder.Entity<VARIATION>()
                 .HasMany(e => e.BASELINE_ITEM)
                 .WithOptional(e => e.VARIATION)

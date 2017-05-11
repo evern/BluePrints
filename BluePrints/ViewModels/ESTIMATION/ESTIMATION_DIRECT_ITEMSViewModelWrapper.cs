@@ -5,6 +5,7 @@ using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
+using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Data;
@@ -24,7 +25,7 @@ namespace BluePrints.ViewModels
     /// Represents the single ESTIMATION_DIRECT object view model.
     /// </summary>
     public partial class ESTIMATION_DIRECT_ITEMSViewModelWrapper :
-        CollectionViewModelsWrapper
+        BluePrintsEntitiesCollectionWrapper
         <ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         public Action ShowWORKPACKInternalName1;

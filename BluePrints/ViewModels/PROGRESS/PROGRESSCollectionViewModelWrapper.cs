@@ -3,6 +3,7 @@ using BaseModel.Misc;
 using BaseModel.ViewModel.Document;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common.Base;
 using BluePrints.Data;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
@@ -16,7 +17,7 @@ using PROJECT = BluePrints.Data.PROJECT;
 namespace BluePrints.ViewModels
 {
     public class PROGRESSCollectionViewModelWrapper :
-        CollectionViewModelsWrapper
+        BluePrintsEntitiesCollectionWrapper
         <PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>

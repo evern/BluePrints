@@ -6,6 +6,7 @@ using BaseModel.ViewModel.Document;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
+using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Data;
 using DevExpress.Mvvm;
@@ -19,7 +20,7 @@ using System.Linq;
 namespace BluePrints.ViewModels
 {
     public class VARIATIONSCollectionViewModelWrapper :
-        CollectionViewModelsWrapper
+        BluePrintsEntitiesCollectionWrapper
         <VARIATION, VARIATIONProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>

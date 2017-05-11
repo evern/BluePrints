@@ -182,36 +182,6 @@
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <Image
-                                                    Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}"
-                                                    ToolTip="Min Allowed Units" Grid.Column="1">
-                                                <Image.Visibility>
-                                                    <MultiBinding
-                                                            Converter="{StaticResource NumericCompareToVisibilityConverter}"
-                                                            FallbackValue="Hidden">
-                                                        <MultiBinding.ConverterParameter>
-                                                            <sys:Boolean>False</sys:Boolean>
-                                                        </MultiBinding.ConverterParameter>
-                                                        <Binding ElementName="PART_Editor" Path="MinValue" />
-                                                        <Binding ElementName="PART_Editor" Path="EditValue" />
-                                                    </MultiBinding>
-                                                </Image.Visibility>
-                                            </Image>
-                                            <Image
-                                                    Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}"
-                                                    ToolTip="Max Allowed Units" Grid.Column="1">
-                                                <Image.Visibility>
-                                                    <MultiBinding
-                                                            Converter="{StaticResource NumericCompareToVisibilityConverter}"
-                                                            FallbackValue="Hidden">
-                                                        <MultiBinding.ConverterParameter>
-                                                            <sys:Boolean>False</sys:Boolean>
-                                                        </MultiBinding.ConverterParameter>
-                                                        <Binding ElementName="PART_Editor" Path="MaxValue" />
-                                                        <Binding ElementName="PART_Editor" Path="EditValue" />
-                                                    </MultiBinding>
-                                                </Image.Visibility>
-                                            </Image>
                                             <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n"
                                                               MaskUseAsDisplayFormat="True" Increment="1"
                                                               MinValue="{Binding RowData.Row.CurrentPROGRESS_ITEM_UNITS}"

@@ -20,6 +20,7 @@ using System.Globalization;
 using BluePrints.Common.Projections;
 using BaseModel.Data.Helpers;
 using BluePrints.Common;
+using BluePrints.Common.Base;
 
 namespace BluePrints.ViewModels
 {
@@ -27,7 +28,7 @@ namespace BluePrints.ViewModels
     /// Represents the ROLE collection view model.
     /// </summary>
     public partial class ROLECollectionViewModelWrapper :
-        CollectionViewModelsWrapper
+        BluePrintsEntitiesCollectionWrapper
         <ROLE, ROLEProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         public Action NativeTreeListRefresh;
@@ -177,8 +178,11 @@ namespace BluePrints.ViewModels
 
                 var resourceSet = PermissionResources.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
                 var permissions = new List<RolePermissionAssignment>();
-                if (DisplaySelectedEntity == null && MainViewModel.Entities.Any())
+                if (DisplaySelectedEntity == null && MainViewModel.Entities.Count > 0)
                     DisplaySelectedEntity = MainViewModel.Entities.First();
+
+                if (DisplaySelectedEntity == null)
+                    return null;
 
                 permissions.AddRange(DisplaySelectedEntity.ROLE_PERMISSIONS.Select(x => new RolePermissionAssignment() { PermissionKey = x.PERMISSION, IsAssigned = true }).ToList());
                 foreach (System.Collections.DictionaryEntry permission in resourceSet)
@@ -213,8 +217,9 @@ namespace BluePrints.ViewModels
         {
             RolePermissionAssignment editingRolePermissionAssignment = (RolePermissionAssignment)e.Row;
             //don't need to validate fieldname since only this field is changeable in role permission grid control
+
             bool newValue = (bool)e.Value;
-            if(newValue)
+            if (newValue)
             {
                 ROLE_PERMISSION newROLE_PERMISSION = new ROLE_PERMISSION();
                 newROLE_PERMISSION.GUID_ROLE = DisplaySelectedEntity.GUID;
@@ -331,6 +336,7 @@ namespace BluePrints.ViewModels
 
                     childROLE.Entity.OLDSORTORDER = null; //Prepare for next possible drag-drop operation
                     childROLE.Entity.SORTORDER = project_WBSOrderCount;
+                    childROLE.Entity.ISEXPANDED = true;
                 }
 
                 project_WBSOrderCount += 10;
@@ -396,6 +402,7 @@ namespace BluePrints.ViewModels
             newROLE.Entity.NAME = "(New)";
             newROLE.Entity.SORTORDER = project_WBSOrder;
             newROLE.Entity.PARENTGUID = guid_parent;
+            newROLE.Entity.ISEXPANDED = true;
             MainViewModel.EntitiesUndoRedoManager.PauseActionId(); //Save will unpause this
             MainViewModel.EntitiesUndoRedoManager.AddUndo(newROLE, null, null, null, EntityMessageType.Added);
             MainViewModel.Save(newROLE);

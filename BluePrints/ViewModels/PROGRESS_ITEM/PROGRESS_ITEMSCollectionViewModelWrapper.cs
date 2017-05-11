@@ -4,6 +4,7 @@ using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
+using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
@@ -32,7 +33,7 @@ namespace BluePrints.ViewModels
     /// Represents the single PROGRESS object view model.
     /// </summary>
     public partial class PROGRESS_ITEMSCollectionViewModelWrapper :
-        CollectionViewModelsWrapper
+        BluePrintsEntitiesCollectionWrapper
         <BASELINE_ITEM, PROGRESS_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         //ensure mainviewmodel is loaded before calling background worker
