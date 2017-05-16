@@ -84,6 +84,9 @@ namespace BluePrints.ViewModels
             else
                 newModules.Add(new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects"));
 
+            if (entities.Any(x => x.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid))
+                newModules.Add(new BluePrintsEntitiesModuleDescription(myProjectCategoryId, projectCategoryId, "My Project"));
+
             if (entities.Any(x => x.STATUS == ProjectStatus.Active))
                 newModules.Add(new BluePrintsEntitiesModuleDescription(activeCategoryId, projectCategoryId, "Active"));
 
@@ -159,6 +162,7 @@ namespace BluePrints.ViewModels
         const string dataCategoryId = "Category_Data";
         const string activeCategoryId = "Category_Active";
         const string tenderCategoryId = "Category_Tender";
+        const string myProjectCategoryId = "Category_MyProject";
         const string commodityCodeCategoryId = "Category_CommodityCode";
         protected override BluePrintsEntitiesModuleDescription[] CreateModules()
         {
@@ -221,10 +225,18 @@ namespace BluePrints.ViewModels
 
             object parentId;
 
-            if (entity.STATUS == ProjectStatus.Active)
+            if((entity.STATUS == ProjectStatus.Active || entity.STATUS == ProjectStatus.Tender) && entity.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid)
+            {
+                parentId = myProjectCategoryId;
+            }
+            else if (entity.STATUS == ProjectStatus.Active)
+            {
                 parentId = activeCategoryId;
+            }
             else
+            {
                 parentId = tenderCategoryId;
+            }
 
             newModules.Add(new BluePrintsEntitiesModuleDescription(projectKey, parentId, projectTitle, "PROJECTView", new EntitiesParameter<PROJECT>(entity), null, null, false));
 

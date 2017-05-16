@@ -104,7 +104,7 @@
                                                                   DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colCOMMODITY_CODE" FieldName="COMMODITY_GROUP_CODE_SELECTION"
+                                <!--<dxg:GridColumn Name="colCOMMODITY_CODE" FieldName="COMMODITY_GROUP_CODE_SELECTION"
                                                 Header="COMMODITY CODE" VisibleIndex="40">
                                     <dxg:GridColumn.EditSettings>
                                         <dxg:LookUpEditSettings
@@ -217,7 +217,7 @@
                                             </dxg:LookUpEditSettings.PopupContentTemplate>
                                         </dxg:LookUpEditSettings>
                                     </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
+                                </dxg:GridColumn>-->
                                 <dxg:GridColumn Name="colCOMMODITYGROUPID"
                                                 FieldName="Entity.COMMODITY_GROUP_DIRECT_ID"
                                                 Header="GROUP ID" AllowSearchPanel="False" ReadOnly="True"
@@ -361,7 +361,7 @@
                                                                               ValueMember="GUID" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Name="colChildCOMMODITY_CODE"
+                                            <!--<dxg:GridColumn Name="colChildCOMMODITY_CODE"
                                                             FieldName="COMMODITY_GROUP_CODE_SELECTION"
                                                             Header="COMMODITY_CODE" AllowSearchPanel="False"
                                                             VisibleIndex="30">
@@ -490,7 +490,7 @@
                                                         </dxg:LookUpEditSettings.PopupContentTemplate>
                                                     </dxg:LookUpEditSettings>
                                                 </dxg:GridColumn.EditSettings>
-                                            </dxg:GridColumn>
+                                            </dxg:GridColumn>-->
                                             <dxg:GridColumn Name="colChildCOMMODITYGROUPID"
                                                             FieldName="Entity.COMMODITY_GROUP_DIRECT_ID"
                                                             Header="GROUP ID" AllowSearchPanel="False" ReadOnly="True"
