@@ -85,7 +85,7 @@ namespace BluePrints.ViewModels
                 newModules.Add(new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects"));
 
             if (entities.Any(x => x.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid))
-                newModules.Add(new BluePrintsEntitiesModuleDescription(myProjectCategoryId, projectCategoryId, "My Project"));
+                newModules.Add(new BluePrintsEntitiesModuleDescription(myProjectCategoryId, projectCategoryId, "My Projects"));
 
             if (entities.Any(x => x.STATUS == ProjectStatus.Active))
                 newModules.Add(new BluePrintsEntitiesModuleDescription(activeCategoryId, projectCategoryId, "Active"));
