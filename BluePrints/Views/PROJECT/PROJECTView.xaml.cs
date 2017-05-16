@@ -132,7 +132,7 @@ namespace BluePrints.Views
 
         public void Redraw()
         {
-            GridControl.RefreshData();
+            //GridControl.RefreshData();
         }
 
         public void ChangeViewMemberFieldNames(DashboardViewType DashboardViewType)
@@ -223,7 +223,7 @@ namespace BluePrints.Views
             secondaryAxisY.Title.Content = secondaryAxisY.Title.Content.ToString().Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             primaryAxisY.Title.Content = primaryAxisY.Title.Content.ToString().Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
 
-            
+
             foreach (var formatCondition in tableView.FormatConditions)
                 if (formatCondition.Expression != null)
                 {

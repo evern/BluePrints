@@ -159,6 +159,7 @@ namespace BluePrints.ViewModels
         const string dataCategoryId = "Category_Data";
         const string activeCategoryId = "Category_Active";
         const string tenderCategoryId = "Category_Tender";
+        const string commodityCodeCategoryId = "Category_CommodityCode";
         protected override BluePrintsEntitiesModuleDescription[] CreateModules()
         {
             List<BluePrintsEntitiesModuleDescription> bluePrintsEntitiesModuleDescriptions = new List<BluePrintsEntitiesModuleDescription>();
@@ -197,6 +198,16 @@ namespace BluePrints.ViewModels
 
             bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_UOMs", dataCategoryId, "Unit of Measures", "UOMCollectionView"));
 
+            if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))
+            {
+                bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription(commodityCodeCategoryId, null, "Commodity Code", null, null, null, null, false));
+                bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Design", commodityCodeCategoryId, "Commodity Code [Design]", "COMMODITY_CODECollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Design)), null, "Design"));
+                bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Direct", commodityCodeCategoryId, "Commodity Code [Direct]", "COMMODITY_CODECollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Direct)), null, "Direct"));
+                bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_DirectGroup", commodityCodeCategoryId, "Commodity Group [Direct]", "COMMODITY_GROUP_DIRECTCollectionView", null, null, "Direct Group"));
+                bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Indirect", commodityCodeCategoryId, "Commodity Code [Indirect]", "COMMODITY_CODECollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Indirect)), null, "Indirect"));
+                bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Overhead", commodityCodeCategoryId, "Commodity Code [Overhead]", "COMMODITY_CODECollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Overhead)), null, "Overhead"));
+            }
+
             return bluePrintsEntitiesModuleDescriptions;
         }
         
@@ -234,6 +245,12 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageProgress))
                 newModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectProgresses" + keyString, projectKey, childTitlePrefix + "Progresses", "PROGRESS_ITEMCollectionView", new OptionalEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progresses"));
+
+            if(LoginCredentials.hasPermission(PermissionResources.ManageEstimation))
+                newModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates", "ESTIMATION_DIRECT_ITEMCollectionView", new OptionalEntitiesParameter<PROJECT, ESTIMATION_DIRECT>(entity, null), null, "Direct Estimate"));
+
+            if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))
+                newModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectCommodities" + keyString, projectKey, childTitlePrefix + "Commodities", "COMMODITY_GROUP_CODECollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(entity, new CommodityCodeTypeClass(CommodityCodeType.Direct)), null, "Direct Commodities"));
 
             return newModules;
         }

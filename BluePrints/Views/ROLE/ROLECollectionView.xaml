@@ -39,11 +39,11 @@
                                                     LargeGlyph="{dx:DXImage Image=Edit_32x32.png}"
                                                     Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                 <dxb:BarButtonItem Content="Insert Before"
-                                                   Command="{Binding DataContext.AddROLERowBeforeCommand, ElementName=userControl}"
+                                                   Command="{Binding DataContext.AddRowBeforeCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}"
                                                    Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" />
                                 <dxb:BarButtonItem Content="Insert After"
-                                                   Command="{Binding DataContext.AddROLERowAfterCommand, ElementName=userControl}"
+                                                   Command="{Binding DataContext.AddRowAfterCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}"
                                                    Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" />
                                 <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"
@@ -116,10 +116,10 @@
                                     <dxg:TreeListView.RowCellMenuCustomizations>
                                         <dxb:BarButtonItem Content="Insert Before"
                                                        Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}"
-                                                       Command="{Binding DataContext.AddROLERowBeforeCommand, ElementName=userControl}" />
+                                                       Command="{Binding DataContext.AddRowBeforeCommand, ElementName=userControl}" />
                                         <dxb:BarButtonItem Content="Insert After"
                                                        Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}"
-                                                       Command="{Binding DataContext.AddROLERowAfterCommand, ElementName=userControl}" />
+                                                       Command="{Binding DataContext.AddRowAfterCommand, ElementName=userControl}" />
                                         <dxb:BarButtonItem Content="Delete"
                                                        Command="{Binding View.DataContext.BulkDeleteCommand}"
                                                        Glyph="{dx:DXImage Image=Delete_16x16.png}" />

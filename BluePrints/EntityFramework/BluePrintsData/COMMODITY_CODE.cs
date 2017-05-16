@@ -11,7 +11,6 @@ namespace BluePrints.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public COMMODITY_CODE()
         {
-            COMMODITY_GROUP_DIRECT = new HashSet<COMMODITY_GROUP_DIRECT>();
             ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
             ESTIMATION_INDIRECT_ITEM = new HashSet<ESTIMATION_INDIRECT_ITEM>();
         }
@@ -22,6 +21,8 @@ namespace BluePrints.Data
         public Guid? GUID_PROJECT { get; set; }
 
         public Guid GUID_PARENT { get; set; }
+
+        public Guid? GUID_GROUP_PARENT { get; set; }
 
         public Guid? GUID_DEPARTMENT { get; set; }
 
@@ -44,13 +45,6 @@ namespace BluePrints.Data
         [StringLength(500)]
         public string DESCRIPTION { get; set; }
 
-        [StringLength(500)]
-        public string COMMODITY_GROUP_DESC { get; set; }
-
-        public Guid? GUID_COMMODITY_GROUP_DIRECT { get; set; }
-
-        public int? COMMODITY_GROUP_DIRECT_ID { get; set; }
-
         [Required]
         [StringLength(50)]
         public string CODE { get; set; }
@@ -67,6 +61,8 @@ namespace BluePrints.Data
         public bool ISEXPANDED { get; set; }
 
         public bool ISQUANTIFIABLE { get; set; }
+
+        public bool ISGROUPHEADER { get; set; }
 
         [Column(TypeName = "numeric")]
         public decimal? RATE_SUPPLY { get; set; }
@@ -99,9 +95,6 @@ namespace BluePrints.Data
         public virtual INDIRECT_TYPE INDIRECT_TYPE { get; set; }
 
         public virtual PROJECT PROJECT { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<COMMODITY_GROUP_DIRECT> COMMODITY_GROUP_DIRECT { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }

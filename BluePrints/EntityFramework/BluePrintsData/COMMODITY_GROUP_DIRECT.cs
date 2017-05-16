@@ -19,8 +19,6 @@ namespace BluePrints.Data
 
         public Guid? GUID_PARENT { get; set; }
 
-        public Guid? GUID_DISCIPLINE { get; set; }
-
         [Required]
         [StringLength(500)]
         public string DESCRIPTION { get; set; }
@@ -36,10 +34,6 @@ namespace BluePrints.Data
         public DateTime? DELETED { get; set; }
 
         public Guid? DELETEDBY { get; set; }
-
-        public virtual COMMODITY_CODE COMMODITY_CODE { get; set; }
-
-        public virtual DISCIPLINE DISCIPLINE { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }

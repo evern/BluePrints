@@ -5,22 +5,22 @@ using System.Windows.Controls;
 
 namespace BluePrints.Views
 {
-    public partial class COMMODITY_GROUP_DIRECTCollectionView : ViewStateRestoreUserControl
+    public partial class COMMODITY_GROUP_CODECollectionView : ViewStateRestoreUserControl
     {
-        public COMMODITY_GROUP_DIRECTCollectionView()
+        public COMMODITY_GROUP_CODECollectionView()
         {
             InitializeComponent();
             InitializeViewControl(GridControl, tableView);
-            ((COMMODITY_GROUP_DIRECTCollectionViewModelWrapper)DataContext).SetIsRowExpanded =
+            ((COMMODITY_GROUP_CODECollectionViewModelWrapper)DataContext).SetIsRowExpanded =
                 SetIsRowExpanded;
         }
 
         private void dragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.GridDropEventArgs e)
         {
-            ((COMMODITY_GROUP_DIRECTCollectionViewModelWrapper) DataContext).dragDropManager_Drop(sender, e);
+            //((COMMODITY_GROUP_CODECollectionViewModelWrapper) DataContext).dragDropManager_Drop(sender, e);
         }
 
-        public void SetIsRowExpanded(COMMODITY_GROUP_DIRECTProjection row)
+        public void SetIsRowExpanded(COMMODITY_GROUP_CODEProjection row)
         {
             if (row == null)
                 return;

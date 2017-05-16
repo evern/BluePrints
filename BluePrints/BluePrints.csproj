@@ -340,6 +340,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Common\Base\BluePrintsEntitiesCollectionWrapper.cs" />
+    <Compile Include="Common\Base\BluePrintsEntitiesMasterDetailCollectionsWrapper.cs" />
+    <Compile Include="Common\Base\BluePrintsEntitiesTreeCollectionWrapper.cs" />
     <Compile Include="Common\Base\DashboardCollectionViewModelWrapper.cs" />
     <Compile Include="Common\Misc\ActiveDirectory.cs" />
     <Compile Include="Common\Helpers\CommonMethods.cs" />
@@ -350,6 +352,7 @@
     <Compile Include="Common\Base\BluePrintsProjectionMasterDetailBase.cs" />
     <Compile Include="Common\Projections\BASELINE_ITEM_ASSIGNMENTSProjection.cs" />
     <Compile Include="Common\Projections\COMMODITY_CODEMasterDetailProjection.cs" />
+    <Compile Include="Common\Projections\COMMODITY_GROUP_CODEProjection.cs" />
     <Compile Include="Common\Projections\ESTIMATION_DIRECT_ITEMProjection.cs" />
     <Compile Include="Common\Projections\COMMODITY_GROUP_DIRECTProjection.cs" />
     <Compile Include="Common\Projections\BASELINE_ITEMProjection.cs" />
@@ -488,6 +491,8 @@
     <Compile Include="Common\Misc\BluePrintsEnums.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEM_ASSIGNMENTViewModel.cs" />
+    <Compile Include="ViewModels\COMMODITY_GROUP\COMMODITY_GROUP_CODECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\ESTIMATION_ITEM\ESTIMATION_DIRECT_ITEMSViewModelWrapper - old.cs" />
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMAssignmentActivityView.xaml.cs">
       <DependentUpon>BASELINE_ITEMAssignmentActivityView.xaml</DependentUpon>
     </Compile>
@@ -502,6 +507,12 @@
     </Compile>
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMAssignmentView.xaml.cs">
       <DependentUpon>BASELINE_ITEMAssignmentView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\COMMODITY_GROUP\COMMODITY_GROUP_CODECollectionView.xaml.cs">
+      <DependentUpon>COMMODITY_GROUP_CODECollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ESTIMATION_ITEM\ESTIMATION_DIRECT_ITEMCollectionView.xaml.cs">
+      <DependentUpon>ESTIMATION_DIRECT_ITEMCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
@@ -1051,7 +1062,7 @@
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODEMasterDetailViewModelWrapper.cs" />
     <Compile Include="ViewModels\COMMODITY_GROUP\COMMODITY_GROUP_DIRECTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\DELIVERABLES_STATUS\DELIVERABLES_STATUSCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\ESTIMATION\ESTIMATION_DIRECT_ITEMSViewModelWrapper.cs" />
+    <Compile Include="ViewModels\ESTIMATION_ITEM\ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATION\ESTIMATION_DIRECTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\INDIRECT_TYPE\INDIRECT_TYPECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
@@ -1062,7 +1073,7 @@
     <Compile Include="ViewModels\WORKPACK_ASSIGNMENT\WORKPACKSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE\BASELINECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BluePrintsEntitiesViewModel.cs" />
-    <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODEViewModelWrapper.cs" />
+    <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\DEPARTMENT\DEPARTMENTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\DISCIPLINE\DISCIPLINECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\DOCTYPE\DOCTYPECollectionViewModelWrapper.cs" />
@@ -1100,8 +1111,8 @@
     <Compile Include="Views\DELIVERABLES_STATUS\DELIVERABLES_STATUSCollectionView.xaml.cs">
       <DependentUpon>DELIVERABLES_STATUSCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ESTIMATION\ESTIMATION_DIRECT_ITEMCollectionView.xaml.cs">
-      <DependentUpon>ESTIMATION_DIRECT_ITEMCollectionView.xaml</DependentUpon>
+    <Compile Include="Views\ESTIMATION_ITEM\ESTIMATION_DIRECT_ITEMCollectionViewOld.xaml.cs">
+      <DependentUpon>ESTIMATION_DIRECT_ITEMCollectionViewOld.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\INDIRECT_TYPE\INDIRECT_TYPECollectionView.xaml.cs">
       <DependentUpon>INDIRECT_TYPECollectionView.xaml</DependentUpon>
@@ -1239,6 +1250,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\COMMODITY_GROUP\COMMODITY_GROUP_CODECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ESTIMATION_ITEM\ESTIMATION_DIRECT_ITEMCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\LoginWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -1275,7 +1294,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\ESTIMATION\ESTIMATION_DIRECT_ITEMCollectionView.xaml">
+    <Page Include="Views\ESTIMATION_ITEM\ESTIMATION_DIRECT_ITEMCollectionViewOld.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,4 +1,5 @@
 ﻿using BaseModel.Attributes;
+using BaseModel.Misc;
 using BluePrints.Common.Base;
 using BluePrints.Data;
 using System;
@@ -10,7 +11,7 @@ namespace BluePrints.Common.Projections
 {
     [ConstraintAttributes("Entity.NAME")]
     [RequiredAttributes("Entity.NAME")]
-    public class ROLEProjection : BluePrintsProjectionBase<ROLE>
+    public class ROLEProjection : BluePrintsProjectionBase<ROLE>, IGuidParentEntityKey, IHaveSortOrder, IHaveExpandState
     {
         public ObservableCollection<ROLE_PERMISSION> ROLE_PERMISSIONS { get; set; }
 
@@ -21,16 +22,57 @@ namespace BluePrints.Common.Projections
             set { Entity.GUID = value; }
         }
 
-        public Guid ParentGuid
+        public Guid? ParentEntityKey
         {
-            get { return Entity.PARENTGUID; }
-            set { Entity.PARENTGUID = value; }
+            get
+            {
+                return Entity.PARENTGUID;
+            }
+            set
+            {
+                if (value != null)
+                    Entity.PARENTGUID = (Guid)value;
+                else
+                    Entity.PARENTGUID = Guid.Empty;
+            }
         }
+
+        public DateTime EntityCreatedDate
+        {
+            get
+            {
+                return Entity.CREATED;
+            }
+            set
+            {
+                Entity.CREATED = value;
+            }
+        }
+
+        public int SortOrder
+        {
+            get
+            {
+                return Entity.SORTORDER;
+            }
+            set
+            {
+                Entity.SORTORDER = value;
+            }
+        }
+
+        public int? OldSortOrder { get; set; }
 
         public bool IsExpanded
         {
-            get { return Entity.ISEXPANDED; }
-            set { Entity.ISEXPANDED = value; }
+            get
+            {
+                return Entity.ISEXPANDED;
+            }
+            set
+            {
+                Entity.ISEXPANDED = value;
+            }
         }
     }
 

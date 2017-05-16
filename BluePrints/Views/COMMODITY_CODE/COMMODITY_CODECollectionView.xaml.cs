@@ -16,11 +16,11 @@ namespace BluePrints.Views
             sortTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
             sortTimer.Tick += sortTimer_Tick;
             sortTimer.Start();
-            ((COMMODITY_CODESViewModelWrapper) DataContext).ShowDISCIPLINE = ShowDISCIPLINE;
-            ((COMMODITY_CODESViewModelWrapper) DataContext).ShowDEPARTMENT = ShowDEPARTMENT;
-            ((COMMODITY_CODESViewModelWrapper) DataContext).ShowINDIRECT_TYPE = ShowINDIRECT_TYPE;
-            ((COMMODITY_CODESViewModelWrapper) DataContext).ShowDIRECT_RATES = ShowDIRECT_RATES;
-            ((COMMODITY_CODESViewModelWrapper) DataContext).ShowINDIRECT_RATES = ShowINDIRECT_RATES;
+            ((COMMODITY_CODECollectionViewModelWrapper) DataContext).ShowDISCIPLINE = ShowDISCIPLINE;
+            ((COMMODITY_CODECollectionViewModelWrapper) DataContext).ShowDEPARTMENT = ShowDEPARTMENT;
+            ((COMMODITY_CODECollectionViewModelWrapper) DataContext).ShowINDIRECT_TYPE = ShowINDIRECT_TYPE;
+            ((COMMODITY_CODECollectionViewModelWrapper) DataContext).ShowDIRECT_RATES = ShowDIRECT_RATES;
+            ((COMMODITY_CODECollectionViewModelWrapper) DataContext).ShowINDIRECT_RATES = ShowINDIRECT_RATES;
         }
 
         public void ShowDISCIPLINE()
@@ -58,12 +58,12 @@ namespace BluePrints.Views
 
         private void dragDropManager_Dropped(object sender, DevExpress.Xpf.Grid.DragDrop.TreeListDroppedEventArgs e)
         {
-            ((COMMODITY_CODESViewModelWrapper) DataContext).dragDropManager_Dropped(sender, e);
+            ((COMMODITY_CODECollectionViewModelWrapper) DataContext).dragDropManager_Dropped(sender, e);
         }
 
         private void dragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.TreeListDropEventArgs e)
         {
-            ((COMMODITY_CODESViewModelWrapper) DataContext).dragDropManager_Drop(sender, e);
+            ((COMMODITY_CODECollectionViewModelWrapper) DataContext).dragDropManager_Drop(sender, e);
         }
     }
 }

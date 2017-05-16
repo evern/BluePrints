@@ -1,5 +1,5 @@
 ﻿<UserControl x:Name="userControl"
-             x:Class="BluePrints.Views.ESTIMATION_DIRECT_ITEMCollectionView"
+             x:Class="BluePrints.Views.ESTIMATION_DIRECT_ITEMCollectionViewOld"
              xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -14,8 +14,7 @@
              xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
              xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
              xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
-             mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
-             DataContext="{dxmvvm:ViewModelSource viewmodel:ESTIMATION_DIRECT_ITEMSViewModelWrapper}">
+             mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -73,11 +72,7 @@
                 </dxr:RibbonStatusBarControl>
                 <Grid>
                     <custom:GridControlEx x:Name="GridControl"
-                                     dx:DXSerializer.SerializationID="GridControlESTIMATION_DIRECT_ITEM"
-                                     ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}"
-                                     CurrentItem="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}"
-                                     SelectedItems="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}"
-                                     SelectionMode="Row">
+                                     dx:DXSerializer.SerializationID="GridControlESTIMATION_DIRECT_ITEM" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand
                                 Command="{Binding DataContext.MasterRowExpandedCommand, ElementName=userControl}"
@@ -337,12 +332,9 @@
                             </dxg:GridControlBand>
                         </dxg:GridControl.Bands>
                         <dxg:GridControl.DetailDescriptor>
-                            <dxg:DataControlDetailDescriptor
-                                ItemsSourceBinding="{Binding CHILD_ESTIMATION_DIRECT_ITEM}">
-                                <custom:GridControlEx x:Name="gridControlChild"
-                                                 dx:DXSerializer.SerializationID="GridControlChildESTIMATION_DIRECT_ITEM" 
-                                                 CurrentItem="{Binding DataContext.SelectedEntity, Mode=TwoWay, ElementName=userControl}"
-                                                 SelectedItems="{Binding DataContext.SelectedEntities, Mode=TwoWay, ElementName=userControl}">
+                            <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding CHILD_ESTIMATION_DIRECT_ITEM}">
+                                <dxg:GridControl x:Name="gridControlChild" Style="{StaticResource DefaultDetailGridControlTemplate}"
+                                                 dx:DXSerializer.SerializationID="GridControlChildESTIMATION_DIRECT_ITEM" >
                                     <dxg:GridControl.Bands>
                                         <dxg:GridControlBand Name="bandChildGeneral" Header="General">
                                             <dxg:GridColumn Name="colChildSUPPLYWORKPACK"
@@ -633,7 +625,7 @@
                                         <custom:TableViewEx x:Name="tableView1"
                                                        Style="{StaticResource DefaultDetailTableViewTemplate}" />
                                     </dxg:GridControl.View>
-                                </custom:GridControlEx>
+                                </dxg:GridControl>
                             </dxg:DataControlDetailDescriptor>
                         </dxg:GridControl.DetailDescriptor>
                         <dxg:GridControl.GroupSummary>

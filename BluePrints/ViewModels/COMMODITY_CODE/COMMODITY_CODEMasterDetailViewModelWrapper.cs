@@ -265,7 +265,7 @@ namespace BluePrints.ViewModels
                     mainThreadDispatcher.BeginInvoke(new Action(() => ShowINDIRECT_RATES()));
                 }
 
-            refreshBackgroundWorker.RunWorkerAsync();
+            base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         #region Collection Call Backs
@@ -343,7 +343,6 @@ namespace BluePrints.ViewModels
             MainViewModel.BaseBulkDelete(deletingEntities);
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }
-
         #endregion
 
         #region View Properties
@@ -366,155 +365,155 @@ namespace BluePrints.ViewModels
                 {
                     displayEntities = new ObservableCollection<COMMODITY_CODEMasterDetailProjection>();
 
-                    var projectSpecificCOMMODITY_CODEGrouped =
-                        MainViewModel.Entities.Where(
-                            x =>
-                                (isProjectSpecific
-                                    ? x.Entity.GUID_PROJECT == loadPROJECT.GUID
-                                    : x.Entity.GUID_PROJECT != null) && x.Entity.GUID_COMMODITY_GROUP_DIRECT != null && x.Entity.COMMODITY_GROUP_DIRECT_ID != null).GroupBy(x => x.GROUP_ID);
+                    //var projectSpecificCOMMODITY_CODEGrouped =
+                    //    MainViewModel.Entities.Where(
+                    //        x =>
+                    //            (isProjectSpecific
+                    //                ? x.Entity.GUID_PROJECT == loadPROJECT.GUID
+                    //                : x.Entity.GUID_PROJECT != null) && x.Entity.GUID_COMMODITY_GROUP_DIRECT != null && x.Entity.COMMODITY_GROUP_DIRECT_ID != null).GroupBy(x => x.GROUP_ID);
 
-                    var projectSpecificCOMMODITY_CODENotGrouped =
-                        MainViewModel.Entities.Where(
-                            x =>
-                                (isProjectSpecific
-                                    ? x.Entity.GUID_PROJECT == loadPROJECT.GUID
-                                    : x.Entity.GUID_PROJECT != null) &&
-                                x.Entity.GUID_COMMODITY_GROUP_DIRECT == null &&
-                                x.Entity.ISQUANTIFIABLE == true);
-                    var generalCOMMODITY_CODENotGrouped =
-                        MainViewModel.Entities.Where(
-                            x => x.Entity.GUID_PROJECT == null && x.Entity.ISQUANTIFIABLE == true);
+                    //var projectSpecificCOMMODITY_CODENotGrouped =
+                    //    MainViewModel.Entities.Where(
+                    //        x =>
+                    //            (isProjectSpecific
+                    //                ? x.Entity.GUID_PROJECT == loadPROJECT.GUID
+                    //                : x.Entity.GUID_PROJECT != null) &&
+                    //            x.Entity.GUID_COMMODITY_GROUP_DIRECT == null &&
+                    //            x.Entity.ISQUANTIFIABLE == true);
+                    //var generalCOMMODITY_CODENotGrouped =
+                    //    MainViewModel.Entities.Where(
+                    //        x => x.Entity.GUID_PROJECT == null && x.Entity.ISQUANTIFIABLE == true);
 
-                    foreach (var group in projectSpecificCOMMODITY_CODEGrouped)
-                    {
-                        var firstItemInGroup = group.First();
-                        var parentProjectionPOCO =
-                            ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
-                        parentProjectionPOCO.EntityKey = Guid.NewGuid();
-                        parentProjectionPOCO.Entity.GUID = Guid.Empty;
-                            //this is used by COMMODITY_GROUP_CODE_SELECTION to determine whether selection is group or code
-                        parentProjectionPOCO.Entity.GUID_PROJECT = firstItemInGroup.Entity.GUID_PROJECT;
-                        parentProjectionPOCO.Entity.FULLCODE =
-                            firstItemInGroup.Entity.COMMODITY_GROUP_DESC;
-                        parentProjectionPOCO.Entity.GUID_COMMODITY_GROUP_DIRECT =
-                            firstItemInGroup.Entity.GUID_COMMODITY_GROUP_DIRECT;
-                        parentProjectionPOCO.Entity.COMMODITY_GROUP_DIRECT_ID =
-                            firstItemInGroup.Entity.COMMODITY_GROUP_DIRECT_ID;
+                    //foreach (var group in projectSpecificCOMMODITY_CODEGrouped)
+                    //{
+                    //    var firstItemInGroup = group.First();
+                    //    var parentProjectionPOCO =
+                    //        ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
+                    //    parentProjectionPOCO.EntityKey = Guid.NewGuid();
+                    //    parentProjectionPOCO.Entity.GUID = Guid.Empty;
+                    //        //this is used by COMMODITY_GROUP_CODE_SELECTION to determine whether selection is group or code
+                    //    parentProjectionPOCO.Entity.GUID_PROJECT = firstItemInGroup.Entity.GUID_PROJECT;
+                    //    parentProjectionPOCO.Entity.FULLCODE =
+                    //        firstItemInGroup.Entity.COMMODITY_GROUP_DESC;
+                    //    parentProjectionPOCO.Entity.GUID_COMMODITY_GROUP_DIRECT =
+                    //        firstItemInGroup.Entity.GUID_COMMODITY_GROUP_DIRECT;
+                    //    parentProjectionPOCO.Entity.COMMODITY_GROUP_DIRECT_ID =
+                    //        firstItemInGroup.Entity.COMMODITY_GROUP_DIRECT_ID;
 
-                        foreach (var item in group)
-                        {
-                            var projectionPOCO =
-                                ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
-                            DataUtils.ShallowCopy(projectionPOCO.Entity, item.Entity);
-                            projectionPOCO.EntityKey = item.Entity.GUID;
-                            projectionPOCO.IsEditable = true;
-                            projectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.ProjectSpecificGrouped;
-                            parentProjectionPOCO.DetailEntities.Add(projectionPOCO);
-                        }
+                    //    foreach (var item in group)
+                    //    {
+                    //        var projectionPOCO =
+                    //            ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
+                    //        DataUtils.ShallowCopy(projectionPOCO.Entity, item.Entity);
+                    //        projectionPOCO.EntityKey = item.Entity.GUID;
+                    //        projectionPOCO.IsEditable = true;
+                    //        projectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.ProjectSpecificGrouped;
+                    //        parentProjectionPOCO.DetailEntities.Add(projectionPOCO);
+                    //    }
 
-                        parentProjectionPOCO.Entity.RATE_SUPPLY =
-                            parentProjectionPOCO.DetailEntities.Where(x => x.Entity.RATE_SUPPLY != null)
-                                .Sum(x => x.Entity.RATE_SUPPLY);
-                        parentProjectionPOCO.Entity.RATE_FREIGHT =
-                            parentProjectionPOCO.DetailEntities.Where(x => x.Entity.RATE_FREIGHT != null)
-                                .Sum(x => x.Entity.RATE_FREIGHT);
-                        parentProjectionPOCO.Entity.RATE_PLANT =
-                            parentProjectionPOCO.DetailEntities.Where(x => x.Entity.RATE_PLANT != null)
-                                .Sum(x => x.Entity.RATE_PLANT);
-                        parentProjectionPOCO.Entity.HOURS_INSTALL =
-                            parentProjectionPOCO.DetailEntities.Where(x => x.Entity.HOURS_INSTALL != null)
-                                .Sum(x => x.Entity.HOURS_INSTALL);
+                    //    parentProjectionPOCO.Entity.RATE_SUPPLY =
+                    //        parentProjectionPOCO.DetailEntities.Where(x => x.Entity.RATE_SUPPLY != null)
+                    //            .Sum(x => x.Entity.RATE_SUPPLY);
+                    //    parentProjectionPOCO.Entity.RATE_FREIGHT =
+                    //        parentProjectionPOCO.DetailEntities.Where(x => x.Entity.RATE_FREIGHT != null)
+                    //            .Sum(x => x.Entity.RATE_FREIGHT);
+                    //    parentProjectionPOCO.Entity.RATE_PLANT =
+                    //        parentProjectionPOCO.DetailEntities.Where(x => x.Entity.RATE_PLANT != null)
+                    //            .Sum(x => x.Entity.RATE_PLANT);
+                    //    parentProjectionPOCO.Entity.HOURS_INSTALL =
+                    //        parentProjectionPOCO.DetailEntities.Where(x => x.Entity.HOURS_INSTALL != null)
+                    //            .Sum(x => x.Entity.HOURS_INSTALL);
 
-                        parentProjectionPOCO.IsEditable = false;
-                        parentProjectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.ProjectSpecificGrouped;
-                        displayEntities.Add(parentProjectionPOCO);
-                    }
+                    //    parentProjectionPOCO.IsEditable = false;
+                    //    parentProjectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.ProjectSpecificGrouped;
+                    //    displayEntities.Add(parentProjectionPOCO);
+                    //}
 
-                    foreach (
-                        var COMMODITY_CODEProjection in
-                        projectSpecificCOMMODITY_CODENotGrouped)
-                    {
-                        var projectionPOCO =
-                            ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
-                        DataUtils.ShallowCopy(projectionPOCO.Entity, COMMODITY_CODEProjection.Entity);
-                        projectionPOCO.EntityKey = COMMODITY_CODEProjection.EntityKey;
+                    //foreach (
+                    //    var COMMODITY_CODEProjection in
+                    //    projectSpecificCOMMODITY_CODENotGrouped)
+                    //{
+                    //    var projectionPOCO =
+                    //        ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
+                    //    DataUtils.ShallowCopy(projectionPOCO.Entity, COMMODITY_CODEProjection.Entity);
+                    //    projectionPOCO.EntityKey = COMMODITY_CODEProjection.EntityKey;
 
-                        projectionPOCO.IsEditable = true;
-                        projectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.ProjectSpecificNotGrouped;
-                        displayEntities.Add(projectionPOCO);
-                    }
+                    //    projectionPOCO.IsEditable = true;
+                    //    projectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.ProjectSpecificNotGrouped;
+                    //    displayEntities.Add(projectionPOCO);
+                    //}
 
-                    foreach (
-                        var COMMODITY_GROUPEntity in
-                        COMMODITY_GROUPCollectionViewModel.DisplayEntities)
-                    {
-                        var parentProjectionPOCO =
-                            ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
-                        parentProjectionPOCO.EntityKey = Guid.NewGuid();
-                        parentProjectionPOCO.Entity.GUID = Guid.Empty;
-                            //this is used by COMMODITY_GROUP_CODE_SELECTION to determine whether selection is group or code
-                        parentProjectionPOCO.Entity.FULLCODE = COMMODITY_GROUPEntity.Entity.DESCRIPTION;
-                        parentProjectionPOCO.Entity.GUID_COMMODITY_GROUP_DIRECT = COMMODITY_GROUPEntity.EntityKey;
+                    //foreach (
+                    //    var COMMODITY_GROUPEntity in
+                    //    COMMODITY_GROUPCollectionViewModel.DisplayEntities)
+                    //{
+                    //    var parentProjectionPOCO =
+                    //        ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
+                    //    parentProjectionPOCO.EntityKey = Guid.NewGuid();
+                    //    parentProjectionPOCO.Entity.GUID = Guid.Empty;
+                    //        //this is used by COMMODITY_GROUP_CODE_SELECTION to determine whether selection is group or code
+                    //    parentProjectionPOCO.Entity.FULLCODE = COMMODITY_GROUPEntity.Entity.DESCRIPTION;
+                    //    parentProjectionPOCO.Entity.GUID_COMMODITY_GROUP_DIRECT = COMMODITY_GROUPEntity.EntityKey;
 
-                        foreach (
-                            var childCOMMODITY_GROUPEntity in
-                            COMMODITY_GROUPEntity.DetailEntities)
-                        {
-                            var childProjectionPOCO =
-                                ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
-                            var findCOMMODITY_CODE =
-                                generalCOMMODITY_CODENotGrouped.FirstOrDefault(
-                                    x =>
-                                        x.Entity.GUID ==
-                                        childCOMMODITY_GROUPEntity.Entity.GUID_COMMODITYCODE);
-                            if (findCOMMODITY_CODE != null)
-                            {
-                                DataUtils.ShallowCopy(childProjectionPOCO.Entity,
-                                    findCOMMODITY_CODE.Entity);
-                                childProjectionPOCO.EntityKey = findCOMMODITY_CODE.Entity.GUID;
-                                childProjectionPOCO.Entity.GUID_COMMODITY_GROUP_DIRECT =
-                                    COMMODITY_GROUPEntity.EntityKey;
+                    //    foreach (
+                    //        var childCOMMODITY_GROUPEntity in
+                    //        COMMODITY_GROUPEntity.DetailEntities)
+                    //    {
+                    //        var childProjectionPOCO =
+                    //            ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
+                    //        var findCOMMODITY_CODE =
+                    //            generalCOMMODITY_CODENotGrouped.FirstOrDefault(
+                    //                x =>
+                    //                    x.Entity.GUID ==
+                    //                    childCOMMODITY_GROUPEntity.Entity.GUID_COMMODITYCODE);
+                    //        if (findCOMMODITY_CODE != null)
+                    //        {
+                    //            DataUtils.ShallowCopy(childProjectionPOCO.Entity,
+                    //                findCOMMODITY_CODE.Entity);
+                    //            childProjectionPOCO.EntityKey = findCOMMODITY_CODE.Entity.GUID;
+                    //            childProjectionPOCO.Entity.GUID_COMMODITY_GROUP_DIRECT =
+                    //                COMMODITY_GROUPEntity.EntityKey;
 
-                                childProjectionPOCO.IsEditable = true;
-                                childProjectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.GeneralGrouped;
-                                parentProjectionPOCO.DetailEntities.Add(childProjectionPOCO);
-                            }
-                        }
+                    //            childProjectionPOCO.IsEditable = true;
+                    //            childProjectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.GeneralGrouped;
+                    //            parentProjectionPOCO.DetailEntities.Add(childProjectionPOCO);
+                    //        }
+                    //    }
 
-                        parentProjectionPOCO.Entity.RATE_SUPPLY =
-                            parentProjectionPOCO.DetailEntities.Where(x => x.Entity.RATE_SUPPLY != null)
-                                .Sum(x => x.Entity.RATE_SUPPLY);
-                        parentProjectionPOCO.Entity.RATE_FREIGHT =
-                            parentProjectionPOCO.DetailEntities.Where(x => x.Entity.RATE_FREIGHT != null)
-                                .Sum(x => x.Entity.RATE_FREIGHT);
-                        parentProjectionPOCO.Entity.RATE_PLANT =
-                            parentProjectionPOCO.DetailEntities.Where(x => x.Entity.RATE_PLANT != null)
-                                .Sum(x => x.Entity.RATE_PLANT);
-                        parentProjectionPOCO.Entity.HOURS_INSTALL =
-                            parentProjectionPOCO.DetailEntities.Where(x => x.Entity.HOURS_INSTALL != null)
-                                .Sum(x => x.Entity.HOURS_INSTALL);
+                    //    parentProjectionPOCO.Entity.RATE_SUPPLY =
+                    //        parentProjectionPOCO.DetailEntities.Where(x => x.Entity.RATE_SUPPLY != null)
+                    //            .Sum(x => x.Entity.RATE_SUPPLY);
+                    //    parentProjectionPOCO.Entity.RATE_FREIGHT =
+                    //        parentProjectionPOCO.DetailEntities.Where(x => x.Entity.RATE_FREIGHT != null)
+                    //            .Sum(x => x.Entity.RATE_FREIGHT);
+                    //    parentProjectionPOCO.Entity.RATE_PLANT =
+                    //        parentProjectionPOCO.DetailEntities.Where(x => x.Entity.RATE_PLANT != null)
+                    //            .Sum(x => x.Entity.RATE_PLANT);
+                    //    parentProjectionPOCO.Entity.HOURS_INSTALL =
+                    //        parentProjectionPOCO.DetailEntities.Where(x => x.Entity.HOURS_INSTALL != null)
+                    //            .Sum(x => x.Entity.HOURS_INSTALL);
 
-                        parentProjectionPOCO.IsEditable = false;
-                        parentProjectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.GeneralGrouped;
-                        displayEntities.Add(parentProjectionPOCO);
-                    }
+                    //    parentProjectionPOCO.IsEditable = false;
+                    //    parentProjectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.GeneralGrouped;
+                    //    displayEntities.Add(parentProjectionPOCO);
+                    //}
 
-                    foreach (
-                        var COMMODITY_CODEProjection in generalCOMMODITY_CODENotGrouped
-                    )
-                    {
-                        var projectionPOCO =
-                            ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
-                        DataUtils.ShallowCopy(projectionPOCO.Entity, COMMODITY_CODEProjection.Entity);
-                        projectionPOCO.EntityKey = COMMODITY_CODEProjection.Entity.GUID;
+                    //foreach (
+                    //    var COMMODITY_CODEProjection in generalCOMMODITY_CODENotGrouped
+                    //)
+                    //{
+                    //    var projectionPOCO =
+                    //        ViewModelSource.Create(() => new COMMODITY_CODEMasterDetailProjection());
+                    //    DataUtils.ShallowCopy(projectionPOCO.Entity, COMMODITY_CODEProjection.Entity);
+                    //    projectionPOCO.EntityKey = COMMODITY_CODEProjection.Entity.GUID;
 
-                        projectionPOCO.IsEditable = true;
-                        projectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.GeneralNotGrouped;
-                        displayEntities.Add(projectionPOCO);
-                    }
+                    //    projectionPOCO.IsEditable = true;
+                    //    projectionPOCO.ProjectionType = COMMODITY_CODEProjectionType.GeneralNotGrouped;
+                    //    displayEntities.Add(projectionPOCO);
+                    //}
 
-                    if (!userStateRestoreBackgroundWorker.IsBusy)
-                        userStateRestoreBackgroundWorker.RunWorkerAsync();
+                    //if (!userStateRestoreBackgroundWorker.IsBusy)
+                    //    userStateRestoreBackgroundWorker.RunWorkerAsync();
                 }
 
                 return displayEntities;

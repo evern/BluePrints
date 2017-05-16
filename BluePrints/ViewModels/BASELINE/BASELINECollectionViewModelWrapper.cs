@@ -158,7 +158,7 @@ namespace BluePrints.ViewModels
                 new OptionalEntitiesParameter<Data.PROJECT, BASELINE>(null,
                     DisplaySelectedEntity), 
                     "BASELINE_ITEMCollectionView", 
-                    "[" + loadPROJECT.NUMBER + "] BASELINE");
+                    "[" + loadPROJECT.NUMBER + "] Baseline");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }

@@ -28,10 +28,9 @@ namespace BluePrints.ViewModels
     /// Represents the ROLE collection view model.
     /// </summary>
     public partial class ROLECollectionViewModelWrapper :
-        BluePrintsEntitiesCollectionWrapper
+        BluePrintsProjectionTreeCollectionWrapper
         <ROLE, ROLEProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
-        public Action NativeTreeListRefresh;
         /// <summary>
         /// Creates a new instance of ROLECollectionViewModel as a POCO view model.
         /// </summary>
@@ -56,12 +55,8 @@ namespace BluePrints.ViewModels
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> BluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
-        private BackgroundWorker refreshBackgroundWorker;
         protected override void InitializeParameters(object parameter)
         {
-            refreshBackgroundWorker = new BackgroundWorker();
-            refreshBackgroundWorker.DoWork += refreshBackgroundWorker_DoWork;
-            refreshBackgroundWorker.WorkerSupportsCancellation = true;
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
@@ -85,89 +80,9 @@ namespace BluePrints.ViewModels
         {
             return query => ROLEProjectionQueries.JoinROLE_PERMISSIONOnROLES(query, ROLE_PERMISSIONCollection);
         }
-
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ROLEProjection> entities)
-        {
-            MainViewModel.OnAfterEntitiesDeletedCallBack = EntitiesAfterDeletion;
-            MainViewModel.OnBeforeEntitiesDeleteCallBack = EntitiesBeforeDeletion;
-            MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntity;
-            MainViewModel.SetParentViewModel(this);
-            base.AssignCallBacksAndRaisePropertyChange(entities);
-        }
-
-        private void refreshBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            System.Threading.Thread.Sleep(100);
-            if (((BackgroundWorker)sender).CancellationPending)
-            {
-                e.Cancel = true;
-                return;
-            }
-
-            mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.RefreshWithoutClearingUndoManager()));
-        }
-
-        #region Collection Call Backs
-        public void ApplyProjectionPropertiesToEntity(ROLEProjection projectionEntity, ROLE entity)
-        {
-            DataUtils.ShallowCopy(entity, projectionEntity.Entity);
-            //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
-            if (entity.CREATED.Date.Year == 1)
-                projectionEntity.Entity.CREATED = DateTime.Now;
-
-            entity.CREATED = projectionEntity.Entity.CREATED;
-        }
-
-        //Remove children before parent deletion
-        private void EntitiesBeforeDeletion(IEnumerable<ROLEProjection> entities)
-        {
-            //Undo manager is paused in bulk deletion and will be unpaused in bulk deletion too
-            var childrenEntities = new List<ROLEProjection>();
-            foreach (var entity in entities)
-            {
-                var childrenEntitiesInTotal = RecurseFindChildren(entity, MainViewModel.Entities);
-                var childrenEntitiesNotInDeletionCollection = new List<ROLEProjection>();
-                foreach (var childrenEntityInTotal in childrenEntitiesInTotal)
-                    if (!entities.Any(x => x.GUID == childrenEntityInTotal.GUID))
-                        childrenEntitiesNotInDeletionCollection.Add(childrenEntityInTotal);
-
-                childrenEntities = childrenEntities.Concat(childrenEntitiesNotInDeletionCollection).ToList();
-            }
-
-            uniqueParent_Guids = new List<Guid>();
-            //can't use bulk delete here due to stack overflow
-            foreach (var childrenEntity in childrenEntities)
-            {
-                if (!uniqueParent_Guids.Any(x => x == childrenEntity.Entity.PARENTGUID))
-                    uniqueParent_Guids.Add(childrenEntity.Entity.PARENTGUID);
-
-                MainViewModel.EntitiesUndoRedoManager.AddUndo(childrenEntity, null, null, null,
-                    EntityMessageType.Deleted);
-                MainViewModel.Delete(childrenEntity);
-            }
-        }
-
-        //Reorder tree after deletion
-        private void EntitiesAfterDeletion(IEnumerable<ROLE> entities)
-        {
-            //Undo manager is paused in bulk deletion and will be unpaused in bulk deletion too
-            //uniqueParent_Guids is initialized in EntitiesBeforeDeletion
-            foreach (var entity in entities)
-                if (!uniqueParent_Guids.Any(x => x == entity.PARENTGUID))
-                    uniqueParent_Guids.Add(entity.PARENTGUID);
-
-            MainViewModel.EntitiesUndoRedoManager.PauseActionId(); //save will unpause this
-            ReorderAndSave(uniqueParent_Guids);
-        }
-        #endregion
-
         #endregion
 
         #region View Behavior
-        private Guid Parent_GuidOldValue;
-        private List<Guid> uniqueParent_Guids; //stores dropping entity parent guid before it gets reassigned
-
-
         /// <summary>
         /// Remembers an entity property old value for undoing
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the AddUndoCommand property that can be used as a binding source in views.
@@ -223,7 +138,6 @@ namespace BluePrints.ViewModels
         private void refreshPermissions()
         {
             this.RaisePropertyChanged(x => x.Permissions);
-
             //remove the selection instead of having it focused on first row
             SelectedPermission = null;
         }
@@ -265,126 +179,6 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
-        public void dragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.TreeListDropEventArgs e)
-        {
-            uniqueParent_Guids = new List<Guid>();
-            Parent_GuidOldValue = Guid.Empty;
-
-            if (e.TargetNode != null)
-            {
-                MainViewModel.EntitiesUndoRedoManager.PauseActionId(); //save will unpause this
-                foreach (var obj in e.DraggedRows)
-                {
-                    var editROLE = e.SourceManager.GetObject(obj) as ROLEProjection;
-
-                    Parent_GuidOldValue = editROLE.Entity.PARENTGUID;
-                    if (!uniqueParent_Guids.Any(x => x == Parent_GuidOldValue))
-                        uniqueParent_Guids.Add(Parent_GuidOldValue);
-                }
-            }
-        }
-
-        public void dragDropManager_Dropped(object sender, DevExpress.Xpf.Grid.DragDrop.TreeListDroppedEventArgs e)
-        {
-            Guid newParentGuid = Guid.Empty;
-            if (e.TargetNode != null)
-            {
-                foreach (TreeListNode obj in e.DraggedRows)
-                {
-                    var droppedROLE = obj.Content as ROLEProjection;
-                    var targetROLE = e.TargetNode.Content as ROLEProjection;
-
-                    droppedROLE.Entity.OLDSORTORDER = droppedROLE.Entity.SORTORDER;
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(droppedROLE,
-                    BindableBase.GetPropertyName(() => new ROLEProjection().Entity) + "." +
-                    BindableBase.GetPropertyName(() => new ROLE().PARENTGUID), Parent_GuidOldValue,
-                    droppedROLE.Entity.PARENTGUID, EntityMessageType.Changed);
-
-                    if (e.DropTargetType == DropTargetType.InsertRowsAfter)
-                    {
-                        droppedROLE.Entity.SORTORDER = targetROLE.Entity.SORTORDER + 1;
-                    }
-                    else if (e.DropTargetType == DropTargetType.InsertRowsBefore)
-                    {
-                        droppedROLE.Entity.SORTORDER = targetROLE.Entity.SORTORDER - 1;
-                    }
-                    else
-                    {
-                        var targetROLEChild =
-                            MainViewModel.Entities.Where(x => x.Entity.PARENTGUID == targetROLE.GUID);
-
-                        var maxTargetChildrenOrder = 0;
-                        if (targetROLEChild.Count() > 0)
-                            maxTargetChildrenOrder = targetROLEChild.Max(x => x.Entity.SORTORDER);
-
-                        maxTargetChildrenOrder += 1;
-
-                        droppedROLE.Entity.SORTORDER = maxTargetChildrenOrder;
-                    }
-
-                    newParentGuid = droppedROLE.Entity.PARENTGUID;
-                }
-
-                if (!uniqueParent_Guids.Any(x => x == newParentGuid))
-                    uniqueParent_Guids.Add(newParentGuid);
-
-                ReorderAndSave(uniqueParent_Guids);
-            }
-        }
-
-        private void ReorderAndSave(IEnumerable<Guid> guid_parents)
-        {
-            var childEntities = new List<ROLEProjection>();
-            foreach (var guid_parent in guid_parents)
-                childEntities = childEntities.Concat(ReorderAndSave(guid_parent, true)).ToList();
-
-            MainViewModel.BulkSave(childEntities);
-            NativeTreeListRefresh?.Invoke();
-        }
-
-        private IEnumerable<ROLEProjection> ReorderAndSave(Guid guid_parent, bool dontSave = false)
-        {
-            IEnumerable<ROLEProjection> childROLEs =
-                MainViewModel.Entities.Where(x => x.Entity.PARENTGUID == guid_parent).OrderBy(x => x.Entity.SORTORDER).ToList();
-            var childROLEsList = new List<ROLEProjection>(childROLEs);
-
-            var project_WBSOrderCount = 10;
-            foreach (var childROLE in childROLEsList)
-            {
-                if (childROLE.Entity.SORTORDER != project_WBSOrderCount)
-                {
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(childROLE,
-                        BindableBase.GetPropertyName(() => new ROLEProjection().Entity) + "." +
-                        BindableBase.GetPropertyName(() => new ROLE().SORTORDER), childROLE.Entity.OLDSORTORDER == null ? childROLE.Entity.SORTORDER : childROLE.Entity.OLDSORTORDER,
-                        project_WBSOrderCount, EntityMessageType.Changed);
-
-                    childROLE.Entity.OLDSORTORDER = null; //Prepare for next possible drag-drop operation
-                    childROLE.Entity.SORTORDER = project_WBSOrderCount;
-                    childROLE.Entity.ISEXPANDED = true;
-                }
-
-                project_WBSOrderCount += 10;
-            }
-
-            if (!dontSave)
-                MainViewModel.BulkSave(childROLEsList);
-
-            return childROLEsList;
-        }
-
-        public static IEnumerable<ROLEProjection> RecurseFindChildren(ROLEProjection parentEntity,
-            IEnumerable<ROLEProjection> entities)
-        {
-            foreach (var entity in entities)
-                if (entity.Entity.PARENTGUID == parentEntity.Entity.GUID)
-                {
-                    yield return entity;
-
-                    foreach (var entityChild in RecurseFindChildren(entity, entities))
-                        yield return entityChild;
-                }
-        }
-
         /// <summary>
         /// Save expanded state before closing
         /// </summary>
@@ -395,44 +189,20 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
-        #region View Commands
-
-        public void AddROLERowBefore()
+        protected override void PopulateNewProjection(ROLEProjection projection)
         {
-            AddROLERow(false);
+            projection.Entity.NAME = "(new)";
         }
 
-        public void AddROLERowAfter()
+        protected override string GetParentEntityKeyFieldName()
         {
-            AddROLERow(true);
+            return BindableBase.GetPropertyName(() => new ROLEProjection().Entity) + "." + BindableBase.GetPropertyName(() => new ROLE().PARENTGUID);
         }
 
-        private void AddROLERow(bool isAfter)
+        protected override string GetSortOrderFieldName()
         {
-            var project_WBSOrder = 0;
-            Guid guid_parent = Guid.Empty;
-            if (DisplaySelectedEntity != null)
-            {
-                if (isAfter)
-                    project_WBSOrder = DisplaySelectedEntity.Entity.SORTORDER + 1;
-                else
-                    project_WBSOrder = DisplaySelectedEntity.Entity.SORTORDER - 1;
-
-                guid_parent = DisplaySelectedEntity.Entity.PARENTGUID;
-            }
-
-            var newROLE = new ROLEProjection();
-
-            newROLE.Entity.NAME = "(New)";
-            newROLE.Entity.SORTORDER = project_WBSOrder;
-            newROLE.Entity.PARENTGUID = guid_parent;
-            newROLE.Entity.ISEXPANDED = true;
-            MainViewModel.EntitiesUndoRedoManager.PauseActionId(); //Save will unpause this
-            MainViewModel.EntitiesUndoRedoManager.AddUndo(newROLE, null, null, null, EntityMessageType.Added);
-            MainViewModel.Save(newROLE);
-            ReorderAndSave(guid_parent);
+            return BindableBase.GetPropertyName(() => new ROLEProjection().Entity) + "." + BindableBase.GetPropertyName(() => new ROLE().SORTORDER);
         }
-        #endregion
 
         #region View Properties
 

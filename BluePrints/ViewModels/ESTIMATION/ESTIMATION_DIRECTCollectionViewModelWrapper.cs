@@ -87,7 +87,7 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
+            base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         #region Collection Call Backs
@@ -149,7 +149,7 @@ namespace BluePrints.ViewModels
                 return;
             
             DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new OptionalEntitiesParameter<Data.PROJECT, ESTIMATION_DIRECT>(null,
-                DisplaySelectedEntity), "ESTIMATION_DIRECT_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] ESTIMATION_DIRECT");
+                DisplaySelectedEntity), "ESTIMATION_DIRECT_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Direct Estimate");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }

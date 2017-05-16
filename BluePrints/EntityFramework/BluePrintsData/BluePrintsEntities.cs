@@ -103,11 +103,6 @@ namespace BluePrints.Data
                 .HasPrecision(5, 2);
 
             modelBuilder.Entity<COMMODITY_CODE>()
-                .HasMany(e => e.COMMODITY_GROUP_DIRECT)
-                .WithOptional(e => e.COMMODITY_CODE)
-                .HasForeignKey(e => e.GUID_COMMODITYCODE);
-
-            modelBuilder.Entity<COMMODITY_CODE>()
                 .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
                 .WithOptional(e => e.COMMODITY_CODE)
                 .HasForeignKey(e => e.GUID_COMMODITY_CODE);
@@ -167,11 +162,6 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<DISCIPLINE>()
                 .HasMany(e => e.COMMODITY_CODE)
-                .WithOptional(e => e.DISCIPLINE)
-                .HasForeignKey(e => e.GUID_DISCIPLINE);
-
-            modelBuilder.Entity<DISCIPLINE>()
-                .HasMany(e => e.COMMODITY_GROUP_DIRECT)
                 .WithOptional(e => e.DISCIPLINE)
                 .HasForeignKey(e => e.GUID_DISCIPLINE);
 

@@ -348,7 +348,7 @@ namespace BluePrints.ViewModels
             DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
                 new OptionalEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, DisplaySelectedEntity.Entity),
                 "VARIATION_ITEMCollectionView",
-                "[" + loadPROJECT.NUMBER + "] VARIATION");
+                "[" + loadPROJECT.NUMBER + "] Variation");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }

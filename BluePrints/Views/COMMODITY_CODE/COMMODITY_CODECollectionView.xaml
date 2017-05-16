@@ -16,7 +16,7 @@
     xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
     xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
     mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
-    DataContext="{dxmvvm:ViewModelSource viewmodel:COMMODITY_CODESViewModelWrapper}">
+    DataContext="{dxmvvm:ViewModelSource viewmodel:COMMODITY_CODECollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -33,11 +33,11 @@
                         <dxr:RibbonPage Caption="Home">
                             <dxr:RibbonPageGroup Caption="COMMODITY CODE Tasks">
                                 <dxb:BarButtonItem Content="Insert Before"
-                                                   Command="{Binding DataContext.AddCommodityCodeRowBeforeCommand, ElementName=userControl}"
+                                                   Command="{Binding DataContext.AddRowBeforeCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}"
                                                    Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" />
                                 <dxb:BarButtonItem Content="Insert After"
-                                                   Command="{Binding DataContext.AddCommodityCodeRowAfterCommand, ElementName=userControl}"
+                                                   Command="{Binding DataContext.AddRowAfterCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}"
                                                    Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" />
                                 <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"
@@ -46,8 +46,8 @@
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding RefreshCommand}"
                                                    LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                <!--<dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
-                                <dxb:BarButtonItem Content="Redo" Command="{Binding RedoCommand}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />-->
+                                <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
+                                <dxb:BarButtonItem Content="Redo" Command="{Binding RedoCommand}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                                 <dxb:BarButtonItem Content="Save Layout"
                                                    Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Save_32x32.png}"
@@ -111,7 +111,7 @@
                             <dxg:TreeListColumn FieldName="UOM" VisibleIndex="100" AllowEditing="True">
                                 <dxg:TreeListColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
-                                        ItemsSource="{Binding DataContext.UOMCollection, ElementName=userControl}"
+                                        ItemsSource="{Binding DataContext.UOMCollection, ElementName=userControl}" NullValueButtonPlacement="Popup"
                                         AutoComplete="True" DisplayMember="UOM1" ValueMember="UOM1" />
                                 </dxg:TreeListColumn.EditSettings>
                             </dxg:TreeListColumn>
@@ -174,17 +174,14 @@
                                     <dxmvvm:KeyToCommand KeyGesture="Delete" Command="{Binding BulkDeleteCommand}" />
                                     <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}" />
                                     <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}" />
-                                    <dxmvvm:EventToCommand EventName="CustomUnboundColumnData"
-                                                           Command="{Binding CustomUnboundColumnDataCommand}"
-                                                           PassEventArgsToCommand="True" />
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:TreeListView.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Insert Before"
                                                        Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}"
-                                                       Command="{Binding DataContext.AddCommodityCodeRowBeforeCommand, ElementName=userControl}" />
+                                                       Command="{Binding DataContext.AddRowBeforeCommand, ElementName=userControl}" />
                                     <dxb:BarButtonItem Content="Insert After"
                                                        Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}"
-                                                       Command="{Binding DataContext.AddCommodityCodeRowAfterCommand, ElementName=userControl}" />
+                                                       Command="{Binding DataContext.AddRowAfterCommand, ElementName=userControl}" />
                                     <dxb:BarButtonItem Content="Delete"
                                                        Command="{Binding View.DataContext.BulkDeleteCommand}"
                                                        CommandParameter="{Binding View.DataContext.SelectedEntities}"

@@ -1,0 +1,28 @@
+﻿using BaseModel.DataModel;
+using BaseModel.Misc;
+using BaseModel.ViewModel.Loader;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BluePrints.Common.Base
+{
+    public abstract class BluePrintsEntitiesMasterDetailCollectionsWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
+        TMainEntityUnitOfWork> : ProjectionMasterDetailCollectionsWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
+        TMainEntityUnitOfWork>
+        where TMainEntity : class, IGuidEntityKey, IGuidParentEntityKey, new()
+        where TMainProjectionEntity : class, IProjectionMasterDetail<TMainEntity, TMainProjectionEntity>, new()
+        where TMainEntityUnitOfWork : IUnitOfWork
+    {
+        public SpellCheckerModule SpellCheckerModule { get; set; }
+
+        public override void OnLoaded()
+        {
+            SpellCheckerModule = new SpellCheckerModule();
+            SpellCheckerModule.ApplySpellCheckMode(true);
+            base.OnLoaded();
+        }
+    }
+}

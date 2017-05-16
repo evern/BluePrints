@@ -18,7 +18,7 @@ namespace BluePrints.Data
             List<string> applicableContext = new List<string>();
             applicableContext.Add("BluePrints.Data.BluePrintsEntities");
             AddInterceptor(new SoftDeleteInterceptor("DELETED", "DELETEDBY"));
-            AddInterceptor(new CreatedAndUpdatedDateInterceptor("CREATED", "CREATEDBY", "UPDATED", "UPDATEDBY", LoginCredentials.CurrentUserGuid, applicableContext));
+            AddInterceptor(new CreatedAndUpdatedDateInterceptor("CREATED", "CREATEDBY", "UPDATED", "UPDATEDBY", () => LoginCredentials.CurrentUserGuid, applicableContext));
         }
     }
 

@@ -153,7 +153,7 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new OptionalEntitiesParameter<PROJECT, PROGRESS>(null, DisplaySelectedEntity), "PROGRESS_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] PROGRESS");
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new OptionalEntitiesParameter<PROJECT, PROGRESS>(null, DisplaySelectedEntity), "PROGRESS_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Progress");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }

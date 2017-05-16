@@ -32,19 +32,19 @@ namespace BluePrints.Views
         public void ShowDISCIPLINE()
         {
             colDISCIPLINE.Visible = true;
-            colChildDISCIPLINE.Visible = true;
+            //colChildDISCIPLINE.Visible = true;
         }
 
         public void ShowDEPARTMENT()
         {
             colDEPARTMENT.Visible = true;
-            colChildDEPARTMENT.Visible = true;
+            //colChildDEPARTMENT.Visible = true;
         }
 
         public void ShowINDIRECT_TYPE()
         {
             colINDIRECT_TYPE.Visible = true;
-            colChildINDIRECT_TYPE.Visible = true;
+            //colChildINDIRECT_TYPE.Visible = true;
         }
 
         public void ShowDIRECT_RATES()
@@ -52,15 +52,15 @@ namespace BluePrints.Views
             colRATE_SUPPLY.Visible = true;
             colRATE_FREIGHT.Visible = true;
             colHOURS_INSTALL.Visible = true;
-            colChildRATE_SUPPLY.Visible = true;
-            colChildRATE_FREIGHT.Visible = true;
-            colChildHOURS_INSTALL.Visible = true;
+            //colChildRATE_SUPPLY.Visible = true;
+            //colChildRATE_FREIGHT.Visible = true;
+            //colChildHOURS_INSTALL.Visible = true;
         }
 
         public void ShowINDIRECT_RATES()
         {
             colRATE_PLANT.Visible = true;
-            colChildRATE_PLANT.Visible = true;
+            //colChildRATE_PLANT.Visible = true;
         }
     }
 }
