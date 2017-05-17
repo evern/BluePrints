@@ -129,7 +129,8 @@ namespace BluePrints.ViewModels
 
             var primaryKey = (Guid)key;
             string projectViewId = projectViewIdPrefix + primaryKey.ToString();
-            var projectModules = Modules.Where(x => x.Id.ToString() == projectViewId || (x.ParentId != null && x.ParentId.ToString() == projectViewId));
+            string projectPrimaryKey = primaryKey.ToString();
+            var projectModules = Modules.Where(x => x.Id.ToString() == projectViewId || (x.ParentId != null && x.ParentId.ToString().Contains(projectPrimaryKey)));
 
             if (messageType == EntityMessageType.Added || messageType == EntityMessageType.Changed)
             {
@@ -266,7 +267,7 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageRegisters))
             {
-                string registerCategoryId = "View_RegisterCategory" + projectKey;
+                string registerCategoryId = "View_RegisterCategory" + keyString;
                 newModules.Add(new BluePrintsEntitiesModuleDescription(registerCategoryId, projectKey, "Registers", null, null, null, null, false));
 
                 newModules.Add(new BluePrintsEntitiesModuleDescription("View_IssueRegister" + keyString, registerCategoryId, childTitlePrefix + "Issue Register", "REGISTER_ISSUECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Issue Register"));
