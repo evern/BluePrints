@@ -264,6 +264,18 @@ namespace BluePrints.ViewModels
             if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))
                 newModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectCommodities" + keyString, projectKey, childTitlePrefix + "Commodities", "COMMODITY_GROUP_CODECollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(entity, new CommodityCodeTypeClass(CommodityCodeType.Direct)), null, "Direct Commodities"));
 
+            if (LoginCredentials.hasPermission(PermissionResources.ManageRegisters))
+            {
+                string registerCategoryId = "View_RegisterCategory" + projectKey;
+                newModules.Add(new BluePrintsEntitiesModuleDescription(registerCategoryId, projectKey, "Registers", null, null, null, null, false));
+
+                newModules.Add(new BluePrintsEntitiesModuleDescription("View_IssueRegister" + keyString, registerCategoryId, childTitlePrefix + "Issue Register", "REGISTER_ISSUECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Issue Register"));
+                newModules.Add(new BluePrintsEntitiesModuleDescription("View_ChangeRegister" + keyString, registerCategoryId, childTitlePrefix + "Change Register", "REGISTER_CHANGECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Change Register"));
+                newModules.Add(new BluePrintsEntitiesModuleDescription("View_RiskRegister" + keyString, registerCategoryId, childTitlePrefix + "Risk Register", "REGISTER_RISKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Risk Register"));
+                newModules.Add(new BluePrintsEntitiesModuleDescription("View_HoldRegister" + keyString, registerCategoryId, childTitlePrefix + "Hold Register", "REGISTER_HOLDCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Hold Register"));
+            }
+
+
             return newModules;
         }
     }

@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using BluePrints.Common;
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
@@ -90,13 +91,13 @@ namespace BluePrints.Data
 
         public bool COST_IMPACT { get; set; }
 
-        public int IMPACT_TYPE { get; set; }
+        public Register_ImpactType IMPACT_TYPE { get; set; }
 
         public bool CHANGE_APPROVED { get; set; }
 
         public bool INTERDISC_CHECKED { get; set; }
 
-        public int? HAZARD_GROUP { get; set; }
+        public Register_HazardGroup? HAZARD_GROUP { get; set; }
 
         [StringLength(500)]
         public string HAZARD_TYPE { get; set; }
@@ -104,16 +105,16 @@ namespace BluePrints.Data
         [StringLength(500)]
         public string HAZARD_CAUSE { get; set; }
 
-        public int? RISK_LIKELIHOOD { get; set; }
+        public Register_RiskLikelihood? RISK_LIKELIHOOD { get; set; }
 
-        public int? RISK_CONSEQ { get; set; }
+        public Register_RiskConsequence? RISK_CONSEQ { get; set; }
 
         [StringLength(500)]
         public string CONTROL_MEASURES { get; set; }
 
-        public int? RRISK_LIKELIHOOD { get; set; }
+        public Register_RiskLikelihood? RRISK_LIKELIHOOD { get; set; }
 
-        public int? RRISK_CONSEQ { get; set; }
+        public Register_RiskConsequence? RRISK_CONSEQ { get; set; }
 
         [StringLength(500)]
         public string RHAZARD { get; set; }

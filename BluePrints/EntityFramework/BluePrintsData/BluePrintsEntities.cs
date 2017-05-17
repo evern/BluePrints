@@ -34,6 +34,10 @@ namespace BluePrints.Data
         public virtual DbSet<PROJECT_REPORT> PROJECT_REPORT { get; set; }
         public virtual DbSet<RATE> RATE { get; set; }
         public virtual DbSet<REGISTER> REGISTER { get; set; }
+        public virtual DbSet<REGISTER_CHANGE> REGISTER_CHANGE { get; set; }
+        public virtual DbSet<REGISTER_HOLD> REGISTER_HOLD { get; set; }
+        public virtual DbSet<REGISTER_ISSUE> REGISTER_ISSUE { get; set; }
+        public virtual DbSet<REGISTER_RISK> REGISTER_RISK { get; set; }
         public virtual DbSet<ROLE> ROLE { get; set; }
         public virtual DbSet<ROLE_PERMISSION> ROLE_PERMISSION { get; set; }
         public virtual DbSet<SETTINGS_GLOBAL> SETTINGS_GLOBAL { get; set; }
@@ -59,6 +63,27 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<AREA>()
                 .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
+                .WithOptional(e => e.AREA)
+                .HasForeignKey(e => e.GUID_AREA);
+
+            modelBuilder.Entity<AREA>()
+                .HasMany(e => e.REGISTER_CHANGE)
+                .WithRequired(e => e.AREA)
+                .HasForeignKey(e => e.GUID_AREA)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<AREA>()
+                .HasMany(e => e.REGISTER_HOLD)
+                .WithOptional(e => e.AREA)
+                .HasForeignKey(e => e.GUID_AREA);
+
+            modelBuilder.Entity<AREA>()
+                .HasMany(e => e.REGISTER_ISSUE)
+                .WithOptional(e => e.AREA)
+                .HasForeignKey(e => e.GUID_AREA);
+
+            modelBuilder.Entity<AREA>()
+                .HasMany(e => e.REGISTER_RISK)
                 .WithOptional(e => e.AREA)
                 .HasForeignKey(e => e.GUID_AREA);
 
@@ -394,6 +419,30 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.RATE)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.REGISTER_CHANGE)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.REGISTER_HOLD)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.REGISTER_ISSUE)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.REGISTER_RISK)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);

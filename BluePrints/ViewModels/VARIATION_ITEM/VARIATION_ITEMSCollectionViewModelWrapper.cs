@@ -212,8 +212,11 @@ namespace BluePrints.ViewModels
         public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
             //Don't refresh on local update because every updates invoke baseline_item and variation save
+            //Need to refresh variation because variation addition is notified later than baseline
             if (sender == VARIATION_ITEMSCollectionViewModel)
-                return ;
+            {
+                FullRefreshWithoutClearingUndoRedo();
+            }
 
             base.OnAfterAffectingEntitiesChanged(key, changedType, messageType, sender);
         }

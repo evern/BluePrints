@@ -116,6 +116,26 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<RATE, Guid> RATES { get; }
 
         /// <summary>
+        /// The REGISTER_CHANGE entities repository.
+        /// </summary>
+        IRepository<REGISTER_CHANGE, Guid> REGISTER_CHANGE { get; }
+
+        /// <summary>
+        /// The REGISTER_HOLD entities repository.
+        /// </summary>
+        IRepository<REGISTER_HOLD, Guid> REGISTER_HOLD { get; }
+
+        /// <summary>
+        /// The REGISTER_ISSUE entities repository.
+        /// </summary>
+        IRepository<REGISTER_ISSUE, Guid> REGISTER_ISSUE { get; }
+
+        /// <summary>
+        /// The REGISTER_RISK entities repository.
+        /// </summary>
+        IRepository<REGISTER_RISK, Guid> REGISTER_RISK { get; }
+
+        /// <summary>
         /// The REGISTER entities repository.
         /// </summary>
         IRepository<REGISTER, Guid> REGISTERS { get; }

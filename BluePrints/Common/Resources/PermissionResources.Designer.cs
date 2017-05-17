@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BluePrints.Common.Resources
-{
-
-
+namespace BluePrints.Common.Resources {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -156,6 +156,15 @@ namespace BluePrints.Common.Resources
         internal static string ManageRate {
             get {
                 return ResourceManager.GetString("ManageRate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allow user to manage registers.
+        /// </summary>
+        internal static string ManageRegisters {
+            get {
+                return ResourceManager.GetString("ManageRegisters", resourceCulture);
             }
         }
         

@@ -195,7 +195,7 @@ namespace BluePrints.Common.Projections
 
             var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
             return
-                BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS.ToArray()
+                BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS.OrderBy(x => x.Entity.Entity.CREATED).ToArray()
                     .Select(x => new VARIATION_ITEMProjection(reportingDate)
                     {
                         EntityKey = x.EntityKey,

@@ -31,6 +31,9 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:OpenFileDialogService Title="Select Document" Multiselect="False" />
+    </dxmvvm:Interaction.Behaviors>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <Grid Style="{StaticResource DashboardView.RootContainer}">
             <Grid DataContext="{Binding MainViewModel}">
@@ -111,11 +114,45 @@
                                                                       ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectType}}" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Header="Design Manager" FieldName="Entity.DESIGNMANAGER"
-                                                    VisibleIndex="60">
+                                            <dxg:GridColumn Header="Design Manager" FieldName="Entity.GUID_MANAGEUSER">
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:ComboBoxEditSettings
+                                                        ItemsSource="{Binding DataContext.MANAGERCollection, ElementName=userControl}"
+                                                        IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
+                                                        ValueMember="GUID" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
+                                            <dxg:GridColumn Header="Design Kick-Off Held" FieldName="Entity.DOC_KICKOFF">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
-                                                                      ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DesignManager}}" />
+                                                    ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectDocumentStatus}}" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
+                                            <dxg:GridColumn Header="Design Kick-Off Attachment" FieldName="Entity.DOC_KICKOFF_PATH">
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:HyperlinkEditSettings AllowAutoNavigate="True" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
+                                            <dxg:GridColumn Header="SID Report Complete" FieldName="Entity.DOC_SIDREPORT">
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                                    ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectDocumentStatus}}" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
+                                            <dxg:GridColumn Header="SID Report Attachment" FieldName="Entity.DOC_SIDREPORT_PATH">
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:HyperlinkEditSettings AllowAutoNavigate="True" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
+                                            <dxg:GridColumn Header="Project Close-Out Complete" FieldName="Entity.DOC_CLOSEOUT">
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                                    ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectDocumentStatus}}" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
+                                            <dxg:GridColumn Header="Project Close-Out Attachment" FieldName="Entity.DOC_CLOSEOUT_PATH">
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:HyperlinkEditSettings AllowAutoNavigate="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn x:Name="colCumulativeBudget" Header="Total Units"
@@ -251,11 +288,15 @@
                                         </dxg:GridControlBand>
                                     </dxg:GridControl.Bands>
                                     <dxg:GridControl.View>
-                                        <custom:TableViewEx x:Name="tableView" AllowEditing="False" UseLightweightTemplates="{x:Null}"
+                                        <custom:TableViewEx x:Name="tableView" AllowEditing="True" UseLightweightTemplates="{x:Null}"
                                                Style="{StaticResource DefaultTableViewTemplate}"
                                                ShowAutoFilterRow="False"
                                                ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                NewItemRowPosition="None" ShowGroupPanel="False">
+                                            <dxmvvm:Interaction.Behaviors>
+                                                <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}"
+                                                PassEventArgsToCommand="True" EventName="CellValueChanging" />
+                                            </dxmvvm:Interaction.Behaviors>
                                             <custom:TableViewEx.RowCellMenuCustomizations>
                                                 <dxb:BarButtonItem Content="Workpacks"
                                                            Command="{Binding DataContext.EditCommand, ElementName=userControl}"

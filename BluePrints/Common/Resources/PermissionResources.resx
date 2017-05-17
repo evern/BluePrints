@@ -150,6 +150,9 @@
   <data name="ManageRate" xml:space="preserve">
     <value>Allow user to manage rates</value>
   </data>
+  <data name="ManageRegisters" xml:space="preserve">
+    <value>Allow user to manage registers</value>
+  </data>
   <data name="ManageRole" xml:space="preserve">
     <value>Allow user to manage roles</value>
   </data>

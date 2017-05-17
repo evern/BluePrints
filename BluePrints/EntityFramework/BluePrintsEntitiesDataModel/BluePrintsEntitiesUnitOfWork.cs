@@ -113,6 +113,26 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<PROJECT_REPORT>(), (PROJECT_REPORT x) => x.GUID); }
         }
 
+        IRepository<REGISTER_CHANGE, Guid> IBluePrintsEntitiesUnitOfWork.REGISTER_CHANGE
+        {
+            get { return GetRepository(x => x.Set<REGISTER_CHANGE>(), (REGISTER_CHANGE x) => x.GUID); }
+        }
+
+        IRepository<REGISTER_HOLD, Guid> IBluePrintsEntitiesUnitOfWork.REGISTER_HOLD
+        {
+            get { return GetRepository(x => x.Set<REGISTER_HOLD>(), (REGISTER_HOLD x) => x.GUID); }
+        }
+
+        IRepository<REGISTER_ISSUE, Guid> IBluePrintsEntitiesUnitOfWork.REGISTER_ISSUE
+        {
+            get { return GetRepository(x => x.Set<REGISTER_ISSUE>(), (REGISTER_ISSUE x) => x.GUID); }
+        }
+
+        IRepository<REGISTER_RISK, Guid> IBluePrintsEntitiesUnitOfWork.REGISTER_RISK
+        {
+            get { return GetRepository(x => x.Set<REGISTER_RISK>(), (REGISTER_RISK x) => x.GUID); }
+        }
+
         IRepository<PROJECT, Guid> IBluePrintsEntitiesUnitOfWork.PROJECTS
         {
             get { return GetRepository(x => x.Set<PROJECT>(), (PROJECT x) => x.GUID); }

@@ -149,12 +149,148 @@ namespace BluePrints.Common
         Site = 1,
     }
 
+    public enum ProjectDocumentStatus
+    {
+        [Display(Name = "N/A")]
+        NA = 0,
+        [Display(Name = "Yes")]
+        Yes = 1,
+        [Display(Name = "No")]
+        No = 2,
+    }
+
     public enum COMMODITY_CODEProjectionType
     {
         [Display(Name = "Grouped Project Specific")] ProjectSpecificGrouped,
         [Display(Name = "Not Grouped Project Specific")] ProjectSpecificNotGrouped,
         [Display(Name = "Grouped Not Project Specific")] GeneralGrouped,
         [Display(Name = "Not Grouped Not Project Specific")] GeneralNotGrouped
+    }
+
+    public enum Register_ImpactType
+    {
+        [Display(Name = "No Impact")]
+        NoImpact = 0,
+        [Display(Name = "Internal")]
+        Internal = 1,
+        [Display(Name = "Variation")]
+        Variation = 2
+    }
+
+    public enum Register_RiskLikelihood
+    {
+        [Display(Name = "A Certain")]
+        Certain = 0,
+        [Display(Name = "B Likely")]
+        Likely = 1,
+        [Display(Name = "C Possible")]
+        Possible = 2,
+        [Display(Name = "D Unlikely")]
+        Unlikely = 3,
+        [Display(Name = "E Rare")]
+        Rare = 4
+    }
+
+    public enum Register_RiskConsequence
+    {
+        [Display(Name = "1 Insignificant")]
+        Insignificant = 0,
+        [Display(Name = "2 Minor")]
+        Minor = 1,
+        [Display(Name = "3 Moderate")]
+        Moderate = 2,
+        [Display(Name = "4 Major")]
+        Major = 3,
+        [Display(Name = "5 Catastrophic")]
+        Catastrophic = 4
+    }
+
+    public enum Register_RiskRanking
+    {
+        [Display(Name = "1 Low")]
+        Low1 = 0,
+        [Display(Name = "2 Low")]
+        Low2 = 1,
+        [Display(Name = "3 Low")]
+        Low3 = 2,
+        [Display(Name = "4 Low")]
+        Low4 = 3,
+        [Display(Name = "5 Low")]
+        Low5 = 4,
+        [Display(Name = "6 Low")]
+        Low6 = 5,
+        [Display(Name = "7 Medium")]
+        Medium7 = 6,
+        [Display(Name = "8 Medium")]
+        Medium8 = 7,
+        [Display(Name = "9 Medium")]
+        Medium9 = 8,
+        [Display(Name = "10 Medium")]
+        Medium10 = 9,
+        [Display(Name = "11 Medium")]
+        Medium11 = 10,
+        [Display(Name = "12 High")]
+        High12 = 11,
+        [Display(Name = "13 High")]
+        High13 = 12,
+        [Display(Name = "14 High")]
+        High14 = 13,
+        [Display(Name = "15 High")]
+        High15 = 14,
+        [Display(Name = "16 High")]
+        High16 = 15,
+        [Display(Name = "17 High")]
+        High17 = 16,
+        [Display(Name = "18 High")]
+        High18 = 17,
+        [Display(Name = "19 High")]
+        High19 = 18,
+        [Display(Name = "20 Extreme")]
+        Extreme20 = 19,
+        [Display(Name = "21 Extreme")]
+        Extreme21 = 20,
+        [Display(Name = "22 Extreme")]
+        Extreme22 = 21,
+        [Display(Name = "23 Extreme")]
+        Extreme23 = 22,
+        [Display(Name = "24 Extreme")]
+        Extreme24 = 23,
+        [Display(Name = "25 Extreme")]
+        Extreme25 = 24,
+        [Display(Name = "Unassigned")]
+        Unassigned = 25
+    }
+
+    public enum Register_HazardGroup
+    {
+        [Display(Name = "Electrical")]
+        Electrical = 0,
+        [Display(Name = "Fire and Emergencies")]
+        Fire_and_Emergencies = 1,
+        [Display(Name = "People, Material Movement")]
+        People_Material_Movement = 2,
+        [Display(Name = "Radiation")]
+        Radiation = 3,
+        [Display(Name = "Working Environment")]
+        Working_Environment = 4,
+        [Display(Name = "Plant")]
+        Plant = 5,
+        [Display(Name = "Amenities")]
+        Amenities = 6,
+        [Display(Name = "Earthworks")]
+        Earthworks = 7,
+        [Display(Name = "Structural Safety")]
+        Structural_Safety = 8,
+        [Display(Name = "Manual Tasks")]
+        Manual_Tasks = 9,
+        [Display(Name = "Substances")]
+        Substances = 10,
+        [Display(Name = "Falls Prevention")]
+        Falls_Prevention = 11,
+        [Display(Name = "Specific Risks")]
+        Specific_Risks = 12,
+        [Display(Name = "Noise Exposure")]
+        Noise_Exposure = 13
     }
 
     public class ReportingEnum

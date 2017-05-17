@@ -1,12 +1,14 @@
 ﻿<custom:ViewStateRestoreUserControl
     x:Name="userControl"
-    x:Class="BluePrints.Views.PROJECTCollectionView"
+    x:Class="BluePrints.Views.REGISTER_RISKCollectionView"
     xmlns:view="clr-namespace:BluePrints.Views"
     xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
+    xmlns:common="clr-namespace:BluePrints.Common"
     xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
     xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
@@ -15,22 +17,16 @@
     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
     xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
     xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
-    xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
-    xmlns:common="clr-namespace:BluePrints.Common"
-    xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters"
     mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
-    DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTCollectionViewModelWrapper}">
+    DataContext="{dxmvvm:ViewModelSource viewmodel:REGISTER_RISKCollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <dxmvvm:Interaction.Behaviors>
-        <dxmvvm:OpenFileDialogService Title="Select Document" Multiselect="False" />
-    </dxmvvm:Interaction.Behaviors>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
@@ -38,11 +34,7 @@
                                    MDIMergeStyle="Always">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Home">
-                            <dxr:RibbonPageGroup Caption="PROJECT Tasks">
-                                <dxb:BarButtonItem Content="Edit"
-                                                   Command="{Binding DataContext.EditCommand, ElementName=userControl}"
-                                                   LargeGlyph="{dx:DXImage Image=Edit_32x32.png}"
-                                                   Glyph="{dx:DXImage Image=Edit_16x16.png}" />
+                            <dxr:RibbonPageGroup Caption="REGISTER Tasks">
                                 <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"
                                                    LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Delete_16x16.png}" />
@@ -77,111 +69,87 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPROJECT"
-                                     Style="{StaticResource DefaultGridControlTemplate}">
-                        <dxmvvm:Interaction.Behaviors>
-                            <dxmvvm:EventToCommand PassEventArgsToCommand="True"
-                                                   Command="{Binding DataContext.EditCommand, ElementName=userControl}"
-                                                   EventName="MouseDoubleClick" MarkRoutedEventsAsHandled="True">
-                                <dxmvvm:EventToCommand.EventArgsConverter>
-                                    <dx:EventArgsToDataRowConverter />
-                                </dxmvvm:EventToCommand.EventArgsConverter>
-                            </dxmvvm:EventToCommand>
-                        </dxmvvm:Interaction.Behaviors>
+                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlREGISTER" Style="{StaticResource DefaultGridControlTemplate}" >
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="Number" FieldName="NUMBER" />
-                            <dxg:GridColumn Header="Name" FieldName="NAME" />
-                            <dxg:GridColumn Header="Client" FieldName="CLIENT" />
-                            <dxg:GridColumn Header="Status" FieldName="STATUS">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
-                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectStatus}}" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Contract Type" FieldName="CONTRACTTYPE">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
-                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ContractType}}" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Type" FieldName="TYPE">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
-                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectType}}" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Design Manager" FieldName="GUID_MANAGEUSER">
+                            <dxg:GridColumn FieldName="NUMBER" VisibleIndex="10" />
+                            <dxg:GridColumn FieldName="TITLE" VisibleIndex="20" />
+                            <dxg:GridColumn Header="AREA" FieldName="GUID_AREA" VisibleIndex="30" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
-                                        ItemsSource="{Binding DataContext.MANAGERCollection, ElementName=userControl}"
-                                        IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
+                                        ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM"
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Legacy Workpack" FieldName="USELEGACYWORKPACK">
+                            <dxg:GridColumn FieldName="HAZARD_GROUP" VisibleIndex="40" >
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:CheckEditSettings />
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
+                                        <dxe:ComboBoxEditSettings.ItemsSource>
+                                            <dxe:EnumItemsSource EnumType="{x:Type common:Register_HazardGroup}" />
+                                        </dxe:ComboBoxEditSettings.ItemsSource>
+                                    </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Currency Conversion" FieldName="CURRENCYCONVERSION">
+                            <dxg:GridColumn FieldName="HAZARD_TYPE" VisibleIndex="50" />
+                            <dxg:GridColumn FieldName="HAZARD_CAUSE" VisibleIndex="60" />
+                            <dxg:GridColumn FieldName="RISK_LIKELIHOOD" VisibleIndex="70" >
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings MinValue="0.1" x:Name="PART_Editor" MaskType="Numeric" Mask="n2"
-                                      MaskUseAsDisplayFormat="True" Increment="0.01" />
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
+                                        <dxe:ComboBoxEditSettings.ItemsSource>
+                                            <dxe:EnumItemsSource EnumType="{x:Type common:Register_RiskLikelihood}" />
+                                        </dxe:ComboBoxEditSettings.ItemsSource>
+                                    </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Review %" FieldName="REVIEWPERCENTAGE">
+                            <dxg:GridColumn FieldName="RISK_CONSEQUENCES" VisibleIndex="80" >
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="p2" MinValue="0" Increment="0.1" MaxValue="1"
-                                      MaskUseAsDisplayFormat="True" />
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
+                                        <dxe:ComboBoxEditSettings.ItemsSource>
+                                            <dxe:EnumItemsSource EnumType="{x:Type common:Register_RiskConsequence}" />
+                                        </dxe:ComboBoxEditSettings.ItemsSource>
+                                    </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Review Period" FieldName="REVIEWPERIOD">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:SpinEdit
-                                            x:Name="PART_Editor"
-                                            MaskUseAsDisplayFormat="True"
-                                            MaskType="Numeric"
-                                            Increment="1"
-                                            MinValue="0"
-                                            MaxValue="99"
-                                            Mask="{Binding EditValue, ConverterParameter=Day, Converter={StaticResource QuantityExpressionConverter}, RelativeSource={RelativeSource Self}}" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Design Kick-Off Held" FieldName="DOC_KICKOFF">
+                            <dxg:GridColumn FieldName="RISK_RANKING" VisibleIndex="90" AllowEditing="False" >
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
-                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectDocumentStatus}}" />
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
+                                        <dxe:ComboBoxEditSettings.ItemsSource>
+                                            <dxe:EnumItemsSource EnumType="{x:Type common:Register_RiskRanking}" />
+                                        </dxe:ComboBoxEditSettings.ItemsSource>
+                                    </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Design Kick-Off Attachment" FieldName="DOC_KICKOFF_PATH">
+                            <dxg:GridColumn FieldName="CONTROL_MEASURES" VisibleIndex="100" />
+                            <dxg:GridColumn FieldName="RESIDUE_RISK_LIKELIHOOD" VisibleIndex="110" >
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:HyperlinkEditSettings AllowAutoNavigate="True" />
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
+                                        <dxe:ComboBoxEditSettings.ItemsSource>
+                                            <dxe:EnumItemsSource EnumType="{x:Type common:Register_RiskLikelihood}" />
+                                        </dxe:ComboBoxEditSettings.ItemsSource>
+                                    </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="SID Report Complete" FieldName="DOC_SIDREPORT">
+                            <dxg:GridColumn FieldName="RESIDUE_RISK_CONSEQUENCES" VisibleIndex="120" >
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
-                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectDocumentStatus}}" />
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
+                                        <dxe:ComboBoxEditSettings.ItemsSource>
+                                            <dxe:EnumItemsSource EnumType="{x:Type common:Register_RiskConsequence}" />
+                                        </dxe:ComboBoxEditSettings.ItemsSource>
+                                    </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="SID Report Attachment" FieldName="DOC_SIDREPORT_PATH">
+                            <dxg:GridColumn FieldName="RESIDUE_RISK_RANKING" VisibleIndex="130" AllowEditing="False">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:HyperlinkEditSettings AllowAutoNavigate="True" />
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
+                                        <dxe:ComboBoxEditSettings.ItemsSource>
+                                            <dxe:EnumItemsSource EnumType="{x:Type common:Register_RiskRanking}" />
+                                        </dxe:ComboBoxEditSettings.ItemsSource>
+                                    </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Project Close-Out Complete" FieldName="DOC_CLOSEOUT">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
-                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectDocumentStatus}}" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Project Close-Out Attachment" FieldName="DOC_CLOSEOUT_PATH">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:HyperlinkEditSettings AllowAutoNavigate="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="RESIDUE_HAZARD" VisibleIndex="140" />
+                            <dxg:GridColumn FieldName="FURTHER_ACTION" VisibleIndex="150" />
+                            <dxg:GridColumn FieldName="DATE_IDENTIFIED" VisibleIndex="160" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
@@ -191,11 +159,6 @@
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
                             <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
-                                <dxmvvm:Interaction.Behaviors>
-                                    <dxmvvm:EventToCommand
-                                        Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}"
-                                        PassEventArgsToCommand="True" EventName="CellValueChanging" />
-                                </dxmvvm:Interaction.Behaviors>
                                 <custom:TableViewEx.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Bulk Edit"
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"
@@ -206,7 +169,7 @@
                                                        Command="{Binding View.DataContext.FillUpCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                     <dxb:BarButtonItem Content="Fill Down"
-                                                       Glyph="{dx:DXImageOffice2013 Image=Download_16x16.png}"
+                                                       Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}"
                                                        Command="{Binding View.DataContext.FillDownCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                     <dxb:BarButtonItem Content="Delete"

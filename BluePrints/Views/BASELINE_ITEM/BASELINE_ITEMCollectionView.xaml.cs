@@ -53,98 +53,98 @@ namespace BluePrints.Views
 
         private void tableView_ShowGridMenu(object sender, GridMenuEventArgs e)
         {
-            //var menuInfo = tableView.GridMenu.MenuInfo as GridCellMenuInfo;
-            //if (menuInfo != null && menuInfo.Row != null && menuInfo.Column != null)
-            //{
-            //    contextMenuFillUp.IsVisible = true;
-            //    contextMenuFillDown.IsVisible = true;
+            var menuInfo = tableView.GridMenu.MenuInfo as GridCellMenuInfo;
+            if (menuInfo != null && menuInfo.Row != null && menuInfo.Column != null)
+            {
+                contextMenuFillUp.IsVisible = true;
+                contextMenuFillDown.IsVisible = true;
 
-            //    if (menuInfo.Row.ControllerVisibleIndex == DataControlBase.NewItemRowHandle)
-            //    {
-            //        contextMenuDuplicate.IsEnabled = false;
-            //        contextMenuDuplicateMulti.IsEnabled = false;
-            //    }
-            //    else
-            //    {
-            //        contextMenuDuplicate.IsEnabled = true;
-            //        contextMenuDuplicateMulti.IsEnabled = true;
-            //    }
+                if (menuInfo.Row.ControllerVisibleIndex == DataControlBase.NewItemRowHandle)
+                {
+                    contextMenuDuplicate.IsEnabled = false;
+                    contextMenuDuplicateMulti.IsEnabled = false;
+                }
+                else
+                {
+                    contextMenuDuplicate.IsEnabled = true;
+                    contextMenuDuplicateMulti.IsEnabled = true;
+                }
 
-            //    if (menuInfo.Column == colWORKPACKInternalName1 || menuInfo.Column == colWORKPACKInternalName2)
-            //    {
-            //        contextMenuPopulate.IsVisible = true;
-            //        contextMenuPopulate.Content = "Autofill from Area/DocType/Disc/Dept data";
-            //    }
-            //    else if (menuInfo.Column == colAREA)
-            //    {
-            //        contextMenuPopulate.IsVisible = true;
-            //        contextMenuPopulate.Content = "Autofill From Workpack Data";
-            //    }
-            //    else if (menuInfo.Column == colDOCTYPE)
-            //    {
-            //        contextMenuPopulate.IsVisible = true;
-            //        contextMenuPopulate.Content = "Autofill From Workpack Data";
-            //    }
-            //    else if (menuInfo.Column == colDISCIPLINE)
-            //    {
-            //        contextMenuPopulate.IsVisible = true;
-            //        contextMenuPopulate.Content = "Autofill From Workpack Data";
-            //    }
-            //    else if (menuInfo.Column == colDEPARTMENT)
-            //    {
-            //        contextMenuPopulate.IsVisible = true;
-            //        contextMenuPopulate.Content = "Autofill From Workpack Data";
-            //    }
-            //    else if (menuInfo.Column == colPRIMARY_TITLE)
-            //    {
-            //        contextMenuPopulate.IsVisible = false;
-            //    }
-            //    else if (menuInfo.Column == colSECONDARY_TITLE)
-            //    {
-            //        contextMenuPopulate.IsVisible = false;
-            //    }
-            //    else if (menuInfo.Column == colESTIMATED_HOURS)
-            //    {
-            //        contextMenuBulkEdit.IsVisible = !isBASELINELocked;
-            //        contextMenuFillUp.IsVisible = !isBASELINELocked;
-            //        contextMenuFillDown.IsVisible = !isBASELINELocked;
+                if (menuInfo.Column == colWORKPACKInternalName1 || menuInfo.Column == colWORKPACKInternalName2)
+                {
+                    contextMenuPopulate.IsVisible = true;
+                    contextMenuPopulate.Content = "Autofill from Area/DocType/Disc/Dept data";
+                }
+                else if (menuInfo.Column == colAREA)
+                {
+                    contextMenuPopulate.IsVisible = true;
+                    contextMenuPopulate.Content = "Autofill From Workpack Data";
+                }
+                else if (menuInfo.Column == colDOCTYPE)
+                {
+                    contextMenuPopulate.IsVisible = true;
+                    contextMenuPopulate.Content = "Autofill From Workpack Data";
+                }
+                else if (menuInfo.Column == colDISCIPLINE)
+                {
+                    contextMenuPopulate.IsVisible = true;
+                    contextMenuPopulate.Content = "Autofill From Workpack Data";
+                }
+                else if (menuInfo.Column == colDEPARTMENT)
+                {
+                    contextMenuPopulate.IsVisible = true;
+                    contextMenuPopulate.Content = "Autofill From Workpack Data";
+                }
+                else if (menuInfo.Column == colPRIMARY_TITLE)
+                {
+                    contextMenuPopulate.IsVisible = false;
+                }
+                else if (menuInfo.Column == colSECONDARY_TITLE)
+                {
+                    contextMenuPopulate.IsVisible = false;
+                }
+                else if (menuInfo.Column == colESTIMATED_HOURS)
+                {
+                    contextMenuBulkEdit.IsVisible = !isBASELINELocked;
+                    contextMenuFillUp.IsVisible = !isBASELINELocked;
+                    contextMenuFillDown.IsVisible = !isBASELINELocked;
 
-            //        contextMenuPopulate.IsVisible = false;
-            //    }
-            //    else if (menuInfo.Column == colINTERNAL_NUM)
-            //    {
-            //        contextMenuPopulate.IsVisible = true;
-            //        contextMenuFillUp.IsVisible = false;
-            //        contextMenuFillDown.IsVisible = false;
-            //        contextMenuPopulate.Content = "Autofill From Area/DocType/Disc/Dept Data";
-            //    }
-            //    else if (menuInfo.Column == colCLIENT_NUM)
-            //    {
-            //        contextMenuPopulate.IsVisible = false;
-            //    }
-            //    else if (menuInfo.Column == colREVISION_NUMBER)
-            //    {
-            //        contextMenuPopulate.IsVisible = false;
-            //    }
-            //    else if (menuInfo.Column == colTOTAL_COSTS)
-            //    {
-            //        contextMenuPopulate.IsVisible = false;
-            //        //contextMenuBulkEdit.IsEnabled = false;
-            //    }
-            //    else if (menuInfo.Column == colDC_HOURS)
-            //    {
-            //        contextMenuPopulate.IsVisible = false;
-            //        //contextMenuBulkEdit.IsEnabled = false;
-            //    }
-            //    else if (menuInfo.Column == colCOMMENTS)
-            //    {
-            //        contextMenuPopulate.IsVisible = false;
-            //    }
-            //    else if (menuInfo.Column == colDELIVERABLE_TYPE)
-            //    {
-            //        contextMenuPopulate.IsVisible = false;
-            //    }
-            //}
+                    contextMenuPopulate.IsVisible = false;
+                }
+                else if (menuInfo.Column == colINTERNAL_NUM)
+                {
+                    contextMenuPopulate.IsVisible = true;
+                    contextMenuFillUp.IsVisible = false;
+                    contextMenuFillDown.IsVisible = false;
+                    contextMenuPopulate.Content = "Autofill From Area/DocType/Disc/Dept Data";
+                }
+                else if (menuInfo.Column == colCLIENT_NUM)
+                {
+                    contextMenuPopulate.IsVisible = false;
+                }
+                else if (menuInfo.Column == colREVISION_NUMBER)
+                {
+                    contextMenuPopulate.IsVisible = false;
+                }
+                else if (menuInfo.Column == colTOTAL_COSTS)
+                {
+                    contextMenuPopulate.IsVisible = false;
+                    //contextMenuBulkEdit.IsEnabled = false;
+                }
+                else if (menuInfo.Column == colDC_HOURS)
+                {
+                    contextMenuPopulate.IsVisible = false;
+                    //contextMenuBulkEdit.IsEnabled = false;
+                }
+                else if (menuInfo.Column == colCOMMENTS)
+                {
+                    contextMenuPopulate.IsVisible = false;
+                }
+                else if (menuInfo.Column == colDELIVERABLE_TYPE)
+                {
+                    contextMenuPopulate.IsVisible = false;
+                }
+            }
         }
 
         private void gridControl_PreviewKeyDown(object sender, KeyEventArgs e)

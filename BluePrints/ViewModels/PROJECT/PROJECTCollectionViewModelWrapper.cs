@@ -11,6 +11,7 @@ using BluePrints.Common.Resources;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -122,6 +123,8 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECT> entities)
         {
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = PostSave;
+            MainViewModel.IsValidFromViewCallBack = AdditionalCellValidation;
+            MainViewModel.CanFillDownCallBack = CanFillDownCallBack;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -188,6 +191,123 @@ namespace BluePrints.ViewModels
 
         #endregion
 
+        #endregion
+
+        #region View Behavior
+        protected IOpenFileDialogService OpenFileDialogService
+        {
+            get { return this.GetService<IOpenFileDialogService>(); }
+        }
+
+        public bool CanFillDownCallBack(IEnumerable<PROJECT> selectedEntities, GridMenuInfo info)
+        {
+            if (info.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF) ||
+                info.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT) ||
+                info.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT))
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Influence column(s) when changes happens in other column
+        /// </summary>
+        public void CellValueChanging(CellValueChangedEventArgs e)
+        {
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF) || 
+                e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT) ||
+                e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT))
+            {
+                MainViewModel.EntitiesUndoRedoManager.PauseActionId(); //Unpaused in existingRowAddUndoAndSave
+                PROJECT activePROJECT = (PROJECT)e.Row;
+                ProjectDocumentStatus newValue = (ProjectDocumentStatus)e.Value;
+                if (newValue == ProjectDocumentStatus.Yes)
+                {
+                    OpenFileDialogService.Filter = "PDF (*.PDF)|*.PDF";
+                    bool DialogResult;
+
+                    DialogResult = OpenFileDialogService.ShowDialog();
+                    if (DialogResult)
+                    {
+                        string fullPath = OpenFileDialogService.File.GetFullName();
+                        if(e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF))
+                        {
+                            MainViewModel.EntitiesUndoRedoManager.AddUndo(activePROJECT, BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF_PATH), null, fullPath, EntityMessageType.Changed);
+                            activePROJECT.DOC_KICKOFF_PATH = fullPath;
+                        }
+                        else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT))
+                        {
+                            MainViewModel.EntitiesUndoRedoManager.AddUndo(activePROJECT, BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT_PATH), null, fullPath, EntityMessageType.Changed);
+                            activePROJECT.DOC_CLOSEOUT_PATH = fullPath;
+                        }
+                        else
+                        {
+                            MainViewModel.EntitiesUndoRedoManager.AddUndo(activePROJECT, BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT), null, fullPath, EntityMessageType.Changed);
+                            activePROJECT.DOC_SIDREPORT_PATH = fullPath;
+                        }
+                    }
+                }
+                else
+                {
+                    if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF))
+                    {
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(activePROJECT, BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF_PATH), activePROJECT.DOC_KICKOFF_PATH, null, EntityMessageType.Changed);
+                        activePROJECT.DOC_KICKOFF_PATH = null;
+                    }
+                    else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT))
+                    {
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(activePROJECT, BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT_PATH), activePROJECT.DOC_CLOSEOUT_PATH, null, EntityMessageType.Changed);
+                        activePROJECT.DOC_CLOSEOUT_PATH = null;
+                    }
+                    else
+                    {
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(activePROJECT, BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT_PATH), activePROJECT.DOC_SIDREPORT_PATH, null, EntityMessageType.Changed);
+                        activePROJECT.DOC_SIDREPORT_PATH = null;
+                    }
+                }
+            }
+        }
+
+        private bool AdditionalCellValidation(GridCellValidationEventArgs e)
+        {
+            PROJECT activePROJECT = (PROJECT)e.Row;
+            string missingPathErrorString = "Path not selected";
+            bool isError = false;
+
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF))
+            {
+                ProjectDocumentStatus newValue = (ProjectDocumentStatus)e.Value;
+                if (newValue == ProjectDocumentStatus.Yes && activePROJECT.DOC_KICKOFF_PATH == null)
+                {
+                    isError = true;
+                }
+            }
+            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT))
+            {
+                ProjectDocumentStatus newValue = (ProjectDocumentStatus)e.Value;
+                if (newValue == ProjectDocumentStatus.Yes && activePROJECT.DOC_CLOSEOUT_PATH == null)
+                {
+                    isError = true;
+                }
+            }
+            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT))
+            {
+                ProjectDocumentStatus newValue = (ProjectDocumentStatus)e.Value;
+                if (newValue == ProjectDocumentStatus.Yes && activePROJECT.DOC_SIDREPORT_PATH == null)
+                {
+                    isError = true;
+                }
+            }
+
+            if (isError)
+            {
+                e.IsValid = false;
+                e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                e.ErrorContent = missingPathErrorString;
+            }
+
+            return true;
+        }
         #endregion
 
         #region View Properties

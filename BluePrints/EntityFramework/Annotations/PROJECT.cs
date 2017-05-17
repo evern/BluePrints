@@ -23,6 +23,10 @@ namespace BluePrints.Data
             PHASE = new HashSet<PHASE>();
             PROGRESS = new HashSet<PROGRESS>();
             REGISTER = new HashSet<REGISTER>();
+            REGISTER_CHANGE = new HashSet<REGISTER_CHANGE>();
+            REGISTER_HOLD = new HashSet<REGISTER_HOLD>();
+            REGISTER_ISSUE = new HashSet<REGISTER_ISSUE>();
+            REGISTER_RISK = new HashSet<REGISTER_RISK>();
             PROJECT_REPORT = new HashSet<PROJECT_REPORT>();
             RATE = new HashSet<RATE>();
             VARIATION = new HashSet<VARIATION>();

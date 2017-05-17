@@ -38,6 +38,21 @@ namespace BluePrints.Data
 
         public bool USELEGACYWORKPACK { get; set; }
 
+        public ProjectDocumentStatus DOC_KICKOFF { get; set; }
+
+        [StringLength(500)]
+        public string DOC_KICKOFF_PATH { get; set; }
+
+        public ProjectDocumentStatus DOC_SIDREPORT { get; set; }
+
+        [StringLength(500)]
+        public string DOC_SIDREPORT_PATH { get; set; }
+
+        public ProjectDocumentStatus DOC_CLOSEOUT { get; set; }
+
+        [StringLength(500)]
+        public string DOC_CLOSEOUT_PATH { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }
@@ -87,6 +102,18 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RATE> RATE { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<REGISTER_CHANGE> REGISTER_CHANGE { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<REGISTER_HOLD> REGISTER_HOLD { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<REGISTER_ISSUE> REGISTER_ISSUE { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<REGISTER_RISK> REGISTER_RISK { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<VARIATION> VARIATION { get; set; }

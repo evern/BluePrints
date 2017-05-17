@@ -106,7 +106,7 @@
                                     IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="INTERNAL NAME" FieldName="Entity.INTERNAL_NAME1" />
+                            <dxg:GridColumn x:Name="colINTERNAL_NAME" Header="INTERNAL NAME" FieldName="Entity.INTERNAL_NAME1" />
                             <dxg:GridColumn Header="INTERNAL NAME" FieldName="Entity.INTERNAL_NAME2" />
                             <dxg:GridColumn Header="COMMENTS" FieldName="Entity.COMMENTS" />
                             <dxg:GridColumn Header="START DATE" FieldName="Entity.STARTDATE">
@@ -168,7 +168,7 @@
                             <dxg:GridSummaryItem SummaryType="Count" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
-                            <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                            <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" ShowGridMenu="tableView_ShowGridMenu">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand PassEventArgsToCommand="True"
                                                            Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}"
@@ -189,6 +189,10 @@
                                     <dxb:BarButtonItem Content="Fill Down"
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}"
                                                        Command="{Binding View.DataContext.FillDownCommand}"
+                                                       CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                                    <dxb:BarButtonItem Name="contextMenuPopulate" Content="Populate"
+                                                       Glyph="{dx:DXImageOffice2013 Image=PictureShapeFillColor_16x16.png}"
+                                                       Command="{Binding DataContext.AutoPopulateCommand, ElementName=userControl}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                     <dxb:BarButtonItem x:Name="contextMenuDuplicate" Content="Duplicate"
                                                        Command="{Binding DataContext.DuplicateCommand, ElementName=userControl}"
