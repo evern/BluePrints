@@ -45,12 +45,13 @@
             this.gridControlDeliverable = new DevExpress.XtraGrid.GridControl();
             this.gridBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.gridViewDeliverable = new DevExpress.XtraGrid.Views.Grid.GridView();
-            this.colEntity = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colWorkpack = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colArea = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colDocType = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colDepartment = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colDiscipline = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colWorkpack = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colEntity = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colPrimaryTitle = new DevExpress.XtraGrid.Columns.GridColumn();
             this.schedulerStorage1 = new DevExpress.XtraScheduler.SchedulerStorage(this.components);
             this.schedulerBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.barAndDockingController1 = new DevExpress.XtraBars.BarAndDockingController(this.components);
@@ -63,7 +64,6 @@
             this.resourceTreeColumn3 = new DevExpress.XtraScheduler.Native.ResourceTreeColumn();
             this.splitContainerControl1 = new DevExpress.XtraEditors.SplitContainerControl();
             this.splitContainerControl2 = new DevExpress.XtraEditors.SplitContainerControl();
-            this.colPrimaryTitle = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)(this.gridControlDeliverable)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewDeliverable)).BeginInit();
@@ -90,7 +90,7 @@
             this.colAssigned.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colAssigned.OptionsColumn.ReadOnly = true;
             this.colAssigned.Visible = true;
-            this.colAssigned.VisibleIndex = 7;
+            this.colAssigned.VisibleIndex = 8;
             // 
             // gridControlDeliverable
             // 
@@ -162,59 +162,9 @@
             this.gridViewDeliverable.GridControl = this.gridControlDeliverable;
             this.gridViewDeliverable.Name = "gridViewDeliverable";
             this.gridViewDeliverable.OptionsSelection.MultiSelect = true;
+            this.gridViewDeliverable.OptionsSelection.MultiSelectMode = DevExpress.XtraGrid.Views.Grid.GridMultiSelectMode.CheckBoxRowSelect;
             this.gridViewDeliverable.OptionsView.ShowFooter = true;
             this.gridViewDeliverable.PopupMenuShowing += new DevExpress.XtraGrid.Views.Grid.PopupMenuShowingEventHandler(this.gridViewDeliverable_PopupMenuShowing);
-            // 
-            // colEntity
-            // 
-            this.colEntity.Caption = "Internal Number";
-            this.colEntity.FieldName = "Entity.INTERNAL_NUM";
-            this.colEntity.Name = "colEntity";
-            this.colEntity.OptionsColumn.AllowEdit = false;
-            this.colEntity.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
-            this.colEntity.OptionsColumn.ReadOnly = true;
-            this.colEntity.Visible = true;
-            this.colEntity.VisibleIndex = 5;
-            // 
-            // colArea
-            // 
-            this.colArea.Caption = "Area";
-            this.colArea.FieldName = "Entity.AREA.INTERNAL_NUM";
-            this.colArea.Name = "colArea";
-            this.colArea.OptionsColumn.AllowEdit = false;
-            this.colArea.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
-            this.colArea.Visible = true;
-            this.colArea.VisibleIndex = 1;
-            // 
-            // colDocType
-            // 
-            this.colDocType.Caption = "Doc Type";
-            this.colDocType.FieldName = "Entity.DOCTYPE.NAME";
-            this.colDocType.Name = "colDocType";
-            this.colDocType.OptionsColumn.AllowEdit = false;
-            this.colDocType.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
-            this.colDocType.Visible = true;
-            this.colDocType.VisibleIndex = 2;
-            // 
-            // colDepartment
-            // 
-            this.colDepartment.Caption = "Department";
-            this.colDepartment.FieldName = "Entity.DEPARTMENT.NAME";
-            this.colDepartment.Name = "colDepartment";
-            this.colDepartment.OptionsColumn.AllowEdit = false;
-            this.colDepartment.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
-            this.colDepartment.Visible = true;
-            this.colDepartment.VisibleIndex = 3;
-            // 
-            // colDiscipline
-            // 
-            this.colDiscipline.Caption = "Discipline";
-            this.colDiscipline.FieldName = "Entity.DISCIPLINE.NAME";
-            this.colDiscipline.Name = "colDiscipline";
-            this.colDiscipline.OptionsColumn.AllowEdit = false;
-            this.colDiscipline.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
-            this.colDiscipline.Visible = true;
-            this.colDiscipline.VisibleIndex = 4;
             // 
             // colWorkpack
             // 
@@ -225,7 +175,66 @@
             this.colWorkpack.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colWorkpack.OptionsColumn.ReadOnly = true;
             this.colWorkpack.Visible = true;
-            this.colWorkpack.VisibleIndex = 0;
+            this.colWorkpack.VisibleIndex = 1;
+            // 
+            // colArea
+            // 
+            this.colArea.Caption = "Area";
+            this.colArea.FieldName = "Entity.AREA.INTERNAL_NUM";
+            this.colArea.Name = "colArea";
+            this.colArea.OptionsColumn.AllowEdit = false;
+            this.colArea.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
+            this.colArea.Visible = true;
+            this.colArea.VisibleIndex = 2;
+            // 
+            // colDocType
+            // 
+            this.colDocType.Caption = "Doc Type";
+            this.colDocType.FieldName = "Entity.DOCTYPE.NAME";
+            this.colDocType.Name = "colDocType";
+            this.colDocType.OptionsColumn.AllowEdit = false;
+            this.colDocType.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
+            this.colDocType.Visible = true;
+            this.colDocType.VisibleIndex = 3;
+            // 
+            // colDepartment
+            // 
+            this.colDepartment.Caption = "Department";
+            this.colDepartment.FieldName = "Entity.DEPARTMENT.NAME";
+            this.colDepartment.Name = "colDepartment";
+            this.colDepartment.OptionsColumn.AllowEdit = false;
+            this.colDepartment.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
+            this.colDepartment.Visible = true;
+            this.colDepartment.VisibleIndex = 4;
+            // 
+            // colDiscipline
+            // 
+            this.colDiscipline.Caption = "Discipline";
+            this.colDiscipline.FieldName = "Entity.DISCIPLINE.NAME";
+            this.colDiscipline.Name = "colDiscipline";
+            this.colDiscipline.OptionsColumn.AllowEdit = false;
+            this.colDiscipline.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
+            this.colDiscipline.Visible = true;
+            this.colDiscipline.VisibleIndex = 5;
+            // 
+            // colEntity
+            // 
+            this.colEntity.Caption = "Internal Number";
+            this.colEntity.FieldName = "Entity.INTERNAL_NUM";
+            this.colEntity.Name = "colEntity";
+            this.colEntity.OptionsColumn.AllowEdit = false;
+            this.colEntity.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
+            this.colEntity.OptionsColumn.ReadOnly = true;
+            this.colEntity.Visible = true;
+            this.colEntity.VisibleIndex = 6;
+            // 
+            // colPrimaryTitle
+            // 
+            this.colPrimaryTitle.Caption = "Primary Title";
+            this.colPrimaryTitle.FieldName = "Entity.PRIMARY_TITLE";
+            this.colPrimaryTitle.Name = "colPrimaryTitle";
+            this.colPrimaryTitle.Visible = true;
+            this.colPrimaryTitle.VisibleIndex = 7;
             // 
             // schedulerStorage1
             // 
@@ -450,14 +459,6 @@
             this.splitContainerControl2.SplitterPosition = 512;
             this.splitContainerControl2.TabIndex = 0;
             this.splitContainerControl2.Text = "splitContainerControl2";
-            // 
-            // colPrimaryTitle
-            // 
-            this.colPrimaryTitle.Caption = "Primary Title";
-            this.colPrimaryTitle.FieldName = "Entity.PRIMARY_TITLE";
-            this.colPrimaryTitle.Name = "colPrimaryTitle";
-            this.colPrimaryTitle.Visible = true;
-            this.colPrimaryTitle.VisibleIndex = 6;
             // 
             // BASELINE_ITEMSchedulingView
             // 
