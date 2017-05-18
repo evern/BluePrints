@@ -25,5 +25,15 @@ namespace BluePrints.Common.Base
             SpellCheckerModule.ApplySpellCheckMode(true);
             base.OnLoaded();
         }
+
+        public override void OnAfterDeletedSendMessage(string entityName, string key, string messageType, string sender)
+        {
+            SignalR.HubSendMessage(entityName, key, messageType, sender, LoginCredentials.CurrentHWID);
+        }
+
+        public override void OnAfterSavedSendMessage(string entityName, string key, string messageType, string sender)
+        {
+            SignalR.HubSendMessage(entityName, key, messageType, sender, LoginCredentials.CurrentHWID);
+        }
     }
 }

@@ -163,8 +163,7 @@ namespace BluePrints.ViewModels
             var getPROGRESSFunc = loaderCollection.GetObjectFunc<PROGRESS>();
             var getVARIATIONFunc = loaderCollection.GetObjectFunc<VARIATION>();
             var getPROGRESS_ITEMSFunc = loaderCollection.GetCollectionFunc<PROGRESS_ITEM>();
-            var getVARIATION_ITEMSFunc =
-                loaderCollection.GetCollectionFunc<VARIATION_ITEM>();
+            var getVARIATION_ITEMSFunc = loaderCollection.GetCollectionFunc<VARIATION_ITEM>();
             var getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
             var getDELIVERABLES_STATUSESFunc = loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
 
@@ -194,13 +193,11 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentAssociationCallBack = NewProjectionInitializeCallBack;
             MainViewModel.ExistingRowAddUndoAndSaveCallBack = ExistingProjectionEditCallBack;
             MainViewModel.IsContinueSaveCallBack = MainEntityPreSaveWithNewEntityDetection;
-            MainViewModel.OnAfterEntitySavedCallBack = MainEntitySaveVariation;
+            //MainViewModel.OnAfterEntitySavedCallBack = MainEntitySaveVariation;
             MainViewModel.IsContinueNewRowFromViewCallBack = AddVARIATION_ITEMCallBack;
             MainViewModel.OnBeforeBulkEditSaveCallBack = OnBeforeBulkEditSaveCallBack;
-            //MainViewModel.BulkPreSave = this.MainEntityBulkPreSave;
-            //MainViewModel.BulkPostSave = this.MainEntityBulkPostSave;
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntityCallBack;
-            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
+            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = ApplyEntityPropertiesToProjectionCallBack;
             MainViewModel.OnBeforeEntityDeleteCallBack = EntityBeforeDeletionCallBack;
             MainViewModel.CreateNewProjectionFromNewEntityCallBack = CreateNewProjectionFromNewEntity;
             MainViewModel.SetParentViewModel(this);
@@ -209,25 +206,13 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
-        {
-            //Don't refresh on local update because every updates invoke baseline_item and variation save
-            //Need to refresh variation because variation addition is notified later than baseline
-            if (sender == VARIATION_ITEMSCollectionViewModel)
-            {
-                FullRefreshWithoutClearingUndoRedo();
-            }
-
-            base.OnAfterAffectingEntitiesChanged(key, changedType, messageType, sender);
-        }
-
         protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender)
         {
             //Don't refresh on local update because every updates invoke baseline_item and variation save
             if (sender == VARIATION_ITEMSCollectionViewModel)
                 return true;
 
-            if(changedType == typeof(VARIATION_ITEM))
+            if (changedType == typeof(VARIATION_ITEM))
             {
                 VARIATION_ITEMProjection mainEntity = MainViewModel.Entities.Where(x => x.VARIATION_ITEM != null).FirstOrDefault(x => x.VARIATION_ITEM.GUID.ToString() == key.ToString());
                 if (mainEntity != null)
@@ -345,45 +330,6 @@ namespace BluePrints.ViewModels
             return loadVARIATION.SUBMITTED == null && selectedEntities != null && selectedEntities.All(x => x.VARIATION_ITEM != null && x.VARIATION_ITEM.ACTION == VariationAction.Add);
         }
 
-        //public bool CanBulkRestore()
-        //{
-        //    return loadVARIATION.SUBMITTED == null && SelectedEntities != null && SelectedEntities.Any(x => x.VARIATION_ITEM != null && x.VARIATION_ITEM.ACTION == VariationAction.Cancel);
-        //}
-
-        //public void BulkRestore()
-        //{
-        //    IEnumerable<VARIATION_ITEMProjection> cancelledVARIATIONS = SelectedEntities.Where(x => x.VARIATION_ITEM != null && x.VARIATION_ITEM.ACTION == VariationAction.Cancel);
-        //    foreach(VARIATION_ITEMProjection cancelledVARIATION in cancelledVARIATIONS)
-        //    {
-        //        cancelledVARIATION.VARIATION_ITEM.ACTION = VariationAction.NoAction;
-        //        MainEntitySaveVariation(cancelledVARIATION, false);
-        //    }
-        //}
-
-        //public bool CanBulkDelete()
-        //{
-        //    return loadVARIATION.SUBMITTED == null && SelectedEntities != null;
-        //}
-
-        //public void BulkDelete()
-        //{
-        //    //Only newly added variation can be deleted
-        //    IEnumerable<VARIATION_ITEMProjection> addedVARIATIONS = SelectedEntities.Where(x => x.VARIATION_ITEM != null && x.VARIATION_ITEM.ACTION == VariationAction.Add);
-        //    //variation that is in appended or no action shall be cancelled
-        //    IEnumerable<VARIATION_ITEMProjection> existingVARIATIONS = SelectedEntities.Where(x => x.VARIATION_ITEM != null && (x.VARIATION_ITEM.ACTION == VariationAction.Append || x.VARIATION_ITEM.ACTION == VariationAction.NoAction));
-
-        //    IEnumerable<VARIATION_ITEM> deleteVARIATION_ITEM = addedVARIATIONS.Select(x => x.VARIATION_ITEM);
-        //    VARIATION_ITEMSCollectionViewModel.BaseBulkDelete(deleteVARIATION_ITEM);
-        //    MainViewModel.BaseBulkDelete(addedVARIATIONS);
-
-        //    foreach(VARIATION_ITEMProjection existingVARIATION in existingVARIATIONS)
-        //    {
-        //        existingVARIATION.VARIATION_ITEM.VARIATION_UNITS = 0;
-        //        existingVARIATION.VARIATION_ITEM.ACTION = VariationAction.Cancel;
-        //        MainEntitySaveVariation(existingVARIATION, false);
-        //    }
-        //}
-
         public bool AddVARIATION_ITEMCallBack(RowEventArgs e, VARIATION_ITEMProjection projectionEntity)
         {
             projectionEntity.VARIATION_ITEM.ACTION = VariationAction.Add;
@@ -464,10 +410,11 @@ namespace BluePrints.ViewModels
             entity.CREATED = projectionEntity.Entity.Entity.CREATED;
         }
 
-        public void OnEntitiesSavedCallBack(Guid primaryKey, VARIATION_ITEMProjection projectionEntity,
+        public void ApplyEntityPropertiesToProjectionCallBack(Guid primaryKey, VARIATION_ITEMProjection projectionEntity,
             BASELINE_ITEM entity, bool isNewEntity)
         {
             projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
+            MainEntitySaveVariation(projectionEntity, isNewEntity);
         }
 
         public void EntityBeforeDeletionCallBack(VARIATION_ITEMProjection undoRedoEntity)
