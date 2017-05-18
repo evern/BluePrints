@@ -305,7 +305,7 @@
                                                            Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                            Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                             </custom:TableViewEx.RowCellMenuCustomizations>
-                                            <custom:TableViewEx.FormatConditions>
+                                            <!--<custom:TableViewEx.FormatConditions>
                                                 <dxg:FormatCondition
                                             Expression="[Stats.Earned.CurrentPeriodCumulativeDataPoint.Units] / [Stats.Planned.CurrentPeriodCumulativeDataPoint.Units] &lt; 0.8"
                                             FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage">
@@ -348,7 +348,7 @@
                                                                     MaxValue="1" MinValue="-1">
                                                     <dx:DataBarFormat FillNegative="#FFFF9B98" Fill="#FF9ACCFF" />
                                                 </dxg:DataBarFormatCondition>
-                                            </custom:TableViewEx.FormatConditions>
+                                            </custom:TableViewEx.FormatConditions>-->
                                         </custom:TableViewEx>
                                     </dxg:GridControl.View>
                                 </custom:GridControlEx>
