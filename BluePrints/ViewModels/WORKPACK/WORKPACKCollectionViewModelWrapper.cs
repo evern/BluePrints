@@ -296,11 +296,11 @@ namespace BluePrints.ViewModels
         {
             if (e.Column.FieldName == "Entity.GUID_DDOCTYPE")
             {
-                var changingWORKPACK = (WORKPACK) e.Row;
+                var changingWORKPACK = (WORKPACKProjection) e.Row;
                 var chosenDOCTYPE = DOCTYPECollection.FirstOrDefault(entity => entity.GUID == (Guid) e.Value);
                 if (chosenDOCTYPE != null && chosenDOCTYPE.GUID_DDEPARTMENT != null)
                 {
-                    changingWORKPACK.GUID_DDEPARTMENT = chosenDOCTYPE.DEPARTMENT.GUID;
+                    changingWORKPACK.Entity.GUID_DDEPARTMENT = chosenDOCTYPE.DEPARTMENT.GUID;
                     MainViewModel.UpdateSelectedEntity();
                 }
             }
@@ -309,25 +309,25 @@ namespace BluePrints.ViewModels
                 DateTime startDate;
                 DateTime endDate;
 
-                var changingWORKPACK = (WORKPACK) e.Row;
+                var changingWORKPACK = (WORKPACKProjection) e.Row;
                 if (e.Column.FieldName == "Entity.STARTDATE")
                 {
                     startDate = (DateTime) e.Value;
-                    endDate = (DateTime) changingWORKPACK.ENDDATE;
+                    endDate = (DateTime) changingWORKPACK.Entity.ENDDATE;
                     if (endDate < startDate)
                     {
                         endDate = BluePrintsDataUtils.WORKPACK_Calculate_EndDate(startDate, loadPROJECT);
-                        changingWORKPACK.ENDDATE = endDate;
+                        changingWORKPACK.Entity.ENDDATE = endDate;
                     }
                 }
                 else
                 {
                     endDate = (DateTime) e.Value;
-                    startDate = (DateTime) changingWORKPACK.STARTDATE;
+                    startDate = (DateTime) changingWORKPACK.Entity.STARTDATE;
                     if (endDate < startDate)
                     {
                         startDate = BluePrintsDataUtils.WORKPACK_Calculate_StartDate(endDate, loadPROJECT);
-                        changingWORKPACK.STARTDATE = startDate;
+                        changingWORKPACK.Entity.STARTDATE = startDate;
                     }
                 }
 
@@ -336,12 +336,12 @@ namespace BluePrints.ViewModels
 
                 BluePrintsDataUtils.WORKPACK_Calculate_ReviewPeriod(ref reviewStartDate, ref reviewEndDate, loadPROJECT,
                     false);
-                changingWORKPACK.REVIEWSTARTDATE = reviewStartDate;
+                changingWORKPACK.Entity.REVIEWSTARTDATE = reviewStartDate;
 
                 if (reviewEndDate >= endDate)
-                    changingWORKPACK.REVIEWENDDATE = endDate;
+                    changingWORKPACK.Entity.REVIEWENDDATE = endDate;
                 else
-                    changingWORKPACK.REVIEWENDDATE = reviewEndDate;
+                    changingWORKPACK.Entity.REVIEWENDDATE = reviewEndDate;
 
                 MainViewModel.UpdateSelectedEntity();
             }
