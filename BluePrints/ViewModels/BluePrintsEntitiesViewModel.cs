@@ -127,39 +127,39 @@ namespace BluePrints.ViewModels
         const string projectViewIdPrefix = "View_Project";
         private void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
-            if (_projectCollectionViewModel == null)
-                return;
+            //if (_projectCollectionViewModel == null)
+            //    return;
 
-            var primaryKey = (Guid)key;
-            string projectViewId = projectViewIdPrefix + primaryKey.ToString();
-            string projectPrimaryKey = primaryKey.ToString();
-            var projectModules = Modules.Where(x => x.Id.ToString() == projectViewId || (x.ParentId != null && x.ParentId.ToString().Contains(projectPrimaryKey)));
+            //var primaryKey = (Guid)key;
+            //string projectViewId = projectViewIdPrefix + primaryKey.ToString();
+            //string projectPrimaryKey = primaryKey.ToString();
+            //var projectModules = Modules.Where(x => x.Id.ToString() == projectViewId || (x.ParentId != null && x.ParentId.ToString().Contains(projectPrimaryKey)));
 
-            if (messageType == EntityMessageType.Added || messageType == EntityMessageType.Changed)
-            {
-                PROJECT project = _projectCollectionViewModel.Entities.FirstOrDefault(x => x.GUID == primaryKey);
-                if (project != null)
-                    if (messageType == EntityMessageType.Added)
-                    {
-                        if (projectModules.Count() == 0)
-                            Modules.InsertRangeBackground(CreateProjectTree(project));
-                    }
-                    else if (messageType == EntityMessageType.Changed)
-                    {
+            //if (messageType == EntityMessageType.Added || messageType == EntityMessageType.Changed)
+            //{
+            //    PROJECT project = _projectCollectionViewModel.Entities.FirstOrDefault(x => x.GUID == primaryKey);
+            //    if (project != null)
+            //        if (messageType == EntityMessageType.Added)
+            //        {
+            //            if (projectModules.Count() == 0)
+            //                Modules.InsertRangeBackground(CreateProjectTree(project));
+            //        }
+            //        else if (messageType == EntityMessageType.Changed)
+            //        {
 
-                        if (projectModules.Count() > 0)
-                            Modules.RemoveRangeBackground(projectModules.ToArray());
+            //            if (projectModules.Count() > 0)
+            //                Modules.RemoveRangeBackground(projectModules.ToArray());
 
-                        if(project.STATUS == ProjectStatus.Active || project.STATUS == ProjectStatus.Tender)
-                        {
-                            Modules.InsertRangeBackground(CreateProjectTree(project));
-                        }
-                    }
-                    else
-                        Modules.RemoveRangeBackground(projectModules.ToArray());
-            }
-            else
-                Modules.RemoveRangeBackground(projectModules.ToArray());
+            //            if(project.STATUS == ProjectStatus.Active || project.STATUS == ProjectStatus.Tender)
+            //            {
+            //                Modules.InsertRangeBackground(CreateProjectTree(project));
+            //            }
+            //        }
+            //        else
+            //            Modules.RemoveRangeBackground(projectModules.ToArray());
+            //}
+            //else
+            //    Modules.RemoveRangeBackground(projectModules.ToArray());
         }
 
         const string projectCategoryId = "View_Projects";
