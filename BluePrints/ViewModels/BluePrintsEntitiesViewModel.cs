@@ -79,19 +79,22 @@ namespace BluePrints.ViewModels
         private void CreateProjectModules(IEnumerable<PROJECT> entities)
         {
             List<BluePrintsEntitiesModuleDescription> newModules = new List<BluePrintsEntitiesModuleDescription>();
+            BluePrintsEntitiesModuleDescription projectCategoryHeader;
             if (LoginCredentials.hasPermission(PermissionResources.ManageProject))
-                newModules.Add(new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects", "PROJECTCollectionView"));
+                projectCategoryHeader = projectEditableCategoryDescription;
             else
-                newModules.Add(new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects"));
+                projectCategoryHeader = projectCategoryDescription;
+
+            newModules.Add(projectCategoryHeader);
 
             if (entities.Any(x => x.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid))
-                newModules.Add(new BluePrintsEntitiesModuleDescription(myProjectCategoryId, projectCategoryId, "My Projects"));
+                projectCategoryHeader.ChildModules.Add(myProjectsCategoryDescription);
 
             if (entities.Any(x => x.STATUS == ProjectStatus.Active))
-                newModules.Add(new BluePrintsEntitiesModuleDescription(activeCategoryId, projectCategoryId, "Active"));
+                projectCategoryHeader.ChildModules.Add(projectActiveCategoryDescription);
 
             if (entities.Any(x => x.STATUS == ProjectStatus.Tender))
-                newModules.Add(new BluePrintsEntitiesModuleDescription(tenderCategoryId, projectCategoryId, "Tender"));
+                projectCategoryHeader.ChildModules.Add(projectTenderCategoryDescription);
 
             newModules.AddRange(CreateDataModules());
             var projects =
@@ -165,6 +168,13 @@ namespace BluePrints.ViewModels
         const string tenderCategoryId = "Category_Tender";
         const string myProjectCategoryId = "Category_MyProject";
         const string commodityCodeCategoryId = "Category_CommodityCode";
+        BluePrintsEntitiesModuleDescription projectEditableCategoryDescription = new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects", "PROJECTCollectionView");
+        BluePrintsEntitiesModuleDescription projectCategoryDescription = new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects");
+        BluePrintsEntitiesModuleDescription myProjectsCategoryDescription = new BluePrintsEntitiesModuleDescription(myProjectCategoryId, projectCategoryId, "My Projects");
+        BluePrintsEntitiesModuleDescription projectActiveCategoryDescription = new BluePrintsEntitiesModuleDescription(activeCategoryId, projectCategoryId, "Active");
+        BluePrintsEntitiesModuleDescription projectTenderCategoryDescription = new BluePrintsEntitiesModuleDescription(tenderCategoryId, projectCategoryId, "Tender");
+        BluePrintsEntitiesModuleDescription dataCategoryDescription = new BluePrintsEntitiesModuleDescription(dataCategoryId, null, "Data", null, null, null, null, false);
+        BluePrintsEntitiesModuleDescription commodityCategoryDescription = new BluePrintsEntitiesModuleDescription(commodityCodeCategoryId, null, "Commodity Code", null, null, null, null, false);
         protected override BluePrintsEntitiesModuleDescription[] CreateModules()
         {
             List<BluePrintsEntitiesModuleDescription> bluePrintsEntitiesModuleDescriptions = new List<BluePrintsEntitiesModuleDescription>();
@@ -181,36 +191,36 @@ namespace BluePrints.ViewModels
         {
             List<BluePrintsEntitiesModuleDescription> bluePrintsEntitiesModuleDescriptions = new List<BluePrintsEntitiesModuleDescription>();
 
-            bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription(dataCategoryId, null, "Data", null, null, null, null, false));
+            bluePrintsEntitiesModuleDescriptions.Add(dataCategoryDescription);
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageDepartment))
-                bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_Departments", dataCategoryId, "Departments", "DEPARTMENTCollectionView"));
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Departments", dataCategoryId, "Departments", "DEPARTMENTCollectionView"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageDiscipline))
-                bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_Disciplines", dataCategoryId, "Disciplines", "DISCIPLINECollectionView"));
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Disciplines", dataCategoryId, "Disciplines", "DISCIPLINECollectionView"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageDocType))
-                bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_DocTypes", dataCategoryId, "Document Types", "DOCTYPECollectionView"));
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_DocTypes", dataCategoryId, "Document Types", "DOCTYPECollectionView"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageUser))
-                bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_Users", dataCategoryId, "Users", "USERCollectionView"));
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Users", dataCategoryId, "Users", "USERCollectionView"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageRole))
-                bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_Roles", dataCategoryId, "Roles", "ROLECollectionView"));
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Roles", dataCategoryId, "Roles", "ROLECollectionView"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageDeliverableStatuses))
-                bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_DeliverableStatuses", dataCategoryId, "Deliverable Statuses", "DELIVERABLES_STATUSCollectionView"));
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_DeliverableStatuses", dataCategoryId, "Deliverable Statuses", "DELIVERABLES_STATUSCollectionView"));
 
-            bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_UOMs", dataCategoryId, "Unit of Measures", "UOMCollectionView"));
+            dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_UOMs", dataCategoryId, "Unit of Measures", "UOMCollectionView"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))
             {
-                bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription(commodityCodeCategoryId, null, "Commodity Code", null, null, null, null, false));
-                bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Design", commodityCodeCategoryId, "Commodity Code [Design]", "COMMODITY_CODECollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Design)), null, "Design"));
-                bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Direct", commodityCodeCategoryId, "Commodity Code [Direct]", "COMMODITY_CODECollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Direct)), null, "Direct"));
-                bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_DirectGroup", commodityCodeCategoryId, "Commodity Group [Direct]", "COMMODITY_GROUP_DIRECTCollectionView", null, null, "Direct Group"));
-                bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Indirect", commodityCodeCategoryId, "Commodity Code [Indirect]", "COMMODITY_CODECollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Indirect)), null, "Indirect"));
-                bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Overhead", commodityCodeCategoryId, "Commodity Code [Overhead]", "COMMODITY_CODECollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Overhead)), null, "Overhead"));
+                dataCategoryDescription.ChildModules.Add(commodityCategoryDescription);
+                commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Design", commodityCodeCategoryId, "Commodity Code [Design]", "COMMODITY_CODECollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Design)), null, "Design"));
+                commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Direct", commodityCodeCategoryId, "Commodity Code [Direct]", "COMMODITY_CODECollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Direct)), null, "Direct"));
+                commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_DirectGroup", commodityCodeCategoryId, "Commodity Group [Direct]", "COMMODITY_GROUP_DIRECTCollectionView", null, null, "Direct Group"));
+                commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Indirect", commodityCodeCategoryId, "Commodity Code [Indirect]", "COMMODITY_CODECollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Indirect)), null, "Indirect"));
+                commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Overhead", commodityCodeCategoryId, "Commodity Code [Overhead]", "COMMODITY_CODECollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Overhead)), null, "Overhead"));
             }
 
             return bluePrintsEntitiesModuleDescriptions;
@@ -225,55 +235,60 @@ namespace BluePrints.ViewModels
             string projectKey = projectViewIdPrefix + keyString;
 
             object parentId;
+            BluePrintsEntitiesModuleDescription projectStatusDescription;
 
             if((entity.STATUS == ProjectStatus.Active || entity.STATUS == ProjectStatus.Tender) && entity.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid)
             {
+                projectStatusDescription = myProjectsCategoryDescription;
                 parentId = myProjectCategoryId;
             }
             else if (entity.STATUS == ProjectStatus.Active)
             {
+                projectStatusDescription = projectActiveCategoryDescription;
                 parentId = activeCategoryId;
             }
             else
             {
+                projectStatusDescription = projectTenderCategoryDescription;
                 parentId = tenderCategoryId;
             }
 
-            newModules.Add(new BluePrintsEntitiesModuleDescription(projectKey, parentId, projectTitle, "PROJECTView", new EntitiesParameter<PROJECT>(entity), null, null, false));
+            BluePrintsEntitiesModuleDescription projectModuleDescription = new BluePrintsEntitiesModuleDescription(projectKey, parentId, projectTitle, "PROJECTView", new EntitiesParameter<PROJECT>(entity), null, null, false);
+            projectStatusDescription.ChildModules.Add(projectModuleDescription);
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageAreaAndPhases))
-                newModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectAreas" + keyString, projectKey, childTitlePrefix + "Areas", "AREACollectionView", new EntitiesParameter<PROJECT>(entity), null, "Areas"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectAreas" + keyString, projectKey, childTitlePrefix + "Areas", "AREACollectionView", new EntitiesParameter<PROJECT>(entity), null, "Areas"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageRate))
-                newModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectRates" + keyString, projectKey, childTitlePrefix + "Rates", "RATECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Rates"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectRates" + keyString, projectKey, childTitlePrefix + "Rates", "RATECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Rates"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageWorkpack))
-                newModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectWorkpacks" + keyString, projectKey, childTitlePrefix + "Workpacks", "WORKPACKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Workpacks"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectWorkpacks" + keyString, projectKey, childTitlePrefix + "Workpacks", "WORKPACKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Workpacks"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageBaseline))
-                newModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables", "BASELINE_ITEMCollectionView", new OptionalEntitiesParameter<PROJECT, BASELINE>(entity, null), null, "Deliverables"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables", "BASELINE_ITEMCollectionView", new OptionalEntitiesParameter<PROJECT, BASELINE>(entity, null), null, "Deliverables"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageVariation))
-                newModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectVariations" + keyString, projectKey, childTitlePrefix + "Variations", "VARIATIONCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Variations"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectVariations" + keyString, projectKey, childTitlePrefix + "Variations", "VARIATIONCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Variations"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageProgress))
-                newModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectProgresses" + keyString, projectKey, childTitlePrefix + "Progresses", "PROGRESS_ITEMCollectionView", new OptionalEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progresses"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectProgresses" + keyString, projectKey, childTitlePrefix + "Progresses", "PROGRESS_ITEMCollectionView", new OptionalEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progresses"));
 
             if(LoginCredentials.hasPermission(PermissionResources.ManageEstimation))
-                newModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates", "ESTIMATION_DIRECT_ITEMCollectionView", new OptionalEntitiesParameter<PROJECT, ESTIMATION_DIRECT>(entity, null), null, "Direct Estimate"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates", "ESTIMATION_DIRECT_ITEMCollectionView", new OptionalEntitiesParameter<PROJECT, ESTIMATION_DIRECT>(entity, null), null, "Direct Estimate"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))
-                newModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectCommodities" + keyString, projectKey, childTitlePrefix + "Commodities", "COMMODITY_GROUP_CODECollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(entity, new CommodityCodeTypeClass(CommodityCodeType.Direct)), null, "Direct Commodities"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectCommodities" + keyString, projectKey, childTitlePrefix + "Commodities", "COMMODITY_GROUP_CODECollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(entity, new CommodityCodeTypeClass(CommodityCodeType.Direct)), null, "Direct Commodities"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageRegisters))
             {
                 string registerCategoryId = "View_RegisterCategory" + keyString;
-                newModules.Add(new BluePrintsEntitiesModuleDescription(registerCategoryId, projectKey, "Registers", null, null, null, null, false));
+                BluePrintsEntitiesModuleDescription registerCategoryDescription = new BluePrintsEntitiesModuleDescription(registerCategoryId, projectKey, "Registers", null, null, null, null, false);
 
-                newModules.Add(new BluePrintsEntitiesModuleDescription("View_IssueRegister" + keyString, registerCategoryId, childTitlePrefix + "Issue Register", "REGISTER_ISSUECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Issue Register"));
-                newModules.Add(new BluePrintsEntitiesModuleDescription("View_ChangeRegister" + keyString, registerCategoryId, childTitlePrefix + "Change Register", "REGISTER_CHANGECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Change Register"));
-                newModules.Add(new BluePrintsEntitiesModuleDescription("View_RiskRegister" + keyString, registerCategoryId, childTitlePrefix + "Risk Register", "REGISTER_RISKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Risk Register"));
-                newModules.Add(new BluePrintsEntitiesModuleDescription("View_HoldRegister" + keyString, registerCategoryId, childTitlePrefix + "Hold Register", "REGISTER_HOLDCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Hold Register"));
+                registerCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_IssueRegister" + keyString, registerCategoryId, childTitlePrefix + "Issue Register", "REGISTER_ISSUECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Issue Register"));
+                registerCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ChangeRegister" + keyString, registerCategoryId, childTitlePrefix + "Change Register", "REGISTER_CHANGECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Change Register"));
+                registerCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_RiskRegister" + keyString, registerCategoryId, childTitlePrefix + "Risk Register", "REGISTER_RISKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Risk Register"));
+                registerCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_HoldRegister" + keyString, registerCategoryId, childTitlePrefix + "Hold Register", "REGISTER_HOLDCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Hold Register"));
             }
 
 
@@ -289,6 +304,8 @@ namespace BluePrints.Common.ViewModel
         public BluePrintsEntitiesModuleDescription(object id, object parentId, string title, string documentType = null, object documentParameter = null, ImageSource image = null, string navigationTitle = null, bool treeViewIsExpanded = true)
             : base(id, parentId, title, documentType, documentParameter, image, navigationTitle, treeViewIsExpanded)
         {
+            ChildModules = new RangeObservableCollection<BluePrintsEntitiesModuleDescription>();
+
             if (!CanNavigate)
                 Image = new BitmapImage(
                     new Uri(
@@ -296,6 +313,13 @@ namespace BluePrints.Common.ViewModel
             else
                 Image = new BitmapImage(
                     new Uri("pack://application:,,,/DevExpress.Images.v17.1;component/Images/Actions/Open_16x16.png"));
+        }
+
+        public RangeObservableCollection<BluePrintsEntitiesModuleDescription> ChildModules { get; set; }
+
+        public override string ToString()
+        {
+            return this.NavigationTitle;
         }
     }
 }

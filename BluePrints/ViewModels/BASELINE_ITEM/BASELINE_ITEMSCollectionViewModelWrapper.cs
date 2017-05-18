@@ -471,7 +471,6 @@ namespace BluePrints.ViewModels
                     newProjection.Entity.Entity.GUID_ORIGINAL = Guid.Empty;
                     newProjection.Entity.Entity.ESTIMATED_HOURS = IsBASELINELocked ? 0 : selectedEntity.Entity.Entity.ESTIMATED_HOURS;
                     newProjection.Entity.Entity.DC_HOURS = 0;
-
                     var selectedAREA = AREACollection.FirstOrDefault(x => x.GUID == newProjection.Entity.Entity.GUID_AREA);
                     var selectedDISCIPLINE =
                         DISCIPLINECollection.FirstOrDefault(x => x.GUID == newProjection.Entity.Entity.GUID_DISCIPLINE);

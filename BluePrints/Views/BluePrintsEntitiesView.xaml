@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxa="http://schemas.devexpress.com/winfx/2008/xaml/accordion"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
     xmlns:dxd="http://schemas.devexpress.com/winfx/2008/xaml/docking"
@@ -117,13 +118,34 @@
                 <dxdo:LayoutGroup Orientation="Horizontal" ItemHeight="*" BorderThickness="0" Margin="0" Padding="0">
                     <dxdo:LayoutGroup BorderThickness="0" Margin="0" Padding="0">
                         <dxdo:LayoutPanel MaxWidth="300" ItemWidth="Auto">
-                            <dxg:TreeListControl x:Name="TreeListControl" MaxHeight="2000" MaxWidth="2000"
+                            <dxa:AccordionControl x:Name="TreeListControl" MaxHeight="2000" MaxWidth="2000"
                                                  dx:DXSerializer.SerializationID="NavigationTree"
+                                                 ChildrenPath="ChildModules"
                                                  ItemsSource="{Binding Modules}"
                                                  SelectedItem="{Binding SelectedModule}" BorderThickness="0"
                                                  Background="Transparent"
-                                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                                <dxg:TreeListControl.Columns>
+                                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" >
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand EventName="MouseDoubleClick"
+                                                                   Command="{Binding NavigateCommand}" />
+                                </dxmvvm:Interaction.Behaviors>
+                                <dxa:AccordionControl.ItemContainerStyle>
+                                    <Style TargetType="dxa:AccordionItem">
+                                        <Setter Property="Glyph" Value="{Binding Image}" />
+                                        <Setter Property="GlyphTemplate">
+                                            <Setter.Value>
+                                                <DataTemplate>
+                                                    <Image Width="16"
+                                                       Height="16"
+                                                       SnapsToDevicePixels="True"
+                                                       Source="{Binding}" />
+                                                </DataTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Setter Property="IsExpanded" Value="{Binding TreeViewIsExpanded}" />
+                                    </Style>
+                                </dxa:AccordionControl.ItemContainerStyle>
+                                <!--<dxg:TreeListControl.Columns>
                                     <dxg:TreeListColumn Header="Title" FieldName="NavigationTitle" VisibleIndex="0"
                                                         Width="*" />
                                 </dxg:TreeListControl.Columns>
@@ -140,8 +162,22 @@
                                                                    Command="{Binding NavigateCommand}" />
                                         </dxmvvm:Interaction.Behaviors>
                                     </dxg:TreeListView>
-                                </dxg:TreeListControl.View>
-                            </dxg:TreeListControl>
+                                </dxg:TreeListControl.View>-->
+                                <!--<dxa:AccordionView>
+                                    <dxg:TreeListView x:Name="TreeListView" ShowHorizontalLines="False"
+                                                      ShowVerticalLines="False" TreeLineStyle="None"
+                                                      ShowColumnHeaders="False" ShowIndicator="False"
+                                                      ShowNodeImages="True" ExpandStateFieldName="TreeViewIsExpanded"
+                                                      ImageFieldName="Image" AllowEditing="False"
+                                                      AllowSorting="False" ParentFieldName="ParentId"
+                                                      KeyFieldName="Id">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand EventName="MouseDoubleClick"
+                                                                   Command="{Binding NavigateCommand}" />
+                                        </dxmvvm:Interaction.Behaviors>
+                                    </dxg:TreeListView>
+                                </dxa:AccordionView>-->
+                            </dxa:AccordionControl>
                         </dxdo:LayoutPanel>
                         <dxdo:DocumentGroup x:Name="documentGroup" BorderThickness="0" Margin="0" Padding="0" TabContentCacheMode="CacheAllTabs" >
                             <dxmvvm:Interaction.Behaviors>

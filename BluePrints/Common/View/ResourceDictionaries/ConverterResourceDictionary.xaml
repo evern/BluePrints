@@ -10,6 +10,7 @@
     <converter:NumericCompareToBooleanConverter x:Key="NumericCompareToBooleanConverter" />
     <converter:VariationActionToImageConverter x:Key="VariationActionToImageConverter" />
     <converter:VariationActionToStringConverter x:Key="VariationActionToStringConverter" />
+    <converter:CollectionConverter x:Key="CollectionConverter" />
     <dx:EmbeddedResourceImageConverter x:Key="EmbeddedResourceImageConverter" />
     <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
     <dxmvvm:StringToBooleanConverter x:Key="StringToBoolConverter" />

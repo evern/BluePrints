@@ -115,6 +115,7 @@
     <Reference Include="DevExpress.Utils.v17.1.UI, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
+    <Reference Include="DevExpress.Xpf.Accordion.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Xpf.Charts.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
@@ -209,9 +210,12 @@
     <Reference Include="DevExpress.Xpf.Themes.Office2016Colorful.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>False</Private>
     </Reference>
+    <Reference Include="DevExpress.Xpf.Themes.Office2016ColorfulSE.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Themes.Office2016DarkGraySE.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Xpf.Themes.Office2016White.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
+    <Reference Include="DevExpress.Xpf.Themes.Office2016WhiteSE.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Xpf.Themes.Seven.v17.1, Version=17.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
@@ -409,6 +413,7 @@
     <Compile Include="Common\Reports\ViewModel\Helpers\ChronologicalHelpers.cs" />
     <Compile Include="Common\Reports\ViewModel\Helpers\ProjectionHelpers.cs" />
     <Compile Include="Common\Reports\ViewModel\Summarizers.cs" />
+    <Compile Include="Common\ViewModel\Converters\CollectionConverter.cs" />
     <Compile Include="Common\ViewModel\Misc\XMLSettings.cs" />
     <Compile Include="Common\View\DXSplashScreen\LoadingScreen.cs" />
     <Compile Include="Common\View\DXSplashScreen\LoadingScreen.xaml.cs">

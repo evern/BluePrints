@@ -7,6 +7,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:dxa="http://schemas.devexpress.com/winfx/2008/xaml/accordion"
     xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
     xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
@@ -21,7 +22,8 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -64,9 +66,6 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <dxmvvm:Interaction.Behaviors>
-                        <dxmvvm:LayoutSerializationService />
-                    </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDOCTYPE" 
                                      Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>

@@ -6,6 +6,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxa="http://schemas.devexpress.com/winfx/2008/xaml/accordion"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
@@ -27,7 +28,7 @@
         <ResourceDictionary>
             <converters:BaselineItemMaximumUnitsConverter x:Key="BaselineItemMaximumUnitsConverter" />
             <ResourceDictionary.MergedDictionaries>
-                                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -83,7 +84,7 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM"
+                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM" 
                                      Style="{StaticResource DefaultGridControlTemplate}" PreviewKeyDown="gridControl_PreviewKeyDown">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="Entity.Entity.GUID_WORKPACK"
