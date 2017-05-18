@@ -172,7 +172,7 @@ namespace BluePrints.ViewModels
         BluePrintsEntitiesModuleDescription projectCategoryDescription = new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects");
         BluePrintsEntitiesModuleDescription myProjectsCategoryDescription = new BluePrintsEntitiesModuleDescription(myProjectCategoryId, projectCategoryId, "My Projects");
         BluePrintsEntitiesModuleDescription projectActiveCategoryDescription = new BluePrintsEntitiesModuleDescription(activeCategoryId, projectCategoryId, "Active");
-        BluePrintsEntitiesModuleDescription projectTenderCategoryDescription = new BluePrintsEntitiesModuleDescription(tenderCategoryId, projectCategoryId, "Tender");
+        BluePrintsEntitiesModuleDescription projectTenderCategoryDescription = new BluePrintsEntitiesModuleDescription(tenderCategoryId, projectCategoryId, "Tender", null, null, null, null, false);
         BluePrintsEntitiesModuleDescription dataCategoryDescription = new BluePrintsEntitiesModuleDescription(dataCategoryId, null, "Data", null, null, null, null, false);
         BluePrintsEntitiesModuleDescription commodityCategoryDescription = new BluePrintsEntitiesModuleDescription(commodityCodeCategoryId, null, "Commodity Code", null, null, null, null, false);
         protected override BluePrintsEntitiesModuleDescription[] CreateModules()
