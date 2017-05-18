@@ -292,10 +292,10 @@ namespace BluePrints.Common.ViewModel
             if (!CanNavigate)
                 Image = new BitmapImage(
                     new Uri(
-                        "pack://application:,,,/DevExpress.Images.v16.2;component/Images/Data/ManageDataSource_16x16.png"));
+                        "pack://application:,,,/DevExpress.Images.v17.1;component/Images/Data/ManageDataSource_16x16.png"));
             else
                 Image = new BitmapImage(
-                    new Uri("pack://application:,,,/DevExpress.Images.v16.2;component/Images/Actions/Open_16x16.png"));
+                    new Uri("pack://application:,,,/DevExpress.Images.v17.1;component/Images/Actions/Open_16x16.png"));
         }
     }
 }
