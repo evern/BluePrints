@@ -157,14 +157,14 @@
                             <dxg:GridColumn Name="colSECONDARY_TITLE" FieldName="Entity.Entity.SECONDARY_TITLE"
                                             Header="SECONDARY_TITLE" />
                             <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.Entity.COMMENTS" Header="COMMENTS" />
-                            <dxg:GridColumn Name="colSTATUS" FieldName="Entity.Entity.GUID_STATUS" Header="STATUS">
+                            <!--<dxg:GridColumn Name="colSTATUS" FieldName="Entity.Entity.GUID_STATUS" Header="STATUS">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
                                                               ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}"
                                                               IsTextEditable="True" AutoComplete="True"
                                                               DisplayMember="NAME" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
+                            </dxg:GridColumn>-->
                             <dxg:GridColumn Name="colUSER" FieldName="Entity.Entity.GUID_USER" Header="RESOURCE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"

@@ -4,7 +4,7 @@ namespace BluePrints.Data
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class ESTIMATION_DIRECT_ITEM : IGuidEntityKey, IGuidParentEntityKey, IHaveCreatedDate
+    public partial class ESTIMATION_DIRECT_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IGuidParentEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey
@@ -17,6 +17,20 @@ namespace BluePrints.Data
             set
             {
                 GUID = value;
+            }
+        }
+
+        [NotMapped]
+        public Guid OriginalEntityKey
+        {
+            get
+            {
+                return GUID_ORIGINAL;
+            }
+
+            set
+            {
+                GUID_ORIGINAL = value;
             }
         }
 

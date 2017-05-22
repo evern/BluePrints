@@ -15,9 +15,15 @@ namespace BluePrints.Data
         [Key]
         public Guid GUID { get; set; }
 
+        public Guid? GUID_PROJECT { get; set; }
+
+        public Guid? GUID_DOCTYPE { get; set; }
+
         [Required]
         [StringLength(500)]
         public string NAME { get; set; }
+
+        public decimal? AUTO_PERCENTAGE { get; set; }
 
         public decimal MAX_PERCENTAGE { get; set; }
 
@@ -35,5 +41,9 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
+
+        public virtual DOCTYPE DOCTYPE { get; set; }
+
+        public virtual PROJECT PROJECT { get; set; }
     }
 }

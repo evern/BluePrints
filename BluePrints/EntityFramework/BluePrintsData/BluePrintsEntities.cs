@@ -212,6 +212,11 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_DOCTYPE);
 
             modelBuilder.Entity<DOCTYPE>()
+                .HasMany(e => e.DELIVERABLES_STATUS)
+                .WithOptional(e => e.DOCTYPE)
+                .HasForeignKey(e => e.GUID_DOCTYPE);
+
+            modelBuilder.Entity<DOCTYPE>()
                 .HasMany(e => e.WORKPACK)
                 .WithOptional(e => e.DOCTYPE)
                 .HasForeignKey(e => e.GUID_DDOCTYPE);
@@ -373,6 +378,11 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.COMMODITY_CODE)
+                .WithOptional(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.DELIVERABLES_STATUS)
                 .WithOptional(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT);
 

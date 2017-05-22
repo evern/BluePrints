@@ -124,7 +124,7 @@
                                             </dxg:GridColumn>
                                             <dxg:GridColumn Header="Design Kick-Off Held" FieldName="Entity.DOC_KICKOFF">
                                                 <dxg:GridColumn.EditSettings>
-                                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" NullValueButtonPlacement="Popup"
                                                     ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectDocumentStatus}}" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
@@ -135,7 +135,7 @@
                                             </dxg:GridColumn>
                                             <dxg:GridColumn Header="SID Report Complete" FieldName="Entity.DOC_SIDREPORT">
                                                 <dxg:GridColumn.EditSettings>
-                                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" NullValueButtonPlacement="Popup"
                                                     ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectDocumentStatus}}" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
@@ -146,7 +146,7 @@
                                             </dxg:GridColumn>
                                             <dxg:GridColumn Header="Project Close-Out Complete" FieldName="Entity.DOC_CLOSEOUT">
                                                 <dxg:GridColumn.EditSettings>
-                                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" NullValueButtonPlacement="Popup"
                                                     ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectDocumentStatus}}" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>

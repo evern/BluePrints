@@ -167,11 +167,14 @@
                                 <dxg:GridColumn Name="columnTitle"
                                                 FieldName="Entity.Entity.PRIMARY_TITLE"
                                                 Header="PRIMARY TITLE" ReadOnly="True" IsEnabled="False" />
+                                <dxg:GridColumn Name="columnTitle2"
+                                                FieldName="Entity.Entity.SECONDARY_TITLE"
+                                                Header="SECONDARY TITLE" ReadOnly="True" IsEnabled="False" />
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandBudgeted" Header="Budgeted">
                                 <dxg:GridColumn Name="columnEstimatedHours"
                                                 FieldName="Entity.Entity.ESTIMATED_HOURS"
-                                                Header="ESTIMATED HOURS" ReadOnly="True" IsEnabled="False">
+                                                Header="ESTIMATED HOURS" ReadOnly="True" IsEnabled="False" Visible="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1"
                                                               MaskUseAsDisplayFormat="True" />
@@ -179,7 +182,7 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnDCHours"
                                                 FieldName="Entity.Entity.DC_HOURS"
-                                                Header="DC HOURS" ReadOnly="True" IsEnabled="False">
+                                                Header="DC HOURS" ReadOnly="True" IsEnabled="False" Visible="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" Increment="1"
                                                               MaskUseAsDisplayFormat="True" />
@@ -194,7 +197,7 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnRate" FieldName="Entity.ITEMRATE"
-                                                Header="RATE" ReadOnly="True" IsEnabled="False">
+                                                Header="RATE" ReadOnly="True" IsEnabled="False" Visible="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1"
                                                               MaskUseAsDisplayFormat="True" />
@@ -203,12 +206,27 @@
                                 <dxg:GridColumn Name="columnStatus"
                                                 FieldName="Entity.Entity.GUID_STATUS"
                                                 Header="STATUS">
-                                    <dxg:GridColumn.EditSettings>
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:ComboBoxEdit 
+                                                  x:Name="PART_Editor"
+                                                  ItemsSource="{Binding RowData.Row.Entity.AvailableDeliverable_Status}"
+                                                  DisplayMember="NAME" 
+                                                  ValueMember="GUID"
+                                                  ValidateOnTextInput="True"
+                                                  ValidateOnEnterKeyPressed="True"
+                                                  IncrementalFiltering="True"
+                                                  IsEnabled="{Binding RowData.Row.Entity.HaveDeliverableStatus}"
+                                                  ImmediatePopup="True">
+                                            </dxe:ComboBoxEdit>
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                    <!--<dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings
                                             ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}"
                                             IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
                                             ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn.EditSettings>-->
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnUser"
                                                 FieldName="Entity.Entity.GUID_USER"
@@ -229,7 +247,7 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnTotalPercentage" Header="TOTAL %"
-                                                FieldName="TOTAL_PERCENTAGE" ReadOnly="True" IsEnabled="False">
+                                                FieldName="TOTAL_PERCENTAGE" ReadOnly="True" IsEnabled="False" Visible="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
@@ -304,7 +322,7 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnTotalEarnedCost" Header="TOTAL EARNED $"
-                                                FieldName="TOTAL_EARNED_COSTS" ReadOnly="True" IsEnabled="False">
+                                                FieldName="TOTAL_EARNED_COSTS" ReadOnly="True" IsEnabled="False" Visible="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
@@ -325,7 +343,7 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnCurrentEarnedCost" Header="CURRENT EARNED COSTS"
-                                                FieldName="PERIOD_EARNED_COSTS" ReadOnly="True" IsEnabled="False">
+                                                FieldName="PERIOD_EARNED_COSTS" ReadOnly="True" IsEnabled="False" Visible="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
@@ -384,6 +402,11 @@
                             <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
                                            ShowTotalSummary="True" ShowFixedTotalSummary="True"
                                            GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand
+                                        Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}"
+                                        PassEventArgsToCommand="True" EventName="CellValueChanged" />
+                                </dxmvvm:Interaction.Behaviors>
                                 <custom:TableViewEx.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Fill Up"
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}"

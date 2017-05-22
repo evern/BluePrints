@@ -291,7 +291,10 @@ namespace BluePrints.ViewModels
             if (LoginCredentials.hasPermission(PermissionResources.ManageProgress))
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectProgresses" + keyString, projectKey, childTitlePrefix + "Progresses", "PROGRESS_ITEMCollectionView", new OptionalEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progresses"));
 
-            if(LoginCredentials.hasPermission(PermissionResources.ManageEstimation))
+            if (LoginCredentials.hasPermission(PermissionResources.ManageDeliverableStatuses))
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDeliverableStatuses" + keyString, projectKey, childTitlePrefix + "Deliverable Statuses", "DELIVERABLES_STATUSCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Deliverable Statuses"));
+
+            if (LoginCredentials.hasPermission(PermissionResources.ManageEstimation))
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates", "ESTIMATION_DIRECT_ITEMCollectionView", new OptionalEntitiesParameter<PROJECT, ESTIMATION_DIRECT>(entity, null), null, "Direct Estimate"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))

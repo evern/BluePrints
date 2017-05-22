@@ -84,7 +84,7 @@
                         <dxg:GridControl.Bands>
                             <dxg:GridControlBand Name="bandGeneral" Header="General">
                                 <dxg:GridColumn FieldName="Entity.GUID" Header="GUID" VisibleIndex="10" Visible="False"/>
-                                <dxg:GridColumn FieldName="Entity.GUID_COMMODITY_CODE" VisibleIndex="15" >
+                                <dxg:GridColumn Header="COMMODITY CODE" FieldName="Entity.GUID_COMMODITY_CODE" VisibleIndex="15" >
                                     <dxg:GridColumn.EditSettings>
                                         <dxg:LookUpEditSettings
                                             Name="LookUpCOMMODITY_GROUP"
@@ -102,6 +102,8 @@
                                                     <custom:GridControlEx x:Name="PART_GridControl" ShowBorder="False" dx:DXSerializer.SerializationID="GridControlPopUpMasterCOMMODITY_GROUP" 
                                                                      SelectionMode="Row">
                                                         <dxg:GridControl.Columns>
+                                                            <!--<dxg:GridColumn FieldName="Temp_Id" VisibleIndex="0" />
+                                                            <dxg:GridColumn FieldName="Temp_Parent_Id" VisibleIndex="1" />-->
                                                             <dxg:GridColumn FieldName="GUID_PROJECT"
                                                                             Header="PROJECT" VisibleIndex="10">
                                                                 <dxg:GridColumn.EditSettings>
@@ -111,11 +113,13 @@
                                                                         ValueMember="GUID" />
                                                                 </dxg:GridColumn.EditSettings>
                                                             </dxg:GridColumn>
+                                                            <dxg:GridColumn FieldName="DESCRIPTION"
+                                                                            Header="DESCRIPTION" VisibleIndex="20" />
                                                             <dxg:GridColumn FieldName="FULLCODE"
-                                                                            Header="FULLCODE" VisibleIndex="20" />
+                                                                            Header="FULLCODE" VisibleIndex="30" />
                                                             <dxg:GridColumn Name="colDISCIPLINE" Header="DISCIPLINE"
                                                                             FieldName="GUID_DISCIPLINE"
-                                                                            VisibleIndex="50">
+                                                                            VisibleIndex="40">
                                                                 <dxg:GridColumn.EditSettings>
                                                                     <dxe:ComboBoxEditSettings
                                                                         ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
@@ -124,13 +128,11 @@
                                                                 </dxg:GridColumn.EditSettings>
                                                             </dxg:GridColumn>
                                                             <dxg:GridColumn FieldName="TYPE"
-                                                                            Header="TYPE" VisibleIndex="70" />
+                                                                            Header="TYPE" VisibleIndex="50" />
                                                             <dxg:GridColumn FieldName="SPEC"
-                                                                            Header="SPEC" VisibleIndex="80" />
-                                                            <dxg:GridColumn FieldName="DESCRIPTION"
-                                                                            Header="DESCRIPTION" VisibleIndex="90" />
+                                                                            Header="SPEC" VisibleIndex="60" />
                                                             <dxg:GridColumn FieldName="UOM" Header="UOM"
-                                                                            VisibleIndex="100" AllowEditing="True">
+                                                                            VisibleIndex="70" AllowEditing="True">
                                                                 <dxg:GridColumn.EditSettings>
                                                                     <dxe:ComboBoxEditSettings
                                                                         ItemsSource="{Binding DataContext.UOMCollection, ElementName=userControl}"
@@ -140,7 +142,7 @@
                                                             </dxg:GridColumn>
                                                             <dxg:GridColumn x:Name="colRATE_SUPPLY"
                                                                             FieldName="RATE_SUPPLY"
-                                                                            Header="SUPPLY RATE" VisibleIndex="120">
+                                                                            Header="SUPPLY RATE" VisibleIndex="80">
                                                                 <dxg:GridColumn.CellTemplate>
                                                                     <DataTemplate>
                                                                         <dxe:SpinEdit Name="PART_Editor"
@@ -153,7 +155,7 @@
                                                             </dxg:GridColumn>
                                                             <dxg:GridColumn x:Name="colHOURS_INSTALL"
                                                                             FieldName="HOURS_INSTALL"
-                                                                            Header="INSTALL HOURS" VisibleIndex="130">
+                                                                            Header="INSTALL HOURS" VisibleIndex="90">
                                                                 <dxg:GridColumn.CellTemplate>
                                                                     <DataTemplate>
                                                                         <dxe:SpinEdit Name="PART_Editor"
@@ -166,7 +168,7 @@
                                                             </dxg:GridColumn>
                                                             <dxg:GridColumn x:Name="colRATE_FREIGHT"
                                                                             FieldName="RATE_FREIGHT"
-                                                                            Header="FREIGHT RATE" VisibleIndex="140">
+                                                                            Header="FREIGHT RATE" VisibleIndex="100">
                                                                 <dxg:GridColumn.CellTemplate>
                                                                     <DataTemplate>
                                                                         <dxe:SpinEdit Name="PART_Editor"

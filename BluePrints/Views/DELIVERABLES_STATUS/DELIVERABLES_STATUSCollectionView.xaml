@@ -52,6 +52,10 @@
                                                    Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}"
                                                    Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
+                                <dxb:BarButtonItem Content="Copy From"
+                                                   Command="{Binding DataContext.CopyFromCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImage Image=Copy_32x32.png}"
+                                                   Glyph="{dx:DXImageOffice2013 Image=Copy_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -69,12 +73,28 @@
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDELIVERABLE_STATUS" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn FieldName="NAME" VisibleIndex="10" />
+                            <dxg:GridColumn FieldName="GUID_DOCTYPE" Header="DOCTYPE">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings
+                                        ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
+                                        ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="MAX_PERCENTAGE" VisibleIndex="20">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Name="PART_Editor" MaskType="Numeric" Mask="p2"
+                                    <dxe:SpinEditSettings  MaskType="Numeric" Mask="p2"
                                                           MaskUseAsDisplayFormat="True" Increment="0.1" MaxValue="1"
                                                           MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="AUTO_PERCENTAGE" VisibleIndex="30">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:SpinEdit Name="PART_Editor" MaskUseAsDisplayFormat="True" MinValue="0" Increment="0.1" MaxValue="{Binding RowData.Row.MAX_PERCENTAGE}"
+                                                      MaskType="Numeric" Mask="p2" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
@@ -98,6 +118,29 @@
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}"
                                                        Command="{Binding View.DataContext.FillDownCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                                    <dxb:BarSubItem Content="Duplicate"
+                                                    Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}">
+                                        <dxb:BarEditItem Content="Document Type" x:Name="contextMenuDuplicate" >
+                                            <dxb:BarEditItem.EditSettings>
+                                                <dxe:ComboBoxEditSettings
+                                                    ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}"
+                                                    IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
+                                                    ValueMember="GUID" >
+                                                    <dxe:ComboBoxEditSettings.Buttons>
+                                                        <dxe:ButtonInfo x:Name="contextMenuDuplicateBtn"
+                                                                        GlyphKind="Apply">
+                                                            <dxmvvm:Interaction.Behaviors>
+                                                                <dxmvvm:EventToCommand
+                                                                    Command="{Binding DataContext.DuplicateCommand, ElementName=userControl}"
+                                                                    CommandParameter="{Binding ElementName=contextMenuDuplicate}"
+                                                                    EventName="Click" />
+                                                            </dxmvvm:Interaction.Behaviors>
+                                                        </dxe:ButtonInfo>
+                                                    </dxe:ComboBoxEditSettings.Buttons>
+                                                </dxe:ComboBoxEditSettings>
+                                            </dxb:BarEditItem.EditSettings>
+                                        </dxb:BarEditItem>
+                                    </dxb:BarSubItem>
                                     <dxb:BarButtonItem Content="Delete"
                                                        Command="{Binding View.DataContext.BulkDeleteCommand}"
                                                        CommandParameter="{Binding View.DataContext.SelectedEntities}"

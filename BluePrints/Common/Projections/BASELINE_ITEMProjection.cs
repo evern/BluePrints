@@ -20,6 +20,31 @@ namespace BluePrints.Common.Projections
         public RATE RATE { get; set; }
         public DELIVERABLES_STATUS DELIVERABLE_STATUS { get; set; }
 
+        private IEnumerable<DELIVERABLES_STATUS> _availableDeliverable_Status;
+        public IEnumerable<DELIVERABLES_STATUS> AvailableDeliverable_Status
+        {
+            get { return _availableDeliverable_Status; }
+            set
+            {
+                if (value != _availableDeliverable_Status)
+                {
+                    _availableDeliverable_Status = value as IEnumerable<DELIVERABLES_STATUS>;
+                    this.RaisePropertiesChanged();
+                }
+            }
+        }
+
+        public bool HaveDeliverableStatus
+        {
+            get
+            {
+                if (AvailableDeliverable_Status == null)
+                    return false;
+
+                return ((IEnumerable<DELIVERABLES_STATUS>)AvailableDeliverable_Status).Count() > 0;
+            }
+        }
+
         public decimal ITEMRATE
         {
             get
@@ -143,6 +168,7 @@ namespace BluePrints.Common.Projections
             IEnumerable<RATE> RATES = getRATES_ByProjectFunc();
             IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSES = getDELIVERABLES_STATUSESFunc();
 
+
             return
                 contextBASELINE_ITEMS.ToArray()
                     .Select(
@@ -151,10 +177,8 @@ namespace BluePrints.Common.Projections
                             {
                                 EntityKey = x.GUID,
                                 Entity = x,
-                                DELIVERABLE_STATUS =
-                                    (x.GUID_STATUS == null)
-                                        ? null
-                                        : DELIVERABLES_STATUSES.FirstOrDefault(z => z.GUID == x.GUID_STATUS),
+                                DELIVERABLE_STATUS = (x.GUID_STATUS == null) ? null : DELIVERABLES_STATUSES.FirstOrDefault(z => z.GUID == x.GUID_STATUS),
+                                AvailableDeliverable_Status = DELIVERABLES_STATUSES.Where(z => z.GUID_DOCTYPE == x.GUID_DOCTYPE).OrderBy(z => z.MAX_PERCENTAGE).ToList(),
                                 RATE = 
                                     RATES.FirstOrDefault(
                                         y =>

@@ -1,9 +1,14 @@
-﻿using BaseModel.DataModel;
+﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
+using BaseModel.Misc;
+using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Base;
 using BluePrints.Data;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Bars;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,11 +41,19 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
 
+        private PROJECT loadPROJECT;
+        private bool isProjectSpecific;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
         protected override void InitializeParameters(object parameter)
         {
+            if (parameter != null)
+            {
+                var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
+                loadPROJECT = PROJECTParameter.GetEntity();
+                isProjectSpecific = true;
+            }
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
@@ -49,6 +62,8 @@ namespace BluePrints.ViewModels
             base.CleanUpEntitiesLoader();
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
+            loaderCollection.AddLoaderDescription<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
+            loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -61,7 +76,10 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<DELIVERABLES_STATUS>, IQueryable<DELIVERABLES_STATUS>>
             ConstructMainViewModelProjection()
         {
-            return query => query.OrderBy(x => x.MAX_PERCENTAGE);
+            if (isProjectSpecific)
+                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.GUID_DOCTYPE).ThenBy(x => x.MAX_PERCENTAGE);
+            else
+                return query => query.Where(x => x.GUID_PROJECT == null).OrderBy(x => x.GUID_DOCTYPE).ThenBy(x => x.MAX_PERCENTAGE);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<DELIVERABLES_STATUS> entities)
@@ -81,6 +99,106 @@ namespace BluePrints.ViewModels
             get { return "DELIVERABLES_STATUSCollectionViewModelWrapper"; }
         }
 
+        public IEnumerable<DOCTYPE> DOCTYPECollection
+        {
+            get
+            {
+                var collection = GetEntities<DOCTYPE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.CODE);
+                return collection;
+            }
+        }
+
+        public List<PROJECT> PROJECTCollectionForCopy
+        {
+            get
+            {
+                List<PROJECT> returnPROJECTS = null;
+                var collection = GetEntities<PROJECT>();
+                if (collection != null)
+                {
+                    returnPROJECTS = new List<PROJECT>(collection.OrderBy(x => x.NUMBER));
+                    returnPROJECTS.Insert(0, new PROJECT() { GUID = Guid.Empty, NUMBER = "Default" });
+                }
+
+                return returnPROJECTS;
+            }
+        }
         #endregion
+
+        #region View Command
+        public bool CanDuplicate(BarEditItem barEdit)
+        {
+            return barEdit.EditValue != null;
+        }
+
+        public void Duplicate(BarEditItem barEdit)
+        {
+            Guid doctypeGuid;
+            List<DELIVERABLES_STATUS> newEntities = new List<DELIVERABLES_STATUS>();
+            if (Guid.TryParse(barEdit.EditValue.ToString(), out doctypeGuid))
+            {
+                VerifyAndSaveDuplicateItems(MainViewModel.SelectedEntities, doctypeGuid);
+            }
+        }
+
+        private void VerifyAndSaveDuplicateItems(IEnumerable<DELIVERABLES_STATUS> deliverableStatuses, Guid? docTypeGuid = null)
+        {
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            List<DELIVERABLES_STATUS> duplicateDeliverableStatuses = new List<DELIVERABLES_STATUS>();
+            foreach (var entities in deliverableStatuses)
+            {
+                var newDeliverableStatus = new DELIVERABLES_STATUS();
+                DataUtils.ShallowCopy(newDeliverableStatus, entities);
+                newDeliverableStatus.GUID = Guid.Empty;
+                if (isProjectSpecific)
+                    newDeliverableStatus.GUID_PROJECT = loadPROJECT.GUID;
+
+                if(docTypeGuid != null)
+                    newDeliverableStatus.GUID_DOCTYPE = docTypeGuid;
+
+                DELIVERABLES_STATUS findEntity = MainViewModel.Entities.FirstOrDefault(x => x.MAX_PERCENTAGE == newDeliverableStatus.MAX_PERCENTAGE && x.GUID_DOCTYPE == newDeliverableStatus.GUID_DOCTYPE);
+                if (findEntity == null)
+                {
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(newDeliverableStatus, null, null, null, EntityMessageType.Added);
+                    duplicateDeliverableStatuses.Add(newDeliverableStatus);
+                }
+            }
+
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+            MainViewModel.BulkSave(duplicateDeliverableStatuses);
+        }
+
+        private DevExpress.Mvvm.IDialogService BulkColumnEditDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BulkColumnEditService"); }
+        }
+
+        public bool CanCopyFrom()
+        {
+            return isProjectSpecific;
+        }
+
+        public void CopyFrom()
+        {
+            var bulkEditEnumsViewModel =
+                            BulkEditEnumsViewModel.Create((IEnumerable<object>)PROJECTCollectionForCopy, "NUMBER");
+            if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Select project to copy",
+                    "BulkEditEnums", bulkEditEnumsViewModel) == MessageResult.OK)
+            {
+                if (bulkEditEnumsViewModel.SelectedItem != null)
+                {
+                    IGuidEntityKey entityWithGuid = bulkEditEnumsViewModel.SelectedItem as IGuidEntityKey;
+                    if (entityWithGuid != null)
+                    {
+                        Guid? queryGuid = entityWithGuid.EntityKey == Guid.Empty ? (Guid?)null : entityWithGuid.EntityKey;
+                        var copyEntities = bluePrintsUnitOfWorkFactory.CreateUnitOfWork().DELIVERABLES_STATUSES.Where(x => x.GUID_PROJECT == queryGuid);
+                        VerifyAndSaveDuplicateItems(copyEntities);
+                    }
+                }
+            }
+        }
+        #endregion  
     }
 }

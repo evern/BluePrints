@@ -375,7 +375,6 @@ namespace BluePrints.Common.Projections
                 }
             }
         }
-
     }
 
     public static class PROGRESS_ITEMProjectionQueries
@@ -410,7 +409,7 @@ namespace BluePrints.Common.Projections
                             {
                                 EntityKey = x.EntityKey,
                                 Entity = x, 
-                                PROGRESS_ITEMS = LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.Entity.GUID_ORIGINAL)
+                                PROGRESS_ITEMS = LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.Entity.GUID_ORIGINAL), 
                             }).AsQueryable();
         }
 

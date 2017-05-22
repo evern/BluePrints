@@ -1,8 +1,10 @@
 namespace BluePrints.Data
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
 
     public partial class ESTIMATION_DIRECT_ITEM
     {
@@ -68,8 +70,6 @@ namespace BluePrints.Data
         public virtual AREA AREA { get; set; }
 
         public virtual COMMODITY_CODE COMMODITY_CODE { get; set; }
-
-        public virtual COMMODITY_GROUP_DIRECT COMMODITY_GROUP_DIRECT { get; set; }
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 

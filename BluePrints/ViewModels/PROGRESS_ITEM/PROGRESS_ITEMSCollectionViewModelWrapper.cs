@@ -103,7 +103,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
-            loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
+            loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, DELIVERABLES_STATUSProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc);
 
@@ -158,6 +158,11 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID);
+        }
+
+        private Func<IRepositoryQuery<DELIVERABLES_STATUS>, IQueryable<DELIVERABLES_STATUS>> DELIVERABLES_STATUSProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
@@ -278,9 +283,35 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
+        /// <summary>
+        /// Influence column(s) when changes happens in other column
+        /// </summary>
+        public void CellValueChanged(CellValueChangedEventArgs e)
+        {
+
+        }
 
         private bool ExistingRowAddUndoAndSaveCallBack(PROGRESS_ITEMProjection projectionEntity, CellValueChangedEventArgs e)
         {
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." + BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_STATUS))
+            {
+                PROGRESS_ITEMProjection activeEntity = (PROGRESS_ITEMProjection)e.Row;
+                DELIVERABLES_STATUS findDeliverableStatus = DELIVERABLES_STATUSCollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
+                if(findDeliverableStatus != null)
+                {
+                    decimal? autoAssignPercentage = findDeliverableStatus.AUTO_PERCENTAGE;
+                    if (autoAssignPercentage != null)
+                    {
+                        if(autoAssignPercentage >= activeEntity.MinPercentage)
+                            activeEntity.TOTAL_EARNED_PERCENTAGE = (decimal)autoAssignPercentage;
+                    }
+
+                    SaveProgressItem(projectionEntity);
+                }
+
+                return true;
+            }
             if (e.Column.FieldName ==
                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().TOTAL_EARNED_PERCENTAGE))
             {

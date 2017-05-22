@@ -38,17 +38,17 @@ namespace BluePrints.Data
 
         public bool USELEGACYWORKPACK { get; set; }
 
-        public ProjectDocumentStatus DOC_KICKOFF { get; set; }
+        public ProjectDocumentStatus? DOC_KICKOFF { get; set; }
 
         [StringLength(500)]
         public string DOC_KICKOFF_PATH { get; set; }
 
-        public ProjectDocumentStatus DOC_SIDREPORT { get; set; }
+        public ProjectDocumentStatus? DOC_SIDREPORT { get; set; }
 
         [StringLength(500)]
         public string DOC_SIDREPORT_PATH { get; set; }
 
-        public ProjectDocumentStatus DOC_CLOSEOUT { get; set; }
+        public ProjectDocumentStatus? DOC_CLOSEOUT { get; set; }
 
         [StringLength(500)]
         public string DOC_CLOSEOUT_PATH { get; set; }
@@ -76,6 +76,9 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<COMMODITY_CODE> COMMODITY_CODE { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<DELIVERABLES_STATUS> DELIVERABLES_STATUS { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ESTIMATION_DIRECT> ESTIMATION_DIRECT { get; set; }

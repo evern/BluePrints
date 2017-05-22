@@ -220,8 +220,25 @@ namespace BluePrints.ViewModels
             {
                 MainViewModel.EntitiesUndoRedoManager.PauseActionId(); //Unpaused in existingRowAddUndoAndSave
                 PROJECT activePROJECT = (PROJECT)e.Row;
-                ProjectDocumentStatus newValue = (ProjectDocumentStatus)e.Value;
-                if (newValue == ProjectDocumentStatus.Yes)
+                if(e.Value == null || ((ProjectDocumentStatus)e.Value) != ProjectDocumentStatus.Yes)
+                {
+                    if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF))
+                    {
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(activePROJECT, BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF_PATH), activePROJECT.DOC_KICKOFF_PATH, null, EntityMessageType.Changed);
+                        activePROJECT.DOC_KICKOFF_PATH = null;
+                    }
+                    else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT))
+                    {
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(activePROJECT, BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT_PATH), activePROJECT.DOC_CLOSEOUT_PATH, null, EntityMessageType.Changed);
+                        activePROJECT.DOC_CLOSEOUT_PATH = null;
+                    }
+                    else
+                    {
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(activePROJECT, BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT_PATH), activePROJECT.DOC_SIDREPORT_PATH, null, EntityMessageType.Changed);
+                        activePROJECT.DOC_SIDREPORT_PATH = null;
+                    }
+                }
+                else
                 {
                     OpenFileDialogService.Filter = "PDF (*.PDF)|*.PDF";
                     bool DialogResult;
@@ -247,24 +264,6 @@ namespace BluePrints.ViewModels
                         }
                     }
                 }
-                else
-                {
-                    if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF))
-                    {
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(activePROJECT, BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF_PATH), activePROJECT.DOC_KICKOFF_PATH, null, EntityMessageType.Changed);
-                        activePROJECT.DOC_KICKOFF_PATH = null;
-                    }
-                    else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT))
-                    {
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(activePROJECT, BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT_PATH), activePROJECT.DOC_CLOSEOUT_PATH, null, EntityMessageType.Changed);
-                        activePROJECT.DOC_CLOSEOUT_PATH = null;
-                    }
-                    else
-                    {
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(activePROJECT, BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT_PATH), activePROJECT.DOC_SIDREPORT_PATH, null, EntityMessageType.Changed);
-                        activePROJECT.DOC_SIDREPORT_PATH = null;
-                    }
-                }
             }
         }
 
@@ -276,24 +275,21 @@ namespace BluePrints.ViewModels
 
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF))
             {
-                ProjectDocumentStatus newValue = (ProjectDocumentStatus)e.Value;
-                if (newValue == ProjectDocumentStatus.Yes && activePROJECT.DOC_KICKOFF_PATH == null)
+                if (e.Value != null &&  ((ProjectDocumentStatus)e.Value) == ProjectDocumentStatus.Yes && activePROJECT.DOC_KICKOFF_PATH == null)
                 {
                     isError = true;
                 }
             }
             else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT))
             {
-                ProjectDocumentStatus newValue = (ProjectDocumentStatus)e.Value;
-                if (newValue == ProjectDocumentStatus.Yes && activePROJECT.DOC_CLOSEOUT_PATH == null)
+                if (e.Value != null && ((ProjectDocumentStatus)e.Value) == ProjectDocumentStatus.Yes && activePROJECT.DOC_CLOSEOUT_PATH == null)
                 {
                     isError = true;
                 }
             }
             else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT))
             {
-                ProjectDocumentStatus newValue = (ProjectDocumentStatus)e.Value;
-                if (newValue == ProjectDocumentStatus.Yes && activePROJECT.DOC_SIDREPORT_PATH == null)
+                if (e.Value != null && ((ProjectDocumentStatus)e.Value) == ProjectDocumentStatus.Yes && activePROJECT.DOC_SIDREPORT_PATH == null)
                 {
                     isError = true;
                 }
