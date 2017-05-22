@@ -88,7 +88,14 @@ namespace BluePrints.ViewModels
             newModules.Add(projectCategoryHeader);
 
             if (entities.Any(x => x.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid))
-                projectCategoryHeader.ChildModules.Add(myProjectsCategoryDescription);
+            {
+                IEnumerable<PROJECT> userProjects = entities.Where(x => x.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid);
+                if(userProjects.Any(x => x.STATUS == ProjectStatus.Active))
+                    projectCategoryHeader.ChildModules.Add(myProjectsCategoryDescription);
+
+                if(userProjects.Any(x => x.STATUS == ProjectStatus.Tender))
+                    projectCategoryHeader.ChildModules.Add(myTendersCategoryDescription);
+            }
 
             if (entities.Any(x => x.STATUS == ProjectStatus.Active))
                 projectCategoryHeader.ChildModules.Add(projectActiveCategoryDescription);
@@ -167,10 +174,12 @@ namespace BluePrints.ViewModels
         const string activeCategoryId = "Category_Active";
         const string tenderCategoryId = "Category_Tender";
         const string myProjectCategoryId = "Category_MyProject";
+        const string myTenderCategoryId = "Category_MyTender";
         const string commodityCodeCategoryId = "Category_CommodityCode";
         BluePrintsEntitiesModuleDescription projectEditableCategoryDescription = new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects", "PROJECTCollectionView");
         BluePrintsEntitiesModuleDescription projectCategoryDescription = new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects");
         BluePrintsEntitiesModuleDescription myProjectsCategoryDescription = new BluePrintsEntitiesModuleDescription(myProjectCategoryId, projectCategoryId, "My Projects");
+        BluePrintsEntitiesModuleDescription myTendersCategoryDescription = new BluePrintsEntitiesModuleDescription(myTenderCategoryId, projectCategoryId, "My Tenders");
         BluePrintsEntitiesModuleDescription projectActiveCategoryDescription = new BluePrintsEntitiesModuleDescription(activeCategoryId, projectCategoryId, "Active");
         BluePrintsEntitiesModuleDescription projectTenderCategoryDescription = new BluePrintsEntitiesModuleDescription(tenderCategoryId, projectCategoryId, "Tender", null, null, null, null, false);
         BluePrintsEntitiesModuleDescription dataCategoryDescription = new BluePrintsEntitiesModuleDescription(dataCategoryId, null, "Data", null, null, null, null, false);
@@ -239,8 +248,16 @@ namespace BluePrints.ViewModels
 
             if((entity.STATUS == ProjectStatus.Active || entity.STATUS == ProjectStatus.Tender) && entity.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid)
             {
-                projectStatusDescription = myProjectsCategoryDescription;
-                parentId = myProjectCategoryId;
+                if(entity.STATUS == ProjectStatus.Active)
+                {
+                    projectStatusDescription = myProjectsCategoryDescription;
+                    parentId = myProjectCategoryId;
+                }
+                else
+                {
+                    projectStatusDescription = myTendersCategoryDescription;
+                    parentId = myTenderCategoryId;
+                }
             }
             else if (entity.STATUS == ProjectStatus.Active)
             {

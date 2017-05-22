@@ -119,7 +119,7 @@
                     <dxdo:LayoutGroup BorderThickness="0" Margin="0" Padding="0">
                         <dxdo:LayoutPanel MaxWidth="300" ItemWidth="Auto">
                             <dxa:AccordionControl x:Name="TreeListControl" MaxHeight="2000" MaxWidth="2000" ExpandItemOnHeaderClick="False"
-                                                 dx:DXSerializer.SerializationID="NavigationTree" ExpandMode="Single"
+                                                 dx:DXSerializer.SerializationID="NavigationTree" ExpandMode="Multiple"
                                                  ChildrenPath="ChildModules"
                                                  ItemsSource="{Binding Modules}"
                                                  SelectedItem="{Binding SelectedModule}" BorderThickness="0"
