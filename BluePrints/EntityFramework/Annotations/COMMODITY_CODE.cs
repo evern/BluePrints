@@ -7,6 +7,12 @@ namespace BluePrints.Data
     public partial class COMMODITY_CODE : IGuidEntityKey, IGuidParentEntityKey, IHaveCreatedDate, IHaveSortOrder, IHaveExpandState
     {
         [NotMapped]
+        public string Temp_Id { get; set; }
+
+        [NotMapped]
+        public string Temp_Parent_Id { get; set; }
+
+        [NotMapped]
         public Guid EntityKey
         {
             get

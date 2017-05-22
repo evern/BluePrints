@@ -161,10 +161,16 @@ namespace BluePrints.ViewModels
         {
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
+
+        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        {
+            base.OnAfterAffectingEntitiesChanged(key, changedType, messageType, sender);
+            Refresh_COMMODITY_GROUP_CODE();
+        }
         #endregion
 
         #region Collection Call Backs
-        
+
         #endregion
 
         #endregion
@@ -239,6 +245,84 @@ namespace BluePrints.ViewModels
             {
                 var collection = GetEntities<COMMODITY_GROUP_DIRECT>();
                 return collection;
+            }
+        }
+
+        private void Refresh_COMMODITY_GROUP_CODE()
+        {
+            commodity_group_codeCollection = null;
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.COMMODITY_GROUP_CODECollection)));
+        }
+
+        List<COMMODITY_CODE> commodity_group_codeCollection;
+        public IEnumerable<COMMODITY_CODE> COMMODITY_GROUP_CODECollection
+        {
+            get
+            {
+                if(commodity_group_codeCollection == null)
+                {
+                    commodity_group_codeCollection = new List<COMMODITY_CODE>();
+                    //get the parents only
+                    IEnumerable<COMMODITY_GROUP_DIRECT> commodityGroupParentCollection = COMMODITY_GROUP_DIRECTCollection.Where(x => x.GUID_PARENT == null);
+                    //get the childs only
+                    IEnumerable<COMMODITY_GROUP_DIRECT> commodityGroupChildCollection = COMMODITY_GROUP_DIRECTCollection.Where(x => x.GUID_PARENT != null && x.GUID_COMMODITYCODE != null);
+
+                    //temp id used to identify parents in the view
+                    int tempParentId = 0;
+                    int tempChildId = 0;
+                    if (commodityGroupParentCollection != null)
+                    {
+                        foreach(COMMODITY_GROUP_DIRECT commodityGroup in commodityGroupParentCollection)
+                        {
+                            IEnumerable<COMMODITY_GROUP_DIRECT> currentGroupChildrens = commodityGroupChildCollection.Where(x => x.GUID_PARENT == commodityGroup.GUID);
+                            List<COMMODITY_CODE> tempChildCommodityCodes = new List<COMMODITY_CODE>();
+                            //construct child dynamically
+                            foreach (COMMODITY_GROUP_DIRECT currentGroupChildren in currentGroupChildrens)
+                            {
+                                COMMODITY_CODE childCommodityCode = new COMMODITY_CODE();
+                                DataUtils.ShallowCopy(childCommodityCode, currentGroupChildren.COMMODITY_CODE);
+                                childCommodityCode.Temp_Id = "child" + tempChildId.ToString();
+                                childCommodityCode.Temp_Parent_Id = tempParentId.ToString();
+                                tempChildId += 1;
+                                tempChildCommodityCodes.Add(childCommodityCode);
+                            }
+
+                            COMMODITY_CODE tempParentCommodityCode = new COMMODITY_CODE()
+                            {
+                                GUID = Guid.Empty,
+                                GUID_PARENT = Guid.Empty,
+                                COMMODITYCODETYPE = CommodityCodeType.Direct,
+                                DESCRIPTION = commodityGroup.DESCRIPTION,
+                                SortOrder = 0,
+                                IsExpanded = false,
+                                ISQUANTIFIABLE = false,
+                                ISGROUPHEADER = true,
+                                RATE_FREIGHT = tempChildCommodityCodes.Sum(x => x.RATE_FREIGHT),
+                                RATE_PLANT = tempChildCommodityCodes.Sum(x => x.RATE_PLANT),
+                                RATE_SUPPLY = tempChildCommodityCodes.Sum(x => x.RATE_SUPPLY),
+                                Temp_Id = tempParentId.ToString()
+                            };
+
+                            tempParentId += 1;
+                            commodity_group_codeCollection.Add(tempParentCommodityCode);
+                            commodity_group_codeCollection.AddRange(tempChildCommodityCodes);
+                        }
+                    }
+
+                    if (COMMODITY_CODECollection != null)
+                    {
+                        foreach(COMMODITY_CODE commodityCode in COMMODITY_CODECollection)
+                        {
+                            COMMODITY_CODE tempCommodityCode = new COMMODITY_CODE();
+                            DataUtils.ShallowCopy(tempCommodityCode, commodityCode);
+                            tempCommodityCode.Temp_Id = commodityCode.GUID.ToString();
+                            tempCommodityCode.Temp_Parent_Id = commodityCode.GUID_PARENT.ToString();
+                            commodity_group_codeCollection.Add(commodityCode);
+                        }
+                    }
+                }
+
+                return commodity_group_codeCollection;
             }
         }
         #endregion
