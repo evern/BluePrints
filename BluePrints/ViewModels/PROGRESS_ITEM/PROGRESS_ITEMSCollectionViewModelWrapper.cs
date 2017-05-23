@@ -403,14 +403,20 @@ namespace BluePrints.ViewModels
                 e.Column.FieldName ==
                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
-                BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_STATUS)
-                ||
-                e.Column.FieldName ==
-                BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
-                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_USER))
             {
                 return true;
+            }
+            else if (
+                e.Column.FieldName ==
+                BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_STATUS))
+            {
+                if (e.Value == null)
+                    return false;
+                else
+                    return true;
             }
 
             return false;
