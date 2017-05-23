@@ -84,8 +84,17 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<DELIVERABLES_STATUS> entities)
         {
+            MainViewModel.IsContinueSaveCallBack = IsContinueSaveCallBack;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
+
+        private bool IsContinueSaveCallBack(DELIVERABLES_STATUS entity, bool isNewEntity)
+        {
+            if (isProjectSpecific)
+                entity.GUID_PROJECT = loadPROJECT.GUID;
+
+            return true;
         }
         #endregion
 
