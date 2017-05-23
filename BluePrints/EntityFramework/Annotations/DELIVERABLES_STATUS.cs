@@ -5,7 +5,6 @@ namespace BluePrints.Data
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    [ConstraintAttributes("GUID_DOCTYPE, MAX_PERCENTAGE")]
     public partial class DELIVERABLES_STATUS : IGuidEntityKey
     {
         [NotMapped]
