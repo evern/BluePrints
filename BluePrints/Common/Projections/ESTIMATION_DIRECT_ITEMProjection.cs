@@ -13,6 +13,8 @@ namespace BluePrints.Common.Projections
     {
         public RATE RATE { get; set; }
 
+        public COMMODITY_CODE TempCOMMODITY_GROUP_CODE { get; set; }
+
         public string COMMODITY_GROUP_CODE_SELECTION
         {
             get
@@ -159,6 +161,54 @@ namespace BluePrints.Common.Projections
                                         y =>
                                             y.GUID_DEPARTMENT == searchDEPARTMENTGuid &&
                                             y.GUID_DISCIPLINE == x.GUID_DISCIPLINE)
+                            }).AsQueryable();
+        }
+
+        public static IQueryable<ESTIMATION_DIRECT_ITEMProjection> JoinRATESOnESTIMATION_DIRECT_ITEMS(
+            IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, Func<ESTIMATION_DIRECT> getESTIMATION_DIRECTFunc,
+            Func<IEnumerable<DEPARTMENT>> getDEPARTMENTFunc, Func<IEnumerable<COMMODITY_CODE>> getCOMMODITY_CODESFunc, Func<IEnumerable<RATE>> getRATES_ByProjectFunc = null,
+            bool isESTIMATION_DIRECTQueryProcessed = false)
+        {
+            var ESTIMATION_DIRECT = getESTIMATION_DIRECTFunc();
+            IQueryable<ESTIMATION_DIRECT_ITEM> contextESTIMATION_DIRECT_ITEMS;
+            if (ESTIMATION_DIRECT == null)
+                contextESTIMATION_DIRECT_ITEMS = new List<ESTIMATION_DIRECT_ITEM>().AsQueryable();
+            else
+            {
+                if (isESTIMATION_DIRECTQueryProcessed)
+                    contextESTIMATION_DIRECT_ITEMS = ESTIMATION_DIRECT_ITEMS;
+                else
+                    contextESTIMATION_DIRECT_ITEMS =
+                        ESTIMATION_DIRECT_ITEMS.Where(x => x.GUID_ESTIMATION_DIRECT == ESTIMATION_DIRECT.GUID);
+            }
+
+
+            var RATES = getRATES_ByProjectFunc();
+            var DEPARTMENTS = getDEPARTMENTFunc();
+            var COMMODITY_CODES = getCOMMODITY_CODESFunc();
+
+            var constructionDEPARTMENT =
+                DEPARTMENTS.FirstOrDefault(x => x.NAME.ToUpper() == BluePrintsResources.DefaultConstructionDepartment);
+            Guid searchDEPARTMENTGuid;
+            if (constructionDEPARTMENT == null)
+                searchDEPARTMENTGuid = Guid.Empty;
+            else
+                searchDEPARTMENTGuid = constructionDEPARTMENT.GUID;
+
+            return
+                contextESTIMATION_DIRECT_ITEMS.ToArray()
+                    .Select(
+                        x =>
+                            new ESTIMATION_DIRECT_ITEMProjection()
+                            {
+                                EntityKey = x.GUID,
+                                Entity = x,
+                                RATE = RATES == null ? null :
+                                    RATES.FirstOrDefault(
+                                        y =>
+                                            y.GUID_DEPARTMENT == searchDEPARTMENTGuid &&
+                                            y.GUID_DISCIPLINE == x.GUID_DISCIPLINE), 
+                                TempCOMMODITY_GROUP_CODE = COMMODITY_CODES.FirstOrDefault(z => z.GUID == x.GUID_COMMODITY_CODE)
                             }).AsQueryable();
         }
     }

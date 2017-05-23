@@ -88,7 +88,10 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_GROUP_CODEProjection>>
             ConstructMainViewModelProjection()
         {
-            return query => COMMODITY_GROUP_CODEProjectionQueries.ConvertToProjectionCOMMODITY_GROUP_CODE(query);
+            if(loadPROJECT != null)
+                return query => COMMODITY_GROUP_CODEProjectionQueries.ConvertToProjectionCOMMODITY_GROUP_CODE(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID));
+            else
+                return query => COMMODITY_GROUP_CODEProjectionQueries.ConvertToProjectionCOMMODITY_GROUP_CODE(query);
         }
 
         #region View Refresh

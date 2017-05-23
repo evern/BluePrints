@@ -1,6 +1,7 @@
 ﻿using BaseModel.Data.Helpers;
 using BaseModel.DataModel;
 using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
@@ -150,10 +151,11 @@ namespace BluePrints.ViewModels
             var getDEPARTMENTSFunc = loaderCollection.GetCollectionFunc<DEPARTMENT>();
             var getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
             var getESTIMATION_DIRECTFunc = loaderCollection.GetObjectFunc<ESTIMATION_DIRECT>();
+            var getCOMMODITY_CODEFunc = loaderCollection.GetCollectionFunc<COMMODITY_CODE>();
             return
                 query =>
                     ESTIMATION_DIRECT_ITEMProjectionQueries.JoinRATESOnESTIMATION_DIRECT_ITEMS(query,
-                        getESTIMATION_DIRECTFunc, getDEPARTMENTSFunc, getRATESFunc);
+                        getESTIMATION_DIRECTFunc, getDEPARTMENTSFunc, getCOMMODITY_CODEFunc, getRATESFunc);
         }
 
         #region Saving Routine
@@ -167,9 +169,102 @@ namespace BluePrints.ViewModels
         #region View Refresh
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATION_DIRECT_ITEMProjection> entities)
         {
-            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = this.ApplyEntityPropertiesToProjectionCallBack;
+            COMMODITY_CODECollectionViewModel.OnAfterEntitySavedCallBack = OnAfterCommodityCodeSavedCallBack;
+            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = ApplyEntityPropertiesToProjectionCallBack;
             base.AssignCallBacksAndRaisePropertyChange(entities);
             Refresh_COMMODITY_GROUP_CODE();
+        }
+
+        protected override void OnBeforeApplyProjectionPropertiesToEntity(ESTIMATION_DIRECT_ITEMProjection projectionEntity, ESTIMATION_DIRECT_ITEM entity)
+        {
+            bool isNewSignature = IsNewCommodityCodeSignature(projectionEntity.TempCOMMODITY_GROUP_CODE);
+            if (isNewSignature)
+            {
+                COMMODITY_CODE newCOMMODITY_CODE = new COMMODITY_CODE();
+                DataUtils.ShallowCopy(newCOMMODITY_CODE, projectionEntity.TempCOMMODITY_GROUP_CODE);
+                newCOMMODITY_CODE.GUID = Guid.Empty;
+                newCOMMODITY_CODE.GUID_PROJECT = loadPROJECT.GUID;
+                COMMODITY_CODECollectionViewModel.Save(newCOMMODITY_CODE);
+                projectionEntity.Entity.GUID_COMMODITY_CODE = newCOMMODITY_CODE.GUID;
+            }
+
+            projectionEntity.Entity.GUID_ESTIMATION_DIRECT = loadESTIMATION_DIRECT.GUID;
+            base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
+        }
+
+        public void OnAfterCommodityCodeSavedCallBack(COMMODITY_CODE savedEntity, bool isNewEntity)
+        {
+
+        }
+
+        public bool IsNewCommodityCodeSignature(COMMODITY_CODE commodity_code)
+        {
+            IEnumerable<COMMODITY_CODE> projectCommodity_Code = COMMODITY_CODECollection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            if(commodity_code.GUID_GROUP_PARENT != null)
+            {
+                //get the parent
+                COMMODITY_CODE currentGroupParentCommodity_Code = projectCommodity_Code.FirstOrDefault(x => x.GUID == commodity_code.GUID_GROUP_PARENT);
+                //when parent doesn't exists, make a new branch because of dirty data
+                if (currentGroupParentCommodity_Code == null)
+                    return true;
+
+                //get the entire branch of childrens
+                IEnumerable<COMMODITY_CODE> currentProjectGroupChildrenCommodity_Codes = projectCommodity_Code.Where(x => x.GUID_GROUP_PARENT == commodity_code.GUID);
+
+                IEnumerable<COMMODITY_CODE> allProjectGroupParentCommodity_Codes = projectCommodity_Code.Where(x => x.GUID_COMMODITY_GROUP_DIRECT == currentGroupParentCommodity_Code.GUID_COMMODITY_GROUP_DIRECT);
+
+                bool isMatch = false;
+
+                foreach(COMMODITY_CODE allProjectGroupParentCommodity_Code in allProjectGroupParentCommodity_Codes)
+                {
+                    IEnumerable<COMMODITY_CODE> allProjectGroupChildrenCommodity_Codes = projectCommodity_Code.Where(x => x.GUID_GROUP_PARENT == allProjectGroupParentCommodity_Code.GUID);
+                    isMatch = IsGroupChildrenMatch(currentProjectGroupChildrenCommodity_Codes, allProjectGroupChildrenCommodity_Codes);
+                    if (isMatch)
+                        return false;
+                }
+
+                return true;
+            }
+            else
+            {
+                IEnumerable<COMMODITY_CODE> projectStandaloneCommodity_Codes = projectCommodity_Code.Where(x => x.GUID_GROUP_PARENT == null);
+                COMMODITY_CODE projectSameSignatureCommodity_Code = projectStandaloneCommodity_Codes
+                    .FirstOrDefault(x => x.FULLCODE == commodity_code.FULLCODE && x.RATE_FREIGHT == commodity_code.RATE_FREIGHT && x.RATE_PLANT == commodity_code.RATE_PLANT && x.RATE_SUPPLY == commodity_code.RATE_SUPPLY && x.HOURS_INSTALL == commodity_code.HOURS_INSTALL);
+                if (projectSameSignatureCommodity_Code != null)
+                    return false;
+                else
+                    return true;
+            }
+        }
+
+        public bool IsGroupChildrenMatch(IEnumerable<COMMODITY_CODE> currentGroupChildrenCommodity_Codes, IEnumerable<COMMODITY_CODE> otherGroupChildrenCommodity_Codes)
+        {
+            foreach(COMMODITY_CODE currentGroupChildrenCommodity_Code in currentGroupChildrenCommodity_Codes)
+            {
+                COMMODITY_CODE sameOtherGroupChildrenCommodity_Code = otherGroupChildrenCommodity_Codes
+                    .FirstOrDefault(x => x.FULLCODE == currentGroupChildrenCommodity_Code.FULLCODE
+                    && x.RATE_FREIGHT == currentGroupChildrenCommodity_Code.RATE_FREIGHT
+                    && x.RATE_PLANT == currentGroupChildrenCommodity_Code.RATE_PLANT
+                    && x.RATE_SUPPLY == currentGroupChildrenCommodity_Code.RATE_SUPPLY);
+
+                if (sameOtherGroupChildrenCommodity_Code == null)
+                    return false;
+            }
+
+            //swap the other way to see if anything is missing from the collection
+            foreach (COMMODITY_CODE otherGroupChildrenCommodity_Code in otherGroupChildrenCommodity_Codes)
+            {
+                COMMODITY_CODE sameCurrentGroupChildrenCommodity_Codes = currentGroupChildrenCommodity_Codes
+                    .FirstOrDefault(x => x.FULLCODE == otherGroupChildrenCommodity_Code.FULLCODE
+                    && x.RATE_FREIGHT == otherGroupChildrenCommodity_Code.RATE_FREIGHT
+                    && x.RATE_PLANT == otherGroupChildrenCommodity_Code.RATE_PLANT
+                    && x.RATE_SUPPLY == otherGroupChildrenCommodity_Code.RATE_SUPPLY);
+
+                if (sameCurrentGroupChildrenCommodity_Codes == null)
+                    return false;
+            }
+
+            return true;
         }
 
         public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
@@ -183,6 +278,22 @@ namespace BluePrints.ViewModels
 
         #endregion
 
+        #endregion
+
+        #region View Behavior
+        /// <summary>
+        /// Influence column(s) when changes happens in other column
+        /// </summary>
+        public void CellValueChanging(CellValueChangedEventArgs e)
+        {
+            var activeProjection = (ESTIMATION_DIRECT_ITEMProjection)e.Row;
+            if (e.Column.FieldName ==
+                BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_COMMODITY_CODE))
+            {
+                activeProjection.TempCOMMODITY_GROUP_CODE = COMMODITY_GROUP_CODECollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
+            }
+        }
         #endregion
 
         #region View Properties
@@ -258,6 +369,20 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public CollectionViewModel<COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork>
+            COMMODITY_CODECollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<COMMODITY_CODE>();
+            }
+        }
+
         private void Refresh_COMMODITY_GROUP_CODE()
         {
             commodity_group_codeCollection = null;
@@ -299,6 +424,7 @@ namespace BluePrints.ViewModels
                                     {
                                         COMMODITY_CODE newChildCommodityCode = new COMMODITY_CODE();
                                         DataUtils.ShallowCopy(newChildCommodityCode, childCommodityCode);
+                                        newChildCommodityCode.ISGROUPHEADER = false;
                                         newChildCommodityCode.Temp_Id = childPrefix + tempChildId.ToString();
                                         newChildCommodityCode.Temp_Parent_Id = parentPrefix + tempParentId.ToString();
                                         tempChildId += 1;
@@ -308,8 +434,9 @@ namespace BluePrints.ViewModels
 
                                 COMMODITY_CODE tempParentCommodityCode = new COMMODITY_CODE()
                                 {
-                                    GUID = Guid.Empty,
+                                    GUID = Guid.NewGuid(),
                                     GUID_PARENT = Guid.Empty,
+                                    GUID_COMMODITY_GROUP_DIRECT = commodityGroup.GUID,
                                     COMMODITYCODETYPE = CommodityCodeType.Direct,
                                     DESCRIPTION = commodityGroup.DESCRIPTION,
                                     SortOrder = 0,

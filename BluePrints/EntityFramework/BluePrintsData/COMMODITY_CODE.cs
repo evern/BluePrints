@@ -23,6 +23,8 @@ namespace BluePrints.Data
 
         public Guid GUID_PARENT { get; set; }
 
+        public Guid? GUID_COMMODITY_GROUP_DIRECT { get; set; }
+
         public Guid? GUID_GROUP_PARENT { get; set; }
 
         public Guid? GUID_DEPARTMENT { get; set; }
