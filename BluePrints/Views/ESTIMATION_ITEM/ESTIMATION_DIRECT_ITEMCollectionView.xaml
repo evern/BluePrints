@@ -367,7 +367,7 @@
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandRate" Header="Rate">
-                                <dxg:GridColumn Name="colSUPPLY_RATE" FieldName="Entity.RATE_SUPPLY"
+                                <dxg:GridColumn Name="colSUPPLY_RATE" FieldName="TempCommodityCode.RATE_SUPPLY"
                                                 Header="SUPPLY RATE" AllowSearchPanel="False" VisibleIndex="10">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
@@ -377,7 +377,7 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colFREIGHT_RATE" FieldName="Entity.RATE_FREIGHT"
+                                <dxg:GridColumn Name="colFREIGHT_RATE" FieldName="TempCommodityCode.RATE_FREIGHT"
                                                 Header="FREIGHT RATE" AllowSearchPanel="False" VisibleIndex="20">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
@@ -398,7 +398,7 @@
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="colINSTALL_HOURS"
-                                                FieldName="Entity.HOURS_INSTALL" Header="INSTALL HOURS"
+                                                FieldName="TempCommodityCode.HOURS_INSTALL" Header="INSTALL HOURS"
                                                 AllowSearchPanel="False" VisibleIndex="40">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>

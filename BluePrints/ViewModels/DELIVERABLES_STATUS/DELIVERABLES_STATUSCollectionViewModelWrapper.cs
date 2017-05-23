@@ -78,9 +78,9 @@ namespace BluePrints.ViewModels
             ConstructMainViewModelProjection()
         {
             if (isProjectSpecific)
-                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.GUID_DOCTYPE).ThenBy(x => x.MAX_PERCENTAGE);
+                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TEMP_ERROR == false).OrderBy(x => x.GUID_DOCTYPE).ThenBy(x => x.MAX_PERCENTAGE);
             else
-                return query => query.Where(x => x.GUID_PROJECT == null).OrderBy(x => x.GUID_DOCTYPE).ThenBy(x => x.MAX_PERCENTAGE);
+                return query => query.Where(x => x.GUID_PROJECT == null && x.TEMP_ERROR == false).OrderBy(x => x.GUID_DOCTYPE).ThenBy(x => x.MAX_PERCENTAGE);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<DELIVERABLES_STATUS> entities)

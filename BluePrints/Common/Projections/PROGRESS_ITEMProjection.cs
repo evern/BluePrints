@@ -122,6 +122,11 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public IEnumerable<PROGRESS_ITEM> AllProgresses
+        {
+            get { return progress_items; }
+        }
+
         private PROGRESS_ITEM progress_itemCurrent;
 
         public PROGRESS_ITEM PROGRESS_ITEMCurrent

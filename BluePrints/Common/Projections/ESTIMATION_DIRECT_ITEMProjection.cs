@@ -1,4 +1,5 @@
-﻿using BluePrints.Common.Base;
+﻿using BaseModel.Data.Helpers;
+using BluePrints.Common.Base;
 using BluePrints.Common.Resources;
 using BluePrints.Data;
 using System;
@@ -13,7 +14,16 @@ namespace BluePrints.Common.Projections
     {
         public RATE RATE { get; set; }
 
-        public COMMODITY_CODE TempCOMMODITY_GROUP_CODE { get; set; }
+        COMMODITY_CODE tempCommodityCode;
+        public COMMODITY_CODE TempCommodityCode
+        {
+            get { return tempCommodityCode; }
+            set
+            {
+                tempCommodityCode = new COMMODITY_CODE();
+                DataUtils.ShallowCopy(tempCommodityCode, value);
+            }
+        }
 
         public string COMMODITY_GROUP_CODE_SELECTION
         {
@@ -208,7 +218,7 @@ namespace BluePrints.Common.Projections
                                         y =>
                                             y.GUID_DEPARTMENT == searchDEPARTMENTGuid &&
                                             y.GUID_DISCIPLINE == x.GUID_DISCIPLINE), 
-                                TempCOMMODITY_GROUP_CODE = COMMODITY_CODES.FirstOrDefault(z => z.GUID == x.GUID_COMMODITY_CODE)
+                                TempCommodityCode = COMMODITY_CODES.FirstOrDefault(z => z.GUID == x.GUID_COMMODITY_CODE)
                             }).AsQueryable();
         }
     }

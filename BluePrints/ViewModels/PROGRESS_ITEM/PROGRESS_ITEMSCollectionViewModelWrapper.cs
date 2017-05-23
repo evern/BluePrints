@@ -162,7 +162,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<DELIVERABLES_STATUS>, IQueryable<DELIVERABLES_STATUS>> DELIVERABLES_STATUSProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TEMP_ERROR == false);
         }
 
         private Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
@@ -183,6 +183,92 @@ namespace BluePrints.ViewModels
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
+        }
+
+        public void FixDeliverablesStatus()
+        {
+            IEnumerable<PROGRESS_ITEMProjection> deliverablesWithStatuses = MainViewModel.Entities.Where(x => x.Entity.Entity.GUID_STATUS != null);
+
+            List<PROGRESS_ITEMProjection> fixedProjections = new List<PROGRESS_ITEMProjection>();
+            foreach(var deliverableWithStatus in deliverablesWithStatuses)
+            {
+                string statusString = deliverableWithStatus.Entity.Entity.DELIVERABLES_STATUS.NAME;
+                DELIVERABLES_STATUS projectSpecificStatus = deliverableWithStatus.Entity.AvailableDeliverable_Status.FirstOrDefault(x => x.NAME.ToUpper() == statusString.ToUpper());
+                if(projectSpecificStatus != null)
+                {
+                    deliverableWithStatus.Entity.Entity.GUID_STATUS = projectSpecificStatus.GUID;
+                    fixedProjections.Add(deliverableWithStatus);
+                }
+            }
+
+            MainViewModel.BulkSave(fixedProjections);
+            RefreshView();
+        }
+
+        public void UpdateAllPercentagesByStatus()
+        {
+            if (MessageBoxService.ShowMessage("Warning\nThis action will update or delete progresses based on deliverable status and is not reversible\nDo you wish to continue?",
+                         BluePrintsResources.Warning_Caption, MessageButton.YesNo) == MessageResult.No)
+                return;
+
+            IEnumerable<PROGRESS_ITEMProjection> deliverablesWithStatuses = MainViewModel.Entities.Where(x => x.Entity.Entity.GUID_STATUS != null);
+            List<PROGRESS_ITEM> updateProgress = new List<PROGRESS_ITEM>();
+
+            string percentageFieldname = BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().TOTAL_EARNED_PERCENTAGE);
+            foreach (var deliverableWithStatus in deliverablesWithStatuses)
+            {
+                DELIVERABLES_STATUS deliverableStatus = deliverableWithStatus.Entity.DELIVERABLE_STATUS;
+                decimal? autoPercentage = deliverableStatus.AUTO_PERCENTAGE;
+                if(autoPercentage != null)
+                {
+                    if (deliverableWithStatus.TOTAL_EARNED_PERCENTAGE < autoPercentage)
+                    {
+                        decimal oldPercentage = deliverableWithStatus.TOTAL_EARNED_PERCENTAGE;
+                        decimal newPercentage = (decimal)autoPercentage;
+                        deliverableWithStatus.TOTAL_EARNED_PERCENTAGE = newPercentage;
+                        PROGRESS_ITEM updateProgressItem = deliverableWithStatus.PROGRESS_ITEMCurrent;
+                        if(updateProgressItem.GUID == Guid.Empty)
+                        {
+                            updateProgressItem.EARNED_DATE = loadPROGRESS.DATA_DATE;
+                            updateProgressItem.GUID_PROGRESS = loadPROGRESS.GUID;
+                            updateProgressItem.GUID_ORIBASEITEM = deliverableWithStatus.Entity.Entity.GUID_ORIGINAL;
+                            //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
+                            if (updateProgressItem.CREATED.Date.Year == 1)
+                                updateProgressItem.CREATED = DateTime.Now;
+                        }
+
+                        updateProgress.Add(deliverableWithStatus.PROGRESS_ITEMCurrent);
+                    }
+                }
+                
+                if(deliverableWithStatus.TOTAL_EARNED_PERCENTAGE > deliverableStatus.MAX_PERCENTAGE)
+                {
+                    decimal totalDeliverableUnits = deliverableWithStatus.Entity.Entity.TOTAL_HOURS;
+                    decimal maxAllowableEarnedUnit = totalDeliverableUnits * deliverableStatus.MAX_PERCENTAGE;
+                    if(maxAllowableEarnedUnit > 0)
+                    {
+                        decimal iterateEarnedUnits = 0;
+                        List<PROGRESS_ITEM> progressesByDate = deliverableWithStatus.AllProgresses.OrderBy(x => x.EARNED_DATE).ToList();
+                        foreach(PROGRESS_ITEM progressByDate in progressesByDate)
+                        {
+                            decimal postProgressEarnedUnit = (iterateEarnedUnits + progressByDate.EARNED_UNITS);
+                            decimal oldProgressEarnUnit = progressByDate.EARNED_UNITS;
+                            if (postProgressEarnedUnit > maxAllowableEarnedUnit)
+                            {
+                                decimal newProgressEarnUnit = (maxAllowableEarnedUnit - iterateEarnedUnits);
+                                progressByDate.EARNED_UNITS = newProgressEarnUnit < 0 ? 0 : newProgressEarnUnit;
+                                updateProgress.Add(progressByDate);
+                            }
+
+                            iterateEarnedUnits += oldProgressEarnUnit;
+                        }
+                    }
+                }
+            }
+
+            PROGRESS_ITEMSCollectionViewModel.BulkSave(updateProgress);
+
+            FullRefreshWithoutClearingUndoRedo();
         }
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<PROGRESS_ITEMProjection>>
@@ -213,6 +299,7 @@ namespace BluePrints.ViewModels
             MainViewModel.OnAfterEntitySavedCallBack = OnAfterBASELINE_ITEMEntitySaved;
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             MainViewModel.BeforeShownEditor = BeforeShownEditor;
+            PROGRESS_ITEMSCollectionViewModel.SetParentViewModel(this);
             MainViewModel.SetParentViewModel(this);
             //mainThreadDispatcher.BeginInvoke(new Action(() => InitializeSummarizer(entities)));
             onMainViewModelFirstLoadedTimer.Start();
@@ -283,35 +370,27 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-        /// <summary>
-        /// Influence column(s) when changes happens in other column
-        /// </summary>
-        public void CellValueChanged(CellValueChangedEventArgs e)
-        {
-
-        }
-
         private bool ExistingRowAddUndoAndSaveCallBack(PROGRESS_ITEMProjection projectionEntity, CellValueChangedEventArgs e)
         {
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
-                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." + BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_STATUS))
-            {
-                PROGRESS_ITEMProjection activeEntity = (PROGRESS_ITEMProjection)e.Row;
-                DELIVERABLES_STATUS findDeliverableStatus = DELIVERABLES_STATUSCollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
-                if(findDeliverableStatus != null)
-                {
-                    decimal? autoAssignPercentage = findDeliverableStatus.AUTO_PERCENTAGE;
-                    if (autoAssignPercentage != null)
-                    {
-                        if(autoAssignPercentage >= activeEntity.MinPercentage)
-                            activeEntity.TOTAL_EARNED_PERCENTAGE = (decimal)autoAssignPercentage;
-                    }
+            //if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+            //     BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." + BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_STATUS))
+            //{
+            //    PROGRESS_ITEMProjection activeEntity = (PROGRESS_ITEMProjection)e.Row;
+            //    DELIVERABLES_STATUS findDeliverableStatus = DELIVERABLES_STATUSCollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
+            //    if(findDeliverableStatus != null)
+            //    {
+            //        decimal? autoAssignPercentage = findDeliverableStatus.AUTO_PERCENTAGE;
+            //        if (autoAssignPercentage != null)
+            //        {
+            //            if(autoAssignPercentage >= activeEntity.MinPercentage)
+            //                activeEntity.TOTAL_EARNED_PERCENTAGE = (decimal)autoAssignPercentage;
+            //        }
 
-                    SaveProgressItem(projectionEntity);
-                }
+            //        SaveProgressItem(projectionEntity);
+            //    }
 
-                return true;
-            }
+            //    return true;
+            //}
             if (e.Column.FieldName ==
                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().TOTAL_EARNED_PERCENTAGE))
             {

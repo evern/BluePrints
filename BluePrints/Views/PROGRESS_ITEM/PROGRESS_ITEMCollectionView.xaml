@@ -37,6 +37,12 @@
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                <dxb:BarButtonItem Content="Fix Status" Command="{Binding DataContext.FixDeliverablesStatusCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImageOffice2013 Image=Replace_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=Replace_16x16.png}" />
+                                <dxb:BarButtonItem Content="Update % by Status" Command="{Binding DataContext.UpdateAllPercentagesByStatusCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImageOffice2013 Image=ClearFormatting_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=ClearFormatting_16x16.png}" />
                                 <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}"
                                                    LargeGlyph="{dx:DXImage Image=Undo_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Undo_16x16.png}" />
@@ -203,9 +209,10 @@
                                                               MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Entity.Entity.DELIVERABLES_STATUS.NAME" Header="OldStatusName" />
                                 <dxg:GridColumn Name="columnStatus"
                                                 FieldName="Entity.Entity.GUID_STATUS"
-                                                Header="STATUS">
+                                                Header="STATUS" ColumnFilterMode="DisplayText">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:ComboBoxEdit 
@@ -217,16 +224,18 @@
                                                   ValidateOnEnterKeyPressed="True"
                                                   IncrementalFiltering="True"
                                                   IsEnabled="{Binding RowData.Row.Entity.HaveDeliverableStatus}"
+                                                  NullValueButtonPlacement="Popup"
                                                   ImmediatePopup="True">
                                             </dxe:ComboBoxEdit>
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
-                                    <!--<dxg:GridColumn.EditSettings>
+                                    <!--For Filtering-->
+                                    <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings
                                             ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}"
                                             IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
                                             ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>-->
+                                    </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnUser"
                                                 FieldName="Entity.Entity.GUID_USER"
