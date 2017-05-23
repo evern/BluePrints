@@ -9,6 +9,7 @@ using BluePrints.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Bars;
+using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,14 +85,26 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<DELIVERABLES_STATUS> entities)
         {
+            MainViewModel.AdditionalValidateRowCallBack = AdditionalValidateRowCallBack;
             MainViewModel.IsContinueSaveCallBack = IsContinueSaveCallBack;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        private void AdditionalValidateRowCallBack(GridRowValidationEventArgs e)
+        {
+            DELIVERABLES_STATUS validateEntity = (DELIVERABLES_STATUS)e.Row;
+            if(validateEntity.AUTO_PERCENTAGE > validateEntity.MAX_PERCENTAGE)
+            {
+                e.IsValid = false;
+                e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                e.ErrorContent = "Auto assign percentage cannot be more than max percentage";
+            }
+        }
+
         private bool IsContinueSaveCallBack(DELIVERABLES_STATUS entity, bool isNewEntity)
         {
-            if (isProjectSpecific)
+            if (isNewEntity && isProjectSpecific)
                 entity.GUID_PROJECT = loadPROJECT.GUID;
 
             return true;

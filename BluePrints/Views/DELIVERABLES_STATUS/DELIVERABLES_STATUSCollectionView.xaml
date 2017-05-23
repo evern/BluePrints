@@ -83,7 +83,7 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="MAX_PERCENTAGE" VisibleIndex="20">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings  MaskType="Numeric" Mask="p2"
+                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="p2"
                                                           MaskUseAsDisplayFormat="True" Increment="0.1" MaxValue="1"
                                                           MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
@@ -91,7 +91,7 @@
                             <dxg:GridColumn FieldName="AUTO_PERCENTAGE" VisibleIndex="30">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxe:SpinEdit Name="PART_Editor" MaskUseAsDisplayFormat="True" MinValue="0" Increment="0.1" MaxValue="{Binding RowData.Row.MAX_PERCENTAGE}"
+                                        <dxe:SpinEdit Name="PART_Editor" MaskUseAsDisplayFormat="True" MinValue="0" MaxValue="1" Increment="0.1" 
                                                       MaskType="Numeric" Mask="p2" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
