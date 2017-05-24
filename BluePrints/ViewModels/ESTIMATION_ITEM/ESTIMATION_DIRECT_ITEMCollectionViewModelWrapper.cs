@@ -175,6 +175,11 @@ namespace BluePrints.ViewModels
             Refresh_COMMODITY_GROUP_CODE();
         }
 
+        private DevExpress.Mvvm.IDialogService BulkColumnEditDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BulkColumnEditService"); }
+        }
+
         protected override void OnBeforeApplyProjectionPropertiesToEntity(ESTIMATION_DIRECT_ITEMProjection projectionEntity, ESTIMATION_DIRECT_ITEM entity)
         {
             if(projectionEntity.TempCommodityCode != null)
@@ -187,10 +192,19 @@ namespace BluePrints.ViewModels
                     {
                         projectionEntity.Entity.GUID_COMMODITY_CODE = AddNewCommodityCode(projectionEntity.TempCommodityCode);
                     }
-                    else if (MessageBoxService.ShowMessage("Do you wish to edit current commodity code?",
-                         BluePrintsResources.Confirmation_Caption, MessageButton.YesNo) == MessageResult.No)
+                    else if (MessageBoxService.ShowMessage("Do you wish to add as new current commodity code?",
+                         BluePrintsResources.Confirmation_Caption, MessageButton.YesNo) == MessageResult.Yes)
                     {
                         projectionEntity.Entity.GUID_COMMODITY_CODE = AddNewCommodityCode(projectionEntity.TempCommodityCode);
+                    }
+                    else
+                    {
+                        ESTIMATE_COMMODITY_CODESelectionViewModel estimateCommodityCodeSelectionViewModel = ESTIMATE_COMMODITY_CODESelectionViewModel.Create(COMMODITY_GROUP_CODECollection, projectionEntity.TempCommodityCode, PROJECTCollection, DISCIPLINECollection);
+                        if(BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Select Item to edit",
+                            "ESTIMATE_COMMODITY_CODESelectionView", estimateCommodityCodeSelectionViewModel) == MessageResult.OK)
+                        {
+                            string s = estimateCommodityCodeSelectionViewModel.SelectedItem.ToString();
+                        }
                     }
                 }
             }

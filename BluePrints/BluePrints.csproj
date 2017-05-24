@@ -415,6 +415,7 @@
     <Compile Include="Common\Reports\ViewModel\Summarizers.cs" />
     <Compile Include="Common\ViewModel\Converters\CollectionConverter.cs" />
     <Compile Include="Common\ViewModel\Misc\XMLSettings.cs" />
+    <Compile Include="Common\ViewModel\Services\TableViewService.cs" />
     <Compile Include="Common\View\DXSplashScreen\LoadingScreen.cs" />
     <Compile Include="Common\View\DXSplashScreen\LoadingScreen.xaml.cs">
       <DependentUpon>LoadingScreen.xaml</DependentUpon>
@@ -506,6 +507,7 @@
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\IBluePrintsEntitiesUnitOfWork.cs" />
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\BluePrintsEntitiesUnitOfWorkSource.cs" />
     <Compile Include="Common\Misc\BluePrintsEnums.cs" />
+    <Compile Include="ViewModels\ESTIMATION_ITEM\ESTIMATE_COMMODITY_CODESelectionViewModel.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_HOLDCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_ISSUECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_CHANGECollectionViewModelWrapper.cs" />
@@ -513,7 +515,10 @@
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEM_ASSIGNMENTViewModel.cs" />
     <Compile Include="ViewModels\COMMODITY_GROUP\COMMODITY_GROUP_CODECollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\ESTIMATION_ITEM\ESTIMATION_DIRECT_ITEMSViewModelWrapper - old.cs" />
+    <Compile Include="ViewModels\ESTIMATION_ITEM\ESTIMATION_DIRECT_ITEMSViewModelWrapperOld.cs" />
+    <Compile Include="Views\ESTIMATION_ITEM\ESTIMATE_COMMODITY_CODESelectionView.xaml.cs">
+      <DependentUpon>ESTIMATE_COMMODITY_CODESelectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\REGISTER\REGISTER_HOLDCollectionView.xaml.cs">
       <DependentUpon>REGISTER_HOLDCollectionView.xaml</DependentUpon>
     </Compile>
@@ -1268,6 +1273,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Common\View\ResourceDictionaries\GridColumnResourceDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ESTIMATION_ITEM\ESTIMATE_COMMODITY_CODESelectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -223,8 +223,14 @@ namespace BluePrints.ViewModels
             foreach (var deliverableWithStatus in deliverablesWithStatuses)
             {
                 DELIVERABLES_STATUS deliverableStatus = deliverableWithStatus.Entity.DELIVERABLE_STATUS;
+
+                //user are able to fill up/down on statuses that might result in assigned status isn't valid to doctype, so check if status is valid before continuing
+                bool isValidStatus = deliverableWithStatus.Entity.AvailableDeliverable_Status.Any(x => x.GUID == deliverableStatus.GUID);
+                if (!isValidStatus)
+                    continue;
+
                 decimal? autoPercentage = deliverableStatus.AUTO_PERCENTAGE;
-                if(autoPercentage != null)
+                if (autoPercentage != null)
                 {
                     if (deliverableWithStatus.TOTAL_EARNED_PERCENTAGE < autoPercentage)
                     {
@@ -232,7 +238,7 @@ namespace BluePrints.ViewModels
                         decimal newPercentage = (decimal)autoPercentage;
                         deliverableWithStatus.TOTAL_EARNED_PERCENTAGE = newPercentage;
                         PROGRESS_ITEM updateProgressItem = deliverableWithStatus.PROGRESS_ITEMCurrent;
-                        if(updateProgressItem.GUID == Guid.Empty)
+                        if (updateProgressItem.GUID == Guid.Empty)
                         {
                             updateProgressItem.EARNED_DATE = loadPROGRESS.DATA_DATE;
                             updateProgressItem.GUID_PROGRESS = loadPROGRESS.GUID;
@@ -245,16 +251,16 @@ namespace BluePrints.ViewModels
                         updateProgress.Add(deliverableWithStatus.PROGRESS_ITEMCurrent);
                     }
                 }
-                
-                if(deliverableWithStatus.TOTAL_EARNED_PERCENTAGE > deliverableStatus.MAX_PERCENTAGE)
+
+                if (deliverableWithStatus.TOTAL_EARNED_PERCENTAGE > deliverableStatus.MAX_PERCENTAGE)
                 {
                     decimal totalDeliverableUnits = deliverableWithStatus.Entity.Entity.TOTAL_HOURS;
                     decimal maxAllowableEarnedUnit = totalDeliverableUnits * deliverableStatus.MAX_PERCENTAGE;
-                    if(maxAllowableEarnedUnit > 0)
+                    if (maxAllowableEarnedUnit > 0)
                     {
                         decimal iterateEarnedUnits = 0;
                         List<PROGRESS_ITEM> progressesByDate = deliverableWithStatus.AllProgresses.OrderBy(x => x.EARNED_DATE).ToList();
-                        foreach(PROGRESS_ITEM progressByDate in progressesByDate)
+                        foreach (PROGRESS_ITEM progressByDate in progressesByDate)
                         {
                             decimal postProgressEarnedUnit = (iterateEarnedUnits + progressByDate.EARNED_UNITS);
                             decimal oldProgressEarnUnit = progressByDate.EARNED_UNITS;
@@ -269,11 +275,12 @@ namespace BluePrints.ViewModels
                         }
                     }
                 }
+
             }
 
             PROGRESS_ITEMSCollectionViewModel.BulkSave(updateProgress);
 
-            FullRefreshWithoutClearingUndoRedo();
+            FullRefresh();
         }
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<PROGRESS_ITEMProjection>>
