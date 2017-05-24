@@ -205,6 +205,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to update progress percentage by deliverable status.
+        /// </summary>
+        internal static string ProgressUpdatePercentageByStatus {
+            get {
+                return ResourceManager.GetString("ProgressUpdatePercentageByStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to view dashboard.
         /// </summary>
         internal static string ViewDashboard {

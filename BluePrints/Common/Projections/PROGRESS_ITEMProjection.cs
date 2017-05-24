@@ -18,6 +18,17 @@ namespace BluePrints.Common.Projections
         public ProgressStats Stats { get; set; }
         #endregion
 
+        public string TempOldDeliverableStatusName
+        {
+            get
+            {
+                if (Entity == null || Entity.Entity == null || Entity.Entity.DELIVERABLES_STATUS == null)
+                    return string.Empty;
+
+                return Entity.Entity.DELIVERABLES_STATUS.NAME;
+            }
+        }
+
         /// <summary>
         /// Refreshes current row when stats budgeted datapoints are set
         /// </summary>

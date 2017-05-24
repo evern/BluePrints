@@ -165,6 +165,9 @@
   <data name="ManageWorkpack" xml:space="preserve">
     <value>Allow user to manage workpacks</value>
   </data>
+  <data name="ProgressUpdatePercentageByStatus" xml:space="preserve">
+    <value>Allow user to update progress percentage by deliverable status</value>
+  </data>
   <data name="ViewDashboard" xml:space="preserve">
     <value>Allow user to view dashboard</value>
   </data>

@@ -205,6 +205,11 @@ namespace BluePrints.ViewModels
             RefreshView();
         }
 
+        public bool CanUpdateAllPercentagesByStatus()
+        {
+            return LoginCredentials.hasPermission(PermissionResources.ProgressUpdatePercentageByStatus);
+        }
+
         public void UpdateAllPercentagesByStatus()
         {
             if (MessageBoxService.ShowMessage("Warning\nThis action will update or delete progresses based on deliverable status and is not reversible\nDo you wish to continue?",
