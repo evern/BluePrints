@@ -209,7 +209,6 @@
                                                               MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="TempOldDeliverableStatusName" Header="OldStatusName" ReadOnly="True" />
                                 <dxg:GridColumn Name="columnStatus"
                                                 FieldName="Entity.Entity.GUID_STATUS"
                                                 Header="STATUS" ColumnFilterMode="DisplayText">

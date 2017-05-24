@@ -154,7 +154,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<DELIVERABLES_STATUS>, IQueryable<DELIVERABLES_STATUS>> DELIVERABLES_STATUSProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == _loadProject.GUID && x.TEMP_ERROR == false);
+            return query => query.Where(x => x.GUID_PROJECT == _loadProject.GUID);
         }
 
         private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
