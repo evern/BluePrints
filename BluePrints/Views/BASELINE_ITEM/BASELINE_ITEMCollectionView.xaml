@@ -73,6 +73,10 @@
                                 <dxb:BarCheckItem Content="Lock Baseline"
                                                   IsChecked="{Binding DataContext.IsBASELINELocked, ElementName=userControl}"
                                                   Glyph="{dx:DXImageOffice2013 Image=Product_16x16.png}" />
+                                <dxb:BarButtonItem Content="Export"
+                                                   Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

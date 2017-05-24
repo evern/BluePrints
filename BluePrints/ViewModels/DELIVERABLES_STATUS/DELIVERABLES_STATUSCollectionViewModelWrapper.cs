@@ -221,6 +221,14 @@ namespace BluePrints.ViewModels
                 }
             }
         }
+
+        protected override string ExportExcelFilename()
+        {
+            if (isProjectSpecific)
+                return loadPROJECT.NUMBER + "_DeliverablesStatus.xlsx";
+            else
+                return "Global_DeliverablesStatus.xlsx";
+        }
         #endregion  
     }
 }

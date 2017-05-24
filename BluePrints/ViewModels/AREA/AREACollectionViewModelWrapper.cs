@@ -105,7 +105,6 @@ namespace BluePrints.ViewModels
         {
             get { return "AREACollectionViewModelWrapper"; }
         }
-
         #endregion
     }
 }

@@ -731,6 +731,10 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        protected override string ExportExcelFilename()
+        {
+            return loadPROJECT.NUMBER + "_" + loadVARIATION.NAME + ".xlsx";
+        }
 
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent

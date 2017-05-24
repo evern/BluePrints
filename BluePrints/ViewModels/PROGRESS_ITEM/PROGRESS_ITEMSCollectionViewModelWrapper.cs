@@ -1029,6 +1029,10 @@ namespace BluePrints.ViewModels
             previewWindow.Show();
         }
 
+        protected override string ExportExcelFilename()
+        {
+            return loadPROJECT.NUMBER + "_Progress_" + loadPROGRESS.DATA_DATE.ToString("dd-MMM-yy") + ".xlsx";
+        }
         #endregion
 
         #region Disposing

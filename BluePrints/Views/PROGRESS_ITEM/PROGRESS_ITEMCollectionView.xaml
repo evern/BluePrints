@@ -87,6 +87,10 @@
                                                    Command="{Binding DataContext.ViewReportCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Report_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Report_16x16.png}" />
+                                <dxb:BarButtonItem Content="Export"
+                                                   Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
                                 <!--<dxb:BarButtonItem Content="Push to P6" Command="{Binding DataContext.PushToP6Command, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Export_32x32.png}" Glyph="{dx:DXImage Image=Export_16x16.png}" />-->
                                 <dxb:BarItemSeparator />
                                 <dxb:BarStaticItem Content="Data Date" />
