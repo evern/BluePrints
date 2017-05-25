@@ -76,12 +76,21 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public bool IsEditable
+        {
+            get
+            {
+                return Entity.GUID_COMMODITY_GROUP_DIRECT == null;
+            }
+        }
+
         public bool ISQUANTIFIABLE
         {
             get
             {
-                return EntityKey != null && Entity != null &&
-                       Entity.GUID_COMMODITY_CODE != null;
+                return Entity.GUID_COMMODITY_GROUP_DIRECT == null;
+                //return EntityKey != null && Entity != null &&
+                //       Entity.GUID_COMMODITY_CODE != null;
             }
         }
 
@@ -100,7 +109,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Entity == null || COMMODITY_CODE == null)
+                if (Entity == null || COMMODITY_CODE == null || COMMODITY_CODE.HOURS_INSTALL == null)
                     return 0;
 
                 if (RATE == null || RATE.RATE1 == null)
@@ -115,7 +124,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Entity == null || COMMODITY_CODE == null)
+                if (Entity == null || COMMODITY_CODE == null || COMMODITY_CODE.RATE_FREIGHT == null)
                     return 0;
 
                 return (decimal) COMMODITY_CODE.RATE_FREIGHT * Entity.TOTAL_QUANTITY;
@@ -126,7 +135,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Entity == null || COMMODITY_CODE == null)
+                if (Entity == null || COMMODITY_CODE == null || COMMODITY_CODE.RATE_SUPPLY == null)
                     return 0;
 
                 return (decimal) COMMODITY_CODE.RATE_SUPPLY * Entity.TOTAL_QUANTITY;

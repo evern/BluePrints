@@ -103,6 +103,12 @@ namespace BluePrints.Data
             }
         }
 
+        [NotMapped]
+        public bool IsChildren
+        {
+            get { return GUID_GROUP_PARENT != null; }
+        }
+
         public override string ToString()
         {
             return FULLCODE;

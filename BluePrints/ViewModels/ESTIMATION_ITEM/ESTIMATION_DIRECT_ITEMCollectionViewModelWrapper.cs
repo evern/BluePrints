@@ -169,7 +169,7 @@ namespace BluePrints.ViewModels
         #region View Refresh
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATION_DIRECT_ITEMProjection> entities)
         {
-            MainViewModel.OnAfterEntitySavedCallBack = OnAfterCommodityCodeSavedCallBack;
+            MainViewModel.OnAfterEntitySavedCallBack = OnAfterEntitySavedCallBack;
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = ApplyEntityPropertiesToProjectionCallBack;
             base.AssignCallBacksAndRaisePropertyChange(entities);
             Refresh_COMMODITY_GROUP_CODE();
@@ -182,32 +182,50 @@ namespace BluePrints.ViewModels
 
         protected override void OnBeforeApplyProjectionPropertiesToEntity(ESTIMATION_DIRECT_ITEMProjection projectionEntity, ESTIMATION_DIRECT_ITEM entity)
         {
-            if(projectionEntity.COMMODITY_CODE != null)
+            //newly added estimate from code will not have COMMODITY_CODE populated, see OnAfterEntitySavedCallBack
+            if (projectionEntity.COMMODITY_CODE != null)
             {
-                bool isFullCodeExists;
-                bool isExists = IsProjectCodeSignatureExist(projectionEntity.COMMODITY_CODE, out isFullCodeExists);
+                //for standalone commodity code existing project matching fullcode will be returned
+                //for group commodity code new group composition will be returned if existing project group code doesn't match
+                List<COMMODITY_CODE> existingStandaloneOrAddNewGroupCommodityCodes; 
+                bool isExists = isProjectCodeSignatureExist(projectionEntity.COMMODITY_CODE, out existingStandaloneOrAddNewGroupCommodityCodes);
                 if (!isExists)
                 {
-                    if (!isFullCodeExists)
+                    //also validate for count == 0 so that ToList() clause can be used in subroutines
+                    if (existingStandaloneOrAddNewGroupCommodityCodes == null || existingStandaloneOrAddNewGroupCommodityCodes.Count == 0)
                     {
                         projectionEntity.Entity.GUID_COMMODITY_CODE = AddNewCommodityCode(projectionEntity.COMMODITY_CODE);
                     }
-                    else if (MessageBoxService.ShowMessage("Do you wish to add as new current commodity code?",
+                    else if (MessageBoxService.ShowMessage("Do you wish to add as new commodity code?",
                          BluePrintsResources.Confirmation_Caption, MessageButton.YesNo) == MessageResult.Yes)
                     {
-                        projectionEntity.Entity.GUID_COMMODITY_CODE = AddNewCommodityCode(projectionEntity.COMMODITY_CODE);
+                        if(projectionEntity.COMMODITY_CODE.IsChildren)
+                        {
+                            COMMODITY_CODE groupParent = existingStandaloneOrAddNewGroupCommodityCodes.First(x => x.GUID == projectionEntity.COMMODITY_CODE.GUID_GROUP_PARENT);
+                            Guid groupParentGuid = AddNewCommodityCode(groupParent);
+                            existingStandaloneOrAddNewGroupCommodityCodes.Remove(groupParent);
+                            foreach (COMMODITY_CODE existingStandaloneOrAddNewGroupCommodityCode in existingStandaloneOrAddNewGroupCommodityCodes)
+                            {
+                                Guid newGuid = AddNewCommodityCode(existingStandaloneOrAddNewGroupCommodityCode, groupParentGuid);
+                                if (existingStandaloneOrAddNewGroupCommodityCode.FULLCODE == projectionEntity.COMMODITY_CODE.FULLCODE)
+                                    projectionEntity.Entity.GUID_COMMODITY_CODE = newGuid;
+                            }
+                        }
+                        else
+                            projectionEntity.Entity.GUID_COMMODITY_CODE = AddNewCommodityCode(projectionEntity.COMMODITY_CODE);
                     }
                     else
                     {
-                        Guid? selectedGuid = null;
-                        if(projectionEntity.COMMODITY_CODE != null)
-                            selectedGuid = projectionEntity.COMMODITY_CODE.GUID;
-                        ESTIMATE_COMMODITY_CODESelectionViewModel estimateCommodityCodeSelectionViewModel = ESTIMATE_COMMODITY_CODESelectionViewModel.Create(COMMODITY_GROUP_CODECollection, selectedGuid, PROJECTCollection, DISCIPLINECollection);
-                        if(BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Select Item to edit",
-                            "ESTIMATE_COMMODITY_CODESelectionView", estimateCommodityCodeSelectionViewModel) == MessageResult.OK)
-                        {
-                            EditCommodityCode(projectionEntity.COMMODITY_CODE, estimateCommodityCodeSelectionViewModel.SelectedItem.GUID);
-                        }
+                        EditCommodityCode(projectionEntity.COMMODITY_CODE, projectionEntity.COMMODITY_CODE.GUID);
+                        //Guid? selectedGuid = null;
+                        //if(projectionEntity.COMMODITY_CODE != null)
+                        //    selectedGuid = projectionEntity.COMMODITY_CODE.GUID;
+                        //ESTIMATE_COMMODITY_CODESelectionViewModel estimateCommodityCodeSelectionViewModel = ESTIMATE_COMMODITY_CODESelectionViewModel.Create(COMMODITY_GROUP_CODECollection, selectedGuid, PROJECTCollection, DISCIPLINECollection);
+                        //if(BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Select Item to edit",
+                        //    "ESTIMATE_COMMODITY_CODESelectionView", estimateCommodityCodeSelectionViewModel) == MessageResult.OK)
+                        //{
+                        //    EditCommodityCode(projectionEntity.COMMODITY_CODE, estimateCommodityCodeSelectionViewModel.SelectedItem.GUID);
+                        //}
                     }
                 }
             }
@@ -216,11 +234,14 @@ namespace BluePrints.ViewModels
             base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
         }
         
-        private Guid AddNewCommodityCode(COMMODITY_CODE newCommodityCode)
+        private Guid AddNewCommodityCode(COMMODITY_CODE newCommodityCode, Guid? groupParentGuid = null)
         {
             COMMODITY_CODE newCOMMODITY_CODE = new COMMODITY_CODE();
             DataUtils.ShallowCopy(newCOMMODITY_CODE, newCommodityCode);
             newCOMMODITY_CODE.GUID = Guid.Empty;
+            if (groupParentGuid != null)
+                newCOMMODITY_CODE.GUID_GROUP_PARENT = groupParentGuid;
+
             newCOMMODITY_CODE.GUID_PROJECT = loadPROJECT.GUID;
             COMMODITY_CODECollectionViewModel.Save(newCOMMODITY_CODE);
             return newCOMMODITY_CODE.GUID;
@@ -242,22 +263,49 @@ namespace BluePrints.ViewModels
                 return false;
         }
 
-        public void OnAfterCommodityCodeSavedCallBack(ESTIMATION_DIRECT_ITEMProjection savedEntity, bool isNewEntity)
+        public void OnAfterEntitySavedCallBack(ESTIMATION_DIRECT_ITEMProjection savedEntity, bool isNewEntity)
         {
-            
+            if (isNewEntity && savedEntity.COMMODITY_CODE != null && savedEntity.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT != null)
+            {
+                //get the parent
+                COMMODITY_GROUP_DIRECT commodityGroup = COMMODITY_GROUP_DIRECTCollection.FirstOrDefault(x => x.GUID == savedEntity.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT);
+                //get the group childrens
+                IEnumerable<COMMODITY_GROUP_DIRECT> commodityChildrens = COMMODITY_GROUP_DIRECTCollection.Where(x => x.GUID_PARENT == commodityGroup.GUID);
+                //get the commodity code childrens
+                IEnumerable<COMMODITY_CODE> childrenCommodityCodes = COMMODITY_CODECollection.Where(x => commodityChildrens.Any(z => z.GUID_COMMODITYCODE == x.GUID));
+                List<COMMODITY_CODE> newChildrenCommodityCodes = new List<COMMODITY_CODE>();
+
+                foreach(COMMODITY_CODE childrenCommodityCode in childrenCommodityCodes)
+                {
+                    ESTIMATION_DIRECT_ITEMProjection newEstimation = new ESTIMATION_DIRECT_ITEMProjection();
+                    newEstimation.Entity.GUID_ORIGINAL_PARENT = savedEntity.Entity.GUID_ORIGINAL;
+
+                    //Relies on OnBeforeApplyProjectionPropertiesToEntity to save Commodity Code
+                    //also since entity is not refreshed savedEntity.COMMODITY_CODE.GUID_COMMODITY_GROUP_DIRECT is still using the global version
+                    Guid actualParentCommodityCodeGuid = (Guid)savedEntity.Entity.GUID_COMMODITY_CODE;
+                    newEstimation.Entity.GUID_COMMODITY_CODE = AddNewCommodityCode(childrenCommodityCode, actualParentCommodityCodeGuid);
+                    MainViewModel.Save(newEstimation);
+                }
+            }
         }
 
-        public bool IsProjectCodeSignatureExist(COMMODITY_CODE commodity_code, out bool isFullCodeExists)
+        private bool isProjectCodeSignatureExist(COMMODITY_CODE commodity_code)
+        {
+            List<COMMODITY_CODE> dummyCollection;
+            return isProjectCodeSignatureExist(commodity_code, out dummyCollection);
+        }
+
+        private bool isProjectCodeSignatureExist(COMMODITY_CODE commodity_code, out List<COMMODITY_CODE> existingStandaloneOrAddNewGroupCommodityCodes)
         {
             IEnumerable<COMMODITY_CODE> projectCommodity_Code = COMMODITY_CODECollection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
-            if(commodity_code.GUID_GROUP_PARENT != null)
+            if(commodity_code.IsChildren)
             {
                 //get the parent
                 COMMODITY_CODE currentGroupParentCommodity_Code = projectCommodity_Code.FirstOrDefault(x => x.GUID == commodity_code.GUID_GROUP_PARENT);
                 //when parent doesn't exists, make a new branch
                 if (currentGroupParentCommodity_Code == null)
                 {
-                    isFullCodeExists = false;
+                    existingStandaloneOrAddNewGroupCommodityCodes = null;
                     return false;
                 }
                 else
@@ -265,19 +313,22 @@ namespace BluePrints.ViewModels
                     //parent should have group guid
                     if (currentGroupParentCommodity_Code.GUID_COMMODITY_GROUP_DIRECT == null)
                     {
-                        isFullCodeExists = false;
+                        existingStandaloneOrAddNewGroupCommodityCodes = null;
                         return false;
                     }
 
-                    //get the entire branch of childrens
-                    IEnumerable<COMMODITY_CODE> currentProjectGroupChildrenCommodity_Codes = projectCommodity_Code.Where(x => x.GUID_GROUP_PARENT == currentGroupParentCommodity_Code.GUID);
-                    return IsProjectGroupSignatureExist((Guid)currentGroupParentCommodity_Code.GUID_COMMODITY_GROUP_DIRECT, currentProjectGroupChildrenCommodity_Codes, out isFullCodeExists);
+                    //get the entire branch of childrens, excluding current children
+                    List<COMMODITY_CODE> currentProjectGroupChildrenCommodity_Codes = projectCommodity_Code.Where(x => x.GUID_GROUP_PARENT == currentGroupParentCommodity_Code.GUID && x.GUID != commodity_code.GUID).ToList();
+                    currentProjectGroupChildrenCommodity_Codes.Add(commodity_code);
+                    bool result = isProjectGroupSignatureExist((Guid)currentGroupParentCommodity_Code.GUID_COMMODITY_GROUP_DIRECT, currentProjectGroupChildrenCommodity_Codes, out existingStandaloneOrAddNewGroupCommodityCodes);
+                    existingStandaloneOrAddNewGroupCommodityCodes.Add(currentGroupParentCommodity_Code);
+                    return result;
                 }
             }
             else
             {
                 IEnumerable<COMMODITY_CODE> projectStandaloneCommodity_Codes = projectCommodity_Code.Where(x => x.GUID_GROUP_PARENT == null);
-                isFullCodeExists = projectStandaloneCommodity_Codes.Any(x => x.FULLCODE == commodity_code.FULLCODE);
+                existingStandaloneOrAddNewGroupCommodityCodes = projectStandaloneCommodity_Codes.Where(x => x.FULLCODE == commodity_code.FULLCODE).ToList();
 
                 if (isCommodityCodeExists(commodity_code, projectStandaloneCommodity_Codes))
                     return true;
@@ -286,15 +337,21 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private bool IsProjectGroupSignatureExist(Guid commodityGroupGuid, IEnumerable<COMMODITY_CODE> currentProjectGroupChildrenCommodity_Codes, out bool isGroupExists)
+        private bool isProjectGroupSignatureExist(Guid commodityGroupGuid, IEnumerable<COMMODITY_CODE> currentProjectGroupChildrenCommodity_Codes)
+        {
+            List<COMMODITY_CODE> dummyCollection;
+            return isProjectGroupSignatureExist(commodityGroupGuid, currentProjectGroupChildrenCommodity_Codes, out dummyCollection);
+        }
+
+        private bool isProjectGroupSignatureExist(Guid commodityGroupGuid, IEnumerable<COMMODITY_CODE> currentProjectGroupChildrenCommodity_Codes, out List<COMMODITY_CODE> existingStandaloneOrAddNewGroupCommodityCodes)
         {
             IEnumerable<COMMODITY_CODE> projectCommodity_Code = COMMODITY_CODECollection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
             IEnumerable<COMMODITY_CODE> allProjectGroupParentCommodity_Codes = projectCommodity_Code.Where(x => x.GUID_COMMODITY_GROUP_DIRECT == commodityGroupGuid);
 
             if (allProjectGroupParentCommodity_Codes.Count() > 0)
-                isGroupExists = true;
+                existingStandaloneOrAddNewGroupCommodityCodes = currentProjectGroupChildrenCommodity_Codes.ToList();
             else
-                isGroupExists = false;
+                existingStandaloneOrAddNewGroupCommodityCodes = null;
 
             bool isMatch = false;
 
@@ -519,8 +576,7 @@ namespace BluePrints.ViewModels
 
                 foreach (COMMODITY_CODE commodityCode in CommodityCodes)
                 {
-                    bool isCommodityCodeExists;
-                    if (isProjectSpecific || !IsProjectCodeSignatureExist(commodityCode, out isCommodityCodeExists))
+                    if (isProjectSpecific || !isProjectCodeSignatureExist(commodityCode))
                     {
                         COMMODITY_CODE tempCommodityCode = new COMMODITY_CODE();
                         DataUtils.ShallowCopy(tempCommodityCode, commodityCode);
@@ -569,8 +625,7 @@ namespace BluePrints.ViewModels
                             }
                         }
 
-                        bool isGroupExists;
-                        if (!IsProjectGroupSignatureExist(groupParent.GUID, tempChildCommodityCodes, out isGroupExists))
+                        if (!isProjectGroupSignatureExist(groupParent.GUID, tempChildCommodityCodes))
                         {
                             COMMODITY_CODE tempParentCommodityCode = new COMMODITY_CODE()
                             {
@@ -586,6 +641,7 @@ namespace BluePrints.ViewModels
                                 ISQUANTIFIABLE = false,
                                 ISGROUPHEADER = true,
                                 RATE_FREIGHT = tempChildCommodityCodes.Sum(x => x.RATE_FREIGHT),
+                                HOURS_INSTALL = tempChildCommodityCodes.Sum(x => x.HOURS_INSTALL),
                                 RATE_PLANT = tempChildCommodityCodes.Sum(x => x.RATE_PLANT),
                                 RATE_SUPPLY = tempChildCommodityCodes.Sum(x => x.RATE_SUPPLY),
                                 Temp_Id = parentPrefix + tempParentId.ToString()
