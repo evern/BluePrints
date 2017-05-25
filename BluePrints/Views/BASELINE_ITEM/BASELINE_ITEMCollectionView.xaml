@@ -172,7 +172,6 @@
                                                   ValidateOnTextInput="True"
                                                   ValidateOnEnterKeyPressed="True"
                                                   IncrementalFiltering="True"
-                                                  IsEnabled="{Binding RowData.Row.Entity.HaveDeliverableStatus}"
                                                   NullValueButtonPlacement="Popup"
                                                   ImmediatePopup="True">
                                         </dxe:ComboBoxEdit>

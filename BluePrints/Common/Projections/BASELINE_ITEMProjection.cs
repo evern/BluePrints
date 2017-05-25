@@ -43,17 +43,6 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public bool HaveDeliverableStatus
-        {
-            get
-            {
-                if (AvailableDeliverable_Status == null)
-                    return false;
-
-                return ((IEnumerable<DELIVERABLES_STATUS>)AvailableDeliverable_Status).Count() > 0;
-            }
-        }
-
         public decimal ITEMRATE
         {
             get
