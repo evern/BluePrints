@@ -187,7 +187,7 @@ namespace BluePrints.Common.Projections
                                 EntityKey = x.GUID,
                                 Entity = x,
                                 DELIVERABLE_STATUS = (x.GUID_STATUS == null) ? null : DELIVERABLES_STATUSES.FirstOrDefault(z => z.GUID == x.GUID_STATUS),
-                                AvailableDeliverable_Status = DELIVERABLES_STATUSES.Where(z => z.GUID_DOCTYPE == x.GUID_DOCTYPE).OrderBy(z => z.MAX_PERCENTAGE).ToList(),
+                                AvailableDeliverable_Status = DELIVERABLES_STATUSES,
                                 RATE = 
                                     RATES.FirstOrDefault(
                                         y =>
