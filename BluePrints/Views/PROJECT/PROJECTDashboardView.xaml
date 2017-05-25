@@ -292,7 +292,6 @@
                                                      ShowInColumn="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-
                                 <dxg:GridSummaryItem x:Name="groupSummaryPeriodPlanned"
                                                      ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units"
@@ -344,7 +343,6 @@
                                                      ShowInColumn="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-
                                 <dxg:GridSummaryItem x:Name="totalSummaryPeriodPlanned"
                                                      ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units"

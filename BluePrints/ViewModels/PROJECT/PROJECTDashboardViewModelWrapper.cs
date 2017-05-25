@@ -134,6 +134,7 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             MainViewModel.SetParentViewModel(this);
             onMainViewModelFirstLoadedTimer.Start();
+            
             return base.OnMainViewModelLoaded(entities);
         }
 
@@ -152,6 +153,7 @@ namespace BluePrints.ViewModels
             BackgroundWorker summaryBackgroundWorker = new BackgroundWorker();
             backgroundWorkerCollection.Add(summaryBackgroundWorker);
             summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
+            summaryBackgroundWorker.RunWorkerCompleted += summaryBackgroundWorker_RunWorkerCompleted;
             summaryBackgroundWorker.WorkerSupportsCancellation = true;
             summaryBackgroundWorker.RunWorkerAsync(new object[] { entity });
         }
@@ -163,11 +165,22 @@ namespace BluePrints.ViewModels
 
             project.BuildStats(false);
             project.RecalculateStats(false);
+            
             if (((BackgroundWorker)sender).CancellationPending)
             {
                 e.Cancel = true;
                 return;
             }
+        }
+
+        private void summaryBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            RefreshSummary();
+        }
+
+        private void RefreshSummary()
+        {
+            mainThreadDispatcher.BeginInvoke(new Action(() => Redraw?.Invoke()));
         }
 
         public override void FullRefresh()

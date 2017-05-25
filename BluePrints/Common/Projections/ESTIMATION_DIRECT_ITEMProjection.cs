@@ -14,15 +14,29 @@ namespace BluePrints.Common.Projections
     {
         public RATE RATE { get; set; }
 
-        COMMODITY_CODE tempCommodityCode;
-        public COMMODITY_CODE TempCommodityCode
+        COMMODITY_CODE commodity_code;
+        public COMMODITY_CODE COMMODITY_CODE
         {
-            get { return tempCommodityCode; }
+            get { return commodity_code; }
             set
             {
-                tempCommodityCode = new COMMODITY_CODE();
-                DataUtils.ShallowCopy(tempCommodityCode, value);
+                if (value == null)
+                    commodity_code = null;
+                else
+                {
+                    commodity_code = new COMMODITY_CODE();
+                    DataUtils.ShallowCopy(commodity_code, value);
+                }
             }
+        }
+
+        /// <summary>
+        /// Used to update the estimation code when collection changes
+        /// </summary>
+        public void UpdateCommodityCode(IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection)
+        {
+            COMMODITY_CODE lookupCommodityCode = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == Entity.GUID_COMMODITY_CODE);
+            COMMODITY_CODE = lookupCommodityCode;
         }
 
         public string COMMODITY_GROUP_CODE_SELECTION
@@ -86,13 +100,13 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Entity == null || Entity.HOURS_INSTALL == null)
+                if (Entity == null || COMMODITY_CODE == null)
                     return 0;
 
                 if (RATE == null || RATE.RATE1 == null)
                     return 0;
 
-                return (decimal) Entity.HOURS_INSTALL * (decimal) RATE.RATE1 *
+                return (decimal) COMMODITY_CODE.HOURS_INSTALL * (decimal) RATE.RATE1 *
                        Entity.TOTAL_QUANTITY;
             }
         }
@@ -101,10 +115,10 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Entity == null || Entity.RATE_FREIGHT == null)
+                if (Entity == null || COMMODITY_CODE == null)
                     return 0;
 
-                return (decimal) Entity.RATE_FREIGHT * Entity.TOTAL_QUANTITY;
+                return (decimal) COMMODITY_CODE.RATE_FREIGHT * Entity.TOTAL_QUANTITY;
             }
         }
 
@@ -112,10 +126,10 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Entity == null || Entity.RATE_SUPPLY == null)
+                if (Entity == null || COMMODITY_CODE == null)
                     return 0;
 
-                return (decimal) Entity.RATE_SUPPLY * Entity.TOTAL_QUANTITY;
+                return (decimal) COMMODITY_CODE.RATE_SUPPLY * Entity.TOTAL_QUANTITY;
             }
         }
 
@@ -218,7 +232,7 @@ namespace BluePrints.Common.Projections
                                         y =>
                                             y.GUID_DEPARTMENT == searchDEPARTMENTGuid &&
                                             y.GUID_DISCIPLINE == x.GUID_DISCIPLINE), 
-                                TempCommodityCode = COMMODITY_CODES.FirstOrDefault(z => z.GUID == x.GUID_COMMODITY_CODE)
+                                COMMODITY_CODE = COMMODITY_CODES.FirstOrDefault(z => z.GUID == x.GUID_COMMODITY_CODE)
                             }).AsQueryable();
         }
     }

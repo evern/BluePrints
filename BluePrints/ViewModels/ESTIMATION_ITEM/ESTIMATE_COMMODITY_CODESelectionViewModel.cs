@@ -22,20 +22,26 @@ namespace BluePrints.ViewModels
     {
         public static ESTIMATE_COMMODITY_CODESelectionViewModel Create(
             IEnumerable<COMMODITY_CODE> enumerableObjects,
-            COMMODITY_CODE selectedItem, IEnumerable<PROJECT> ProjectLookup, IEnumerable<DISCIPLINE> DisciplineLookup)
+            Guid? selectedGuid, IEnumerable<PROJECT> ProjectLookup, IEnumerable<DISCIPLINE> DisciplineLookup)
         {
             return
                 ViewModelSource.Create(
-                    () => new ESTIMATE_COMMODITY_CODESelectionViewModel(enumerableObjects, selectedItem, ProjectLookup, DisciplineLookup));
+                    () => new ESTIMATE_COMMODITY_CODESelectionViewModel(enumerableObjects, selectedGuid, ProjectLookup, DisciplineLookup));
         }
 
         public IEnumerable<COMMODITY_CODE> SourceObjects { get; set; }
-
         protected ESTIMATE_COMMODITY_CODESelectionViewModel(IEnumerable<COMMODITY_CODE> enumerableObjects,
-            COMMODITY_CODE selectedItem, IEnumerable<PROJECT> ProjectLookup, IEnumerable<DISCIPLINE> DisciplineLookup)
+            Guid? selectedGuid, IEnumerable<PROJECT> ProjectLookup, IEnumerable<DISCIPLINE> DisciplineLookup)
         {
-            SourceObjects = enumerableObjects;
-            this.selectedItem = selectedItem;
+            if (selectedGuid != null)
+            {
+                this.SelectedItem = enumerableObjects.FirstOrDefault(x => x.GUID == selectedGuid);
+                if(this.SelectedItem != null)
+                    SourceObjects = enumerableObjects.Where(x => x.FULLCODE == this.SelectedItem.FULLCODE);
+            }
+            else
+                SourceObjects = enumerableObjects;
+
             PROJECTCollection = ProjectLookup;
             DISCIPLINECollection = DisciplineLookup;
         }

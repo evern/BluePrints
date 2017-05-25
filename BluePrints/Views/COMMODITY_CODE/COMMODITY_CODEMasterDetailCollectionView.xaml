@@ -36,7 +36,6 @@
                                                    Command="{Binding DataContext.BulkDeleteCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding RefreshCommand}"
                                                    LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Refresh_16x16.png}" />

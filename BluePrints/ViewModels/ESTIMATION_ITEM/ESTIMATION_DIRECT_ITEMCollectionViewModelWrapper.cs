@@ -169,7 +169,7 @@ namespace BluePrints.ViewModels
         #region View Refresh
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATION_DIRECT_ITEMProjection> entities)
         {
-            COMMODITY_CODECollectionViewModel.OnAfterEntitySavedCallBack = OnAfterCommodityCodeSavedCallBack;
+            MainViewModel.OnAfterEntitySavedCallBack = OnAfterCommodityCodeSavedCallBack;
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = ApplyEntityPropertiesToProjectionCallBack;
             base.AssignCallBacksAndRaisePropertyChange(entities);
             Refresh_COMMODITY_GROUP_CODE();
@@ -182,37 +182,40 @@ namespace BluePrints.ViewModels
 
         protected override void OnBeforeApplyProjectionPropertiesToEntity(ESTIMATION_DIRECT_ITEMProjection projectionEntity, ESTIMATION_DIRECT_ITEM entity)
         {
-            if(projectionEntity.TempCommodityCode != null)
+            if(projectionEntity.COMMODITY_CODE != null)
             {
                 bool isFullCodeExists;
-                bool isNewSignature = IsNewCommodityCodeSignature(projectionEntity.TempCommodityCode, out isFullCodeExists);
-                if (isNewSignature)
+                bool isExists = IsProjectCodeSignatureExist(projectionEntity.COMMODITY_CODE, out isFullCodeExists);
+                if (!isExists)
                 {
                     if (!isFullCodeExists)
                     {
-                        projectionEntity.Entity.GUID_COMMODITY_CODE = AddNewCommodityCode(projectionEntity.TempCommodityCode);
+                        projectionEntity.Entity.GUID_COMMODITY_CODE = AddNewCommodityCode(projectionEntity.COMMODITY_CODE);
                     }
                     else if (MessageBoxService.ShowMessage("Do you wish to add as new current commodity code?",
                          BluePrintsResources.Confirmation_Caption, MessageButton.YesNo) == MessageResult.Yes)
                     {
-                        projectionEntity.Entity.GUID_COMMODITY_CODE = AddNewCommodityCode(projectionEntity.TempCommodityCode);
+                        projectionEntity.Entity.GUID_COMMODITY_CODE = AddNewCommodityCode(projectionEntity.COMMODITY_CODE);
                     }
                     else
                     {
-                        ESTIMATE_COMMODITY_CODESelectionViewModel estimateCommodityCodeSelectionViewModel = ESTIMATE_COMMODITY_CODESelectionViewModel.Create(COMMODITY_GROUP_CODECollection, projectionEntity.TempCommodityCode, PROJECTCollection, DISCIPLINECollection);
+                        Guid? selectedGuid = null;
+                        if(projectionEntity.COMMODITY_CODE != null)
+                            selectedGuid = projectionEntity.COMMODITY_CODE.GUID;
+                        ESTIMATE_COMMODITY_CODESelectionViewModel estimateCommodityCodeSelectionViewModel = ESTIMATE_COMMODITY_CODESelectionViewModel.Create(COMMODITY_GROUP_CODECollection, selectedGuid, PROJECTCollection, DISCIPLINECollection);
                         if(BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Select Item to edit",
                             "ESTIMATE_COMMODITY_CODESelectionView", estimateCommodityCodeSelectionViewModel) == MessageResult.OK)
                         {
-                            string s = estimateCommodityCodeSelectionViewModel.SelectedItem.ToString();
+                            EditCommodityCode(projectionEntity.COMMODITY_CODE, estimateCommodityCodeSelectionViewModel.SelectedItem.GUID);
                         }
                     }
                 }
             }
-
+            
             projectionEntity.Entity.GUID_ESTIMATION_DIRECT = loadESTIMATION_DIRECT.GUID;
             base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
         }
-
+        
         private Guid AddNewCommodityCode(COMMODITY_CODE newCommodityCode)
         {
             COMMODITY_CODE newCOMMODITY_CODE = new COMMODITY_CODE();
@@ -223,12 +226,15 @@ namespace BluePrints.ViewModels
             return newCOMMODITY_CODE.GUID;
         }
 
-        private bool EditCommodityCode(COMMODITY_CODE editCommodityCode)
+        private bool EditCommodityCode(COMMODITY_CODE editedCommodityCode, Guid selectedCommodityCodeGuid)
         {
-            COMMODITY_CODE actualCommodityCode = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == editCommodityCode.GUID);
+            if (editedCommodityCode.GUID == Guid.Empty || selectedCommodityCodeGuid == Guid.Empty)
+                throw new InvalidOperationException();
+
+            COMMODITY_CODE actualCommodityCode = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == selectedCommodityCodeGuid);
             if (actualCommodityCode != null)
             {
-                DataUtils.ShallowCopy(actualCommodityCode, editCommodityCode);
+                DataUtils.ShallowCopy(actualCommodityCode, editedCommodityCode);
                 COMMODITY_CODECollectionViewModel.Save(actualCommodityCode);
                 return true;
             }
@@ -236,96 +242,125 @@ namespace BluePrints.ViewModels
                 return false;
         }
 
-        public void OnAfterCommodityCodeSavedCallBack(COMMODITY_CODE savedEntity, bool isNewEntity)
+        public void OnAfterCommodityCodeSavedCallBack(ESTIMATION_DIRECT_ITEMProjection savedEntity, bool isNewEntity)
         {
-
+            
         }
 
-        public bool IsNewCommodityCodeSignature(COMMODITY_CODE commodity_code, out bool isFullCodeExists)
+        public bool IsProjectCodeSignatureExist(COMMODITY_CODE commodity_code, out bool isFullCodeExists)
         {
             IEnumerable<COMMODITY_CODE> projectCommodity_Code = COMMODITY_CODECollection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
             if(commodity_code.GUID_GROUP_PARENT != null)
             {
                 //get the parent
                 COMMODITY_CODE currentGroupParentCommodity_Code = projectCommodity_Code.FirstOrDefault(x => x.GUID == commodity_code.GUID_GROUP_PARENT);
-                //when parent doesn't exists, make a new branch because of dirty data
+                //when parent doesn't exists, make a new branch
                 if (currentGroupParentCommodity_Code == null)
                 {
                     isFullCodeExists = false;
-                    return true;
+                    return false;
                 }
                 else
                 {
-                    //get the entire branch of childrens
-                    IEnumerable<COMMODITY_CODE> currentProjectGroupChildrenCommodity_Codes = projectCommodity_Code.Where(x => x.GUID_GROUP_PARENT == currentGroupParentCommodity_Code.GUID);
-                    IEnumerable<COMMODITY_CODE> allProjectGroupParentCommodity_Codes = projectCommodity_Code.Where(x => x.GUID_COMMODITY_GROUP_DIRECT == currentGroupParentCommodity_Code.GUID_COMMODITY_GROUP_DIRECT);
-
-                    if (allProjectGroupParentCommodity_Codes.Count() > 0)
-                        isFullCodeExists = true;
-                    else
-                        isFullCodeExists = false;
-
-                    bool isMatch = false;
-
-                    foreach (COMMODITY_CODE allProjectGroupParentCommodity_Code in allProjectGroupParentCommodity_Codes)
+                    //parent should have group guid
+                    if (currentGroupParentCommodity_Code.GUID_COMMODITY_GROUP_DIRECT == null)
                     {
-                        IEnumerable<COMMODITY_CODE> allProjectGroupChildrenCommodity_Codes = projectCommodity_Code.Where(x => x.GUID_GROUP_PARENT == allProjectGroupParentCommodity_Code.GUID);
-                        isMatch = IsGroupChildrenMatch(currentProjectGroupChildrenCommodity_Codes, allProjectGroupChildrenCommodity_Codes);
-                        if (isMatch)
-                            return false;
+                        isFullCodeExists = false;
+                        return false;
                     }
 
-                    return true;
+                    //get the entire branch of childrens
+                    IEnumerable<COMMODITY_CODE> currentProjectGroupChildrenCommodity_Codes = projectCommodity_Code.Where(x => x.GUID_GROUP_PARENT == currentGroupParentCommodity_Code.GUID);
+                    return IsProjectGroupSignatureExist((Guid)currentGroupParentCommodity_Code.GUID_COMMODITY_GROUP_DIRECT, currentProjectGroupChildrenCommodity_Codes, out isFullCodeExists);
                 }
             }
             else
             {
                 IEnumerable<COMMODITY_CODE> projectStandaloneCommodity_Codes = projectCommodity_Code.Where(x => x.GUID_GROUP_PARENT == null);
-                COMMODITY_CODE projectSameSignatureCommodity_Code = projectStandaloneCommodity_Codes
-                    .FirstOrDefault(x => x.FULLCODE == commodity_code.FULLCODE && x.RATE_FREIGHT == commodity_code.RATE_FREIGHT && x.RATE_PLANT == commodity_code.RATE_PLANT && x.RATE_SUPPLY == commodity_code.RATE_SUPPLY && x.HOURS_INSTALL == commodity_code.HOURS_INSTALL);
-
                 isFullCodeExists = projectStandaloneCommodity_Codes.Any(x => x.FULLCODE == commodity_code.FULLCODE);
-                if (projectSameSignatureCommodity_Code != null)
-                    return false;
-                else
+
+                if (isCommodityCodeExists(commodity_code, projectStandaloneCommodity_Codes))
                     return true;
+                else
+                    return false;
             }
         }
 
-        public bool IsGroupChildrenMatch(IEnumerable<COMMODITY_CODE> currentGroupChildrenCommodity_Codes, IEnumerable<COMMODITY_CODE> otherGroupChildrenCommodity_Codes)
+        private bool IsProjectGroupSignatureExist(Guid commodityGroupGuid, IEnumerable<COMMODITY_CODE> currentProjectGroupChildrenCommodity_Codes, out bool isGroupExists)
+        {
+            IEnumerable<COMMODITY_CODE> projectCommodity_Code = COMMODITY_CODECollection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            IEnumerable<COMMODITY_CODE> allProjectGroupParentCommodity_Codes = projectCommodity_Code.Where(x => x.GUID_COMMODITY_GROUP_DIRECT == commodityGroupGuid);
+
+            if (allProjectGroupParentCommodity_Codes.Count() > 0)
+                isGroupExists = true;
+            else
+                isGroupExists = false;
+
+            bool isMatch = false;
+
+            foreach (COMMODITY_CODE allProjectGroupParentCommodity_Code in allProjectGroupParentCommodity_Codes)
+            {
+                IEnumerable<COMMODITY_CODE> allProjectGroupChildrenCommodity_Codes = projectCommodity_Code.Where(x => x.GUID_GROUP_PARENT == allProjectGroupParentCommodity_Code.GUID);
+                isMatch = IsGroupChildrensSignatureMatch(currentProjectGroupChildrenCommodity_Codes, allProjectGroupChildrenCommodity_Codes);
+                if (isMatch)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private bool IsGroupChildrensSignatureMatch(IEnumerable<COMMODITY_CODE> currentGroupChildrenCommodity_Codes, IEnumerable<COMMODITY_CODE> otherGroupChildrenCommodity_Codes)
         {
             foreach(COMMODITY_CODE currentGroupChildrenCommodity_Code in currentGroupChildrenCommodity_Codes)
             {
-                COMMODITY_CODE sameOtherGroupChildrenCommodity_Code = otherGroupChildrenCommodity_Codes
-                    .FirstOrDefault(x => x.FULLCODE == currentGroupChildrenCommodity_Code.FULLCODE
-                    && x.RATE_FREIGHT == currentGroupChildrenCommodity_Code.RATE_FREIGHT
-                    && x.RATE_PLANT == currentGroupChildrenCommodity_Code.RATE_PLANT
-                    && x.RATE_SUPPLY == currentGroupChildrenCommodity_Code.RATE_SUPPLY);
-
-                if (sameOtherGroupChildrenCommodity_Code == null)
+                if (!isCommodityCodeExists(currentGroupChildrenCommodity_Code, otherGroupChildrenCommodity_Codes))
                     return false;
             }
 
             //swap the other way to see if anything is missing from the collection
             foreach (COMMODITY_CODE otherGroupChildrenCommodity_Code in otherGroupChildrenCommodity_Codes)
             {
-                COMMODITY_CODE sameCurrentGroupChildrenCommodity_Codes = currentGroupChildrenCommodity_Codes
-                    .FirstOrDefault(x => x.FULLCODE == otherGroupChildrenCommodity_Code.FULLCODE
-                    && x.RATE_FREIGHT == otherGroupChildrenCommodity_Code.RATE_FREIGHT
-                    && x.RATE_PLANT == otherGroupChildrenCommodity_Code.RATE_PLANT
-                    && x.RATE_SUPPLY == otherGroupChildrenCommodity_Code.RATE_SUPPLY);
-
-                if (sameCurrentGroupChildrenCommodity_Codes == null)
+                if (!isCommodityCodeExists(otherGroupChildrenCommodity_Code, currentGroupChildrenCommodity_Codes))
                     return false;
             }
 
             return true;
         }
 
+        private bool isCommodityCodeExists(COMMODITY_CODE commodity_code, IEnumerable<COMMODITY_CODE> comparisonContext)
+        {
+            COMMODITY_CODE contextSameCommodityCode = comparisonContext
+            .FirstOrDefault(x => x.FULLCODE == commodity_code.FULLCODE
+            && x.RATE_FREIGHT == commodity_code.RATE_FREIGHT
+            && x.HOURS_INSTALL == commodity_code.HOURS_INSTALL
+            && x.RATE_SUPPLY == commodity_code.RATE_SUPPLY);
+
+            if (contextSameCommodityCode != null)
+                return true;
+            else
+                return false;
+        }
+
         public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
+            if(changedType == typeof(COMMODITY_CODE))
+            {
+                Refresh_COMMODITY_GROUP_CODE();
+                UpdateCommodityCodes((Guid)key);
+            }
+
             base.OnAfterAffectingEntitiesChanged(key, changedType, messageType, sender);
-            Refresh_COMMODITY_GROUP_CODE();
+        }
+
+        private void UpdateCommodityCodes(Guid commodity_code_guid)
+        {
+            if (MainViewModel == null || MainViewModel.Entities == null)
+                return;
+
+            foreach(ESTIMATION_DIRECT_ITEMProjection estimation_direct_item in MainViewModel.Entities.Where(x => x.Entity.GUID_COMMODITY_CODE == commodity_code_guid))
+            {
+                estimation_direct_item.UpdateCommodityCode(COMMODITY_CODECollection);
+            }
         }
         #endregion
 
@@ -346,7 +381,7 @@ namespace BluePrints.ViewModels
                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_COMMODITY_CODE))
             {
-                activeProjection.TempCommodityCode = COMMODITY_GROUP_CODECollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
+                activeProjection.COMMODITY_CODE = COMMODITY_GROUP_CODECollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
             }
         }
         #endregion
@@ -410,7 +445,7 @@ namespace BluePrints.ViewModels
             {
                 var collection = GetEntities<COMMODITY_CODE>();
                 if (collection != null)
-                    collection = collection.Where(x => x.ISQUANTIFIABLE).OrderBy(x => x.GUID_PROJECT).OrderBy(x => x.CODE);
+                    collection = collection.OrderBy(x => x.GUID_PROJECT).OrderBy(x => x.CODE);
                 return collection;
             }
         }
@@ -454,78 +489,118 @@ namespace BluePrints.ViewModels
             {
                 if(commodity_group_codeCollection == null)
                 {
-                    commodity_group_codeCollection = new List<COMMODITY_CODE>();
-                    if (COMMODITY_GROUP_DIRECTCollection != null)
-                    {
-                        //get the parents only
-                        IEnumerable<COMMODITY_GROUP_DIRECT> commodityGroupParentCollection = COMMODITY_GROUP_DIRECTCollection.Where(x => x.GUID_PARENT == null);
-                        //get the childs only
-                        IEnumerable<COMMODITY_GROUP_DIRECT> commodityGroupChildCollection = COMMODITY_GROUP_DIRECTCollection.Where(x => x.GUID_PARENT != null && x.GUID_COMMODITYCODE != null);
-
-                        //temp id used to identify parents in the view
-                        int tempParentId = 0;
-                        int tempChildId = 0;
-                        if (commodityGroupParentCollection != null && COMMODITY_CODECollection != null)
-                        {
-                            foreach (COMMODITY_GROUP_DIRECT commodityGroup in commodityGroupParentCollection)
-                            {
-                                IEnumerable<COMMODITY_GROUP_DIRECT> currentGroupChildrens = commodityGroupChildCollection.Where(x => x.GUID_PARENT == commodityGroup.GUID);
-                                List<COMMODITY_CODE> tempChildCommodityCodes = new List<COMMODITY_CODE>();
-                                //construct child dynamically
-                                foreach (COMMODITY_GROUP_DIRECT currentGroupChildren in currentGroupChildrens)
-                                {
-                                    COMMODITY_CODE childCommodityCode = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == currentGroupChildren.GUID_COMMODITYCODE);
-                                    if(childCommodityCode != null)
-                                    {
-                                        COMMODITY_CODE newChildCommodityCode = new COMMODITY_CODE();
-                                        DataUtils.ShallowCopy(newChildCommodityCode, childCommodityCode);
-                                        newChildCommodityCode.ISGROUPHEADER = false;
-                                        newChildCommodityCode.Temp_Id = childPrefix + tempChildId.ToString();
-                                        newChildCommodityCode.Temp_Parent_Id = parentPrefix + tempParentId.ToString();
-                                        tempChildId += 1;
-                                        tempChildCommodityCodes.Add(newChildCommodityCode);
-                                    }
-                                }
-
-                                COMMODITY_CODE tempParentCommodityCode = new COMMODITY_CODE()
-                                {
-                                    GUID = Guid.NewGuid(),
-                                    GUID_PARENT = Guid.Empty,
-                                    GUID_COMMODITY_GROUP_DIRECT = commodityGroup.GUID,
-                                    COMMODITYCODETYPE = CommodityCodeType.Direct,
-                                    DESCRIPTION = commodityGroup.DESCRIPTION,
-                                    SortOrder = 0,
-                                    IsExpanded = false,
-                                    ISQUANTIFIABLE = false,
-                                    ISGROUPHEADER = true,
-                                    RATE_FREIGHT = tempChildCommodityCodes.Sum(x => x.RATE_FREIGHT),
-                                    RATE_PLANT = tempChildCommodityCodes.Sum(x => x.RATE_PLANT),
-                                    RATE_SUPPLY = tempChildCommodityCodes.Sum(x => x.RATE_SUPPLY),
-                                    Temp_Id = parentPrefix + tempParentId.ToString()
-                                };
-
-                                tempParentId += 1;
-                                commodity_group_codeCollection.Add(tempParentCommodityCode);
-                                commodity_group_codeCollection.AddRange(tempChildCommodityCodes);
-                            }
-                        }
-                    }
-
-                    if (COMMODITY_CODECollection != null)
-                    {
-                        foreach(COMMODITY_CODE commodityCode in COMMODITY_CODECollection)
-                        {
-                            COMMODITY_CODE tempCommodityCode = new COMMODITY_CODE();
-                            DataUtils.ShallowCopy(tempCommodityCode, commodityCode);
-                            tempCommodityCode.Temp_Id = tempCommodityCode.GUID.ToString();
-                            tempCommodityCode.Temp_Parent_Id = tempCommodityCode.GUID_PARENT.ToString();
-                            commodity_group_codeCollection.Add(tempCommodityCode);
-                        }
-                    }
+                    commodity_group_codeCollection = getGlobal_CommodityGroupCodes();
+                    commodity_group_codeCollection.AddRange(getAllCommodityCodes());
                 }
 
                 return commodity_group_codeCollection;
             }
+        }
+
+        private List<COMMODITY_CODE> getAllCommodityCodes()
+        {
+            List<COMMODITY_CODE> commodityCodes = new List<COMMODITY_CODE>();
+            commodityCodes.AddRange(getCommodityCodes(true));
+            commodityCodes.AddRange(getCommodityCodes(false));
+
+            return commodityCodes;
+        }
+
+        private List<COMMODITY_CODE> getCommodityCodes(bool isProjectSpecific)
+        {
+            List<COMMODITY_CODE> commodityCodes = new List<COMMODITY_CODE>();
+            if (COMMODITY_CODECollection != null)
+            {
+                IEnumerable<COMMODITY_CODE> CommodityCodes;
+                if (isProjectSpecific)
+                    CommodityCodes = COMMODITY_CODECollection.Where(x => x.GUID_PROJECT != null);
+                else
+                    CommodityCodes = COMMODITY_CODECollection.Where(x => x.ISQUANTIFIABLE).Where(x => x.GUID_PROJECT == null);
+
+                foreach (COMMODITY_CODE commodityCode in CommodityCodes)
+                {
+                    bool isCommodityCodeExists;
+                    if (isProjectSpecific || !IsProjectCodeSignatureExist(commodityCode, out isCommodityCodeExists))
+                    {
+                        COMMODITY_CODE tempCommodityCode = new COMMODITY_CODE();
+                        DataUtils.ShallowCopy(tempCommodityCode, commodityCode);
+                        tempCommodityCode.Temp_Id = tempCommodityCode.GUID.ToString();
+                        tempCommodityCode.Temp_Parent_Id = tempCommodityCode.GUID_PARENT.ToString();
+                        commodityCodes.Add(tempCommodityCode);
+                    }
+                }
+            }
+
+            return commodityCodes;
+        }
+
+        private List<COMMODITY_CODE> getGlobal_CommodityGroupCodes()
+        {
+            List<COMMODITY_CODE> globalCommodityCodes = new List<COMMODITY_CODE>();
+            if (COMMODITY_GROUP_DIRECTCollection != null)
+            {
+                //get the parents only
+                IEnumerable<COMMODITY_GROUP_DIRECT> groupParents = COMMODITY_GROUP_DIRECTCollection.Where(x => x.GUID_PARENT == null);
+                //get the childs only
+                IEnumerable<COMMODITY_GROUP_DIRECT> groupChildrens = COMMODITY_GROUP_DIRECTCollection.Where(x => x.GUID_PARENT != null && x.GUID_COMMODITYCODE != null);
+
+                //temp id used to identify parents in the view
+                int tempParentId = 0;
+                int tempChildId = 0;
+                if (groupParents != null && COMMODITY_CODECollection != null)
+                {
+                    foreach (COMMODITY_GROUP_DIRECT groupParent in groupParents)
+                    {
+                        IEnumerable<COMMODITY_GROUP_DIRECT> currentGroupChildrens = groupChildrens.Where(x => x.GUID_PARENT == groupParent.GUID);
+                        List<COMMODITY_CODE> tempChildCommodityCodes = new List<COMMODITY_CODE>();
+                        //construct child dynamically
+                        foreach (COMMODITY_GROUP_DIRECT currentGroupChildren in currentGroupChildrens)
+                        {
+                            COMMODITY_CODE childCommodityCode = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == currentGroupChildren.GUID_COMMODITYCODE);
+                            if (childCommodityCode != null)
+                            {
+                                COMMODITY_CODE newChildCommodityCode = new COMMODITY_CODE();
+                                DataUtils.ShallowCopy(newChildCommodityCode, childCommodityCode);
+                                newChildCommodityCode.ISGROUPHEADER = false;
+                                newChildCommodityCode.Temp_Id = childPrefix + tempChildId.ToString();
+                                newChildCommodityCode.Temp_Parent_Id = parentPrefix + tempParentId.ToString();
+                                tempChildId += 1;
+                                tempChildCommodityCodes.Add(newChildCommodityCode);
+                            }
+                        }
+
+                        bool isGroupExists;
+                        if (!IsProjectGroupSignatureExist(groupParent.GUID, tempChildCommodityCodes, out isGroupExists))
+                        {
+                            COMMODITY_CODE tempParentCommodityCode = new COMMODITY_CODE()
+                            {
+                                GUID = Guid.NewGuid(),
+                                GUID_PARENT = Guid.Empty,
+                                GUID_COMMODITY_GROUP_DIRECT = groupParent.GUID,
+                                COMMODITYCODETYPE = CommodityCodeType.Direct,
+                                NAME = groupParent.DESCRIPTION,
+                                FULLCODE = "Group Header",
+                                CODE = "Group Header",
+                                SortOrder = 0,
+                                IsExpanded = false,
+                                ISQUANTIFIABLE = false,
+                                ISGROUPHEADER = true,
+                                RATE_FREIGHT = tempChildCommodityCodes.Sum(x => x.RATE_FREIGHT),
+                                RATE_PLANT = tempChildCommodityCodes.Sum(x => x.RATE_PLANT),
+                                RATE_SUPPLY = tempChildCommodityCodes.Sum(x => x.RATE_SUPPLY),
+                                Temp_Id = parentPrefix + tempParentId.ToString()
+                            };
+
+                            globalCommodityCodes.Add(tempParentCommodityCode);
+                            globalCommodityCodes.AddRange(tempChildCommodityCodes);
+                        }
+
+                        tempParentId += 1;
+                    }
+                }
+            }
+
+            return globalCommodityCodes;
         }
         #endregion
 
