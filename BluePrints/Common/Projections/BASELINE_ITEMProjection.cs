@@ -19,29 +19,7 @@ namespace BluePrints.Common.Projections
 
         public RATE RATE { get; set; }
         public DELIVERABLES_STATUS DELIVERABLE_STATUS { get; set; }
-
-        private IEnumerable<DELIVERABLES_STATUS> allDeliverable_Status;
-        private IEnumerable<DELIVERABLES_STATUS> availableDeliverable_Status;
-        public IEnumerable<DELIVERABLES_STATUS> AvailableDeliverable_Status
-        {
-            get
-            {
-                if (availableDeliverable_Status == null)
-                    availableDeliverable_Status = allDeliverable_Status.Where(x => x.GUID_DOCTYPE == Entity.GUID_DOCTYPE).OrderBy(z => z.MAX_PERCENTAGE);
-
-                return availableDeliverable_Status;
-            }
-            set
-            {
-                availableDeliverable_Status = null;
-                allDeliverable_Status = value;
-                //if (value != allDeliverable_Status)
-                //{
-                //    allDeliverable_Status = value as IEnumerable<DELIVERABLES_STATUS>;
-                //    this.RaisePropertiesChanged();
-                //}
-            }
-        }
+        public IEnumerable<DELIVERABLES_STATUS> AvailableDeliverable_Status { get; set; }
 
         public decimal ITEMRATE
         {
@@ -176,7 +154,7 @@ namespace BluePrints.Common.Projections
                                 EntityKey = x.GUID,
                                 Entity = x,
                                 DELIVERABLE_STATUS = (x.GUID_STATUS == null) ? null : DELIVERABLES_STATUSES.FirstOrDefault(z => z.GUID == x.GUID_STATUS),
-                                AvailableDeliverable_Status = DELIVERABLES_STATUSES,
+                                AvailableDeliverable_Status = DELIVERABLES_STATUSES.Where(z => z.GUID_DOCTYPE == x.GUID_DOCTYPE).OrderBy(z => z.MAX_PERCENTAGE),
                                 RATE = 
                                     RATES.FirstOrDefault(
                                         y =>
