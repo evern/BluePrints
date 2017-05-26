@@ -71,6 +71,14 @@
                                                Command="{Binding DataContext.ShowExoErrorsCommand, ElementName=userControl}"
                                                LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}"
                                                Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Save Layout"
+                                                   Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImage Image=Save_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=Save_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Reset Layout"
+                                                   Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
                                 </dxr:RibbonPageGroup>
                             </dxr:RibbonPage>
                         </dxr:RibbonDefaultPageCategory>
