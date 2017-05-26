@@ -413,11 +413,6 @@
                             <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
                                            ShowTotalSummary="True" ShowFixedTotalSummary="True"
                                            GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None">
-                                <dxmvvm:Interaction.Behaviors>
-                                    <dxmvvm:EventToCommand
-                                        Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}"
-                                        PassEventArgsToCommand="True" EventName="CellValueChanged" />
-                                </dxmvvm:Interaction.Behaviors>
                                 <custom:TableViewEx.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Fill Up"
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}"
