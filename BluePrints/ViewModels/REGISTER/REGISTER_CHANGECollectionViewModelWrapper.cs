@@ -105,7 +105,8 @@ namespace BluePrints.ViewModels
         public void OnBeforeEntitySaved(REGISTER_CHANGE entity)
         {
             entity.GUID_PROJECT = loadPROJECT.GUID;
-            entity.DATE_RAISED = DateTime.Now.Date;
+            if(entity.DATE_RAISED == null)
+                entity.DATE_RAISED = DateTime.Now.Date;
         }
 
         private bool AdditionalCellValidation(GridCellValidationEventArgs e)

@@ -128,6 +128,9 @@ namespace BluePrints.ViewModels
         /// </summary>
         public void OnBeforeEntitySaved(REGISTER_ISSUE entity)
         {
+            if (entity.DATE_RAISED == null)
+                entity.DATE_RAISED = DateTime.Now;
+
             entity.GUID_PROJECT = loadPROJECT.GUID;
         }
 
