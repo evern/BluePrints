@@ -21,7 +21,7 @@ using System.Linq;
 namespace BluePrints.ViewModels
 {
     public class REGISTER_CHANGECollectionViewModelWrapper :
-        EntitiesAutoNumberCollectionWrapper
+        BluePrintsEntitiesAutoNumberCollectionWrapper
         <REGISTER_CHANGE, REGISTER_CHANGE, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
@@ -88,11 +88,12 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<REGISTER_CHANGE>, IQueryable<REGISTER_CHANGE>> ConstructMainViewModelProjection()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.NUMBER);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_CHANGE> entities)
         {
+            MainViewModel.IsValidFromViewCallBack = AdditionalCellValidation;
             MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -105,6 +106,40 @@ namespace BluePrints.ViewModels
         {
             entity.GUID_PROJECT = loadPROJECT.GUID;
             entity.DATE_RAISED = DateTime.Now.Date;
+        }
+
+        private bool AdditionalCellValidation(GridCellValidationEventArgs e)
+        {
+            if (e.Column.FieldName ==
+                BindableBase.GetPropertyName(() => new REGISTER_CHANGE().DATE_CLOSED))
+            {
+                DateTime dateClosed = (DateTime)e.Value;
+                var editingEntity = (REGISTER_CHANGE)e.Row;
+                if (editingEntity.DATE_RAISED != null &&
+                    editingEntity.DATE_RAISED > dateClosed)
+                {
+                    e.IsValid = false;
+                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                    e.ErrorContent = "Date closed cannot be earlier than date raised";
+                    return false;
+                }
+            }
+
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new REGISTER_CHANGE().DATE_RAISED))
+            {
+                DateTime dateRaised = (DateTime)e.Value;
+                var editingEntity = (REGISTER_CHANGE)e.Row;
+                if (editingEntity.DATE_CLOSED != null &&
+                    dateRaised > editingEntity.DATE_CLOSED)
+                {
+                    e.IsValid = false;
+                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                    e.ErrorContent = "Date raised cannot be later than date closed";
+                    return false;
+                }
+            }
+
+            return true;
         }
         #endregion
 

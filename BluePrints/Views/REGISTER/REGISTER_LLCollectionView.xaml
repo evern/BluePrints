@@ -74,7 +74,7 @@
                             <dxg:GridColumn FieldName="NUMBER" ReadOnly="True" Header="Item" />
                             <dxg:GridColumn Header="Area" FieldName="GUID_AREA" >
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings
+                                    <dxe:ComboBoxEditSettings NullValueButtonPlacement="Popup"
                                         ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
                                         IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM"
                                         ValueMember="GUID" />
@@ -82,7 +82,7 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Discipline" FieldName="GUID_DISCIPLINE" >
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings
+                                    <dxe:ComboBoxEditSettings NullValueButtonPlacement="Popup"
                                         ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
                                         IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
                                         ValueMember="GUID" />
@@ -90,16 +90,40 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Raised By" FieldName="RAISEDBY_TYPE">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" NullValueButtonPlacement="Popup"
                                                               ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:RegisterRaisedByType}}" />
                                 </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn> 
-                            <dxg:GridColumn FieldName="TYPE" Header="Type"/>
-                            <dxg:GridColumn FieldName="TITLE" Header="Lessons Learned Title" />
-                            <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" />
-                            <dxg:GridColumn FieldName="PROCESS_ISSUE" Header="Process Issue" />
-                            <dxg:GridColumn FieldName="FURTHER_ACTION" Header="Further Action Required" />
-                            <dxg:GridColumn FieldName="RAISEDBY" Header="Raised By" />
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="TYPE" Header="Type">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="TITLE" Header="Lessons Learned Title" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="PROCESS_ISSUE" Header="Process Issue" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:CheckEditSettings AllowNullInput="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="FURTHER_ACTION" Header="Further Action Required" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="RAISEDBY" Header="Raised By" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="DATE_IDENTIFIED" Header="Date Identified"/>
                             <dxg:GridColumn FieldName="DATE_CLOSED" Header="Date Closed" />
                         </dxg:GridControl.Columns>

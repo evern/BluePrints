@@ -90,8 +90,16 @@
                                     </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="HAZARD_TYPE" Header="Hazard Type" />
-                            <dxg:GridColumn FieldName="HAZARD_CAUSE" Header="Cause of Hazard" />
+                            <dxg:GridColumn FieldName="HAZARD_TYPE" Header="Hazard Type" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="HAZARD_CAUSE" Header="Cause of Hazard" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="RISK_LIKELIHOOD" Header="Rated Likelihood">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
@@ -119,7 +127,11 @@
                                     </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="CONTROL_MEASURES" Header="Control Measures" />
+                            <dxg:GridColumn FieldName="CONTROL_MEASURES" Header="Control Measures" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="RESIDUE_RISK_LIKELIHOOD" Header="Residual Likelihood">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
@@ -147,8 +159,18 @@
                                     </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="RESIDUE_HAZARD" Header="Residual Hazards" />
-                            <dxg:GridColumn FieldName="FURTHER_ACTION" Header="Further Action By" />
+                            <dxg:GridColumn FieldName="RESIDUE_HAZARD" Header="Residual Hazards" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="FURTHER_ACTION" Header="Further Action By" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="RiskRankingCategory" Visible="False" />
+                            <dxg:GridColumn FieldName="ResidueRankingCategory" Visible="False" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
@@ -158,6 +180,32 @@
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
                             <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                                <custom:TableViewEx.FormatConditions>
+                                    <dxg:FormatCondition Expression="[RiskRankingCategory] = '1'" FieldName="RISK_RANKING">
+                                        <dx:Format Background="LightGreen"/>
+                                    </dxg:FormatCondition>
+                                    <dxg:FormatCondition Expression="[RiskRankingCategory] = '2'" FieldName="RISK_RANKING">
+                                        <dx:Format Background="Yellow"/>
+                                    </dxg:FormatCondition>
+                                    <dxg:FormatCondition Expression="[RiskRankingCategory] = '3'" FieldName="RISK_RANKING">
+                                        <dx:Format Background="Orange"/>
+                                    </dxg:FormatCondition>
+                                    <dxg:FormatCondition Expression="[RiskRankingCategory] = '4'" FieldName="RISK_RANKING">
+                                        <dx:Format Background="Red"/>
+                                    </dxg:FormatCondition>
+                                    <dxg:FormatCondition Expression="[ResidueRankingCategory] = '1'" FieldName="RESIDUE_RISK_RANKING">
+                                        <dx:Format Background="LightGreen"/>
+                                    </dxg:FormatCondition>
+                                    <dxg:FormatCondition Expression="[ResidueRankingCategory] = '2'" FieldName="RESIDUE_RISK_RANKING">
+                                        <dx:Format Background="Yellow"/>
+                                    </dxg:FormatCondition>
+                                    <dxg:FormatCondition Expression="[ResidueRankingCategory] = '3'" FieldName="RESIDUE_RISK_RANKING">
+                                        <dx:Format Background="Orange"/>
+                                    </dxg:FormatCondition>
+                                    <dxg:FormatCondition Expression="[ResidueRankingCategory] = '4'" FieldName="RESIDUE_RISK_RANKING">
+                                        <dx:Format Background="Red"/>
+                                    </dxg:FormatCondition>
+                                </custom:TableViewEx.FormatConditions>
                                 <custom:TableViewEx.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Bulk Edit"
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"

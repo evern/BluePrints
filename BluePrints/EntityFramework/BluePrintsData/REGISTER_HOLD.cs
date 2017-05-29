@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -24,13 +25,14 @@ namespace BluePrints.Data
         [StringLength(1000)]
         public string REFERENCE { get; set; }
 
-        public Guid RAISED_BY { get; set; }
+        [StringLength(300)]
+        public string RAISEDBY { get; set; }
 
         [StringLength(1000)]
         public string ACTION { get; set; }
 
         public DateTime DATE_RAISED { get; set; }
-        
+
         public DateTime? DATE_CLOSED { get; set; }
 
         public DateTime CREATED { get; set; }

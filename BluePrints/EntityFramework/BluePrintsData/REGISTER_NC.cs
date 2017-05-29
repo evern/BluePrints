@@ -1,5 +1,6 @@
 ﻿namespace BluePrints.Data
 {
+    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -20,6 +21,8 @@
         [StringLength(150)]
         public string NUMBER { get; set; }
 
+        public RegisterRaisedByType? RAISEDBY_TYPE { get; set; }
+
         [StringLength(300)]
         public string RAISEDBY { get; set; }
 
@@ -32,7 +35,7 @@
         [StringLength(1000)]
         public string CAUSE { get; set; }
 
-        public int? CORRECTIVE_ACTION_TYPE { get; set; }
+        public CorrectiveActionType? CORRECTIVE_ACTION_TYPE { get; set; }
 
         [StringLength(1500)]
         public string CORRECTIVE_ACTION { get; set; }
@@ -56,6 +59,8 @@
         public Guid? DELETEDBY { get; set; }
 
         public virtual AREA AREA { get; set; }
+
+        public virtual DISCIPLINE DISCIPLINE { get; set; }
 
         public virtual PROJECT PROJECT { get; set; }
     }

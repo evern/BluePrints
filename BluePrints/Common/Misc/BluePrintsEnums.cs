@@ -93,6 +93,24 @@ namespace BluePrints.Common
         [Display(Name = "Preclude Use")] PrecludeUse = 2
     }
 
+    public enum ScheduleImpact
+    {
+        [Display(Name = "Yes")]
+        Yes = 0,
+        [Display(Name = "No")]
+        No = 1,
+        [Display(Name = "Potential")]
+        Potential = 2
+    }
+
+    public enum ActionedOnDrawing
+    {
+        [Display(Name = "N/A")]
+        NA = 0,
+        [Display(Name = "Yes")]
+        Yes = 1
+    }
+
     public enum DashboardViewType
     {
         Costs,

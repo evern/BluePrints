@@ -347,6 +347,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Common\Base\BluePrintsEntitiesCollectionWrapper.cs" />
+    <Compile Include="Common\Base\BluePrintsEntitiesAutoNumberCollectionWrapper.cs" />
     <Compile Include="Common\Base\BluePrintsEntitiesMasterDetailCollectionsWrapper.cs" />
     <Compile Include="Common\Base\BluePrintsEntitiesTreeCollectionWrapper.cs" />
     <Compile Include="Common\Base\DashboardCollectionViewModelWrapper.cs" />

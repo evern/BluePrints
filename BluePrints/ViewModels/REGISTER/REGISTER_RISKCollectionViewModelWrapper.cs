@@ -17,7 +17,7 @@ using System.Linq;
 namespace BluePrints.ViewModels
 {
     public class REGISTER_RISKCollectionViewModelWrapper :
-        EntitiesAutoNumberCollectionWrapper
+        BluePrintsEntitiesAutoNumberCollectionWrapper
         <REGISTER_RISK, REGISTER_RISK, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
@@ -90,6 +90,7 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
             MainViewModel.ExistingRowAddUndoAndSaveCallBack = ExistingRowAddUndoAndSaveCallBack;
+            MainViewModel.IsContinueNewRowFromViewCallBack += IsContinueNewRowFromView;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -105,25 +106,51 @@ namespace BluePrints.ViewModels
             entity.DATE_IDENTIFIED = DateTime.Now.Date;
         }
 
+        private bool IsContinueNewRowFromView(RowEventArgs e, REGISTER_RISK projection)
+        {
+            if (projection.RISK_LIKELIHOOD != null && projection.RISK_CONSEQUENCES != null)
+            {
+                Register_RiskRanking? oldValue = projection.RISK_RANKING;
+                Register_RiskRanking? newValue = RiskMatrix.GetRanking(projection.RISK_LIKELIHOOD, projection.RISK_CONSEQUENCES);
+
+                projection.RISK_RANKING = newValue;
+            }
+            if (projection.RESIDUE_RISK_LIKELIHOOD != null && projection.RESIDUE_RISK_CONSEQUENCES != null)
+            {
+                Register_RiskRanking? oldValue = projection.RESIDUE_RISK_RANKING;
+                Register_RiskRanking? newValue = RiskMatrix.GetRanking(projection.RESIDUE_RISK_LIKELIHOOD, projection.RESIDUE_RISK_CONSEQUENCES);
+
+                projection.RESIDUE_RISK_RANKING = newValue;
+            }
+
+            return true;
+        }
+
         private bool ExistingRowAddUndoAndSaveCallBack(REGISTER_RISK projectionEntity, CellValueChangedEventArgs e)
         {
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new REGISTER_RISK().RISK_CONSEQUENCES) || 
                 e.Column.FieldName == BindableBase.GetPropertyName(() => new REGISTER_RISK().RISK_LIKELIHOOD))
             {
-                Register_RiskRanking? oldValue = projectionEntity.RISK_RANKING;
-                Register_RiskRanking? newValue = RiskMatrix.GetRanking(projectionEntity.RISK_LIKELIHOOD, projectionEntity.RISK_CONSEQUENCES);
+                if(projectionEntity.RISK_LIKELIHOOD != null && projectionEntity.RISK_CONSEQUENCES != null)
+                {
+                    Register_RiskRanking? oldValue = projectionEntity.RISK_RANKING;
+                    Register_RiskRanking? newValue = RiskMatrix.GetRanking(projectionEntity.RISK_LIKELIHOOD, projectionEntity.RISK_CONSEQUENCES);
 
-                projectionEntity.RISK_RANKING = newValue;
-                MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity, BindableBase.GetPropertyName(() => new REGISTER_RISK().RISK_RANKING), oldValue, e.Value, EntityMessageType.Changed);
+                    projectionEntity.RISK_RANKING = newValue;
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity, BindableBase.GetPropertyName(() => new REGISTER_RISK().RISK_RANKING), oldValue, e.Value, EntityMessageType.Changed);
+                }
             }
             else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new REGISTER_RISK().RESIDUE_RISK_CONSEQUENCES) ||
                      e.Column.FieldName == BindableBase.GetPropertyName(() => new REGISTER_RISK().RESIDUE_RISK_LIKELIHOOD))
             {
-                Register_RiskRanking? oldValue = projectionEntity.RESIDUE_RISK_RANKING;
-                Register_RiskRanking? newValue = RiskMatrix.GetRanking(projectionEntity.RESIDUE_RISK_LIKELIHOOD, projectionEntity.RESIDUE_RISK_CONSEQUENCES);
+                if (projectionEntity.RESIDUE_RISK_LIKELIHOOD != null && projectionEntity.RESIDUE_RISK_CONSEQUENCES != null)
+                {
+                    Register_RiskRanking? oldValue = projectionEntity.RESIDUE_RISK_RANKING;
+                    Register_RiskRanking? newValue = RiskMatrix.GetRanking(projectionEntity.RESIDUE_RISK_LIKELIHOOD, projectionEntity.RESIDUE_RISK_CONSEQUENCES);
 
-                projectionEntity.RESIDUE_RISK_RANKING = newValue;
-                MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity, BindableBase.GetPropertyName(() => new REGISTER_RISK().RESIDUE_RISK_RANKING), oldValue, e.Value, EntityMessageType.Changed);
+                    projectionEntity.RESIDUE_RISK_RANKING = newValue;
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity, BindableBase.GetPropertyName(() => new REGISTER_RISK().RESIDUE_RISK_RANKING), oldValue, e.Value, EntityMessageType.Changed);
+                }
             }
 
             return true;

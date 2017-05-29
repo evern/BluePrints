@@ -17,7 +17,7 @@ using System.Linq;
 namespace BluePrints.ViewModels
 {
     public class REGISTER_LLCollectionViewModelWrapper :
-        EntitiesAutoNumberCollectionWrapper
+        BluePrintsEntitiesAutoNumberCollectionWrapper
         <REGISTER_LL, REGISTER_LL, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
@@ -83,11 +83,12 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<REGISTER_LL>, IQueryable<REGISTER_LL>> ConstructMainViewModelProjection()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.NUMBER);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_LL> entities)
         {
+            MainViewModel.IsValidFromViewCallBack = AdditionalCellValidation;
             MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -103,6 +104,39 @@ namespace BluePrints.ViewModels
             entity.DATE_IDENTIFIED = DateTime.Now.Date;
         }
 
+        private bool AdditionalCellValidation(GridCellValidationEventArgs e)
+        {
+            if (e.Column.FieldName ==
+                BindableBase.GetPropertyName(() => new REGISTER_LL().DATE_CLOSED))
+            {
+                DateTime dateClosed = (DateTime)e.Value;
+                var editingEntity = (REGISTER_LL)e.Row;
+                if (editingEntity.DATE_IDENTIFIED != null &&
+                    editingEntity.DATE_IDENTIFIED > dateClosed)
+                {
+                    e.IsValid = false;
+                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                    e.ErrorContent = "Date closed cannot be earlier than date identified";
+                    return false;
+                }
+            }
+
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new REGISTER_LL().DATE_IDENTIFIED))
+            {
+                DateTime dateRaised = (DateTime)e.Value;
+                var editingEntity = (REGISTER_LL)e.Row;
+                if (editingEntity.DATE_CLOSED != null &&
+                    dateRaised > editingEntity.DATE_CLOSED)
+                {
+                    e.IsValid = false;
+                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                    e.ErrorContent = "Date identified cannot be later than date closed";
+                    return false;
+                }
+            }
+
+            return true;
+        }
         #endregion
 
         #endregion

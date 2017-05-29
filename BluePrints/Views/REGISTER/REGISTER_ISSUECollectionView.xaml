@@ -35,6 +35,9 @@
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Home">
                             <dxr:RibbonPageGroup Caption="REGISTER Tasks">
+                                <dxb:BarButtonItem Content="Hold Register" Command="{Binding DataContext.HoldRegisterCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImage Image=BORules_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=BORules_16x16.png}" />
                                 <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"
                                                    LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Delete_16x16.png}" />
@@ -81,18 +84,68 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="TITLE" Header="Title" />
-                            <dxg:GridColumn FieldName="DESCRIPTION" Header="Issue Description" />
-                            <dxg:GridColumn FieldName="PROPOSED_SOLUTION" Header="Proposed Solution or Comments" />
-                            <dxg:GridColumn FieldName="SCHEDULE_IMPACT" Header="Schedule Impact" />
-                            <dxg:GridColumn FieldName="COST_IMPACT" Header="Cost Impact" />
-                            <dxg:GridColumn FieldName="CLIENT_NOTIFICATION" Header="Client Notification" />
-                            <dxg:GridColumn FieldName="NOTIFIED_PERSON" Header="Notified Person" />
+                            <dxg:GridColumn FieldName="DESCRIPTION" Header="Issue Description" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="PROPOSED_SOLUTION" Header="Proposed Solution or Comments" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="SCHEDULE_IMPACT" Header="Schedule Impact" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" NullValueButtonPlacement="Popup" AutoComplete="True">
+                                        <dxe:ComboBoxEditSettings.ItemsSource>
+                                            <dxe:EnumItemsSource EnumType="{x:Type common:ScheduleImpact}" />
+                                        </dxe:ComboBoxEditSettings.ItemsSource>
+                                    </dxe:ComboBoxEditSettings>
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="COST_IMPACT" Header="Cost Impact" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" NullValueButtonPlacement="Popup" AutoComplete="True">
+                                        <dxe:ComboBoxEditSettings.ItemsSource>
+                                            <dxe:EnumItemsSource EnumType="{x:Type common:ScheduleImpact}" />
+                                        </dxe:ComboBoxEditSettings.ItemsSource>
+                                    </dxe:ComboBoxEditSettings>
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="CLIENT_NOTIFICATION" Header="Client Notification" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="NOTIFIED_PERSON" Header="Notified Person" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="DATE_RAISED" Header="Date Raised" />
-                            <dxg:GridColumn FieldName="FINAL_RESOLUTION" Header="Final Resolution" />
-                            <dxg:GridColumn FieldName="WAY_CLOSED" Header="Way Closed" />
+                            <dxg:GridColumn FieldName="FINAL_RESOLUTION" Header="Final Resolution" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="WAY_CLOSED" Header="Way Closed" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="CLOSED_NOTIFIED_PERSON" Header="Closed Notified Person" />
                             <dxg:GridColumn FieldName="DATE_CLOSED" Header="Date Closed" />
-                            <dxg:GridColumn FieldName="ACTIONED_ON_DWG" Header="Actioned on Drawing" />
+                            <dxg:GridColumn FieldName="ACTIONED_ON_DWG" Header="Actioned on Drawing" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" NullValueButtonPlacement="Popup" AutoComplete="True">
+                                        <dxe:ComboBoxEditSettings.ItemsSource>
+                                            <dxe:EnumItemsSource EnumType="{x:Type common:ActionedOnDrawing}" />
+                                        </dxe:ComboBoxEditSettings.ItemsSource>
+                                    </dxe:ComboBoxEditSettings>
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="RegisterChange.NUMBER" Header="Change Register" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="IsClosed" Visible="False" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
@@ -102,11 +155,19 @@
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
                             <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                                <custom:TableViewEx.FormatConditions>
+                                    <dxg:FormatCondition ApplyToRow="True" Expression="[IsClosed] = 'True'" FieldName="NUMBER">
+                                        <dx:Format Background="#FFD8D8D8"/>
+                                    </dxg:FormatCondition>
+                                </custom:TableViewEx.FormatConditions>
                                 <custom:TableViewEx.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Bulk Edit"
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                                                        Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Send to Change Register"
+                                                       Command="{Binding DataContext.SendToChangeRegisterCommand, ElementName=userControl}"
+                                                       Glyph="{dx:DXImage Image=TableConvertToRange_16x16.png}" />
                                     <dxb:BarButtonItem Content="Fill Up"
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}"
                                                        Command="{Binding View.DataContext.FillUpCommand}"

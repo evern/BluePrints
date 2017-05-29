@@ -19,15 +19,18 @@ namespace BluePrints.Data
         [StringLength(150)]
         public string NUMBER { get; set; }
 
+        [StringLength(150)]
+        public string CLIENT_NUMBER { get; set; }
+
         [StringLength(300)]
         public string TITLE { get; set; }
 
         [StringLength(1000)]
         public string DESCRIPTION { get; set; }
 
-        public bool SCHEDULE_IMPACT { get; set; }
+        public ScheduleImpact? SCHEDULE_IMPACT { get; set; }
 
-        public bool COST_IMPACT { get; set; }
+        public ScheduleImpact? COST_IMPACT { get; set; }
 
         public Register_ImpactType IMPACT_TYPE { get; set; }
 
@@ -35,7 +38,7 @@ namespace BluePrints.Data
 
         public DateTime DATE_RAISED { get; set; }
 
-        public DateTime? DATE_APPROVED { get; set; }
+        public bool APPROVED { get; set; }
 
         public DateTime? DATE_CLOSED { get; set; }
 

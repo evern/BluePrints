@@ -71,6 +71,8 @@ namespace BluePrints.Data
 
         public virtual COMMODITY_CODE COMMODITY_CODE { get; set; }
 
+        public virtual COMMODITY_GROUP_DIRECT COMMODITY_GROUP_DIRECT { get; set; }
+
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 
         public virtual ESTIMATION_DIRECT ESTIMATION_DIRECT { get; set; }

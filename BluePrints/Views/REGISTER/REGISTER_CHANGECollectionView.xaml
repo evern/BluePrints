@@ -81,10 +81,34 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="TITLE" Header="Title"/>
-                            <dxg:GridColumn FieldName="DESCRIPTION" Header="Issue Description" />
-                            <dxg:GridColumn FieldName="SCHEDULE_IMPACT" Header="Schedule Impact" />
-                            <dxg:GridColumn FieldName="COST_IMPACT" Header="Cost Impact" />
+                            <dxg:GridColumn FieldName="TITLE" Header="Title">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="DESCRIPTION" Header="Issue Description" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="SCHEDULE_IMPACT" Header="Schedule Impact" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" NullValueButtonPlacement="Popup" AutoComplete="True">
+                                        <dxe:ComboBoxEditSettings.ItemsSource>
+                                            <dxe:EnumItemsSource EnumType="{x:Type common:ScheduleImpact}" />
+                                        </dxe:ComboBoxEditSettings.ItemsSource>
+                                    </dxe:ComboBoxEditSettings>
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="COST_IMPACT" Header="Cost Impact" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" NullValueButtonPlacement="Popup" AutoComplete="True">
+                                        <dxe:ComboBoxEditSettings.ItemsSource>
+                                            <dxe:EnumItemsSource EnumType="{x:Type common:ScheduleImpact}" />
+                                        </dxe:ComboBoxEditSettings.ItemsSource>
+                                    </dxe:ComboBoxEditSettings>
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="DATE_RAISED" Header="Date Raised" />
                             <dxg:GridColumn FieldName="IMPACT_TYPE" Header="Impact">
                                 <dxg:GridColumn.EditSettings>
@@ -95,7 +119,7 @@
                                     </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="DATE_APPROVED" Header="Approved" />
+                            <dxg:GridColumn FieldName="APPROVED" Header="Approved" />
                             <dxg:GridColumn FieldName="INTERDISC_CHECK_COMPLETE" Header="Interdisc Check Complete"/>
                             <dxg:GridColumn FieldName="DATE_CLOSED" Header="Date Closed" />
                         </dxg:GridControl.Columns>

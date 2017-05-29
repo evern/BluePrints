@@ -80,18 +80,27 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="DESCRIPTION" Header="Hold Description" />
-                            <dxg:GridColumn FieldName="REFERENCE" Header="Reference" />
-                            <dxg:GridColumn FieldName="RAISED_BY" Header="Raised By">
+                            <dxg:GridColumn FieldName="DESCRIPTION" Header="Hold Description" >
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings 
-                                        ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}"
-                                        IsTextEditable="True" AutoComplete="True"
-                                        DisplayMember="NAME" ValueMember="GUID" />
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="REFERENCE" Header="Reference" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="RAISEDBY" Header="Raised By" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="DATE_RAISED" Header="Date Raised" />
-                            <dxg:GridColumn FieldName="ACTION" Header="Action" />
+                            <dxg:GridColumn FieldName="ACTION" Header="Action" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="DATE_CLOSED" Header="Date Closed" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>

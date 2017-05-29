@@ -22,6 +22,7 @@ namespace BluePrints.Data
             }
         }
 
+        [NotMapped]
         public string EntityNumber
         {
             get { return NUMBER; }

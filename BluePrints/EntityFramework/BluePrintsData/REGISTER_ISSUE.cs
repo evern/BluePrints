@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -14,6 +15,8 @@ namespace BluePrints.Data
         public Guid GUID_PROJECT { get; set; }
 
         public Guid? GUID_AREA { get; set; }
+
+        public Guid? GUID_CHANGE { get; set; }
 
         [StringLength(150)]
         public string NUMBER { get; set; }
@@ -39,15 +42,18 @@ namespace BluePrints.Data
         [StringLength(300)]
         public string WAY_CLOSED { get; set; }
 
+        [StringLength(300)]
+        public string CLOSED_NOTIFIED_PERSON { get; set; }
+
         public DateTime? DATE_RAISED { get; set; }
 
         public DateTime? DATE_CLOSED { get; set; }
 
-        public bool ACTIONED_ON_DWG { get; set; }
+        public ActionedOnDrawing? ACTIONED_ON_DWG { get; set; }
 
-        public bool SCHEDULE_IMPACT { get; set; }
+        public ScheduleImpact? SCHEDULE_IMPACT { get; set; }
 
-        public bool COST_IMPACT { get; set; }
+        public ScheduleImpact? COST_IMPACT { get; set; }
 
         public DateTime CREATED { get; set; }
 

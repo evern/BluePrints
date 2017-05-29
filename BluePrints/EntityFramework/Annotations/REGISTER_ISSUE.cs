@@ -3,7 +3,9 @@ namespace BluePrints.Data
     using BaseModel.Attributes;
     using BaseModel.Misc;
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Linq;
 
     [ConstraintAttributes("NUMBER")]
     public partial class REGISTER_ISSUE : IGuidEntityKey, IEntityNumber
@@ -22,10 +24,28 @@ namespace BluePrints.Data
             }
         }
 
+        [NotMapped]
         public string EntityNumber
         {
             get { return NUMBER; }
             set { NUMBER = value; }
+        }
+
+        [NotMapped]
+        public bool IsClosed
+        {
+            get
+            {
+                return DATE_CLOSED != null;
+            }
+        }
+
+        [NotMapped]
+        public REGISTER_CHANGE RegisterChange { get; set; }
+
+        public void SetRegisterChange(IEnumerable<REGISTER_CHANGE> REGISTER_CHANGECollection)
+        {
+            RegisterChange = REGISTER_CHANGECollection.FirstOrDefault(x => x.GUID == GUID_CHANGE);
         }
     }
 }

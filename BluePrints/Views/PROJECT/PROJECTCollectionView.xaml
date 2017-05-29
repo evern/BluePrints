@@ -157,7 +157,7 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Design Kick-Off Attachment" FieldName="DOC_KICKOFF_PATH">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:HyperlinkEditSettings AllowAutoNavigate="True" />
+                                    <dxe:HyperlinkEditSettings AllowAutoNavigate="True" RequestNavigation="HyperlinkEditSettings_RequestNavigation"/>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="SID Report Complete" FieldName="DOC_SIDREPORT">

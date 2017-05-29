@@ -17,7 +17,7 @@ using System.Linq;
 namespace BluePrints.ViewModels
 {
     public class REGISTER_NCCollectionViewModelWrapper :
-        EntitiesAutoNumberCollectionWrapper
+        BluePrintsEntitiesAutoNumberCollectionWrapper
         <REGISTER_NC, REGISTER_NC, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
@@ -60,6 +60,7 @@ namespace BluePrints.ViewModels
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
+            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             InvokeEntitiesLoaderDescriptionLoading();
         }
@@ -82,12 +83,13 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<REGISTER_NC>, IQueryable<REGISTER_NC>> ConstructMainViewModelProjection()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.NUMBER);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_NC> entities)
         {
             MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
+            MainViewModel.IsValidFromViewCallBack = AdditionalCellValidation;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
@@ -100,6 +102,40 @@ namespace BluePrints.ViewModels
         {
             entity.GUID_PROJECT = loadPROJECT.GUID;
             entity.DATE_IDENTIFIED = DateTime.Now.Date;
+        }
+
+        private bool AdditionalCellValidation(GridCellValidationEventArgs e)
+        {
+            if (e.Column.FieldName ==
+                BindableBase.GetPropertyName(() => new REGISTER_NC().DATE_CLOSED))
+            {
+                DateTime dateClosed = (DateTime)e.Value;
+                var editingEntity = (REGISTER_NC)e.Row;
+                if (editingEntity.DATE_IDENTIFIED != null &&
+                    editingEntity.DATE_IDENTIFIED > dateClosed)
+                {
+                    e.IsValid = false;
+                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                    e.ErrorContent = "Date closed cannot be earlier than date identified";
+                    return false;
+                }
+            }
+
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new REGISTER_NC().DATE_IDENTIFIED))
+            {
+                DateTime dateRaised = (DateTime)e.Value;
+                var editingEntity = (REGISTER_NC)e.Row;
+                if (editingEntity.DATE_CLOSED != null &&
+                    dateRaised > editingEntity.DATE_CLOSED)
+                {
+                    e.IsValid = false;
+                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                    e.ErrorContent = "Date identified cannot be later than date closed";
+                    return false;
+                }
+            }
+
+            return true;
         }
         #endregion
 
@@ -134,6 +170,17 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<AREA>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.INTERNAL_NUM);
+                return collection;
+            }
+        }
+
+        public IEnumerable<DISCIPLINE> DISCIPLINECollection
+        {
+            get
+            {
+                var collection = GetEntities<DISCIPLINE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
                 return collection;
             }
         }
