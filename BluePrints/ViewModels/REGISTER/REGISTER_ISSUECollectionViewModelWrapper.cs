@@ -111,6 +111,16 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        {
+            if (changedType == typeof(REGISTER_CHANGE))
+            {
+                FullRefreshWithoutClearingUndoRedo();
+                return;
+            }
+
+            base.OnAfterAffectingEntitiesChanged(key, changedType, messageType, sender);
+        }
         #region Collection Call Backs
 
         /// <summary>
