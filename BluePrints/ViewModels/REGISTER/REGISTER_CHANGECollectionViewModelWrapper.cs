@@ -1,10 +1,12 @@
 ﻿using BaseModel.DataModel;
+using BaseModel.Helpers;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Misc;
+using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
@@ -92,6 +94,20 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        const int numericFieldLengthOverride = 3;
+        protected bool IsContinueNewRowFromViewCallBack(RowEventArgs e, REGISTER_CHANGE projection)
+        {
+            IEnumerable<REGISTER_CHANGE> entitiesInOrder = MainViewModel.Entities.OrderBy(x => x.NUMBER);
+            REGISTER_CHANGE largestNumberEntity = entitiesInOrder.Last();
+            string largestNumberString = largestNumberEntity.NUMBER;
+            int numericFieldLength = 0;
+            long largestNumberValueOnly = 0;
+            string largestNumberStringOnly = BluePrintsDataUtils.ParseStringIntoComponents(largestNumberString, out numericFieldLength, out largestNumberValueOnly);
+            long newRowNumber = largestNumberValueOnly + 1;
+            projection.NUMBER = StringFormatUtils.AppendStringWithEnumerator(string.Empty, newRowNumber, numericFieldLengthOverride);
+
+            return true;
+        }
         #region Collection Call Backs
 
         /// <summary>

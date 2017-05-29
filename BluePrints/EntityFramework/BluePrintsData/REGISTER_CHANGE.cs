@@ -16,7 +16,7 @@ namespace BluePrints.Data
 
         public Guid? GUID_AREA { get; set; }
 
-        [Required]
+        //[Required]
         [StringLength(150)]
         public string NUMBER { get; set; }
 
