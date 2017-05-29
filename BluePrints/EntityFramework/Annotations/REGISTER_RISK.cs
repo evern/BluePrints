@@ -6,7 +6,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
 
     [ConstraintAttributes("NUMBER")]
-    public partial class REGISTER_RISK : IGuidEntityKey
+    public partial class REGISTER_RISK : IGuidEntityKey, IEntityNumber
     {
         [NotMapped]
         public Guid EntityKey
@@ -20,6 +20,12 @@ namespace BluePrints.Data
             {
                 GUID = value;
             }
+        }
+
+        public string EntityNumber
+        {
+            get { return NUMBER; }
+            set { NUMBER = value; }
         }
     }
 }

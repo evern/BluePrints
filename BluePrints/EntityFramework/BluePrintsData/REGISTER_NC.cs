@@ -1,13 +1,12 @@
-namespace BluePrints.Data
+﻿namespace BluePrints.Data
 {
-    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class REGISTER_CHANGE
+    public partial class REGISTER_NC
     {
         [Key]
         public Guid GUID { get; set; }
@@ -16,26 +15,31 @@ namespace BluePrints.Data
 
         public Guid? GUID_AREA { get; set; }
 
+        public Guid? GUID_DISCIPLINE { get; set; }
+
         [StringLength(150)]
         public string NUMBER { get; set; }
 
         [StringLength(300)]
+        public string RAISEDBY { get; set; }
+
+        [StringLength(300)]
         public string TITLE { get; set; }
 
-        [StringLength(1000)]
+        [StringLength(300)]
         public string DESCRIPTION { get; set; }
 
-        public bool SCHEDULE_IMPACT { get; set; }
+        [StringLength(1000)]
+        public string CAUSE { get; set; }
 
-        public bool COST_IMPACT { get; set; }
+        public int? CORRECTIVE_ACTION_TYPE { get; set; }
 
-        public Register_ImpactType IMPACT_TYPE { get; set; }
+        [StringLength(1500)]
+        public string CORRECTIVE_ACTION { get; set; }
 
-        public bool INTERDISC_CHECK_COMPLETE { get; set; }
+        public decimal? ESTIMATED_RECTIFICATION_COST { get; set; }
 
-        public DateTime DATE_RAISED { get; set; }
-
-        public DateTime? DATE_APPROVED { get; set; }
+        public DateTime? DATE_IDENTIFIED { get; set; }
 
         public DateTime? DATE_CLOSED { get; set; }
 
@@ -56,3 +60,4 @@ namespace BluePrints.Data
         public virtual PROJECT PROJECT { get; set; }
     }
 }
+

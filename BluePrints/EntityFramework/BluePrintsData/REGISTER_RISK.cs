@@ -16,12 +16,8 @@ namespace BluePrints.Data
 
         public Guid? GUID_AREA { get; set; }
 
-        [Required]
         [StringLength(150)]
         public string NUMBER { get; set; }
-
-        [StringLength(300)]
-        public string TITLE { get; set; }
 
         public Register_HazardGroup? HAZARD_GROUP { get; set; }
 

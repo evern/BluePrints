@@ -1,4 +1,5 @@
-﻿using BaseModel.DataModel;
+﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
 using BaseModel.Helpers;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Loader;
@@ -6,10 +7,12 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Misc;
+using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Bars;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
@@ -18,7 +21,7 @@ using System.Linq;
 namespace BluePrints.ViewModels
 {
     public class REGISTER_CHANGECollectionViewModelWrapper :
-        BluePrintsEntitiesCollectionWrapper
+        EntitiesAutoNumberCollectionWrapper
         <REGISTER_CHANGE, REGISTER_CHANGE, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
@@ -30,7 +33,6 @@ namespace BluePrints.ViewModels
         {
             return ViewModelSource.Create(() => new REGISTER_CHANGECollectionViewModelWrapper(unitOfWorkFactory));
         }
-
 
         /// <summary>
         /// Initializes a new instance of the REGISTERCollectionViewModelWrapper class.
@@ -55,11 +57,13 @@ namespace BluePrints.ViewModels
             loadPROJECT = PROJECTParameter.GetEntity();
         }
 
+        int defaultNumericFieldLengthForRegisters;
         public override void InitializeAndLoadEntitiesLoaderDescription()
         {
             MainViewModel = null;
             base.CleanUpEntitiesLoader();
 
+            defaultNumericFieldLengthForRegisters = Int32.Parse(BluePrintsResources.REGISTER_DefaultNumberFieldLength);
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
@@ -90,26 +94,10 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_CHANGE> entities)
         {
             MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
-            MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        const int numericFieldLengthOverride = 3;
-        protected bool IsContinueNewRowFromViewCallBack(RowEventArgs e, REGISTER_CHANGE projection)
-        {
-            IEnumerable<REGISTER_CHANGE> entitiesInOrder = MainViewModel.Entities.OrderBy(x => x.NUMBER);
-            REGISTER_CHANGE largestNumberEntity = entitiesInOrder.Last();
-            string largestNumberString = largestNumberEntity.NUMBER;
-            int numericFieldLength = 0;
-            long largestNumberValueOnly = 0;
-            string largestNumberStringOnly = BluePrintsDataUtils.ParseStringIntoComponents(largestNumberString, out numericFieldLength, out largestNumberValueOnly);
-            long newRowNumber = largestNumberValueOnly + 1;
-            projection.NUMBER = StringFormatUtils.AppendStringWithEnumerator(string.Empty, newRowNumber, numericFieldLengthOverride);
-
-            return true;
-        }
         #region Collection Call Backs
-
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
@@ -120,6 +108,18 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
+        #endregion
+
+        #region IEntityNumber
+        protected override string GetEntityNumberFieldName()
+        {
+            return BindableBase.GetPropertyName(() => new REGISTER_CHANGE().NUMBER);
+        }
+
+        protected override int DefaultNumericFieldLength()
+        {
+            return Int32.Parse(BluePrintsResources.REGISTER_DefaultNumberFieldLength);
+        }
         #endregion
 
         #region View Properties

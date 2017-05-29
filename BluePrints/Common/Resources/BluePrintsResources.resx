@@ -267,4 +267,7 @@
   <data name="P6AssignmentWriteComplete" xml:space="preserve">
     <value>P6 units populated</value>
   </data>
+  <data name="REGISTER_DefaultNumberFieldLength" xml:space="preserve">
+    <value>3</value>
+  </data>
 </root>

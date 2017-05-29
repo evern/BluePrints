@@ -1,6 +1,6 @@
 ﻿<custom:ViewStateRestoreUserControl
     x:Name="userControl"
-    x:Class="BluePrints.Views.REGISTER_RISKCollectionView"
+    x:Class="BluePrints.Views.REGISTER_LLCollectionView"
     xmlns:view="clr-namespace:BluePrints.Views"
     xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -18,7 +18,7 @@
     xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
     xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
     mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
-    DataContext="{dxmvvm:ViewModelSource viewmodel:REGISTER_RISKCollectionViewModelWrapper}">
+    DataContext="{dxmvvm:ViewModelSource viewmodel:REGISTER_LLCollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -71,7 +71,7 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlREGISTER" Style="{StaticResource DefaultGridControlTemplate}" >
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="NUMBER" ReadOnly="True" Header="Number" />
+                            <dxg:GridColumn FieldName="NUMBER" ReadOnly="True" Header="Item" />
                             <dxg:GridColumn Header="Area" FieldName="GUID_AREA" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
@@ -80,75 +80,28 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="DATE_IDENTIFIED" Header="Date Identified" />
-                            <dxg:GridColumn FieldName="HAZARD_GROUP" Header="Hazard Group">
+                            <dxg:GridColumn Header="Discipline" FieldName="GUID_DISCIPLINE" >
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
-                                        <dxe:ComboBoxEditSettings.ItemsSource>
-                                            <dxe:EnumItemsSource EnumType="{x:Type common:Register_HazardGroup}" />
-                                        </dxe:ComboBoxEditSettings.ItemsSource>
-                                    </dxe:ComboBoxEditSettings>
+                                    <dxe:ComboBoxEditSettings
+                                        ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
+                                        ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="HAZARD_TYPE" Header="Hazard Type" />
-                            <dxg:GridColumn FieldName="HAZARD_CAUSE" Header="Cause of Hazard" />
-                            <dxg:GridColumn FieldName="RISK_LIKELIHOOD" Header="Rated Likelihood">
+                            <dxg:GridColumn Header="Raised By" FieldName="RAISEDBY_TYPE">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
-                                        <dxe:ComboBoxEditSettings.ItemsSource>
-                                            <dxe:EnumItemsSource EnumType="{x:Type common:Register_RiskLikelihood}" />
-                                        </dxe:ComboBoxEditSettings.ItemsSource>
-                                    </dxe:ComboBoxEditSettings>
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                                              ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:RegisterRaisedByType}}" />
                                 </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="RISK_CONSEQUENCES" Header="Rated Consequence">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
-                                        <dxe:ComboBoxEditSettings.ItemsSource>
-                                            <dxe:EnumItemsSource EnumType="{x:Type common:Register_RiskConsequence}" />
-                                        </dxe:ComboBoxEditSettings.ItemsSource>
-                                    </dxe:ComboBoxEditSettings>
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="RISK_RANKING" AllowEditing="False" Header="Rated Ranking" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
-                                        <dxe:ComboBoxEditSettings.ItemsSource>
-                                            <dxe:EnumItemsSource EnumType="{x:Type common:Register_RiskRanking}" />
-                                        </dxe:ComboBoxEditSettings.ItemsSource>
-                                    </dxe:ComboBoxEditSettings>
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="CONTROL_MEASURES" Header="Control Measures" />
-                            <dxg:GridColumn FieldName="RESIDUE_RISK_LIKELIHOOD" Header="Residual Likelihood">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
-                                        <dxe:ComboBoxEditSettings.ItemsSource>
-                                            <dxe:EnumItemsSource EnumType="{x:Type common:Register_RiskLikelihood}" />
-                                        </dxe:ComboBoxEditSettings.ItemsSource>
-                                    </dxe:ComboBoxEditSettings>
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="RESIDUE_RISK_CONSEQUENCES" Header="Residual Consequence" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
-                                        <dxe:ComboBoxEditSettings.ItemsSource>
-                                            <dxe:EnumItemsSource EnumType="{x:Type common:Register_RiskConsequence}" />
-                                        </dxe:ComboBoxEditSettings.ItemsSource>
-                                    </dxe:ComboBoxEditSettings>
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="RESIDUE_RISK_RANKING" AllowEditing="False" Header="Residual Ranking">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
-                                        <dxe:ComboBoxEditSettings.ItemsSource>
-                                            <dxe:EnumItemsSource EnumType="{x:Type common:Register_RiskRanking}" />
-                                        </dxe:ComboBoxEditSettings.ItemsSource>
-                                    </dxe:ComboBoxEditSettings>
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="RESIDUE_HAZARD" Header="Residual Hazards" />
-                            <dxg:GridColumn FieldName="FURTHER_ACTION" Header="Further Action By" />
+                            </dxg:GridColumn> 
+                            <dxg:GridColumn FieldName="TYPE" Header="Type"/>
+                            <dxg:GridColumn FieldName="TITLE" Header="Lessons Learned Title" />
+                            <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" />
+                            <dxg:GridColumn FieldName="PROCESS_ISSUE" Header="Process Issue" />
+                            <dxg:GridColumn FieldName="FURTHER_ACTION" Header="Further Action Required" />
+                            <dxg:GridColumn FieldName="RAISEDBY" Header="Raised By" />
+                            <dxg:GridColumn FieldName="DATE_IDENTIFIED" Header="Date Identified"/>
+                            <dxg:GridColumn FieldName="DATE_CLOSED" Header="Date Closed" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
@@ -163,6 +116,33 @@
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                                                        Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
+                                    <dxb:BarButtonItem x:Name="contextMenuInsert" Content="Insert"
+                                                       Command="{Binding DataContext.InsertCommand, ElementName=userControl}"
+                                                       Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" />
+                                    <dxb:BarSubItem x:Name="contextMenuInsertMulti" Content="Insert Multiple"
+                                                    Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}">
+                                        <dxb:BarEditItem x:Name="contextMenuInsertMultiCount" Content="Count"
+                                                         EditValue="2">
+                                            <dxb:BarEditItem.EditSettings>
+                                                <dxe:SpinEditSettings IsTextEditable="True" IsFloatValue="False"
+                                                                      Increment="1" MinValue="2" MaxValue="99"
+                                                                      MaskType="Numeric" Mask="n0"
+                                                                      MaskUseAsDisplayFormat="True">
+                                                    <dxe:SpinEditSettings.Buttons>
+                                                        <dxe:ButtonInfo x:Name="contextMenuInsertMultiCountBtn"
+                                                                        GlyphKind="Apply">
+                                                            <dxmvvm:Interaction.Behaviors>
+                                                                <dxmvvm:EventToCommand
+                                                                    Command="{Binding DataContext.InsertMultipleCommand, ElementName=userControl}"
+                                                                    CommandParameter="{Binding ElementName=contextMenuInsertMultiCount}"
+                                                                    EventName="Click" />
+                                                            </dxmvvm:Interaction.Behaviors>
+                                                        </dxe:ButtonInfo>
+                                                    </dxe:SpinEditSettings.Buttons>
+                                                </dxe:SpinEditSettings>
+                                            </dxb:BarEditItem.EditSettings>
+                                        </dxb:BarEditItem>
+                                    </dxb:BarSubItem>
                                     <dxb:BarButtonItem Content="Fill Up"
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}"
                                                        Command="{Binding View.DataContext.FillUpCommand}"

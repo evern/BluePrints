@@ -83,6 +83,16 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_AREA);
 
             modelBuilder.Entity<AREA>()
+                .HasMany(e => e.REGISTER_LL)
+                .WithOptional(e => e.AREA)
+                .HasForeignKey(e => e.GUID_AREA);
+
+            modelBuilder.Entity<AREA>()
+                .HasMany(e => e.REGISTER_NC)
+                .WithOptional(e => e.AREA)
+                .HasForeignKey(e => e.GUID_AREA);
+
+            modelBuilder.Entity<AREA>()
                 .HasMany(e => e.REGISTER_RISK)
                 .WithOptional(e => e.AREA)
                 .HasForeignKey(e => e.GUID_AREA);
@@ -453,6 +463,17 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.REGISTER_RISK)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.REGISTER_LL)
+                .WithOptional(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.REGISTER_NC)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);

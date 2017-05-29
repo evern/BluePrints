@@ -15,7 +15,6 @@ namespace BluePrints.Data
 
         public Guid? GUID_AREA { get; set; }
 
-        [Required]
         [StringLength(150)]
         public string NUMBER { get; set; }
 
@@ -36,6 +35,9 @@ namespace BluePrints.Data
 
         [StringLength(300)]
         public string NOTIFIED_PERSON { get; set; }
+
+        [StringLength(300)]
+        public string WAY_CLOSED { get; set; }
 
         public DateTime? DATE_RAISED { get; set; }
 

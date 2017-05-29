@@ -326,7 +326,7 @@
                                                             <dxmvvm:Interaction.Behaviors>
                                                                 <dxmvvm:EventToCommand
                                                                     Command="{Binding DataContext.InsertMultipleCommand, ElementName=userControl}"
-                                                                    CommandParameter="{Binding ElementName=contextMenuDuplicateMultiCount}"
+                                                                    CommandParameter="{Binding ElementName=contextMenuInsertMultiCount}"
                                                                     EventName="Click" />
                                                             </dxmvvm:Interaction.Behaviors>
                                                         </dxe:ButtonInfo>

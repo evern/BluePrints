@@ -142,6 +142,16 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((REGISTER_RISK x) => x.GUID); }
         }
 
+        IRepository<REGISTER_LL, Guid> IBluePrintsEntitiesUnitOfWork.REGISTER_LL
+        {
+            get { return GetRepository((REGISTER_LL x) => x.GUID); }
+        }
+
+        IRepository<REGISTER_NC, Guid> IBluePrintsEntitiesUnitOfWork.REGISTER_NC
+        {
+            get { return GetRepository((REGISTER_NC x) => x.GUID); }
+        }
+
         IRepository<REGISTER, Guid> IBluePrintsEntitiesUnitOfWork.REGISTERS
         {
             get { return GetRepository((REGISTER x) => x.GUID); }

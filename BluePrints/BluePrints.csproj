@@ -431,6 +431,8 @@
     <Compile Include="EntityFramework\Annotations\REGISTER_ISSUE.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_HOLD.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_CHANGE.cs" />
+    <Compile Include="EntityFramework\Annotations\REGISTER_NC.cs" />
+    <Compile Include="EntityFramework\Annotations\REGISTER_LL.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_RISK.cs" />
     <Compile Include="EntityFramework\Annotations\BASELINE_ITEM_ASSIGNMENT.cs" />
     <Compile Include="EntityFramework\Annotations\BluePrintsEntities.cs" />
@@ -466,6 +468,8 @@
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_CHANGE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_HOLD.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_ISSUE.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\REGISTER_NC.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\REGISTER_LL.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_RISK.cs" />
     <Compile Include="EntityFramework\BluePrintsData\ROLE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\ROLE_PERMISSION.cs" />
@@ -510,6 +514,8 @@
     <Compile Include="ViewModels\REGISTER\REGISTER_HOLDCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_ISSUECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_CHANGECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\REGISTER\REGISTER_NCCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\REGISTER\REGISTER_LLCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_RISKCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEM_ASSIGNMENTViewModel.cs" />
@@ -517,6 +523,9 @@
     <Compile Include="ViewModels\ESTIMATION_ITEM\ESTIMATION_DIRECT_ITEMSViewModelWrapperOld.cs" />
     <Compile Include="Views\ESTIMATION_ITEM\ESTIMATE_COMMODITY_CODESelectionView.xaml.cs">
       <DependentUpon>ESTIMATE_COMMODITY_CODESelectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\REGISTER\REGISTER_LLCollectionView.xaml.cs">
+      <DependentUpon>REGISTER_LLCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\REGISTER\REGISTER_HOLDCollectionView.xaml.cs">
       <DependentUpon>REGISTER_HOLDCollectionView.xaml</DependentUpon>
@@ -526,6 +535,9 @@
     </Compile>
     <Compile Include="Views\REGISTER\REGISTER_ISSUECollectionView.xaml.cs">
       <DependentUpon>REGISTER_ISSUECollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\REGISTER\REGISTER_NCCollectionView.xaml.cs">
+      <DependentUpon>REGISTER_NCCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\REGISTER\REGISTER_RISKCollectionView.xaml.cs">
       <DependentUpon>REGISTER_RISKCollectionView.xaml</DependentUpon>
@@ -1279,6 +1291,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\REGISTER\REGISTER_LLCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\REGISTER\REGISTER_HOLDCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -1290,6 +1306,10 @@
     <Page Include="Views\REGISTER\REGISTER_ISSUECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\REGISTER\REGISTER_NCCollectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
     <Page Include="Views\REGISTER\REGISTER_RISKCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>

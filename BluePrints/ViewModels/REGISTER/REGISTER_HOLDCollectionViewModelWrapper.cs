@@ -5,6 +5,7 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Misc;
+using BluePrints.Common.Resources;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
@@ -16,7 +17,7 @@ using System.Linq;
 namespace BluePrints.ViewModels
 {
     public class REGISTER_HOLDCollectionViewModelWrapper :
-        BluePrintsEntitiesCollectionWrapper
+        EntitiesAutoNumberCollectionWrapper
         <REGISTER_HOLD, REGISTER_HOLD, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
@@ -28,7 +29,6 @@ namespace BluePrints.ViewModels
         {
             return ViewModelSource.Create(() => new REGISTER_HOLDCollectionViewModelWrapper(unitOfWorkFactory));
         }
-
 
         /// <summary>
         /// Initializes a new instance of the REGISTERCollectionViewModelWrapper class.
@@ -106,6 +106,18 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
+        #endregion
+
+        #region IEntityNumber
+        protected override string GetEntityNumberFieldName()
+        {
+            return BindableBase.GetPropertyName(() => new REGISTER_CHANGE().NUMBER);
+        }
+
+        protected override int DefaultNumericFieldLength()
+        {
+            return Int32.Parse(BluePrintsResources.REGISTER_DefaultNumberFieldLength);
+        }
         #endregion
 
         #region View Properties

@@ -18,8 +18,7 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The BASELINE_ITEMS entities repository.
         /// </summary>
         IRepository<BASELINE_ITEM, Guid> BASELINE_ITEMS { get; }
-
-
+        
         /// <summary>
         /// The BASELINE_ITEM_WORK entities repository.
         /// </summary>
@@ -134,6 +133,16 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The REGISTER_RISK entities repository.
         /// </summary>
         IRepository<REGISTER_RISK, Guid> REGISTER_RISK { get; }
+
+        /// <summary>
+        /// The REGISTER_LL entities repository.
+        /// </summary>
+        IRepository<REGISTER_LL, Guid> REGISTER_LL { get; }
+
+        /// <summary>
+        /// The REGISTER_NC entities repository.
+        /// </summary>
+        IRepository<REGISTER_NC, Guid> REGISTER_NC { get; }
 
         /// <summary>
         /// The REGISTER entities repository.

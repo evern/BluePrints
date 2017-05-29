@@ -79,6 +79,20 @@ namespace BluePrints.Common
         [Display(Name = "Modified")] Modified = 1
     }
 
+    public enum RegisterRaisedByType
+    {
+        [Display(Name = "Internal")] Internal = 0,
+        [Display(Name = "Client")] Client = 1,
+        [Display(Name = "Sub-contractor")] SubContractor = 2
+    }
+
+    public enum CorrectiveActionType
+    {
+        [Display(Name = "Design Use")] DesignUse = 0,
+        [Display(Name = "Concessional Use")] ConcessionalUse = 1,
+        [Display(Name = "Preclude Use")] PrecludeUse = 2
+    }
+
     public enum DashboardViewType
     {
         Costs,

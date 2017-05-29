@@ -412,6 +412,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 3.
+        /// </summary>
+        internal static string REGISTER_DefaultNumberFieldLength {
+            get {
+                return ResourceManager.GetString("REGISTER_DefaultNumberFieldLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Lhpwrma6!.
         /// </summary>
         internal static string SecurityKey {

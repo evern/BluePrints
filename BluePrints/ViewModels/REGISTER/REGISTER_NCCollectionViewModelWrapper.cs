@@ -16,27 +16,26 @@ using System.Linq;
 
 namespace BluePrints.ViewModels
 {
-    public class REGISTER_RISKCollectionViewModelWrapper :
+    public class REGISTER_NCCollectionViewModelWrapper :
         EntitiesAutoNumberCollectionWrapper
-        <REGISTER_RISK, REGISTER_RISK, Guid, IBluePrintsEntitiesUnitOfWork>
+        <REGISTER_NC, REGISTER_NC, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of REGISTERCollectionViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static REGISTER_RISKCollectionViewModelWrapper Create(
+        public static REGISTER_NCCollectionViewModelWrapper Create(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new REGISTER_RISKCollectionViewModelWrapper(unitOfWorkFactory));
+            return ViewModelSource.Create(() => new REGISTER_NCCollectionViewModelWrapper(unitOfWorkFactory));
         }
-
 
         /// <summary>
         /// Initializes a new instance of the REGISTERCollectionViewModelWrapper class.
         /// This constructor is declared protected to avoid undesired instantiation of the REGISTERCollectionViewModelWrapper type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected REGISTER_RISKCollectionViewModelWrapper(
+        protected REGISTER_NCCollectionViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
@@ -77,20 +76,18 @@ namespace BluePrints.ViewModels
 
         protected override void OnAllEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.REGISTER_RISK);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.REGISTER_NC);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<REGISTER_RISK>, IQueryable<REGISTER_RISK>> ConstructMainViewModelProjection()
+        protected override Func<IRepositoryQuery<REGISTER_NC>, IQueryable<REGISTER_NC>> ConstructMainViewModelProjection()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_RISK> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_NC> entities)
         {
             MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
-            MainViewModel.ExistingRowAddUndoAndSaveCallBack = ExistingRowAddUndoAndSaveCallBack;
-            MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
@@ -99,36 +96,11 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
-        public void OnBeforeEntitySaved(REGISTER_RISK entity)
+        public void OnBeforeEntitySaved(REGISTER_NC entity)
         {
             entity.GUID_PROJECT = loadPROJECT.GUID;
             entity.DATE_IDENTIFIED = DateTime.Now.Date;
         }
-
-        private bool ExistingRowAddUndoAndSaveCallBack(REGISTER_RISK projectionEntity, CellValueChangedEventArgs e)
-        {
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new REGISTER_RISK().RISK_CONSEQUENCES) || 
-                e.Column.FieldName == BindableBase.GetPropertyName(() => new REGISTER_RISK().RISK_LIKELIHOOD))
-            {
-                Register_RiskRanking? oldValue = projectionEntity.RISK_RANKING;
-                Register_RiskRanking? newValue = RiskMatrix.GetRanking(projectionEntity.RISK_LIKELIHOOD, projectionEntity.RISK_CONSEQUENCES);
-
-                projectionEntity.RISK_RANKING = newValue;
-                MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity, BindableBase.GetPropertyName(() => new REGISTER_RISK().RISK_RANKING), oldValue, e.Value, EntityMessageType.Changed);
-            }
-            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new REGISTER_RISK().RESIDUE_RISK_CONSEQUENCES) ||
-                     e.Column.FieldName == BindableBase.GetPropertyName(() => new REGISTER_RISK().RESIDUE_RISK_LIKELIHOOD))
-            {
-                Register_RiskRanking? oldValue = projectionEntity.RESIDUE_RISK_RANKING;
-                Register_RiskRanking? newValue = RiskMatrix.GetRanking(projectionEntity.RESIDUE_RISK_LIKELIHOOD, projectionEntity.RESIDUE_RISK_CONSEQUENCES);
-
-                projectionEntity.RESIDUE_RISK_RANKING = newValue;
-                MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity, BindableBase.GetPropertyName(() => new REGISTER_RISK().RESIDUE_RISK_RANKING), oldValue, e.Value, EntityMessageType.Changed);
-            }
-
-            return true;
-        }
-
         #endregion
 
         #endregion
@@ -152,7 +124,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "REGISTER_RISKCollectionViewModelWrapper"; }
+            get { return "REGISTER_NCCollectionViewModelWrapper"; }
         }
 
         public IEnumerable<AREA> AREACollection

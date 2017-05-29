@@ -71,9 +71,8 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlREGISTER" Style="{StaticResource DefaultGridControlTemplate}" >
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="NUMBER" VisibleIndex="10" />
-                            <dxg:GridColumn FieldName="TITLE" VisibleIndex="20" />
-                            <dxg:GridColumn Header="AREA" FieldName="GUID_AREA" VisibleIndex="30" >
+                            <dxg:GridColumn FieldName="NUMBER" ReadOnly="True" Header="Item" />
+                            <dxg:GridColumn FieldName="GUID_AREA" Header="Area" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
@@ -81,16 +80,19 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="DESCRIPTION" VisibleIndex="40" />
-                            <dxg:GridColumn FieldName="PROPOSED_SOLUTION" VisibleIndex="50" />
-                            <dxg:GridColumn FieldName="FINAL_RESOLUTION" VisibleIndex="60" />
-                            <dxg:GridColumn FieldName="CLIENT_NOTIFICATION" VisibleIndex="70" />
-                            <dxg:GridColumn FieldName="NOTIFIED_PERSON" VisibleIndex="80" />
-                            <dxg:GridColumn FieldName="DATE_RAISED" VisibleIndex="90" />
-                            <dxg:GridColumn FieldName="DATE_CLOSED" VisibleIndex="100" />
-                            <dxg:GridColumn FieldName="ACTIONED_ON_DWG" VisibleIndex="110" />
-                            <dxg:GridColumn FieldName="SCHEDULE_IMPACT" VisibleIndex="120" />
-                            <dxg:GridColumn FieldName="COST_IMPACT" VisibleIndex="130" />
+                            <dxg:GridColumn FieldName="TITLE" Header="Title" />
+                            <dxg:GridColumn FieldName="DESCRIPTION" Header="Issue Description" />
+                            <dxg:GridColumn FieldName="PROPOSED_SOLUTION" Header="Proposed Solution or Comments" />
+                            <dxg:GridColumn FieldName="SCHEDULE_IMPACT" Header="Schedule Impact" />
+                            <dxg:GridColumn FieldName="COST_IMPACT" Header="Cost Impact" />
+                            <dxg:GridColumn FieldName="CLIENT_NOTIFICATION" Header="Client Notification" />
+                            <dxg:GridColumn FieldName="NOTIFIED_PERSON" Header="Notified Person" />
+                            <dxg:GridColumn FieldName="DATE_RAISED" Header="Date Raised" />
+                            <dxg:GridColumn FieldName="FINAL_RESOLUTION" Header="Final Resolution" />
+                            <dxg:GridColumn FieldName="WAY_CLOSED" Header="Way Closed" />
+                            <dxg:GridColumn FieldName="CLOSED_NOTIFIED_PERSON" Header="Closed Notified Person" />
+                            <dxg:GridColumn FieldName="DATE_CLOSED" Header="Date Closed" />
+                            <dxg:GridColumn FieldName="ACTIONED_ON_DWG" Header="Actioned on Drawing" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />

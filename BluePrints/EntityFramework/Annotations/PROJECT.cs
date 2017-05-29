@@ -27,6 +27,8 @@ namespace BluePrints.Data
             REGISTER_CHANGE = new HashSet<REGISTER_CHANGE>();
             REGISTER_HOLD = new HashSet<REGISTER_HOLD>();
             REGISTER_ISSUE = new HashSet<REGISTER_ISSUE>();
+            REGISTER_LL = new HashSet<REGISTER_LL>();
+            REGISTER_NC = new HashSet<REGISTER_NC>();
             REGISTER_RISK = new HashSet<REGISTER_RISK>();
             PROJECT_REPORT = new HashSet<PROJECT_REPORT>();
             RATE = new HashSet<RATE>();

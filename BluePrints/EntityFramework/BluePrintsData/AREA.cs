@@ -17,6 +17,8 @@ namespace BluePrints.Data
             REGISTER_CHANGE = new HashSet<REGISTER_CHANGE>();
             REGISTER_HOLD = new HashSet<REGISTER_HOLD>();
             REGISTER_ISSUE = new HashSet<REGISTER_ISSUE>();
+            REGISTER_LL = new HashSet<REGISTER_LL>();
+            REGISTER_NC = new HashSet<REGISTER_NC>();
             REGISTER_RISK = new HashSet<REGISTER_RISK>();
         }
 
@@ -64,6 +66,12 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<REGISTER_ISSUE> REGISTER_ISSUE { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<REGISTER_LL> REGISTER_LL { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<REGISTER_NC> REGISTER_NC { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<REGISTER_RISK> REGISTER_RISK { get; set; }

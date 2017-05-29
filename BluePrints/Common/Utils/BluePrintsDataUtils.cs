@@ -64,7 +64,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 string stringValueToFill = duplicateInternalNumber;
                 int numericFieldLength = 0;
                 long valueToFillNumberOnly = 0;
-                string valueToFillStringOnly = ParseStringIntoComponents(duplicateInternalNumber, out numericFieldLength, out valueToFillNumberOnly);
+                string valueToFillStringOnly = StringFormatUtils.ParseStringIntoComponents(duplicateInternalNumber, out numericFieldLength, out valueToFillNumberOnly);
 
                 List<BASELINE_ITEMProjection> allEntities = new List<BASELINE_ITEMProjection>(originalEntities);
                 allEntities.AddRange(unsavedEntities);
@@ -126,31 +126,6 @@ namespace BluePrints.Common.ViewModel.Utils
             }
 
             return string.Empty;
-        }
-
-        /// <summary>
-        /// Parse string into string only value and number only value.
-        /// </summary>
-        /// <param name="fullStringValue">String to parse.</param>
-        /// <param name="numericFieldlength">Length of number value.</param>
-        /// <param name="numberComponent">Parsed number value.</param>
-        /// <returns></returns>
-        public static string ParseStringIntoComponents(string fullStringValue, out int numericFieldlength, out long numberComponent)
-        {
-            int numberLength = 0;
-            int? numericIndex = StringFormatUtils.GetNumericIndex(fullStringValue, out numberLength);
-            //if (numericIndex == null)
-            //{
-            //    numericFieldlength = 0;
-            //    numberComponent = 0;
-            //    return fullStringValue;
-            //}
-
-            string stringOnlyValue = fullStringValue.Substring(0, fullStringValue.Length - numberLength);
-            numberComponent = Int64.Parse(fullStringValue.Substring(numericIndex.Value, fullStringValue.Length - numericIndex.Value));
-            numericFieldlength = numberLength;
-
-            return stringOnlyValue;
         }
 
         public static string Insert_InternalNumber(IEnumerable<BASELINE_ITEMProjection> originalEntities, IEnumerable<BASELINE_ITEMProjection> unsavedEntities, string duplicateInternalNumber)

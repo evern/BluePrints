@@ -416,7 +416,7 @@ namespace BluePrints.ViewModels
                 if (valueToFill == string.Empty)
                     return concatenatedEntities;
 
-                string valueToFillStringOnly = BluePrintsDataUtils.ParseStringIntoComponents(valueToFill, out numericFieldLength, out arbitraryNumericValue);
+                string valueToFillStringOnly = StringFormatUtils.ParseStringIntoComponents(valueToFill, out numericFieldLength, out arbitraryNumericValue);
 
                 List<PROGRESS_ITEMProjection> relatedNewEntities = newEntities.Where(x => x.Entity.Entity.INTERNAL_NUM.Contains(valueToFillStringOnly)).ToList();
                 PROGRESS_ITEMProjection smallestNumberEntity = relatedNewEntities.First();
@@ -425,8 +425,8 @@ namespace BluePrints.ViewModels
                 string smallestInternalNum = smallestNumberEntity.Entity.Entity.INTERNAL_NUM;
                 string largestInternalNum = largestNumberEntity.Entity.Entity.INTERNAL_NUM;
 
-                valueToFillStringOnly = BluePrintsDataUtils.ParseStringIntoComponents(smallestInternalNum, out numericFieldLength, out lowestUnsavedNumericValue);
-                valueToFillStringOnly = BluePrintsDataUtils.ParseStringIntoComponents(largestInternalNum, out numericFieldLength, out highestUnsavedNumericValue);
+                valueToFillStringOnly = StringFormatUtils.ParseStringIntoComponents(smallestInternalNum, out numericFieldLength, out lowestUnsavedNumericValue);
+                valueToFillStringOnly = StringFormatUtils.ParseStringIntoComponents(largestInternalNum, out numericFieldLength, out highestUnsavedNumericValue);
                 if(!processedValueToFillStringOnly.Contains(valueToFillStringOnly))
                 {
                     processedValueToFillStringOnly.Add(valueToFillStringOnly);
@@ -471,7 +471,7 @@ namespace BluePrints.ViewModels
 
                 int numericFieldLength = 0;
                 long valueToFillNumberOnly = 0;
-                string valueToFillStringOnly = BluePrintsDataUtils.ParseStringIntoComponents(stringValueToFill, out numericFieldLength, out valueToFillNumberOnly);
+                string valueToFillStringOnly = StringFormatUtils.ParseStringIntoComponents(stringValueToFill, out numericFieldLength, out valueToFillNumberOnly);
 
                 if (valueToFillNumberOnly >= startNumber)
                 {
