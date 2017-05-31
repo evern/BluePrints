@@ -156,10 +156,14 @@ namespace BluePrints.Common.Projections
             get { return PROGRESS_ITEMSuptocurrentdate; }
         }
 
+        //xaml use only
         public decimal CurrentPROGRESS_ITEM_UNITS
         {
             get
             {
+                if (Entity.Entity.BY_DURATION)
+                    return BluePrintsConstants.DurationBasedDisplayUnits;
+
                 decimal currentUnits = PROGRESS_ITEMCurrent == null ? 0 : PROGRESS_ITEMCurrent.EARNED_UNITS;
                 return PastPROGRESS_ITEMS_UNITS + currentUnits;
             }
@@ -213,11 +217,16 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (PROGRESS_ITEMSBeforeReportingDate == null || Entity == null ||
-                    Entity.Entity.TOTAL_HOURS == 0)
+                if (Entity == null || Entity.Entity == null || PROGRESS_ITEMSBeforeReportingDate == null)
                     return 0;
-                else
-                    return PastPROGRESS_ITEMS_UNITS / Entity.Entity.TOTAL_HOURS;
+
+                if (Entity.Entity.BY_DURATION)
+                    return PastPROGRESS_ITEMS_UNITS / BluePrintsConstants.DurationBasedTotalUnits;
+
+                if (Entity.Entity.TOTAL_HOURS == 0)
+                    return 0;
+
+                return PastPROGRESS_ITEMS_UNITS / Entity.Entity.TOTAL_HOURS;
             }
         }
 
@@ -227,11 +236,17 @@ namespace BluePrints.Common.Projections
             {
                 if (Entity == null || Entity.Entity == null)
                     return 0;
-                else if (PROGRESS_ITEMSBeforeReportingDate == null || Entity.Entity.TOTAL_HOURS == 0)
+
+                if (PROGRESS_ITEMSBeforeReportingDate == null)
                     return 1;
-                else
-                    return (Entity.Entity.TOTAL_HOURS - FuturePROGRESS_ITEMS_UNITS) /
-                           Entity.Entity.TOTAL_HOURS;
+
+                if (Entity.Entity.BY_DURATION)
+                    return (BluePrintsConstants.DurationBasedTotalUnits - FuturePROGRESS_ITEMS_UNITS) / BluePrintsConstants.DurationBasedTotalUnits;
+
+                if (Entity.Entity.TOTAL_HOURS == 0)
+                    return 1;
+
+                return (Entity.Entity.TOTAL_HOURS - FuturePROGRESS_ITEMS_UNITS) / Entity.Entity.TOTAL_HOURS;
             }
         }
 
@@ -239,8 +254,12 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Entity == null || Entity.Entity == null ||
-                    Entity.Entity.ESTIMATED_HOURS == 0)
+                if (Entity == null || Entity.Entity == null)
+                    return 0;
+
+                if (Entity.Entity.BY_DURATION)
+                    return TOTAL_EARNED_UNITS / BluePrintsConstants.DurationBasedTotalUnits;
+                else if (Entity.Entity.TOTAL_HOURS == 0)
                     return 0;
 
                 return TOTAL_EARNED_UNITS / Entity.Entity.ESTIMATED_HOURS;
@@ -251,30 +270,43 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Entity == null || Entity.Entity == null ||
-                    Entity.Entity.TOTAL_HOURS == 0)
+                if (Entity == null || Entity.Entity == null)
+                    return 0;
+
+                if (Entity.Entity.BY_DURATION)
+                    return TOTAL_EARNED_UNITS / BluePrintsConstants.DurationBasedTotalUnits;
+                else if (Entity.Entity.TOTAL_HOURS == 0)
                     return 0;
 
                 return TOTAL_EARNED_UNITS / Entity.Entity.TOTAL_HOURS;
             }
         }
 
+        //xaml use only
         public decimal PERIOD_EARNED_PERCENTAGE
         {
             get
             {
-                if (Entity == null || Entity.Entity == null || PROGRESS_ITEMCurrent == null ||
-                    Entity.Entity.TOTAL_HOURS == 0)
+                if (Entity == null || Entity.Entity == null || PROGRESS_ITEMCurrent == null)
+                    return 0;
+
+                if (Entity.Entity.BY_DURATION)
+                    return PROGRESS_ITEMCurrent.EARNED_UNITS / BluePrintsConstants.DurationBasedTotalUnits;
+                else if (Entity.Entity.TOTAL_HOURS == 0)
                     return 0;
 
                 return PROGRESS_ITEMCurrent.EARNED_UNITS / Entity.Entity.TOTAL_HOURS;
             }
         }
 
-        public decimal PERIOD_EARNED_UNITS
+        //xaml use only
+        public decimal DisplayPeriodEarnedUnits
         {
             get
             {
+                if (Entity != null && Entity.Entity != null && Entity.Entity.BY_DURATION)
+                    return BluePrintsConstants.DurationBasedDisplayUnits;
+
                 if (PROGRESS_ITEMCurrent == null)
                     return 0;
 
@@ -282,12 +314,15 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public decimal PERIOD_EARNED_COSTS
+        //xaml use only
+        public decimal DisplayPeriodEarnedCosts
         {
             get
             {
-                if (PROGRESS_ITEMCurrent == null || Entity == null ||
-                    Entity.RATE == null || Entity.RATE.RATE1 == null)
+                if (Entity != null && Entity.Entity != null && Entity.Entity.BY_DURATION)
+                    return BluePrintsConstants.DurationBasedDisplayUnits;
+
+                if (PROGRESS_ITEMCurrent == null || Entity == null || Entity.RATE == null || Entity.RATE.RATE1 == null)
                     return 0;
 
                 return PROGRESS_ITEMCurrent.EARNED_UNITS * (decimal)Entity.RATE.RATE1;
@@ -307,10 +342,15 @@ namespace BluePrints.Common.Projections
                         return 0;
 
                     var totalUnits = Entity.Entity.TOTAL_HOURS;
-                    if (totalUnits > 0)
+                    if (Entity.Entity.BY_DURATION)
                     {
                         var earnedUnits = TOTAL_EARNED_UNITS;
-                        total_earned_percentage = totalUnits == 0 ? 0 : earnedUnits / totalUnits;
+                        total_earned_percentage = earnedUnits / BluePrintsConstants.DurationBasedTotalUnits;
+                    }
+                    else if(totalUnits > 0)
+                    {
+                        var earnedUnits = TOTAL_EARNED_UNITS;
+                        total_earned_percentage = earnedUnits / totalUnits;
                     }
                     else
                     {
@@ -328,7 +368,17 @@ namespace BluePrints.Common.Projections
                 var totalUnits = Entity.Entity.TOTAL_HOURS;
                 if (totalUnits > 0)
                 {
-                    var earnedUnits = value * Entity.Entity.TOTAL_HOURS;
+                    decimal earnedUnits = value * Entity.Entity.TOTAL_HOURS;
+                    earnedUnits -= PastPROGRESS_ITEMS_UNITS;
+
+                    if (PROGRESS_ITEMCurrent == null)
+                        PROGRESS_ITEMCurrent = new PROGRESS_ITEM();
+
+                    PROGRESS_ITEMCurrent.EARNED_UNITS = earnedUnits;
+                }
+                else if(Entity.Entity.BY_DURATION)
+                {
+                    decimal earnedUnits = value * BluePrintsConstants.DurationBasedTotalUnits;
                     earnedUnits -= PastPROGRESS_ITEMS_UNITS;
 
                     if (PROGRESS_ITEMCurrent == null)
@@ -341,6 +391,22 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        //xaml use only
+        public decimal DisplayTotalEarnedUnits
+        {
+            get
+            {
+                if (Entity != null && Entity.Entity != null && Entity.Entity.BY_DURATION)
+                    return BluePrintsConstants.DurationBasedDisplayUnits;
+                
+                if (PROGRESS_ITEMCurrent == null)
+                    return PastPROGRESS_ITEMS_UNITS;
+
+                return PROGRESS_ITEMCurrent.EARNED_UNITS + PastPROGRESS_ITEMS_UNITS;
+            }
+        }
+
+        //code use only
         public decimal TOTAL_EARNED_UNITS
         {
             get
@@ -352,10 +418,14 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public decimal TOTAL_EARNED_COSTS
+        //xaml use only
+        public decimal DisplayTotalEarnedCost
         {
             get
             {
+                if (Entity != null && Entity.Entity != null && Entity.Entity.BY_DURATION)
+                    return BluePrintsConstants.DurationBasedDisplayUnits;
+
                 if (Entity == null || Entity.RATE == null)
                     return 0;
 

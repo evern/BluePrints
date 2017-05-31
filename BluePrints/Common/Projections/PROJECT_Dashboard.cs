@@ -100,7 +100,7 @@ namespace BluePrints.Common.Projections
                     getLivePROGRESS_ITEMFunc()
                         .Where(x => x.PROGRESS.GUID == livePROGRESS.GUID);
 
-                IEnumerable<BASELINE_ITEM> liveBASELINE_ITEM = liveBASELINE.BASELINE_ITEM;
+                IEnumerable<BASELINE_ITEM> liveBASELINE_ITEM = liveBASELINE.BASELINE_ITEM.Where(x => !x.BY_DURATION);
                 IEnumerable<RATE> RATESByProject = AllRATES.Where(x => x.GUID_PROJECT == localPROJECT.GUID);
                 IEnumerable<VARIATION> ApprovedVARIATIONSByProject =
                     ApprovedVARIATIONS.Where(x => x.GUID_PROJECT == localPROJECT.GUID);

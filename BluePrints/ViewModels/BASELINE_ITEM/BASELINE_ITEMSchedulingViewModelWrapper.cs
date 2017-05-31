@@ -368,7 +368,7 @@ namespace BluePrints.ViewModels
                     foreach (BASELINE_ITEM_ASSIGNMENT BASELINE_ITEM_ASSIGNMENT in projectBASELINE_ITEM_ASSIGNMENTS)
                     {
                         TASK existingTask = P6Tasks.FirstOrDefault(x => x.task_code == BASELINE_ITEM_ASSIGNMENT.P6_ACTIVITYID);
-                        decimal currentAssignmentUnits = ((BASELINE_ITEM_ASSIGNMENT.HIGH_VALUE - BASELINE_ITEM_ASSIGNMENT.LOW_VALUE) + 0.01m) * baseline_item.TOTAL_UNITS;
+                        decimal currentAssignmentUnits = ((BASELINE_ITEM_ASSIGNMENT.HIGH_VALUE - BASELINE_ITEM_ASSIGNMENT.LOW_VALUE) + 0.01m) * baseline_item.TotalUnitsIncludeByDuration;
 
                         if (existingTask != null && existingTask.delete_date == null)
                         {

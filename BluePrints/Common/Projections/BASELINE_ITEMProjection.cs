@@ -60,6 +60,20 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public decimal TotalUnitsIncludeByDuration
+        {
+            get
+            {
+                if (Entity == null)
+                    return 0;
+
+                if (Entity.BY_DURATION)
+                    return BluePrintsConstants.DurationBasedTotalUnits;
+
+                return Entity.TOTAL_HOURS + Entity.DC_HOURS;
+            }
+        }
+
         public decimal TOTAL_UNITS
         {
             get

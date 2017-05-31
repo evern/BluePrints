@@ -378,7 +378,7 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROGRESS_ITEM>()
                 .Property(e => e.EARNED_UNITS)
-                .HasPrecision(18, 4);
+                .HasPrecision(18, 7);
 
             modelBuilder.Entity<PROJECT>()
                 .Property(e => e.CURRENCYCONVERSION)

@@ -154,9 +154,10 @@ namespace BluePrints.Common.ViewModel.Reporting
             decimal totalUnits = progressItemStats.Stats == null ? 0 : progressItemStats.Stats.totalUnits;
             decimal rate = progressItemStats.Entity.RATE == null ? 0 : progressItemStats.Entity.RATE.RATE1 == null ? 0 :
                 (decimal)progressItemStats.Entity.RATE.RATE1;
+            bool isByDuration = progressItemStats.Entity.Entity.BY_DURATION;
             Guid workpackKey = progressItemStats.Entity.Entity.GUID_WORKPACK == null ? Guid.Empty : (Guid)progressItemStats.Entity.Entity.GUID_WORKPACK;
 
-            ObjectResult<StoredProcedure_PlannedDataPoint> deliverablesDataPoints = bluePrintDataContext.GetDeliverablePlannedDataPoints(this.p6BaselineName, this.dataDate, progressItemStats.Entity.EntityKey, progressItemStats.Entity.Entity.GUID_ORIGINAL, workpackKey, totalUnits, rate);
+            ObjectResult<StoredProcedure_PlannedDataPoint> deliverablesDataPoints = bluePrintDataContext.GetDeliverablePlannedDataPoints(this.p6BaselineName, this.p6ProgressProjectName, this.dataDate, progressItemStats.Entity.EntityKey, progressItemStats.Entity.Entity.GUID_ORIGINAL, workpackKey, totalUnits, rate, isByDuration);
 
             
             List<StoredProcedure_PlannedDataPoint> plannedDataPoints = new List<StoredProcedure_PlannedDataPoint>();

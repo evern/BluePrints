@@ -327,13 +327,13 @@
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnEarnedUnits" Header="EARNED UNITS"
-                                                FieldName="TOTAL_EARNED_UNITS" ReadOnly="True" IsEnabled="False">
+                                                FieldName="DisplayTotalEarnedUnits" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnTotalEarnedCost" Header="TOTAL EARNED $"
-                                                FieldName="TOTAL_EARNED_COSTS" ReadOnly="True" IsEnabled="False" Visible="False">
+                                                FieldName="DisplayTotalEarnedCost" ReadOnly="True" IsEnabled="False" Visible="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
@@ -348,13 +348,13 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnPeriodEarnedUnits" Header="EARNED UNITS"
-                                                FieldName="PERIOD_EARNED_UNITS" ReadOnly="True" IsEnabled="False">
+                                                FieldName="DisplayPeriodEarnedUnits" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnCurrentEarnedCost" Header="CURRENT EARNED COSTS"
-                                                FieldName="PERIOD_EARNED_COSTS" ReadOnly="True" IsEnabled="False" Visible="False">
+                                                FieldName="DisplayPeriodEarnedCosts" ReadOnly="True" IsEnabled="False" Visible="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
@@ -366,14 +366,12 @@
                                                  ShowInColumn="TOTAL_EARNED_PERCENTAGE" DisplayFormat="Total: {0:p}" />
                             <dxg:GridSummaryItem FieldName="PERIOD_EARNED_PERCENTAGE" SummaryType="Custom"
                                                  ShowInColumn="PERIOD_EARNED_PERCENTAGE" DisplayFormat="Total: {0:p}" />
-                            <dxg:GridSummaryItem FieldName="PERIOD_EARNED_UNITS" SummaryType="Sum"
-                                                 ShowInColumn="PERIOD_EARNED_UNITS" DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="TOTAL_EARNED_UNITS" SummaryType="Sum"
-                                                 ShowInColumn="TOTAL_EARNED_UNITS" DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="PERIOD_EARNED_COSTS" SummaryType="Sum"
-                                                 ShowInColumn="PERIOD_EARNED_COSTS" DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="TOTAL_EARNED_COSTS" SummaryType="Sum"
-                                                 ShowInColumn="TOTAL_EARNED_COSTS" DisplayFormat="Total: {0:c2}" />
+                            <dxg:GridSummaryItem FieldName="DisplayPeriodEarnedUnits" SummaryType="Sum"
+                                                 ShowInColumn="DisplayPeriodEarnedUnits" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="DisplayTotalEarnedUnits" SummaryType="Sum"
+                                                 ShowInColumn="DisplayTotalEarnedUnits" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="DisplayPeriodEarnedCosts" SummaryType="Sum"
+                                                 ShowInColumn="DisplayPeriodEarnedCosts" DisplayFormat="Total: {0:c2}" />
                             <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS"
                                                  SummaryType="Sum" DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS"
@@ -390,14 +388,12 @@
                                                  ShowInColumn="TOTAL_EARNED_PERCENTAGE" DisplayFormat="Total: {0:p}" />
                             <dxg:GridSummaryItem FieldName="PERIOD_EARNED_PERCENTAGE" SummaryType="Custom"
                                                  ShowInColumn="PERIOD_EARNED_PERCENTAGE" DisplayFormat="Total: {0:p}" />
-                            <dxg:GridSummaryItem FieldName="PERIOD_EARNED_UNITS" SummaryType="Sum"
-                                                 ShowInColumn="PERIOD_EARNED_UNITS" DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="TOTAL_EARNED_UNITS" SummaryType="Sum"
-                                                 ShowInColumn="TOTAL_EARNED_UNITS" DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="PERIOD_EARNED_COSTS" SummaryType="Sum"
-                                                 ShowInColumn="PERIOD_EARNED_COSTS" DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="TOTAL_EARNED_COSTS" SummaryType="Sum"
-                                                 ShowInColumn="TOTAL_EARNED_COSTS" DisplayFormat="Total: {0:c2}" />
+                            <dxg:GridSummaryItem FieldName="DisplayPeriodEarnedUnits" SummaryType="Sum"
+                                                 ShowInColumn="DisplayPeriodEarnedUnits" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="DisplayTotalEarnedUnits" SummaryType="Sum"
+                                                 ShowInColumn="DisplayTotalEarnedUnits" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="DisplayPeriodEarnedCosts" SummaryType="Sum"
+                                                 ShowInColumn="DisplayPeriodEarnedCosts" DisplayFormat="Total: {0:c2}" />
                             <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS"
                                                  SummaryType="Sum" DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS"

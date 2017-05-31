@@ -2,6 +2,7 @@ namespace BluePrints.Data
 {
     using BaseModel.Attributes;
     using BaseModel.Misc;
+    using BluePrints.Common;
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
@@ -39,7 +40,22 @@ namespace BluePrints.Data
         [NotMapped]
         public decimal TOTAL_HOURS
         {
-            get { return ESTIMATED_HOURS + DC_HOURS; }
+            get
+            {
+                return ESTIMATED_HOURS + DC_HOURS;
+            }
+        }
+
+        [NotMapped]
+        public decimal Total_HoursIncludeByDuration
+        {
+            get
+            {
+                if (BY_DURATION)
+                    return BluePrintsConstants.DurationBasedTotalUnits;
+
+                return ESTIMATED_HOURS + DC_HOURS;
+            }
         }
     }
 }

@@ -57,6 +57,8 @@ namespace BluePrints.Data
 
         public decimal? P6_ASSIGNMENT_STARTUNIT { get; set; }
 
+        public bool BY_DURATION { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

@@ -68,25 +68,29 @@ namespace BluePrints.Data
 
         public const string dbo = nameof(dbo);
         [Function(FunctionType.StoredProcedure, nameof(GetDeliverablePlannedDataPoints), Schema = dbo)]
-        public ObjectResult<StoredProcedure_PlannedDataPoint> GetDeliverablePlannedDataPoints(string p6BaselineProjectName, DateTime dataDate, Guid baseline_itemKey, Guid baseline_item_originalKey, Guid workpackKey, decimal totalUnits, decimal rate)
+        public ObjectResult<StoredProcedure_PlannedDataPoint> GetDeliverablePlannedDataPoints(string p6BaselineProjectName, string p6ProgressProjectName, DateTime dataDate, Guid baseline_itemKey, Guid baseline_item_originalKey, Guid workpackKey, decimal totalUnits, decimal rate, bool isByDuration)
         {
             ObjectParameter p6BaselineProjectNameParameter = new ObjectParameter("P6_BASELINE_NAME", p6BaselineProjectName);
+            ObjectParameter p6ProgressProjectNameParameter = new ObjectParameter("P6_PROGRESS_NAME", p6ProgressProjectName);
             ObjectParameter dataDateParameter = new ObjectParameter("DATA_DATE", dataDate);
             ObjectParameter baselineItemGuidParameter = new ObjectParameter("GUID_BASELINE_ITEM", baseline_itemKey);
             ObjectParameter originalGuidParameter = new ObjectParameter("GUID_ORIGINAL", baseline_item_originalKey);
             ObjectParameter workpackGuidParameter = new ObjectParameter("GUID_WORKPACK", workpackKey);
             ObjectParameter totalUnitsParameter = new ObjectParameter("TOTAL_UNITS", totalUnits);
             ObjectParameter rateParameter = new ObjectParameter("RATE", rate);
+            ObjectParameter byDurationParameter = new ObjectParameter("BY_DURATION", isByDuration);
 
             ObjectParameter[] parameterArray = new ObjectParameter[] 
             {
                 p6BaselineProjectNameParameter,
+                p6ProgressProjectNameParameter, 
                 baselineItemGuidParameter,
                 originalGuidParameter,
                 workpackGuidParameter,
                 dataDateParameter,
                 totalUnitsParameter,
-                rateParameter
+                rateParameter,
+                byDurationParameter
             };
 
             ObjectResult<StoredProcedure_PlannedDataPoint> result = null;

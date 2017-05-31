@@ -17,7 +17,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 List<VariationAdjustment> currentProgressItemAdjustments = variationAdjustments.Where(x => x.DeliverableOriginalGuid == progressItem.Entity.Entity.GUID_ORIGINAL).ToList();
                 if(!progressHaveStats)
-                    progressItem.Stats = new ProgressStats(livePROGRESS, progressItem.Entity.Entity.ESTIMATED_HOURS, progressItem.Entity .Entity.TOTAL_HOURS, progressItem.Entity.ESTIMATED_COSTS, progressItem.Entity.TOTAL_COSTS, currentProgressItemAdjustments);
+                    progressItem.Stats = new ProgressStats(livePROGRESS, progressItem.Entity.Entity.Total_HoursIncludeByDuration, progressItem.Entity .Entity.TOTAL_HOURS, progressItem.Entity.ESTIMATED_COSTS, progressItem.Entity.TOTAL_COSTS, currentProgressItemAdjustments);
             }
         }
 

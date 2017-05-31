@@ -799,6 +799,7 @@ namespace BluePrints.ViewModels
 
             isPushingToP6 = true;
             //Stats will be built in SummarizeSinglePROJECTDashboard within SummarizeBASELINE_ITEMDashboard in ConstructMainViewModelProjection
+            MainViewModel.Refresh();
             BASELINE_ITEMSchedulingViewModel = BASELINE_ITEMSchedulingViewModelWrapper.Create();
             BASELINE_ITEMSchedulingViewModel.OnMappingViewModelLoaded = OnPROJECTBASELINE_ITEMSMappingViewModelLoaded;
             var ParameterObj = BASELINE_ITEMSchedulingViewModel as ISupportParameter;
@@ -815,8 +816,8 @@ namespace BluePrints.ViewModels
             List<string> processedP6Task = new List<string>();
             TimeSpan intervalTimeSpan = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
 
-            IEnumerable<BASELINE_ITEMProjection> baseline_itemProjection = entities.Where(x => x.TOTAL_UNITS > 0);
-
+            //IEnumerable<BASELINE_ITEMProjection> baseline_itemProjection = entities.Where(x => x.TOTAL_UNITS > 0);
+            IEnumerable<BASELINE_ITEMProjection> baseline_itemProjection = entities.Where(x => x.TOTAL_UNITS > 0 || x.Entity.BY_DURATION);
             LoadingScreenManager.ShowLoadingScreen(baseline_itemProjection.Count());
             string errorMessage = string.Empty;
 
@@ -827,8 +828,8 @@ namespace BluePrints.ViewModels
                 if (currentPROGRESS_ITEM == null)
                     continue;
 
-                if (currentPROGRESS_ITEM.Stats == null || currentPROGRESS_ITEM.Stats.totalUnits == 0)
-                    continue;
+                //if (currentPROGRESS_ITEM.Stats == null)
+                //    continue;
 
                 if (currentPROGRESS_ITEM.PROGRESS_ITEMSUpToCurrentDate == null || currentPROGRESS_ITEM.PROGRESS_ITEMSUpToCurrentDate.Count == 0)
                     continue;
@@ -837,7 +838,7 @@ namespace BluePrints.ViewModels
                 DateTime lastEarnedDate = currentPROGRESS_ITEM.PROGRESS_ITEMSUpToCurrentDate.Max(x => x.EARNED_DATE);
                 decimal totalEarnedUnits = currentPROGRESS_ITEM.PROGRESS_ITEMSUpToCurrentDate.Sum(x => x.EARNED_UNITS);
 
-                decimal baseline_itemEarnedPercentage = totalEarnedUnits / baseline_item.TOTAL_UNITS;
+                decimal baseline_itemEarnedPercentage = totalEarnedUnits / baseline_item.TotalUnitsIncludeByDuration;
                 if (baseline_item.BASELINE_ITEM_ASSIGNMENTS.Count == 0)
                     continue;
 
@@ -859,7 +860,7 @@ namespace BluePrints.ViewModels
                         decimal highValueToUse = baseline_itemAssignment.HIGH_VALUE > baseline_itemEarnedPercentage ? baseline_itemEarnedPercentage : baseline_itemAssignment.HIGH_VALUE;
 
                         //current activity assignment unit
-                        decimal currentAssignmentUnits = ((highValueToUse - baseline_itemAssignment.LOW_VALUE) + 0.01m) * baseline_item.TOTAL_UNITS;
+                        decimal currentAssignmentUnits = ((highValueToUse - baseline_itemAssignment.LOW_VALUE) + 0.01m) * baseline_item.TotalUnitsIncludeByDuration;
 
                         //if this is the first time processing the task
                         //another way of doing this is to reset everything to zero and not started, but we do not want to override user changes on the p6 schedule

@@ -2,6 +2,19 @@
 
 namespace BluePrints.Common
 {
+    public static class BluePrintsConstants
+    {
+        public static decimal DurationBasedTotalUnits
+        {
+            get { return 0.0001m; }
+        }
+
+        public static decimal DurationBasedDisplayUnits
+        {
+            get { return 0; }
+        }
+    }
+
     public enum DesignManager
     {
         [Display(Name = "None")] None = 0,

@@ -193,6 +193,8 @@
                                                               DisplayMember="NAME" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn Name="colBY_DURATION" FieldName="Entity.Entity.BY_DURATION"
+                                            Header="BY_DURATION" />
                             <dxg:GridColumn Name="colESTIMATED_HOURS" FieldName="Entity.Entity.ESTIMATED_HOURS"
                                             Header="ESTIMATED_HOURS">
                                 <dxg:GridColumn.CellTemplate>
