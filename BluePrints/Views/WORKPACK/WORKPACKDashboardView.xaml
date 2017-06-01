@@ -95,7 +95,7 @@
                                             <DataTemplate>
                                                 <dxe:ComboBoxEdit 
                                                   x:Name="PART_Editor"
-                                                  ItemsSource="{Binding RowData.Row.Entity.AvailableSubAreas}"
+                                                  ItemsSource="{Binding RowData.Row.AvailableSubAreas}"
                                                   DisplayMember="INTERNAL_NUM" 
                                                   ValueMember="GUID"
                                                   ValidateOnTextInput="True"
