@@ -171,7 +171,12 @@ namespace BluePrints.ViewModels
 
         private void OnTaskIdSelectedMessage(SelectIntIdMessage message)
         {
-            SelectedTASK = TASKSItemSource.FirstOrDefault(x => x.task_id == message.SelectedId);
+            TASK_AppointmentInfo selectedTask = TASKSItemSource.FirstOrDefault(x => x.task_id == message.SelectedId);
+
+            if (selectedTask.Status.ToString() == AppointmentActivityType.Milestone.ToString())
+                return;
+
+            SelectedTASK = selectedTask;
         }
         #endregion
 
@@ -230,6 +235,7 @@ namespace BluePrints.ViewModels
         public void MatchSelectedBASELINE_ITEM_ASSIGNMENT()
         {
             TASK_AppointmentInfo taskAppointment = TASKSItemSource.FirstOrDefault(x => x.Subject == SelectedASSIGNMENT.Entity.P6_ACTIVITYID);
+
             if (taskAppointment != null)
                 SelectedTASK = taskAppointment;
         }
