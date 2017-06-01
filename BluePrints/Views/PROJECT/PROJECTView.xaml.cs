@@ -15,8 +15,7 @@ namespace BluePrints.Views
 
             ((PROJECTViewModelWrapper)DataContext).AssignBASELINEDelegates = this.AssignBASELINEDelegates;
             ((PROJECTViewModelWrapper)DataContext).AssignPROGRESSDelegates = this.AssignPROGRESSDelegates;
-            ((PROJECTViewModelWrapper)DataContext).AssignPHASEDelegates = this.AssignPHASEDelegates;
-            ((PROJECTViewModelWrapper)DataContext).AssignAREADelegates = this.AssignAREADelegates;
+            //((PROJECTViewModelWrapper)DataContext).AssignAREADelegates = this.AssignAREADelegates;
             ((PROJECTViewModelWrapper)DataContext).AssignRATEDelegates = this.AssignRATEDelegates;
         }
 
@@ -64,49 +63,27 @@ namespace BluePrints.Views
             tableViewPROGRESS.ShowEditor();
         }
 
-        int focusedRowHandlePHASE;
-        ColumnBase currentColumnPHASE;
-        private void AssignPHASEDelegates(PHASECollectionViewModelWrapper viewModelWrapper)
-        {
-            viewModelWrapper.StoreActiveCell = this.StorePHASEFocusedCell;
-            viewModelWrapper.RestoreActiveCell = this.RestorePHASEFocusedCell;
-        }
+        //int focusedRowHandleAREA;
+        //ColumnBase currentColumnAREA;
+        //private void AssignAREADelegates(AREACollectionViewModelWrapper viewModelWrapper)
+        //{
+        //    viewModelWrapper.StoreActiveCell = this.StoreAREAFocusedCell;
+        //    viewModelWrapper.RestoreActiveCell = this.RestoreAREAFocusedCell;
+        //}
 
-        protected void StorePHASEFocusedCell()
-        {
-            focusedRowHandlePHASE = tableViewPHASE.FocusedRowHandle;
-            currentColumnPHASE = gridControlPHASE.CurrentColumn;
-        }
+        //protected void StoreAREAFocusedCell()
+        //{
+        //    focusedRowHandleAREA = tableViewAREA.FocusedRowHandle;
+        //    currentColumnAREA = gridControlAREA.CurrentColumn;
+        //}
 
-        protected void RestorePHASEFocusedCell()
-        {
-            gridControlPHASE.CurrentColumn = currentColumnPHASE;
-            tableViewPHASE.FocusedRowHandle = focusedRowHandlePHASE;
-            gridControlPHASE.Focus();
-            tableViewPHASE.ShowEditor();
-        }
-
-        int focusedRowHandleAREA;
-        ColumnBase currentColumnAREA;
-        private void AssignAREADelegates(AREACollectionViewModelWrapper viewModelWrapper)
-        {
-            viewModelWrapper.StoreActiveCell = this.StoreAREAFocusedCell;
-            viewModelWrapper.RestoreActiveCell = this.RestoreAREAFocusedCell;
-        }
-
-        protected void StoreAREAFocusedCell()
-        {
-            focusedRowHandleAREA = tableViewAREA.FocusedRowHandle;
-            currentColumnAREA = gridControlAREA.CurrentColumn;
-        }
-
-        protected void RestoreAREAFocusedCell()
-        {
-            gridControlAREA.CurrentColumn = currentColumnAREA;
-            tableViewAREA.FocusedRowHandle = focusedRowHandleAREA;
-            gridControlAREA.Focus();
-            tableViewAREA.ShowEditor();
-        }
+        //protected void RestoreAREAFocusedCell()
+        //{
+        //    gridControlAREA.CurrentColumn = currentColumnAREA;
+        //    tableViewAREA.FocusedRowHandle = focusedRowHandleAREA;
+        //    gridControlAREA.Focus();
+        //    tableViewAREA.ShowEditor();
+        //}
 
         int focusedRowHandleRATE;
         ColumnBase currentColumnRATE;

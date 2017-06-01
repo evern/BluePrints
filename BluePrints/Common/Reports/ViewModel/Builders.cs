@@ -59,7 +59,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             var exoWorkpacksList = exoWorkpacks.ToList();
             foreach (WORKPACK workpack in workpacks)
             {
-                var exoWorkpack = exoWorkpacksList.FirstOrDefault(x => x.JOBCODE == workpack.INTERNAL_NAME1 || x.JOBCODE == workpack.INTERNAL_NAME2);
+                var exoWorkpack = exoWorkpacksList.FirstOrDefault(x => x.JOBCODE == workpack.INTERNAL_NAME1);
                 if (exoWorkpack == null)
                 {
                     projectSummaryStats.AddMissingExoWorkpack(workpack);

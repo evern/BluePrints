@@ -304,7 +304,7 @@ namespace BluePrints.ViewModels
                 query =>
                     PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
                         query.OrderBy(x => x.INTERNAL_NUM), getPROGRESSFunc, getBASELINEFunc, getPROGRESS_ITEMSFunc, 
-                        getRATESFunc, getDELIVERABLES_STATUSESFunc);
+                        getRATESFunc, getDELIVERABLES_STATUSESFunc, GetSUBAREACollection);
         }
 
         bool isFirstLoaded;
@@ -551,20 +551,6 @@ namespace BluePrints.ViewModels
             get { return "PROGRESS_ITEMSViewModelWrapper"; }
         }
 
-        /// <summary>
-        /// The workpack internal name to be used
-        /// </summary>
-        public string WORKPACKDisplayMember
-        {
-            get
-            {
-                if (loadBASELINE == null || loadBASELINE.PROJECT.USELEGACYWORKPACK)
-                    return BindableBase.GetPropertyName(() => new WORKPACK().INTERNAL_NAME1);
-                else
-                    return BindableBase.GetPropertyName(() => new WORKPACK().INTERNAL_NAME2);
-            }
-        }
-
         public CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>
             PROGRESS_ITEMSCollectionViewModel
         {
@@ -585,7 +571,7 @@ namespace BluePrints.ViewModels
             {
                 var collection = GetEntities<WORKPACK>();
                 if (collection != null)
-                    collection = collection.OrderBy(x => x.INTERNAL_NAME1).OrderBy(x => x.INTERNAL_NAME2);
+                    collection = collection.OrderBy(x => x.INTERNAL_NAME1);
                 return collection;
             }
         }
@@ -596,9 +582,25 @@ namespace BluePrints.ViewModels
             {
                 var collection = GetEntities<AREA>();
                 if (collection != null)
-                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
+                    collection = collection.Where(x => x.GUID_PARENT == null).OrderBy(x => x.INTERNAL_NUM);
                 return collection;
             }
+        }
+
+        public IEnumerable<AREA> SUBAREACollection
+        {
+            get
+            {
+                return GetSUBAREACollection();
+            }
+        }
+
+        public IEnumerable<AREA> GetSUBAREACollection()
+        {
+            var collection = GetEntities<AREA>();
+            if (collection != null)
+                collection = collection.Where(x => x.GUID_PARENT != null).OrderBy(x => x.INTERNAL_NUM);
+            return collection;
         }
 
         public IEnumerable<DEPARTMENT> DEPARTMENTCollection

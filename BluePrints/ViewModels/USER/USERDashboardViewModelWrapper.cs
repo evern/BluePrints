@@ -137,7 +137,7 @@ namespace BluePrints.ViewModels
             {
                 var collection = GetEntities<WORKPACK>();
                 if (collection != null)
-                    collection = collection.OrderBy(x => x.INTERNAL_NAME1).OrderBy(x => x.INTERNAL_NAME2);
+                    collection = collection.OrderBy(x => x.INTERNAL_NAME1);
                 return collection;
             }
         }

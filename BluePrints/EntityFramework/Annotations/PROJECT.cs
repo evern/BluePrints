@@ -21,7 +21,6 @@ namespace BluePrints.Data
             ESTIMATION_DIRECT = new HashSet<ESTIMATION_DIRECT>();
             ESTIMATION_INDIRECT = new HashSet<ESTIMATION_INDIRECT>();
             ESTIMATION_SETTING = new HashSet<ESTIMATION_SETTING>();
-            PHASE = new HashSet<PHASE>();
             PROGRESS = new HashSet<PROGRESS>();
             REGISTER = new HashSet<REGISTER>();
             REGISTER_CHANGE = new HashSet<REGISTER_CHANGE>();

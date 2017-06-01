@@ -38,15 +38,11 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
 
-        private PROJECT loadPROJECT;
-
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
         protected override void InitializeParameters(object parameter)
         {
-            var PROJECTParameter = (EntitiesParameter<PROJECT>) parameter;
-            loadPROJECT = PROJECTParameter.GetEntity();
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
@@ -55,15 +51,9 @@ namespace BluePrints.ViewModels
             base.CleanUpEntitiesLoader();
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddLoaderDescription<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             InvokeEntitiesLoaderDescriptionLoading();
         }
-
-        private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID == loadPROJECT.GUID);
-        }
-
+        
         protected override void OnAllEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.PHASES);
@@ -72,7 +62,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> ConstructMainViewModelProjection()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => query;
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PHASE> entities)
@@ -89,7 +79,6 @@ namespace BluePrints.ViewModels
         /// </summary>
         public void OnBeforeEntitySaved(PHASE entity)
         {
-            entity.GUID_PROJECT = loadPROJECT.GUID;
         }
 
         #endregion

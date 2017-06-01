@@ -64,6 +64,11 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_AREA);
 
             modelBuilder.Entity<AREA>()
+                .HasMany(e => e.BASELINE_ITEM1)
+                .WithOptional(e => e.AREA1)
+                .HasForeignKey(e => e.GUID_SUBAREA);
+
+            modelBuilder.Entity<AREA>()
                 .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
                 .WithOptional(e => e.AREA)
                 .HasForeignKey(e => e.GUID_AREA);
@@ -102,6 +107,11 @@ namespace BluePrints.Data
                 .HasMany(e => e.WORKPACK)
                 .WithOptional(e => e.AREA)
                 .HasForeignKey(e => e.GUID_DAREA);
+
+            modelBuilder.Entity<AREA>()
+                .HasMany(e => e.WORKPACK1)
+                .WithOptional(e => e.AREA1)
+                .HasForeignKey(e => e.GUID_DSUBAREA);
 
             modelBuilder.Entity<BASELINE>()
                 .Property(e => e.ACTUAL_UNITS)
@@ -434,12 +444,6 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.ESTIMATION_SETTING)
-                .WithRequired(e => e.PROJECT)
-                .HasForeignKey(e => e.GUID_PROJECT)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.PHASE)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);

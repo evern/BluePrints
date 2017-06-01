@@ -361,6 +361,7 @@
     <Compile Include="Common\Misc\Messages.cs" />
     <Compile Include="Common\Misc\RiskMatrix.cs" />
     <Compile Include="Common\Projections\BASELINE_ITEM_ASSIGNMENTSProjection.cs" />
+    <Compile Include="Common\Projections\AREAMasterDetailProjection.cs" />
     <Compile Include="Common\Projections\COMMODITY_CODEMasterDetailProjection.cs" />
     <Compile Include="Common\Projections\COMMODITY_GROUP_CODEProjection.cs" />
     <Compile Include="Common\Projections\ESTIMATION_DIRECT_ITEMProjection.cs" />

@@ -15,10 +15,6 @@ namespace BluePrints.Views
         {
             InitializeComponent();
             InitializeViewControl(GridControl, tableView);
-            //((BASELINE_ITEMSCollectionViewModelWrapper)DataContext).ShowWORKPACKInternalName1 =
-            //    ShowWorkpackInternalName1;
-            //((BASELINE_ITEMSCollectionViewModelWrapper)DataContext).ShowWORKPACKInternalName2 =
-            //    ShowWorkpackInternalName2;
             ((BASELINE_ITEMSCollectionViewModelWrapper)DataContext).GetGridVisibleRows =
                 GetGridVisibleRows;
             ((BASELINE_ITEMSCollectionViewModelWrapper)DataContext).SetBaselineLockUnlock =
@@ -41,16 +37,6 @@ namespace BluePrints.Views
             isBASELINELocked = isLock;
         }
 
-        public void ShowWorkpackInternalName1()
-        {
-            colWORKPACKInternalName1.Visible = true;
-        }
-
-        public void ShowWorkpackInternalName2()
-        {
-            colWORKPACKInternalName2.Visible = true;
-        }
-
         private void tableView_ShowGridMenu(object sender, GridMenuEventArgs e)
         {
             var menuInfo = tableView.GridMenu.MenuInfo as GridCellMenuInfo;
@@ -70,7 +56,7 @@ namespace BluePrints.Views
                     contextMenuDuplicateMulti.IsEnabled = true;
                 }
 
-                if (menuInfo.Column == colWORKPACKInternalName1 || menuInfo.Column == colWORKPACKInternalName2)
+                if (menuInfo.Column == colWORKPACKInternalName1)
                 {
                     contextMenuPopulate.IsVisible = true;
                     contextMenuPopulate.Content = "Autofill from Area/DocType/Disc/Dept data";

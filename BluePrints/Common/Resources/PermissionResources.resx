@@ -117,8 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ManageAreaAndPhases" xml:space="preserve">
-    <value>Allow user to manage areas and phases</value>
+  <data name="ManageArea" xml:space="preserve">
+    <value>Allow user to manage areas</value>
   </data>
   <data name="ManageBaseline" xml:space="preserve">
     <value>Allow user to manage baselines</value>
@@ -140,6 +140,9 @@
   </data>
   <data name="ManageEstimation" xml:space="preserve">
     <value>Allow user to manage estimations</value>
+  </data>
+  <data name="ManagePhase" xml:space="preserve">
+    <value>Allow user to manage phase</value>
   </data>
   <data name="ManageProgress" xml:space="preserve">
     <value>Allow user to manage progress</value>

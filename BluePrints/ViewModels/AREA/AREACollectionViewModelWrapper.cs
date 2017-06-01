@@ -3,8 +3,10 @@ using BaseModel.Misc;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Base;
+using BluePrints.Common.Projections;
 using BluePrints.Data;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +14,8 @@ using System.Linq;
 namespace BluePrints.ViewModels
 {
     public class AREACollectionViewModelWrapper :
-        BluePrintsEntitiesCollectionWrapper
-        <AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>
+        BluePrintsEntitiesMasterDetailCollectionsWrapper
+        <AREA, AREAMasterDetailProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of AREACollectionViewModelWrapper as a POCO view model.
@@ -70,12 +72,12 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<AREA>, IQueryable<AREA>> ConstructMainViewModelProjection()
+        protected override Func<IRepositoryQuery<AREA>, IQueryable<AREAMasterDetailProjection>> ConstructMainViewModelProjection()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => AREAMasterDetailProjectionQueries.transformAREA(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID));
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<AREA> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<AREAMasterDetailProjection> entities)
         {
             MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
@@ -87,9 +89,9 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
-        public void OnBeforeEntitySaved(AREA entity)
+        public void OnBeforeEntitySaved(AREAMasterDetailProjection entity)
         {
-            entity.GUID_PROJECT = loadPROJECT.GUID;
+            entity.Entity.GUID_PROJECT = loadPROJECT.GUID;
         }
 
         #endregion
@@ -105,6 +107,10 @@ namespace BluePrints.ViewModels
         {
             get { return "AREACollectionViewModelWrapper"; }
         }
+        #endregion
+
+        #region View Command
+
         #endregion
     }
 }

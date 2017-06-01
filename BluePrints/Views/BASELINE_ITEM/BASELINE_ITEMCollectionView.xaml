@@ -91,22 +91,22 @@
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM" 
                                      Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="Entity.Entity.GUID_WORKPACK"
-                                            Header="WORKPACK 1" Visible="true" VisibleIndex="0">
+                            <dxg:GridColumn Name="colPHASE" FieldName="Entity.Entity.GUID_PHASE"
+                                            Header="PHASE" Visible="{Binding DataContext.IsPhaseVisible, ElementName=userControl}" VisibleIndex="0">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1"
-                                                              ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
-                                                              IsTextEditable="True" AutoComplete="True"
-                                                              DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
+                                    <dxe:ComboBoxEditSettings 
+                                            ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}"
+                                            IsTextEditable="True" AutoComplete="True"
+                                            DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colWORKPACKInternalName2" FieldName="Entity.Entity.GUID_WORKPACK"
-                                            Header="WORKPACK 2" Visible="False" VisibleIndex="1">
+                            <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="Entity.Entity.GUID_WORKPACK"
+                                            Header="WORKPACK" Visible="true" VisibleIndex="1">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName2"
-                                                              ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
-                                                              IsTextEditable="True" AutoComplete="True"
-                                                              DisplayMember="INTERNAL_NAME2" ValueMember="GUID" />
+                                    <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1"
+                                            ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
+                                            IsTextEditable="True" AutoComplete="True"
+                                            DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA">
@@ -115,6 +115,30 @@
                                         ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
                                         IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM"
                                         ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Name="colSUBAREA" FieldName="Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:ComboBoxEdit 
+                                                  x:Name="PART_Editor"
+                                                  ItemsSource="{Binding RowData.Row.Entity.AvailableSubAreas}"
+                                                  DisplayMember="INTERNAL_NUM" 
+                                                  ValueMember="GUID"
+                                                  ValidateOnTextInput="True"
+                                                  ValidateOnEnterKeyPressed="True"
+                                                  IncrementalFiltering="True"
+                                                  NullValueButtonPlacement="Popup"
+                                                  ImmediatePopup="True">
+                                        </dxe:ComboBoxEdit>
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                                <!--For Filtering-->
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
+                                                              ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}"
+                                                              IsTextEditable="True" AutoComplete="True"
+                                                              DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Name="colDOCTYPE" FieldName="Entity.Entity.GUID_DOCTYPE" Header="DOCTYPE">

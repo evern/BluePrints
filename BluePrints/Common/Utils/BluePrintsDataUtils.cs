@@ -311,37 +311,44 @@ namespace BluePrints.Common.ViewModel.Utils
         /// Generate internal number2 when all required fields are populated
         /// </summary>
         public static string WORKPACK_Generate_InternalNumber2(PROJECT fromPROJECT, WORKPACK fromWORKPACK,
-            IEnumerable<WORKPACK> WORKPACKEntities, IEnumerable<AREA> lookUpAREA,
-            IEnumerable<DISCIPLINE> lookUpDISCIPLINE, IEnumerable<PHASE> lookUpPHASE)
+            IEnumerable<WORKPACK> WORKPACKEntities, IEnumerable<AREA> lookUpAREA, IEnumerable<AREA> lookUpSUBAREA, 
+            IEnumerable<DISCIPLINE> lookUpDISCIPLINE, IEnumerable<PHASE> lookUpPHASE, IEnumerable<DOCTYPE> lookUpDOCTYPE)
         {
             AREA findAREA;
+            AREA findSUBAREA;
             DISCIPLINE findDISCIPLINE;
             PHASE findPHASE;
+            DOCTYPE findDOCTYPE;
 
-            if (fromWORKPACK.AREA == null || fromWORKPACK.DISCIPLINE == null || fromWORKPACK.AREA == null)
+            if (fromWORKPACK.AREA == null || fromWORKPACK.DISCIPLINE == null || fromWORKPACK.AREA == null || fromWORKPACK.DOCTYPE == null || fromWORKPACK.AREA1 == null)
             {
                 findAREA = lookUpAREA.FirstOrDefault(area => area.GUID == fromWORKPACK.GUID_DAREA);
+                findSUBAREA = lookUpSUBAREA.FirstOrDefault(subarea => subarea.GUID == fromWORKPACK.GUID_DSUBAREA);
                 findPHASE = lookUpPHASE.FirstOrDefault(phase => phase.GUID == fromWORKPACK.GUID_DPHASE);
                 findDISCIPLINE =
                     lookUpDISCIPLINE.FirstOrDefault(discipline => discipline.GUID == fromWORKPACK.GUID_DDISCIPLINE);
+                findDOCTYPE = lookUpDOCTYPE.FirstOrDefault(doctype => doctype.GUID == fromWORKPACK.GUID_DDOCTYPE);
             }
             else
             {
                 findAREA = fromWORKPACK.AREA;
                 findPHASE = fromWORKPACK.PHASE;
                 findDISCIPLINE = fromWORKPACK.DISCIPLINE;
+                findDOCTYPE = fromWORKPACK.DOCTYPE;
+                findSUBAREA = fromWORKPACK.AREA1;
             }
 
-            if (findAREA != null && findDISCIPLINE != null && findPHASE != null)
+            if (findAREA != null && findDISCIPLINE != null && findPHASE != null && findSUBAREA != null)
             {
                 var InternalName = fromPROJECT.NUMBER;
                 InternalName += "-" + findPHASE.INTERNAL_NUM;
-                InternalName += findAREA.INTERNAL_NUM;
-                InternalName += findDISCIPLINE.CODE;
+                InternalName += "-" + findAREA.INTERNAL_NUM;
+                InternalName += "-" + findSUBAREA.INTERNAL_NUM;
+                InternalName += "-" + findDISCIPLINE.CODE;
 
                 var InternalNameCount =
                     WORKPACKEntities.Count(
-                        obj => obj.INTERNAL_NAME2 != null && obj.INTERNAL_NAME2.Contains(InternalName)) + 1;
+                        obj => obj.INTERNAL_NAME1 != null && obj.INTERNAL_NAME1.Contains(InternalName)) + 1;
 
                 InternalName += InternalNameCount.ToString();
 
@@ -388,7 +395,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
                 var InternalNameCount =
                     WORKPACKEntities.Count(
-                        obj => obj.INTERNAL_NAME2 != null && obj.INTERNAL_NAME2.Contains(InternalName)) + 1;
+                        obj => obj.INTERNAL_NAME1 != null && obj.INTERNAL_NAME1.Contains(InternalName)) + 1;
 
                 if (InternalNameCount < 10)
                     InternalName += "0";

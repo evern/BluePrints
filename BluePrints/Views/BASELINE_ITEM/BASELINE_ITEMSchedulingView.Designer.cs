@@ -64,6 +64,7 @@
             this.resourceTreeColumn3 = new DevExpress.XtraScheduler.Native.ResourceTreeColumn();
             this.splitContainerControl1 = new DevExpress.XtraEditors.SplitContainerControl();
             this.splitContainerControl2 = new DevExpress.XtraEditors.SplitContainerControl();
+            this.colSubArea = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)(this.gridControlDeliverable)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewDeliverable)).BeginInit();
@@ -90,7 +91,7 @@
             this.colAssigned.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colAssigned.OptionsColumn.ReadOnly = true;
             this.colAssigned.Visible = true;
-            this.colAssigned.VisibleIndex = 7;
+            this.colAssigned.VisibleIndex = 8;
             // 
             // gridControlDeliverable
             // 
@@ -143,7 +144,8 @@
             this.colDiscipline,
             this.colEntity,
             this.colPrimaryTitle,
-            this.colAssigned});
+            this.colAssigned,
+            this.colSubArea});
             gridFormatRule1.Column = this.colAssigned;
             gridFormatRule1.ColumnApplyTo = this.colAssigned;
             gridFormatRule1.Name = "Format0";
@@ -194,7 +196,7 @@
             this.colDocType.OptionsColumn.AllowEdit = false;
             this.colDocType.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colDocType.Visible = true;
-            this.colDocType.VisibleIndex = 2;
+            this.colDocType.VisibleIndex = 3;
             // 
             // colDepartment
             // 
@@ -204,7 +206,7 @@
             this.colDepartment.OptionsColumn.AllowEdit = false;
             this.colDepartment.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colDepartment.Visible = true;
-            this.colDepartment.VisibleIndex = 3;
+            this.colDepartment.VisibleIndex = 4;
             // 
             // colDiscipline
             // 
@@ -214,7 +216,7 @@
             this.colDiscipline.OptionsColumn.AllowEdit = false;
             this.colDiscipline.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colDiscipline.Visible = true;
-            this.colDiscipline.VisibleIndex = 4;
+            this.colDiscipline.VisibleIndex = 5;
             // 
             // colEntity
             // 
@@ -225,7 +227,7 @@
             this.colEntity.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colEntity.OptionsColumn.ReadOnly = true;
             this.colEntity.Visible = true;
-            this.colEntity.VisibleIndex = 5;
+            this.colEntity.VisibleIndex = 6;
             // 
             // colPrimaryTitle
             // 
@@ -233,7 +235,7 @@
             this.colPrimaryTitle.FieldName = "Entity.PRIMARY_TITLE";
             this.colPrimaryTitle.Name = "colPrimaryTitle";
             this.colPrimaryTitle.Visible = true;
-            this.colPrimaryTitle.VisibleIndex = 6;
+            this.colPrimaryTitle.VisibleIndex = 7;
             // 
             // schedulerStorage1
             // 
@@ -459,6 +461,15 @@
             this.splitContainerControl2.TabIndex = 0;
             this.splitContainerControl2.Text = "splitContainerControl2";
             // 
+            // colSubArea
+            // 
+            this.colSubArea.Caption = "Sub Area";
+            this.colSubArea.CustomizationCaption = "Sub Area";
+            this.colSubArea.FieldName = "Entity.AREA1.INTERNAL_NUM";
+            this.colSubArea.Name = "colSubArea";
+            this.colSubArea.Visible = true;
+            this.colSubArea.VisibleIndex = 2;
+            // 
             // BASELINE_ITEMSchedulingView
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -507,5 +518,6 @@
         private DevExpress.XtraGrid.Columns.GridColumn colDocType;
         private DevExpress.XtraGrid.Columns.GridColumn colDepartment;
         private DevExpress.XtraGrid.Columns.GridColumn colPrimaryTitle;
+        private DevExpress.XtraGrid.Columns.GridColumn colSubArea;
     }
 }

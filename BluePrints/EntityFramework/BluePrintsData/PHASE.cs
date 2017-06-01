@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -18,8 +19,6 @@ namespace BluePrints.Data
         [Key]
         public Guid GUID { get; set; }
 
-        public Guid GUID_PROJECT { get; set; }
-
         [Required]
         [StringLength(100)]
         public string INTERNAL_NUM { get; set; }
@@ -30,6 +29,8 @@ namespace BluePrints.Data
         [Required]
         [StringLength(200)]
         public string TITLE { get; set; }
+
+        public PhaseType? PHASE_TYPE { get; set; }
 
         public DateTime CREATED { get; set; }
 
@@ -45,8 +46,6 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
-
-        public virtual PROJECT PROJECT { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<WORKPACK> WORKPACK { get; set; }

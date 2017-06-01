@@ -458,6 +458,7 @@ namespace BluePrints.Common.Projections
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS, Func<PROGRESS> getPROGRESSFunc, Func<BASELINE> getBASELINEFunc,
             Func<IEnumerable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc, Func<IEnumerable<RATE>> getRATESFunc,
             Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc,
+            Func<IEnumerable<AREA>> getSUBAREAFunc = null,
             bool isBASELINEQueryProcessed = false)
         {
             var PROGRESS = getPROGRESSFunc();
@@ -473,7 +474,7 @@ namespace BluePrints.Common.Projections
                 BASELINE_ITEMProjections = new List<BASELINE_ITEMProjection>().AsQueryable();
             else
                 BASELINE_ITEMProjections = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS,
-                    getBASELINEFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, isBASELINEQueryProcessed);
+                    getBASELINEFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, getSUBAREAFunc, isBASELINEQueryProcessed);
 
             var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
 
@@ -493,6 +494,7 @@ namespace BluePrints.Common.Projections
             Func<IEnumerable<WORKPACK>> getWORKPACKFunc, 
             Func<IEnumerable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc, Func<IEnumerable<RATE>> getRATESFunc,
             Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc, Func<IEnumerable<VARIATION>> getVARIATIONSFunc, IP6EntitiesUnitOfWork p6UOW,
+            Func<IEnumerable<AREA>> getSUBAREAFunc = null,
             bool isBASELINEQueryProcessed = false, bool buildBudgetedOnly = false)
         {
             var PROGRESS = getPROGRESSFunc();
@@ -508,7 +510,7 @@ namespace BluePrints.Common.Projections
                 BASELINE_ITEMProjections = new List<BASELINE_ITEMProjection>().AsQueryable();
             else
                 BASELINE_ITEMProjections = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS,
-                    getBASELINEFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, isBASELINEQueryProcessed);
+                    getBASELINEFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, getSUBAREAFunc, isBASELINEQueryProcessed);
 
             var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
 

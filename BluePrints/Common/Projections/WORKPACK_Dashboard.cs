@@ -11,11 +11,19 @@ namespace BluePrints.Common.Projections
     public class WORKPACK_Dashboard : BluePrintsProjectionBase<WORKPACK>, IHaveStats
     {
         public ProgressStats Stats { get; set; }
+        public IEnumerable<AREA> AvailableSubAreas { get; set; }
 
         public void GroupProjectStats(ProjectSummaryStats projectStats)
         {
             Stats = projectStats.GroupBurnedStatsByWorkpack(this.Entity);
         }
+
+        public void SetAvailableSubAreas(IEnumerable<AREA> SUBAREACollection)
+        {
+            AvailableSubAreas = SUBAREACollection.Where(x => x.GUID_PARENT == Entity.GUID_DAREA);
+            this.RaisePropertyChanged();
+        }
+
         #region WORKPACK Mapping
 
         public bool IsGetModifiedWORKPACK_ASSIGNMENTS { get; set; }
@@ -52,13 +60,15 @@ namespace BluePrints.Common.Projections
     public static class WORKPACK_DashboardQueries
     {
         public static IQueryable<WORKPACK_Dashboard> SummarizeWORKPACKDashboard(IQueryable<WORKPACK> WORKPACKS,
-            PROJECT_Dashboard projectDashboard)
+            PROJECT_Dashboard projectDashboard, IEnumerable<AREA> subAreaCollection = null)
         {
             IEnumerable<WORKPACK_Dashboard> projectWORKPACKDashboards =
                 WORKPACKS.Where(x => x.GUID_PROJECT == projectDashboard.EntityKey)
                     .Select(x => new WORKPACK_Dashboard() {EntityKey = x.GUID, Entity = x});
             List<WORKPACK_Dashboard> newWORKPACKDashboards = projectWORKPACKDashboards.ToList();
             newWORKPACKDashboards.ForEach(x => x.GroupProjectStats((ProjectSummaryStats)projectDashboard.Stats));
+            if(subAreaCollection != null)
+                newWORKPACKDashboards.ForEach(x => x.SetAvailableSubAreas(subAreaCollection));
 
             return newWORKPACKDashboards.AsQueryable();
         }

@@ -141,7 +141,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => query.Where(x => x.PHASE_TYPE == PhaseType.Construct);
         }
 
         private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
@@ -1181,7 +1181,7 @@ namespace BluePrints.ViewModels
             {
                 var collection = GetEntities<WORKPACK>();
                 if (collection != null)
-                    collection = collection.OrderBy(x => x.INTERNAL_NAME1).OrderBy(x => x.INTERNAL_NAME2);
+                    collection = collection.OrderBy(x => x.INTERNAL_NAME1);
                 return collection;
             }
         }

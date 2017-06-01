@@ -48,7 +48,6 @@ namespace BluePrints.ViewModels
         public Action<BASELINECollectionViewModelWrapper> AssignBASELINEDelegates;
         public Action<PROGRESSCollectionViewModelWrapper> AssignPROGRESSDelegates;
         public Action<ESTIMATION_DIRECTCollectionViewModelWrapper> AssignESTIMATION_DIRECTDelegates;
-        public Action<PHASECollectionViewModelWrapper> AssignPHASEDelegates;
         public Action<AREACollectionViewModelWrapper> AssignAREADelegates;
         public Action<RATECollectionViewModelWrapper> AssignRATEDelegates;
 
@@ -110,11 +109,6 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.RATE1);
-        }
-
-        private Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.TITLE);
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
@@ -401,25 +395,6 @@ namespace BluePrints.ViewModels
                 }
 
                 return rateViewModel;
-            }
-        }
-
-        private PHASECollectionViewModelWrapper phaseViewModel;
-
-        public PHASECollectionViewModelWrapper PHASEViewModel
-        {
-            get
-            {
-                if (phaseViewModel == null && loadPROJECT != null)
-                {
-                    phaseViewModel = PHASECollectionViewModelWrapper.Create();
-                    phaseViewModel.SetParentViewModel(this);
-                    var baselineSupportParameterObj = phaseViewModel as ISupportParameter;
-                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(loadPROJECT);
-                    AssignPHASEDelegates?.Invoke(phaseViewModel);
-                }
-
-                return phaseViewModel;
             }
         }
 

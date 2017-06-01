@@ -3,6 +3,7 @@ using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel;
 using BluePrints.Data;
@@ -70,7 +71,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == projectDashboard.Entity.GUID);
+            return query => query;
         }
 
         private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
@@ -81,7 +82,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK_Dashboard>>
             ConstructMainViewModelProjection()
         {
-            return query => WORKPACK_DashboardQueries.SummarizeWORKPACKDashboard(query, projectDashboard);
+            return query => WORKPACK_DashboardQueries.SummarizeWORKPACKDashboard(query, projectDashboard, SUBAREACollection);
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<WORKPACK_Dashboard> entities)
@@ -129,9 +130,25 @@ namespace BluePrints.ViewModels
             {
                 var collection = GetEntities<AREA>();
                 if (collection != null)
-                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
+                    collection = collection.Where(x => x.GUID_PARENT == null).OrderBy(x => x.INTERNAL_NUM);
                 return collection;
             }
+        }
+
+        public IEnumerable<AREA> SUBAREACollection
+        {
+            get
+            {
+                return GetSUBAREACollection();
+            }
+        }
+
+        public IEnumerable<AREA> GetSUBAREACollection()
+        {
+            var collection = GetEntities<AREA>();
+            if (collection != null)
+                collection = collection.Where(x => x.GUID_PARENT != null).OrderBy(x => x.INTERNAL_NUM);
+            return collection;
         }
 
         public IEnumerable<DEPARTMENT> DEPARTMENTCollection

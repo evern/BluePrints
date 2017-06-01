@@ -69,8 +69,30 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlAREA" ColumnsSource="{StaticResource AREAColumns}"
-                                     Style="{StaticResource DefaultGridControlTemplate}" >
+                    <custom:GridControlEx x:Name="GridControl"  Style="{StaticResource DefaultGridControlTemplate}" dx:DXSerializer.SerializationID="GridControlAREA" ColumnsSource="{StaticResource AREAColumns}">
+                        <dxmvvm:Interaction.Behaviors>
+                            <dxmvvm:EventToCommand
+                                Command="{Binding DataContext.MasterRowExpandedCommand, ElementName=userControl}"
+                                PassEventArgsToCommand="True" EventName="MasterRowExpanded" />
+                            <dxmvvm:EventToCommand
+                                Command="{Binding DataContext.MasterRowCollapsedCommand, ElementName=userControl}"
+                                PassEventArgsToCommand="True" EventName="MasterRowCollapsed" />
+                        </dxmvvm:Interaction.Behaviors>
+                        <dxg:GridControl.DetailDescriptor>
+                            <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding DetailEntities}">
+                                <dxg:GridControl x:Name="gridControlChild" Style="{StaticResource DefaultDetailGridControlTemplate}" >
+                                    <dxg:GridControl.Columns>
+                                        <dxg:GridColumn Header="INTERNAL NUM" FieldName="Entity.INTERNAL_NUM" />
+                                        <dxg:GridColumn Header="CLIENT_NUM" FieldName="Entity.CLIENT_NUM" />
+                                        <dxg:GridColumn Header="TITLE" FieldName="Entity.TITLE" />
+                                    </dxg:GridControl.Columns>
+                                    <dxg:GridControl.View>
+                                        <dxg:TableView x:Name="tableView1" Style="{StaticResource DefaultDetailTableViewTemplate}">
+                                        </dxg:TableView>
+                                    </dxg:GridControl.View>
+                                </dxg:GridControl>
+                            </dxg:DataControlDetailDescriptor>
+                        </dxg:GridControl.DetailDescriptor>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.TotalSummary>

@@ -75,45 +75,7 @@
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlVARIATION_ITEM"
                                      Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Name="colWORKPACKInternalName1"
-                                            FieldName="Entity.Entity.GUID_WORKPACK"
-                                            Header="WORKPACK 1" Visible="False" VisibleIndex="0">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings
-                                        ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
-                                        IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NAME1"
-                                        ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:ComboBoxEdit Name="PART_Editor"
-                                                          ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
-                                                          IsTextEditable="True" AutoComplete="True"
-                                                          DisplayMember="INTERNAL_NAME1" ValueMember="GUID"
-                                                          IsEnabled="{Binding RowData.Row.ISREADONLY, Converter={StaticResource BooleanNegationConverter}}" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Name="colWORKPACKInternalName2"
-                                            FieldName="Entity.Entity.GUID_WORKPACK"
-                                            Header="WORKPACK 2" Visible="False" VisibleIndex="1">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings
-                                        ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
-                                        IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NAME2"
-                                        ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:ComboBoxEdit Name="PART_Editor"
-                                                          ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
-                                                          IsTextEditable="True" AutoComplete="True"
-                                                          DisplayMember="INTERNAL_NAME2" ValueMember="GUID"
-                                                          IsEnabled="{Binding RowData.Row.ISREADONLY, Converter={StaticResource BooleanNegationConverter}}" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" Header="PHASE">
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" Visible="{Binding DataContext.IsPhaseVisible, ElementName=userControl}" Header="PHASE" VisibleIndex="0">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}"
@@ -126,6 +88,25 @@
                                                           ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}"
                                                           IsTextEditable="True" AutoComplete="True"
                                                           DisplayMember="INTERNAL_NUM" ValueMember="GUID"
+                                                          IsEnabled="{Binding RowData.Row.ISREADONLY, Converter={StaticResource BooleanNegationConverter}}" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Name="colWORKPACKInternalName1"
+                                            FieldName="Entity.Entity.GUID_WORKPACK"
+                                            Header="WORKPACK" VisibleIndex="1">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings
+                                        ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NAME1"
+                                        ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:ComboBoxEdit Name="PART_Editor"
+                                                          ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
+                                                          IsTextEditable="True" AutoComplete="True"
+                                                          DisplayMember="INTERNAL_NAME1" ValueMember="GUID"
                                                           IsEnabled="{Binding RowData.Row.ISREADONLY, Converter={StaticResource BooleanNegationConverter}}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
@@ -146,6 +127,30 @@
                                                           IsEnabled="{Binding RowData.Row.ISREADONLY, Converter={StaticResource BooleanNegationConverter}}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Name="colSUBAREA" FieldName="Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:ComboBoxEdit 
+                                                  x:Name="PART_Editor"
+                                                  ItemsSource="{Binding RowData.Row.Entity.AvailableSubAreas}"
+                                                  DisplayMember="INTERNAL_NUM" 
+                                                  ValueMember="GUID"
+                                                  ValidateOnTextInput="True"
+                                                  ValidateOnEnterKeyPressed="True"
+                                                  IncrementalFiltering="True"
+                                                  NullValueButtonPlacement="Popup"
+                                                  ImmediatePopup="True">
+                                        </dxe:ComboBoxEdit>
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                                <!--For Filtering-->
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
+                                                              ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}"
+                                                              IsTextEditable="True" AutoComplete="True"
+                                                              DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Entity.Entity.GUID_DOCTYPE"
                                             Header="DOCTYPE">

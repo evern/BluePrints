@@ -7,9 +7,9 @@
                     xmlns:common="clr-namespace:BluePrints.Common"
                     xmlns:local="clr-namespace:BluePrints.Views">
     <collections:ArrayList x:Key="AREAColumns">
-        <dxg:GridColumn FieldName="INTERNAL_NUM" />
-        <dxg:GridColumn FieldName="CLIENT_NUM" />
-        <dxg:GridColumn FieldName="TITLE" />
+        <dxg:GridColumn Header="INTERNAL NUM" FieldName="Entity.INTERNAL_NUM" />
+        <dxg:GridColumn Header="CLIENT_NUM" FieldName="Entity.CLIENT_NUM" />
+        <dxg:GridColumn Header="TITLE" FieldName="Entity.TITLE" />
     </collections:ArrayList>
     <collections:ArrayList x:Key="DISCIPLINEColumns">
         <dxg:GridColumn FieldName="CODE" />
@@ -19,6 +19,12 @@
         <dxg:GridColumn FieldName="INTERNAL_NUM" />
         <dxg:GridColumn FieldName="CLIENT_NUM" />
         <dxg:GridColumn FieldName="TITLE" />
+        <dxg:GridColumn FieldName="PHASE_TYPE">
+            <dxg:GridColumn.EditSettings>
+                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" NullValueButtonPlacement="Popup"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:PhaseType}}" />
+            </dxg:GridColumn.EditSettings>
+        </dxg:GridColumn>
     </collections:ArrayList>
     <collections:ArrayList x:Key="RATEColumns">
         <dxg:GridColumn Header="GROUP" FieldName="COST_GROUP"

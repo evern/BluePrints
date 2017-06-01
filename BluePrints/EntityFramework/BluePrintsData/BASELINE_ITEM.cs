@@ -19,6 +19,8 @@ namespace BluePrints.Data
 
         public Guid? GUID_AREA { get; set; }
 
+        public Guid? GUID_SUBAREA { get; set; }
+
         public Guid? GUID_WORKPACK { get; set; }
 
         public Guid? GUID_DEPARTMENT { get; set; }
@@ -76,6 +78,8 @@ namespace BluePrints.Data
         public Guid? DELETEDBY { get; set; }
 
         public virtual AREA AREA { get; set; }
+
+        public virtual AREA AREA1 { get; set; }
 
         public virtual BASELINE BASELINE { get; set; }
 

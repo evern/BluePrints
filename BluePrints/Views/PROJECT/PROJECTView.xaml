@@ -728,8 +728,7 @@
                                         </dxg:GridControl.View>
                                     </custom:GridControlEx>
                                 </Grid>
-                                <Grid DataContext="{Binding DataContext.PHASEViewModel, ElementName=userControl}"
-                              dxlc:LayoutControl.TabHeader="PHASES">
+                                <!--<Grid DataContext="{Binding DataContext.AREAViewModel, ElementName=userControl}" dxlc:LayoutControl.TabHeader="AREAS">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="*" />
@@ -748,9 +747,31 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                                     </dxb:ToolBarControl>
-                                    <custom:GridControlEx x:Name="gridControlPHASE" dx:DXSerializer.SerializationID="GridControlDetailPHASE"
-                                             ColumnsSource="{StaticResource PHASEColumns}"
-                                             Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" MinHeight="300">
+                                    <custom:GridControlEx x:Name="gridControlAREA" Style="{StaticResource DefaultGridControlTemplate}" 
+                                          dx:DXSerializer.SerializationID="gridControlAREA" Grid.Row="1" ColumnsSource="{StaticResource AREAColumns}">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand
+                                                Command="{Binding DataContext.MasterRowExpandedCommand, ElementName=userControl}"
+                                                PassEventArgsToCommand="True" EventName="MasterRowExpanded" />
+                                                            <dxmvvm:EventToCommand
+                                                Command="{Binding DataContext.MasterRowCollapsedCommand, ElementName=userControl}"
+                                                PassEventArgsToCommand="True" EventName="MasterRowCollapsed" />
+                                                        </dxmvvm:Interaction.Behaviors>
+                                        <dxg:GridControl.DetailDescriptor>
+                                            <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding DetailEntities}">
+                                                <dxg:GridControl x:Name="gridControlChild" Style="{StaticResource DefaultDetailGridControlTemplate}" >
+                                                    <dxg:GridControl.Columns>
+                                                        <dxg:GridColumn Header="INTERNAL NUM" FieldName="Entity.INTERNAL_NUM" />
+                                                        <dxg:GridColumn Header="CLIENT_NUM" FieldName="Entity.CLIENT_NUM" />
+                                                        <dxg:GridColumn Header="TITLE" FieldName="Entity.TITLE" />
+                                                    </dxg:GridControl.Columns>
+                                                    <dxg:GridControl.View>
+                                                        <dxg:TableView x:Name="tableView1" Style="{StaticResource DefaultDetailTableViewTemplate}">
+                                                        </dxg:TableView>
+                                                    </dxg:GridControl.View>
+                                                </dxg:GridControl>
+                                            </dxg:DataControlDetailDescriptor>
+                                        </dxg:GridControl.DetailDescriptor>
                                         <dxg:GridControl.TotalSummary>
                                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                                         </dxg:GridControl.TotalSummary>
@@ -758,94 +779,32 @@
                                             <dxg:GridSummaryItem SummaryType="Count" />
                                         </dxg:GridControl.GroupSummary>
                                         <dxg:GridControl.View>
-                                            <custom:TableViewEx x:Name="tableViewPHASE"
-                                                   Style="{StaticResource NestedTableViewTemplate}"
-                                                   ShowGroupedColumns="False" ShowSearchPanelMode="Never"
-                                                   ShowGroupPanel="False">
+                                            <custom:TableViewEx x:Name="tableViewAREA" Style="{StaticResource DefaultTableViewTemplate}">
                                                 <custom:TableViewEx.RowCellMenuCustomizations>
                                                     <dxb:BarButtonItem Content="Bulk Edit"
-                                                               Command="{Binding View.DataContext.MainViewModel.BulkColumnEditCommand}"
-                                                               CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
-                                                               Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
+                                                       Command="{Binding View.DataContext.BulkColumnEditCommand}"
+                                                       CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                                                       Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
                                                     <dxb:BarButtonItem Content="Fill Up"
-                                                               Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}"
-                                                               Command="{Binding View.DataContext.MainViewModel.FillUpCommand}"
-                                                               CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                                                       Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}"
+                                                       Command="{Binding View.DataContext.FillUpCommand}"
+                                                       CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                                     <dxb:BarButtonItem Content="Fill Down"
-                                                               Glyph="{dx:DXImageOffice2013 Image=Download_16x16.png}"
-                                                               Command="{Binding View.DataContext.MainViewModel.FillDownCommand}"
-                                                               CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                                                       Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}"
+                                                       Command="{Binding View.DataContext.FillDownCommand}"
+                                                       CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                                     <dxb:BarButtonItem Content="Delete"
-                                                               Command="{Binding View.DataContext.MainViewModel.BulkDeleteCommand}"
-                                                               CommandParameter="{Binding View.DataContext.MainViewModel.SelectedEntities}"
-                                                               Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                                       Command="{Binding View.DataContext.BulkDeleteCommand}"
+                                                       CommandParameter="{Binding View.DataContext.SelectedEntities}"
+                                                       Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                                     <dxb:BarButtonItem Content="Refresh"
-                                                               Command="{Binding View.DataContext.MainViewModel.RefreshCommand}"
-                                                               Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                                       Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
+                                                       Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                                 </custom:TableViewEx.RowCellMenuCustomizations>
                                             </custom:TableViewEx>
                                         </dxg:GridControl.View>
                                     </custom:GridControlEx>
-                                </Grid>
-                                <Grid DataContext="{Binding DataContext.AREAViewModel, ElementName=userControl}"
-                              dxlc:LayoutControl.TabHeader="AREAS">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="*" />
-                                    </Grid.RowDefinitions>
-                                    <dxb:ToolBarControl>
-                                        <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Delete"
-                                                   Command="{Binding MainViewModel.BulkDeleteCommand}"
-                                                   Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                        <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Refresh"
-                                                   Command="{Binding MainViewModel.RefreshCommand}"
-                                                   Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                        <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Undo"
-                                                   Command="{Binding MainViewModel.UndoCommand}"
-                                                   Glyph="{dx:DXImage Image=Undo_16x16.png}" />
-                                        <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Content="Redo"
-                                                   Command="{Binding MainViewModel.RedoCommand}"
-                                                   Glyph="{dx:DXImage Image=Redo_16x16.png}" />
-                                    </dxb:ToolBarControl>
-                                    <custom:GridControlEx x:Name="gridControlAREA" dx:DXSerializer.SerializationID="GridControlDetailAREA"
-                                             ColumnsSource="{StaticResource AREAColumns}"
-                                             Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" MinHeight="300">
-                                        <dxg:GridControl.TotalSummary>
-                                            <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
-                                        </dxg:GridControl.TotalSummary>
-                                        <dxg:GridControl.GroupSummary>
-                                            <dxg:GridSummaryItem SummaryType="Count" />
-                                        </dxg:GridControl.GroupSummary>
-                                        <dxg:GridControl.View>
-                                            <custom:TableViewEx x:Name="tableViewAREA"
-                                                   Style="{StaticResource NestedTableViewTemplate}"
-                                                   ShowGroupedColumns="False" ShowSearchPanelMode="Never"
-                                                   ShowGroupPanel="False">
-                                                <custom:TableViewEx.RowCellMenuCustomizations>
-                                                    <dxb:BarButtonItem Content="Bulk Edit"
-                                                               Command="{Binding View.DataContext.MainViewModel.BulkColumnEditCommand}"
-                                                               CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
-                                                               Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
-                                                    <dxb:BarButtonItem Content="Fill Up"
-                                                               Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}"
-                                                               Command="{Binding View.DataContext.MainViewModel.FillUpCommand}"
-                                                               CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                                    <dxb:BarButtonItem Content="Fill Down"
-                                                               Glyph="{dx:DXImageOffice2013 Image=Download_16x16.png}"
-                                                               Command="{Binding View.DataContext.MainViewModel.FillDownCommand}"
-                                                               CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                                    <dxb:BarButtonItem Content="Delete"
-                                                               Command="{Binding View.DataContext.MainViewModel.BulkDeleteCommand}"
-                                                               CommandParameter="{Binding View.DataContext.MainViewModel.SelectedEntities}"
-                                                               Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                                    <dxb:BarButtonItem Content="Refresh"
-                                                               Command="{Binding View.DataContext.MainViewModel.RefreshCommand}"
-                                                               Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                                </custom:TableViewEx.RowCellMenuCustomizations>
-                                            </custom:TableViewEx>
-                                        </dxg:GridControl.View>
-                                    </custom:GridControlEx>
-                                </Grid>
+                                </Grid>-->
                                 <Grid DataContext="{Binding DataContext.RATEViewModel, ElementName=userControl}"
                               dxlc:LayoutControl.TabHeader="RATES">
                                     <Grid.RowDefinitions>

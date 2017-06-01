@@ -211,6 +211,9 @@ namespace BluePrints.ViewModels
             if (LoginCredentials.hasPermission(PermissionResources.ManageDocType))
                 dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_DocTypes", dataCategoryId, "Document Types", "DOCTYPECollectionView"));
 
+            if (LoginCredentials.hasPermission(PermissionResources.ManagePhase))
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Phases", dataCategoryId, "Phases", "PHASECollectionView"));
+
             if (LoginCredentials.hasPermission(PermissionResources.ManageUser))
                 dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Users", dataCategoryId, "Users", "USERCollectionView"));
 
@@ -273,7 +276,7 @@ namespace BluePrints.ViewModels
             BluePrintsEntitiesModuleDescription projectModuleDescription = new BluePrintsEntitiesModuleDescription(projectKey, parentId, projectTitle, "PROJECTView", new EntitiesParameter<PROJECT>(entity), null, null, false);
             projectStatusDescription.ChildModules.Add(projectModuleDescription);
 
-            if (LoginCredentials.hasPermission(PermissionResources.ManageAreaAndPhases))
+            if (LoginCredentials.hasPermission(PermissionResources.ManageArea))
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectAreas" + keyString, projectKey, childTitlePrefix + "Areas", "AREACollectionView", new EntitiesParameter<PROJECT>(entity), null, "Areas"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageRate))
