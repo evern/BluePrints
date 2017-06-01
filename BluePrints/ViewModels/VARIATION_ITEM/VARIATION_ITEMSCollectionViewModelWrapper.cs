@@ -594,6 +594,10 @@ namespace BluePrints.ViewModels
                 }
             }
 
+            if (e.RowHandle != DataControlBase.NewItemRowHandle)
+                return;
+
+
             if (e.Column.FieldName ==
                  BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().Entity) + "." +
                  BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
@@ -612,9 +616,6 @@ namespace BluePrints.ViewModels
                     MainViewModel.UpdateSelectedEntity();
                 }
             }
-
-            if (e.RowHandle != DataControlBase.NewItemRowHandle)
-                return;
 
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().VARIATION_ITEM)
                 + "."

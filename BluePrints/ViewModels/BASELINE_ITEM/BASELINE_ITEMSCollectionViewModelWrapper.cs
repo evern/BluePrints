@@ -406,12 +406,15 @@ namespace BluePrints.ViewModels
                 }
             }
 
+            if (e.RowHandle != DataControlBase.NewItemRowHandle)
+                return;
+
             if (e.Column.FieldName ==
                  BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
                  BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                  BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA))
             {
-                if(e.Value != null)
+                if (e.Value != null)
                 {
                     activeBASELINE_ITEM.Entity.Entity.GUID_AREA = (Guid)e.Value;
                     activeBASELINE_ITEM.Entity.SetAvailableSubAreas(SUBAREACollection);
@@ -424,9 +427,6 @@ namespace BluePrints.ViewModels
                     MainViewModel.UpdateSelectedEntity();
                 }
             }
-
-            if (e.RowHandle != DataControlBase.NewItemRowHandle)
-                return;
 
             if (e.Column.FieldName ==
                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
