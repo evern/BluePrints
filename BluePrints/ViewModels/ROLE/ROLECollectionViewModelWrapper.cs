@@ -85,7 +85,7 @@ namespace BluePrints.ViewModels
         #region View Behavior
         /// <summary>
         /// Remembers an entity property old value for undoing
-        /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the AddUndoCommand property that can be used as a binding source in views.
+        /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the TreeListImmediateSaveCommand property that can be used as a binding source in views.
         /// </summary>
         public void TreeListImmediateSave(TreeListCellValueChangedEventArgs e)
         {
@@ -95,8 +95,7 @@ namespace BluePrints.ViewModels
             var projection = (ROLEProjection)e.Row;
 
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-            MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, e.Column.FieldName, e.OldValue, e.Value,
-                EntityMessageType.Changed);
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, e.Column.FieldName, e.OldValue, e.Value, EntityMessageType.Changed);
             DataUtils.SetNestedValue(e.Column.FieldName, projection, e.Value);
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
 

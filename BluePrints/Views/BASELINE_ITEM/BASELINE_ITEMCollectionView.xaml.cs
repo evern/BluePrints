@@ -146,19 +146,5 @@ namespace BluePrints.Views
                 }
             }
         }
-
-        private void gridControl_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    tableView.CommitEditing();
-                    tableView.MoveNextRow();
-                    //this can't be used in filtered grid
-                    //gridControl.SelectedItem = gridControl.GetRow(tableView.FocusedRowHandle);
-                }));
-            }
-        }
     }
 }

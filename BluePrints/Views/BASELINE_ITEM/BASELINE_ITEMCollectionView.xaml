@@ -89,7 +89,7 @@
                 </dxr:RibbonStatusBarControl>
                 <Grid>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM" 
-                                     Style="{StaticResource DefaultGridControlTemplate}" PreviewKeyDown="gridControl_PreviewKeyDown">
+                                     Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="Entity.Entity.GUID_WORKPACK"
                                             Header="WORKPACK 1" Visible="true" VisibleIndex="0">
@@ -193,8 +193,7 @@
                                                               DisplayMember="NAME" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colBY_DURATION" FieldName="Entity.Entity.BY_DURATION"
-                                            Header="BY_DURATION" />
+                            <dxg:GridColumn Name="colBY_DURATION" FieldName="Entity.Entity.BY_DURATION" Header="BY DURATION" />
                             <dxg:GridColumn Name="colESTIMATED_HOURS" FieldName="Entity.Entity.ESTIMATED_HOURS"
                                             Header="ESTIMATED_HOURS">
                                 <dxg:GridColumn.CellTemplate>
@@ -207,6 +206,7 @@
                                             </Grid.ColumnDefinitions>
                                             <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n"
                                                               MaskUseAsDisplayFormat="True" Increment="1"
+                                                              IsReadOnly="{Binding RowData.Row.Entity.Entity.BY_DURATION}"
                                                               MinValue="{Binding RowData.Row.CurrentPROGRESS_ITEM_UNITS}"
                                                               Grid.Column="2">
                                                 <dxe:SpinEdit.MaxValue>

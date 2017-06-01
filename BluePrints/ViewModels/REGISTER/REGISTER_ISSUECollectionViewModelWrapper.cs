@@ -105,7 +105,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_ISSUE> entities)
         {
-            MainViewModel.IsValidFromViewCallBack = AdditionalCellValidation;
+            MainViewModel.AdditionalValidateCellCallBack = AdditionalCellValidation;
             MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -134,7 +134,7 @@ namespace BluePrints.ViewModels
             entity.GUID_PROJECT = loadPROJECT.GUID;
         }
 
-        private bool AdditionalCellValidation(GridCellValidationEventArgs e)
+        private void AdditionalCellValidation(GridCellValidationEventArgs e)
         {
             if (e.Column.FieldName ==
                 BindableBase.GetPropertyName(() => new REGISTER_ISSUE().DATE_CLOSED))
@@ -147,7 +147,6 @@ namespace BluePrints.ViewModels
                     e.IsValid = false;
                     e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
                     e.ErrorContent = "Date closed cannot be earlier than date raised";
-                    return false;
                 }
             }
 
@@ -161,11 +160,8 @@ namespace BluePrints.ViewModels
                     e.IsValid = false;
                     e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
                     e.ErrorContent = "Date raised cannot be later than date closed";
-                    return false;
                 }
             }
-
-            return true;
         }
         #endregion
 

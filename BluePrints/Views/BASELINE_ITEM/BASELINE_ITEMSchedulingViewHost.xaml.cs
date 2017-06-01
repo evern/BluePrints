@@ -18,8 +18,7 @@ namespace BluePrints.Views
         public BASELINE_ITEMSchedulingViewHost()
         {
             InitializeComponent();
-            ((BASELINE_ITEMSchedulingViewModelWrapper)DataContext).WinformFormHostInitialization =
-                windowsFormHostViewInitialization;
+            ((BASELINE_ITEMSchedulingViewModelWrapper)DataContext).WinformFormHostInitialization = windowsFormHostViewInitialization;
             ((BASELINE_ITEMSchedulingViewModelWrapper)DataContext).RefreshWinformView = RefreshWinformView;
         }
 
@@ -30,8 +29,7 @@ namespace BluePrints.Views
                 BASELINE_ITEM_ASSIGNMENTSViewModel,
             bool IsModified)
         {
-            winFormHost.Child = new BASELINE_ITEMSchedulingView(PROJECT, TASKS, P6WBSs,
-                BASELINE_ITEMProjections, BASELINE_ITEM_ASSIGNMENTSViewModel, IsModified);
+            winFormHost.Child = new BASELINE_ITEMSchedulingView(PROJECT, TASKS, P6WBSs, BASELINE_ITEMProjections, BASELINE_ITEM_ASSIGNMENTSViewModel, IsModified);
         }
 
         public void RefreshWinformView()

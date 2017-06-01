@@ -33,6 +33,7 @@ namespace BluePrints.ViewModels
         private bool IsModified { get; set; }
         private DispatcherTimer dispatchTimer;
         private DispatcherTimer selectAllDispatcherTimer;
+        private DispatcherTimer maxUnitsDispatcherTimer;
 
         protected BASELINE_ITEM_ASSIGNMENTViewModel(PROJECT PROJECT, IEnumerable<TASK_AppointmentInfo> ALLTASK_Appointments,
             IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMS,
@@ -60,6 +61,16 @@ namespace BluePrints.ViewModels
             selectAllDispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
             selectAllDispatcherTimer.Tick += SelectAllDispatcherTimer_Tick;
             selectAllDispatcherTimer.Start();
+
+            maxUnitsDispatcherTimer = new DispatcherTimer();
+            maxUnitsDispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
+            maxUnitsDispatcherTimer.Tick += maxUnitsDispatcherTimer_Tick;
+        }
+
+        private void maxUnitsDispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            maxUnitsDispatcherTimer.Stop();
+            MaxUnits();
         }
 
         private void SelectAllDispatcherTimer_Tick(object sender, EventArgs e)
@@ -68,6 +79,8 @@ namespace BluePrints.ViewModels
             SelectedBASELINE_ITEMS.Clear();
             foreach (BASELINE_ITEMProjection contextBASELINE_ITEM in ContextBASELINE_ITEMS)
                 SelectedBASELINE_ITEMS.Add(contextBASELINE_ITEM);
+
+            maxUnitsDispatcherTimer.Start();
         }
 
         #region Public Properties

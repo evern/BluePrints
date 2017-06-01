@@ -90,7 +90,7 @@
             this.colAssigned.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colAssigned.OptionsColumn.ReadOnly = true;
             this.colAssigned.Visible = true;
-            this.colAssigned.VisibleIndex = 8;
+            this.colAssigned.VisibleIndex = 7;
             // 
             // gridControlDeliverable
             // 
@@ -162,7 +162,6 @@
             this.gridViewDeliverable.GridControl = this.gridControlDeliverable;
             this.gridViewDeliverable.Name = "gridViewDeliverable";
             this.gridViewDeliverable.OptionsSelection.MultiSelect = true;
-            this.gridViewDeliverable.OptionsSelection.MultiSelectMode = DevExpress.XtraGrid.Views.Grid.GridMultiSelectMode.CheckBoxRowSelect;
             this.gridViewDeliverable.OptionsView.ShowFooter = true;
             this.gridViewDeliverable.PopupMenuShowing += new DevExpress.XtraGrid.Views.Grid.PopupMenuShowingEventHandler(this.gridViewDeliverable_PopupMenuShowing);
             // 
@@ -175,7 +174,7 @@
             this.colWorkpack.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colWorkpack.OptionsColumn.ReadOnly = true;
             this.colWorkpack.Visible = true;
-            this.colWorkpack.VisibleIndex = 1;
+            this.colWorkpack.VisibleIndex = 0;
             // 
             // colArea
             // 
@@ -185,7 +184,7 @@
             this.colArea.OptionsColumn.AllowEdit = false;
             this.colArea.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colArea.Visible = true;
-            this.colArea.VisibleIndex = 2;
+            this.colArea.VisibleIndex = 1;
             // 
             // colDocType
             // 
@@ -195,7 +194,7 @@
             this.colDocType.OptionsColumn.AllowEdit = false;
             this.colDocType.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colDocType.Visible = true;
-            this.colDocType.VisibleIndex = 3;
+            this.colDocType.VisibleIndex = 2;
             // 
             // colDepartment
             // 
@@ -205,7 +204,7 @@
             this.colDepartment.OptionsColumn.AllowEdit = false;
             this.colDepartment.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colDepartment.Visible = true;
-            this.colDepartment.VisibleIndex = 4;
+            this.colDepartment.VisibleIndex = 3;
             // 
             // colDiscipline
             // 
@@ -215,7 +214,7 @@
             this.colDiscipline.OptionsColumn.AllowEdit = false;
             this.colDiscipline.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colDiscipline.Visible = true;
-            this.colDiscipline.VisibleIndex = 5;
+            this.colDiscipline.VisibleIndex = 4;
             // 
             // colEntity
             // 
@@ -226,7 +225,7 @@
             this.colEntity.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colEntity.OptionsColumn.ReadOnly = true;
             this.colEntity.Visible = true;
-            this.colEntity.VisibleIndex = 6;
+            this.colEntity.VisibleIndex = 5;
             // 
             // colPrimaryTitle
             // 
@@ -234,7 +233,7 @@
             this.colPrimaryTitle.FieldName = "Entity.PRIMARY_TITLE";
             this.colPrimaryTitle.Name = "colPrimaryTitle";
             this.colPrimaryTitle.Visible = true;
-            this.colPrimaryTitle.VisibleIndex = 7;
+            this.colPrimaryTitle.VisibleIndex = 6;
             // 
             // schedulerStorage1
             // 
@@ -379,7 +378,6 @@
             this.resourcesTree1.Location = new System.Drawing.Point(0, 0);
             this.resourcesTree1.Name = "resourcesTree1";
             this.resourcesTree1.OptionsBehavior.Editable = false;
-            this.resourcesTree1.RefreshDataOnSchedulerChanges = false;
             this.resourcesTree1.SchedulerControl = this.schedulerControl1;
             this.resourcesTree1.Size = new System.Drawing.Size(512, 573);
             this.resourcesTree1.TabIndex = 3;

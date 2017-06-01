@@ -56,6 +56,11 @@ namespace BluePrints.Common.Projections
 
         public DateTime? APPROVED { get; set; }
 
+        public bool AdjustUnitsReadOnly
+        {
+            get { return SUBMITTED != null || Entity.Entity.BY_DURATION; }
+        }
+
         public bool ISSUBMITTED
         {
             get { return SUBMITTED != null; }

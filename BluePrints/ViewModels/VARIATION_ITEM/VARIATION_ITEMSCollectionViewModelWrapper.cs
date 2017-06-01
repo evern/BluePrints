@@ -346,6 +346,46 @@ namespace BluePrints.ViewModels
         public bool ExistingProjectionEditCallBack(VARIATION_ITEMProjection projectionEntity,
             CellValueChangedEventArgs e)
         {
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
+            {
+                var activeVARIATION_ITEM = (VARIATION_ITEMProjection)e.Row;
+                if ((bool)e.Value)
+                {
+                    MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                    decimal oldEstimatedHours = activeVARIATION_ITEM.Entity.Entity.ESTIMATED_HOURS;
+                    decimal oldVariationUnits = activeVARIATION_ITEM.VARIATION_ITEM.VARIATION_UNITS;
+                    if (oldEstimatedHours > 0)
+                    {
+                        decimal newValue = 0;
+                        string estimatedHoursFieldName = BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().Entity) + "." +
+                        BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                        BindableBase.GetPropertyName(() => new BASELINE_ITEM().ESTIMATED_HOURS);
+                        activeVARIATION_ITEM.Entity.Entity.ESTIMATED_HOURS = newValue;
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(activeVARIATION_ITEM, estimatedHoursFieldName, oldEstimatedHours, newValue, EntityMessageType.Changed);
+                    }
+
+                    if(oldVariationUnits > 0)
+                    {
+                        decimal newValue = 0;
+                        string variationHoursFieldName = BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().VARIATION_ITEM) + "." +
+                        BindableBase.GetPropertyName(() => new VARIATION_ITEM().VARIATION_UNITS);
+                        activeVARIATION_ITEM.VARIATION_ITEM.VARIATION_UNITS = newValue;
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(activeVARIATION_ITEM, variationHoursFieldName, oldVariationUnits, newValue, EntityMessageType.Changed);
+                    }
+                }
+            }
+            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_STATUS))
+            {
+                if (e.Value == null)
+                    return false;
+                else
+                    return true;
+            }
+
             if (e.Column.FieldName !=
                 BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().VARIATION_ITEM) + "." +
                 BindableBase.GetPropertyName(() => new VARIATION_ITEM().VARIATION_UNITS))
@@ -473,6 +513,30 @@ namespace BluePrints.ViewModels
         /// </summary>
         public void CellValueChanging(CellValueChangedEventArgs e)
         {
+            var activeVARIATION_ITEM = (VARIATION_ITEMProjection)e.Row;
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
+            {
+                if (e.RowHandle != DataControlBase.NewItemRowHandle)
+                {
+                    PostEditor?.Invoke();
+                    return;
+                }
+
+                if ((bool)e.Value)
+                {
+                    MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                    decimal estimatedHours = activeVARIATION_ITEM.Entity.Entity.ESTIMATED_HOURS;
+                    decimal variationHours = activeVARIATION_ITEM.VARIATION_ITEM.VARIATION_UNITS;
+                    if (estimatedHours > 0)
+                        activeVARIATION_ITEM.Entity.Entity.ESTIMATED_HOURS = 0;
+
+                    if (estimatedHours > 0)
+                        activeVARIATION_ITEM.VARIATION_ITEM.VARIATION_UNITS = 0;
+                }
+            }
+
             if (e.RowHandle != DataControlBase.NewItemRowHandle)
                 return;
 

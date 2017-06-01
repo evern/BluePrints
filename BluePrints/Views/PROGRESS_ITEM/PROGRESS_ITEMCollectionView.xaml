@@ -182,6 +182,8 @@
                                                 Header="SECONDARY TITLE" ReadOnly="True" IsEnabled="False" />
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandBudgeted" Header="Budgeted">
+                                <dxg:GridColumn Name="colBY_DURATION" ReadOnly="True" IsEnabled="False" FieldName="Entity.Entity.BY_DURATION"
+                                            Header="BY DURATION" />
                                 <dxg:GridColumn Name="columnEstimatedHours"
                                                 FieldName="Entity.Entity.ESTIMATED_HOURS"
                                                 Header="ESTIMATED HOURS" ReadOnly="True" IsEnabled="False" Visible="False">

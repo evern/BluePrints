@@ -265,6 +265,13 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.BY_DURATION" Header="BY DURATION" >
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:CheckEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.ISENABLED}" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Entity.Entity.TOTAL_HOURS"
                                             Header="TOTAL HOURS" ReadOnly="True" IsEnabled="False">
                                 <dxg:GridColumn.EditSettings>
@@ -278,7 +285,7 @@
                                         <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" Increment="1"
                                                       MaskUseAsDisplayFormat="True"
                                                       MinValue="{Binding RowData.Row.MINUNITSFORVALIDATION}"
-                                                      IsReadOnly="{Binding RowData.Row.ISSUBMITTED}" />
+                                                      IsReadOnly="{Binding RowData.Row.AdjustUnitsReadOnly}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>

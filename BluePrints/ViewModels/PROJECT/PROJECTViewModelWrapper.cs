@@ -143,7 +143,7 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECT_Dashboard> entities)
         {
             MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntity;
-            MainViewModel.IsValidFromViewCallBack = AdditionalCellValidation;
+            MainViewModel.AdditionalValidateCellCallBack = AdditionalCellValidation;
             MainViewModel.CanFillDownCallBack = CanFillDownCallBack;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -287,7 +287,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private bool AdditionalCellValidation(GridCellValidationEventArgs e)
+        private void AdditionalCellValidation(GridCellValidationEventArgs e)
         {
             PROJECT_Dashboard activePROJECT = (PROJECT_Dashboard)e.Row;
             string missingPathErrorString = "Path not selected";
@@ -324,8 +324,6 @@ namespace BluePrints.ViewModels
                 e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
                 e.ErrorContent = missingPathErrorString;
             }
-
-            return true;
         }
         #endregion
 

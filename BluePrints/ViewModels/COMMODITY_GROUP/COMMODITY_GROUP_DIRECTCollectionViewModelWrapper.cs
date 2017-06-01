@@ -87,13 +87,13 @@ namespace BluePrints.ViewModels
         #region View Refresh
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<COMMODITY_GROUP_DIRECTProjection> entities)
         {
-            MainViewModel.IsValidFromViewCallBack = AdditionalCellValidation;
+            MainViewModel.AdditionalValidateCellCallBack = AdditionalCellValidation;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
         #endregion
 
         #region Collection Call Backs
-        private bool AdditionalCellValidation(GridCellValidationEventArgs e)
+        private void AdditionalCellValidation(GridCellValidationEventArgs e)
         {
             if (e.Column.FieldName == 
                 BindableBase.GetPropertyName(() => new COMMODITY_GROUP_DIRECTProjection().Entity) 
@@ -107,7 +107,6 @@ namespace BluePrints.ViewModels
                     e.IsValid = false;
                     e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
                     e.ErrorContent = BluePrintsResources.CommodityGroup_CannotAssignCommodity;
-                    return false;
                 }
 
                 //Avoid user from selecting WBS COMMODITY_CODE
@@ -117,11 +116,8 @@ namespace BluePrints.ViewModels
                     e.IsValid = false;
                     e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
                     e.ErrorContent = BluePrintsResources.CommodityGroup_CannotSelectParent;
-                    return false;
                 }
             }
-
-            return true;
         }
         #endregion
 
