@@ -1,9 +1,11 @@
 ﻿using BaseModel.ViewModel.Base;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
+using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Data;
 using BluePrints.P6Data;
+using DevExpress.Mvvm;
 using DevExpress.Utils.Menu;
 using DevExpress.XtraGrid.Views.Grid;
 using DevExpress.XtraGrid.Views.Grid.ViewInfo;
@@ -100,6 +102,7 @@ namespace BluePrints.Views
 
         private void SubscribeEvents()
         {
+            gridViewDeliverable.SelectionChanged += gridViewDeliverable_SelectionChanged;
             gridViewDeliverable.MouseDown += new MouseEventHandler(gridViewDeliverable_MouseDown);
             gridViewDeliverable.MouseMove += new MouseEventHandler(gridViewDeliverable_MouseMove);
             schedulerControl1.InitAppointmentDisplayText +=  new AppointmentDisplayTextEventHandler(schedulerControl1_InitAppointmentDisplayText);
@@ -110,6 +113,26 @@ namespace BluePrints.Views
             resourcesTree1.CustomDrawNodeCell += new DevExpress.XtraTreeList.CustomDrawNodeCellEventHandler(resourcesTree1_CustomDrawNodeCell);
             resourcesTree1.PopupMenuShowing += new DevExpress.XtraTreeList.PopupMenuShowingEventHandler(resourcesTree1_PopupMenuShowing);
             gridControlDeliverable.DoubleClick += new EventHandler(gridControlWorkpack_DoubleClick);
+        }
+
+        private void gridViewDeliverable_SelectionChanged(object sender, DevExpress.Data.SelectionChangedEventArgs e)
+        {
+            int[] selectedRowIndex = gridViewDeliverable.GetSelectedRows();
+            List<BASELINE_ITEMProjection> selectedBASELINE_ITEMS = new List<BASELINE_ITEMProjection>();
+            foreach (int selectedIndex in selectedRowIndex)
+            {
+                selectedBASELINE_ITEMS.Add((BASELINE_ITEMProjection)gridViewDeliverable.GetRow(selectedIndex));
+            }
+
+            Messenger.Default.Send<ContextBASELINE_ITEMProjectionsMessage>(new ContextBASELINE_ITEMProjectionsMessage(selectedBASELINE_ITEMS));
+        }
+
+        private void schedulerControl1_SelectionChanged(object sender, EventArgs e)
+        {
+            if (schedulerControl1.SelectedAppointments.Count == 0)
+                return;
+
+            Messenger.Default.Send<SelectIntIdMessage>(new SelectIntIdMessage((int)schedulerControl1.SelectedAppointments.First().Id));
         }
 
         private void SetDataBinding(IEnumerable<TASK_AppointmentInfo> TASK_Appointments,
@@ -198,14 +221,14 @@ namespace BluePrints.Views
             if (schHitInfo.HitTest == SchedulerHitTest.AppointmentContent)
             {
                 var dropAppointment = ((AppointmentViewInfo)schHitInfo.ViewInfo).Appointment;
-                var view = new BASELINE_ITEMAssignmentView(PROJECT, TASK_WBSAppointments, BASELINE_ITEMProjections,
-                    BASELINE_ITEM_ASSIGNMENTSViewModel, ISMODIFIED, dropAppointment, dragDropBaseline_Items);
-                view.ShowDialog();
-                view.Dispose();
+                BASELINE_ITEMAssignmentView view = new BASELINE_ITEMAssignmentView(PROJECT, TASK_WBSAppointments, BASELINE_ITEMProjections,
+                    BASELINE_ITEM_ASSIGNMENTSViewModel, ISMODIFIED, dropAppointment, dragDropBaseline_Items, CalculateAppointmentsUnits);
+                view.Show();
+
                 gridControlDeliverable.RefreshDataSource();
             }
 
-            CalculateAppointmentsUnits();
+            //CalculateAppointmentsUnits();
         }
         #endregion
 

@@ -358,6 +358,7 @@
             this.schedulerControl1.Views.GanttView.ShowResourceHeaders = false;
             this.schedulerControl1.Views.GanttView.TimeIndicatorDisplayOptions.Visibility = DevExpress.XtraScheduler.TimeIndicatorVisibility.Never;
             this.schedulerControl1.Views.WorkWeekView.TimeRulers.Add(timeRuler3);
+            this.schedulerControl1.SelectionChanged += new System.EventHandler(this.schedulerControl1_SelectionChanged);
             // 
             // resourcesTree1
             // 

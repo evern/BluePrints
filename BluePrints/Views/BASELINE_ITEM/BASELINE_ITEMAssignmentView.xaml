@@ -9,7 +9,7 @@
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
-             Height="700" Width="1700" Title="Deliverable's Activity Assignment" WindowStartupLocation="CenterScreen">
+             Height="700" Width="1700" Title="Deliverable's Activity Assignment" WindowStartupLocation="CenterScreen" Closing="userControl_Closing">
     <dxlc:LayoutControl Orientation="Vertical" MaxHeight="1000">
         <dxlc:LayoutGroup Name="LayoutGroupContainer" View="Group" Header="Current Deliverable" Orientation="Horizontal">
             <dxlc:LayoutGroup Name="LayoutGroupBaseline_Items" View="GroupBox" Width="500" Header="Selected Deliverables" Orientation="Horizontal">

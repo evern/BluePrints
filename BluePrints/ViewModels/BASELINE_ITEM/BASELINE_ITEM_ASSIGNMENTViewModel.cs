@@ -1,6 +1,7 @@
 ﻿using BaseModel.ViewModel.Base;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
+using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Data;
 using DevExpress.Mvvm;
@@ -21,16 +22,17 @@ namespace BluePrints.ViewModels
             IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMS,
             CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
                 BASELINE_ITEM_ASSIGNMENTSViewModel, bool IsModified, Appointment SelectedTASK_Appointment = null,
-            IEnumerable<BASELINE_ITEMProjection> dropBASELINE_ITEMS = null)
+            IEnumerable<BASELINE_ITEMProjection> dropBASELINE_ITEMS = null, Action recalculateUnits = null)
         {
             return
                 ViewModelSource.Create(
                     () =>
                         new BASELINE_ITEM_ASSIGNMENTViewModel(PROJECT, ALLTASK_Appointments, BASELINE_ITEMS, BASELINE_ITEM_ASSIGNMENTSViewModel,
-                            IsModified, SelectedTASK_Appointment, dropBASELINE_ITEMS));
+                            IsModified, SelectedTASK_Appointment, dropBASELINE_ITEMS, recalculateUnits));
         }
 
         private bool IsModified { get; set; }
+        public Action RecalculateUnits { get; set; }
         private DispatcherTimer dispatchTimer;
         private DispatcherTimer selectAllDispatcherTimer;
         private DispatcherTimer maxUnitsDispatcherTimer;
@@ -39,20 +41,16 @@ namespace BluePrints.ViewModels
             IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMS,
             CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
                 BASELINE_ITEM_ASSIGNMENTSViewModel, bool IsModified, Appointment SelectedTASK_Appointment = null,
-            IEnumerable<BASELINE_ITEMProjection> droppedBASELINE_ITEMS = null)
+            IEnumerable<BASELINE_ITEMProjection> droppedBASELINE_ITEMS = null, Action recalculateUnits = null)
         {
             TASKSItemSource = ALLTASK_Appointments.ToArray().AsEnumerable();
             BASELINE_ITEMSource = BASELINE_ITEMS;
+            this.RecalculateUnits = recalculateUnits;
             this.BASELINE_ITEM_ASSIGNMENTSViewModel = BASELINE_ITEM_ASSIGNMENTSViewModel;
             this.IsModified = IsModified;
             SelectedTASK = SelectedTASK_Appointment != null
                 ? ALLTASK_Appointments.First(x => x.task_id == (int) SelectedTASK_Appointment.Id)
                 : null;
-            this.ContextBASELINE_ITEMS = droppedBASELINE_ITEMS != null ? new ObservableCollection<BASELINE_ITEMProjection>(droppedBASELINE_ITEMS) : new ObservableCollection<BASELINE_ITEMProjection>();
-
-            this.SelectedBASELINE_ITEMS = new ObservableCollection<BASELINE_ITEMProjection>();
-            this.SelectedASSIGNMENTS = new ObservableCollection<BASELINE_ITEM_ASSIGNMENTSProjection>();
-            this.SelectedBASELINE_ITEMS.CollectionChanged += SelectedBASELINE_ITEMS_CollectionChanged;
             this.loadPROJECT = PROJECT;
 
             dispatchTimer = new DispatcherTimer();
@@ -60,11 +58,25 @@ namespace BluePrints.ViewModels
             selectAllDispatcherTimer = new DispatcherTimer();
             selectAllDispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
             selectAllDispatcherTimer.Tick += SelectAllDispatcherTimer_Tick;
-            selectAllDispatcherTimer.Start();
 
             maxUnitsDispatcherTimer = new DispatcherTimer();
             maxUnitsDispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
             maxUnitsDispatcherTimer.Tick += maxUnitsDispatcherTimer_Tick;
+
+            InitializeBASELINE_ITEMSContext(droppedBASELINE_ITEMS);
+            RegisterBASELINE_ITEMProjectionsMessage();
+            RegisterIntIdMessage();
+        }
+
+        private void InitializeBASELINE_ITEMSContext(IEnumerable<BASELINE_ITEMProjection> droppedBASELINE_ITEMS)
+        {
+            this.ContextBASELINE_ITEMS = droppedBASELINE_ITEMS != null ? new ObservableCollection<BASELINE_ITEMProjection>(droppedBASELINE_ITEMS) : new ObservableCollection<BASELINE_ITEMProjection>();
+
+            this.SelectedBASELINE_ITEMS = new ObservableCollection<BASELINE_ITEMProjection>();
+            this.SelectedASSIGNMENTS = new ObservableCollection<BASELINE_ITEM_ASSIGNMENTSProjection>();
+            this.SelectedBASELINE_ITEMS.CollectionChanged += SelectedBASELINE_ITEMS_CollectionChanged;
+
+            selectAllDispatcherTimer.Start();
         }
 
         private void maxUnitsDispatcherTimer_Tick(object sender, EventArgs e)
@@ -134,6 +146,33 @@ namespace BluePrints.ViewModels
             }
         }
 
+        #endregion
+
+        #region Messaging
+        private void RegisterIntIdMessage()
+        {
+            Messenger.Default.Register<SelectIntIdMessage>(this, x => OnTaskIdSelectedMessage(x));
+        }
+
+        private void RegisterBASELINE_ITEMProjectionsMessage()
+        {
+            Messenger.Default.Register<ContextBASELINE_ITEMProjectionsMessage>(this, x => OnBASELINE_ITEMProjectionsMessage(x));
+        }
+
+        private void UnregisterMessageHandler()
+        {
+            Messenger.Default.Unregister(this);
+        }
+
+        private void OnBASELINE_ITEMProjectionsMessage(ContextBASELINE_ITEMProjectionsMessage message)
+        {
+            InitializeBASELINE_ITEMSContext(message.BASELINE_ITEMProjections);
+        }
+
+        private void OnTaskIdSelectedMessage(SelectIntIdMessage message)
+        {
+            SelectedTASK = TASKSItemSource.FirstOrDefault(x => x.task_id == message.SelectedId);
+        }
         #endregion
 
         #region Selected Items
@@ -433,6 +472,9 @@ namespace BluePrints.ViewModels
 
         public void Dispose()
         {
+            UnregisterMessageHandler();
+            RecalculateUnits?.Invoke();
+            RecalculateUnits = null;
             TASKSItemSource = null;
             BASELINE_ITEMSource = null;
             BASELINE_ITEM_ASSIGNMENTSViewModel.OnDestroy();

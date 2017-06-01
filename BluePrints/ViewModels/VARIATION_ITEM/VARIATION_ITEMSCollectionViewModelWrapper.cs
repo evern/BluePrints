@@ -200,6 +200,7 @@ namespace BluePrints.ViewModels
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = ApplyEntityPropertiesToProjectionCallBack;
             MainViewModel.OnBeforeEntityDeleteCallBack = EntityBeforeDeletionCallBack;
             MainViewModel.CreateNewProjectionFromNewEntityCallBack = CreateNewProjectionFromNewEntity;
+            MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
             MainViewModel.SetParentViewModel(this);
 
             mainThreadDispatcher.BeginInvoke(new Action(() => ShowWORKPACKColumns()));
@@ -289,6 +290,36 @@ namespace BluePrints.ViewModels
             }
 
             return false;
+        }
+
+        private void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
+        {
+            //estimated hours field is disabled but just in case
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEM().ESTIMATED_HOURS))
+            {
+                VARIATION_ITEMProjection validateEntity = (VARIATION_ITEMProjection)e.Row;
+                if (validateEntity.Entity.Entity.BY_DURATION && ((decimal)e.Value) > 0)
+                {
+                    e.IsValid = false;
+                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                    e.ErrorContent = "Cannot set estimated hours when deliverable is by duration";
+                }
+            }
+            //this is not likely to happen, because variation isn't trackable yet but just in case
+            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
+            {
+                VARIATION_ITEMProjection validateEntity = (VARIATION_ITEMProjection)e.Row;
+                if (validateEntity.TOTAL_EARNED_UNITS > 0)
+                {
+                    e.IsValid = false;
+                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                    e.ErrorContent = "Cannot change deliverable tracking type when percentage is already earned";
+                }
+            }
         }
 
         public void OnBeforeBulkEditSaveCallBack(VARIATION_ITEMProjection projection, string fieldName)

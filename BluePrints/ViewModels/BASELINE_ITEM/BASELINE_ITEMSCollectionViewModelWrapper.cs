@@ -302,6 +302,7 @@ namespace BluePrints.ViewModels
 
         private void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
         {
+            //estimated hours field is disabled but just in case
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().ESTIMATED_HOURS))
