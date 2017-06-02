@@ -16,6 +16,7 @@ using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Threading;
 
 namespace BluePrints.ViewModels
 {
@@ -47,7 +48,7 @@ namespace BluePrints.ViewModels
         #region Database Operations
 
         private PROJECT loadPROJECT;
-
+        DispatcherTimer delayedRefreshTimer;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
@@ -55,6 +56,10 @@ namespace BluePrints.ViewModels
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>) parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
+
+            delayedRefreshTimer = new DispatcherTimer();
+            delayedRefreshTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
+            delayedRefreshTimer.Tick += DelayedRefreshTimer_Tick;
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
@@ -66,6 +71,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.REGISTER_CHANGE, REGISTER_CHANGEProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.REGISTER_HOLD, REGISTER_HOLDProjectionFunc);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -80,6 +86,11 @@ namespace BluePrints.ViewModels
         }
 
         private Func<IRepositoryQuery<REGISTER_CHANGE>, IQueryable<REGISTER_CHANGE>> REGISTER_CHANGEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<REGISTER_HOLD>, IQueryable<REGISTER_HOLD>> REGISTER_HOLDProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
@@ -99,7 +110,7 @@ namespace BluePrints.ViewModels
         {
             List<REGISTER_ISSUE> registerIssue = query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.NUMBER).ToList();
             registerIssue.ForEach(x => x.SetRegisterChange(REGISTER_CHANGECollection));
-
+            registerIssue.ForEach(x => x.SetRegisterHold(REGISTER_HOLDCollection));
             return registerIssue.AsQueryable();
         }
 
@@ -113,7 +124,7 @@ namespace BluePrints.ViewModels
 
         public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
-            if (changedType == typeof(REGISTER_CHANGE))
+            if (changedType == typeof(REGISTER_CHANGE) || changedType == typeof(REGISTER_HOLD))
             {
                 FullRefreshWithoutClearingUndoRedo();
                 return;
@@ -128,7 +139,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public void OnBeforeEntitySaved(REGISTER_ISSUE entity)
         {
-            if (entity.DATE_RAISED == null)
+            if (entity.GUID == Guid.Empty && entity.DATE_RAISED == null)
                 entity.DATE_RAISED = DateTime.Now;
 
             entity.GUID_PROJECT = loadPROJECT.GUID;
@@ -139,9 +150,9 @@ namespace BluePrints.ViewModels
             if (e.Column.FieldName ==
                 BindableBase.GetPropertyName(() => new REGISTER_ISSUE().DATE_CLOSED))
             {
-                DateTime dateClosed = (DateTime)e.Value;
+                DateTime? dateClosed = (DateTime?)e.Value;
                 var editingEntity = (REGISTER_ISSUE)e.Row;
-                if (editingEntity.DATE_RAISED != null &&
+                if (editingEntity.DATE_RAISED != null && dateClosed != null && 
                     editingEntity.DATE_RAISED > dateClosed)
                 {
                     e.IsValid = false;
@@ -152,9 +163,9 @@ namespace BluePrints.ViewModels
 
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new REGISTER_ISSUE().DATE_RAISED))
             {
-                DateTime dateRaised = (DateTime)e.Value;
+                DateTime? dateRaised = (DateTime?)e.Value;
                 var editingEntity = (REGISTER_ISSUE)e.Row;
-                if (editingEntity.DATE_CLOSED != null &&
+                if (editingEntity.DATE_CLOSED != null && dateRaised != null && 
                     dateRaised > editingEntity.DATE_CLOSED)
                 {
                     e.IsValid = false;
@@ -195,12 +206,20 @@ namespace BluePrints.ViewModels
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }
 
+        public bool CanSendToHoldRegister()
+        {
+            if (DisplaySelectedEntity == null)
+                return false;
+
+            return DisplaySelectedEntity.RegisterChange == null && DisplaySelectedEntity.RegisterHold == null;
+        }
+
         public bool CanSendToChangeRegister()
         {
             if (DisplaySelectedEntity == null)
                 return false;
 
-            return DisplaySelectedEntity.RegisterChange == null;
+            return DisplaySelectedEntity.RegisterChange == null && DisplaySelectedEntity.RegisterHold == null;
         }
 
         public void SendToChangeRegister()
@@ -208,6 +227,7 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
+            var editingEntity = DisplaySelectedEntity;
             REGISTER_CHANGE newRegister = new REGISTER_CHANGE();
             newRegister.GUID_PROJECT = loadPROJECT.GUID;
             newRegister.GUID_AREA = DisplaySelectedEntity.GUID_AREA;
@@ -224,8 +244,8 @@ namespace BluePrints.ViewModels
             newRegister.CREATEDBY = LoginCredentials.CurrentUserGuid;
             REGISTER_CHANGEViewModel.Save(newRegister);
 
-            DisplaySelectedEntity.GUID_CHANGE = newRegister.GUID;
-            MainViewModel.Save(DisplaySelectedEntity);
+            editingEntity.GUID_CHANGE = newRegister.GUID;
+            MainViewModel.Save(editingEntity);
 
             DocumentInfo DocumentInfo = new DocumentInfo("View_ChangeRegister" + loadPROJECT.EntityKey.ToString(),
                 new EntitiesParameter<PROJECT>(loadPROJECT),
@@ -233,7 +253,44 @@ namespace BluePrints.ViewModels
                     "[" + loadPROJECT.NUMBER + "] Change Register");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            delayedRefreshTimer.Start();
         }
+
+        public void SendToHoldRegister()
+        {
+            if (DisplaySelectedEntity == null)
+                return;
+
+            var editingEntity = DisplaySelectedEntity;
+            REGISTER_HOLD newRegister = new REGISTER_HOLD();
+            newRegister.GUID_PROJECT = loadPROJECT.GUID;
+            newRegister.GUID_AREA = DisplaySelectedEntity.GUID_AREA;
+            newRegister.NUMBER = getHoldRegisterNewNumber();
+            newRegister.DESCRIPTION = DisplaySelectedEntity.DESCRIPTION;
+            newRegister.DATE_RAISED = DateTime.Now;
+            newRegister.CREATED = DateTime.Now;
+            newRegister.CREATEDBY = LoginCredentials.CurrentUserGuid;
+            REGISTER_HOLDViewModel.Save(newRegister);
+
+            editingEntity.GUID_HOLD = newRegister.GUID;
+            MainViewModel.Save(editingEntity);
+
+            DocumentInfo DocumentInfo = new DocumentInfo("View_HoldRegister" + loadPROJECT.EntityKey.ToString(),
+                new EntitiesParameter<PROJECT>(loadPROJECT),
+                    "REGISTER_HOLDCollectionView",
+                    "[" + loadPROJECT.NUMBER + "] Hold Register");
+
+            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            delayedRefreshTimer.Start();
+        }
+
+
+        private void DelayedRefreshTimer_Tick(object sender, EventArgs e)
+        {
+            delayedRefreshTimer.Stop();
+            FullRefresh();
+        }
+
 
         private string getChangeRegisterNewNumber()
         {
@@ -242,6 +299,21 @@ namespace BluePrints.ViewModels
                 return StringFormatUtils.AppendStringWithEnumerator(string.Empty, 0, DefaultNumericFieldLength());
 
             REGISTER_CHANGE largestNumberEntity = entitiesInOrder.Last();
+            string largestNumberString = largestNumberEntity.EntityNumber;
+            int numericFieldLength = 0;
+            long largestNumberValueOnly = 0;
+            string largestNumberStringOnly = StringFormatUtils.ParseStringIntoComponents(largestNumberString, out numericFieldLength, out largestNumberValueOnly);
+            long newRowNumber = largestNumberValueOnly + 1;
+            return StringFormatUtils.AppendStringWithEnumerator(string.Empty, newRowNumber, DefaultNumericFieldLength());
+        }
+
+        private string getHoldRegisterNewNumber()
+        {
+            IEnumerable<REGISTER_HOLD> entitiesInOrder = REGISTER_HOLDViewModel.Entities.OrderBy(x => x.EntityNumber);
+            if (entitiesInOrder.Count() == 0)
+                return StringFormatUtils.AppendStringWithEnumerator(string.Empty, 0, DefaultNumericFieldLength());
+
+            REGISTER_HOLD largestNumberEntity = entitiesInOrder.Last();
             string largestNumberString = largestNumberEntity.EntityNumber;
             int numericFieldLength = 0;
             long largestNumberValueOnly = 0;
@@ -280,11 +352,30 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<REGISTER_HOLD> REGISTER_HOLDCollection
+        {
+            get
+            {
+                var collection = GetEntities<REGISTER_HOLD>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NUMBER);
+                return collection;
+            }
+        }
+
         public CollectionViewModel<REGISTER_CHANGE, REGISTER_CHANGE, Guid, IBluePrintsEntitiesUnitOfWork> REGISTER_CHANGEViewModel
         {
             get
             {
                 return (CollectionViewModel<REGISTER_CHANGE, REGISTER_CHANGE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<REGISTER_CHANGE>();
+            }
+        }
+
+        public CollectionViewModel<REGISTER_HOLD, REGISTER_HOLD, Guid, IBluePrintsEntitiesUnitOfWork> REGISTER_HOLDViewModel
+        {
+            get
+            {
+                return (CollectionViewModel<REGISTER_HOLD, REGISTER_HOLD, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<REGISTER_HOLD>();
             }
         }
         #endregion

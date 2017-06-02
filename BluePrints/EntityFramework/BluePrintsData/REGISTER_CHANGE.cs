@@ -36,7 +36,7 @@ namespace BluePrints.Data
 
         public bool INTERDISC_CHECK_COMPLETE { get; set; }
 
-        public DateTime DATE_RAISED { get; set; }
+        public DateTime? DATE_RAISED { get; set; }
 
         public bool APPROVED { get; set; }
 

@@ -48,7 +48,7 @@ namespace BluePrints.Data
         [StringLength(1000)]
         public string FURTHER_ACTION { get; set; }
 
-        public DateTime DATE_IDENTIFIED { get; set; }
+        public DateTime? DATE_IDENTIFIED { get; set; }
 
         public DateTime CREATED { get; set; }
 

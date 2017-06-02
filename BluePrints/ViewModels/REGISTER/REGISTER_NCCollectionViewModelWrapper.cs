@@ -101,7 +101,7 @@ namespace BluePrints.ViewModels
         public void OnBeforeEntitySaved(REGISTER_NC entity)
         {
             entity.GUID_PROJECT = loadPROJECT.GUID;
-            if(entity.DATE_IDENTIFIED == null)
+            if(entity.GUID == Guid.Empty && entity.DATE_IDENTIFIED == null)
                 entity.DATE_IDENTIFIED = DateTime.Now.Date;
         }
 
@@ -110,9 +110,9 @@ namespace BluePrints.ViewModels
             if (e.Column.FieldName ==
                 BindableBase.GetPropertyName(() => new REGISTER_NC().DATE_CLOSED))
             {
-                DateTime dateClosed = (DateTime)e.Value;
+                DateTime? dateClosed = (DateTime?)e.Value;
                 var editingEntity = (REGISTER_NC)e.Row;
-                if (editingEntity.DATE_IDENTIFIED != null &&
+                if (editingEntity.DATE_IDENTIFIED != null && dateClosed != null && 
                     editingEntity.DATE_IDENTIFIED > dateClosed)
                 {
                     e.IsValid = false;
@@ -123,9 +123,9 @@ namespace BluePrints.ViewModels
 
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new REGISTER_NC().DATE_IDENTIFIED))
             {
-                DateTime dateRaised = (DateTime)e.Value;
+                DateTime? dateRaised = (DateTime?)e.Value;
                 var editingEntity = (REGISTER_NC)e.Row;
-                if (editingEntity.DATE_CLOSED != null &&
+                if (editingEntity.DATE_CLOSED != null && dateRaised != null && 
                     dateRaised > editingEntity.DATE_CLOSED)
                 {
                     e.IsValid = false;

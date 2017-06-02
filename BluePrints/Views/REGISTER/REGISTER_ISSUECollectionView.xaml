@@ -35,7 +35,10 @@
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Home">
                             <dxr:RibbonPageGroup Caption="REGISTER Tasks">
-                                <dxb:BarButtonItem Content="Hold Register" Command="{Binding DataContext.HoldRegisterCommand, ElementName=userControl}"
+                                <dxb:BarButtonItem Content="Change Register" Command="{Binding DataContext.SendToChangeRegisterCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImage Image=BOTask_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=BOTask_16x16.png}" />
+                                <dxb:BarButtonItem Content="Hold Register" Command="{Binding DataContext.SendToHoldRegisterCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=BORules_32x32.png}"
                                                    Glyph="{dx:DXImage Image=BORules_16x16.png}" />
                                 <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"
@@ -145,6 +148,7 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="RegisterChange.NUMBER" Header="Change Register" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="RegisterHold.NUMBER" Header="Hold Register" ReadOnly="True" />
                             <dxg:GridColumn FieldName="IsClosed" Visible="False" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
@@ -157,7 +161,7 @@
                             <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
                                 <custom:TableViewEx.FormatConditions>
                                     <dxg:FormatCondition ApplyToRow="True" Expression="[IsClosed] = 'True'" FieldName="NUMBER">
-                                        <dx:Format Background="#FFD8D8D8"/>
+                                        <dx:Format Background="#FF537DB1"/>
                                     </dxg:FormatCondition>
                                 </custom:TableViewEx.FormatConditions>
                                 <custom:TableViewEx.RowCellMenuCustomizations>
@@ -167,7 +171,10 @@
                                                        Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
                                     <dxb:BarButtonItem Content="Send to Change Register"
                                                        Command="{Binding DataContext.SendToChangeRegisterCommand, ElementName=userControl}"
-                                                       Glyph="{dx:DXImage Image=TableConvertToRange_16x16.png}" />
+                                                       Glyph="{dx:DXImage Image=BOTask_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Send to Hold Register"
+                                                       Command="{Binding DataContext.SendToHoldRegisterCommand, ElementName=userControl}"
+                                                       Glyph="{dx:DXImage Image=BORules_16x16.png}" />
                                     <dxb:BarButtonItem Content="Fill Up"
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}"
                                                        Command="{Binding View.DataContext.FillUpCommand}"

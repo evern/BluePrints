@@ -103,7 +103,7 @@ namespace BluePrints.ViewModels
         public void OnBeforeEntitySaved(REGISTER_RISK entity)
         {
             entity.GUID_PROJECT = loadPROJECT.GUID;
-            if(entity.DATE_IDENTIFIED == null)
+            if(entity.GUID == Guid.Empty && entity.DATE_IDENTIFIED == null)
                 entity.DATE_IDENTIFIED = DateTime.Now.Date;
         }
 

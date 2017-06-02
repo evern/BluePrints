@@ -47,5 +47,13 @@ namespace BluePrints.Data
         {
             RegisterChange = REGISTER_CHANGECollection.FirstOrDefault(x => x.GUID == GUID_CHANGE);
         }
+
+        [NotMapped]
+        public REGISTER_HOLD RegisterHold { get; set; }
+
+        public void SetRegisterHold(IEnumerable<REGISTER_HOLD> REGISTER_HoldCollection)
+        {
+            RegisterHold = REGISTER_HoldCollection.FirstOrDefault(x => x.GUID == GUID_HOLD);
+        }
     }
 }

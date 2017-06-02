@@ -18,6 +18,8 @@ namespace BluePrints.Data
 
         public Guid? GUID_CHANGE { get; set; }
 
+        public Guid? GUID_HOLD { get; set; }
+
         [StringLength(150)]
         public string NUMBER { get; set; }
 

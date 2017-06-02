@@ -31,7 +31,7 @@ namespace BluePrints.Data
         [StringLength(1000)]
         public string ACTION { get; set; }
 
-        public DateTime DATE_RAISED { get; set; }
+        public DateTime? DATE_RAISED { get; set; }
 
         public DateTime? DATE_CLOSED { get; set; }
 
