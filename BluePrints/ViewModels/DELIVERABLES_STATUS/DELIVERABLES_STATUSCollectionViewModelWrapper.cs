@@ -111,6 +111,26 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
+        #region View Behavior
+        /// <summary>
+        /// Influence column(s) when changes happens in other column
+        /// </summary>
+        public void CellValueChanging(CellValueChangedEventArgs e)
+        {
+            var activeDELIVERABLE_STATUS = (DELIVERABLES_STATUS)e.Row;
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new DELIVERABLES_STATUS().FOR_DELIVERABLE) ||
+                e.Column.FieldName == BindableBase.GetPropertyName(() => new DELIVERABLES_STATUS().FOR_NCR) ||
+                e.Column.FieldName == BindableBase.GetPropertyName(() => new DELIVERABLES_STATUS().FOR_TASK))
+            {
+                if (e.RowHandle != DataControlBase.NewItemRowHandle)
+                {
+                    PostEditor?.Invoke();
+                    return;
+                }
+            }
+        }
+        #endregion
+
         #region View Properties
 
         /// <summary>

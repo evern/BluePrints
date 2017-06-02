@@ -77,7 +77,7 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDELIVERABLE_STATUS" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="NAME" VisibleIndex="10" />
+                            <dxg:GridColumn FieldName="NAME"  />
                             <dxg:GridColumn FieldName="GUID_DOCTYPE" Header="DOCTYPE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
@@ -86,14 +86,14 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="MAX_PERCENTAGE" VisibleIndex="20">
+                            <dxg:GridColumn FieldName="MAX_PERCENTAGE" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="p2"
                                                           MaskUseAsDisplayFormat="True" Increment="0.1" MaxValue="1"
                                                           MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="AUTO_PERCENTAGE" VisibleIndex="30">
+                            <dxg:GridColumn FieldName="AUTO_PERCENTAGE" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:SpinEdit Name="PART_Editor" MaskUseAsDisplayFormat="True" MinValue="0" MaxValue="1" Increment="0.1" 
@@ -101,6 +101,9 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="FOR_DELIVERABLE" />
+                            <dxg:GridColumn FieldName="FOR_TASK" />
+                            <dxg:GridColumn FieldName="FOR_NCR" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
@@ -110,6 +113,11 @@
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
                             <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand
+                                        Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}"
+                                        PassEventArgsToCommand="True" EventName="CellValueChanging" />
+                                </dxmvvm:Interaction.Behaviors>
                                 <custom:TableViewEx.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Bulk Edit"
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"

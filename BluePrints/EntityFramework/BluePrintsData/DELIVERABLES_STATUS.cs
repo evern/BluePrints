@@ -6,11 +6,6 @@ namespace BluePrints.Data
 
     public partial class DELIVERABLES_STATUS
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public DELIVERABLES_STATUS()
-        {
-            BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
-        }
 
         [Key]
         public Guid GUID { get; set; }
@@ -26,6 +21,12 @@ namespace BluePrints.Data
         public decimal? AUTO_PERCENTAGE { get; set; }
 
         public decimal MAX_PERCENTAGE { get; set; }
+
+        public bool FOR_DELIVERABLE { get; set; }
+
+        public bool FOR_TASK { get; set; }
+
+        public bool FOR_NCR { get; set; }
 
         public DateTime CREATED { get; set; }
 

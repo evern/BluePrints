@@ -196,7 +196,11 @@ namespace BluePrints.Common.Projections
                                 EntityKey = x.GUID,
                                 Entity = x,
                                 DELIVERABLE_STATUS = (x.GUID_STATUS == null) ? null : DELIVERABLES_STATUSES.FirstOrDefault(z => z.GUID == x.GUID_STATUS),
-                                AvailableDeliverable_Status = DELIVERABLES_STATUSES.Where(z => z.GUID_DOCTYPE == x.GUID_DOCTYPE).OrderBy(z => z.MAX_PERCENTAGE),
+                                AvailableDeliverable_Status = DELIVERABLES_STATUSES
+                                .Where(z => (x.DELIVERABLE_TYPE == DeliverableType.Deliverable && z.FOR_DELIVERABLE) || 
+                                            (x.DELIVERABLE_TYPE == DeliverableType.DeliverableNCR && z.FOR_NCR) ||
+                                            (x.DELIVERABLE_TYPE == DeliverableType.Task && z.FOR_TASK))
+                                .Where(z => z.GUID_DOCTYPE == x.GUID_DOCTYPE).OrderBy(z => z.MAX_PERCENTAGE),
                                 AvailableSubAreas = SUBAREAS.Where(z => z.GUID_PARENT == x.GUID_AREA).OrderBy(z => z.INTERNAL_NUM),
                                 RATE = 
                                     RATES.FirstOrDefault(
