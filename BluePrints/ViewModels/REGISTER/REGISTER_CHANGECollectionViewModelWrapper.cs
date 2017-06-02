@@ -164,6 +164,11 @@ namespace BluePrints.ViewModels
             get { return "REGISTER_CHANGECollectionViewModelWrapper"; }
         }
 
+        protected override string ExportExcelFilename()
+        {
+            return loadPROJECT.NUMBER + "_Register_Change.xlsx";
+        }
+
         public IEnumerable<AREA> AREACollection
         {
             get

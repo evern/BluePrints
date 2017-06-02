@@ -174,13 +174,17 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
-
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
         protected override string ViewName
         {
             get { return "REGISTER_RISKCollectionViewModelWrapper"; }
+        }
+
+        protected override string ExportExcelFilename()
+        {
+            return loadPROJECT.NUMBER + "_Register_Risk.xlsx";
         }
 
         public IEnumerable<AREA> AREACollection
