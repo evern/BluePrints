@@ -259,7 +259,7 @@ namespace BluePrints.Common.Projections
 
                 if (Entity.Entity.BY_DURATION)
                     return TOTAL_EARNED_UNITS / BluePrintsConstants.DurationBasedTotalUnits;
-                else if (Entity.Entity.TOTAL_HOURS == 0)
+                else if (Entity.Entity.ESTIMATED_HOURS == 0)
                     return 0;
 
                 return TOTAL_EARNED_UNITS / Entity.Entity.ESTIMATED_HOURS;
