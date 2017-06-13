@@ -570,6 +570,9 @@ namespace BluePrints.ViewModels
         /// </summary>
         public void CellValueChanging(CellValueChangedEventArgs e)
         {
+            if (e.RowHandle == GridControl.AutoFilterRowHandle)
+                return;
+
             var activeVARIATION_ITEM = (VARIATION_ITEMProjection)e.Row;
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +

@@ -361,6 +361,9 @@ namespace BluePrints.ViewModels
         /// </summary>
         public void CellValueChanging(CellValueChangedEventArgs e)
         {
+            if (e.RowHandle == GridControl.AutoFilterRowHandle)
+                return;
+
             var activeBASELINE_ITEM = (PROGRESS_ITEMProjection)e.Row;
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +

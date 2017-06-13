@@ -214,6 +214,9 @@ namespace BluePrints.ViewModels
         /// </summary>
         public void CellValueChanging(CellValueChangedEventArgs e)
         {
+            if (e.RowHandle == GridControl.AutoFilterRowHandle)
+                return;
+
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF) || 
                 e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT) ||
                 e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT))

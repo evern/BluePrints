@@ -152,6 +152,9 @@ namespace BluePrints.ViewModels
         /// </summary>
         public void CellValueChanging(CellValueChangedEventArgs e)
         {
+            if (e.RowHandle == GridControl.AutoFilterRowHandle)
+                return;
+
             RolePermissionAssignment editingRolePermissionAssignment = (RolePermissionAssignment)e.Row;
             //don't need to validate fieldname since only this field is changeable in role permission grid control
 

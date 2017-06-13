@@ -433,6 +433,9 @@ namespace BluePrints.ViewModels
         /// </summary>
         public void CellValueChanging(CellValueChangedEventArgs e)
         {
+            if (e.RowHandle == GridControl.AutoFilterRowHandle)
+                return;
+
             var activeProjection = (ESTIMATION_DIRECT_ITEMProjection)e.Row;
             if (e.Column.FieldName ==
                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +

@@ -117,6 +117,9 @@ namespace BluePrints.ViewModels
         /// </summary>
         public void CellValueChanging(CellValueChangedEventArgs e)
         {
+            if (e.RowHandle == GridControl.AutoFilterRowHandle)
+                return;
+
             var activeDELIVERABLE_STATUS = (DELIVERABLES_STATUS)e.Row;
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new DELIVERABLES_STATUS().FOR_DELIVERABLE) ||
                 e.Column.FieldName == BindableBase.GetPropertyName(() => new DELIVERABLES_STATUS().FOR_NCR) ||

@@ -342,6 +342,9 @@ namespace BluePrints.ViewModels
 
         public void CellValueChanging(CellValueChangedEventArgs e)
         {
+            if (e.RowHandle == GridControl.AutoFilterRowHandle)
+                return;
+
             if (e.Column.FieldName == "Entity.GUID_DDOCTYPE")
             {
                 var changingWORKPACK = (WORKPACKProjection) e.Row;
