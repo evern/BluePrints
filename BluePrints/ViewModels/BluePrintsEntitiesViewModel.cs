@@ -114,7 +114,7 @@ namespace BluePrints.ViewModels
             {
                 foreach (var project in projects)
                 {
-                    newModules.AddRange(CreateProjectTree(project));
+                    CreateProjectTree(project);
                 }
             }
 
@@ -134,39 +134,45 @@ namespace BluePrints.ViewModels
         const string projectViewIdPrefix = "View_Project";
         private void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
         {
-            //if (_projectCollectionViewModel == null)
-            //    return;
+            if (_projectCollectionViewModel == null)
+                return;
 
-            //var primaryKey = (Guid)key;
-            //string projectViewId = projectViewIdPrefix + primaryKey.ToString();
-            //string projectPrimaryKey = primaryKey.ToString();
-            //var projectModules = Modules.Where(x => x.Id.ToString() == projectViewId || (x.ParentId != null && x.ParentId.ToString().Contains(projectPrimaryKey)));
+            Guid primaryKey = (Guid)key;
+            RemoveProjectModule(primaryKey);
 
-            //if (messageType == EntityMessageType.Added || messageType == EntityMessageType.Changed)
-            //{
-            //    PROJECT project = _projectCollectionViewModel.Entities.FirstOrDefault(x => x.GUID == primaryKey);
-            //    if (project != null)
-            //        if (messageType == EntityMessageType.Added)
-            //        {
-            //            if (projectModules.Count() == 0)
-            //                Modules.InsertRangeBackground(CreateProjectTree(project));
-            //        }
-            //        else if (messageType == EntityMessageType.Changed)
-            //        {
+            if (messageType == EntityMessageType.Added || messageType == EntityMessageType.Changed)
+            {
+                PROJECT project = _projectCollectionViewModel.Entities.FirstOrDefault(x => x.GUID == primaryKey);
+                if (project != null)
+                    if (messageType == EntityMessageType.Added)
+                    {
+                        CreateProjectTree(project);
+                    }
+                    else if (messageType == EntityMessageType.Changed)
+                    {
+                        if (project.STATUS == ProjectStatus.Active || project.STATUS == ProjectStatus.Tender)
+                        {
+                            CreateProjectTree(project);
+                        }
+                    }
+            }
+        }
 
-            //            if (projectModules.Count() > 0)
-            //                Modules.RemoveRangeBackground(projectModules.ToArray());
+        private void RemoveProjectModule(Guid primaryKey)
+        {
+            string projectViewId = projectViewIdPrefix + primaryKey.ToString();
+            string projectPrimaryKey = primaryKey.ToString();
 
-            //            if(project.STATUS == ProjectStatus.Active || project.STATUS == ProjectStatus.Tender)
-            //            {
-            //                Modules.InsertRangeBackground(CreateProjectTree(project));
-            //            }
-            //        }
-            //        else
-            //            Modules.RemoveRangeBackground(projectModules.ToArray());
-            //}
-            //else
-            //    Modules.RemoveRangeBackground(projectModules.ToArray());
+            var projectCategoryModules = Modules.SelectMany(x => x.ChildModules)
+            .Where(x => x.Id.ToString() == tenderCategoryId || x.Id.ToString() == activeCategoryId || x.Id.ToString() == myProjectCategoryId || x.Id.ToString() == myTenderCategoryId);
+            var projectModules = projectCategoryModules.SelectMany(x => x.ChildModules);
+            var projectModule = projectModules.FirstOrDefault(x => x.Id.ToString() == projectViewId || (x.ParentId != null && x.ParentId.ToString().Contains(projectPrimaryKey)));
+
+            if(projectModule != null)
+            {
+                var projectCategoryModule = projectCategoryModules.First(x => x.Id.ToString() == projectModule.ParentId.ToString());
+                projectCategoryModule.ChildModules.Remove(projectModule);
+            }
         }
 
         const string projectCategoryId = "View_Projects";
@@ -238,9 +244,9 @@ namespace BluePrints.ViewModels
             return bluePrintsEntitiesModuleDescriptions;
         }
         
-        private IEnumerable<BluePrintsEntitiesModuleDescription> CreateProjectTree(PROJECT entity)
+        private void CreateProjectTree(PROJECT entity)
         {
-            List<BluePrintsEntitiesModuleDescription> newModules = new List<BluePrintsEntitiesModuleDescription>();
+            //List<BluePrintsEntitiesModuleDescription> newModules = new List<BluePrintsEntitiesModuleDescription>();
             string projectTitle = entity.NUMBER + " " + entity.NAME;
             string childTitlePrefix = "[" + entity.NUMBER + "] ";
             string keyString = entity.EntityKey.ToString();
@@ -318,7 +324,7 @@ namespace BluePrints.ViewModels
             }
 
 
-            return newModules;
+            //return newModules;
         }
     }
 }

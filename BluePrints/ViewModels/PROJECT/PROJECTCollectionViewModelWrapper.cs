@@ -155,7 +155,7 @@ namespace BluePrints.ViewModels
                 newAREA.GUID_PROJECT = entity.GUID;
                 newAREA.INTERNAL_NUM = "000";
                 newAREA.CLIENT_NUM = "000";
-                newAREA.TITLE = "000";
+                newAREA.TITLE = "General";
                 AREAViewModel.Save(newAREA);
 
                 DEPARTMENT defaultDepartment = DEPARTMENTViewModel.Entities.FirstOrDefault(x => x.NAME == BluePrintsResources.NewProject_DefaultDepartment);
