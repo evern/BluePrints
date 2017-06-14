@@ -411,10 +411,10 @@
                                 </dxlc:LayoutGroup>
                             </dxlc:LayoutGroup>
                             <!-- UI will lag if max height doesn't exists -->
-                            <dxlc:LayoutGroup x:Name="Tabs" dxlc:LayoutControl.AllowVerticalSizing="true" View="Tabs" MinHeight="300" >
+                            <dxlc:LayoutGroup x:Name="Tabs" dxlc:LayoutControl.AllowVerticalSizing="true" View="Tabs" Height="300" >
                                 <Grid DataContext="{Binding DataContext.BASELINEViewModel, ElementName=userControl}" dxlc:LayoutControl.TabHeader="BASELINES">
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="30" />
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
                                     <dxb:ToolBarControl>
@@ -435,7 +435,7 @@
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                                     </dxb:ToolBarControl>
                                     <custom:GridControlEx x:Name="gridControlBASELINE" dx:DXSerializer.SerializationID="GridControlDetailBASELINE"
-                                             Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" MinHeight="300">
+                                             Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" >
                                         <dxg:GridControl.Columns>
                                             <dxg:GridColumn FieldName="NAME" />
                                             <dxg:GridColumn FieldName="REVISION" />
@@ -479,28 +479,6 @@
                                                     </DataTemplate>
                                                 </dxg:GridColumn.CellTemplate>
                                             </dxg:GridColumn>
-                                            <!--<dxg:GridColumn FieldName="P6MODBASELINE_NAME" MinWidth="200">
-                                        <dxg:GridColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <dxlc:LayoutGroup Orientation="Horizontal">
-                                                    <dxe:ComboBoxEdit x:Name="PART_Editor" IsTextEditable="True"
-                                                                      NullValueButtonPlacement="Popup"
-                                                                      AutoComplete="True"
-                                                                      ItemsSource="{Binding View.DataContext.P6PROJECTSCollection}"
-                                                                      DisplayMember="wbs_short_name"
-                                                                      ValueMember="wbs_short_name" />
-                                                    <Button Width="50"
-                                                            Command="{Binding View.DataContext.P6MODBASELINE_ASSIGNCommand}">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <Image Source="{dx:DXImageOffice2013 Image=Edit_16x16.png}"
-                                                                   Width="16" Height="16" Margin="0, 0, 3, 0" />
-                                                            <TextBlock VerticalAlignment="Center" />
-                                                        </StackPanel>
-                                                    </Button>
-                                                </dxlc:LayoutGroup>
-                                            </DataTemplate>
-                                        </dxg:GridColumn.CellTemplate>
-                                    </dxg:GridColumn>-->
                                         </dxg:GridControl.Columns>
                                         <dxg:GridControl.TotalSummary>
                                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
@@ -538,10 +516,9 @@
                                         </dxg:GridControl.View>
                                     </custom:GridControlEx>
                                 </Grid>
-                                <Grid DataContext="{Binding DataContext.PROGRESSViewModel, ElementName=userControl}"
-                              dxlc:LayoutControl.TabHeader="PROGRESSES">
+                                <Grid DataContext="{Binding DataContext.PROGRESSViewModel, ElementName=userControl}" dxlc:LayoutControl.TabHeader="PROGRESSES">
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="30" />
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
                                     <dxb:ToolBarControl>
@@ -562,7 +539,7 @@
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                                     </dxb:ToolBarControl>
                                     <custom:GridControlEx x:Name="gridControlPROGRESS" dx:DXSerializer.SerializationID="GridControlDetailPROGRESS"
-                                             Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" MinHeight="300">
+                                             Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" >
                                         <dxg:GridControl.Columns>
                                             <dxg:GridColumn FieldName="NAME" />
                                             <dxg:GridColumn FieldName="PROGRESS_START">
@@ -647,7 +624,7 @@
                                 </Grid>
                                 <Grid DataContext="{Binding DataContext.ESTIMATION_DIRECTViewModel, ElementName=userControl}" dxlc:LayoutControl.TabHeader="DIRECT ESTIMATES">
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="30" />
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
                                     <dxb:ToolBarControl>
@@ -668,7 +645,7 @@
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                                     </dxb:ToolBarControl>
                                     <custom:GridControlEx x:Name="gridControlESTIMATION_DIRECT" dx:DXSerializer.SerializationID="GridControlDetailESTIMATION_DIRECT"
-                                             Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" MinHeight="300">
+                                             Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" >
                                         <dxg:GridControl.Columns>
                                             <dxg:GridColumn FieldName="NAME" />
                                             <dxg:GridColumn FieldName="REVISION" />
@@ -805,7 +782,7 @@
                                         </dxg:GridControl.View>
                                     </custom:GridControlEx>
                                 </Grid>-->
-                                <Grid DataContext="{Binding DataContext.RATEViewModel, ElementName=userControl}"
+                                <!--<Grid DataContext="{Binding DataContext.RATEViewModel, ElementName=userControl}"
                               dxlc:LayoutControl.TabHeader="RATES">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -884,7 +861,7 @@
                                             </custom:TableViewEx>
                                         </dxg:GridControl.View>
                                     </custom:GridControlEx>
-                                </Grid>
+                                </Grid>-->
                             </dxlc:LayoutGroup>
                         </dxlc:LayoutControl>
                     </Grid>

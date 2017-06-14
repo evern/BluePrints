@@ -19,6 +19,9 @@ namespace BluePrints.Data
         public Guid? GUID_PARENT { get; set; }
 
         [Required]
+        [StringLength(50)]
+        public string GROUP_CODE { get; set; }
+
         [StringLength(500)]
         public string DESCRIPTION { get; set; }
 
