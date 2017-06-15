@@ -158,6 +158,15 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn Name="colDISCIPLINE_NUMBER" FieldName="Entity.Entity.DISCIPLINE_NUMBER"
+                                            Header="DISC. NUM">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings IsTextEditable="True" IsFloatValue="False"
+                                                                      Increment="1" MinValue="1" MaxValue="99"
+                                                                      MaskType="Numeric" Mask="n0"
+                                                                      MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn Name="colDEPARTMENT" FieldName="Entity.Entity.GUID_DEPARTMENT"
                                             Header="DEPARTMENT">
                                 <dxg:GridColumn.EditSettings>

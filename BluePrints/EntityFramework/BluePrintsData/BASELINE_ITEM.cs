@@ -57,6 +57,9 @@ namespace BluePrints.Data
         [StringLength(50)]
         public string REVISION_NUMBER { get; set; }
 
+        [Required]
+        public int DISCIPLINE_NUMBER { get; set; }
+
         public decimal? P6_ASSIGNMENT_STARTUNIT { get; set; }
 
         public bool BY_DURATION { get; set; }

@@ -8,6 +8,7 @@ using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel;
 using BluePrints.Data;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
@@ -57,9 +58,9 @@ namespace BluePrints.ViewModels
         private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory =
             P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
-        private IDialogService MissingActivitiesDialogService
+        private IDialogService ActivityDetailDialogService
         {
-            get { return this.GetRequiredService<IDialogService>("MissingActivityIdDialog"); }
+            get { return this.GetRequiredService<IDialogService>("ActivityIdDialog"); }
         }
 
         protected override void InitializeParameters(object parameter)
@@ -360,7 +361,7 @@ namespace BluePrints.ViewModels
                     IP6EntitiesUnitOfWork.TASKRSRC.Remove(TaskRsrc);
                 }
 
-                List<MissingP6Activities> missingActivities = new List<MissingP6Activities>();
+                List<P6ActivityAssignment> missingActivities = new List<P6ActivityAssignment>();
                 foreach(BASELINE_ITEMProjection baseline_item in MainViewModel.Entities)
                 {
                     IEnumerable<BASELINE_ITEM_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = baseline_item.BASELINE_ITEM_ASSIGNMENTS;
@@ -368,16 +369,16 @@ namespace BluePrints.ViewModels
                     foreach (BASELINE_ITEM_ASSIGNMENT BASELINE_ITEM_ASSIGNMENT in projectBASELINE_ITEM_ASSIGNMENTS)
                     {
                         TASK existingTask = P6Tasks.FirstOrDefault(x => x.task_code == BASELINE_ITEM_ASSIGNMENT.P6_ACTIVITYID);
-                        decimal currentAssignmentUnits = ((BASELINE_ITEM_ASSIGNMENT.HIGH_VALUE - BASELINE_ITEM_ASSIGNMENT.LOW_VALUE) + 0.01m) * baseline_item.TotalUnitsIncludeByDuration;
+                        P6ActivityAssignment P6Assignment = new P6ActivityAssignment(baseline_item, BASELINE_ITEM_ASSIGNMENT);
 
                         if (existingTask != null && existingTask.delete_date == null)
                         {
-                            existingTask.target_work_qty += currentAssignmentUnits;
-                            existingTask.remain_work_qty += currentAssignmentUnits;
+                            existingTask.target_work_qty += P6Assignment.UNITS;
+                            existingTask.remain_work_qty += P6Assignment.UNITS;
                         }
                         else
                         {
-                            missingActivities.Add(new MissingP6Activities() { INTERNAL_NUM = baseline_item.Entity.INTERNAL_NUM, P6_ACTIVITY = BASELINE_ITEM_ASSIGNMENT.P6_ACTIVITYID, UNITS = currentAssignmentUnits });
+                            missingActivities.Add(P6Assignment);
                         }
                     }
                 }
@@ -385,8 +386,8 @@ namespace BluePrints.ViewModels
                 ((P6EntitiesUnitOfWork)IP6EntitiesUnitOfWork).Context.SaveChanges();
                 if (missingActivities.Count > 0)
                 {
-                    DialogCollectionViewModel<MissingP6Activities> missingActivitiesViewModel = DialogCollectionViewModel<MissingP6Activities>.Create(missingActivities);
-                    MissingActivitiesDialogService.ShowDialog(MessageButton.OK,
+                    DialogCollectionViewModel<P6ActivityAssignment> missingActivitiesViewModel = DialogCollectionViewModel<P6ActivityAssignment>.Create(missingActivities);
+                    ActivityDetailDialogService.ShowDialog(MessageButton.OK,
                     "Missing P6 Activities", "MissingAssignments", missingActivitiesViewModel);
                 }
                 else
@@ -394,7 +395,82 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public void RemoveInvalidAssignments()
+        public void ReassignP6Ids()
+        {
+            IEnumerable<TASK> validTASKS;
+            List<P6ActivityAssignment> missingActivities = getMissingP6Activities(out validTASKS);
+            List<P6ActivityRemap> p6ActivitiesRemap = new List<P6ActivityRemap>();
+
+            if(missingActivities.Count > 0)
+            {
+                foreach(P6ActivityAssignment missingActivity in missingActivities)
+                {
+                    if (!p6ActivitiesRemap.Any(x => x.P6_OLD_ACTIVITY == missingActivity.P6_ACTIVITY))
+                        p6ActivitiesRemap.Add(ViewModelSource.Create(() => new P6ActivityRemap() { P6_OLD_ACTIVITY = missingActivity.P6_ACTIVITY }));
+                }
+
+                P6ActivityAssignmentDialogViewModel<P6ActivityRemap> activitiesRemapViewModel = P6ActivityAssignmentDialogViewModel<P6ActivityRemap>.CreateViewModel(p6ActivitiesRemap, loadPROJECT.NUMBER, validTASKS);
+                if(ActivityDetailDialogService.ShowDialog(MessageButton.OKCancel, "Re-Assign", "MissingAssignmentsRemap", activitiesRemapViewModel) == MessageResult.OK)
+                {
+                    IEnumerable<P6ActivityRemap> userRemappedActivities = p6ActivitiesRemap.Where(x => x.P6_NEW_ACTIVITY != null && x.P6_NEW_ACTIVITY != string.Empty);
+                    List<P6ActivityRemap> validUserRemappedActivities = new List<P6ActivityRemap>();
+
+                    foreach(P6ActivityRemap userRemappedActivity in userRemappedActivities)
+                    {
+                        if (validTASKS.Any(x => x.task_code == userRemappedActivity.P6_NEW_ACTIVITY))
+                        {
+                            validUserRemappedActivities.Add(userRemappedActivity);
+                        }
+                    }
+
+                    List<P6ActivityAssignment> reassignActivities = new List<P6ActivityAssignment>();
+                    if (userRemappedActivities.Count() > 0)
+                    {
+                        List<P6ActivityAssignment> validReassignments = new List<P6ActivityAssignment>();
+                        foreach (P6ActivityAssignment missingActivity in missingActivities)
+                        {
+                            P6ActivityRemap userRemappedActivity = validUserRemappedActivities.FirstOrDefault(x => x.P6_OLD_ACTIVITY == missingActivity.P6_ACTIVITY);
+                            if(userRemappedActivity != null)
+                            {
+                                missingActivity.Reassign(userRemappedActivity.P6_NEW_ACTIVITY);
+                                reassignActivities.Add(missingActivity);
+                            }
+                        }
+                    }
+
+                    if(reassignActivities.Count > 0)
+                    {
+                        BASELINE_ITEM_ASSIGNMENTSCollectionViewModel.BulkSave(reassignActivities.Select(x => x.baseline_item_assignment));
+                        RefreshWinformView?.Invoke();
+
+                        MessageBoxService.ShowMessage(reassignActivities.Count + " activities re-assigned");
+                    }
+                }
+            }
+            else
+                MessageBoxService.ShowMessage("All Assignments Valid");
+        }
+
+        public void CheckAssignments()
+        {
+            IEnumerable<TASK> validTASKS;
+            List<P6ActivityAssignment> missingActivities = getMissingP6Activities(out validTASKS);
+            if (missingActivities.Count > 0)
+            {
+                DialogCollectionViewModel<P6ActivityAssignment> missingActivitiesViewModel = DialogCollectionViewModel<P6ActivityAssignment>.Create(missingActivities);
+                ActivityDetailDialogService.ShowDialog(MessageButton.OK, "Invalid Assignments", "MissingAssignments", missingActivitiesViewModel);
+
+                if (MessageBoxService.ShowMessage("Do you want to delete invalid assignments?", "Warning", MessageButton.OKCancel) == MessageResult.OK)
+                {
+                    BASELINE_ITEM_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(missingActivities.Select(x => x.baseline_item_assignment));
+                    RefreshWinformView?.Invoke();
+                }
+            }
+            else
+                MessageBoxService.ShowMessage("All Assignments Valid");
+        }
+
+        private List<P6ActivityAssignment> getMissingP6Activities(out IEnumerable<TASK> validTASKS)
         {
             var IP6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
 
@@ -404,42 +480,28 @@ namespace BluePrints.ViewModels
             else
                 ProjectName = loadBASELINE.P6BASELINE_NAME;
 
-            List<BASELINE_ITEM_ASSIGNMENT> invalidBASELINE_ITEM_ASSIGNMENTS = new List<BASELINE_ITEM_ASSIGNMENT>();
+            List<P6ActivityAssignment> missingActivities = new List<P6ActivityAssignment>();
             BluePrints.P6Data.PROJECT P6PROJECT = IP6EntitiesUnitOfWork.PROJECT.FirstOrDefault(x => x.proj_short_name == ProjectName && x.delete_date == null);
             if (P6PROJECT != null)
             {
-                IEnumerable<TASK> P6Tasks = P6PROJECT.TASK.ToArray().AsEnumerable();
-                List<MissingP6Activities> missingActivities = new List<MissingP6Activities>();
+                validTASKS = P6PROJECT.TASK.ToArray().AsEnumerable();
                 foreach (BASELINE_ITEMProjection baseline_item in MainViewModel.Entities)
                 {
                     IEnumerable<BASELINE_ITEM_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = baseline_item.BASELINE_ITEM_ASSIGNMENTS;
                     foreach (BASELINE_ITEM_ASSIGNMENT BASELINE_ITEM_ASSIGNMENT in projectBASELINE_ITEM_ASSIGNMENTS)
                     {
-                        decimal currentAssignmentUnits = ((BASELINE_ITEM_ASSIGNMENT.HIGH_VALUE - BASELINE_ITEM_ASSIGNMENT.LOW_VALUE) + 0.01m) * baseline_item.TOTAL_UNITS;
-                        TASK existingTask = P6Tasks.FirstOrDefault(x => x.task_code == BASELINE_ITEM_ASSIGNMENT.P6_ACTIVITYID);
+                        TASK existingTask = validTASKS.FirstOrDefault(x => x.task_code == BASELINE_ITEM_ASSIGNMENT.P6_ACTIVITYID);
                         if (existingTask == null || existingTask.delete_date != null)
                         {
-                            invalidBASELINE_ITEM_ASSIGNMENTS.Add(BASELINE_ITEM_ASSIGNMENT);
-                            missingActivities.Add(new MissingP6Activities() { INTERNAL_NUM = baseline_item.Entity.INTERNAL_NUM, P6_ACTIVITY = BASELINE_ITEM_ASSIGNMENT.P6_ACTIVITYID, UNITS = currentAssignmentUnits });
+                            missingActivities.Add(new P6ActivityAssignment(baseline_item, BASELINE_ITEM_ASSIGNMENT));
                         }
                     }
                 }
-
-                if (invalidBASELINE_ITEM_ASSIGNMENTS.Count > 0)
-                {
-                    DialogCollectionViewModel<MissingP6Activities> missingActivitiesViewModel = DialogCollectionViewModel<MissingP6Activities>.Create(missingActivities);
-                    MissingActivitiesDialogService.ShowDialog(MessageButton.OK,
-                    "Removed Assignments", "MissingAssignments", missingActivitiesViewModel);
-
-                    if (MessageBoxService.ShowMessage("Do you want to delete invalid assignments?", "Warning", MessageButton.OKCancel) == MessageResult.OK)
-                    {
-                        BASELINE_ITEM_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(invalidBASELINE_ITEM_ASSIGNMENTS);
-                        RefreshWinformView?.Invoke();
-                    }
-                }
-                else
-                    MessageBoxService.ShowMessage("All Assignments Valid");
             }
+            else
+                validTASKS = null;
+
+            return missingActivities;
         }
 
         public void Refresh()

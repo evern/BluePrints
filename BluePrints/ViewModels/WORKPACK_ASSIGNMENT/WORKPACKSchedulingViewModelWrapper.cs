@@ -326,39 +326,39 @@ namespace BluePrints.ViewModels
                     IP6EntitiesUnitOfWork.TASKRSRC.Remove(TaskRsrc);
                 }
 
-                List<MissingP6Activities> missingActivities = new List<MissingP6Activities>();
-                foreach(WORKPACK_Dashboard workpack in MainViewModel.Entities)
-                {
-                    IEnumerable<WORKPACK_ASSIGNMENT> projectWORKPACK_ASSIGNMENTS = workpack.ObservableWORKPACK_ASSIGNMENTS;
-                    decimal workpackTotalUnits = workpack.Stats.totalUnits;
+                //List<MissingP6Activities> missingActivities = new List<MissingP6Activities>();
+                //foreach(WORKPACK_Dashboard workpack in MainViewModel.Entities)
+                //{
+                //    IEnumerable<WORKPACK_ASSIGNMENT> projectWORKPACK_ASSIGNMENTS = workpack.ObservableWORKPACK_ASSIGNMENTS;
+                //    decimal workpackTotalUnits = workpack.Stats.totalUnits;
 
-                    foreach (WORKPACK_ASSIGNMENT WORKPACK_ASSIGNMENT in projectWORKPACK_ASSIGNMENTS)
-                    {
-                        TASK existingTask = P6Tasks.FirstOrDefault(x => x.task_code == WORKPACK_ASSIGNMENT.P6_ACTIVITYID);
-                        decimal currentAssignmentUnits = ((WORKPACK_ASSIGNMENT.HIGH_VALUE - WORKPACK_ASSIGNMENT.LOW_VALUE) + 0.01m) * workpackTotalUnits;
+                //    foreach (WORKPACK_ASSIGNMENT WORKPACK_ASSIGNMENT in projectWORKPACK_ASSIGNMENTS)
+                //    {
+                //        TASK existingTask = P6Tasks.FirstOrDefault(x => x.task_code == WORKPACK_ASSIGNMENT.P6_ACTIVITYID);
+                //        decimal currentAssignmentUnits = ((WORKPACK_ASSIGNMENT.HIGH_VALUE - WORKPACK_ASSIGNMENT.LOW_VALUE) + 0.01m) * workpackTotalUnits;
 
-                        if (existingTask != null)
-                        {
-                            existingTask.target_work_qty += currentAssignmentUnits;
-                            existingTask.remain_work_qty += currentAssignmentUnits;
-                        }
-                        else
-                        {
-                            WORKPACK missingWORKPACK = WORKPACKCollection.FirstOrDefault(x => x.GUID == WORKPACK_ASSIGNMENT.GUID_WORKPACK);
-                            missingActivities.Add(new MissingP6Activities() { INTERNAL_NUM = missingWORKPACK == null ? string.Empty : missingWORKPACK.INTERNAL_NAME1, P6_ACTIVITY = WORKPACK_ASSIGNMENT.P6_ACTIVITYID, UNITS = currentAssignmentUnits });
-                        }
-                    }
-                }
+                //        if (existingTask != null)
+                //        {
+                //            existingTask.target_work_qty += currentAssignmentUnits;
+                //            existingTask.remain_work_qty += currentAssignmentUnits;
+                //        }
+                //        else
+                //        {
+                //            WORKPACK missingWORKPACK = WORKPACKCollection.FirstOrDefault(x => x.GUID == WORKPACK_ASSIGNMENT.GUID_WORKPACK);
+                //            missingActivities.Add(new MissingP6Activities() { INTERNAL_NUM = missingWORKPACK == null ? string.Empty : missingWORKPACK.INTERNAL_NAME1, P6_ACTIVITY = WORKPACK_ASSIGNMENT.P6_ACTIVITYID, UNITS = currentAssignmentUnits });
+                //        }
+                //    }
+                //}
 
-                ((P6EntitiesUnitOfWork)IP6EntitiesUnitOfWork).Context.SaveChanges();
-                if (missingActivities.Count > 0)
-                {
-                    DialogCollectionViewModel<MissingP6Activities> missingActivitiesViewModel = DialogCollectionViewModel<MissingP6Activities>.Create(missingActivities);
-                    MissingActivitiesDialogService.ShowDialog(MessageButton.OK,
-                    "Missing P6 Activities", "MissingAssignments", missingActivitiesViewModel);
-                }
-                else
-                    MessageBoxService.ShowMessage(BluePrintsResources.WORKPACK_ASSIGNMENT_P6WriteComplete);
+                //((P6EntitiesUnitOfWork)IP6EntitiesUnitOfWork).Context.SaveChanges();
+                //if (missingActivities.Count > 0)
+                //{
+                //    DialogCollectionViewModel<MissingP6Activities> missingActivitiesViewModel = DialogCollectionViewModel<MissingP6Activities>.Create(missingActivities);
+                //    MissingActivitiesDialogService.ShowDialog(MessageButton.OK,
+                //    "Missing P6 Activities", "MissingAssignments", missingActivitiesViewModel);
+                //}
+                //else
+                MessageBoxService.ShowMessage(BluePrintsResources.WORKPACK_ASSIGNMENT_P6WriteComplete);
             }
         }
 

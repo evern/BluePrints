@@ -28,12 +28,12 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
-        <dx:DialogService x:Name="MissingActivityIdDialog">
+        <dx:DialogService x:Name="ActivityIdDialog">
             <dx:DialogService.DialogStyle>
                 <Style TargetType="dx:DXDialogWindow">
                     <Setter Property="SizeToContent" Value="WidthAndHeight" />
                     <Setter Property="MinWidth" Value="500" />
-                    <Setter Property="MinHeight" Value="370" />
+                    <Setter Property="MinHeight" Value="500" />
                 </Style>
             </dx:DialogService.DialogStyle>
         </dx:DialogService>
@@ -58,10 +58,14 @@
                                                    Command="{Binding DataContext.RefreshCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImageOffice2013 Image=Refresh_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                <dxb:BarButtonItem Content="Remove Invalid Assignments"
-                                                   Command="{Binding DataContext.RemoveInvalidAssignmentsCommand, ElementName=userControl}"
-                                                   LargeGlyph="{dx:DXImageOffice2013 Image=Delete_32x32.png}"
-                                                   Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                <dxb:BarButtonItem Content="Check Assignments"
+                                                   Command="{Binding DataContext.CheckAssignmentsCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImageOffice2013 Image=Show_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=Show_16x16.png}" />
+                                <dxb:BarButtonItem Content="Re-assignments"
+                                                   Command="{Binding DataContext.ReassignP6IdsCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImageOffice2013 Image=InsertTableColumnsToTheRight_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=InsertTableColumnsToTheRight_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

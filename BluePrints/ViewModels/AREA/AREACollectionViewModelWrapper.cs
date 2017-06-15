@@ -74,7 +74,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<AREA>, IQueryable<AREAMasterDetailProjection>> ConstructMainViewModelProjection()
         {
-            return query => AREAMasterDetailProjectionQueries.transformAREA(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID));
+            return query => AREAMasterDetailProjectionQueries.transformAREA(query, loadPROJECT.GUID);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<AREAMasterDetailProjection> entities)

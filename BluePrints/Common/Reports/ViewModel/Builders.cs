@@ -50,7 +50,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                                   join JOBCOST_RESOURCE in PrimeroUnitOfWork.JOBCOST_RESOURCE
                                   on JOBTRANS.STAFFNO equals JOBCOST_RESOURCE.SEQNO
                                   where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X"
-                                  select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME };
+                                  select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBTRANS.DESCRIPTION };
 
             var exoWorkpacks = from JOBCOST_HDR in PrimeroUnitOfWork.JOBCOST_HDR
                                where JOBCOST_HDR.JOBCODE.Contains(projectNumber)

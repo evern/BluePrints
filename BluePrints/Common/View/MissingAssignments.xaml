@@ -15,9 +15,10 @@
                 <dxlc:LayoutItem Height="230" >
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlMissingAssignments" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="WORKPACK" ReadOnly="True" FieldName="INTERNAL_NUM" />
+                            <dxg:GridColumn Header="INTERNAL NUM" ReadOnly="True" FieldName="INTERNAL_NUM" />
                             <dxg:GridColumn Header="P6 ID" ReadOnly="True" FieldName="P6_ACTIVITY" />
                             <dxg:GridColumn Header="UNITS" ReadOnly="True" FieldName="UNITS" />
+                            <dxg:GridColumn Header="P6 NEW ID" FieldName="P6_NEW_ACTIVITY" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />

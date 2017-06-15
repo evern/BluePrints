@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BluePrints.Common.Projections;
+using BluePrints.Data;
+using System.ComponentModel.DataAnnotations;
 
 namespace BluePrints.Common
 {
@@ -383,10 +385,51 @@ namespace BluePrints.Common
         }
     }
 
-    public class MissingP6Activities
+    /// <summary>
+    /// Used for displaying missing assignments
+    /// </summary>
+    public class P6ActivityAssignment
     {
-        public string INTERNAL_NUM { get; set; }
-        public string P6_ACTIVITY { get; set; }
-        public decimal UNITS { get; set; }
+        public P6ActivityAssignment(BASELINE_ITEMProjection baseline_itemProjection, BASELINE_ITEM_ASSIGNMENT baseline_item_assignment)
+        {
+            this.baseline_itemProjection = baseline_itemProjection;
+            this.baseline_item_assignment = baseline_item_assignment;
+        }
+
+        public readonly BASELINE_ITEM_ASSIGNMENT baseline_item_assignment;
+        public readonly BASELINE_ITEMProjection baseline_itemProjection;
+
+        public string INTERNAL_NUM
+        {
+            get { return baseline_itemProjection.Entity.INTERNAL_NUM; }
+        }
+
+        public string P6_ACTIVITY
+        {
+            get { return baseline_item_assignment.P6_ACTIVITYID; }
+        }
+
+        public decimal UNITS
+        {
+            get { return ((baseline_item_assignment.HIGH_VALUE - baseline_item_assignment.LOW_VALUE) + 0.01m) * baseline_itemProjection.TotalUnitsIncludeByDuration; }
+        }
+
+        public void Reassign(string p6NewActivity)
+        {
+            if (p6NewActivity == null || p6NewActivity == string.Empty)
+                return;
+
+            baseline_item_assignment.P6_ACTIVITYID = p6NewActivity;
+        }
+    }
+
+    /// <summary>
+    /// Used for remapping P6 activities
+    /// </summary>
+    public class P6ActivityRemap
+    {
+        public string P6_OLD_ACTIVITY { get; set; }
+        public string OLD_ACTIVITY_DESCRIPTION { get; set; }
+        public string P6_NEW_ACTIVITY { get; set; }
     }
 }

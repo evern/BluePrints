@@ -1,0 +1,56 @@
+﻿<UserControl
+    x:Name="userControl"
+    x:Class="BluePrints.Views.MissingAssignmentsRemap"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+    xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
+    Height="380" Width="500">
+    <dxlc:LayoutControl Orientation="Vertical">
+        <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
+            <dxlc:LayoutGroup Height="275" Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
+                <dxlc:LayoutItem Height="275" >
+                    <custom:GridControlEx x:Name="GridControl" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn FieldName="P6_OLD_ACTIVITY" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="OLD_ACTIVITY_DESCRIPTION" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="P6_NEW_ACTIVITY" />
+                        </dxg:GridControl.Columns>
+                        <dxg:GridControl.TotalSummary>
+                            <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
+                        </dxg:GridControl.TotalSummary>
+                        <dxg:GridControl.View>
+                            <custom:TableViewEx x:Name="tableView" ShowGroupedColumns="False" ShowGroupPanel="False">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand PassEventArgsToCommand="True"
+                                               Command="{Binding PastingFromClipboardCommand}"
+                                               EventName="PastingFromClipboard" />
+                                </dxmvvm:Interaction.Behaviors>
+                            </custom:TableViewEx>
+                        </dxg:GridControl.View>
+                    </custom:GridControlEx>
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+            <dxlc:LayoutGroup Height="35" Name="LayoutGroupSelection" View="Group" Orientation="Horizontal">
+                <dxlc:LayoutItem Height="30" Width="130">
+                    <Label VerticalAlignment="Center" Content="Old Schedule Name" />
+                </dxlc:LayoutItem>
+                <dxlc:LayoutItem Height="30">
+                    <dxe:ComboBoxEdit ItemsSource="{Binding OldScheduleNames}" EditValue="{Binding SelectedOldScheduleName}" />
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+            <dxlc:LayoutGroup Height="35" Name="LayoutGroupButtons" View="Group" Orientation="Horizontal">
+                <dxlc:LayoutItem Height="30" HorizontalAlignment="Center">
+                    <Button Content="Fetch Description" Command="{Binding GetDescriptionCommand}" />
+                </dxlc:LayoutItem>
+                <dxlc:LayoutItem Height="30" HorizontalAlignment="Center">
+                    <Button Content="Auto Assign" Command="{Binding AutoAssignCommand}" />
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+        </dxlc:LayoutGroup>
+    </dxlc:LayoutControl>
+</UserControl>
