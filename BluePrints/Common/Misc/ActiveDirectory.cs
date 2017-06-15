@@ -9,13 +9,24 @@ namespace BluePrints.Common
 {
     public static class ActiveDirectory
     {
-        public static bool Authenticate(string sUserName, string sPassword)
+        public static bool? Authenticate(string sUserName, string sPassword)
         {
             var domain = "primerogroup.com.au";
             var oPrincipalContext = new PrincipalContext
                 (ContextType.Domain, domain);
 
-            return oPrincipalContext.ValidateCredentials(sUserName, sPassword);
+            bool? result = null;
+
+            try
+            {
+                result = oPrincipalContext.ValidateCredentials(sUserName, sPassword);
+            }
+            catch
+            {
+
+            }
+
+            return result;
         }
 
         public static ArrayList Groups(string userDn, bool recursive)

@@ -24,7 +24,8 @@ namespace BluePrints.ViewModels
             UsernameNotAdded,
             RoleNotAssigned,
             InvalidUsernameOrPassword,
-            Authenticated
+            Authenticated,
+            ActiveDirectoryError
         }
 
         public static LoginViewModel Create()
@@ -116,13 +117,29 @@ namespace BluePrints.ViewModels
                     {
                         if(!isUsernameLoadedFromXML)
                         {
-                            IEnumerable<USER> activeDirectoryUSERS = ActiveDirectory.GetUSERS();
-                            USER CaseSensitiveUser = activeDirectoryUSERS.FirstOrDefault(x => x.NAME.ToLower() == UserName.ToLower());
-                            if (CaseSensitiveUser != null)
-                                UserName = CaseSensitiveUser.NAME;
+                            IEnumerable<USER> activeDirectoryUSERS = null;
+                            try
+                            {
+                                activeDirectoryUSERS = ActiveDirectory.GetUSERS();
+                            }
+                            catch
+                            {
+                                return UserAuthenticationResult.ActiveDirectoryError;
+                            }
+                            
+                            if(activeDirectoryUSERS != null)
+                            {
+                                USER CaseSensitiveUser = activeDirectoryUSERS.FirstOrDefault(x => x.NAME.ToLower() == UserName.ToLower());
+                                if (CaseSensitiveUser != null)
+                                    UserName = CaseSensitiveUser.NAME;
+                            }
                         }
 
-                        if (ActiveDirectory.Authenticate(UserName, UserPassword))
+                        bool? result = ActiveDirectory.Authenticate(UserName, UserPassword);
+                        if (result == null)
+                            return UserAuthenticationResult.ActiveDirectoryError;
+
+                        if (((bool)result))
                         {
                             ShowError(false, null);
                             ShowError(true, null);
@@ -161,6 +178,11 @@ namespace BluePrints.ViewModels
                 errorText = "Please ask pete to add you as a BluePrint user";
                 ShowError(false, errorText);
             }
+            else if (authenticationResult == UserAuthenticationResult.ActiveDirectoryError)
+            {
+                errorText = "Active directory not responding";
+                ShowError(false, errorText);
+            }
         }
 
         public Action ShowControlCallBack;
@@ -175,8 +197,7 @@ namespace BluePrints.ViewModels
 
         public void ShowError(bool isPasswordField, string errorMessage)
         {
-            if (ShowErrorCallBack != null)
-                ShowErrorCallBack(isPasswordField, errorMessage);
+            ShowErrorCallBack?.Invoke(isPasswordField, errorMessage);
         }
 
         public void ShowMainWindow()

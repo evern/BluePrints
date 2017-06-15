@@ -337,6 +337,12 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private bool isProjectCommodityGroupExists(Guid commodityGroupGuid)
+        {
+            IEnumerable<COMMODITY_CODE> projectCommodity_Code = COMMODITY_CODECollection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return projectCommodity_Code.Any(x => x.GUID_COMMODITY_GROUP_DIRECT == commodityGroupGuid);
+        }
+
         private bool isProjectGroupSignatureExist(Guid commodityGroupGuid, IEnumerable<COMMODITY_CODE> currentProjectGroupChildrenCommodity_Codes)
         {
             List<COMMODITY_CODE> dummyCollection;
@@ -600,35 +606,14 @@ namespace BluePrints.ViewModels
             {
                 //get the parents only
                 IEnumerable<COMMODITY_GROUP_DIRECT> groupParents = COMMODITY_GROUP_DIRECTCollection.Where(x => x.GUID_PARENT == null);
-                //get the childs only
-                IEnumerable<COMMODITY_GROUP_DIRECT> groupChildrens = COMMODITY_GROUP_DIRECTCollection.Where(x => x.GUID_PARENT != null && x.GUID_COMMODITYCODE != null);
 
                 //temp id used to identify parents in the view
                 int tempParentId = 0;
-                int tempChildId = 0;
                 if (groupParents != null && COMMODITY_CODECollection != null)
                 {
                     foreach (COMMODITY_GROUP_DIRECT groupParent in groupParents)
                     {
-                        IEnumerable<COMMODITY_GROUP_DIRECT> currentGroupChildrens = groupChildrens.Where(x => x.GUID_PARENT == groupParent.GUID);
-                        List<COMMODITY_CODE> tempChildCommodityCodes = new List<COMMODITY_CODE>();
-                        //construct child dynamically
-                        foreach (COMMODITY_GROUP_DIRECT currentGroupChildren in currentGroupChildrens)
-                        {
-                            COMMODITY_CODE childCommodityCode = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == currentGroupChildren.GUID_COMMODITYCODE);
-                            if (childCommodityCode != null)
-                            {
-                                COMMODITY_CODE newChildCommodityCode = new COMMODITY_CODE();
-                                DataUtils.ShallowCopy(newChildCommodityCode, childCommodityCode);
-                                newChildCommodityCode.ISGROUPHEADER = false;
-                                newChildCommodityCode.Temp_Id = childPrefix + tempChildId.ToString();
-                                newChildCommodityCode.Temp_Parent_Id = parentPrefix + tempParentId.ToString();
-                                tempChildId += 1;
-                                tempChildCommodityCodes.Add(newChildCommodityCode);
-                            }
-                        }
-
-                        if (!isProjectGroupSignatureExist(groupParent.GUID, tempChildCommodityCodes))
+                        if (!isProjectCommodityGroupExists(groupParent.GUID))
                         {
                             COMMODITY_CODE tempParentCommodityCode = new COMMODITY_CODE()
                             {
@@ -637,21 +622,20 @@ namespace BluePrints.ViewModels
                                 GUID_COMMODITY_GROUP_DIRECT = groupParent.GUID,
                                 COMMODITYCODETYPE = CommodityCodeType.Direct,
                                 NAME = groupParent.DESCRIPTION,
-                                FULLCODE = "Group Header",
-                                CODE = "Group Header",
+                                FULLCODE = groupParent.GROUP_CODE,
+                                CODE = groupParent.GROUP_CODE,
                                 SortOrder = 0,
                                 IsExpanded = false,
                                 ISQUANTIFIABLE = false,
                                 ISGROUPHEADER = true,
-                                RATE_FREIGHT = tempChildCommodityCodes.Sum(x => x.RATE_FREIGHT),
-                                HOURS_INSTALL = tempChildCommodityCodes.Sum(x => x.HOURS_INSTALL),
-                                RATE_PLANT = tempChildCommodityCodes.Sum(x => x.RATE_PLANT),
-                                RATE_SUPPLY = tempChildCommodityCodes.Sum(x => x.RATE_SUPPLY),
+                                RATE_FREIGHT = 0,
+                                HOURS_INSTALL = 0,
+                                RATE_PLANT = 0,
+                                RATE_SUPPLY = 0,
                                 Temp_Id = parentPrefix + tempParentId.ToString()
                             };
 
                             globalCommodityCodes.Add(tempParentCommodityCode);
-                            globalCommodityCodes.AddRange(tempChildCommodityCodes);
                         }
 
                         tempParentId += 1;

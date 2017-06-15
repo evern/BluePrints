@@ -23,8 +23,8 @@ namespace BluePrints.ViewModels
     /// Represents the COMMODITIES collection view model.
     /// </summary>
     public partial class COMMODITY_GROUP_DIRECTCollectionViewModelWrapper :
-        BluePrintsEntitiesMasterDetailCollectionsWrapper
-        <COMMODITY_GROUP_DIRECT, COMMODITY_GROUP_DIRECTProjection, Guid, IBluePrintsEntitiesUnitOfWork>
+        BluePrintsEntitiesCollectionWrapper
+        <COMMODITY_GROUP_DIRECT, COMMODITY_GROUP_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of COMMODITY_GROUP_DIRECTCollectionViewModel as a POCO view model.
@@ -78,46 +78,15 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<COMMODITY_GROUP_DIRECT>, IQueryable<COMMODITY_GROUP_DIRECTProjection>>
-            ConstructMainViewModelProjection()
+        protected override Func<IRepositoryQuery<COMMODITY_GROUP_DIRECT>, IQueryable<COMMODITY_GROUP_DIRECT>> ConstructMainViewModelProjection()
         {
-            return query => COMMODITY_GROUP_DIRECTProjectionQueries.ConvertToProjectionCOMMODITY_GROUP_DIRECT(query);
+            return query => query;
         }
 
         #region View Refresh
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<COMMODITY_GROUP_DIRECTProjection> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<COMMODITY_GROUP_DIRECT> entities)
         {
-            MainViewModel.AdditionalValidateCellCallBack = AdditionalCellValidation;
             base.AssignCallBacksAndRaisePropertyChange(entities);
-        }
-        #endregion
-
-        #region Collection Call Backs
-        private void AdditionalCellValidation(GridCellValidationEventArgs e)
-        {
-            if (e.Column.FieldName == 
-                BindableBase.GetPropertyName(() => new COMMODITY_GROUP_DIRECTProjection().Entity) 
-                + "." +
-                BindableBase.GetPropertyName(() => new COMMODITY_GROUP_DIRECT().GUID_COMMODITYCODE))
-            {
-                var editingCOMMODITY_GROUP = (COMMODITY_GROUP_DIRECTProjection)e.Row;
-                if (editingCOMMODITY_GROUP.DetailEntities != null &&
-                    editingCOMMODITY_GROUP.DetailEntities.Count > 0)
-                {
-                    e.IsValid = false;
-                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
-                    e.ErrorContent = BluePrintsResources.CommodityGroup_CannotAssignCommodity;
-                }
-
-                //Avoid user from selecting WBS COMMODITY_CODE
-                var newCOMMODITY_CODE = COMMODITY_CODECollection.First(x => x.GUID == (Guid) e.Value);
-                if (!newCOMMODITY_CODE.ISQUANTIFIABLE)
-                {
-                    e.IsValid = false;
-                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
-                    e.ErrorContent = BluePrintsResources.CommodityGroup_CannotSelectParent;
-                }
-            }
         }
         #endregion
 
@@ -171,50 +140,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
-        public void dragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.GridDropEventArgs e)
-        {
-            foreach (var obj in e.DraggedRows)
-            {
-                var droppedNode = obj as TreeListNode;
-                if (droppedNode == null)
-                    continue;
-
-                var droppedCOMMODITY_CODE = droppedNode.Content as COMMODITY_CODE;
-                if (droppedCOMMODITY_CODE == null || droppedCOMMODITY_CODE.COMMODITYCODETYPE != CommodityCodeType.Direct)
-                    continue;
-
-                var targetCOMMODITY_GROUP = e.TargetRow as COMMODITY_GROUP_DIRECTProjection;
-                var newCOMMODITY_GROUP_DIRECT = new COMMODITY_GROUP_DIRECTProjection();
-                newCOMMODITY_GROUP_DIRECT.Entity.DESCRIPTION = BluePrintsResources.CommodityCodeGroup_New;
-
-                if (targetCOMMODITY_GROUP != null)
-                {
-                    if (targetCOMMODITY_GROUP.Entity.GUID_COMMODITYCODE != null)
-                    {
-                        MessageBoxService.ShowMessage(BluePrintsResources.CommodityGroup_CannotAssignCommodity);
-                        continue;
-                    }
-
-                    newCOMMODITY_GROUP_DIRECT.Entity.GUID_PARENT = targetCOMMODITY_GROUP.EntityKey;
-                    newCOMMODITY_GROUP_DIRECT.Entity.GUID_COMMODITYCODE = droppedCOMMODITY_CODE.GUID;
-
-                    var errorMessage = string.Empty;
-                    if (MainViewModel.IsValidEntity(newCOMMODITY_GROUP_DIRECT, ref errorMessage))
-                    {
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(newCOMMODITY_GROUP_DIRECT, null, null, null,
-                            EntityMessageType.Added);
-                        MainViewModel.Save(newCOMMODITY_GROUP_DIRECT);
-                    }
-                    else
-                    {
-                        MessageBoxService.ShowMessage(errorMessage + " is not unique");
-                    }
-                }
-            }
-
-            e.Handled = true;
-        }
-
         protected override void OnClose(CancelEventArgs e)
         {
             base.OnClose(e);

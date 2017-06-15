@@ -523,7 +523,6 @@
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEM_ASSIGNMENTViewModel.cs" />
     <Compile Include="ViewModels\COMMODITY_GROUP\COMMODITY_GROUP_CODECollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\ESTIMATION_ITEM\ESTIMATION_DIRECT_ITEMSViewModelWrapperOld.cs" />
     <Compile Include="Views\ESTIMATION_ITEM\ESTIMATE_COMMODITY_CODESelectionView.xaml.cs">
       <DependentUpon>ESTIMATE_COMMODITY_CODESelectionView.xaml</DependentUpon>
     </Compile>
@@ -1163,9 +1162,6 @@
     <Compile Include="Views\DELIVERABLES_STATUS\DELIVERABLES_STATUSCollectionView.xaml.cs">
       <DependentUpon>DELIVERABLES_STATUSCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ESTIMATION_ITEM\ESTIMATION_DIRECT_ITEMCollectionViewOld.xaml.cs">
-      <DependentUpon>ESTIMATION_DIRECT_ITEMCollectionViewOld.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\INDIRECT_TYPE\INDIRECT_TYPECollectionView.xaml.cs">
       <DependentUpon>INDIRECT_TYPECollectionView.xaml</DependentUpon>
     </Compile>
@@ -1373,10 +1369,6 @@
     <Page Include="Views\DELIVERABLES_STATUS\DELIVERABLES_STATUSCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\ESTIMATION_ITEM\ESTIMATION_DIRECT_ITEMCollectionViewOld.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\INDIRECT_TYPE\INDIRECT_TYPECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
