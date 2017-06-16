@@ -57,5 +57,29 @@ namespace BluePrints.Data
                 return ESTIMATED_HOURS + DC_HOURS;
             }
         }
+
+        [NotMapped]
+        public string StockCode
+        {
+            get
+            {
+                if (DISCIPLINE == null)
+                    return string.Empty;
+
+                return DISCIPLINE.CODE + DISCIPLINE_NUM;
+            }
+        }
+
+        [NotMapped]
+        public string CommodityCode
+        {
+            get
+            {
+                if (DOCTYPE == null)
+                    return string.Empty;
+
+                return DOCTYPE.CODE;
+            }
+        }
     }
 }

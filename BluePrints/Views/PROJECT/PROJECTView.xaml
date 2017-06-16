@@ -491,6 +491,10 @@
                                                    Style="{StaticResource NestedTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
+                                                <dxmvvm:Interaction.Behaviors>
+                                                    <dxmvvm:EventToCommand Command="{Binding CellValueChangingCommand}"
+                                                     PassEventArgsToCommand="True" EventName="CellValueChanging" />
+                                                </dxmvvm:Interaction.Behaviors>
                                                 <custom:TableViewEx.RowCellMenuCustomizations>
                                                     <dxb:BarButtonItem Content="Bulk Edit"
                                                                Command="{Binding View.DataContext.MainViewModel.BulkColumnEditCommand}"
@@ -707,7 +711,7 @@
                                 </Grid>
                                 <!--<Grid DataContext="{Binding DataContext.AREAViewModel, ElementName=userControl}" dxlc:LayoutControl.TabHeader="AREAS">
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="30" />
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
                                     <dxb:ToolBarControl>
@@ -782,10 +786,9 @@
                                         </dxg:GridControl.View>
                                     </custom:GridControlEx>
                                 </Grid>-->
-                                <!--<Grid DataContext="{Binding DataContext.RATEViewModel, ElementName=userControl}"
-                              dxlc:LayoutControl.TabHeader="RATES">
+                                <Grid DataContext="{Binding DataContext.RATEViewModel, ElementName=userControl}" dxlc:LayoutControl.TabHeader="RATES">
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="30" />
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
                                     <dxb:ToolBarControl>
@@ -861,7 +864,7 @@
                                             </custom:TableViewEx>
                                         </dxg:GridControl.View>
                                     </custom:GridControlEx>
-                                </Grid>-->
+                                </Grid>
                             </dxlc:LayoutGroup>
                         </dxlc:LayoutControl>
                     </Grid>

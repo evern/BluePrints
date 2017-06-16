@@ -10,6 +10,7 @@ using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -98,7 +99,6 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
@@ -109,6 +109,25 @@ namespace BluePrints.ViewModels
 
         #endregion
 
+        #endregion
+
+        #region View Behavior
+        /// <summary>
+        /// Influence column(s) when changes happens in other column
+        /// </summary>
+        public void CellValueChanging(CellValueChangedEventArgs e)
+        {
+            if (e.RowHandle == GridControl.AutoFilterRowHandle)
+                return;
+
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE().P6BASELINE_NAME))
+            {
+                if (e.RowHandle != DataControlBase.NewItemRowHandle)
+                {
+                    ((TableViewEx)e.Source).PostEditor();
+                }
+            }
+        }
         #endregion
 
         #region View Properties

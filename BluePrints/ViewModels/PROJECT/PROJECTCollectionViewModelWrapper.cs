@@ -217,6 +217,11 @@ namespace BluePrints.ViewModels
             if (e.RowHandle == GridControl.AutoFilterRowHandle)
                 return;
 
+            if(e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().USELEGACYWORKPACK))
+            {
+                ((TableViewEx)e.Source).PostEditor();
+            }
+
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF) || 
                 e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT) ||
                 e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT))

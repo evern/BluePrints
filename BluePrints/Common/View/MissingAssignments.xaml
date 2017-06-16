@@ -7,18 +7,16 @@
     xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
     xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
-    xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
-    Height="380" Width="500">
+    xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel">
     <dxlc:LayoutControl Orientation="Vertical">
         <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
-            <dxlc:LayoutGroup Height="300" Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
-                <dxlc:LayoutItem Height="230" >
+            <dxlc:LayoutGroup Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
+                <dxlc:LayoutItem Height="500" >
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlMissingAssignments" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="INTERNAL NUM" ReadOnly="True" FieldName="INTERNAL_NUM" />
                             <dxg:GridColumn Header="P6 ID" ReadOnly="True" FieldName="P6_ACTIVITY" />
                             <dxg:GridColumn Header="UNITS" ReadOnly="True" FieldName="UNITS" />
-                            <dxg:GridColumn Header="P6 NEW ID" FieldName="P6_NEW_ACTIVITY" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
@@ -29,8 +27,6 @@
                     </custom:GridControlEx>
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
-            <dxlc:LayoutGroup Height="25" HorizontalAlignment="Right" Name="LayoutGroupButtons" View="Group"
-                              Orientation="Horizontal" />
         </dxlc:LayoutGroup>
     </dxlc:LayoutControl>
 </UserControl>

@@ -158,7 +158,7 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colDISCIPLINE_NUMBER" FieldName="Entity.Entity.DISCIPLINE_NUMBER"
+                            <dxg:GridColumn Name="colDISCIPLINE_NUM" FieldName="Entity.Entity.DISCIPLINE_NUM"
                                             Header="DISC. NUM">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings IsTextEditable="True" IsFloatValue="False"

@@ -58,7 +58,7 @@ namespace BluePrints.Data
         public string REVISION_NUMBER { get; set; }
 
         [Required]
-        public int DISCIPLINE_NUMBER { get; set; }
+        public int DISCIPLINE_NUM { get; set; }
 
         public decimal? P6_ASSIGNMENT_STARTUNIT { get; set; }
 

@@ -10,14 +10,14 @@ namespace BluePrints.Views
         public PROJECTView()
         {
             InitializeComponent();
-            ((PROJECTViewModelWrapper) DataContext).ChangeViewMemberFieldNames = ChangeViewMemberFieldNames;
-            ((PROJECTViewModelWrapper) DataContext).Redraw = Redraw;
+            ((PROJECTViewModelWrapper)DataContext).ChangeViewMemberFieldNames = ChangeViewMemberFieldNames;
+            ((PROJECTViewModelWrapper)DataContext).Redraw = Redraw;
 
             ((PROJECTViewModelWrapper)DataContext).AssignBASELINEDelegates = this.AssignBASELINEDelegates;
             ((PROJECTViewModelWrapper)DataContext).AssignPROGRESSDelegates = this.AssignPROGRESSDelegates;
             ((PROJECTViewModelWrapper)DataContext).AssignESTIMATION_DIRECTDelegates = this.AssignESTIMATION_DIRECTDelegates;
             //((PROJECTViewModelWrapper)DataContext).AssignAREADelegates = this.AssignAREADelegates;
-            //((PROJECTViewModelWrapper)DataContext).AssignRATEDelegates = this.AssignRATEDelegates;
+            ((PROJECTViewModelWrapper)DataContext).AssignRATEDelegates = this.AssignRATEDelegates;
         }
 
         int focusedRowHandleBASELINE;
@@ -108,27 +108,27 @@ namespace BluePrints.Views
         //    tableViewAREA.ShowEditor();
         //}
 
-        //int focusedRowHandleRATE;
-        //ColumnBase currentColumnRATE;
-        //private void AssignRATEDelegates(RATECollectionViewModelWrapper viewModelWrapper)
-        //{
-        //    viewModelWrapper.StoreActiveCell = this.StoreRATEFocusedCell;
-        //    viewModelWrapper.RestoreActiveCell = this.RestoreRATEFocusedCell;
-        //}
+        int focusedRowHandleRATE;
+        ColumnBase currentColumnRATE;
+        private void AssignRATEDelegates(RATECollectionViewModelWrapper viewModelWrapper)
+        {
+            viewModelWrapper.StoreActiveCell = this.StoreRATEFocusedCell;
+            viewModelWrapper.RestoreActiveCell = this.RestoreRATEFocusedCell;
+        }
 
-        //protected void StoreRATEFocusedCell()
-        //{
-        //    focusedRowHandleRATE = tableViewRATE.FocusedRowHandle;
-        //    currentColumnRATE = gridControlRATE.CurrentColumn;
-        //}
+        protected void StoreRATEFocusedCell()
+        {
+            focusedRowHandleRATE = tableViewRATE.FocusedRowHandle;
+            currentColumnRATE = gridControlRATE.CurrentColumn;
+        }
 
-        //protected void RestoreRATEFocusedCell()
-        //{
-        //    gridControlRATE.CurrentColumn = currentColumnRATE;
-        //    tableViewRATE.FocusedRowHandle = focusedRowHandleRATE;
-        //    gridControlRATE.Focus();
-        //    tableViewRATE.ShowEditor();
-        //}
+        protected void RestoreRATEFocusedCell()
+        {
+            gridControlRATE.CurrentColumn = currentColumnRATE;
+            tableViewRATE.FocusedRowHandle = focusedRowHandleRATE;
+            gridControlRATE.Focus();
+            tableViewRATE.ShowEditor();
+        }
 
         public void Redraw()
         {

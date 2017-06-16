@@ -8,12 +8,11 @@
     xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-    xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
-    Height="380" Width="500">
+    xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel">
     <dxlc:LayoutControl Orientation="Vertical">
         <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
-            <dxlc:LayoutGroup Height="275" Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
-                <dxlc:LayoutItem Height="275" >
+            <dxlc:LayoutGroup Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
+                <dxlc:LayoutItem Height="600">
                     <custom:GridControlEx x:Name="GridControl" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn FieldName="P6_OLD_ACTIVITY" ReadOnly="True" />
@@ -35,19 +34,19 @@
                     </custom:GridControlEx>
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
-            <dxlc:LayoutGroup Height="35" Name="LayoutGroupSelection" View="Group" Orientation="Horizontal">
-                <dxlc:LayoutItem Height="30" Width="130">
+            <dxlc:LayoutGroup Name="LayoutGroupSelection" View="Group" Orientation="Horizontal">
+                <dxlc:LayoutItem MinHeight="30" MaxWidth="150">
                     <Label VerticalAlignment="Center" Content="Old Schedule Name" />
                 </dxlc:LayoutItem>
-                <dxlc:LayoutItem Height="30">
+                <dxlc:LayoutItem MinHeight="30">
                     <dxe:ComboBoxEdit ItemsSource="{Binding OldScheduleNames}" EditValue="{Binding SelectedOldScheduleName}" />
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
-            <dxlc:LayoutGroup Height="35" Name="LayoutGroupButtons" View="Group" Orientation="Horizontal">
-                <dxlc:LayoutItem Height="30" HorizontalAlignment="Center">
+            <dxlc:LayoutGroup Name="LayoutGroupButtons" View="Group" Orientation="Horizontal">
+                <dxlc:LayoutItem MinHeight="30" HorizontalAlignment="Center">
                     <Button Content="Fetch Description" Command="{Binding GetDescriptionCommand}" />
                 </dxlc:LayoutItem>
-                <dxlc:LayoutItem Height="30" HorizontalAlignment="Center">
+                <dxlc:LayoutItem MinHeight="30" HorizontalAlignment="Center">
                     <Button Content="Auto Assign" Command="{Binding AutoAssignCommand}" />
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>

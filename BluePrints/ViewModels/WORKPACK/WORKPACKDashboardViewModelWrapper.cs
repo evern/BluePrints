@@ -6,10 +6,12 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace BluePrints.ViewModels
@@ -44,9 +46,29 @@ namespace BluePrints.ViewModels
 
         private PROJECT_Dashboard projectDashboard;
 
+        public ObservableCollection<StockCode_Dashboard> SelectedStockCodes { get; set; }
+        public ObservableCollection<CommodityCode_Dashboard> SelectedCommodityCodes { get; set; }
         protected override void InitializeParameters(object parameter)
         {
             projectDashboard = (PROJECT_Dashboard)parameter;
+            SelectedStockCodes = new ObservableCollection<StockCode_Dashboard>();
+            SelectedCommodityCodes = new ObservableCollection<CommodityCode_Dashboard>();
+            SelectedStockCodes.CollectionChanged += SelectedStockCode_CollectionChanged;
+            SelectedCommodityCodes.CollectionChanged += SelectedCommodityCodes_CollectionChanged;
+        }
+
+        private void SelectedStockCode_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            IEnumerable<SummaryStats> entitiesSummary = SelectedStockCodes.Select(x => (SummaryStats)x.Stats);
+            SummaryEntity.Stats = new SummaryStats(entitiesSummary);
+            this.RaisePropertyChanged(x => x.SummaryEntity);
+        }
+
+        private void SelectedCommodityCodes_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            IEnumerable<SummaryStats> entitiesSummary = SelectedCommodityCodes.Select(x => (SummaryStats)x.Stats);
+            SummaryEntity.Stats = new SummaryStats(entitiesSummary);
+            this.RaisePropertyChanged(x => x.SummaryEntity);
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()

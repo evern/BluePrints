@@ -99,7 +99,7 @@ namespace BluePrints.Common.ViewModel
 
             foreach(TASK currentProjectTASK in currentProjectTASKs)
             {
-                TASK findOldTask = oldTASKs.FirstOrDefault(x => x.task_name == currentProjectTASK.task_name && x.PROJWBS.wbs_name == currentProjectTASK.PROJWBS.wbs_name);
+                TASK findOldTask = oldTASKs.FirstOrDefault(x => x.task_name == currentProjectTASK.task_name && x.PROJWBS.wbs_short_name == currentProjectTASK.PROJWBS.wbs_short_name);
                 if(findOldTask != null)
                 {
                     P6ActivityRemap findRemapActivity = SourceObjects.FirstOrDefault(x => x.P6_OLD_ACTIVITY == findOldTask.task_code);

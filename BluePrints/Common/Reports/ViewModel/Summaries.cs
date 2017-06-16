@@ -22,8 +22,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             ProjectionHelpers.InitializePROGRESS_ITEMStats(progressItem, projectVariationAdjustments, livePROGRESS, false);
         }
 
-        public SummaryStats GroupBurnedStatsByWorkpack(WORKPACK workpack)
+        public SummaryStats GroupStatsByWorkpack(WORKPACK workpack, bool isLegacyProject = true)
         {
+            //set budgeted, current and earned
             IEnumerable<PROGRESS_ITEMProjection> progressItemStatsByWorkpack = Deliverable.Where(x => x.Entity.Entity.GUID_WORKPACK == workpack.GUID);
 
             DateTime progressItemReportingDataDate = this.ReportingDataDate;
@@ -41,6 +42,42 @@ namespace BluePrints.Common.ViewModel.Reporting
             workpackSummaryStats.RecalculateStats(false);
 
             return workpackSummaryStats;
+        }
+
+        public SummaryStats GroupStatsByStockCode(SummaryStats progressItemStatsByWorkpack, string stockCode)
+        {
+            IEnumerable<PROGRESS_ITEMProjection> progressItemStatsByStockCode = progressItemStatsByWorkpack.Deliverable.Where(x => x.Entity.Entity.StockCode == stockCode);
+            List<VariationAdjustment> stockCodeVariationAdjustments = progressItemStatsByStockCode.SelectMany(x => x.Stats.VariationAdjustments).ToList();
+            SummaryStats stockCodeSummary = new SummaryStats(progressItemStatsByStockCode, progress, stockCodeVariationAdjustments);
+            stockCodeSummary.GenerateSummary();
+
+            IEnumerable<ExoDataPoint> burnedDataPoints = this.Burned.GetData().Select(x => (ExoDataPoint)x);
+            IEnumerable<ExoDataPoint> actualDataPoints = this.Actual.GetData().Select(x => (ExoDataPoint)x);
+            List<ExoDataPoint> burnedRawDataPoints = burnedDataPoints.Where(x => x.StockCode == stockCode).ToList();
+            stockCodeSummary.Burned.SetData(burnedRawDataPoints);
+            List<ExoDataPoint> actualRawDataPoints = actualDataPoints.Where(x => x.StockCode == stockCode).ToList();
+            stockCodeSummary.Actual.SetData(actualRawDataPoints);
+            stockCodeSummary.RecalculateStats(false);
+
+            return stockCodeSummary;
+        }
+
+        public SummaryStats GroupStatsByCommodityCode(SummaryStats progressItemStatsByStockCode, string commodityCode)
+        {
+            IEnumerable<PROGRESS_ITEMProjection> progressItemStatsByCommodityCode = progressItemStatsByStockCode.Deliverable.Where(x => x.Entity.Entity.CommodityCode == commodityCode);
+            List<VariationAdjustment> commodityCodeVariationAdjustments = progressItemStatsByCommodityCode.SelectMany(x => x.Stats.VariationAdjustments).ToList();
+            SummaryStats commodityCodeSummary = new SummaryStats(progressItemStatsByCommodityCode, progress, commodityCodeVariationAdjustments);
+            commodityCodeSummary.GenerateSummary();
+
+            IEnumerable<ExoDataPoint> burnedDataPoints = this.Burned.GetData().Select(x => (ExoDataPoint)x);
+            IEnumerable<ExoDataPoint> actualDataPoints = this.Actual.GetData().Select(x => (ExoDataPoint)x);
+            List<ExoDataPoint> burnedRawDataPoints = burnedDataPoints.Where(x => x.CommodityCode == commodityCode).ToList();
+            commodityCodeSummary.Burned.SetData(burnedRawDataPoints);
+            List<ExoDataPoint> actualRawDataPoints = actualDataPoints.Where(x => x.CommodityCode == commodityCode).ToList();
+            commodityCodeSummary.Actual.SetData(actualRawDataPoints);
+            commodityCodeSummary.RecalculateStats(false);
+
+            return commodityCodeSummary;
         }
 
         public void AddMissingExoWorkpack(WORKPACK WORKPACK)
@@ -221,6 +258,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         public ProgressStats(IEnumerable<ProgressStats> progressStats)
         {
             IEnumerable<ProgressStats> cleanProgressStats = progressStats.Where(x => x != null);
+            if (cleanProgressStats.Count() == 0)
+                return;
+
             this.ReportingDataDate = cleanProgressStats.Where(x => x.ReportingDataDate != null).Min(x => x.ReportingDataDate);
             this.ReportingInterval = cleanProgressStats.First().ReportingInterval;
             this.FirstAlignedDataDate = cleanProgressStats.Min(x => x.FirstAlignedDataDate);

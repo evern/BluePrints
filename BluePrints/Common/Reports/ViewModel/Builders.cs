@@ -49,8 +49,12 @@ namespace BluePrints.Common.ViewModel.Reporting
                                   on JOBTRANS.JOBNO equals JOBCOST_HDR1.JOBNO
                                   join JOBCOST_RESOURCE in PrimeroUnitOfWork.JOBCOST_RESOURCE
                                   on JOBTRANS.STAFFNO equals JOBCOST_RESOURCE.SEQNO
+                                  join JOB_COSTGROUPS in PrimeroUnitOfWork.JOB_COSTGROUPS
+                                  on JOBTRANS.COST_GROUP equals JOB_COSTGROUPS.SEQNO
+                                  join JOB_COSTTYPES in PrimeroUnitOfWork.JOB_COSTTYPES
+                                  on JOBTRANS.COST_TYPE equals JOB_COSTTYPES.SEQNO
                                   where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X"
-                                  select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBTRANS.DESCRIPTION };
+                                  select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC };
 
             var exoWorkpacks = from JOBCOST_HDR in PrimeroUnitOfWork.JOBCOST_HDR
                                where JOBCOST_HDR.JOBCODE.Contains(projectNumber)
@@ -84,6 +88,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                     burnedDataPoint.WorkpackName = jobTransaction.JOBCODE;
                     burnedDataPoint.ResourceName = jobTransaction.RESOURCENAME;
                     burnedDataPoint.Quantity = (decimal)jobTransaction.QUANTITY;
+                    burnedDataPoint.CostGroup = jobTransaction.COSTDESC;
+                    burnedDataPoint.CostType = jobTransaction.COSTDESC3;
 
                     burnedDataPoints.Add(burnedDataPoint);
 

@@ -210,6 +210,30 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         public string WorkpackName { get; set; }
         public string ResourceName { get; set; }
+        public string CostGroup { get; set; }
+        public string CostType { get; set; }
+
+        public string StockCode
+        {
+            get
+            {
+                if (CostGroup == null || CostGroup == string.Empty || CostGroup.Length < 3)
+                    return string.Empty;
+
+                return CostGroup.Substring(0, 3);
+            }
+        }
+
+        public string CommodityCode
+        {
+            get
+            {
+                if (CostType == null || CostType == string.Empty || CostType.Length < 3)
+                    return string.Empty;
+
+                return CostType.Substring(0, 3);
+            }
+        }
     }
 
     public class DataPoint

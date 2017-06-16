@@ -72,8 +72,7 @@
                     </dxmvvm:Interaction.Behaviors>
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical"
                                       dxlc:LayoutControl.AllowVerticalSizing="True">
-                        <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDashboardWORKPACK"
-                                         Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDashboardWORKPACK" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Bands>
                                 <dxg:GridControlBand Name="bandGeneral" Header="General">
                                     <dxg:GridColumn FieldName="Entity.GUID_DPHASE" Header="PHASE">
@@ -273,21 +272,283 @@
                             </dxg:GridControl.Bands>
                             <dxg:GridControl.DetailDescriptor>
                                 <dxg:DataControlDetailDescriptor
-                                    ItemsSourceBinding="{Binding Stats.Burned.ExoDataPoints}">
-                                    <dxg:GridControl x:Name="detailExoGridControl" dx:DXSerializer.SerializationID="GridControlDetailExo">
-                                            <dxg:GridControl.Columns>
-                                            <dxg:GridColumn Header="Resource Name" FieldName="ResourceName"
-                                                            VisibleIndex="10" />
-                                            <dxg:GridColumn FieldName="Units" VisibleIndex="20" />
-                                            <!--<dxg:GridColumn FieldName="Costs" VisibleIndex="30" />
-                                            <dxg:GridColumn FieldName="Actuals" VisibleIndex="40" Visible="False" />-->
-                                            <dxg:GridColumn Header="Transaction Date" FieldName="ProgressDate"
-                                                            VisibleIndex="90" />
-                                        </dxg:GridControl.Columns>
+                                    ItemsSourceBinding="{Binding StockCodes}">
+                                    <dxg:GridControl x:Name="detailStockCodeGridControl" 
+                                                     dx:DXSerializer.SerializationID="GridControlDetailStockCode"
+                                                     SelectionMode="Row"
+                                                     SelectedItems="{Binding DataContext.SelectedStockCodes, Mode=TwoWay, ElementName=userControl}">
+                                        <dxg:GridControl.Bands>
+                                            <dxg:GridControlBand Header="General">
+                                                <dxg:GridColumn Header="Stock Code" FieldName="Stock_Code" />
+                                                <dxg:GridColumn Header="Budgeted Units" FieldName="Stats.BudgetedUnits" />
+                                            </dxg:GridControlBand>
+                                            <dxg:GridControlBand Header="Cumulative">
+                                                <dxg:GridColumn x:Name="colStockCumulativeEarnedPercentage" Header="Earned %"
+                                                    FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
+                                                    ReadOnly="True" AllowEditing="False" VisibleIndex="80">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:TextEditSettings MaskType="Numeric" Mask="p2"
+                                                                  MaskUseAsDisplayFormat="True" />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn x:Name="colStockCumulativePlanned" Header="Planned Units"
+                                                    FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
+                                                    AllowEditing="False" VisibleIndex="90">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:TextEditSettings Name="colStockCumulativePlannedText" MaskType="Numeric"
+                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn x:Name="colStockCumulativeEarned" Header="Earned Units"
+                                                    FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
+                                                    AllowEditing="False" VisibleIndex="100">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:TextEditSettings Name="colStockCumulativeEarnedText" MaskType="Numeric"
+                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn x:Name="colStockCumulativeBurned" Header="Burned Units"
+                                                    FieldName="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units"  ReadOnly="True"
+                                                    AllowEditing="False" VisibleIndex="110">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:TextEditSettings Name="colStockCumulativeBurnedText" MaskType="Numeric"
+                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn x:Name="colStockCumulativeActual" Header="Actual Units"
+                                                    FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
+                                                    AllowEditing="False" VisibleIndex="120">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:TextEditSettings Name="colStockCumulativeActualText" MaskType="Numeric"
+                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                            </dxg:GridControlBand>
+                                            <dxg:GridControlBand Header="Period">
+                                                <dxg:GridColumn x:Name="colStockPeriodEarnedPercentage" Header="Earned %"
+                                                    FieldName="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage" ReadOnly="True"
+                                                    AllowEditing="False" VisibleIndex="130">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:TextEditSettings MaskType="Numeric" Mask="p2"
+                                                                  MaskUseAsDisplayFormat="True" />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn x:Name="colStockPeriodPlanned" Header="Planned Units"
+                                                    FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units" ReadOnly="True"
+                                                    AllowEditing="False" VisibleIndex="140">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:TextEditSettings Name="colStockPeriodPlannedText" MaskType="Numeric"
+                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn x:Name="colStockPeriodEarned" Header="Earned Units"
+                                                    FieldName="Stats.Earned.CurrentPeriodDataPoint.Units" ReadOnly="True"
+                                                    AllowEditing="False" VisibleIndex="150">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:TextEditSettings Name="colStockPeriodEarnedText" MaskType="Numeric"
+                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn x:Name="colStockPeriodBurned" Header="Burned Units"
+                                                    FieldName="Stats.Burned.CurrentPeriodDataPoint.Units" ReadOnly="True"
+                                                    AllowEditing="False" VisibleIndex="160">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:TextEditSettings Name="colStockPeriodBurnedText" MaskType="Numeric"
+                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn x:Name="colStockPeriodActual" Header="Actual Units"
+                                                    FieldName="Stats.Actual.CurrentPeriodDataPoint.Units" ReadOnly="True"
+                                                    AllowEditing="False" VisibleIndex="170">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:TextEditSettings Name="colStockPeriodActualText" MaskType="Numeric"
+                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                            </dxg:GridControlBand>
+                                            <dxg:GridControlBand Header="Performance">
+                                                <dxg:GridColumn x:Name="colStockInvisibleSummary_CumulativePlannedCost"
+                                                    Header="Planned Cost" FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Costs"
+                                                    Visible="False" />
+                                                <dxg:GridColumn x:Name="colStockInvisibleSummary_CumulativeEarnedCost"
+                                                    Header="Earned Cost" FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Costs"
+                                                    Visible="False" />
+                                                <dxg:GridColumn x:Name="colStockInvisibleSummary_CumulativeBurnedCost"
+                                                    Header="Burned Cost" FieldName="Stats.Burned.CurrentPeriodCumulativeDataPoint.Costs"
+                                                    Visible="False" />
+                                                <dxg:GridColumn x:Name="colStockInvisibleSummary_CumulativeActualCost"
+                                                    Header="Actual Cost" FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Costs"
+                                                    Visible="False" />
+                                                <dxg:GridColumn x:Name="colStockGrossProfit" Header="Gross Profit"
+                                                    FieldName="Stats.GrossProfit" ReadOnly="True" AllowEditing="False"
+                                                    VisibleIndex="15">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:TextEditSettings MaskType="Numeric" Mask="p2"
+                                                                  MaskUseAsDisplayFormat="True" />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn x:Name="colStockEfficiencyRatio" Header="Efficiency Ratio %"
+                                                    FieldName="Stats.EfficiencyRatio" ReadOnly="True" AllowEditing="False"
+                                                    VisibleIndex="16">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:TextEditSettings MaskType="Numeric" Mask="p2"
+                                                                  MaskUseAsDisplayFormat="True" />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn x:Name="colStockProgressRatio" Header="Progress Ratio %"
+                                                    FieldName="Stats.ProgressRatio" ReadOnly="True" AllowEditing="False"
+                                                    VisibleIndex="17">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:TextEditSettings MaskType="Numeric" Mask="p2"
+                                                                  MaskUseAsDisplayFormat="True" />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                            </dxg:GridControlBand>
+                                        </dxg:GridControl.Bands>
                                         <dxg:GridControl.View>
-                                            <dxg:TableView x:Name="detailTableView" AllowEditing="False" 
-                                                           NewItemRowPosition="None" />
+                                            <dxg:TableView x:Name="detailStockCodeTableView" AllowEditing="False" NewItemRowPosition="None" />
                                         </dxg:GridControl.View>
+                                        <dxg:GridControl.DetailDescriptor>
+                                            <dxg:DataControlDetailDescriptor
+                                                ItemsSourceBinding="{Binding Commodity_Codes}">
+                                                <dxg:GridControl x:Name="detailCommodityCodeGridControl" 
+                                                     dx:DXSerializer.SerializationID="GridControlDetailCommodityCode"
+                                                     SelectionMode="Row"
+                                                     SelectedItems="{Binding DataContext.SelectedCommodityCodes, Mode=TwoWay, ElementName=userControl}">
+                                                    <dxg:GridControl.Bands>
+                                                        <dxg:GridControlBand Header="General">
+                                                            <dxg:GridColumn Header="Commodity Code" FieldName="Commodity_Code" />
+                                                            <dxg:GridColumn Header="Budgeted Units" FieldName="Stats.BudgetedUnits" />
+                                                        </dxg:GridControlBand>
+                                                        <dxg:GridControlBand Header="Cumulative">
+                                                            <dxg:GridColumn x:Name="colCommodityCumulativeEarnedPercentage" Header="Earned %"
+                                                                FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
+                                                                ReadOnly="True" AllowEditing="False" VisibleIndex="80">
+                                                                <dxg:GridColumn.EditSettings>
+                                                                    <dxe:TextEditSettings MaskType="Numeric" Mask="p2"
+                                                                  MaskUseAsDisplayFormat="True" />
+                                                                </dxg:GridColumn.EditSettings>
+                                                            </dxg:GridColumn>
+                                                            <dxg:GridColumn x:Name="colCommodityCumulativePlanned" Header="Planned Units"
+                                                                FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
+                                                                AllowEditing="False" VisibleIndex="90">
+                                                                <dxg:GridColumn.EditSettings>
+                                                                    <dxe:TextEditSettings Name="colCommodityCumulativePlannedText" MaskType="Numeric"
+                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
+                                                                </dxg:GridColumn.EditSettings>
+                                                            </dxg:GridColumn>
+                                                            <dxg:GridColumn x:Name="colCommodityCumulativeEarned" Header="Earned Units"
+                                                                FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
+                                                                AllowEditing="False" VisibleIndex="100">
+                                                                <dxg:GridColumn.EditSettings>
+                                                                    <dxe:TextEditSettings Name="colCommodityCumulativeEarnedText" MaskType="Numeric"
+                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
+                                                                </dxg:GridColumn.EditSettings>
+                                                            </dxg:GridColumn>
+                                                            <dxg:GridColumn x:Name="colCommodityCumulativeBurned" Header="Burned Units"
+                                                                FieldName="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units"  ReadOnly="True"
+                                                                AllowEditing="False" VisibleIndex="110">
+                                                                <dxg:GridColumn.EditSettings>
+                                                                    <dxe:TextEditSettings Name="colCommodityCumulativeBurnedText" MaskType="Numeric"
+                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
+                                                                </dxg:GridColumn.EditSettings>
+                                                            </dxg:GridColumn>
+                                                            <dxg:GridColumn x:Name="colCommodityCumulativeActual" Header="Actual Units"
+                                                                FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
+                                                                AllowEditing="False" VisibleIndex="120">
+                                                                <dxg:GridColumn.EditSettings>
+                                                                    <dxe:TextEditSettings Name="colCommodityCumulativeActualText" MaskType="Numeric"
+                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
+                                                                </dxg:GridColumn.EditSettings>
+                                                            </dxg:GridColumn>
+                                                        </dxg:GridControlBand>
+                                                        <dxg:GridControlBand Header="Period">
+                                                            <dxg:GridColumn x:Name="colCommodityPeriodEarnedPercentage" Header="Earned %"
+                                                                FieldName="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage" ReadOnly="True"
+                                                                AllowEditing="False" VisibleIndex="130">
+                                                                <dxg:GridColumn.EditSettings>
+                                                                    <dxe:TextEditSettings MaskType="Numeric" Mask="p2"
+                                                                  MaskUseAsDisplayFormat="True" />
+                                                                </dxg:GridColumn.EditSettings>
+                                                            </dxg:GridColumn>
+                                                            <dxg:GridColumn x:Name="colCommodityPeriodPlanned" Header="Planned Units"
+                                                                FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units" ReadOnly="True"
+                                                                AllowEditing="False" VisibleIndex="140">
+                                                                <dxg:GridColumn.EditSettings>
+                                                                    <dxe:TextEditSettings Name="colCommodityPeriodPlannedText" MaskType="Numeric"
+                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
+                                                                </dxg:GridColumn.EditSettings>
+                                                            </dxg:GridColumn>
+                                                            <dxg:GridColumn x:Name="colCommodityPeriodEarned" Header="Earned Units"
+                                                                FieldName="Stats.Earned.CurrentPeriodDataPoint.Units" ReadOnly="True"
+                                                                AllowEditing="False" VisibleIndex="150">
+                                                                <dxg:GridColumn.EditSettings>
+                                                                    <dxe:TextEditSettings Name="colCommodityPeriodEarnedText" MaskType="Numeric"
+                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
+                                                                </dxg:GridColumn.EditSettings>
+                                                            </dxg:GridColumn>
+                                                            <dxg:GridColumn x:Name="colCommodityPeriodBurned" Header="Burned Units"
+                                                                FieldName="Stats.Burned.CurrentPeriodDataPoint.Units" ReadOnly="True"
+                                                                AllowEditing="False" VisibleIndex="160">
+                                                                <dxg:GridColumn.EditSettings>
+                                                                    <dxe:TextEditSettings Name="colCommodityPeriodBurnedText" MaskType="Numeric"
+                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
+                                                                </dxg:GridColumn.EditSettings>
+                                                            </dxg:GridColumn>
+                                                            <dxg:GridColumn x:Name="colCommodityPeriodActual" Header="Actual Units"
+                                                                FieldName="Stats.Actual.CurrentPeriodDataPoint.Units" ReadOnly="True"
+                                                                AllowEditing="False" VisibleIndex="170">
+                                                                <dxg:GridColumn.EditSettings>
+                                                                    <dxe:TextEditSettings Name="colCommodityPeriodActualText" MaskType="Numeric"
+                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
+                                                                </dxg:GridColumn.EditSettings>
+                                                            </dxg:GridColumn>
+                                                        </dxg:GridControlBand>
+                                                        <dxg:GridControlBand Header="Performance">
+                                                            <dxg:GridColumn x:Name="colCommodityInvisibleSummary_CumulativePlannedCost"
+                                                    Header="Planned Cost" FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Costs"
+                                                    Visible="False" />
+                                                            <dxg:GridColumn x:Name="colCommodityInvisibleSummary_CumulativeEarnedCost"
+                                                    Header="Earned Cost" FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Costs"
+                                                    Visible="False" />
+                                                            <dxg:GridColumn x:Name="colCommodityInvisibleSummary_CumulativeBurnedCost"
+                                                    Header="Burned Cost" FieldName="Stats.Burned.CurrentPeriodCumulativeDataPoint.Costs"
+                                                    Visible="False" />
+                                                            <dxg:GridColumn x:Name="colCommodityInvisibleSummary_CumulativeActualCost"
+                                                    Header="Actual Cost" FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Costs"
+                                                    Visible="False" />
+                                                            <dxg:GridColumn x:Name="colCommodityGrossProfit" Header="Gross Profit"
+                                                    FieldName="Stats.GrossProfit" ReadOnly="True" AllowEditing="False"
+                                                    VisibleIndex="15">
+                                                                <dxg:GridColumn.EditSettings>
+                                                                    <dxe:TextEditSettings MaskType="Numeric" Mask="p2"
+                                                                  MaskUseAsDisplayFormat="True" />
+                                                                </dxg:GridColumn.EditSettings>
+                                                            </dxg:GridColumn>
+                                                            <dxg:GridColumn x:Name="colCommodityEfficiencyRatio" Header="Efficiency Ratio %"
+                                                    FieldName="Stats.EfficiencyRatio" ReadOnly="True" AllowEditing="False"
+                                                    VisibleIndex="16">
+                                                                <dxg:GridColumn.EditSettings>
+                                                                    <dxe:TextEditSettings MaskType="Numeric" Mask="p2"
+                                                                  MaskUseAsDisplayFormat="True" />
+                                                                </dxg:GridColumn.EditSettings>
+                                                            </dxg:GridColumn>
+                                                            <dxg:GridColumn x:Name="colCommodityProgressRatio" Header="Progress Ratio %"
+                                                    FieldName="Stats.ProgressRatio" ReadOnly="True" AllowEditing="False"
+                                                    VisibleIndex="17">
+                                                                <dxg:GridColumn.EditSettings>
+                                                                    <dxe:TextEditSettings MaskType="Numeric" Mask="p2"
+                                                                  MaskUseAsDisplayFormat="True" />
+                                                                </dxg:GridColumn.EditSettings>
+                                                            </dxg:GridColumn>
+                                                        </dxg:GridControlBand>
+                                                    </dxg:GridControl.Bands>
+                                                    <dxg:GridControl.View>
+                                                        <dxg:TableView x:Name="detailCommodityCodeTableView" AllowEditing="False" NewItemRowPosition="None" />
+                                                    </dxg:GridControl.View>
+                                                </dxg:GridControl>
+                                            </dxg:DataControlDetailDescriptor>
+                                        </dxg:GridControl.DetailDescriptor>
                                     </dxg:GridControl>
                                 </dxg:DataControlDetailDescriptor>
                             </dxg:GridControl.DetailDescriptor>
@@ -398,6 +659,7 @@
                             <dxg:GridControl.View>
                                 <custom:TableViewEx x:Name="tableView" AllowEditing="False"
                                                Style="{StaticResource DefaultTableViewTemplate}" UseLightweightTemplates="{x:Null}"
+                                               IsDetailButtonVisibleBinding="{Binding Row.HaveStockCodes}"
                                                NewItemRowPosition="None">
                                     <custom:TableViewEx.RowCellMenuCustomizations>
                                         <dxb:BarButtonItem Content="Refresh"

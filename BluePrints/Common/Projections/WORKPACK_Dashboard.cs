@@ -8,14 +8,81 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
+    public class StockCode_Dashboard : IHaveStats
+    {
+        public string Stock_Code { get; set; }
+        public IEnumerable<CommodityCode_Dashboard> Commodity_Codes { get; set; }
+        public ProgressStats Stats { get; set; }
+    }
+
+    public class CommodityCode_Dashboard : IHaveStats
+    {
+        public string Commodity_Code { get; set; }
+        public ProgressStats Stats { get; set; }
+    }
+
     public class WORKPACK_Dashboard : BluePrintsProjectionBase<WORKPACK>, IHaveStats
     {
         public ProgressStats Stats { get; set; }
         public IEnumerable<AREA> AvailableSubAreas { get; set; }
 
-        public void GroupProjectStats(ProjectSummaryStats projectStats)
+        public IEnumerable<StockCode_Dashboard> StockCodes { get; set; }
+
+        public bool HaveStockCodes
         {
-            Stats = projectStats.GroupBurnedStatsByWorkpack(this.Entity);
+            get
+            {
+                return StockCodes.Count() > 0;
+            }
+        }
+
+        public void GroupProjectStats(ProjectSummaryStats projectStats, bool isLegacyProject)
+        {
+            Stats = projectStats.GroupStatsByWorkpack(this.Entity);
+            if (!isLegacyProject)
+            {
+                StockCodes = constructStockCodes((SummaryStats)Stats);
+                foreach(StockCode_Dashboard stockCode in StockCodes)
+                {
+                    stockCode.Stats = projectStats.GroupStatsByStockCode((SummaryStats)Stats, stockCode.Stock_Code);
+                    foreach(CommodityCode_Dashboard commodityCode in stockCode.Commodity_Codes)
+                    {
+                        commodityCode.Stats = projectStats.GroupStatsByCommodityCode((SummaryStats)stockCode.Stats, commodityCode.Commodity_Code);
+                    }
+                }
+            }
+        }
+
+        private IEnumerable<StockCode_Dashboard> constructStockCodes(SummaryStats workpackSummaryStats)
+        {
+            List<StockCode_Dashboard> stockCodeDashboards = new List<StockCode_Dashboard>();
+            foreach(PROGRESS_ITEMProjection deliverable in workpackSummaryStats.Deliverable)
+            {
+                string stockCode = deliverable.Entity.Entity.StockCode;
+                if (!stockCodeDashboards.Any(x => x.Stock_Code == stockCode))
+                {
+                    StockCode_Dashboard newStockCode = new StockCode_Dashboard() { Stock_Code = stockCode };
+                    assignCommodityCodes(newStockCode, workpackSummaryStats.Deliverable);
+                    stockCodeDashboards.Add(newStockCode);
+                }
+            }
+
+            return stockCodeDashboards;
+        }
+
+        private void assignCommodityCodes(StockCode_Dashboard stockCodeDashboards, IEnumerable<PROGRESS_ITEMProjection> workpackDeliverables)
+        {
+            List<CommodityCode_Dashboard> commodityCodes = new List<CommodityCode_Dashboard>();
+            foreach (PROGRESS_ITEMProjection deliverable in workpackDeliverables)
+            {
+                string commodityCode = deliverable.Entity.Entity.DOCTYPE.CODE;
+                if(!commodityCodes.Any(x => x.Commodity_Code == commodityCode))
+                {
+                    commodityCodes.Add(new CommodityCode_Dashboard() { Commodity_Code = commodityCode });
+                }
+            }
+
+            stockCodeDashboards.Commodity_Codes = commodityCodes;
         }
 
         public void SetAvailableSubAreas(IEnumerable<AREA> SUBAREACollection)
@@ -25,7 +92,6 @@ namespace BluePrints.Common.Projections
         }
 
         #region WORKPACK Mapping
-
         public bool IsGetModifiedWORKPACK_ASSIGNMENTS { get; set; }
         public ICollection<WORKPACK_ASSIGNMENT> ObservableWORKPACK_ASSIGNMENTS
         {
@@ -66,7 +132,7 @@ namespace BluePrints.Common.Projections
                 WORKPACKS.Where(x => x.GUID_PROJECT == projectDashboard.EntityKey)
                     .Select(x => new WORKPACK_Dashboard() {EntityKey = x.GUID, Entity = x});
             List<WORKPACK_Dashboard> newWORKPACKDashboards = projectWORKPACKDashboards.ToList();
-            newWORKPACKDashboards.ForEach(x => x.GroupProjectStats((ProjectSummaryStats)projectDashboard.Stats));
+            newWORKPACKDashboards.ForEach(x => x.GroupProjectStats((ProjectSummaryStats)projectDashboard.Stats, projectDashboard.Entity.USELEGACYWORKPACK));
             if(subAreaCollection != null)
                 newWORKPACKDashboards.ForEach(x => x.SetAvailableSubAreas(subAreaCollection));
 

@@ -77,6 +77,77 @@ namespace BluePrints.Views
             colPeriodActual.FieldName = colPeriodActual.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             colPeriodActualText.Mask = maskVar;
 
+            colCumulativeBudget.Header = "Budgeted " + headerTextVar;
+            colCumulativeBudget.FieldName = colCumulativeBudget.FieldName.Replace(fieldNameReplaceFrom,
+                fieldNameReplaceTo);
+            colCumulativeBudgetText.Mask = maskVar;
+            colCumulativeEarnedPercentage.FieldName =
+                colCumulativeEarnedPercentage.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+
+            colStockCumulativePlanned.Header = "Planned " + headerTextVar;
+            colStockCumulativePlanned.FieldName = colStockCumulativePlanned.FieldName.Replace(fieldNameReplaceFrom,
+                fieldNameReplaceTo);
+            colStockCumulativePlannedText.Mask = maskVar;
+            colStockCumulativeEarned.Header = "Earned " + headerTextVar;
+            colStockCumulativeEarned.FieldName = colStockCumulativeEarned.FieldName.Replace(fieldNameReplaceFrom,
+                fieldNameReplaceTo);
+            colStockCumulativeEarnedText.Mask = maskVar;
+            colStockCumulativeBurned.Header = "Burned " + headerTextVar;
+            colStockCumulativeBurned.FieldName = colStockCumulativeBurned.FieldName.Replace(fieldNameReplaceFrom,
+                fieldNameReplaceTo);
+            colStockCumulativeBurnedText.Mask = maskVar;
+            colStockCumulativeActual.Header = "Actual " + headerTextVar;
+            colStockCumulativeActual.FieldName = colStockCumulativeActual.FieldName.Replace(fieldNameReplaceFrom,
+                fieldNameReplaceTo);
+            colStockCumulativeActualText.Mask = maskVar;
+
+            colStockPeriodEarnedPercentage.FieldName = colStockPeriodEarnedPercentage.FieldName.Replace(fieldNameReplaceFrom,
+                fieldNameReplaceTo);
+            colStockPeriodPlanned.Header = "Planned " + headerTextVar;
+            colStockPeriodPlanned.FieldName = colStockPeriodPlanned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            colStockPeriodPlannedText.Mask = maskVar;
+            colStockPeriodEarned.Header = "Earned " + headerTextVar;
+            colStockPeriodEarned.FieldName = colStockPeriodEarned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            colStockPeriodEarnedText.Mask = maskVar;
+            colStockPeriodBurned.Header = "Burned " + headerTextVar;
+            colStockPeriodBurned.FieldName = colStockPeriodBurned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            colStockPeriodBurnedText.Mask = maskVar;
+            colStockPeriodActual.Header = "Actual " + headerTextVar;
+            colStockPeriodActual.FieldName = colStockPeriodActual.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            colStockPeriodActualText.Mask = maskVar;
+
+            colCommodityCumulativePlanned.Header = "Planned " + headerTextVar;
+            colCommodityCumulativePlanned.FieldName = colCommodityCumulativePlanned.FieldName.Replace(fieldNameReplaceFrom,
+                fieldNameReplaceTo);
+            colCommodityCumulativePlannedText.Mask = maskVar;
+            colCommodityCumulativeEarned.Header = "Earned " + headerTextVar;
+            colCommodityCumulativeEarned.FieldName = colCommodityCumulativeEarned.FieldName.Replace(fieldNameReplaceFrom,
+                fieldNameReplaceTo);
+            colCommodityCumulativeEarnedText.Mask = maskVar;
+            colCommodityCumulativeBurned.Header = "Burned " + headerTextVar;
+            colCommodityCumulativeBurned.FieldName = colCommodityCumulativeBurned.FieldName.Replace(fieldNameReplaceFrom,
+                fieldNameReplaceTo);
+            colCommodityCumulativeBurnedText.Mask = maskVar;
+            colCommodityCumulativeActual.Header = "Actual " + headerTextVar;
+            colCommodityCumulativeActual.FieldName = colCommodityCumulativeActual.FieldName.Replace(fieldNameReplaceFrom,
+                fieldNameReplaceTo);
+            colCommodityCumulativeActualText.Mask = maskVar;
+
+            colCommodityPeriodEarnedPercentage.FieldName = colCommodityPeriodEarnedPercentage.FieldName.Replace(fieldNameReplaceFrom,
+                fieldNameReplaceTo);
+            colCommodityPeriodPlanned.Header = "Planned " + headerTextVar;
+            colCommodityPeriodPlanned.FieldName = colCommodityPeriodPlanned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            colCommodityPeriodPlannedText.Mask = maskVar;
+            colCommodityPeriodEarned.Header = "Earned " + headerTextVar;
+            colCommodityPeriodEarned.FieldName = colCommodityPeriodEarned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            colCommodityPeriodEarnedText.Mask = maskVar;
+            colCommodityPeriodBurned.Header = "Burned " + headerTextVar;
+            colCommodityPeriodBurned.FieldName = colCommodityPeriodBurned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            colCommodityPeriodBurnedText.Mask = maskVar;
+            colCommodityPeriodActual.Header = "Actual " + headerTextVar;
+            colCommodityPeriodActual.FieldName = colCommodityPeriodActual.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            colCommodityPeriodActualText.Mask = maskVar;
+
             lineSeriesOriginal.DisplayName = lineSeriesPlanned.DisplayName.Replace(fieldNameReplaceFrom,
                 fieldNameReplaceTo);
             lineSeriesPlanned.DisplayName = lineSeriesPlanned.DisplayName.Replace(fieldNameReplaceFrom,

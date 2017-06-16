@@ -426,8 +426,6 @@
                                                  SummaryType="Sum" DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="Entity.Entity.TOTAL_HOURS"
                                                  SummaryType="Sum" DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="PROGRESS_ITEMcurrent.EARNED_UNITS" SummaryType="Sum"
-                                                 DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="Entity.BASELINE_ITEM" SummaryType="Count"
                                                  Alignment="Right" DisplayFormat="Total {0} Records" />
                         </dxg:GridControl.TotalSummary>
