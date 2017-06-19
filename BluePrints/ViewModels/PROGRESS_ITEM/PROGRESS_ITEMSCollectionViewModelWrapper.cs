@@ -53,7 +53,7 @@ namespace BluePrints.ViewModels
         public PROGRESS_ITEMSCollectionViewModelWrapper()
         {
             onMainViewModelFirstLoadedTimer = new DispatcherTimer();
-            onMainViewModelFirstLoadedTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
+            onMainViewModelFirstLoadedTimer.Interval = new TimeSpan(0, 0, 0, 1);
             onMainViewModelFirstLoadedTimer.Tick += onMainViewModelFirstLoaded;
             calculatePlannedBackgroundWorker = new BackgroundWorker();
             calculatePlannedBackgroundWorker.DoWork += calculatePlannedBackgroundWorker_DoWork;

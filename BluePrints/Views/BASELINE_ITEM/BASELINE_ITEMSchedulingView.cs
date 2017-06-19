@@ -61,6 +61,7 @@ namespace BluePrints.Views
             SubscribeEvents();
             InitializeMenuItems();
             CalculateAppointmentsUnits();
+            schedulerControl1.GanttView.ResourcesPerPage = 10;
         }
 
         public void RefreshAllDataSource()

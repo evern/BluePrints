@@ -356,20 +356,14 @@ namespace BluePrints.ViewModels
             }
         }
 
-        /// <summary>
-        /// Influence column(s) when changes happens in other column
-        /// </summary>
-        public void CellValueChanging(CellValueChangedEventArgs e)
+        protected override void CellValueExistingRowChanging(CellValueChangedEventArgs e)
         {
-            if (e.RowHandle == GridControl.AutoFilterRowHandle)
-                return;
-
             var activeBASELINE_ITEM = (PROGRESS_ITEMProjection)e.Row;
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
             {
-                if(e.RowHandle != DataControlBase.NewItemRowHandle)
+                if (e.RowHandle != DataControlBase.NewItemRowHandle)
                 {
                     PostEditor?.Invoke();
                     return;
@@ -378,7 +372,7 @@ namespace BluePrints.ViewModels
                 if ((bool)e.Value)
                 {
                     decimal estimatedHours = activeBASELINE_ITEM.Entity.Entity.ESTIMATED_HOURS;
-                    if(estimatedHours > 0)
+                    if (estimatedHours > 0)
                     {
                         decimal newValue = 0;
                         string estimatedHoursFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
@@ -409,9 +403,12 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            if (e.RowHandle != DataControlBase.NewItemRowHandle)
-                return;
+            base.CellValueExistingRowChanging(e);
+        }
 
+        protected override void CellValueNewRowChanging(CellValueChangedEventArgs e)
+        {
+            var activeBASELINE_ITEM = (PROGRESS_ITEMProjection)e.Row;
             if (e.Column.FieldName ==
                  BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
                  BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
@@ -436,7 +433,7 @@ namespace BluePrints.ViewModels
                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_WORKPACK))
             {
-                var chosenWORKPACK = WORKPACKCollection.FirstOrDefault(entity => entity.GUID == (Guid) e.Value);
+                var chosenWORKPACK = WORKPACKCollection.FirstOrDefault(entity => entity.GUID == (Guid)e.Value);
                 if (chosenWORKPACK != null)
                 {
                     activeBASELINE_ITEM.Entity.Entity.GUID_AREA = chosenWORKPACK.GUID_DAREA;
@@ -470,6 +467,8 @@ namespace BluePrints.ViewModels
                     MainViewModel.UpdateSelectedEntity();
                 }
             }
+
+            base.CellValueNewRowChanging(e);
         }
 
         /// <summary>

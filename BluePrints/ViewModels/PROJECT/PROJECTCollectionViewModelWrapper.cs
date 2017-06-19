@@ -209,26 +209,15 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        /// <summary>
-        /// Influence column(s) when changes happens in other column
-        /// </summary>
-        public void CellValueChanging(CellValueChangedEventArgs e)
+        protected override void CellValueAnyRowChanging(CellValueChangedEventArgs e)
         {
-            if (e.RowHandle == GridControl.AutoFilterRowHandle)
-                return;
-
-            if(e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().USELEGACYWORKPACK))
-            {
-                ((TableViewEx)e.Source).PostEditor();
-            }
-
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF) || 
-                e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT) ||
-                e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT))
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF) ||
+                   e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT) ||
+                   e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT))
             {
                 MainViewModel.EntitiesUndoRedoManager.PauseActionId(); //Unpaused in existingRowAddUndoAndSave
                 PROJECT activePROJECT = (PROJECT)e.Row;
-                if(e.Value == null || ((ProjectDocumentStatus)e.Value) != ProjectDocumentStatus.Yes)
+                if (e.Value == null || ((ProjectDocumentStatus)e.Value) != ProjectDocumentStatus.Yes)
                 {
                     if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF))
                     {
@@ -255,7 +244,7 @@ namespace BluePrints.ViewModels
                     if (DialogResult)
                     {
                         string fullPath = OpenFileDialogService.File.GetFullName();
-                        if(e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF))
+                        if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF))
                         {
                             MainViewModel.EntitiesUndoRedoManager.AddUndo(activePROJECT, BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF_PATH), null, fullPath, EntityMessageType.Changed);
                             activePROJECT.DOC_KICKOFF_PATH = fullPath;
@@ -272,7 +261,11 @@ namespace BluePrints.ViewModels
                         }
                     }
                 }
+
+                e.Handled = true;
             }
+
+            base.CellValueAnyRowChanging(e);
         }
 
         private void AdditionalCellValidation(GridCellValidationEventArgs e)

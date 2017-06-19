@@ -565,25 +565,13 @@ namespace BluePrints.ViewModels
             FullRefresh();
         }
 
-        /// <summary>
-        /// Influence column(s) when changes happens in other column
-        /// </summary>
-        public void CellValueChanging(CellValueChangedEventArgs e)
+        protected override void CellValueExistingRowChanging(CellValueChangedEventArgs e)
         {
-            if (e.RowHandle == GridControl.AutoFilterRowHandle)
-                return;
-
             var activeVARIATION_ITEM = (VARIATION_ITEMProjection)e.Row;
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
             {
-                if (e.RowHandle != DataControlBase.NewItemRowHandle)
-                {
-                    PostEditor?.Invoke();
-                    return;
-                }
-
                 if ((bool)e.Value)
                 {
                     MainViewModel.EntitiesUndoRedoManager.PauseActionId();
@@ -597,10 +585,12 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            if (e.RowHandle != DataControlBase.NewItemRowHandle)
-                return;
+            base.CellValueExistingRowChanging(e);
+        }
 
-
+        protected override void CellValueNewRowChanging(CellValueChangedEventArgs e)
+        {
+            var activeVARIATION_ITEM = (VARIATION_ITEMProjection)e.Row;
             if (e.Column.FieldName ==
                  BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().Entity) + "." +
                  BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
@@ -629,7 +619,7 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            var activeItem = (VARIATION_ITEMProjection) e.Row;
+            var activeItem = (VARIATION_ITEMProjection)e.Row;
             if (e.Column.FieldName ==
                 BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().Entity)
                 + "."
@@ -638,7 +628,7 @@ namespace BluePrints.ViewModels
                 + BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_WORKPACK
                 ))
             {
-                var chosenWORKPACK = WORKPACKCollection.FirstOrDefault(entity => entity.GUID == (Guid) e.Value);
+                var chosenWORKPACK = WORKPACKCollection.FirstOrDefault(entity => entity.GUID == (Guid)e.Value);
                 if (chosenWORKPACK != null)
                 {
                     activeItem.Entity = new BASELINE_ITEMProjection();
@@ -669,13 +659,15 @@ namespace BluePrints.ViewModels
                      + BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity)
                      + BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE))
             {
-                var chosenDOCTYPE = DOCTYPECollection.FirstOrDefault(entity => entity.GUID == (Guid) e.Value);
+                var chosenDOCTYPE = DOCTYPECollection.FirstOrDefault(entity => entity.GUID == (Guid)e.Value);
                 if (chosenDOCTYPE != null && chosenDOCTYPE.GUID_DDEPARTMENT != null)
                 {
                     activeItem.Entity.Entity.GUID_DEPARTMENT = chosenDOCTYPE.DEPARTMENT.GUID;
                     RefreshSelectedEntity();
                 }
             }
+
+            base.CellValueNewRowChanging(e);
         }
 
         public bool CanDuplicate()

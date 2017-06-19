@@ -434,21 +434,18 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
-        /// <summary>
-        /// Influence column(s) when changes happens in other column
-        /// </summary>
-        public void CellValueChanging(CellValueChangedEventArgs e)
+        protected override void CellValueAnyRowChanging(CellValueChangedEventArgs e)
         {
-            if (e.RowHandle == GridControl.AutoFilterRowHandle)
-                return;
-
             var activeProjection = (ESTIMATION_DIRECT_ITEMProjection)e.Row;
             if (e.Column.FieldName ==
                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_COMMODITY_CODE))
             {
                 activeProjection.COMMODITY_CODE = COMMODITY_GROUP_CODECollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
+                e.Handled = true;
             }
+
+            base.CellValueAnyRowChanging(e);
         }
         #endregion
 

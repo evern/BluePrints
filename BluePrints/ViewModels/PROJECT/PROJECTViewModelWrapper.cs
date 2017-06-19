@@ -222,17 +222,11 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        /// <summary>
-        /// Influence column(s) when changes happens in other column
-        /// </summary>
-        public void CellValueChanging(CellValueChangedEventArgs e)
+        protected override void CellValueAnyRowChanging(CellValueChangedEventArgs e)
         {
-            if (e.RowHandle == GridControl.AutoFilterRowHandle)
-                return;
-
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Entity) + "." +  BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF) ||
-                e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Entity) + "." + BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT) ||
-                e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Entity) + "." + BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT))
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Entity) + "." + BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF) ||
+                   e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Entity) + "." + BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT) ||
+                   e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Entity) + "." + BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT))
             {
                 MainViewModel.EntitiesUndoRedoManager.PauseActionId(); //Unpaused in existingRowAddUndoAndSave
                 PROJECT_Dashboard activePROJECT = (PROJECT_Dashboard)e.Row;
@@ -281,7 +275,11 @@ namespace BluePrints.ViewModels
                         activePROJECT.Entity.DOC_SIDREPORT_PATH = null;
                     }
                 }
+
+                e.Handled = true;
             }
+
+            base.CellValueAnyRowChanging(e);
         }
 
         private void AdditionalCellValidation(GridCellValidationEventArgs e)

@@ -340,31 +340,32 @@ namespace BluePrints.ViewModels
                 MainViewModel.Save(changedWORKPACK);
         }
 
-        public void CellValueChanging(CellValueChangedEventArgs e)
+        protected override void CellValueAnyRowChanging(CellValueChangedEventArgs e)
         {
-            if (e.RowHandle == GridControl.AutoFilterRowHandle)
-                return;
-
-            if (e.Column.FieldName == "Entity.GUID_DDOCTYPE")
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." + BindableBase.GetPropertyName(() => new WORKPACK().DOCTYPE))
             {
-                var changingWORKPACK = (WORKPACKProjection) e.Row;
-                var chosenDOCTYPE = DOCTYPECollection.FirstOrDefault(entity => entity.GUID == (Guid) e.Value);
+                var changingWORKPACK = (WORKPACKProjection)e.Row;
+                var chosenDOCTYPE = DOCTYPECollection.FirstOrDefault(entity => entity.GUID == (Guid)e.Value);
                 if (chosenDOCTYPE != null && chosenDOCTYPE.GUID_DDEPARTMENT != null)
                 {
                     changingWORKPACK.Entity.GUID_DDEPARTMENT = chosenDOCTYPE.DEPARTMENT.GUID;
                     MainViewModel.UpdateSelectedEntity();
+                    e.Handled = true;
                 }
             }
-            else if (e.Column.FieldName == "Entity.STARTDATE" || e.Column.FieldName == "Entity.ENDDATE")
+            else if (
+                e.Column.FieldName == BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." + BindableBase.GetPropertyName(() => new WORKPACK().STARTDATE) 
+                || 
+                e.Column.FieldName == BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." + BindableBase.GetPropertyName(() => new WORKPACK().ENDDATE))
             {
                 DateTime startDate;
                 DateTime endDate;
 
-                var changingWORKPACK = (WORKPACKProjection) e.Row;
+                var changingWORKPACK = (WORKPACKProjection)e.Row;
                 if (e.Column.FieldName == "Entity.STARTDATE")
                 {
-                    startDate = (DateTime) e.Value;
-                    endDate = (DateTime) changingWORKPACK.Entity.ENDDATE;
+                    startDate = (DateTime)e.Value;
+                    endDate = (DateTime)changingWORKPACK.Entity.ENDDATE;
                     if (endDate < startDate)
                     {
                         endDate = BluePrintsDataUtils.WORKPACK_Calculate_EndDate(startDate, loadPROJECT);
@@ -373,8 +374,8 @@ namespace BluePrints.ViewModels
                 }
                 else
                 {
-                    endDate = (DateTime) e.Value;
-                    startDate = (DateTime) changingWORKPACK.Entity.STARTDATE;
+                    endDate = (DateTime)e.Value;
+                    startDate = (DateTime)changingWORKPACK.Entity.STARTDATE;
                     if (endDate < startDate)
                     {
                         startDate = BluePrintsDataUtils.WORKPACK_Calculate_StartDate(endDate, loadPROJECT);
@@ -395,10 +396,9 @@ namespace BluePrints.ViewModels
                     changingWORKPACK.Entity.REVIEWENDDATE = reviewEndDate;
 
                 MainViewModel.UpdateSelectedEntity();
+                e.Handled = true;
             }
-            else if (e.Column.FieldName ==
-                     BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." +
-                     BindableBase.GetPropertyName(() => new WORKPACK().GUID_DAREA))
+            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." + BindableBase.GetPropertyName(() => new WORKPACK().GUID_DAREA))
             {
                 var changingWORKPACK = (WORKPACKProjection)e.Row;
                 if (e.Value != null)
@@ -406,14 +406,18 @@ namespace BluePrints.ViewModels
                     changingWORKPACK.Entity.GUID_DAREA = (Guid)e.Value;
                     changingWORKPACK.SetAvailableSubAreas(SUBAREACollection);
                     MainViewModel.UpdateSelectedEntity();
+                    e.Handled = true;
                 }
 
                 if (e.Value != null && changingWORKPACK.Entity.GUID_DSUBAREA != null)
                 {
                     changingWORKPACK.Entity.GUID_DSUBAREA = null;
                     MainViewModel.UpdateSelectedEntity();
+                    e.Handled = true;
                 }
             }
+
+            base.CellValueAnyRowChanging(e);
         }
         #endregion
 

@@ -147,14 +147,8 @@ namespace BluePrints.ViewModels
             base.OnDisplaySelectedEntityChanged(entity);
         }
 
-        /// <summary>
-        /// Influence column(s) when changes happens in other column
-        /// </summary>
-        public void CellValueChanging(CellValueChangedEventArgs e)
+        protected override void CellValueAnyRowChanging(CellValueChangedEventArgs e)
         {
-            if (e.RowHandle == GridControl.AutoFilterRowHandle)
-                return;
-
             RolePermissionAssignment editingRolePermissionAssignment = (RolePermissionAssignment)e.Row;
             //don't need to validate fieldname since only this field is changeable in role permission grid control
 
@@ -166,6 +160,7 @@ namespace BluePrints.ViewModels
                 newROLE_PERMISSION.PERMISSION = editingRolePermissionAssignment.PermissionKey;
                 ROLE_PERMISSIONViewModel.Save(newROLE_PERMISSION);
                 DisplaySelectedEntity.ROLE_PERMISSIONS.Add(newROLE_PERMISSION);
+                e.Handled = true;
             }
             else
             {
@@ -174,10 +169,12 @@ namespace BluePrints.ViewModels
                 {
                     ROLE_PERMISSIONViewModel.Delete(existingROLE_PERMISSION);
                     DisplaySelectedEntity.ROLE_PERMISSIONS.Remove(existingROLE_PERMISSION);
+                    e.Handled = true;
                 }
             }
 
             refreshPermissions();
+            base.CellValueAnyRowChanging(e);
         }
         #endregion
 

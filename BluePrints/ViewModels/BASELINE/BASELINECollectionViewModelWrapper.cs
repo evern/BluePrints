@@ -111,25 +111,6 @@ namespace BluePrints.ViewModels
 
         #endregion
 
-        #region View Behavior
-        /// <summary>
-        /// Influence column(s) when changes happens in other column
-        /// </summary>
-        public void CellValueChanging(CellValueChangedEventArgs e)
-        {
-            if (e.RowHandle == GridControl.AutoFilterRowHandle)
-                return;
-
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE().P6BASELINE_NAME))
-            {
-                if (e.RowHandle != DataControlBase.NewItemRowHandle)
-                {
-                    ((TableViewEx)e.Source).PostEditor();
-                }
-            }
-        }
-        #endregion
-
         #region View Properties
 
         /// <summary>

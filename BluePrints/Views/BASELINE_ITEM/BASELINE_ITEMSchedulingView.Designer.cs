@@ -52,6 +52,7 @@
             this.colDiscipline = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colEntity = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colPrimaryTitle = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colSubArea = new DevExpress.XtraGrid.Columns.GridColumn();
             this.schedulerStorage1 = new DevExpress.XtraScheduler.SchedulerStorage(this.components);
             this.schedulerBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.barAndDockingController1 = new DevExpress.XtraBars.BarAndDockingController(this.components);
@@ -64,7 +65,6 @@
             this.resourceTreeColumn3 = new DevExpress.XtraScheduler.Native.ResourceTreeColumn();
             this.splitContainerControl1 = new DevExpress.XtraEditors.SplitContainerControl();
             this.splitContainerControl2 = new DevExpress.XtraEditors.SplitContainerControl();
-            this.colSubArea = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)(this.gridControlDeliverable)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewDeliverable)).BeginInit();
@@ -105,7 +105,7 @@
             this.gridControlDeliverable.MainView = this.gridViewDeliverable;
             this.gridControlDeliverable.Name = "gridControlDeliverable";
             this.gridControlDeliverable.ShowOnlyPredefinedDetails = true;
-            this.gridControlDeliverable.Size = new System.Drawing.Size(1904, 463);
+            this.gridControlDeliverable.Size = new System.Drawing.Size(1904, 462);
             this.gridControlDeliverable.TabIndex = 1;
             this.gridControlDeliverable.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridViewDeliverable});
@@ -237,6 +237,15 @@
             this.colPrimaryTitle.Visible = true;
             this.colPrimaryTitle.VisibleIndex = 7;
             // 
+            // colSubArea
+            // 
+            this.colSubArea.Caption = "Sub Area";
+            this.colSubArea.CustomizationCaption = "Sub Area";
+            this.colSubArea.FieldName = "Entity.AREA1.INTERNAL_NUM";
+            this.colSubArea.Name = "colSubArea";
+            this.colSubArea.Visible = true;
+            this.colSubArea.VisibleIndex = 2;
+            // 
             // schedulerStorage1
             // 
             this.schedulerStorage1.Appointments.DataSource = this.schedulerBindingSource;
@@ -308,7 +317,7 @@
             this.schedulerControl1.OptionsCustomization.AllowDisplayAppointmentDependencyForm = DevExpress.XtraScheduler.AllowDisplayAppointmentDependencyForm.Never;
             this.schedulerControl1.OptionsCustomization.AllowDisplayAppointmentForm = DevExpress.XtraScheduler.AllowDisplayAppointmentForm.Never;
             this.schedulerControl1.OptionsCustomization.AllowInplaceEditor = DevExpress.XtraScheduler.UsedAppointmentType.None;
-            this.schedulerControl1.Size = new System.Drawing.Size(1387, 573);
+            this.schedulerControl1.Size = new System.Drawing.Size(1386, 573);
             this.schedulerControl1.Start = new System.DateTime(2012, 1, 1, 0, 0, 0, 0);
             this.schedulerControl1.TabIndex = 2;
             this.schedulerControl1.Text = "schedulerControl1";
@@ -390,6 +399,8 @@
             // 
             this.resourceTreeColumn1.AppearanceCell.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.resourceTreeColumn1.AppearanceCell.Options.UseFont = true;
+            this.resourceTreeColumn1.AppearanceCell.Options.UseTextOptions = true;
+            this.resourceTreeColumn1.AppearanceCell.TextOptions.WordWrap = DevExpress.Utils.WordWrap.Wrap;
             this.resourceTreeColumn1.Caption = "Tasks";
             this.resourceTreeColumn1.FieldName = "Subject";
             this.resourceTreeColumn1.Name = "resourceTreeColumn1";
@@ -401,6 +412,8 @@
             // 
             this.resourceTreeColumn4.AppearanceCell.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.resourceTreeColumn4.AppearanceCell.Options.UseFont = true;
+            this.resourceTreeColumn4.AppearanceCell.Options.UseTextOptions = true;
+            this.resourceTreeColumn4.AppearanceCell.TextOptions.WordWrap = DevExpress.Utils.WordWrap.Wrap;
             this.resourceTreeColumn4.Caption = "Description";
             this.resourceTreeColumn4.FieldName = "Description";
             this.resourceTreeColumn4.Name = "resourceTreeColumn4";
@@ -414,6 +427,7 @@
             this.resourceTreeColumn2.AppearanceCell.Options.UseFont = true;
             this.resourceTreeColumn2.AppearanceCell.Options.UseTextOptions = true;
             this.resourceTreeColumn2.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
+            this.resourceTreeColumn2.AppearanceCell.TextOptions.WordWrap = DevExpress.Utils.WordWrap.Wrap;
             this.resourceTreeColumn2.Caption = "Assigned Units";
             this.resourceTreeColumn2.FieldName = "AssignedUnits";
             this.resourceTreeColumn2.Name = "resourceTreeColumn2";
@@ -428,6 +442,8 @@
             // 
             // resourceTreeColumn3
             // 
+            this.resourceTreeColumn3.AppearanceCell.Options.UseTextOptions = true;
+            this.resourceTreeColumn3.AppearanceCell.TextOptions.WordWrap = DevExpress.Utils.WordWrap.Wrap;
             this.resourceTreeColumn3.Caption = "Status";
             this.resourceTreeColumn3.FieldName = "Status";
             this.resourceTreeColumn3.Name = "resourceTreeColumn3";
@@ -460,15 +476,6 @@
             this.splitContainerControl2.SplitterPosition = 512;
             this.splitContainerControl2.TabIndex = 0;
             this.splitContainerControl2.Text = "splitContainerControl2";
-            // 
-            // colSubArea
-            // 
-            this.colSubArea.Caption = "Sub Area";
-            this.colSubArea.CustomizationCaption = "Sub Area";
-            this.colSubArea.FieldName = "Entity.AREA1.INTERNAL_NUM";
-            this.colSubArea.Name = "colSubArea";
-            this.colSubArea.Visible = true;
-            this.colSubArea.VisibleIndex = 2;
             // 
             // BASELINE_ITEMSchedulingView
             // 
