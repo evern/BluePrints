@@ -1045,6 +1045,7 @@ namespace BluePrints.ViewModels
         #region Disposing
         protected override void OnClose(CancelEventArgs e)
         {
+            BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(loadPROJECT.NUMBER);
             CancelBackgroundWorker();
             base.OnClose(e);
         }

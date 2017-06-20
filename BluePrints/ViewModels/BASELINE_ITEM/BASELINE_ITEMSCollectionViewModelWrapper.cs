@@ -363,12 +363,6 @@ namespace BluePrints.ViewModels
                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
             {
-                if (e.RowHandle != DataControlBase.NewItemRowHandle)
-                {
-                    PostEditor?.Invoke();
-                    return;
-                }
-
                 if ((bool)e.Value)
                 {
                     decimal estimatedHours = activeBASELINE_ITEM.Entity.Entity.ESTIMATED_HOURS;
@@ -448,9 +442,7 @@ namespace BluePrints.ViewModels
                     var SelectedDISCIPLINE =
                         DISCIPLINECollection.FirstOrDefault(x => x.GUID == chosenWORKPACK.GUID_DDISCIPLINE);
 
-                    activeBASELINE_ITEM.Entity.Entity.INTERNAL_NUM =
-                        BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(_loadProject, MainViewModel.Entities.Select(x => x.Entity),
-                            SelectedAREA, SelectedDISCIPLINE, SelectedDOCTYPE);
+                    activeBASELINE_ITEM.Entity.Entity.INTERNAL_NUM = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(_loadProject, MainViewModel.Entities.Select(x => x.Entity), SelectedAREA, SelectedDISCIPLINE, SelectedDOCTYPE);
                     MainViewModel.UpdateSelectedEntity();
                 }
             }
@@ -481,6 +473,28 @@ namespace BluePrints.ViewModels
                                  BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                                  BindableBase.GetPropertyName(() => new BASELINE_ITEM().ESTIMATED_HOURS))
                 this.RaisePropertiesChanged();
+
+            if (e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE) ||
+                e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA) ||
+                e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DEPARTMENT) ||
+                e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DISCIPLINE))
+            {
+                var activeBASELINE_ITEM = (PROGRESS_ITEMProjection)e.Row;
+                activeBASELINE_ITEM.Entity.Entity.INTERNAL_NUM = generateInternalNumber(activeBASELINE_ITEM);
+                MainViewModel.UpdateSelectedEntity();
+            }
         }
         #endregion
 
@@ -763,15 +777,8 @@ namespace BluePrints.ViewModels
                     WORKPACKCollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_WORKPACK);
                 if (info.Column.FieldName == internalNumberFieldName)
                 {
-                    AREA currentItemAREA = AREACollection.FirstOrDefault((x => x.GUID == entity.Entity.Entity.GUID_AREA));
-                    DISCIPLINE currentItemDISCIPLINE =
-                        DISCIPLINECollection.FirstOrDefault((x => x.GUID == entity.Entity.Entity.GUID_DISCIPLINE));
-                    DOCTYPE currentItemDOCTYPE =
-                        DOCTYPECollection.FirstOrDefault((x => x.GUID == entity.Entity.Entity.GUID_DOCTYPE));
-                    var internalNum = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(_loadProject,
-                        MainViewModel.Entities.Select(x => x.Entity), currentItemAREA, currentItemDISCIPLINE,
-                        currentItemDOCTYPE, entity.EntityKey);
-                    SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName, internalNum);
+                    string internalNumber = generateInternalNumber(entity);
+                    SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName, internalNumber);
                     entitiesToSave.Add(entity);
                 }
                 else if (info.Column.FieldName == departmentFieldName || info.Column.FieldName == disciplineFieldName ||
@@ -866,6 +873,17 @@ namespace BluePrints.ViewModels
             RefreshView();
         }
 
+        private string generateInternalNumber(PROGRESS_ITEMProjection projectionEntity)
+        {
+            AREA currentItemAREA = AREACollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_AREA));
+            DISCIPLINE currentItemDISCIPLINE = DISCIPLINECollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_DISCIPLINE));
+            DOCTYPE currentItemDOCTYPE = DOCTYPECollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_DOCTYPE));
+            var internalNum = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(_loadProject,
+                MainViewModel.Entities.Select(x => x.Entity), currentItemAREA, currentItemDISCIPLINE,
+                currentItemDOCTYPE, projectionEntity.EntityKey);
+
+            return internalNum;
+        }
         #endregion
 
         #region View Properties

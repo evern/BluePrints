@@ -157,9 +157,6 @@
                                         <dxmvvm:EventToCommand
                                         Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}"
                                         PassEventArgsToCommand="True" EventName="CellValueChanging" />
-                                        <!--<dxmvvm:EventToCommand
-                                        Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}"
-                                        PassEventArgsToCommand="True" EventName="CellValueChanged" />-->
                                     </dxmvvm:Interaction.Behaviors>
                                 </custom:TableViewEx>
                             </dxg:GridControl.View>

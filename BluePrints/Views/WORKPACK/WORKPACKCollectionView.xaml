@@ -197,9 +197,6 @@
                                     <dxmvvm:EventToCommand PassEventArgsToCommand="True"
                                                            Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}"
                                                            EventName="CellValueChanged" />
-                                    <dxmvvm:EventToCommand PassEventArgsToCommand="True"
-                                                           Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}"
-                                                           EventName="CellValueChanging" />
                                 </dxmvvm:Interaction.Behaviors>
                                 <custom:TableViewEx.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Bulk Edit"

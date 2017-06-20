@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
+using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BluePrints.Data
 {
@@ -182,6 +184,8 @@ namespace BluePrints.Data
             return result;
         }
 
+
+
         [ComplexType]
         public class StoredProcedure_DeliverablesDataPoints
         {
@@ -220,6 +224,19 @@ namespace BluePrints.Data
             public double PeriodRemainingUnits { get; set; }
             public double PeriodRemainingPrice { get; set; }
             public bool IsFromP6 { get; set; }
+        }
+    }
+
+    public static class BluePrintsContextHelper
+    {
+        public static async Task RefreshDeliverablesDataPointsByProject(string projectNumber)
+        {
+            using (BluePrintsEntities dbContext = new BluePrintsEntities())
+            {
+                var projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
+                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshDeliverablesDataPointsByProject @PROJECT_NUMBER", projectNumberParameter);
+                var i = await returnTask;
+            }
         }
     }
 }

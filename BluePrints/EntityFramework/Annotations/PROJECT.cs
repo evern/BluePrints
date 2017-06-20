@@ -8,7 +8,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
 
     [ConstraintAttributes("NUMBER")]
-    public partial class PROJECT : IGuidEntityKey
+    public partial class PROJECT : IGuidEntityKey, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PROJECT()
@@ -53,6 +53,19 @@ namespace BluePrints.Data
             set
             {
                 GUID = value;
+            }
+        }
+
+        [NotMapped]
+        public DateTime EntityCreatedDate
+        {
+            get
+            {
+                return CREATED;
+            }
+            set
+            {
+                CREATED = value;
             }
         }
     }

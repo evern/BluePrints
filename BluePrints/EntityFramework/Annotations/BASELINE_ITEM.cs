@@ -9,6 +9,11 @@ namespace BluePrints.Data
     [ConstraintAttributes("GUID_BASELINE, INTERNAL_NUM")]
     public partial class BASELINE_ITEM : IGuidEntityKey, IOriginalGuidEntityKey
     {
+        public BASELINE_ITEM()
+        {
+            DISCIPLINE_NUM = 1;
+        }
+
         [NotMapped]
         public Guid EntityKey
         {

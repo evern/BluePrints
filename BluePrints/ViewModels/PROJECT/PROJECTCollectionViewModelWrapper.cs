@@ -1,4 +1,5 @@
-﻿using BaseModel.DataModel;
+﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Document;
@@ -132,7 +133,10 @@ namespace BluePrints.ViewModels
 
         private void PostSave(Guid key, PROJECT projectionEntity, PROJECT entity, bool isNewEntity)
         {
-            if (isNewEntity)
+            bool? isEntityNew = DataUtils.IsNewEntity<PROJECT>(projectionEntity);
+
+            //only way to determine whether current entity is new to avoid creating multiple 
+            if (isEntityNew != null && ((bool)isEntityNew))
             {
                 var newBASELINE = new BASELINE();
                 newBASELINE.GUID_PROJECT = entity.GUID;
@@ -263,6 +267,12 @@ namespace BluePrints.ViewModels
                 }
 
                 e.Handled = true;
+            }
+
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().STATUS))
+            {
+                PROJECT activePROJECT = (PROJECT)e.Row;
+                BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(activePROJECT.NUMBER);
             }
 
             base.CellValueAnyRowChanging(e);
