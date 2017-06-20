@@ -43,10 +43,15 @@ namespace BluePrints.ViewModels
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
+        ActionObject actionObject;
         protected override void InitializeParameters(object parameter)
         {
-            var USERParameter = (EntitiesParameter<USER>)parameter;
-            _loadUSER = USERParameter.GetEntity();
+            actionObject = parameter as ActionObject;
+            if(actionObject == null)
+            {
+                var USERParameter = (EntitiesParameter<USER>)parameter;
+                _loadUSER = USERParameter.GetEntity();
+            }
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
@@ -84,6 +89,12 @@ namespace BluePrints.ViewModels
 
         protected override void OnAllEntitiesCollectionLoaded()
         {
+            if (actionObject != null)
+            {
+                actionObject.ExecuteAction();
+                return;
+            }
+
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }

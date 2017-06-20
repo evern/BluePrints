@@ -13,7 +13,7 @@ namespace BluePrints.Views
                 ChangeViewMemberFieldNames;
             ((PROJECTDashboardViewModelWrapper) DataContext).Redraw = Redraw;
         }
-
+        
         public void Redraw()
         {
             GridControl.RefreshData();

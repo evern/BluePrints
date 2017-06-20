@@ -1,4 +1,5 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.Misc;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Helpers;
 using BluePrints.Common.Resources;
@@ -6,6 +7,7 @@ using BluePrints.Common.ViewModel;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Charts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,7 +56,6 @@ namespace BluePrints.ViewModels
             if (HideControlCallBack != null)
                 HideControlCallBack();
         }
-
 
         public void EVERNPCLogin()
         {

@@ -7,6 +7,7 @@ using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel;
 using BluePrints.Data;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Charts;
 using DevExpress.Xpf.Core;
 using System;
 using System.Collections.Generic;
@@ -74,6 +75,7 @@ namespace BluePrints.ViewModels
             IsLoaded = true;
             MainThreadDispatcher.BeginInvoke(new Action(() => CreateProjectModules(entities)));
             _projectCollectionViewModel.OnEntitiesLoadedCallBack = null;
+            MainThreadDispatcher.BeginInvoke(new Action(() => PreloadAssemblies()));
         }
 
         private void CreateProjectModules(IEnumerable<PROJECT> entities)
@@ -121,14 +123,17 @@ namespace BluePrints.ViewModels
             Modules.AddRange(newModules);
         }
 
-        private void ShowDashboardModule()
+        /// <summary>
+        /// Used for preloading assemblies
+        /// </summary>
+        private void PreloadAssemblies()
         {
-            if (LoginCredentials.hasPermission(PermissionResources.ViewDashboard))
-            {
-                var dashboard = Modules.FirstOrDefault(x => x.DocumentType == "PROJECTDashboardView");
-                if (dashboard != null)
-                    NavigateCore(dashboard);
-            }
+            //if (LoginCredentials.hasPermission(PermissionResources.ViewDashboard))
+            //{
+                //var dashboard = Modules.FirstOrDefault(x => x.DocumentType == "PROJECTDashboardView");
+                //if (dashboard != null)
+            NavigateCoreHide(new BluePrintsEntitiesModuleDescription("View_PreloadDashboard", null, "Preloading...", "PROJECTDashboardView", new ActionObject(this.ClosePreloadDocument)));
+            //}
         }
 
         const string projectViewIdPrefix = "View_Project";
@@ -352,6 +357,20 @@ namespace BluePrints.Common.ViewModel
         public override string ToString()
         {
             return this.NavigationTitle;
+        }
+    }
+
+    public class ActionObject
+    {
+        public ActionObject(Action actionParameter)
+        {
+            this.actionParameter = actionParameter;
+        }
+
+        Action actionParameter { get; set; }
+        public void ExecuteAction()
+        {
+            actionParameter();
         }
     }
 }

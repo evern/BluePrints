@@ -58,8 +58,13 @@ namespace BluePrints.ViewModels
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
+        ActionObject actionObject;
         protected override void InitializeParameters(object parameter)
         {
+            if (parameter != null)
+            {
+                actionObject = parameter as ActionObject;
+            }
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
@@ -140,6 +145,12 @@ namespace BluePrints.ViewModels
 
         private void onMainViewModelFirstLoaded(object sender, EventArgs e)
         {
+            if (actionObject != null)
+            {
+                actionObject.ExecuteAction();
+                return;
+            }
+
             onMainViewModelFirstLoadedTimer.Stop();
             backgroundWorkerCollection.Clear();
             foreach (PROJECT_Dashboard entity in MainViewModel.Entities)

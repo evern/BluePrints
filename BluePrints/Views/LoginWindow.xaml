@@ -7,6 +7,7 @@
     xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
     xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+    xmlns:view="clr-namespace:BluePrints.Views"
     xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
     x:Class="BluePrints.Views.LoginWindow" Topmost="False"
     Height="320" Width="600" WindowStartupLocation="CenterScreen" WindowStyle="None">
@@ -16,6 +17,9 @@
     </dxmvvm:Interaction.Behaviors>
     <dxlc:LayoutControl Orientation="Vertical" MinHeight="320" MaxHeight="320" MaxWidth="600" MinWidth="550">
         <dxlc:LayoutGroup x:Name="LayoutGroupWorkpackSelection" View="Group" Orientation="Vertical">
+            <!--<dxlc:LayoutItem Height="0" Width="0">
+                <view:PROJECTDashboardView Height="0" Width="0" />
+            </dxlc:LayoutItem>-->
             <dxlc:LayoutItem x:Name="layoutItemLogo">
                 <dxe:ImageEdit Source="/BluePrints;component/Common/Images/PRIMERO.jpg" IsReadOnly="True" />
             </dxlc:LayoutItem>

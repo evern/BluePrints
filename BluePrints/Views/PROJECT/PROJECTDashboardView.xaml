@@ -22,7 +22,7 @@
         <ResourceDictionary>
             <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
             <ResourceDictionary.MergedDictionaries>
-                                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ChartResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
