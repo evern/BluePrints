@@ -351,8 +351,7 @@ namespace BluePrints.Views
         {
             var view = new BASELINE_ITEMAssignmentView(PROJECT, TASK_WBSAppointments, BASELINE_ITEMProjections,
                 BASELINE_ITEM_ASSIGNMENTSViewModel, ISMODIFIED, null, selectedBASELINE_ITEMS);
-            view.ShowDialog();
-            view.Dispose();
+            view.Show();
             gridControlDeliverable.RefreshDataSource();
         }
 

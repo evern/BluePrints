@@ -279,6 +279,12 @@ namespace BluePrints.ViewModels
                 e.Handled = true;
             }
 
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Entity) + "." + BindableBase.GetPropertyName(() => new PROJECT().STATUS))
+            {
+                PROJECT_Dashboard activePROJECT = (PROJECT_Dashboard)e.Row;
+                BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(activePROJECT.Entity.NUMBER);
+            }
+
             base.CellValueAnyRowChanging(e);
         }
 

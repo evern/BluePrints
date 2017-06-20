@@ -229,11 +229,14 @@ namespace BluePrints.ViewModels
 
         public bool CanMatchSelectedBASELINE_ITEM_ASSIGNMENT()
         {
-            return true;
+            return SelectedASSIGNMENT != null;
         }
 
         public void MatchSelectedBASELINE_ITEM_ASSIGNMENT()
         {
+            if (SelectedASSIGNMENT == null)
+                return;
+
             TASK_AppointmentInfo taskAppointment = TASKSItemSource.FirstOrDefault(x => x.Subject == SelectedASSIGNMENT.Entity.P6_ACTIVITYID);
 
             if (taskAppointment != null)

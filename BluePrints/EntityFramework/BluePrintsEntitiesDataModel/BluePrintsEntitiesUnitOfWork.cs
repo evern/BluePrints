@@ -65,6 +65,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<DOCTYPE>(), (DOCTYPE x) => x.GUID); }
         }
 
+        IRepository<DataPoint, Guid> IBluePrintsEntitiesUnitOfWork.DataPoints
+        {
+            get { return GetRepository(x => x.Set<DataPoint>(), (DataPoint x) => x.Guid_DataPoint); }
+        }
+
         IRepository<ESTIMATION_DIRECT, Guid> IBluePrintsEntitiesUnitOfWork.ESTIMATION_DIRECTS
         {
             get { return GetRepository(x => x.Set<ESTIMATION_DIRECT>(), (ESTIMATION_DIRECT x) => x.GUID); }

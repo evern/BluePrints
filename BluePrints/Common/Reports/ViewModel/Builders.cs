@@ -154,63 +154,85 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.exceptionPeriods.AddRange(ChronologicalHelpers.NonWorkingPeriods);
         }
 
-        public void BuildPlannedDataPointsFromStoredProcedure(PROGRESS_ITEMProjection progressItemStats)
+        public void BuildPlannedDataPointsFromQuery(PROGRESS_ITEMProjection progressItemStats)
         {
-            BluePrintsEntities bluePrintDataContext = new BluePrintsEntities();
-            decimal totalUnits = progressItemStats.Stats == null ? 0 : progressItemStats.Stats.totalUnits;
-            decimal rate = progressItemStats.Entity.RATE == null ? 0 : progressItemStats.Entity.RATE.RATE1 == null ? 0 :
-                (decimal)progressItemStats.Entity.RATE.RATE1;
-            bool isByDuration = progressItemStats.Entity.Entity.BY_DURATION;
-            Guid workpackKey = progressItemStats.Entity.Entity.GUID_WORKPACK == null ? Guid.Empty : (Guid)progressItemStats.Entity.Entity.GUID_WORKPACK;
-
-            ObjectResult<StoredProcedure_PlannedDataPoint> deliverablesDataPoints = bluePrintDataContext.GetDeliverablePlannedDataPoints(this.p6BaselineName, this.p6ProgressProjectName, this.dataDate, progressItemStats.Entity.EntityKey, progressItemStats.Entity.Entity.GUID_ORIGINAL, workpackKey, totalUnits, rate, isByDuration);
-
-            
-            List<StoredProcedure_PlannedDataPoint> plannedDataPoints = new List<StoredProcedure_PlannedDataPoint>();
-            //circumvent EF issue when ObjectResult is null
-            try
+            using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                plannedDataPoints.AddRange(deliverablesDataPoints);
+                List<StoredProcedure_PlannedDataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPoints(progressItemStats.Entity.Entity.GUID);
+                progressItemStats.Stats.Budgeted.SetPlannedData(plannedDataPoints);
+                progressItemStats.Stats.Current.SetPlannedData(plannedDataPoints);
             }
-            catch
-            {
-                return;
-            }
-
-            progressItemStats.Stats.Budgeted.SetPlannedData(plannedDataPoints);
-            progressItemStats.Stats.Current.SetPlannedData(plannedDataPoints);
         }
 
+        public void BuildPlannedDataPointsFromStoredProcedure(PROGRESS_ITEMProjection progressItemStats)
+        {
+            using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
+            {
+                decimal totalUnits = progressItemStats.Stats == null ? 0 : progressItemStats.Stats.totalUnits;
+                decimal rate = progressItemStats.Entity.RATE == null ? 0 : progressItemStats.Entity.RATE.RATE1 == null ? 0 :
+                    (decimal)progressItemStats.Entity.RATE.RATE1;
+                bool isByDuration = progressItemStats.Entity.Entity.BY_DURATION;
+                Guid workpackKey = progressItemStats.Entity.Entity.GUID_WORKPACK == null ? Guid.Empty : (Guid)progressItemStats.Entity.Entity.GUID_WORKPACK;
+
+                ObjectResult<StoredProcedure_PlannedDataPoint> deliverablesDataPoints = bluePrintDataContext.GetDeliverablePlannedDataPoints(this.p6BaselineName, this.p6ProgressProjectName, this.dataDate, progressItemStats.Entity.EntityKey, progressItemStats.Entity.Entity.GUID_ORIGINAL, workpackKey, totalUnits, rate, isByDuration);
+
+
+                List<StoredProcedure_PlannedDataPoint> plannedDataPoints = new List<StoredProcedure_PlannedDataPoint>();
+                //circumvent EF issue when ObjectResult is null
+                try
+                {
+                    plannedDataPoints.AddRange(deliverablesDataPoints);
+                }
+                catch
+                {
+                    return;
+                }
+
+                progressItemStats.Stats.Budgeted.SetPlannedData(plannedDataPoints);
+                progressItemStats.Stats.Current.SetPlannedData(plannedDataPoints);
+            }
+        }
+
+        public void BuildRemainingDataPointsFromQuery(PROGRESS_ITEMProjection progressItemStats)
+        {
+            using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
+            {
+                List<StoredProcedure_RemainingDataPoint> RemainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPoints(progressItemStats.Entity.Entity.GUID);
+                progressItemStats.Stats.Remaining.SetRemainingData(RemainingDataPoints, progressItemStats.Stats.Earned.DataPoints);
+            }
+        }
 
         public void BuildRemainingDataPointsFromStoredProcedure(PROGRESS_ITEMProjection progressItemStats)
         {
-            BluePrintsEntities bluePrintDataContext = new BluePrintsEntities();
-            decimal totalUnits = progressItemStats.Stats == null ? 0 : progressItemStats.Stats.totalUnits;
-            decimal rate = progressItemStats.Entity.RATE == null ? 0 : progressItemStats.Entity.RATE.RATE1 == null ? 0 :
-                (decimal)progressItemStats.Entity.RATE.RATE1;
-            Guid workpackKey = progressItemStats.Entity.Entity.GUID_WORKPACK == null ? Guid.Empty : (Guid)progressItemStats.Entity.Entity.GUID_WORKPACK;
-
-            decimal totalEarnedUnits = 0;
-            if(progressItemStats.Stats.Earned.DataPoints != null && progressItemStats.Stats.Earned.DataPoints.Count > 0)
-                totalEarnedUnits = progressItemStats.Stats.Earned.DataPoints.Sum(x => x.Units);
-
-            ObjectResult<StoredProcedure_RemainingDataPoint> deliverablesDataPoints = bluePrintDataContext.GetDeliverableRemainingDataPoints(this.p6ProgressProjectName, this.dataDate, progressItemStats.Entity.EntityKey, progressItemStats.Entity.Entity.GUID_ORIGINAL, workpackKey, totalUnits, totalEarnedUnits, rate);
-
-            List<StoredProcedure_RemainingDataPoint> RemainingDataPoints = new List<StoredProcedure_RemainingDataPoint>();
-            //circumvent EF issue when ObjectResult is null
-            try
+            using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                RemainingDataPoints.AddRange(deliverablesDataPoints);
-            }
-            catch
-            {
-                return;
-            }
+                decimal totalUnits = progressItemStats.Stats == null ? 0 : progressItemStats.Stats.totalUnits;
+                decimal rate = progressItemStats.Entity.RATE == null ? 0 : progressItemStats.Entity.RATE.RATE1 == null ? 0 :
+                    (decimal)progressItemStats.Entity.RATE.RATE1;
+                Guid workpackKey = progressItemStats.Entity.Entity.GUID_WORKPACK == null ? Guid.Empty : (Guid)progressItemStats.Entity.Entity.GUID_WORKPACK;
 
-            //if (RemainingDataPoints != null && RemainingDataPoints.Count > 0)
-            //    Debug.Print(progressItemStats.Entity.Entity.INTERNAL_NUM + "|" + progressItemStats.Stats.totalUnits + "|" + RemainingDataPoints.Sum(x => x.PeriodRemainingUnits));
+                decimal totalEarnedUnits = 0;
+                if (progressItemStats.Stats.Earned.DataPoints != null && progressItemStats.Stats.Earned.DataPoints.Count > 0)
+                    totalEarnedUnits = progressItemStats.Stats.Earned.DataPoints.Sum(x => x.Units);
 
-            progressItemStats.Stats.Remaining.SetRemainingData(RemainingDataPoints, progressItemStats.Stats.Earned.DataPoints);
+                ObjectResult<StoredProcedure_RemainingDataPoint> deliverablesDataPoints = bluePrintDataContext.GetDeliverableRemainingDataPoints(this.p6ProgressProjectName, this.dataDate, progressItemStats.Entity.EntityKey, progressItemStats.Entity.Entity.GUID_ORIGINAL, workpackKey, totalUnits, totalEarnedUnits, rate);
+
+                List<StoredProcedure_RemainingDataPoint> RemainingDataPoints = new List<StoredProcedure_RemainingDataPoint>();
+                //circumvent EF issue when ObjectResult is null
+                try
+                {
+                    RemainingDataPoints.AddRange(deliverablesDataPoints);
+                }
+                catch
+                {
+                    return;
+                }
+
+                //if (RemainingDataPoints != null && RemainingDataPoints.Count > 0)
+                //    Debug.Print(progressItemStats.Entity.Entity.INTERNAL_NUM + "|" + progressItemStats.Stats.totalUnits + "|" + RemainingDataPoints.Sum(x => x.PeriodRemainingUnits));
+
+                progressItemStats.Stats.Remaining.SetRemainingData(RemainingDataPoints, progressItemStats.Stats.Earned.DataPoints);
+            }
         }
 
         public void BuildPlannedDataPoints(PROGRESS_ITEMProjection progressItemStats, ReportingEnum.AssignmentLoadType assignmentLoadType)

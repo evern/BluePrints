@@ -45,6 +45,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<DEPARTMENT, Guid> DEPARTMENTS { get; }
 
         /// <summary>
+        /// The DataPoint entities repository.
+        /// </summary>
+        IRepository<DataPoint, Guid> DataPoints { get; }
+
+        /// <summary>
         /// The DELIVERABLES_STATUS entities repository.
         /// </summary>
         IRepository<DELIVERABLES_STATUS, Guid> DELIVERABLES_STATUSES { get; }

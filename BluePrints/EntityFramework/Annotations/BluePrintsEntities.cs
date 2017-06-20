@@ -68,6 +68,21 @@ namespace BluePrints.Data
             Entry(entity).Reload();
         }
 
+        public List<StoredProcedure_PlannedDataPoint> QueryDeliverablePlannedDataPoints(Guid baselineItemGuid)
+        {
+            return this.DataPoint.Where(x => x.Guid_DataPoint == baselineItemGuid && x.IsPlanned == true).ToList()
+                .Select(x => new StoredProcedure_PlannedDataPoint()
+                {
+                    Deliverable_Guid = x.Deliverable_Guid,
+                    IsFromP6 = x.IsFromP6,
+                    Original_Guid = x.Original_Guid,
+                    PeriodPlannedPrice = x.PeriodPrice,
+                    PeriodPlannedUnits = x.PeriodUnits,
+                    UniversalPeriodEndDate = x.UniversalPeriodEndDate,
+                    UniversalPeriodStartDate = x.UniversalPeriodStartDate
+                }).ToList();
+        }
+
         public const string dbo = nameof(dbo);
         [Function(FunctionType.StoredProcedure, nameof(GetDeliverablePlannedDataPoints), Schema = dbo)]
         public ObjectResult<StoredProcedure_PlannedDataPoint> GetDeliverablePlannedDataPoints(string p6BaselineProjectName, string p6ProgressProjectName, DateTime dataDate, Guid baseline_itemKey, Guid baseline_item_originalKey, Guid workpackKey, decimal totalUnits, decimal rate, bool isByDuration)
@@ -101,6 +116,21 @@ namespace BluePrints.Data
                 nameof(this.GetDeliverablePlannedDataPoints), parameterArray);
 
             return result;
+        }
+
+        public List<StoredProcedure_RemainingDataPoint> QueryDeliverableRemainingDataPoints(Guid baselineItemGuid)
+        {
+            return this.DataPoint.Where(x => x.Guid_DataPoint == baselineItemGuid && x.IsPlanned == true).ToList()
+                .Select(x => new StoredProcedure_RemainingDataPoint()
+                {
+                    Deliverable_Guid = x.Deliverable_Guid,
+                    IsFromP6 = x.IsFromP6,
+                    Original_Guid = x.Original_Guid,
+                    PeriodRemainingPrice = x.PeriodPrice,
+                    PeriodRemainingUnits = x.PeriodUnits,
+                    UniversalPeriodEndDate = x.UniversalPeriodEndDate,
+                    UniversalPeriodStartDate = x.UniversalPeriodStartDate
+                }).ToList();
         }
 
         [Function(FunctionType.StoredProcedure, nameof(GetDeliverableRemainingDataPoints), Schema = dbo)]
@@ -137,6 +167,21 @@ namespace BluePrints.Data
             return result;
         }
 
+        public List<StoredProcedure_PlannedDataPoint> QueryDeliverablePlannedDataPointsByProject(string projectNumber)
+        {
+            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == true).ToList()
+                .Select(x => new StoredProcedure_PlannedDataPoint()
+                {
+                    Deliverable_Guid = x.Deliverable_Guid,
+                    IsFromP6 = x.IsFromP6,
+                    Original_Guid = x.Original_Guid,
+                    PeriodPlannedPrice = x.PeriodPrice,
+                    PeriodPlannedUnits = x.PeriodUnits,
+                    UniversalPeriodEndDate = x.UniversalPeriodEndDate,
+                    UniversalPeriodStartDate = x.UniversalPeriodStartDate
+                }).ToList();
+        }
+
         [Function(FunctionType.StoredProcedure, nameof(GetDeliverablesPlannedDataPointsByProject), Schema = dbo)]
         public ObjectResult<StoredProcedure_PlannedDataPoint> GetDeliverablesPlannedDataPointsByProject(string projectNumber)
         {
@@ -158,6 +203,21 @@ namespace BluePrints.Data
             }
 
             return result;
+        }
+
+        public List<StoredProcedure_RemainingDataPoint> QueryDeliverableRemainingDataPointsByProject(string projectNumber)
+        {
+            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == false).ToList()
+                .Select(x => new StoredProcedure_RemainingDataPoint()
+                {
+                    Deliverable_Guid = x.Deliverable_Guid,
+                    IsFromP6 = x.IsFromP6,
+                    Original_Guid = x.Original_Guid,
+                    PeriodRemainingPrice = x.PeriodPrice,
+                    PeriodRemainingUnits = x.PeriodUnits,
+                    UniversalPeriodEndDate = x.UniversalPeriodEndDate,
+                    UniversalPeriodStartDate = x.UniversalPeriodStartDate
+                }).ToList();
         }
 
         [Function(FunctionType.StoredProcedure, nameof(GetDeliverablesRemainingDataPointsByProject), Schema = dbo)]

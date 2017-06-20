@@ -126,10 +126,30 @@ namespace BluePrints.ViewModels
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = PostSave;
             MainViewModel.AdditionalValidateCellCallBack = AdditionalCellValidation;
             MainViewModel.CanFillDownCallBack = CanFillDownCallBack;
+            MainViewModel.OnBeforeEntitiesDeleteCallBack = onBeforeEntitiesDeleted;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
         #region Collection Call Backs
+        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        {
+            if(messageType == EntityMessageType.Added)
+            {
+                PROJECT findPROJECT = MainViewModel.Entities.FirstOrDefault(x => x.GUID == (Guid)key);
+                if(findPROJECT != null)
+                    BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(findPROJECT.NUMBER);
+            }
+
+            base.OnAfterAffectingEntitiesChanged(key, changedType, messageType, sender);
+        }
+
+        private void onBeforeEntitiesDeleted(IEnumerable<PROJECT> deletedPROJECTs)
+        {
+            foreach(PROJECT project in deletedPROJECTs)
+            {
+                BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(project.NUMBER);
+            }
+        }
 
         private void PostSave(Guid key, PROJECT projectionEntity, PROJECT entity, bool isNewEntity)
         {

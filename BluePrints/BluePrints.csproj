@@ -455,6 +455,7 @@
     <Compile Include="EntityFramework\BluePrintsData\BluePrintsEntities.cs" />
     <Compile Include="EntityFramework\BluePrintsData\COMMODITY_CODE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\COMMODITY_GROUP_DIRECT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\DataPoint.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DELIVERABLES_STATUS.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DEPARTMENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DISCIPLINE.cs" />
