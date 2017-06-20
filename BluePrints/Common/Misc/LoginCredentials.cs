@@ -35,6 +35,11 @@ namespace BluePrints.Common
             }
         }
 
+        public static bool isPreloadMode()
+        {
+            return CurrentUser == null;
+        }
+
         public static List<ROLE_PERMISSION> CurrentUserPermission { get; set; }
 
         public static string CurrentHWID { get; set; }

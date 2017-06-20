@@ -130,9 +130,10 @@ namespace BluePrints.ViewModels
         {
             //if (LoginCredentials.hasPermission(PermissionResources.ViewDashboard))
             //{
-                //var dashboard = Modules.FirstOrDefault(x => x.DocumentType == "PROJECTDashboardView");
-                //if (dashboard != null)
-            NavigateCoreHide(new BluePrintsEntitiesModuleDescription("View_PreloadDashboard", null, "Preloading...", "PROJECTDashboardView", new ActionObject(this.ClosePreloadDocument)));
+            //var dashboard = Modules.FirstOrDefault(x => x.DocumentType == "PROJECTDashboardView");
+            //if (dashboard != null)
+            if (LoginCredentials.isPreloadMode())
+                StartPreloading(new BluePrintsEntitiesModuleDescription("View_PreloadDashboard", null, "Preloading...", "PROJECTDashboardView", new ActionObject(this.ClosePreloadDocument)));
             //}
         }
 

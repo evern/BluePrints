@@ -40,6 +40,7 @@ namespace BluePrints.ViewModels
         bool isUsernameLoadedFromXML;
         public LoginViewModel()
         {
+            CacheMainWindow();
             delayedHideDispatcher = new DispatcherTimer();
             delayedHideDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
             delayedHideDispatcher.Tick += delayedHideDispatcher_Tick;
@@ -200,10 +201,16 @@ namespace BluePrints.ViewModels
         {
             ShowErrorCallBack?.Invoke(isPasswordField, errorMessage);
         }
+        
+        private async void CacheMainWindow()
+        {
+            MainWindow mainWindow = new MainWindow();
+            mainWindow = null;
+        }
 
         public void ShowMainWindow()
         {
-            var mainWindow = new MainWindow();
+            MainWindow mainWindow = new MainWindow();
             mainWindow.Show();
         }
 
