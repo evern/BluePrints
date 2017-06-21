@@ -1,7 +1,7 @@
 ﻿<Application x:Class="BluePrints.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="Views/LoginWindow.xaml" Startup="OnAppStartup_UpdateThemeName">
+             StartupUri="Views/DXSplashScreen/BluePrintsSplashScreen.xaml" Startup="OnAppStartup_UpdateThemeName">
     <Application.Resources>
 
     </Application.Resources>

@@ -10,7 +10,9 @@ using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Charts;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -41,7 +43,8 @@ namespace BluePrints.ViewModels
         bool isUsernameLoadedFromXML;
         public LoginViewModel()
         {
-            preloadMainWindow();
+            //preloadMainWindow();
+
             delayedHideDispatcher = new DispatcherTimer();
             delayedHideDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
             delayedHideDispatcher.Tick += delayedHideDispatcher_Tick;
@@ -69,9 +72,9 @@ namespace BluePrints.ViewModels
             if (Environment.MachineName == "EVERN-PC")
             {
                 UserName = BluePrintsResources.AdminUsername;
-                //UserPassword = BluePrintsResources.AdminPassword;
-                //delayedHideDispatcher.Start();
-                //Login();
+                UserPassword = BluePrintsResources.AdminPassword;
+                delayedHideDispatcher.Start();
+                Login();
             }
 #endif
         }
@@ -198,19 +201,18 @@ namespace BluePrints.ViewModels
 
         public void ShowThisControl()
         {
-            if (ShowControlCallBack != null)
-                ShowControlCallBack();
+            ShowControlCallBack?.Invoke();
         }
 
         public void ShowError(bool isPasswordField, string errorMessage)
         {
             ShowErrorCallBack?.Invoke(isPasswordField, errorMessage);
         }
-        
-        private async void preloadMainWindow()
+
+        private void preloadMainWindow()
         {
-            MainWindow mainWindow = new MainWindow();
-            mainWindow = null;
+            MainWindow preloadMainWindow = new MainWindow();
+            preloadMainWindow = null;
         }
 
         public void ShowMainWindow()

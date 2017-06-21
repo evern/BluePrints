@@ -37,6 +37,13 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new PROJECTDashboardViewModelWrapper());
         }
 
+        public static PROJECTDashboardViewModelWrapper Create(ActionObject actionObject)
+        {
+            PROJECTDashboardViewModelWrapper preloadDashboard = ViewModelSource.Create(() => new PROJECTDashboardViewModelWrapper());
+            preloadDashboard.OnParameterChanged(actionObject);
+            return preloadDashboard;
+        }
+
         /// <summary>
         /// Initializes a new instance of the PROJECTViewModel class.
         /// This constructor is declared protected to avoid undesired instantiation of the PROJECTViewModel type without the POCO proxy factory.
@@ -46,11 +53,6 @@ namespace BluePrints.ViewModels
             onMainViewModelFirstLoadedTimer = new DispatcherTimer();
             onMainViewModelFirstLoadedTimer.Interval = new TimeSpan(0, 0, 0, 1);
             onMainViewModelFirstLoadedTimer.Tick += onMainViewModelFirstLoaded;
-        }
-
-        private void BuildStatsTimer_Tick(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         #region Database Operation
@@ -64,6 +66,12 @@ namespace BluePrints.ViewModels
             if (parameter != null)
             {
                 actionObject = parameter as ActionObject;
+            }
+
+            if (actionObject != null)
+            {
+                actionObject.ExecuteAction();
+                return;
             }
         }
 
@@ -110,12 +118,6 @@ namespace BluePrints.ViewModels
 
         protected override void OnAllEntitiesCollectionLoaded()
         {
-            if (actionObject != null)
-            {
-                actionObject.ExecuteAction();
-                return;
-            }
-
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }

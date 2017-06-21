@@ -75,20 +75,11 @@ namespace BluePrints.Data
         public virtual ICollection<BASELINE_ITEM_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENT { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<COMMODITY_CODE> COMMODITY_CODE { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DELIVERABLES_STATUS> DELIVERABLES_STATUS { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ESTIMATION_DIRECT> ESTIMATION_DIRECT { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ESTIMATION_INDIRECT> ESTIMATION_INDIRECT { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ESTIMATION_SETTING> ESTIMATION_SETTING { get; set; }
-        
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PROGRESS> PROGRESS { get; set; }
 

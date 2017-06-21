@@ -44,7 +44,7 @@ namespace BluePrints.ViewModels
                     unitOfWorkFactory, x => x.PROJECTS);
             _projectCollectionViewModel.OnEntitiesLoadedCallBack = OnEntitiesLoadedCallBack;
             _projectCollectionViewModel.OnAfterEntitiesChangedCallBack = OnAfterEntitiesChanged;
-            _projectCollectionViewModel.Entities.ToList();
+            _projectCollectionViewModel.Entities.ToList();      
         }
 
         /// <summary>
@@ -73,9 +73,8 @@ namespace BluePrints.ViewModels
         private void OnEntitiesLoadedCallBack(IEnumerable<PROJECT> entities)
         {
             IsLoaded = true;
-            MainThreadDispatcher.BeginInvoke(new Action(() => CreateProjectModules(entities)));
             _projectCollectionViewModel.OnEntitiesLoadedCallBack = null;
-            MainThreadDispatcher.BeginInvoke(new Action(() => PreloadAssemblies()));
+            MainThreadDispatcher.BeginInvoke(new Action(() => preloadAssemblies(entities)));
         }
 
         private void CreateProjectModules(IEnumerable<PROJECT> entities)
@@ -126,15 +125,22 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// Used for preloading assemblies
         /// </summary>
-        private void PreloadAssemblies()
+        private void preloadAssemblies(IEnumerable<PROJECT> entities)
         {
-            //if (LoginCredentials.hasPermission(PermissionResources.ViewDashboard))
-            //{
-            //var dashboard = Modules.FirstOrDefault(x => x.DocumentType == "PROJECTDashboardView");
-            //if (dashboard != null)
-            if (LoginCredentials.isPreloadMode())
-                startPreloading(new BluePrintsEntitiesModuleDescription("View_PreloadDashboard", null, "Preloading...", "PROJECTDashboardView", new ActionObject(this.ClosePreloadDocument)));
-            //}
+            //if (!LoginCredentials.isPreloadMode())
+            CreateProjectModules(entities);
+            //startPreloading(new BluePrintsEntitiesModuleDescription("View_PreloadDashboard", null, "Preloading...", "PROJECTDashboardView", new ActionObject(this.ClosePreloadDocument)));
+            //else
+        }
+
+        private void showDashboard()
+        {
+            if (LoginCredentials.hasPermission(PermissionResources.ViewDashboard))
+            {
+                var dashboard = Modules.FirstOrDefault(x => x.DocumentType == "PROJECTDashboardView");
+                if (dashboard != null)
+                    NavigateCore(dashboard);
+            }
         }
 
         const string projectViewIdPrefix = "View_Project";
@@ -198,13 +204,25 @@ namespace BluePrints.ViewModels
         BluePrintsEntitiesModuleDescription commodityCategoryDescription = new BluePrintsEntitiesModuleDescription(commodityCodeCategoryId, null, "Commodity Code", null, null, null, null, false);
         protected override BluePrintsEntitiesModuleDescription[] CreateModules()
         {
+            return CreateBluePrintsModules();
+        }
+
+        private BluePrintsEntitiesModuleDescription[] CreateBluePrintsModules()
+        {
             List<BluePrintsEntitiesModuleDescription> bluePrintsEntitiesModuleDescriptions = new List<BluePrintsEntitiesModuleDescription>();
 
             if (LoginCredentials.hasPermission(PermissionResources.ViewDashboard))
                 bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_Dashboard", null, "Dashboard", "PROJECTDashboardView"));
 
             bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_UserDashboard", null, "User Dashboard", "USERDashboardView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser)));
-            
+
+            return bluePrintsEntitiesModuleDescriptions.ToArray();
+        }
+
+        private BluePrintsEntitiesModuleDescription[] CreatePreloadModules()
+        {
+            List<BluePrintsEntitiesModuleDescription> bluePrintsEntitiesModuleDescriptions = new List<BluePrintsEntitiesModuleDescription>();
+            bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_Dashboard", null, "Dashboard", "PROJECTDashboardView"));
             return bluePrintsEntitiesModuleDescriptions.ToArray();
         }
 

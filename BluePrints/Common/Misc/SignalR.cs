@@ -70,26 +70,14 @@ namespace BluePrints.Common
                 ReceiveMessage<BASELINE_ITEM, Guid>(PrimaryKey, MessageType, sender, hwid);
             else if (entityName == typeof(BASELINE).ToString())
                 ReceiveMessage<BASELINE, Guid>(PrimaryKey, MessageType, sender, hwid);
-            else if (entityName == typeof(COMMODITY_CODE).ToString())
-                ReceiveMessage<COMMODITY_CODE, Guid>(PrimaryKey, MessageType, sender, hwid);
-            else if (entityName == typeof(COMMODITY_GROUP_DIRECT).ToString())
-                ReceiveMessage<COMMODITY_GROUP_DIRECT, Guid>(PrimaryKey, MessageType, sender, hwid);
             else if (entityName == typeof(DEPARTMENT).ToString())
                 ReceiveMessage<DEPARTMENT, Guid>(PrimaryKey, MessageType, sender, hwid);
             else if (entityName == typeof(DISCIPLINE).ToString())
                 ReceiveMessage<DISCIPLINE, Guid>(PrimaryKey, MessageType, sender, hwid);
             else if (entityName == typeof(DOCTYPE).ToString())
                 ReceiveMessage<DOCTYPE, Guid>(PrimaryKey, MessageType, sender, hwid);
-            else if (entityName == typeof(ESTIMATION_DIRECT_ITEM).ToString())
-                ReceiveMessage<ESTIMATION_DIRECT_ITEM, Guid>(PrimaryKey, MessageType, sender, hwid);
             else if (entityName == typeof(ESTIMATION_DIRECT).ToString())
                 ReceiveMessage<ESTIMATION_DIRECT, Guid>(PrimaryKey, MessageType, sender, hwid);
-            else if (entityName == typeof(ESTIMATION_INDIRECT_ITEM).ToString())
-                ReceiveMessage<ESTIMATION_INDIRECT_ITEM, Guid>(PrimaryKey, MessageType, sender, hwid);
-            else if (entityName == typeof(ESTIMATION_INDIRECT).ToString())
-                ReceiveMessage<ESTIMATION_INDIRECT, Guid>(PrimaryKey, MessageType, sender, hwid);
-            else if (entityName == typeof(INDIRECT_TYPE).ToString())
-                ReceiveMessage<INDIRECT_TYPE, Guid>(PrimaryKey, MessageType, sender, hwid);
             else if (entityName == typeof(PHASE).ToString())
                 ReceiveMessage<PHASE, Guid>(PrimaryKey, MessageType, sender, hwid);
             else if (entityName == typeof(PROGRESS_ITEM).ToString())
