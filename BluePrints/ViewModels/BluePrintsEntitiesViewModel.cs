@@ -13,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -76,17 +75,6 @@ namespace BluePrints.ViewModels
             IsLoaded = true;
             MainThreadDispatcher.BeginInvoke(new Action(() => CreateProjectModules(entities)));
             _projectCollectionViewModel.OnEntitiesLoadedCallBack = null;
-
-            BackgroundWorker preloadBackgroundWorker = new BackgroundWorker();
-            preloadBackgroundWorker.DoWork += PreloadBackgroundWorker_DoWork;
-            preloadBackgroundWorker.WorkerSupportsCancellation = true;
-            preloadBackgroundWorker.RunWorkerAsync();
-
-            //MainThreadDispatcher.BeginInvoke(new Action(() => PreloadAssemblies()));
-        }
-
-        private void PreloadBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
             MainThreadDispatcher.BeginInvoke(new Action(() => PreloadAssemblies()));
         }
 
@@ -138,7 +126,7 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// Used for preloading assemblies
         /// </summary>
-        private async void PreloadAssemblies()
+        private void PreloadAssemblies()
         {
             //if (LoginCredentials.hasPermission(PermissionResources.ViewDashboard))
             //{

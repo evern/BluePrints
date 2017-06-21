@@ -7,5 +7,5 @@
         xmlns:local="clr-namespace:BluePrints.Views"
         mc:Ignorable="d"
         Title="PreloadWindow" Height="0" Width="0">
-    <views:BluePrintsEntitiesView Width="0" Height="0" />
+    <views:PROJECTDashboardView Width="0" Height="0" />
 </Window>
