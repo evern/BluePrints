@@ -69,12 +69,6 @@ namespace BluePrints.ViewModels
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
         {
-            if (actionObject != null)
-            {
-                actionObject.ExecuteAction();
-                return;
-            }
-
             MainViewModel = null;
             base.CleanUpEntitiesLoader();
 
@@ -116,6 +110,12 @@ namespace BluePrints.ViewModels
 
         protected override void OnAllEntitiesCollectionLoaded()
         {
+            if (actionObject != null)
+            {
+                actionObject.ExecuteAction();
+                return;
+            }
+
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
