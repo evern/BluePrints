@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -75,7 +76,18 @@ namespace BluePrints.ViewModels
             IsLoaded = true;
             MainThreadDispatcher.BeginInvoke(new Action(() => CreateProjectModules(entities)));
             _projectCollectionViewModel.OnEntitiesLoadedCallBack = null;
-            MainThreadDispatcher.BeginInvoke(new Action(() => PreloadAssemblies()));
+
+            BackgroundWorker preloadBackgroundWorker = new BackgroundWorker();
+            preloadBackgroundWorker.DoWork += PreloadBackgroundWorker_DoWork;
+            preloadBackgroundWorker.WorkerSupportsCancellation = true;
+            preloadBackgroundWorker.RunWorkerAsync();
+
+            //MainThreadDispatcher.BeginInvoke(new Action(() => PreloadAssemblies()));
+        }
+
+        private void PreloadBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            PreloadAssemblies();
         }
 
         private void CreateProjectModules(IEnumerable<PROJECT> entities)
@@ -126,14 +138,14 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// Used for preloading assemblies
         /// </summary>
-        private void PreloadAssemblies()
+        private async void PreloadAssemblies()
         {
             //if (LoginCredentials.hasPermission(PermissionResources.ViewDashboard))
             //{
             //var dashboard = Modules.FirstOrDefault(x => x.DocumentType == "PROJECTDashboardView");
             //if (dashboard != null)
             if (LoginCredentials.isPreloadMode())
-                StartPreloading(new BluePrintsEntitiesModuleDescription("View_PreloadDashboard", null, "Preloading...", "PROJECTDashboardView", new ActionObject(this.ClosePreloadDocument)));
+                startPreloading(new BluePrintsEntitiesModuleDescription("View_PreloadDashboard", null, "Preloading...", "PROJECTDashboardView", new ActionObject(this.ClosePreloadDocument)));
             //}
         }
 

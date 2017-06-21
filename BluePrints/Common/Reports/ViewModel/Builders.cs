@@ -176,7 +176,6 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 ObjectResult<StoredProcedure_PlannedDataPoint> deliverablesDataPoints = bluePrintDataContext.GetDeliverablePlannedDataPoints(this.p6BaselineName, this.p6ProgressProjectName, this.dataDate, progressItemStats.Entity.EntityKey, progressItemStats.Entity.Entity.GUID_ORIGINAL, workpackKey, totalUnits, rate, isByDuration);
 
-
                 List<StoredProcedure_PlannedDataPoint> plannedDataPoints = new List<StoredProcedure_PlannedDataPoint>();
                 //circumvent EF issue when ObjectResult is null
                 try

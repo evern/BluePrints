@@ -92,6 +92,7 @@
             this.colAssigned.OptionsColumn.ReadOnly = true;
             this.colAssigned.Visible = true;
             this.colAssigned.VisibleIndex = 8;
+            this.colAssigned.Width = 229;
             // 
             // gridControlDeliverable
             // 
@@ -139,13 +140,13 @@
             this.gridViewDeliverable.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.colWorkpack,
             this.colArea,
+            this.colSubArea,
             this.colDocType,
             this.colDepartment,
             this.colDiscipline,
             this.colEntity,
             this.colPrimaryTitle,
-            this.colAssigned,
-            this.colSubArea});
+            this.colAssigned});
             gridFormatRule1.Column = this.colAssigned;
             gridFormatRule1.ColumnApplyTo = this.colAssigned;
             gridFormatRule1.Name = "Format0";
@@ -177,6 +178,7 @@
             this.colWorkpack.OptionsColumn.ReadOnly = true;
             this.colWorkpack.Visible = true;
             this.colWorkpack.VisibleIndex = 0;
+            this.colWorkpack.Width = 150;
             // 
             // colArea
             // 
@@ -187,6 +189,7 @@
             this.colArea.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colArea.Visible = true;
             this.colArea.VisibleIndex = 1;
+            this.colArea.Width = 100;
             // 
             // colDocType
             // 
@@ -197,6 +200,7 @@
             this.colDocType.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colDocType.Visible = true;
             this.colDocType.VisibleIndex = 3;
+            this.colDocType.Width = 100;
             // 
             // colDepartment
             // 
@@ -207,6 +211,7 @@
             this.colDepartment.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colDepartment.Visible = true;
             this.colDepartment.VisibleIndex = 4;
+            this.colDepartment.Width = 100;
             // 
             // colDiscipline
             // 
@@ -217,6 +222,7 @@
             this.colDiscipline.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
             this.colDiscipline.Visible = true;
             this.colDiscipline.VisibleIndex = 5;
+            this.colDiscipline.Width = 100;
             // 
             // colEntity
             // 
@@ -228,14 +234,19 @@
             this.colEntity.OptionsColumn.ReadOnly = true;
             this.colEntity.Visible = true;
             this.colEntity.VisibleIndex = 6;
+            this.colEntity.Width = 200;
             // 
             // colPrimaryTitle
             // 
             this.colPrimaryTitle.Caption = "Primary Title";
             this.colPrimaryTitle.FieldName = "Entity.PRIMARY_TITLE";
             this.colPrimaryTitle.Name = "colPrimaryTitle";
+            this.colPrimaryTitle.OptionsColumn.AllowEdit = false;
+            this.colPrimaryTitle.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.True;
+            this.colPrimaryTitle.OptionsColumn.ReadOnly = true;
             this.colPrimaryTitle.Visible = true;
             this.colPrimaryTitle.VisibleIndex = 7;
+            this.colPrimaryTitle.Width = 800;
             // 
             // colSubArea
             // 
@@ -245,6 +256,7 @@
             this.colSubArea.Name = "colSubArea";
             this.colSubArea.Visible = true;
             this.colSubArea.VisibleIndex = 2;
+            this.colSubArea.Width = 100;
             // 
             // schedulerStorage1
             // 

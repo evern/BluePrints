@@ -11,6 +11,7 @@ using DevExpress.Xpf.Charts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -40,7 +41,7 @@ namespace BluePrints.ViewModels
         bool isUsernameLoadedFromXML;
         public LoginViewModel()
         {
-            CacheMainWindow();
+            //preloadMainWindow();
             delayedHideDispatcher = new DispatcherTimer();
             delayedHideDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
             delayedHideDispatcher.Tick += delayedHideDispatcher_Tick;
@@ -48,6 +49,10 @@ namespace BluePrints.ViewModels
             UserName = XMLHelpers.GetSettings_Username();
             if (UserName != string.Empty)
                 isUsernameLoadedFromXML = true;
+#if DEBUG
+            UserName = "superadmin";
+#endif
+
             Application.Current.Dispatcher.BeginInvoke(new Action(() => EVERNPCLogin()));
         }
 
@@ -64,9 +69,9 @@ namespace BluePrints.ViewModels
             if (Environment.MachineName == "EVERN-PC")
             {
                 UserName = BluePrintsResources.AdminUsername;
-                UserPassword = BluePrintsResources.AdminPassword;
-                delayedHideDispatcher.Start();
-                Login();
+                //UserPassword = BluePrintsResources.AdminPassword;
+                //delayedHideDispatcher.Start();
+                //Login();
             }
 #endif
         }
@@ -202,7 +207,7 @@ namespace BluePrints.ViewModels
             ShowErrorCallBack?.Invoke(isPasswordField, errorMessage);
         }
         
-        private async void CacheMainWindow()
+        private async void preloadMainWindow()
         {
             MainWindow mainWindow = new MainWindow();
             mainWindow = null;

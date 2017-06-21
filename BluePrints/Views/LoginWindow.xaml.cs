@@ -20,7 +20,7 @@ namespace BluePrints.Views
             viewModel.ShowControlCallBack = Show;
             DataContext = viewModel;
 
-            if (txtUsername.Text == string.Empty)
+            if (viewModel.UserName == string.Empty)
                 txtUsername.Focus();
             else
                 txtPassword.Focus();

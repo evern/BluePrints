@@ -69,6 +69,12 @@ namespace BluePrints.ViewModels
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
         {
+            if (actionObject != null)
+            {
+                actionObject.ExecuteAction();
+                return;
+            }
+
             MainViewModel = null;
             base.CleanUpEntitiesLoader();
 
@@ -145,12 +151,6 @@ namespace BluePrints.ViewModels
 
         private void onMainViewModelFirstLoaded(object sender, EventArgs e)
         {
-            if (actionObject != null)
-            {
-                actionObject.ExecuteAction();
-                return;
-            }
-
             onMainViewModelFirstLoadedTimer.Stop();
             backgroundWorkerCollection.Clear();
             foreach (PROJECT_Dashboard entity in MainViewModel.Entities)
