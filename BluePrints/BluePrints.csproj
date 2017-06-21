@@ -532,9 +532,6 @@
     <Compile Include="Views\ESTIMATION_ITEM\ESTIMATE_COMMODITY_CODESelectionView.xaml.cs">
       <DependentUpon>ESTIMATE_COMMODITY_CODESelectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PreloadWindow.xaml.cs">
-      <DependentUpon>PreloadWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\REGISTER\REGISTER_LLCollectionView.xaml.cs">
       <DependentUpon>REGISTER_LLCollectionView.xaml</DependentUpon>
     </Compile>
@@ -1299,10 +1296,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ESTIMATION_ITEM\ESTIMATE_COMMODITY_CODESelectionView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\PreloadWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
