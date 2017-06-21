@@ -41,7 +41,7 @@ namespace BluePrints.ViewModels
         bool isUsernameLoadedFromXML;
         public LoginViewModel()
         {
-            //preloadMainWindow();
+            preloadMainWindow();
             delayedHideDispatcher = new DispatcherTimer();
             delayedHideDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
             delayedHideDispatcher.Tick += delayedHideDispatcher_Tick;
