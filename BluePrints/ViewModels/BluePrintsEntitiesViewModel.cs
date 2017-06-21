@@ -87,7 +87,7 @@ namespace BluePrints.ViewModels
 
         private void PreloadBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            PreloadAssemblies();
+            MainThreadDispatcher.BeginInvoke(new Action(() => PreloadAssemblies()));
         }
 
         private void CreateProjectModules(IEnumerable<PROJECT> entities)
