@@ -131,23 +131,27 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
         #region Collection Call Backs
-        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
             if(messageType == EntityMessageType.Added)
             {
                 PROJECT findPROJECT = MainViewModel.Entities.FirstOrDefault(x => x.GUID == (Guid)key);
                 if(findPROJECT != null)
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                     BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(findPROJECT.NUMBER);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
 
-            base.OnAfterAffectingEntitiesChanged(key, changedType, messageType, sender);
+            base.OnAfterAffectingEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }
 
         private void onBeforeEntitiesDeleted(IEnumerable<PROJECT> deletedPROJECTs)
         {
             foreach(PROJECT project in deletedPROJECTs)
             {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(project.NUMBER);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
         }
 
@@ -292,7 +296,9 @@ namespace BluePrints.ViewModels
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().STATUS))
             {
                 PROJECT activePROJECT = (PROJECT)e.Row;
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(activePROJECT.NUMBER);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
 
             base.CellValueAnyRowChanging(e);

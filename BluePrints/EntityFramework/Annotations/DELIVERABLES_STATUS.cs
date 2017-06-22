@@ -6,7 +6,7 @@ namespace BluePrints.Data
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class DELIVERABLES_STATUS : IGuidEntityKey
+    public partial class DELIVERABLES_STATUS : IGuidEntityKey, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public DELIVERABLES_STATUS()
@@ -29,6 +29,13 @@ namespace BluePrints.Data
             {
                 GUID = value;
             }
+        }
+
+        [NotMapped]
+        public DateTime EntityCreatedDate
+        {
+            get { return CREATED; }
+            set { CREATED = value; }
         }
     }
 }

@@ -7,7 +7,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
 
     [ConstraintAttributes("GUID_PROJECT, INTERNAL_NAME1")]
-    public partial class WORKPACK : IGuidEntityKey
+    public partial class WORKPACK : IGuidEntityKey, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public WORKPACK()
@@ -32,6 +32,13 @@ namespace BluePrints.Data
             {
                 GUID = value;
             }
+        }
+
+        [NotMapped]
+        public DateTime EntityCreatedDate
+        {
+            get { return CREATED; }
+            set { CREATED = value; }
         }
     }
 }

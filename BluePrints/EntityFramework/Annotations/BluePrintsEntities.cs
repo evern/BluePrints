@@ -70,7 +70,7 @@ namespace BluePrints.Data
 
         public List<StoredProcedure_PlannedDataPoint> QueryDeliverablePlannedDataPoints(Guid baselineItemGuid)
         {
-            return this.DataPoint.Where(x => x.Guid_DataPoint == baselineItemGuid && x.IsPlanned == true).ToList()
+            return this.DataPoint.Where(x => x.Deliverable_Guid == baselineItemGuid && x.IsPlanned == true).ToList()
                 .Select(x => new StoredProcedure_PlannedDataPoint()
                 {
                     Deliverable_Guid = x.Deliverable_Guid,
@@ -120,7 +120,7 @@ namespace BluePrints.Data
 
         public List<StoredProcedure_RemainingDataPoint> QueryDeliverableRemainingDataPoints(Guid baselineItemGuid)
         {
-            return this.DataPoint.Where(x => x.Guid_DataPoint == baselineItemGuid && x.IsPlanned == true).ToList()
+            return this.DataPoint.Where(x => x.Deliverable_Guid == baselineItemGuid && x.IsPlanned == true).ToList()
                 .Select(x => new StoredProcedure_RemainingDataPoint()
                 {
                     Deliverable_Guid = x.Deliverable_Guid,

@@ -206,7 +206,6 @@ namespace BluePrints.ViewModels
             //MainViewModel.OnAfterEntitySavedCallBack = MainEntitySaveVariation;
             MainViewModel.IsContinueNewRowFromViewCallBack = AddVARIATION_ITEMCallBack;
             MainViewModel.OnBeforeBulkEditSaveCallBack = OnBeforeBulkEditSaveCallBack;
-            MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntityCallBack;
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = ApplyEntityPropertiesToProjectionCallBack;
             MainViewModel.OnBeforeEntityDeleteCallBack = EntityBeforeDeletionCallBack;
             MainViewModel.CreateNewProjectionFromNewEntityCallBack = CreateNewProjectionFromNewEntity;
@@ -216,7 +215,7 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender)
+        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
             //Don't refresh on local update because every updates invoke baseline_item and variation save
             if (sender == VARIATION_ITEMSCollectionViewModel)
@@ -495,16 +494,10 @@ namespace BluePrints.ViewModels
             VARIATION_ITEMSCollectionViewModel.Save(saveVARIATION_ITEM);
         }
 
-        public void ApplyProjectionPropertiesToEntityCallBack(VARIATION_ITEMProjection projectionEntity,
-            BASELINE_ITEM entity)
+        protected override void OnBeforeApplyProjectionPropertiesToEntity(VARIATION_ITEMProjection projectionEntity, BASELINE_ITEM entity)
         {
             projectionEntity.Entity.Entity.GUID_VARIATION = loadVARIATION.GUID;
-            DataUtils.ShallowCopy(entity, projectionEntity.Entity.Entity);
-            //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
-            if (entity.CREATED.Date.Year == 1)
-                projectionEntity.Entity.Entity.CREATED = DateTime.Now;
-
-            entity.CREATED = projectionEntity.Entity.Entity.CREATED;
+            base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
         }
 
         public void ApplyEntityPropertiesToProjectionCallBack(Guid primaryKey, VARIATION_ITEMProjection projectionEntity,
@@ -751,7 +744,7 @@ namespace BluePrints.ViewModels
         public void AutoPopulate(object button)
         {
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject) button) as GridMenuInfo;
+            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
 
             var departmentFieldName = "Entity.Entity.GUID_DEPARTMENT";
             var disciplineFieldName = "Entity.Entity.GUID_DISCIPLINE";
@@ -821,19 +814,19 @@ namespace BluePrints.ViewModels
                         var newWORKPACK = new WORKPACK();
                         newWORKPACK.GUID_PROJECT = loadPROJECT.GUID;
                         if (entity.Entity.Entity.GUID_AREA != null)
-                            newWORKPACK.GUID_DAREA = (Guid) entity.Entity.Entity.GUID_AREA;
+                            newWORKPACK.GUID_DAREA = (Guid)entity.Entity.Entity.GUID_AREA;
                         if (entity.Entity.Entity.GUID_SUBAREA != null)
                             newWORKPACK.GUID_DSUBAREA = (Guid)entity.Entity.Entity.GUID_SUBAREA;
                         if (entity.Entity.Entity.GUID_PHASE != null)
                             newWORKPACK.GUID_DPHASE = entity.Entity.Entity.GUID_PHASE;
                         if (entity.Entity.Entity.GUID_DISCIPLINE != null)
                             newWORKPACK.GUID_DDISCIPLINE =
-                                (Guid) entity.Entity.Entity.GUID_DISCIPLINE;
+                                (Guid)entity.Entity.Entity.GUID_DISCIPLINE;
                         if (entity.Entity.Entity.GUID_DEPARTMENT != null)
                             newWORKPACK.GUID_DDEPARTMENT =
-                                (Guid) entity.Entity.Entity.GUID_DEPARTMENT;
+                                (Guid)entity.Entity.Entity.GUID_DEPARTMENT;
                         if (entity.Entity.Entity.GUID_DOCTYPE != null)
-                            newWORKPACK.GUID_DDOCTYPE = (Guid) entity.Entity.Entity.GUID_DOCTYPE;
+                            newWORKPACK.GUID_DDOCTYPE = (Guid)entity.Entity.Entity.GUID_DOCTYPE;
 
                         string newInternalName;
                         if (IsPhaseVisible)
@@ -844,9 +837,9 @@ namespace BluePrints.ViewModels
                         newWORKPACK.INTERNAL_NAME1 = newInternalName;
                         newWORKPACK.STARTDATE = DateTime.Now;
                         newWORKPACK.ENDDATE =
-                            BluePrintsDataUtils.WORKPACK_Calculate_EndDate((DateTime) newWORKPACK.STARTDATE, loadPROJECT);
-                        var reviewStartDate = (DateTime) newWORKPACK.STARTDATE;
-                        var reviewEndDate = (DateTime) newWORKPACK.ENDDATE;
+                            BluePrintsDataUtils.WORKPACK_Calculate_EndDate((DateTime)newWORKPACK.STARTDATE, loadPROJECT);
+                        var reviewStartDate = (DateTime)newWORKPACK.STARTDATE;
+                        var reviewEndDate = (DateTime)newWORKPACK.ENDDATE;
                         BluePrintsDataUtils.WORKPACK_Calculate_ReviewPeriod(ref reviewStartDate, ref reviewEndDate,
                             loadPROJECT, false);
                         newWORKPACK.REVIEWSTARTDATE = reviewStartDate;

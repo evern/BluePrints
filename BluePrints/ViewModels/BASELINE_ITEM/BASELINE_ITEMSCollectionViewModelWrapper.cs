@@ -217,7 +217,6 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.CreateNewProjectionFromNewEntityCallBack = CreateNewProjectionFromNewEntityCallBack;
             MainViewModel.ExistingRowAddUndoAndSaveCallBack = ExistingRowAddUndoAndSaveCallBack;
-            MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntity;
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
             MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
             MainViewModel.PasteListener = this.PasteListener;
@@ -229,7 +228,7 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
             if (changedType == typeof(PROGRESS_ITEM))
             {
@@ -237,7 +236,7 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            base.OnAfterAffectingEntitiesChanged(key, changedType, messageType, sender);
+            base.OnAfterAffectingEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }
 
         private void PasteListener(PasteStatus pasteStatus)
@@ -245,16 +244,12 @@ namespace BluePrints.ViewModels
 
         }
 
-
-        public void ApplyProjectionPropertiesToEntity(PROGRESS_ITEMProjection projectionEntity, BASELINE_ITEM entity)
+        protected override void OnBeforeApplyProjectionPropertiesToEntity(PROGRESS_ITEMProjection projectionEntity, BASELINE_ITEM entity)
         {
             projectionEntity.Entity.Entity.GUID_BASELINE = _LoadBaseline.GUID;
+            //because TProjection is not IProjection<TMainEntity>, do it manually here
             DataUtils.ShallowCopy(entity, projectionEntity.Entity.Entity);
-            //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
-            if (entity.CREATED.Date.Year == 1)
-                projectionEntity.Entity.Entity.CREATED = DateTime.Now;
-
-            entity.CREATED = projectionEntity.Entity.Entity.CREATED;
+            base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
         }
 
         public void OnEntitiesSavedCallBack(Guid primaryKey, PROGRESS_ITEMProjection projectionEntity,

@@ -6,7 +6,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
 
     [ConstraintAttributes("INTERNAL_NUM")]
-    public partial class AREA : IGuidEntityKey, IGuidParentEntityKey
+    public partial class AREA : IGuidEntityKey, IGuidParentEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey
@@ -33,6 +33,13 @@ namespace BluePrints.Data
             {
                 GUID_PARENT = value;
             }
+        }
+
+        [NotMapped]
+        public DateTime EntityCreatedDate
+        {
+            get { return CREATED; }
+            set { CREATED = value; }
         }
     }
 }

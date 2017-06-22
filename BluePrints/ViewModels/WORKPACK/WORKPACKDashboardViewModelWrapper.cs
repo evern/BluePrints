@@ -119,7 +119,7 @@ namespace BluePrints.ViewModels
         }
 
         public override void OnAfterCompulsoryEntitiesChanged(object key, Type changedType, EntityMessageType messageType,
-            object sender)
+            object sender, bool isBulkRefresh)
         {
             return;
         }

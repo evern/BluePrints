@@ -38,6 +38,22 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public Guid? DeliverableStatusGuid
+        {
+            get
+            {
+                return Entity.GUID_STATUS;
+            }
+            set
+            {
+                Guid? deliverableStatusGuid = (Guid?)value;
+                if (deliverableStatusGuid == null)
+                    Entity.GUID_STATUS = null;
+                else if (AvailableDeliverable_Status.Any(x => x.GUID == deliverableStatusGuid))
+                    Entity.GUID_STATUS = deliverableStatusGuid;
+            }
+        }
+
         public void SetAvailableSubAreas(IEnumerable<AREA> SUBAREACollection)
         {
             AvailableSubAreas = SUBAREACollection.Where(x => x.GUID_PARENT == Entity.GUID_AREA);

@@ -7,7 +7,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
 
     [ConstraintAttributes("NUMBER")]
-    public partial class REGISTER_RISK : IGuidEntityKey, IEntityNumber
+    public partial class REGISTER_RISK : IGuidEntityKey, IEntityNumber, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey
@@ -70,6 +70,13 @@ namespace BluePrints.Data
 
                 return 4;
             }
+        }
+
+        [NotMapped]
+        public DateTime EntityCreatedDate
+        {
+            get { return CREATED; }
+            set { CREATED = value; }
         }
     }
 }

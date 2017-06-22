@@ -18,6 +18,10 @@ namespace BluePrints.Common.Projections
         public ProgressStats Stats { get; set; }
         #endregion
 
+        #region For User Dashboard and Deliverables
+        public PROGRESS loadPROGRESS { get; set; }
+        #endregion
+
         /// <summary>
         /// Refreshes current row when stats budgeted datapoints are set
         /// </summary>
@@ -43,6 +47,17 @@ namespace BluePrints.Common.Projections
                     return 0;
 
                 return Stats.Budgeted.CurrentPeriodCumulativeDataPoint.UnitsPercentage;
+            }
+        }
+
+        public DateTime? DueDate
+        {
+            get
+            {
+                if (Stats == null || Stats.Budgeted == null || Stats.Budgeted.CumulativeDataPoints == null || Stats.Budgeted.CumulativeDataPoints.Count == 0)
+                    return null;
+
+                return Stats.Budgeted.CumulativeDataPoints.Last().ProgressDate;
             }
         }
 
@@ -454,6 +469,44 @@ namespace BluePrints.Common.Projections
 
     public static class PROGRESS_ITEMProjectionQueries
     {
+        public static IQueryable<PROGRESS_ITEMProjection> GetUserDeliverables(IQueryable<BASELINE_ITEM> query, Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc, USER user, bool buildStats = true)
+        {
+            IP6EntitiesUnitOfWork p6UnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            IQueryable<BASELINE_ITEM> projectUSER_DELIVERABLES = query.Where(x => x.GUID_USER == user.GUID && x.BASELINE.STATUS == BaselineStatus.Live && x.BASELINE.PROJECT.STATUS == ProjectStatus.Active);
+            List<PROGRESS_ITEMProjection> USERDeliverables = new List<PROGRESS_ITEMProjection>();
+
+            var deliverablesGroupByProject = projectUSER_DELIVERABLES.GroupBy(x => x.BASELINE.PROJECT).Select(group => new { Project = group.Key, Deliverables = group.ToList() });
+            foreach(var deliverableGroupByProject in deliverablesGroupByProject)
+            {
+                PROJECT currentDeliverablePROJECT = deliverableGroupByProject.Project;
+
+                PROGRESS livePROGRESS = currentDeliverablePROJECT.PROGRESS.FirstOrDefault(x => x.STATUS == ProgressStatus.Live);
+                if (livePROGRESS == null)
+                    continue;
+
+                IEnumerable<BASELINE_ITEM> currentProjectDeliverables = deliverableGroupByProject.Deliverables;
+                BASELINE liveBASELINE = currentDeliverablePROJECT.BASELINE.FirstOrDefault(x => x.STATUS == BaselineStatus.Live);
+                IEnumerable<WORKPACK> projectWORKPACK = currentDeliverablePROJECT.WORKPACK;
+                IEnumerable<VARIATION> approvedVARIATION = currentDeliverablePROJECT.VARIATION.Where(x => x.APPROVED != null);
+                IEnumerable<PROGRESS_ITEM> livePROGRESS_ITEMS = livePROGRESS.PROGRESS_ITEM;
+                IEnumerable<RATE> projectRATES = currentDeliverablePROJECT.RATE;
+                Func<IEnumerable<DELIVERABLES_STATUS>> getProjectDELIVERABLE_STATUSFunc = () => getDELIVERABLES_STATUSESFunc().Where(x => x.GUID_PROJECT == currentDeliverablePROJECT.GUID);
+
+                List<PROGRESS_ITEMProjection> activePROGRESS_ITEMS;
+                if (buildStats)
+                {
+                    activePROGRESS_ITEMS = PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMSWithStats(currentProjectDeliverables.AsQueryable(), () => currentDeliverablePROJECT, () => livePROGRESS, () => liveBASELINE, () => projectWORKPACK, () => livePROGRESS_ITEMS, () => projectRATES, getProjectDELIVERABLE_STATUSFunc, () => approvedVARIATION, p6UnitOfWork).ToList();
+                    activePROGRESS_ITEMS.ForEach(x => x.BuildStats());
+                }
+                else
+                    activePROGRESS_ITEMS = PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(currentProjectDeliverables.AsQueryable(), () => livePROGRESS, () => liveBASELINE, () => livePROGRESS_ITEMS, () => projectRATES, getProjectDELIVERABLE_STATUSFunc).ToList();
+
+                USERDeliverables.AddRange(activePROGRESS_ITEMS);
+            }
+
+            return USERDeliverables.AsQueryable();
+        }
+
         public static IQueryable<PROGRESS_ITEMProjection> JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS, Func<PROGRESS> getPROGRESSFunc, Func<BASELINE> getBASELINEFunc,
             Func<IEnumerable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc, Func<IEnumerable<RATE>> getRATESFunc,
@@ -484,7 +537,8 @@ namespace BluePrints.Common.Projections
                             new PROGRESS_ITEMProjection(reportingDate)
                             {
                                 EntityKey = x.EntityKey,
-                                Entity = x, 
+                                Entity = x,
+                                loadPROGRESS = PROGRESS,
                                 PROGRESS_ITEMS = LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.Entity.GUID_ORIGINAL), 
                             }).AsQueryable();
         }
@@ -526,6 +580,7 @@ namespace BluePrints.Common.Projections
                         new PROGRESS_ITEMProjection(reportingDate, reportInterval, firstAlignedDataDate, x, project, getBASELINEFunc(), getPROGRESSFunc(), getWORKPACKFunc(), projectVariationAdjustments, p6UOW)
                         {
                             EntityKey = x.EntityKey,
+                            loadPROGRESS = PROGRESS, 
                             PROGRESS_ITEMS = LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.Entity.GUID_ORIGINAL)
                         }).ToList();
 

@@ -136,20 +136,9 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECT_Dashboard> entities)
         {
-            MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntity;
             MainViewModel.AdditionalValidateCellCallBack = AdditionalCellValidation;
             MainViewModel.CanFillDownCallBack = CanFillDownCallBack;
             base.AssignCallBacksAndRaisePropertyChange(entities);
-        }
-
-        public void ApplyProjectionPropertiesToEntity(PROJECT_Dashboard projectionEntity, PROJECT entity)
-        {
-            DataUtils.ShallowCopy(entity, projectionEntity.Entity);
-            //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
-            if (entity.CREATED.Date.Year == 1)
-                projectionEntity.Entity.CREATED = DateTime.Now;
-
-            entity.CREATED = projectionEntity.Entity.CREATED;
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)
@@ -282,7 +271,9 @@ namespace BluePrints.ViewModels
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Entity) + "." + BindableBase.GetPropertyName(() => new PROJECT().STATUS))
             {
                 PROJECT_Dashboard activePROJECT = (PROJECT_Dashboard)e.Row;
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(activePROJECT.Entity.NUMBER);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
 
             base.CellValueAnyRowChanging(e);

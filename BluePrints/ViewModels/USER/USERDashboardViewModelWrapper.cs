@@ -19,7 +19,7 @@ namespace BluePrints.ViewModels
     /// Represents the PROJECTS collection view model.
     /// </summary>
     public class USERDashboardViewModelWrapper :
-        DashboardViewModelWrapper<PROJECT, USER_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>
+        DashboardViewModelWrapper<BASELINE_ITEM, PROGRESS_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROJECT_ITEMSViewModelWrapper as a POCO view model.
@@ -39,7 +39,7 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operation
-        USER _loadUSER;
+        private USER _loadUSER;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
@@ -61,7 +61,6 @@ namespace BluePrints.ViewModels
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
 
             InvokeEntitiesLoaderDescriptionLoading();
@@ -77,16 +76,6 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.PROJECT.STATUS == ProjectStatus.Active);
         }
 
-        private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
-        {
-            return query => query.Where(x => x.STATUS == BaselineStatus.Live);
-        }
-
-        private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
-        {
-            return query => query.Where(x => x.STATUS == ProgressStatus.Live);
-        }
-
         protected override void OnAllEntitiesCollectionLoaded()
         {
             if (actionObject != null)
@@ -95,24 +84,22 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<PROJECT>, IQueryable<USER_Dashboard>>
+        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<PROGRESS_ITEMProjection>>
             ConstructMainViewModelProjection()
         {
             var getDELIVERABLES_STATUSESFunc = loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
 
-            return
-                query =>
-                    USER_DashboardQueries.SummarizeUserDashboard(query.Where(x => x.STATUS == ProjectStatus.Active).OrderBy(x => x.NUMBER), getDELIVERABLES_STATUSESFunc, _loadUSER, RaisePropertyChanged);
+            return query => PROGRESS_ITEMProjectionQueries.GetUserDeliverables(query, getDELIVERABLES_STATUSESFunc, _loadUSER);
         }
 
-        protected override bool OnMainViewModelLoaded(IEnumerable<USER_Dashboard> entities)
+        protected override bool OnMainViewModelLoaded(IEnumerable<PROGRESS_ITEMProjection> entities)
         {
             MainViewModel =
-                (CollectionViewModel<PROJECT, USER_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>)
+                (CollectionViewModel<BASELINE_ITEM, PROGRESS_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>)
                 mainEntityLoaderDescription.GetViewModel();
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             MainViewModel.SetParentViewModel(this);
@@ -142,28 +129,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
-        public IEnumerable<WORKPACK> WORKPACKCollection
-        {
-            get
-            {
-                var collection = GetEntities<WORKPACK>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.INTERNAL_NAME1);
-                return collection;
-            }
-        }
-
-        public IEnumerable<PROJECT> PROJECTCollection
-        {
-            get
-            {
-                var collection = GetEntities<PROJECT>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.NUMBER);
-                return collection;
-            }
-        }
-
         public IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection
         {
             get
@@ -173,30 +138,6 @@ namespace BluePrints.ViewModels
                     collection = collection.OrderBy(x => x.MAX_PERCENTAGE);
                 return collection;
             }
-        }
-
-        public bool CanEditReport()
-        {
-            if (DisplaySelectedEntities.Count > 0)
-                return false;
-
-            return true;
-        }
-
-        public bool CanViewReport()
-        {
-            if (DisplaySelectedEntities.Count > 0)
-                return false;
-
-            return true;
-        }
-
-        public bool CanEdit(USER_Dashboard entity)
-        {
-            if (DisplaySelectedEntity == null)
-                return false;
-
-            return true;
         }
 
         protected IDocumentManagerService DocumentManagerService

@@ -157,7 +157,6 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<WORKPACKProjection> entities)
         {
             MainViewModel.CreateNewProjectionFromNewEntityCallBack = CreateNewProjectionFromNewEntityCallBack;
-            MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntity;
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitySavedCallBack;
             MainViewModel.ExistingRowAddUndoAndSaveCallBack = ExistingRowAddUndoAndSaveCallBack;
             MainViewModel.SetParentViewModel(this);
@@ -170,15 +169,10 @@ namespace BluePrints.ViewModels
             return new WORKPACKProjection();
         }
 
-        public void ApplyProjectionPropertiesToEntity(WORKPACKProjection projectionEntity, WORKPACK entity)
+        protected override void OnBeforeApplyProjectionPropertiesToEntity(WORKPACKProjection projectionEntity, WORKPACK entity)
         {
             projectionEntity.Entity.GUID_PROJECT = loadPROJECT.GUID;
-            DataUtils.ShallowCopy(entity, projectionEntity.Entity);
-            //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
-            if (entity.CREATED.Date.Year == 1)
-                projectionEntity.Entity.CREATED = DateTime.Now;
-
-            entity.CREATED = projectionEntity.Entity.CREATED;
+            base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
         }
 
         public void OnEntitySavedCallBack(Guid primaryKey, WORKPACKProjection projectionEntity,

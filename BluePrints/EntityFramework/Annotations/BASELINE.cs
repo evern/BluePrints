@@ -7,7 +7,7 @@ namespace BluePrints.Data
 
     [ConstraintAttributes("REVISION")]
     [BulkEditDisabledAttributes("P6BASELINE_NAME, P6MODBASELINE_NAME")]
-    public partial class BASELINE : IGuidEntityKey
+    public partial class BASELINE : IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey
@@ -21,6 +21,13 @@ namespace BluePrints.Data
             {
                 GUID = value;
             }
+        }
+        
+        [NotMapped]
+        public DateTime EntityCreatedDate
+        {
+            get { return CREATED; }
+            set { CREATED = value; }
         }
     }
 }

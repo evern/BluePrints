@@ -122,7 +122,7 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
             if (changedType == typeof(REGISTER_CHANGE) || changedType == typeof(REGISTER_HOLD))
             {
@@ -130,7 +130,7 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            base.OnAfterAffectingEntitiesChanged(key, changedType, messageType, sender);
+            base.OnAfterAffectingEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }
         #region Collection Call Backs
 

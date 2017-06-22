@@ -68,7 +68,7 @@ namespace BluePrints.ViewModels
         private BASELINE loadBASELINE;
         private bool isQueryForLiveStatus;
         FullSummarizer fullSummarizer;
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
+        protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private IP6EntitiesUnitOfWork p6UOW = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
 
@@ -310,17 +310,30 @@ namespace BluePrints.ViewModels
         bool isFirstLoaded;
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROGRESS_ITEMProjection> entities)
         {
-            MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntityCallBack;
             MainViewModel.ExistingRowAddUndoAndSaveCallBack = ExistingRowAddUndoAndSaveCallBack;
             MainViewModel.OnAfterEntitySavedCallBack = OnAfterBASELINE_ITEMEntitySaved;
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
+            MainViewModel.OnMappingAdditionalChangedEntitiesProperties = OnMappingAdditionalChangedEntitiesProperties;
             MainViewModel.BeforeShownEditor = BeforeShownEditor;
             PROGRESS_ITEMSCollectionViewModel.SetParentViewModel(this);
             MainViewModel.SetParentViewModel(this);
             //mainThreadDispatcher.BeginInvoke(new Action(() => InitializeSummarizer(entities)));
+
             onMainViewModelFirstLoadedTimer.Start();
+
             base.AssignCallBacksAndRaisePropertyChange(entities);
             isFirstLoaded = true;
+        }
+
+        private void OnMappingAdditionalChangedEntitiesProperties(PROGRESS_ITEMProjection existingProjectionEntity, PROGRESS_ITEMProjection projectionEntity)
+        {
+            projectionEntity.Stats = existingProjectionEntity.Stats;
+        }
+
+        protected override void OnBeforeApplyProjectionPropertiesToEntity(PROGRESS_ITEMProjection projectionEntity, BASELINE_ITEM entity)
+        {
+            entity = projectionEntity.Entity.Entity;
+            base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
         }
 
         ProjectSummaryStats projectSummary;
@@ -331,7 +344,7 @@ namespace BluePrints.ViewModels
             calculatePlannedBackgroundWorker.RunWorkerAsync();
         }
 
-        private void InitializeSummarizer()
+        protected virtual void InitializeSummarizer()
         {
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
@@ -350,6 +363,11 @@ namespace BluePrints.ViewModels
                 return;
             }
 
+            BackgroundWorkerBuildStats();
+        }
+
+        protected virtual void BackgroundWorkerBuildStats()
+        {
             fullSummarizer.BuildBudgetedOnly();
         }
 
@@ -360,33 +378,19 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => RefreshView()));
         }
 
-        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
+            this.RaisePropertiesChanged();
             //do no perform any refresh when progress is changed from here
-            if (sender == PROGRESS_ITEMSCollectionViewModel)
-                return;
+            //if (sender == PROGRESS_ITEMSCollectionViewModel)
+            //    return;
 
-            base.OnAfterAffectingEntitiesChanged(key, changedType, messageType, sender);
-        }
-
-        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender)
-        {
-            if (changedType == typeof(PROGRESS_ITEM))
-            {
-                PROGRESS_ITEMProjection mainEntity = MainViewModel.Entities.Where(x => x.PROGRESS_ITEMCurrent != null).FirstOrDefault(x => x.PROGRESS_ITEMCurrent.GUID.ToString() == key.ToString());
-                if (mainEntity != null)
-                {
-                    //got to make sure sender is not MainViewModel or else it'll not be refreshed
-                    mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(mainEntity.EntityKey, EntityMessageType.Changed, this))));
-                    return true;
-                }
-            }
-
-            return false;
+            //base.OnAfterAffectingEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }
 
         #region Collection Call Backs
-        private bool ExistingRowAddUndoAndSaveCallBack(PROGRESS_ITEMProjection projectionEntity, CellValueChangedEventArgs e)
+        //Hereby chooses whether to perform save in BASELINE_ITEMCollectionViewModel or PROGRESS_ITEMCollectionViewModel
+        protected bool ExistingRowAddUndoAndSaveCallBack(PROGRESS_ITEMProjection projectionEntity, CellValueChangedEventArgs e)
         {
             //if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
             //     BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." + BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_STATUS))
@@ -423,24 +427,21 @@ namespace BluePrints.ViewModels
             {
                 return true;
             }
-            else if (
+            else    if (
                 e.Column.FieldName ==
                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
-                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
-                BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_STATUS))
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().DeliverableStatusGuid))
             {
-                if (e.Value == null)
-                    return false;
-                else
+                //if (e.Value == null)
+                //    return false;
+                //else
+                //{
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity, e.Column.FieldName, e.OldValue, e.Value, EntityMessageType.Changed);
                     return true;
+                //}
             }
 
             return false;
-        }
-
-        private void ApplyProjectionPropertiesToEntityCallBack(PROGRESS_ITEMProjection projectionEntity, BASELINE_ITEM entity)
-        {
-            entity = projectionEntity.Entity.Entity;
         }
 
         /// <summary>
@@ -448,7 +449,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         /// <param name="projectionEntity"></param>
         /// <param name="isNewEntity"></param>
-        private void OnAfterBASELINE_ITEMEntitySaved(PROGRESS_ITEMProjection projectionEntity, bool isNewEntity)
+        protected void OnAfterBASELINE_ITEMEntitySaved(PROGRESS_ITEMProjection projectionEntity, bool isNewEntity)
         {
             SaveProgressItem(projectionEntity);
         }
@@ -459,27 +460,14 @@ namespace BluePrints.ViewModels
         /// <param name="projectionEntity"></param>
         private void SaveProgressItem(PROGRESS_ITEMProjection projectionEntity)
         {
-            var findPROGRESS_ITEM =
-                PROGRESS_ITEMSCollectionViewModel.Entities.FirstOrDefault(
-                    x =>
-                        x.GUID_ORIBASEITEM == projectionEntity.Entity.Entity.GUID_ORIGINAL &&
-                        x.EARNED_DATE == loadPROGRESS.DATA_DATE);
             PROGRESS_ITEM savePROGRESS_ITEM;
-            if (findPROGRESS_ITEM == null)
-            {
-                if (projectionEntity.PROGRESS_ITEMCurrent == null)
-                    return;
+            savePROGRESS_ITEM = projectionEntity.PROGRESS_ITEMCurrent;
 
-                savePROGRESS_ITEM = projectionEntity.PROGRESS_ITEMCurrent;
-            }
-            else
-            {
-                savePROGRESS_ITEM = findPROGRESS_ITEM;
-                savePROGRESS_ITEM.EARNED_UNITS = projectionEntity.PROGRESS_ITEMCurrent.EARNED_UNITS;
-            }
+            if (savePROGRESS_ITEM == null)
+                return;
 
-            savePROGRESS_ITEM.EARNED_DATE = loadPROGRESS.DATA_DATE;
-            savePROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
+            savePROGRESS_ITEM.EARNED_DATE = projectionEntity.loadPROGRESS.DATA_DATE;
+            savePROGRESS_ITEM.GUID_PROGRESS = projectionEntity.loadPROGRESS.GUID;
             savePROGRESS_ITEM.GUID_ORIBASEITEM = projectionEntity.Entity.Entity.GUID_ORIGINAL;
             //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
             if (savePROGRESS_ITEM.CREATED.Date.Year == 1)
@@ -491,19 +479,25 @@ namespace BluePrints.ViewModels
 
         public bool ValidateFillDownCallBack(PROGRESS_ITEMProjection fillDownEntity, string fieldName, object fillValue)
         {
-            if (fieldName != BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().TOTAL_EARNED_PERCENTAGE))
-                return false;
-
-            var newPercentage = (decimal)fillValue;
-            if (newPercentage > fillDownEntity.MaxPercentage)
-                return false;
-            else if (newPercentage < fillDownEntity.MinPercentage)
-                return false;
+            if (fieldName == BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().TOTAL_EARNED_PERCENTAGE))
+            {
+                var newPercentage = (decimal)fillValue;
+                if (newPercentage > fillDownEntity.MaxPercentage)
+                    return false;
+                else if (newPercentage < fillDownEntity.MinPercentage)
+                    return false;
+            }
 
             return true;
         }
 
         public override void FullRefresh()
+        {
+            mainThreadDispatcher.BeginInvoke(new Action(() => StoreViewState()));
+            InitializeAndLoadEntitiesLoaderDescription();
+        }
+
+        public override void FullRefreshWithoutClearingUndoRedo()
         {
             mainThreadDispatcher.BeginInvoke(new Action(() => StoreViewState()));
             InitializeAndLoadEntitiesLoaderDescription();
@@ -514,7 +508,7 @@ namespace BluePrints.ViewModels
 
         #region View Behavior
 
-        private bool BeforeShownEditor(EditorEventArgs e)
+        protected bool BeforeShownEditor(EditorEventArgs e)
         {
             if (e.Column.FieldName ==
                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().TOTAL_EARNED_PERCENTAGE))
@@ -1045,7 +1039,10 @@ namespace BluePrints.ViewModels
         #region Disposing
         protected override void OnClose(CancelEventArgs e)
         {
-            BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(loadPROJECT.NUMBER);
+            if(loadPROJECT != null)
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(loadPROJECT.NUMBER);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             CancelBackgroundWorker();
             base.OnClose(e);
         }

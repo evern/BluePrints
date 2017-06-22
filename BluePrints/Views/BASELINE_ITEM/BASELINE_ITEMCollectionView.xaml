@@ -194,7 +194,7 @@
                             <dxg:GridColumn Name="colSECONDARY_TITLE" FieldName="Entity.Entity.SECONDARY_TITLE"
                                             Header="SECONDARY_TITLE" />
                             <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.Entity.COMMENTS" Header="COMMENTS" />
-                            <dxg:GridColumn Name="colSTATUS" FieldName="Entity.Entity.GUID_STATUS" Header="STATUS" ColumnFilterMode="DisplayText">
+                            <dxg:GridColumn Name="colSTATUS" FieldName="Entity.DeliverableStatusGuid" Header="STATUS" ColumnFilterMode="DisplayText">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit 

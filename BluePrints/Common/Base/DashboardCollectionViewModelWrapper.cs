@@ -120,7 +120,7 @@ namespace BluePrints.Common.ViewModel
                 IHaveSummary.RecalculateStats(calculationType == DashboardViewType.Costs);
         }
 
-        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender)
+        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
             
         }

@@ -8,7 +8,7 @@ namespace BluePrints.Data
     using System.Linq;
 
     [ConstraintAttributes("NUMBER")]
-    public partial class REGISTER_ISSUE : IGuidEntityKey, IEntityNumber
+    public partial class REGISTER_ISSUE : IGuidEntityKey, IEntityNumber, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey
@@ -54,6 +54,13 @@ namespace BluePrints.Data
         public void SetRegisterHold(IEnumerable<REGISTER_HOLD> REGISTER_HoldCollection)
         {
             RegisterHold = REGISTER_HoldCollection.FirstOrDefault(x => x.GUID == GUID_HOLD);
+        }
+        
+        [NotMapped]
+        public DateTime EntityCreatedDate
+        {
+            get { return CREATED; }
+            set { CREATED = value; }
         }
     }
 }

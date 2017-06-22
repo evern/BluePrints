@@ -115,7 +115,6 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATIONProjection> entities)
         {
             MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
-            MainViewModel.ApplyProjectionPropertiesToEntityCallBack = ApplyProjectionPropertiesToEntity;
             MainViewModel.IsContinueSaveCallBack = BeforeSaveValidation;
 
             variationSummaryBackgroundWorker.RunWorkerAsync(entities);
@@ -163,18 +162,15 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public void ApplyProjectionPropertiesToEntity(VARIATIONProjection projectionEntity, VARIATION entity)
+        protected override void OnBeforeApplyProjectionPropertiesToEntity(VARIATIONProjection projectionEntity, VARIATION entity)
         {
-            DataUtils.ShallowCopy(entity, projectionEntity.Entity);
-            //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
             if (entity.CREATED.Date.Year == 1)
             {
-                projectionEntity.Entity.CREATED = DateTime.Now;
                 //Although EF convention will generate this but we require it immediately in the view
                 projectionEntity.Entity.CREATEDBY = LoginCredentials.CurrentUserGuid;
             }
 
-            entity.CREATED = projectionEntity.Entity.CREATED;
+            base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
         }
 
         public void OnBeforeEntitySaved(VARIATIONProjection entity)
