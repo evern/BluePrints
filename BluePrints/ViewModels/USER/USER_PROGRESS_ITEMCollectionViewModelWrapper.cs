@@ -94,6 +94,7 @@ namespace BluePrints.ViewModels
             foreach(FullSummarizer fullSummarizer in firstLoadProjectStatsSummarizers)
             {
                 fullSummarizer.BuildBudgetedOnly();
+                fullSummarizer.BuildEarnedAndRemaining();
             }
         }
     }

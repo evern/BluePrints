@@ -301,6 +301,12 @@
                                         <dxe:DateEditSettings />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn Name="columnForecastDate" FieldName="ForecastDate" Header="FORECAST DATE" ReadOnly="True"
+                                                IsEnabled="False">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:DateEditSettings />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnTotalEarnedPercentage" FieldName="TOTAL_EARNED_PERCENTAGE"
                                                 Header="CURRENT %" AllowEditing="True">
                                     <dxg:GridColumn.CellTemplate>

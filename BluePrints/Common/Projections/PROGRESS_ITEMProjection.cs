@@ -57,7 +57,18 @@ namespace BluePrints.Common.Projections
                 if (Stats == null || Stats.Budgeted == null || Stats.Budgeted.CumulativeDataPoints == null || Stats.Budgeted.CumulativeDataPoints.Count == 0)
                     return null;
 
-                return Stats.Budgeted.CumulativeDataPoints.Last().ProgressDate;
+                return Stats.Budgeted.CumulativeDataPoints.Max(x => x.ProgressDate);
+            }
+        }
+
+        public DateTime? ForecastDate
+        {
+            get
+            {
+                if (Stats == null || Stats.Budgeted == null || Stats.Remaining.CumulativeDataPoints == null || Stats.Remaining.CumulativeDataPoints.Count == 0)
+                    return null;
+
+                return Stats.Remaining.CumulativeDataPoints.Max(x => x.ProgressDate);
             }
         }
 

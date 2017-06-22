@@ -369,6 +369,7 @@ namespace BluePrints.ViewModels
         protected virtual void BackgroundWorkerBuildStats()
         {
             fullSummarizer.BuildBudgetedOnly();
+            fullSummarizer.BuildEarnedAndRemaining();
         }
 
         public bool isBusy { get; set; }
