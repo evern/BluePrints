@@ -64,6 +64,8 @@ namespace BluePrints.Data
 
         public bool BY_DURATION { get; set; }
 
+        public DateTime? TARGET_DATE { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

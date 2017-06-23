@@ -289,12 +289,28 @@ namespace BluePrints.Data
 
     public static class BluePrintsContextHelper
     {
-        public static async Task RefreshDeliverablesDataPointsByProject(string projectNumber)
+        public static void RefreshDeliverablesDataPointsByProject(string projectNumber)
+        {
+            RefreshDeliverablesPlannedDataPointsByProject(projectNumber);
+            RefreshDeliverablesRemainingDataPointsByProject(projectNumber);
+        }
+
+        public static async Task RefreshDeliverablesPlannedDataPointsByProject(string projectNumber)
         {
             using (BluePrintsEntities dbContext = new BluePrintsEntities())
             {
                 var projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
-                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshDeliverablesDataPointsByProject @PROJECT_NUMBER", projectNumberParameter);
+                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshDeliverablesPlannedDataPointsByProject @PROJECT_NUMBER", projectNumberParameter);
+                var i = await returnTask;
+            }
+        }
+
+        public static async Task RefreshDeliverablesRemainingDataPointsByProject(string projectNumber)
+        {
+            using (BluePrintsEntities dbContext = new BluePrintsEntities())
+            {
+                var projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
+                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshDeliverablesRemainingDataPointsByProject @PROJECT_NUMBER", projectNumberParameter);
                 var i = await returnTask;
             }
         }

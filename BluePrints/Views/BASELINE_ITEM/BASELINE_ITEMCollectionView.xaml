@@ -254,6 +254,11 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
+                            <dxg:GridColumn Name="colTARGET_DATE" FieldName="Entity.Entity.TARGET_DATE" Header="TARGET DATE">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn Name="colDC_HOURS" FieldName="Entity.Entity.DC_HOURS" Header="DC_HOURS"
                                             ReadOnly="True" />
                             <dxg:GridColumn Name="colTOTAL_COSTS" FieldName="Entity.TOTAL_COSTS" Header="COSTS"

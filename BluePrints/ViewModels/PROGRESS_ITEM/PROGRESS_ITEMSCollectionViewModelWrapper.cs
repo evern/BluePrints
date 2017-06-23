@@ -420,26 +420,10 @@ namespace BluePrints.ViewModels
                 SaveProgressItem(projectionEntity);
                 return false;
             }
-            else if (
-                e.Column.FieldName ==
-                BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
-                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
-                BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_USER))
+            else
             {
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity, e.Column.FieldName, e.OldValue, e.Value, EntityMessageType.Changed);
                 return true;
-            }
-            else    if (
-                e.Column.FieldName ==
-                BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
-                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().DeliverableStatusGuid))
-            {
-                //if (e.Value == null)
-                //    return false;
-                //else
-                //{
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity, e.Column.FieldName, e.OldValue, e.Value, EntityMessageType.Changed);
-                    return true;
-                //}
             }
 
             return false;

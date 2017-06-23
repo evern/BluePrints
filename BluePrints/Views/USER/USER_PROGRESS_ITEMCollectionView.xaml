@@ -243,6 +243,11 @@
                                         <dxe:DateEditSettings />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn Name="colTargetDate" FieldName="Entity.Entity.TARGET_DATE" Header="TARGET DATE">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnTotalEarnedPercentage" FieldName="TOTAL_EARNED_PERCENTAGE"
                                                 Header="CURRENT %" AllowEditing="True">
                                     <dxg:GridColumn.CellTemplate>

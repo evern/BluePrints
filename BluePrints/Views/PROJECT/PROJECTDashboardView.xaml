@@ -79,7 +79,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical"
+                    <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical" Height="500"
                                       dxlc:LayoutControl.AllowVerticalSizing="True">
                         <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDashboardPROJECT"
                                          Style="{StaticResource DefaultGridControlTemplate}">
