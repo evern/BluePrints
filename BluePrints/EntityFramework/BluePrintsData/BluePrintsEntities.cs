@@ -15,12 +15,14 @@ namespace BluePrints.Data
         public virtual DbSet<BASELINE_ITEM> BASELINE_ITEM { get; set; }
         public virtual DbSet<BASELINE_ITEM_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENT { get; set; }
         public virtual DbSet<BASELINE_ITEM_WORK> BASELINE_ITEM_WORK { get; set; }
+        public virtual DbSet<COMMODITY_CODE> COMMODITY_CODE { get; set; }
         public virtual DbSet<DataPoint> DataPoint { get; set; }
         public virtual DbSet<DELIVERABLES_STATUS> DELIVERABLES_STATUS { get; set; }
         public virtual DbSet<DEPARTMENT> DEPARTMENT { get; set; }
         public virtual DbSet<DISCIPLINE> DISCIPLINE { get; set; }
         public virtual DbSet<DOCTYPE> DOCTYPE { get; set; }
         public virtual DbSet<ESTIMATION_DIRECT> ESTIMATION_DIRECT { get; set; }
+        public virtual DbSet<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
         public virtual DbSet<PHASE> PHASE { get; set; }
         public virtual DbSet<PROGRESS> PROGRESS { get; set; }
         public virtual DbSet<PROGRESS_ITEM> PROGRESS_ITEM { get; set; }
@@ -58,6 +60,16 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<AREA>()
                 .HasMany(e => e.BASELINE_ITEM1)
+                .WithOptional(e => e.AREA1)
+                .HasForeignKey(e => e.GUID_SUBAREA);
+
+            modelBuilder.Entity<AREA>()
+                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
+                .WithOptional(e => e.AREA)
+                .HasForeignKey(e => e.GUID_AREA);
+
+            modelBuilder.Entity<AREA>()
+                .HasMany(e => e.ESTIMATION_DIRECT_ITEM1)
                 .WithOptional(e => e.AREA1)
                 .HasForeignKey(e => e.GUID_SUBAREA);
 
@@ -159,6 +171,11 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_DEPARTMENT);
 
             modelBuilder.Entity<DEPARTMENT>()
+                .HasMany(e => e.COMMODITY_CODE)
+                .WithRequired(e => e.DEPARTMENT)
+                .HasForeignKey(e => e.GUID_DEPARTMENT);
+
+            modelBuilder.Entity<DEPARTMENT>()
                 .HasMany(e => e.DOCTYPE)
                 .WithRequired(e => e.DEPARTMENT)
                 .HasForeignKey(e => e.GUID_DDEPARTMENT)
@@ -178,6 +195,16 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<DISCIPLINE>()
                 .HasMany(e => e.BASELINE_ITEM)
+                .WithOptional(e => e.DISCIPLINE)
+                .HasForeignKey(e => e.GUID_DISCIPLINE);
+
+            modelBuilder.Entity<DISCIPLINE>()
+                .HasMany(e => e.COMMODITY_CODE)
+                .WithRequired(e => e.DISCIPLINE)
+                .HasForeignKey(e => e.GUID_DISCIPLINE);
+
+            modelBuilder.Entity<DISCIPLINE>()
+                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
                 .WithOptional(e => e.DISCIPLINE)
                 .HasForeignKey(e => e.GUID_DISCIPLINE);
 
@@ -216,6 +243,12 @@ namespace BluePrints.Data
                 .HasMany(e => e.WORKPACK)
                 .WithOptional(e => e.DOCTYPE)
                 .HasForeignKey(e => e.GUID_DDOCTYPE);
+
+            modelBuilder.Entity<ESTIMATION_DIRECT>()
+                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
+                .WithRequired(e => e.ESTIMATION_DIRECT)
+                .HasForeignKey(e => e.GUID_ESTIMATION_DIRECT)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PHASE>()
                 .HasMany(e => e.BASELINE_ITEM)
@@ -266,6 +299,11 @@ namespace BluePrints.Data
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.COMMODITY_CODE)
+                .WithOptional(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT);
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.DELIVERABLES_STATUS)
@@ -387,12 +425,17 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<USER>()
-                .HasMany(e => e.PROJECTS)
+                .HasMany(e => e.PROJECT)
                 .WithOptional(e => e.USER)
                 .HasForeignKey(e => e.GUID_MANAGEUSER);
 
             modelBuilder.Entity<VARIATION>()
                 .HasMany(e => e.BASELINE_ITEM)
+                .WithOptional(e => e.VARIATION)
+                .HasForeignKey(e => e.GUID_VARIATION);
+
+            modelBuilder.Entity<VARIATION>()
+                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
                 .WithOptional(e => e.VARIATION)
                 .HasForeignKey(e => e.GUID_VARIATION);
 

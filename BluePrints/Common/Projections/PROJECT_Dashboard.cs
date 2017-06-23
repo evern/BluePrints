@@ -82,7 +82,7 @@ namespace BluePrints.Common.Projections
                 BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             var p6UnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             var primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-
+            
             foreach (var localPROJECT in singleOrActivePROJECT)
             {
                 BASELINE liveBASELINE =
@@ -116,7 +116,7 @@ namespace BluePrints.Common.Projections
                     Entity = localPROJECT
                     //VARIATIONS = ApprovedVARIATIONSByProject
                 };
-
+                
                 currentPROJECT_Dashboard.InitializeSummarizer(projectProgress_Items, liveBASELINE, livePROGRESS, localPROJECT.WORKPACK, localPROJECT.WORKPACK.SelectMany(x => x.WORKPACK_ASSIGNMENT), ApprovedVARIATIONSByProject, bluePrintsUnitOfWork, p6UnitOfWork, primeroUnitOfWork, localPROJECT.NUMBER);
 
                 PROJECTDashboard.Add(currentPROJECT_Dashboard);

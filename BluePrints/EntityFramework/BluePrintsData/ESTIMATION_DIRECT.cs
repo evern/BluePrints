@@ -1,17 +1,14 @@
 namespace BluePrints.Data
 {
-    using Common;
+    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
 
     public partial class ESTIMATION_DIRECT
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public ESTIMATION_DIRECT()
-        {
-        }
-
         [Key]
         public Guid GUID { get; set; }
 
@@ -28,6 +25,12 @@ namespace BluePrints.Data
         [StringLength(100)]
         public string COMMENTS { get; set; }
 
+        [Required]
+        public decimal MARGIN { get; set; }
+
+        [Required]
+        public decimal CONTINGENCY { get; set; }
+
         public EstimationStatus STATUS { get; set; }
 
         public DateTime CREATED { get; set; }
@@ -41,6 +44,9 @@ namespace BluePrints.Data
         public DateTime? DELETED { get; set; }
 
         public Guid? DELETEDBY { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
 
         public virtual PROJECT PROJECT { get; set; }
     }

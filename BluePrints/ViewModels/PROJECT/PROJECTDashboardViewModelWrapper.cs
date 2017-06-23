@@ -67,16 +67,16 @@ namespace BluePrints.ViewModels
             {
                 actionObject = parameter as ActionObject;
             }
+        }
 
+        public override void InitializeAndLoadEntitiesLoaderDescription()
+        {
             if (actionObject != null)
             {
                 actionObject.ExecuteAction();
                 return;
             }
-        }
 
-        public override void InitializeAndLoadEntitiesLoaderDescription()
-        {
             MainViewModel = null;
             base.CleanUpEntitiesLoader();
 

@@ -35,6 +35,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<BASELINE>(), (BASELINE x) => x.GUID); }
         }
 
+        IRepository<COMMODITY_CODE, Guid> IBluePrintsEntitiesUnitOfWork.COMMODITY_CODES
+        {
+            get { return GetRepository(x => x.Set<COMMODITY_CODE>(), (COMMODITY_CODE x) => x.GUID); }
+        }
+
         IRepository<DEPARTMENT, Guid> IBluePrintsEntitiesUnitOfWork.DEPARTMENTS
         {
             get { return GetRepository(x => x.Set<DEPARTMENT>(), (DEPARTMENT x) => x.GUID); }
@@ -63,6 +68,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<ESTIMATION_DIRECT, Guid> IBluePrintsEntitiesUnitOfWork.ESTIMATION_DIRECTS
         {
             get { return GetRepository(x => x.Set<ESTIMATION_DIRECT>(), (ESTIMATION_DIRECT x) => x.GUID); }
+        }
+
+        IRepository<ESTIMATION_DIRECT_ITEM, Guid> IBluePrintsEntitiesUnitOfWork.ESTIMATION_DIRECT_ITEMS
+        {
+            get { return GetRepository(x => x.Set<ESTIMATION_DIRECT_ITEM>(), (ESTIMATION_DIRECT_ITEM x) => x.GUID); }
         }
 
         IRepository<PHASE, Guid> IBluePrintsEntitiesUnitOfWork.PHASES

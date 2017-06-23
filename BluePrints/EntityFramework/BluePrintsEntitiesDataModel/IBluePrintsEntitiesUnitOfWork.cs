@@ -30,6 +30,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<BASELINE, Guid> BASELINES { get; }
 
         /// <summary>
+        /// The COMMODITY_CODE entities repository.
+        /// </summary>
+        IRepository<COMMODITY_CODE, Guid> COMMODITY_CODES { get; }
+
+        /// <summary>
         /// The DEPARTMENT entities repository.
         /// </summary>
         IRepository<DEPARTMENT, Guid> DEPARTMENTS { get; }
@@ -58,6 +63,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The ESTIMATION_DIRECT entities repository.
         /// </summary>
         IRepository<ESTIMATION_DIRECT, Guid> ESTIMATION_DIRECTS { get; }
+
+        /// <summary>
+        /// The ESTIMATION_DIRECT_ITEM entities repository.
+        /// </summary>
+        IRepository<ESTIMATION_DIRECT_ITEM, Guid> ESTIMATION_DIRECT_ITEMS { get; }
 
         /// <summary>
         /// The PHASE entities repository.

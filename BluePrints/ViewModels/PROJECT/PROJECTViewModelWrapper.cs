@@ -51,9 +51,7 @@ namespace BluePrints.ViewModels
         public Action<AREACollectionViewModelWrapper> AssignAREADelegates;
         public Action<RATECollectionViewModelWrapper> AssignRATEDelegates;
 
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void InitializeParameters(object parameter)
         {
             var PROJECTParameter =
@@ -462,7 +460,6 @@ namespace BluePrints.ViewModels
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }
-
 
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent

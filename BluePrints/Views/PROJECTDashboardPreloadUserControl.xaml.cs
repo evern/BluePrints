@@ -11,6 +11,7 @@ namespace BluePrints.Views
         {
             InitializeComponent();
             this.DataContext = PROJECTDashboardViewModelWrapper.Create(new Common.ViewModel.ActionObject(nullifyDataContext));
+            ((PROJECTDashboardViewModelWrapper)this.DataContext).CleanUpEntitiesLoader();
         }
 
         private void nullifyDataContext()

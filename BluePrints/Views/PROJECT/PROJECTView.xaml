@@ -665,7 +665,7 @@
                                             <dxg:GridColumn FieldName="STATUS">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
-                                                              ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:EstimationStatus}}" />
+                                                        ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:EstimationStatus}}" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                         </dxg:GridControl.Columns>
