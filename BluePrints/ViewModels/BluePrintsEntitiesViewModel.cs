@@ -214,8 +214,8 @@ namespace BluePrints.ViewModels
             if (LoginCredentials.hasPermission(PermissionResources.ViewDashboard))
                 bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_Dashboard", null, "Dashboard", "PROJECTDashboardView"));
 
-            bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_UserDashboard", null, "User Dashboard", "USERDashboardView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser)));
-            bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_UserDeliverables", null, "User Deliverables", "USER_PROGRESS_ITEMCollectionView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser)));
+            bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_UserDashboard", null, "My Dashboard", "USERDashboardView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser)));
+            bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_UserDeliverables", null, "My Deliverables", "USER_PROGRESS_ITEMCollectionView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser)));
 
             return bluePrintsEntitiesModuleDescriptions.ToArray();
         }
