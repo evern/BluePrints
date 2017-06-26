@@ -497,6 +497,7 @@ namespace BluePrints.ViewModels
         protected override void OnBeforeApplyProjectionPropertiesToEntity(VARIATION_ITEMProjection projectionEntity, BASELINE_ITEM entity)
         {
             projectionEntity.Entity.Entity.GUID_VARIATION = loadVARIATION.GUID;
+            DataUtils.ShallowCopy(entity, projectionEntity.Entity.Entity);
             base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
         }
 
