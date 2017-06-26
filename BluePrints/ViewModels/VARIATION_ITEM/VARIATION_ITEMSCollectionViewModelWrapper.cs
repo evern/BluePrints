@@ -606,9 +606,8 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().VARIATION_ITEM)
-                + "."
-                + BindableBase.GetPropertyName(() => new VARIATION_ITEM().VARIATION_UNITS))
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().VARIATION_ITEM) + "." + 
+                BindableBase.GetPropertyName(() => new VARIATION_ITEM().VARIATION_UNITS))
             {
                 MessageBoxService.ShowMessage(BluePrintsResources.Notify_AddBASELINE_ITEMBeforeVARIATION_UNITS);
                 e.Handled = true;
@@ -649,20 +648,24 @@ namespace BluePrints.ViewModels
                     activeItem.Entity.Entity.INTERNAL_NUM =
                         BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT, BASELINE_ITEMJoinRATES,
                             SelectedAREA, SelectedDISCIPLINE, SelectedDOCTYPE);
-                    RefreshSelectedEntity();
+                    activeItem.Update();
                 }
             }
             else if (e.Column.FieldName ==
-                     BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().Entity)
-                     + "."
-                     + BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity)
-                     + BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE))
+                     BindableBase.GetPropertyName(() => new VARIATION_ITEMProjection().Entity) + "." + 
+                     BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                     BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE))
             {
                 var chosenDOCTYPE = DOCTYPECollection.FirstOrDefault(entity => entity.GUID == (Guid)e.Value);
                 if (chosenDOCTYPE != null && chosenDOCTYPE.GUID_DDEPARTMENT != null)
                 {
-                    activeItem.Entity.Entity.GUID_DEPARTMENT = chosenDOCTYPE.DEPARTMENT.GUID;
-                    RefreshSelectedEntity();
+                    if (chosenDOCTYPE.GUID_DDEPARTMENT != null)
+                        activeItem.Entity.Entity.GUID_DEPARTMENT = chosenDOCTYPE.DEPARTMENT.GUID;
+
+                    //Baseline and Department is required immediately for deliverables status selection
+                    activeItem.Entity.Entity.BASELINE = loadBASELINE;
+                    activeItem.Entity.Entity.DOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
+                    activeItem.Update();
                 }
             }
 
@@ -756,6 +759,7 @@ namespace BluePrints.ViewModels
             var disciplineFieldName = "Entity.Entity.GUID_DISCIPLINE";
             var docTypeFieldName = "Entity.Entity.GUID_DOCTYPE";
             var areaFieldName = "Entity.Entity.GUID_AREA";
+            var subAreaFieldName = "Entity.Entity.SubAreaGuid";
             var workpackFieldName = "Entity.Entity.GUID_WORKPACK";
             var internalNumberFieldName = "Entity.Entity.INTERNAL_NUM";
 
@@ -784,7 +788,7 @@ namespace BluePrints.ViewModels
                     entitiesToSave.Add(entity);
                 }
                 else if (info.Column.FieldName == departmentFieldName || info.Column.FieldName == disciplineFieldName ||
-                         info.Column.FieldName == docTypeFieldName || info.Column.FieldName == areaFieldName)
+                         info.Column.FieldName == docTypeFieldName || info.Column.FieldName == areaFieldName || info.Column.FieldName == subAreaFieldName) 
                 {
                     if (entityWORKPACK == null)
                         continue;
@@ -799,6 +803,8 @@ namespace BluePrints.ViewModels
                         MainViewModel.SetNestedValueWithUndo(entity, info.Column.FieldName, entityWORKPACK.GUID_DDOCTYPE);
                     else if (info.Column.FieldName == areaFieldName)
                         MainViewModel.SetNestedValueWithUndo(entity, info.Column.FieldName, entityWORKPACK.GUID_DAREA);
+                    else if (info.Column.FieldName == subAreaFieldName && IsPhaseVisible)
+                        MainViewModel.SetNestedValueWithUndo(entity, info.Column.FieldName, entityWORKPACK.GUID_DSUBAREA);
 
                     entitiesToSave.Add(entity);
                 }

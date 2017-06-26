@@ -42,6 +42,7 @@ namespace BluePrints.Common.Projections
             if (projectSummarizer == null)
                 return;
 
+            projectSummarizer.BuildBurnedDataPoints();
             projectSummarizer.Build(showLoadingScreen, isCosts);
             this.RaisePropertiesChanged();
         }
@@ -81,7 +82,8 @@ namespace BluePrints.Common.Projections
             var bluePrintsUnitOfWork =
                 BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             var p6UnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-            var primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            //Cannot use primeroUnitOfWork because same context cannot be used on multithreaded environment
+            //var primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             
             foreach (var localPROJECT in singleOrActivePROJECT)
             {
@@ -117,7 +119,7 @@ namespace BluePrints.Common.Projections
                     //VARIATIONS = ApprovedVARIATIONSByProject
                 };
                 
-                currentPROJECT_Dashboard.InitializeSummarizer(projectProgress_Items, liveBASELINE, livePROGRESS, localPROJECT.WORKPACK, localPROJECT.WORKPACK.SelectMany(x => x.WORKPACK_ASSIGNMENT), ApprovedVARIATIONSByProject, bluePrintsUnitOfWork, p6UnitOfWork, primeroUnitOfWork, localPROJECT.NUMBER);
+                currentPROJECT_Dashboard.InitializeSummarizer(projectProgress_Items, liveBASELINE, livePROGRESS, localPROJECT.WORKPACK, localPROJECT.WORKPACK.SelectMany(x => x.WORKPACK_ASSIGNMENT), ApprovedVARIATIONSByProject, bluePrintsUnitOfWork, p6UnitOfWork, null, localPROJECT.NUMBER);
 
                 PROJECTDashboard.Add(currentPROJECT_Dashboard);
             }

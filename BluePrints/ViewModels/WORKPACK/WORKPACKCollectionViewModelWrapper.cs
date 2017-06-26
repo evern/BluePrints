@@ -34,7 +34,6 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new WORKPACKCollectionViewModelWrapper(unitOfWorkFactory));
         }
 
-
         /// <summary>
         /// Initializes a new instance of the WORKPACKCollectionViewModelWrapper class.
         /// This constructor is declared protected to avoid undesired instantiation of the WORKPACKCollectionViewModelWrapper type without the POCO proxy factory.
@@ -351,7 +350,8 @@ namespace BluePrints.ViewModels
 
         protected override void CellValueExistingRowChanging(CellValueChangedEventArgs e)
         {
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." + 
+            if (e.Column.FieldName == 
+                BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." + 
                 BindableBase.GetPropertyName(() => new WORKPACK().GUID_DDOCTYPE))
             {
                 var changingWORKPACK = (WORKPACKProjection)e.Row;

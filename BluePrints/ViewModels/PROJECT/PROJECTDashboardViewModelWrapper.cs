@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Windows.Threading;
 
 namespace BluePrints.ViewModels
@@ -179,7 +180,7 @@ namespace BluePrints.ViewModels
 
             project.BuildStats(false);
             project.RecalculateStats(false);
-            
+
             if (((BackgroundWorker)sender).CancellationPending)
             {
                 e.Cancel = true;

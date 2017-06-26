@@ -291,7 +291,14 @@ namespace BluePrints.Common.ViewModel.Reporting
             : base(summaryStats, fullStatsBuilder, projectNumber)
         {
             FullStatsBuilder = fullStatsBuilder;
-            FullStatsBuilder.BuildExoDataPoints(summaryStats);
+            //FullStatsBuilder.BuildExoDataPoints(summaryStats);
+        }
+
+        public void BuildBurnedDataPoints()
+        {
+            ProjectSummaryStats projectSummaryStats = this.SummaryStats as ProjectSummaryStats;
+            if (projectSummaryStats != null)
+                FullStatsBuilder.BuildExoDataPoints(projectSummaryStats);
         }
 
         public void RecalculateStats(bool isCosts)
