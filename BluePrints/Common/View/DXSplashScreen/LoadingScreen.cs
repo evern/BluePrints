@@ -27,8 +27,6 @@ namespace BluePrints.Common
         {
             if(DXSplashScreen.IsActive)
                 DXSplashScreen.Close();
-
-            DXSplashScreen.SetState(DefaultState);
         }
 
         public static void SetMessage(string message)
