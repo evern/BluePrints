@@ -393,25 +393,6 @@ namespace BluePrints.ViewModels
         //Hereby chooses whether to perform save in BASELINE_ITEMCollectionViewModel or PROGRESS_ITEMCollectionViewModel
         protected bool ExistingRowAddUndoAndSaveCallBack(PROGRESS_ITEMProjection projectionEntity, CellValueChangedEventArgs e)
         {
-            //if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
-            //     BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." + BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_STATUS))
-            //{
-            //    PROGRESS_ITEMProjection activeEntity = (PROGRESS_ITEMProjection)e.Row;
-            //    DELIVERABLES_STATUS findDeliverableStatus = DELIVERABLES_STATUSCollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
-            //    if(findDeliverableStatus != null)
-            //    {
-            //        decimal? autoAssignPercentage = findDeliverableStatus.AUTO_PERCENTAGE;
-            //        if (autoAssignPercentage != null)
-            //        {
-            //            if(autoAssignPercentage >= activeEntity.MinPercentage)
-            //                activeEntity.TOTAL_EARNED_PERCENTAGE = (decimal)autoAssignPercentage;
-            //        }
-
-            //        SaveProgressItem(projectionEntity);
-            //    }
-
-            //    return true;
-            //}
             if (e.Column.FieldName ==
                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().TOTAL_EARNED_PERCENTAGE))
             {
@@ -425,8 +406,6 @@ namespace BluePrints.ViewModels
                 MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity, e.Column.FieldName, e.OldValue, e.Value, EntityMessageType.Changed);
                 return true;
             }
-
-            return false;
         }
 
         /// <summary>

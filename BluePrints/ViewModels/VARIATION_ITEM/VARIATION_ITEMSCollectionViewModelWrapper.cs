@@ -217,9 +217,10 @@ namespace BluePrints.ViewModels
 
         protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
+            //Latest Update: need to remove this line because VARIATION_ITEM save can be invoked directly through Undo/Redo operation
             //Don't refresh on local update because every updates invoke baseline_item and variation save
-            if (sender == VARIATION_ITEMSCollectionViewModel)
-                return true;
+            //if (sender == VARIATION_ITEMSCollectionViewModel)
+            //    return true;
 
             if (changedType == typeof(VARIATION_ITEM))
             {
@@ -234,6 +235,7 @@ namespace BluePrints.ViewModels
 
             return false;
         }
+
         #region CallBacks
         public VARIATION_ITEMProjection CreateNewProjectionFromNewEntity()
         {
