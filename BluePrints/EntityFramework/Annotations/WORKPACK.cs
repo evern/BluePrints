@@ -3,6 +3,7 @@ namespace BluePrints.Data
     using BaseModel.Attributes;
     using BaseModel.Misc;
     using System;
+    using System.Linq;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
 
@@ -39,6 +40,47 @@ namespace BluePrints.Data
         {
             get { return CREATED; }
             set { CREATED = value; }
+        }
+
+        //Used for direct property access validation in fill/undo-redo
+        [NotMapped]
+        public Guid? SubAreaGuid
+        {
+            get
+            {
+                return GUID_DSUBAREA;
+            }
+            set
+            {
+                Guid? setValue = (Guid?)value;
+                if (setValue == null)
+                    GUID_DSUBAREA = null;
+                else if (IsSubAreaValid(setValue))
+                    GUID_DSUBAREA = setValue;
+            }
+        }
+
+        public bool IsSubAreaValid(Guid? subAreaGuid)
+        {
+            if (subAreaGuid == null)
+                return false;
+
+            if (SubAreaCollection == null)
+                return false;
+
+            return SubAreaCollection.Any(x => x.GUID == subAreaGuid);
+        }
+
+        [NotMapped]
+        public IEnumerable<AREA> SubAreaCollection
+        {
+            get
+            {
+                if (AREA == null)
+                    return null;
+
+                return AREA.AREA1;
+            }
         }
     }
 }

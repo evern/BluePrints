@@ -463,16 +463,16 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Entity == null || Entity.DELIVERABLE_STATUS == null)
+                if (Entity == null || Entity.Entity.DELIVERABLES_STATUS == null)
                 {
                     return MaxPercentage;
                 }
                 else
                 {
-                    if (MaxPercentage < Entity.DELIVERABLE_STATUS.MAX_PERCENTAGE)
+                    if (MaxPercentage < Entity.Entity.DELIVERABLES_STATUS.MAX_PERCENTAGE)
                         return MaxPercentage;
                     else
-                        return Entity.DELIVERABLE_STATUS.MAX_PERCENTAGE;
+                        return Entity.Entity.DELIVERABLES_STATUS.MAX_PERCENTAGE;
                 }
             }
         }

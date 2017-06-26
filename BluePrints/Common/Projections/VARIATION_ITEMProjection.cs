@@ -78,6 +78,9 @@ namespace BluePrints.Common.Projections
                 if (ISSUBMITTED)
                     return true;
 
+                if (GUID == Guid.Empty)
+                    return false;
+
                 if (VARIATION_ITEM.ACTION != VariationAction.Add)
                     return true;
 

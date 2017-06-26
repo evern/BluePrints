@@ -85,12 +85,12 @@
                                           ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colSUBAREA" FieldName="SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText">
+                            <dxg:GridColumn Name="colSUBAREA" FieldName="Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit 
                                                   x:Name="PART_Editor"
-                                                  ItemsSource="{Binding RowData.Row.AvailableSubAreas}"
+                                                  ItemsSource="{Binding RowData.Row.Entity.SubAreaCollection}"
                                                   DisplayMember="INTERNAL_NUM" 
                                                   ValueMember="GUID"
                                                   ValidateOnTextInput="True"

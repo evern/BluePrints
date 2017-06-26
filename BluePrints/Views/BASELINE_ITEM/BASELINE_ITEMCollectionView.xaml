@@ -117,12 +117,12 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colSUBAREA" FieldName="Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText">
+                            <dxg:GridColumn Name="colSUBAREA" FieldName="Entity.Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit 
                                                   x:Name="PART_Editor"
-                                                  ItemsSource="{Binding RowData.Row.Entity.AvailableSubAreas}"
+                                                  ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}"
                                                   DisplayMember="INTERNAL_NUM" 
                                                   ValueMember="GUID"
                                                   ValidateOnTextInput="True"
@@ -194,12 +194,12 @@
                             <dxg:GridColumn Name="colSECONDARY_TITLE" FieldName="Entity.Entity.SECONDARY_TITLE"
                                             Header="SECONDARY_TITLE" />
                             <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.Entity.COMMENTS" Header="COMMENTS" />
-                            <dxg:GridColumn Name="colSTATUS" FieldName="Entity.DeliverableStatusGuid" Header="STATUS" ColumnFilterMode="DisplayText">
+                            <dxg:GridColumn Name="colSTATUS" FieldName="Entity.Entity.DeliverableStatusGuid" Header="STATUS" ColumnFilterMode="DisplayText">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit 
                                                   x:Name="PART_Editor"
-                                                  ItemsSource="{Binding RowData.Row.Entity.AvailableDeliverable_Status}"
+                                                  ItemsSource="{Binding RowData.Row.Entity.Entity.DeliverableStatusCollection}"
                                                   DisplayMember="NAME" 
                                                   ValueMember="GUID"
                                                   ValidateOnTextInput="True"

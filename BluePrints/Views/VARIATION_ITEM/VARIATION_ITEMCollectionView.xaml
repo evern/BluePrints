@@ -128,13 +128,14 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colSUBAREA" FieldName="Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText">
+                            <dxg:GridColumn Name="colSUBAREA" FieldName="Entity.Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit 
                                                   x:Name="PART_Editor"
-                                                  ItemsSource="{Binding RowData.Row.Entity.AvailableSubAreas}"
+                                                  ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}"
                                                   DisplayMember="INTERNAL_NUM" 
+                                                  IsEnabled="{Binding RowData.Row.ISREADONLY, Converter={StaticResource BooleanNegationConverter}}"
                                                   ValueMember="GUID"
                                                   ValidateOnTextInput="True"
                                                   ValidateOnEnterKeyPressed="True"

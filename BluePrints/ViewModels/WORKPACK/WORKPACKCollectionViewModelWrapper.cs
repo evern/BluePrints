@@ -158,7 +158,6 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.CreateNewProjectionFromNewEntityCallBack = CreateNewProjectionFromNewEntityCallBack;
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitySavedCallBack;
-            MainViewModel.ExistingRowAddUndoAndSaveCallBack = ExistingRowAddUndoAndSaveCallBack;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -179,26 +178,6 @@ namespace BluePrints.ViewModels
             WORKPACK entity, bool isNewEntity)
         {
             projectionEntity.EntityKey = entity.GUID;
-        }
-
-        private bool ExistingRowAddUndoAndSaveCallBack(WORKPACKProjection projectionEntity, CellValueChangedEventArgs e)
-        {
-            if (e.Column.FieldName ==
-                 BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." +
-                 BindableBase.GetPropertyName(() => new WORKPACK().GUID_DAREA))
-            {
-                var activeWORKPACK = (WORKPACKProjection)e.Row;
-                Guid? oldValue = activeWORKPACK.Entity.GUID_DSUBAREA;
-                if (e.Value != null && oldValue != null)
-                {
-                    Guid? newValue = (Guid?)null;
-                    string subAreaFieldName = BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." +
-                    BindableBase.GetPropertyName(() => new WORKPACK().GUID_DAREA);
-                    activeWORKPACK.Entity.GUID_DSUBAREA = newValue;
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(activeWORKPACK, subAreaFieldName, oldValue, newValue, EntityMessageType.Changed);
-                }
-            }
-            return true;
         }
         #endregion
 
@@ -334,20 +313,86 @@ namespace BluePrints.ViewModels
                 MainViewModel.Save(changedWORKPACK);
         }
 
-        protected override void CellValueAnyRowChanging(CellValueChangedEventArgs e)
+        protected override void CellValueNewRowChanging(CellValueChangedEventArgs e)
         {
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." + BindableBase.GetPropertyName(() => new WORKPACK().DOCTYPE))
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." +
+                                      BindableBase.GetPropertyName(() => new WORKPACK().GUID_DDOCTYPE))
             {
                 var changingWORKPACK = (WORKPACKProjection)e.Row;
                 var chosenDOCTYPE = DOCTYPECollection.FirstOrDefault(entity => entity.GUID == (Guid)e.Value);
                 if (chosenDOCTYPE != null && chosenDOCTYPE.GUID_DDEPARTMENT != null)
                 {
                     changingWORKPACK.Entity.GUID_DDEPARTMENT = chosenDOCTYPE.DEPARTMENT.GUID;
-                    MainViewModel.UpdateSelectedEntity();
-                    e.Handled = true;
+                    changingWORKPACK.Update();
                 }
             }
-            else if (
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." + 
+                BindableBase.GetPropertyName(() => new WORKPACK().GUID_DAREA))
+            {
+                var changingWORKPACK = (WORKPACKProjection)e.Row;
+                if (e.Value != null)
+                {
+                    changingWORKPACK.Entity.GUID_DAREA = (Guid)e.Value;
+                    //Area is required immediately for subarea selection
+                    changingWORKPACK.Entity.AREA = AREACollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
+                    changingWORKPACK.Update();
+                }
+
+                //SubArea must be removed immediately to nullify subarea selection
+                if (e.Value != null && changingWORKPACK.Entity.GUID_DSUBAREA != null)
+                {
+                    changingWORKPACK.Entity.GUID_DSUBAREA = null;
+                    changingWORKPACK.Update();
+                }
+            }
+
+            base.CellValueNewRowChanging(e);
+        }
+
+        protected override void CellValueExistingRowChanging(CellValueChangedEventArgs e)
+        {
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." + 
+                BindableBase.GetPropertyName(() => new WORKPACK().GUID_DDOCTYPE))
+            {
+                var changingWORKPACK = (WORKPACKProjection)e.Row;
+                var chosenDOCTYPE = DOCTYPECollection.FirstOrDefault(entity => entity.GUID == (Guid)e.Value);
+                if (chosenDOCTYPE != null && chosenDOCTYPE.GUID_DDEPARTMENT != null)
+                {
+                    Guid? oldValue = changingWORKPACK.Entity.GUID_DDEPARTMENT;
+                    Guid? newValue = chosenDOCTYPE.DEPARTMENT.GUID;
+                    string fieldName = BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." +
+                                       BindableBase.GetPropertyName(() => new WORKPACK().GUID_DDEPARTMENT);
+
+                    MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(changingWORKPACK, fieldName, oldValue, newValue, EntityMessageType.Changed);
+                    changingWORKPACK.Entity.GUID_DDEPARTMENT = chosenDOCTYPE.DEPARTMENT.GUID;
+                    changingWORKPACK.Update();
+                }
+            }
+            else if (e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new WORKPACK().GUID_DAREA))
+            {
+                var changingWORKPACK = (WORKPACKProjection)e.Row;
+                Guid? oldValue = changingWORKPACK.Entity.GUID_DSUBAREA;
+                if (e.Value != null && oldValue != null)
+                {
+                    Guid? newValue = (Guid?)null;
+                    string subAreaFieldName = BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." +
+                    BindableBase.GetPropertyName(() => new WORKPACK().SubAreaGuid);
+                    MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(changingWORKPACK, subAreaFieldName, oldValue, newValue, EntityMessageType.Changed);
+                    changingWORKPACK.Entity.GUID_DSUBAREA = newValue;
+                    changingWORKPACK.Update();
+                }
+            }
+
+            base.CellValueExistingRowChanging(e);
+        }
+
+        protected override void CellValueAnyRowChanging(CellValueChangedEventArgs e)
+        {
+            if (
                 e.Column.FieldName == BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." + BindableBase.GetPropertyName(() => new WORKPACK().STARTDATE) 
                 || 
                 e.Column.FieldName == BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." + BindableBase.GetPropertyName(() => new WORKPACK().ENDDATE))
@@ -356,7 +401,8 @@ namespace BluePrints.ViewModels
                 DateTime endDate;
 
                 var changingWORKPACK = (WORKPACKProjection)e.Row;
-                if (e.Column.FieldName == "Entity.STARTDATE")
+                if (e.Column.FieldName == BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." +
+                                          BindableBase.GetPropertyName(() => new WORKPACK().STARTDATE))
                 {
                     startDate = (DateTime)e.Value;
                     endDate = (DateTime)changingWORKPACK.Entity.ENDDATE;
@@ -391,24 +437,6 @@ namespace BluePrints.ViewModels
 
                 MainViewModel.UpdateSelectedEntity();
                 e.Handled = true;
-            }
-            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." + BindableBase.GetPropertyName(() => new WORKPACK().GUID_DAREA))
-            {
-                var changingWORKPACK = (WORKPACKProjection)e.Row;
-                if (e.Value != null)
-                {
-                    changingWORKPACK.Entity.GUID_DAREA = (Guid)e.Value;
-                    changingWORKPACK.SetAvailableSubAreas(SUBAREACollection);
-                    MainViewModel.UpdateSelectedEntity();
-                    e.Handled = true;
-                }
-
-                if (e.Value != null && changingWORKPACK.Entity.GUID_DSUBAREA != null)
-                {
-                    changingWORKPACK.Entity.GUID_DSUBAREA = null;
-                    MainViewModel.UpdateSelectedEntity();
-                    e.Handled = true;
-                }
             }
 
             base.CellValueAnyRowChanging(e);

@@ -15,28 +15,9 @@ namespace BluePrints.Common.Projections
 
         public decimal TOTAL_COSTS { get; set; }
 
-        public IEnumerable<AREA> AvailableSubAreas { get; set; }
-
-        public Guid? SubAreaGuid
+        public void Update()
         {
-            get
-            {
-                return Entity.GUID_DSUBAREA;
-            }
-            set
-            {
-                Guid? subAreaGuid = (Guid?)value;
-                if (subAreaGuid == null)
-                    Entity.GUID_DSUBAREA = null;
-                else if (AvailableSubAreas.Any(x => x.GUID == subAreaGuid))
-                    Entity.GUID_DSUBAREA = subAreaGuid;
-            }
-        }
-
-        public void SetAvailableSubAreas(IEnumerable<AREA> SUBAREACollection)
-        {
-            AvailableSubAreas = SUBAREACollection.Where(x => x.GUID_PARENT == Entity.GUID_DAREA);
-            this.RaisePropertyChanged();
+            RaisePropertiesChanged();
         }
     }
 
@@ -76,7 +57,6 @@ namespace BluePrints.Common.Projections
                 {
                     EntityKey = x.GUID,
                     Entity = x,
-                    AvailableSubAreas = SUBAREAS.Where(z => z.GUID_PARENT == x.GUID_DAREA).OrderBy(z => z.INTERNAL_NUM),
                     TOTAL_COSTS = AllBaselineItems.Where(y => y.Entity.GUID_WORKPACK == x.GUID).Sum(z => z.TOTAL_COSTS),
                     TOTAL_UNITS = AllBaselineItems.Where(y => y.Entity.GUID_WORKPACK == x.GUID).Sum(z => z.Entity.TOTAL_HOURS)
                     //ReportableObjects = reportableItems.Where(y => y.BASELINE_ITEMJoinRATE.BASELINE_ITEM.GUID_WORKPACK == x.GUID)

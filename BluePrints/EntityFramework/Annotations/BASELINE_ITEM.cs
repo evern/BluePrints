@@ -4,7 +4,9 @@ namespace BluePrints.Data
     using BaseModel.Misc;
     using BluePrints.Common;
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Linq;
 
     [ConstraintAttributes("GUID_BASELINE, INTERNAL_NUM")]
     public partial class BASELINE_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate
@@ -158,6 +160,92 @@ namespace BluePrints.Data
                     return string.Empty;
 
                 return DEPARTMENT.NAME;
+            }
+        }
+
+        //Used for direct property access validation in fill/undo-redo
+        [NotMapped]
+        public Guid? SubAreaGuid
+        {
+            get
+            {
+                return GUID_SUBAREA;
+            }
+            set
+            {
+                Guid? setValue = (Guid?)value;
+                if (setValue == null)
+                    GUID_SUBAREA = null;
+                else if (IsSubAreaValid(setValue))
+                    GUID_SUBAREA = setValue;
+            }
+        }
+
+        [NotMapped]
+        public IEnumerable<AREA> SubAreaCollection
+        {
+            get
+            {
+                if (AREA == null)
+                    return null;
+
+                return AREA.AREA1;
+            }
+        }
+
+        public bool IsSubAreaValid(Guid? subAreaGuid)
+        {
+            if (subAreaGuid == null)
+                return false;
+
+            if (SubAreaCollection == null)
+                return false;
+
+            return SubAreaCollection.Any(x => x.GUID == subAreaGuid);
+        }
+
+        [NotMapped]
+        public Guid? DeliverableStatusGuid
+        {
+            get
+            {
+                return GUID_STATUS;
+            }
+            set
+            {
+                Guid? setValue = (Guid?)value;
+                if (setValue == null)
+                    GUID_STATUS = null;
+                else if (IsDeliverableStatusValid(setValue))
+                    GUID_STATUS = setValue;
+            }
+        }
+
+        public bool IsDeliverableStatusValid(Guid? DeliverableStatusGuid)
+        {
+            if (DeliverableStatusGuid == null)
+                return false;
+
+            if (DeliverableStatusCollection == null)
+                return false;
+
+            return DeliverableStatusCollection.Any(x => x.GUID == DeliverableStatusGuid);
+        }
+
+        [NotMapped]
+        public IEnumerable<DELIVERABLES_STATUS> DeliverableStatusCollection
+        {
+            get
+            {
+                if (DOCTYPE == null || DOCTYPE.DELIVERABLES_STATUS == null)
+                    return null;
+
+                return DOCTYPE.DELIVERABLES_STATUS
+                    .Where(x => x.GUID_PROJECT == BASELINE.GUID_PROJECT)
+                    .Where(x => 
+                            (x.FOR_DELIVERABLE && DELIVERABLE_TYPE == DeliverableType.Deliverable) ||
+                            (x.FOR_NCR && DELIVERABLE_TYPE == DeliverableType.DeliverableNCR) || 
+                            (x.FOR_TASK && DELIVERABLE_TYPE == DeliverableType.Task)).OrderBy(x => x.AUTO_PERCENTAGE);
             }
         }
     }

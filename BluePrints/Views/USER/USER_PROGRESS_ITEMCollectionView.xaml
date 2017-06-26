@@ -176,13 +176,13 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnStatus"
-                                                FieldName="Entity.DeliverableStatusGuid"
+                                                FieldName="Entity.Entity.DeliverableStatusGuid"
                                                 Header="STATUS" ColumnFilterMode="DisplayText">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:ComboBoxEdit 
                                                   x:Name="PART_Editor"
-                                                  ItemsSource="{Binding RowData.Row.Entity.AvailableDeliverable_Status}"
+                                                  ItemsSource="{Binding RowData.Row.Entity.Entity.DeliverableStatusCollection}"
                                                   DisplayMember="NAME" 
                                                   ValueMember="GUID"
                                                   ValidateOnTextInput="True"

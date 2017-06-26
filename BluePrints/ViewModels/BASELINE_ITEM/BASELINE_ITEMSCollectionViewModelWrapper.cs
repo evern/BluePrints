@@ -216,7 +216,6 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROGRESS_ITEMProjection> entities)
         {
             MainViewModel.CreateNewProjectionFromNewEntityCallBack = CreateNewProjectionFromNewEntityCallBack;
-            MainViewModel.ExistingRowAddUndoAndSaveCallBack = ExistingRowAddUndoAndSaveCallBack;
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
             MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
             MainViewModel.PasteListener = this.PasteListener;
@@ -256,60 +255,6 @@ namespace BluePrints.ViewModels
             BASELINE_ITEM entity, bool isNewEntity)
         {
             projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
-        }
-
-        private bool ExistingRowAddUndoAndSaveCallBack(PROGRESS_ITEMProjection projectionEntity, CellValueChangedEventArgs e)
-        {
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
-                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
-                BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
-            {
-                var activeBASELINE_ITEM = (PROGRESS_ITEMProjection)e.Row;
-                if ((bool)e.Value)
-                {
-                    MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-                    decimal oldValue = activeBASELINE_ITEM.Entity.Entity.ESTIMATED_HOURS;
-                    if (oldValue > 0)
-                    {
-                        decimal newValue = 0;
-                        string estimatedHoursFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
-                        BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
-                        BindableBase.GetPropertyName(() => new BASELINE_ITEM().ESTIMATED_HOURS);
-                        activeBASELINE_ITEM.Entity.Entity.ESTIMATED_HOURS = newValue;
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(activeBASELINE_ITEM, estimatedHoursFieldName, oldValue, newValue, EntityMessageType.Changed);
-                    }
-                }
-            }
-            else if (e.Column.FieldName ==
-                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
-                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
-                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA))
-            {
-                var activeBASELINE_ITEM = (PROGRESS_ITEMProjection)e.Row;
-                Guid? oldValue = activeBASELINE_ITEM.Entity.Entity.GUID_SUBAREA;
-                if (e.Value != null && oldValue != null)
-                {
-                    Guid? newValue = (Guid?)null;
-                    string subAreaFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
-                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
-                    BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_SUBAREA);
-                    activeBASELINE_ITEM.Entity.Entity.GUID_SUBAREA = newValue;
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(activeBASELINE_ITEM, subAreaFieldName, oldValue, newValue, EntityMessageType.Changed);
-                }
-            }
-            else if (
-                e.Column.FieldName ==
-                BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
-                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
-                BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_STATUS))
-            {
-                if (e.Value == null)
-                    return false;
-                else
-                    return true;
-            }
-
-            return true;
         }
         #endregion
 
@@ -351,44 +296,70 @@ namespace BluePrints.ViewModels
             }
         }
 
+        /// <summary>
+        /// Allow undo-redo behavior to be added for automated cell value changing. This behavior doesn't have to be applied on new row because AddUndo for EntityMessageType.Added is already handling this
+        /// </summary>
         protected override void CellValueExistingRowChanging(CellValueChangedEventArgs e)
         {
-            var activeBASELINE_ITEM = (PROGRESS_ITEMProjection)e.Row;
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
-                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
-                BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
+                            BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                            BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
             {
+                var activeBASELINE_ITEM = (PROGRESS_ITEMProjection)e.Row;
                 if ((bool)e.Value)
                 {
-                    decimal estimatedHours = activeBASELINE_ITEM.Entity.Entity.ESTIMATED_HOURS;
-                    if (estimatedHours > 0)
+                    decimal oldValue = activeBASELINE_ITEM.Entity.Entity.ESTIMATED_HOURS;
+                    if (oldValue > 0)
                     {
                         decimal newValue = 0;
                         string estimatedHoursFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
                         BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                         BindableBase.GetPropertyName(() => new BASELINE_ITEM().ESTIMATED_HOURS);
                         activeBASELINE_ITEM.Entity.Entity.ESTIMATED_HOURS = newValue;
-                        MainViewModel.UpdateSelectedEntity();
+                        MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(activeBASELINE_ITEM, estimatedHoursFieldName, oldValue, newValue, EntityMessageType.Changed);
                     }
                 }
             }
-
-            if (e.Column.FieldName ==
-                     BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
-                     BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
-                     BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE))
+            else if (e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA))
             {
-                var chosenDOCTYPE = DOCTYPECollection.FirstOrDefault(entity => entity.GUID == (Guid)e.Value);
-                if (chosenDOCTYPE != null && activeBASELINE_ITEM.Entity.Entity.GUID_STATUS != null)
+                var activeBASELINE_ITEM = (PROGRESS_ITEMProjection)e.Row;
+                Guid? oldValue = activeBASELINE_ITEM.Entity.Entity.GUID_SUBAREA;
+                if (e.Value != null && oldValue != null)
                 {
-                    activeBASELINE_ITEM.Entity.Entity.GUID_STATUS = null;
-                    MainViewModel.UpdateSelectedEntity();
+                    Guid? newValue = (Guid?)null;
+                    string subAreaFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                    BindableBase.GetPropertyName(() => new BASELINE_ITEM().SubAreaGuid);
+                    activeBASELINE_ITEM.Entity.Entity.GUID_SUBAREA = newValue;
+                    MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(activeBASELINE_ITEM, subAreaFieldName, oldValue, newValue, EntityMessageType.Changed);
                 }
-
-                if (chosenDOCTYPE != null && chosenDOCTYPE.GUID_DDEPARTMENT != null)
+            }
+            else if (
+                 e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE) ||
+                 e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().DELIVERABLE_TYPE))
+            {
+                var activeBASELINE_ITEM = (PROGRESS_ITEMProjection)e.Row;
+                Guid? oldValue = activeBASELINE_ITEM.Entity.Entity.GUID_STATUS;
+                if (e.Value != null && oldValue != null)
                 {
-                    activeBASELINE_ITEM.Entity.Entity.GUID_DEPARTMENT = chosenDOCTYPE.DEPARTMENT.GUID;
-                    MainViewModel.UpdateSelectedEntity();
+                    Guid? newValue = (Guid?)null;
+                    string deliverableStatusFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                    BindableBase.GetPropertyName(() => new BASELINE_ITEM().DeliverableStatusGuid);
+                    activeBASELINE_ITEM.Entity.Entity.GUID_STATUS = newValue;
+                    MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(activeBASELINE_ITEM, deliverableStatusFieldName, oldValue, newValue, EntityMessageType.Changed);
                 }
             }
 
@@ -406,15 +377,43 @@ namespace BluePrints.ViewModels
                 if (e.Value != null)
                 {
                     activeBASELINE_ITEM.Entity.Entity.GUID_AREA = (Guid)e.Value;
-                    activeBASELINE_ITEM.Entity.SetAvailableSubAreas(SUBAREACollection);
-                    MainViewModel.UpdateSelectedEntity();
+                    //Area is required immediately for subarea selection
+                    activeBASELINE_ITEM.Entity.Entity.AREA = AREACollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
+                    activeBASELINE_ITEM.Update();
                 }
 
+                //SubArea must be removed immediately to nullify subarea selection
                 if (e.Value != null && activeBASELINE_ITEM.Entity.Entity.GUID_SUBAREA != null)
                 {
                     activeBASELINE_ITEM.Entity.Entity.GUID_SUBAREA = null;
-                    MainViewModel.UpdateSelectedEntity();
+                    activeBASELINE_ITEM.Update();
                 }
+            }
+
+            if (e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE))
+            {
+                var chosenDOCTYPE = DOCTYPECollection.FirstOrDefault(entity => entity.GUID == (Guid)e.Value);
+                if (chosenDOCTYPE != null)
+                {
+                    if(chosenDOCTYPE.GUID_DDEPARTMENT != null)
+                        activeBASELINE_ITEM.Entity.Entity.GUID_DEPARTMENT = chosenDOCTYPE.DEPARTMENT.GUID;
+
+                    //Baseline and Department is required immediately for deliverables status selection
+                    activeBASELINE_ITEM.Entity.Entity.BASELINE = _LoadBaseline;
+                    activeBASELINE_ITEM.Entity.Entity.DOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
+                    activeBASELINE_ITEM.Update();
+                }
+            }
+
+            if (e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().DELIVERABLE_TYPE))
+            {
+                activeBASELINE_ITEM.Update();
             }
 
             if (e.Column.FieldName ==
@@ -426,6 +425,9 @@ namespace BluePrints.ViewModels
                 if (chosenWORKPACK != null)
                 {
                     activeBASELINE_ITEM.Entity.Entity.GUID_AREA = chosenWORKPACK.GUID_DAREA;
+                    //Area is required immediately for subarea selection
+                    activeBASELINE_ITEM.Entity.Entity.AREA = AREACollection.FirstOrDefault(x => x.GUID == chosenWORKPACK.GUID_DAREA);
+                    activeBASELINE_ITEM.Entity.Entity.GUID_SUBAREA = chosenWORKPACK.GUID_DSUBAREA;
                     activeBASELINE_ITEM.Entity.Entity.GUID_DOCTYPE = chosenWORKPACK.GUID_DDOCTYPE;
                     activeBASELINE_ITEM.Entity.Entity.GUID_DEPARTMENT = chosenWORKPACK.GUID_DDEPARTMENT;
                     activeBASELINE_ITEM.Entity.Entity.GUID_DISCIPLINE = chosenWORKPACK.GUID_DDISCIPLINE;
@@ -438,20 +440,7 @@ namespace BluePrints.ViewModels
                         DISCIPLINECollection.FirstOrDefault(x => x.GUID == chosenWORKPACK.GUID_DDISCIPLINE);
 
                     activeBASELINE_ITEM.Entity.Entity.INTERNAL_NUM = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(_loadProject, MainViewModel.Entities.Select(x => x.Entity), SelectedAREA, SelectedDISCIPLINE, SelectedDOCTYPE);
-                    MainViewModel.UpdateSelectedEntity();
-                }
-            }
-
-            if (e.Column.FieldName ==
-                 BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
-                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
-                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE))
-            {
-                var chosenDOCTYPE = DOCTYPECollection.FirstOrDefault(entity => entity.GUID == (Guid)e.Value);
-                if (chosenDOCTYPE != null && chosenDOCTYPE.GUID_DDEPARTMENT != null)
-                {
-                    activeBASELINE_ITEM.Entity.Entity.GUID_DEPARTMENT = chosenDOCTYPE.DEPARTMENT.GUID;
-                    MainViewModel.UpdateSelectedEntity();
+                    activeBASELINE_ITEM.Update();
                 }
             }
 
@@ -753,7 +742,8 @@ namespace BluePrints.ViewModels
                                     BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                                     BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA);
             var subAreaFieldName =  BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
-                                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().SubAreaGuid);
+                                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                                    BindableBase.GetPropertyName(() => new BASELINE_ITEM().SubAreaGuid);
             var workpackFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
                                     BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +             BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_WORKPACK);
             var internalNumberFieldName =

@@ -54,6 +54,11 @@ namespace BluePrints.Data
             modelBuilder.AddComplexTypesFromAssembly(typeof(BluePrintsEntities).Assembly);
 
             modelBuilder.Entity<AREA>()
+                .HasMany(e => e.AREA1)
+                .WithOptional(e => e.AREA2)
+                .HasForeignKey(e => e.GUID_PARENT);
+
+            modelBuilder.Entity<AREA>()
                 .HasMany(e => e.BASELINE_ITEM)
                 .WithOptional(e => e.AREA)
                 .HasForeignKey(e => e.GUID_AREA);

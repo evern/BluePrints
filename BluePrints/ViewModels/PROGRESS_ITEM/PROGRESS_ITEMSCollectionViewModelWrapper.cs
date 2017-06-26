@@ -185,25 +185,25 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        public void FixDeliverablesStatus()
-        {
-            IEnumerable<PROGRESS_ITEMProjection> deliverablesWithStatuses = MainViewModel.Entities.Where(x => x.Entity.Entity.GUID_STATUS != null);
+        //public void FixDeliverablesStatus()
+        //{
+        //    IEnumerable<PROGRESS_ITEMProjection> deliverablesWithStatuses = MainViewModel.Entities.Where(x => x.Entity.Entity.GUID_STATUS != null);
 
-            List<PROGRESS_ITEMProjection> fixedProjections = new List<PROGRESS_ITEMProjection>();
-            foreach(var deliverableWithStatus in deliverablesWithStatuses)
-            {
-                string statusString = deliverableWithStatus.Entity.Entity.DELIVERABLES_STATUS.NAME;
-                DELIVERABLES_STATUS projectSpecificStatus = deliverableWithStatus.Entity.AvailableDeliverable_Status.FirstOrDefault(x => x.NAME.ToUpper() == statusString.ToUpper());
-                if(projectSpecificStatus != null)
-                {
-                    deliverableWithStatus.Entity.Entity.GUID_STATUS = projectSpecificStatus.GUID;
-                    fixedProjections.Add(deliverableWithStatus);
-                }
-            }
+        //    List<PROGRESS_ITEMProjection> fixedProjections = new List<PROGRESS_ITEMProjection>();
+        //    foreach(var deliverableWithStatus in deliverablesWithStatuses)
+        //    {
+        //        string statusString = deliverableWithStatus.Entity.Entity.DELIVERABLES_STATUS.NAME;
+        //        DELIVERABLES_STATUS projectSpecificStatus = deliverableWithStatus.Entity.AvailableDeliverable_Status.FirstOrDefault(x => x.NAME.ToUpper() == statusString.ToUpper());
+        //        if(projectSpecificStatus != null)
+        //        {
+        //            deliverableWithStatus.Entity.Entity.GUID_STATUS = projectSpecificStatus.GUID;
+        //            fixedProjections.Add(deliverableWithStatus);
+        //        }
+        //    }
 
-            MainViewModel.BulkSave(fixedProjections);
-            RefreshView();
-        }
+        //    MainViewModel.BulkSave(fixedProjections);
+        //    RefreshView();
+        //}
 
         public bool CanUpdateAllPercentagesByStatus()
         {
@@ -222,14 +222,14 @@ namespace BluePrints.ViewModels
             string percentageFieldname = BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().TOTAL_EARNED_PERCENTAGE);
             foreach (var deliverableWithStatus in deliverablesWithStatuses)
             {
-                DELIVERABLES_STATUS deliverableStatus = deliverableWithStatus.Entity.DELIVERABLE_STATUS;
+                DELIVERABLES_STATUS deliverableStatus = deliverableWithStatus.Entity.Entity.DELIVERABLES_STATUS;
 
                 //when this is null it means the deliverable status is no longer valid (e.g. deleted)
                 if (deliverableStatus == null)
                     continue;
 
                 //user are able to fill up/down on statuses that might result in assigned status isn't valid to doctype, so check if status is valid before continuing
-                bool isValidStatus = deliverableWithStatus.Entity.AvailableDeliverable_Status.Any(x => x.GUID == deliverableStatus.GUID);
+                bool isValidStatus = deliverableWithStatus.Entity.Entity.DOCTYPE.DELIVERABLES_STATUS.Any(x => x.GUID == deliverableStatus.GUID);
                 if (!isValidStatus)
                     continue;
 
