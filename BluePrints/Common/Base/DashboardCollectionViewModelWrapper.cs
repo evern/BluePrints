@@ -51,14 +51,15 @@ namespace BluePrints.Common.ViewModel
 
         private void dispatchTimer_Tick(object sender, EventArgs e)
         {
-            if(DisplaySelectedEntities.Count() > 0)
+            dispatchTimer.Stop();
+            if (DisplaySelectedEntities.Count() > 0)
                 DisplaySelectedEntity = DisplaySelectedEntities.First();
 
             OnSelectedEntitiesChanged(DisplaySelectedEntities);
-            dispatchTimer.Stop();
         }
 
         public virtual TProjection SummaryEntity { get; set; }
+        protected bool isMasterDetailView { get; set; }
 
         public void OnSelectedEntitiesChanged(IEnumerable<TProjection> entities)
         {
@@ -76,11 +77,11 @@ namespace BluePrints.Common.ViewModel
             }
 
             //Cannot use this anymore because during master detail view the stats will be recalculated when detail entities are selected
-            //if (entities.Count() == 1)
-            //{
-            //    SummaryEntity = entities.First();
-            //}
-            if(entities.Count() > 0)
+            if (entities.Count() == 1 && !isMasterDetailView)
+            {
+                SummaryEntity = entities.First();
+            }
+            else if (entities.Count() > 0)
             {
                 SummaryEntity = ViewModelSource.Create(() => new TProjection());
                 ProgressStats progressStats = entities.First().Stats as ProgressStats;

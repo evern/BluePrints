@@ -37,6 +37,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected WORKPACKDashboardViewModelWrapper()
         {
+            isMasterDetailView = true;
         }
 
         #region Database Operation
