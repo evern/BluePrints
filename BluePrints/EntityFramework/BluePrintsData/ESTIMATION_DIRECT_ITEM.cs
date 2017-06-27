@@ -25,12 +25,15 @@
 
         public Guid? GUID_COMMODITY_CODE { get; set; }
 
+        [Required]
+        public int DISCIPLINE_NUM { get; set; }
+
         [StringLength(1000)]
         public string COMMENTS { get; set; }
 
         public decimal ESTIMATED_QUANTITY { get; set; }
-
-        public decimal VAR_QUANTITY { get; set; }
+        
+        public bool TRACK { get; set; }
 
         public DateTime CREATED { get; set; }
 

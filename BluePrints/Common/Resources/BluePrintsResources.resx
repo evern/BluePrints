@@ -270,4 +270,7 @@
   <data name="REGISTER_DefaultNumberFieldLength" xml:space="preserve">
     <value>3</value>
   </data>
+  <data name="UncategorisedStockCode" xml:space="preserve">
+    <value>Uncategorised</value>
+  </data>
 </root>

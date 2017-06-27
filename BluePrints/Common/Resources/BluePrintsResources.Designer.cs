@@ -448,6 +448,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Uncategorised.
+        /// </summary>
+        internal static string UncategorisedStockCode {
+            get {
+                return ResourceManager.GetString("UncategorisedStockCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Warning.
         /// </summary>
         internal static string Warning_Caption {

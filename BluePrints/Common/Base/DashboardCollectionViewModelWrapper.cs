@@ -75,11 +75,12 @@ namespace BluePrints.Common.ViewModel
                 }
             }
 
-            if (entities.Count() == 1)
-            {
-                SummaryEntity = entities.First();
-            }
-            else if(entities.Count() > 0)
+            //Cannot use this anymore because during master detail view the stats will be recalculated when detail entities are selected
+            //if (entities.Count() == 1)
+            //{
+            //    SummaryEntity = entities.First();
+            //}
+            if(entities.Count() > 0)
             {
                 SummaryEntity = ViewModelSource.Create(() => new TProjection());
                 ProgressStats progressStats = entities.First().Stats as ProgressStats;

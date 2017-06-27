@@ -27,7 +27,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>324</ApplicationRevision>
+    <ApplicationRevision>325</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -360,6 +360,7 @@
     <Compile Include="Common\Base\BluePrintsProjectionMasterDetailBase.cs" />
     <Compile Include="Common\Misc\Messages.cs" />
     <Compile Include="Common\Misc\RiskMatrix.cs" />
+    <Compile Include="Common\Projections\ESTIMATION_DIRECT_ITEMProjection.cs" />
     <Compile Include="Common\Projections\BASELINE_ITEM_ASSIGNMENTSProjection.cs" />
     <Compile Include="Common\Projections\AREAMasterDetailProjection.cs" />
     <Compile Include="Common\Projections\BASELINE_ITEMProjection.cs" />
@@ -432,6 +433,7 @@
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
     <Compile Include="EntityFramework\Annotations\COMMODITY_CODE.cs" />
+    <Compile Include="EntityFramework\Annotations\ESTIMATION_DIRECT_ITEM.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_ISSUE.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_HOLD.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_CHANGE.cs" />
@@ -506,6 +508,7 @@
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\BluePrintsEntitiesUnitOfWorkSource.cs" />
     <Compile Include="Common\Misc\BluePrintsEnums.cs" />
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\ESTIMATION_DIRECT_ITEM\ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_HOLDCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_ISSUECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_CHANGECollectionViewModelWrapper.cs" />
@@ -521,6 +524,9 @@
     </Compile>
     <Compile Include="Views\DXSplashScreen\BluePrintsSplashScreen.xaml.cs">
       <DependentUpon>BluePrintsSplashScreen.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ESTIMATION_DIRECT_ITEM\ESTIMATION_DIRECT_ITEMCollectionView.xaml.cs">
+      <DependentUpon>ESTIMATION_DIRECT_ITEMCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECTDashboardPreloadUserControl.xaml.cs">
       <DependentUpon>PROJECTDashboardPreloadUserControl.xaml</DependentUpon>
@@ -1272,6 +1278,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\DXSplashScreen\BluePrintsSplashScreen.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ESTIMATION_DIRECT_ITEM\ESTIMATION_DIRECT_ITEMCollectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -4243,6 +4253,7 @@
     <Resource Include="Views\DXSplashScreen\Image.png" />
     <Resource Include="Views\DXSplashScreen\Logo.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\SlowCheetah.2.5.48\build\SlowCheetah.targets" Condition="Exists('..\packages\SlowCheetah.2.5.48\build\SlowCheetah.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

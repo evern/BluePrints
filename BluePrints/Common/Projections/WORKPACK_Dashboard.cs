@@ -1,4 +1,5 @@
 ﻿using BluePrints.Common.Base;
+using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
@@ -11,7 +12,7 @@ namespace BluePrints.Common.Projections
     public class StockCode_Dashboard : IHaveStats
     {
         public string Stock_Code { get; set; }
-        public IEnumerable<CommodityCode_Dashboard> Commodity_Codes { get; set; }
+        public List<CommodityCode_Dashboard> Commodity_Codes { get; set; }
         public ProgressStats Stats { get; set; }
     }
 
@@ -26,7 +27,7 @@ namespace BluePrints.Common.Projections
         public ProgressStats Stats { get; set; }
         public IEnumerable<AREA> AvailableSubAreas { get; set; }
 
-        public IEnumerable<StockCode_Dashboard> StockCodes { get; set; }
+        public List<StockCode_Dashboard> StockCodes { get; set; }
 
         public bool HaveStockCodes
         {
@@ -41,19 +42,45 @@ namespace BluePrints.Common.Projections
             Stats = projectStats.GroupStatsByWorkpack(this.Entity);
             if (!isLegacyProject)
             {
-                StockCodes = constructStockCodes((SummaryStats)Stats);
+                IEnumerable<ExoDataPoint> burnedDataPoints = projectStats.GetBurnedDataPoints();
+                StockCodes = constructAllPossibleStockCodes((SummaryStats)Stats, burnedDataPoints);
+                List<StockCode_Dashboard> removeStockCodes = new List<StockCode_Dashboard>();
+
                 foreach(StockCode_Dashboard stockCode in StockCodes)
                 {
                     stockCode.Stats = projectStats.GroupStatsByStockCode((SummaryStats)Stats, stockCode.Stock_Code);
-                    foreach(CommodityCode_Dashboard commodityCode in stockCode.Commodity_Codes)
+                    if (stockCode.Stats == null)
+                    {
+                        removeStockCodes.Add(stockCode);
+                        continue;
+                    }
+
+                    List<CommodityCode_Dashboard> removeCommodityCodes = new List<CommodityCode_Dashboard>();
+                    foreach (CommodityCode_Dashboard commodityCode in stockCode.Commodity_Codes)
                     {
                         commodityCode.Stats = projectStats.GroupStatsByCommodityCode((SummaryStats)stockCode.Stats, commodityCode.Commodity_Code);
+                        if(commodityCode.Stats == null)
+                        {
+                            removeCommodityCodes.Add(commodityCode);
+                        }
                     }
+
+                    //omit stock codes without any stats
+                    foreach (CommodityCode_Dashboard removeCommodityCode in removeCommodityCodes)
+                    {
+                        stockCode.Commodity_Codes.Remove(removeCommodityCode);
+                    }
+                }
+
+                //omit stock codes without any stats
+                foreach(StockCode_Dashboard removeStockCode in removeStockCodes)
+                {
+                    StockCodes.Remove(removeStockCode);
                 }
             }
         }
 
-        private IEnumerable<StockCode_Dashboard> constructStockCodes(SummaryStats workpackSummaryStats)
+        private List<StockCode_Dashboard> constructAllPossibleStockCodes(SummaryStats workpackSummaryStats, IEnumerable<ExoDataPoint> burnedDataPoints)
         {
             List<StockCode_Dashboard> stockCodeDashboards = new List<StockCode_Dashboard>();
             foreach(PROGRESS_ITEMProjection deliverable in workpackSummaryStats.Deliverable)
@@ -62,7 +89,18 @@ namespace BluePrints.Common.Projections
                 if (!stockCodeDashboards.Any(x => x.Stock_Code == stockCode))
                 {
                     StockCode_Dashboard newStockCode = new StockCode_Dashboard() { Stock_Code = stockCode };
-                    assignCommodityCodes(newStockCode, workpackSummaryStats.Deliverable);
+                    assignAllPossibleCommodityCodes(newStockCode, workpackSummaryStats.Deliverable, burnedDataPoints);
+                    stockCodeDashboards.Add(newStockCode);
+                }
+            }
+
+            foreach(ExoDataPoint burnedDataPoint in burnedDataPoints)
+            {
+                string stockCode = burnedDataPoint.StockCode;
+                if (!stockCodeDashboards.Any(x => x.Stock_Code == stockCode))
+                {
+                    StockCode_Dashboard newStockCode = new StockCode_Dashboard() { Stock_Code = stockCode };
+                    assignAllPossibleCommodityCodes(newStockCode, workpackSummaryStats.Deliverable, burnedDataPoints);
                     stockCodeDashboards.Add(newStockCode);
                 }
             }
@@ -70,13 +108,22 @@ namespace BluePrints.Common.Projections
             return stockCodeDashboards;
         }
 
-        private void assignCommodityCodes(StockCode_Dashboard stockCodeDashboards, IEnumerable<PROGRESS_ITEMProjection> workpackDeliverables)
+        private void assignAllPossibleCommodityCodes(StockCode_Dashboard stockCodeDashboards, IEnumerable<PROGRESS_ITEMProjection> workpackDeliverables, IEnumerable<ExoDataPoint> burnedDataPoints)
         {
             List<CommodityCode_Dashboard> commodityCodes = new List<CommodityCode_Dashboard>();
             foreach (PROGRESS_ITEMProjection deliverable in workpackDeliverables)
             {
                 string commodityCode = deliverable.Entity.Entity.DOCTYPE.CODE;
                 if(!commodityCodes.Any(x => x.Commodity_Code == commodityCode))
+                {
+                    commodityCodes.Add(new CommodityCode_Dashboard() { Commodity_Code = commodityCode });
+                }
+            }
+
+            foreach (ExoDataPoint burnedDataPoint in burnedDataPoints)
+            {
+                string commodityCode = burnedDataPoint.CommodityCode;
+                if (!commodityCodes.Any(x => x.Commodity_Code == commodityCode))
                 {
                     commodityCodes.Add(new CommodityCode_Dashboard() { Commodity_Code = commodityCode });
                 }
