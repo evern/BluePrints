@@ -168,10 +168,11 @@ namespace BluePrints.Common
 
     public enum WorkpackType
     {
-        Design,
-        Supply,
-        Install,
-        Indirect
+        OffsiteDirect,
+        OffsiteIndirect,
+        SiteDirect,
+        SiteIndirect,
+        Supply
     }
 
     public enum VariationType

@@ -1,4 +1,6 @@
-﻿<UserControl x:Class="BluePrints.Views.ESTIMATION_DIRECT_ITEMCollectionView"
+﻿<UserControl 
+             x:Name="userControl" 
+             x:Class="BluePrints.Views.ESTIMATION_DIRECT_ITEMCollectionView"
              xmlns:view="clr-namespace:BluePrints.Views"
              xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -19,12 +21,13 @@
              xmlns:common="clr-namespace:BluePrints.Common"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:helper="clr-namespace:BluePrints.Common.Helpers"
+             xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
              xmlns:local="clr-namespace:BluePrints.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300"
+             DataContext="{dxmvvm:ViewModelSource viewmodel:ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
-            <converters:BaselineItemMaximumUnitsConverter x:Key="BaselineItemMaximumUnitsConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
@@ -60,17 +63,6 @@
                                                    LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}"
                                                    Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
                                 <dxb:BarItemSeparator />
-                                <dxb:BarButtonItem Content="Edit Report"
-                                                   Command="{Binding DataContext.EditReportCommand, ElementName=userControl}"
-                                                   LargeGlyph="{dx:DXImage Image=Edit_32x32.png}"
-                                                   Glyph="{dx:DXImage Image=Edit_16x16.png}" />
-                                <dxb:BarButtonItem Content="View Report"
-                                                   Command="{Binding DataContext.ViewReportCommand, ElementName=userControl}"
-                                                   LargeGlyph="{dx:DXImage Image=Report_32x32.png}"
-                                                   Glyph="{dx:DXImage Image=Report_16x16.png}" />
-                                <dxb:BarCheckItem Content="Lock Baseline"
-                                                  IsChecked="{Binding DataContext.IsBASELINELocked, ElementName=userControl}"
-                                                  Glyph="{dx:DXImageOffice2013 Image=Product_16x16.png}" />
                                 <dxb:BarButtonItem Content="Export"
                                                    Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}"
@@ -139,6 +131,55 @@
                                                                       MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn Name="colCOMMODITY_CODE" FieldName="Entity.GUID_COMMODITY_CODE" Header="COMMODITY CODE">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxg:LookUpEditSettings
+                                        AutoComplete="True"
+                                        ValueMember="GUID"
+                                        DisplayMember="CODE"
+                                        IsTextEditable="true"
+                                        PopupMinWidth="1500"
+                                        AutoPopulateColumns="False"
+                                        NullValueButtonPlacement="None"
+                                        ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}">
+                                        <dxg:LookUpEditSettings.PopupContentTemplate>
+                                            <ControlTemplate TargetType="ContentControl">
+                                                <custom:GridControlEx x:Name="PART_GridControl" ShowBorder="False" 
+                                                                     SelectionMode="Row">
+                                                    <custom:GridControlEx.Columns>
+                                                        <dxg:GridColumn FieldName="CODE" ReadOnly="True" />
+                                                        <dxg:GridColumn FieldName="ProjectNumber" ReadOnly="True" />
+                                                        <dxg:GridColumn FieldName="NAME" ReadOnly="True" />
+                                                        <dxg:GridColumn FieldName="TYPE" ReadOnly="True" />
+                                                        <dxg:GridColumn FieldName="SPEC" ReadOnly="True" />
+                                                        <dxg:GridColumn FieldName="DESCRIPTION" ReadOnly="True" />
+                                                        <dxg:GridColumn FieldName="UOM" ReadOnly="True" />
+                                                        <dxg:GridColumn FieldName="RATE_SUPPLY" ReadOnly="True">
+                                                            <dxg:GridColumn.EditSettings>
+                                                                <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True"
+                                                                    Increment="10" />
+                                                            </dxg:GridColumn.EditSettings>
+                                                        </dxg:GridColumn>
+                                                        <dxg:GridColumn FieldName="HOURS_INSTALL" ReadOnly="True">
+                                                            <dxg:GridColumn.EditSettings>
+                                                                <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True"
+                                                                    Increment="10" />
+                                                            </dxg:GridColumn.EditSettings>
+                                                        </dxg:GridColumn>
+                                                    </custom:GridControlEx.Columns>
+                                                    <dxg:GridControl.View>
+                                                        <dxg:TableView
+                                                            ShowAutoFilterRow="True"
+                                                            ShowSelectionRectangle="True"
+                                                            ShowFocusedRectangle="True"
+                                                            ShowSearchPanelMode="Always" />
+                                                    </dxg:GridControl.View>
+                                                </custom:GridControlEx>
+                                            </ControlTemplate>
+                                        </dxg:LookUpEditSettings.PopupContentTemplate>
+                                    </dxg:LookUpEditSettings>
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.COMMENTS" Header="COMMENTS" />
                             <dxg:GridColumn Name="colESTIMATED_QUANTITY" FieldName="Entity.ESTIMATED_QUANTITY"
                                             Header="ESTIMATED_QUANTITY">
@@ -152,21 +193,23 @@
                                             </Grid.ColumnDefinitions>
                                             <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n"
                                                               MaskUseAsDisplayFormat="True" Increment="1"
-                                                              IsReadOnly="{Binding RowData.Row.Entity.BY_DURATION}"
-                                                              MinValue="{Binding RowData.Row.CurrentPROGRESS_ITEM_UNITS}"
+                                                              MinValue="0"
                                                               Grid.Column="2">
-                                                <dxe:SpinEdit.MaxValue>
-                                                    <MultiBinding Converter="{StaticResource BaselineItemMaximumUnitsConverter}">
-                                                        <Binding ElementName="userControl" Path="DataContext.TotalAllowedUnits" />
-                                                        <Binding ElementName="userControl" Path="DataContext.DisplayEntities" />
-                                                        <Binding Path="RowData.Row" />
-                                                    </MultiBinding>
-                                                </dxe:SpinEdit.MaxValue>
                                             </dxe:SpinEdit>
                                         </Grid>
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
+                            <!--<dxg:GridColumn Header="SUPPLY RATE" FieldName="COMMODITY_CODE.RATE_SUPPLY" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True" Increment="10" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="INSTALL HOURS" FieldName="COMMODITY_CODE.HOURS_INSTALL" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True" Increment="10" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>-->
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.GroupSummary>
                             <dxg:GridSummaryItem FieldName="Entity.COMMENTS" SummaryType="Count"
@@ -184,11 +227,6 @@
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
                             <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" >
-                                <dxmvvm:Interaction.Behaviors>
-                                    <dxmvvm:EventToCommand
-                                        Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}"
-                                        PassEventArgsToCommand="True" EventName="CellValueChanged" />
-                                </dxmvvm:Interaction.Behaviors>
                                 <custom:TableViewEx.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Name="contextMenuBulkEdit" Content="Bulk Edit"
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"
@@ -202,7 +240,7 @@
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}"
                                                        Command="{Binding View.DataContext.FillDownCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Name="contextMenuPopulate" Content="Populate"
+                                    <!--<dxb:BarButtonItem Name="contextMenuPopulate" Content="Populate"
                                                        Glyph="{dx:DXImageOffice2013 Image=PictureShapeFillColor_16x16.png}"
                                                        Command="{Binding DataContext.AutoPopulateCommand, ElementName=userControl}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
@@ -259,7 +297,7 @@
                                                 </dxe:SpinEditSettings>
                                             </dxb:BarEditItem.EditSettings>
                                         </dxb:BarEditItem>
-                                    </dxb:BarSubItem>
+                                    </dxb:BarSubItem>-->
                                     <dxb:BarButtonItem Content="Delete"
                                                        Command="{Binding View.DataContext.BulkDeleteCommand}"
                                                        CommandParameter="{Binding View.DataContext.SelectedEntities}"

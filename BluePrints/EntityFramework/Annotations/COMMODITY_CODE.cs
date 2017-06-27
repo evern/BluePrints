@@ -27,5 +27,16 @@ namespace BluePrints.Data
             get { return CREATED; }
             set { CREATED = value; }
         }
+
+        public string ProjectNumber
+        {
+            get
+            {
+                if (PROJECT == null)
+                    return string.Empty;
+
+                return PROJECT.NUMBER;
+            }
+        }
     }
 }

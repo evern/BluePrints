@@ -17,6 +17,39 @@ namespace BluePrints.Common.Projections
         }
 
         public RATE RATE { get; set; }
+
+        public decimal ITEMRATE
+        {
+            get
+            {
+                if (RATE == null || RATE.RATE1 == null)
+                    return 0;
+
+                return (decimal)RATE.RATE1;
+            }
+        }
+
+        public decimal ESTIMATED_COSTS
+        {
+            get
+            {
+                if (Entity == null)
+                    return 0;
+
+                if (RATE == null || RATE.RATE1 == null)
+                    return 0;
+
+                return Entity.ESTIMATED_QUANTITY * (decimal)RATE.RATE1;
+            }
+        }
+
+        /// <summary>
+        /// Refreshes current row
+        /// </summary>
+        public void Update()
+        {
+            RaisePropertyChanged();
+        }
     }
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries
@@ -28,10 +61,11 @@ namespace BluePrints.Common.Projections
             return
                 ESTIMATION_DIRECT_ITEMS.ToArray()
                     .Select(
-                        x =>
+                        estimate_direct_item =>
                             new ESTIMATION_DIRECT_ITEMProjection()
                             {
-                                Entity = x
+                                Entity = estimate_direct_item,
+                                RATE = RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE)
                             }).AsQueryable();
         }
     }

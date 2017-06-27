@@ -553,7 +553,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<AREA> GetSUBAREACollection()
+        private IEnumerable<AREA> GetSUBAREACollection()
         {
             var collection = GetEntities<AREA>();
             if (collection != null)

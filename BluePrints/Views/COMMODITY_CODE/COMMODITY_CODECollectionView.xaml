@@ -101,7 +101,7 @@
                             <dxg:GridColumn FieldName="HOURS_INSTALL">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True"
-                                      Increment="10" />
+                                      Increment="1" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
