@@ -157,6 +157,11 @@ namespace BluePrints.Data
                 .Property(e => e.WEIGHTING)
                 .HasPrecision(5, 2);
 
+            modelBuilder.Entity<COMMODITY_CODE>()
+                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
+                .WithOptional(e => e.COMMODITY_CODE)
+                .HasForeignKey(e => e.GUID_COMMODITY_CODE);
+
             modelBuilder.Entity<DELIVERABLES_STATUS>()
                 .Property(e => e.MAX_PERCENTAGE)
                 .HasPrecision(5, 2);
@@ -452,6 +457,11 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<WORKPACK>()
                 .HasMany(e => e.BASELINE_ITEM)
+                .WithOptional(e => e.WORKPACK)
+                .HasForeignKey(e => e.GUID_WORKPACK);
+
+            modelBuilder.Entity<WORKPACK>()
+                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
                 .WithOptional(e => e.WORKPACK)
                 .HasForeignKey(e => e.GUID_WORKPACK);
 

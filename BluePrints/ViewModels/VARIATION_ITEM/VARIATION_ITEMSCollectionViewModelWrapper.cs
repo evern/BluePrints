@@ -810,43 +810,38 @@ namespace BluePrints.ViewModels
                 }
                 else if (info.Column.FieldName == workpackFieldName)
                 {
-                    if (entity.Entity.Entity.GUID_DISCIPLINE == Guid.Empty ||
-                        entity.Entity.Entity.GUID_DEPARTMENT == Guid.Empty ||
-                        entity.Entity.Entity.GUID_DOCTYPE == Guid.Empty ||
-                        entity.Entity.Entity.GUID_AREA == Guid.Empty)
+                    if (entity.Entity.Entity.GUID_AREA == Guid.Empty || entity.Entity.Entity.GUID_DISCIPLINE == Guid.Empty)
                         continue;
+
+                    string internalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2(
+                        entity.Entity.Entity.GUID_AREA, entity.Entity.Entity.GUID_SUBAREA,
+                        loadPROJECT, AREACollection, SUBAREACollection, entity.Entity.Entity.GUID_PHASE, PHASECollection);
+
+                    if (internalName == string.Empty)
+                        return;
 
                     var findWORKPACK =
                         WORKPACKCollection.FirstOrDefault(
                             x =>
-                                x.GUID_DDEPARTMENT == entity.Entity.Entity.GUID_DEPARTMENT &&
-                                x.GUID_DDISCIPLINE == entity.Entity.Entity.GUID_DISCIPLINE);
+                                x.INTERNAL_NAME1 == internalName);
+
                     if (findWORKPACK == null)
                     {
                         var newWORKPACK = new WORKPACK();
+                        AREA defaultSubArea = SUBAREACollection.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.WorkpackDefaultSubArea);
+
                         newWORKPACK.GUID_PROJECT = loadPROJECT.GUID;
-                        if (entity.Entity.Entity.GUID_AREA != null)
-                            newWORKPACK.GUID_DAREA = (Guid)entity.Entity.Entity.GUID_AREA;
-                        if (entity.Entity.Entity.GUID_SUBAREA != null)
-                            newWORKPACK.GUID_DSUBAREA = (Guid)entity.Entity.Entity.GUID_SUBAREA;
-                        if (entity.Entity.Entity.GUID_PHASE != null)
-                            newWORKPACK.GUID_DPHASE = entity.Entity.Entity.GUID_PHASE;
+                        newWORKPACK.GUID_DAREA = entity.Entity.Entity.GUID_AREA;
+                        newWORKPACK.GUID_DSUBAREA = entity.Entity.Entity.GUID_SUBAREA == null ? defaultSubArea == null ? defaultSubArea.GUID : (Guid?)null : entity.Entity.Entity.GUID_SUBAREA;
+                        newWORKPACK.GUID_DPHASE = entity.Entity.Entity.GUID_PHASE;
                         if (entity.Entity.Entity.GUID_DISCIPLINE != null)
-                            newWORKPACK.GUID_DDISCIPLINE =
-                                (Guid)entity.Entity.Entity.GUID_DISCIPLINE;
+                            newWORKPACK.GUID_DDISCIPLINE = (Guid)entity.Entity.Entity.GUID_DISCIPLINE;
                         if (entity.Entity.Entity.GUID_DEPARTMENT != null)
-                            newWORKPACK.GUID_DDEPARTMENT =
-                                (Guid)entity.Entity.Entity.GUID_DEPARTMENT;
+                            newWORKPACK.GUID_DDEPARTMENT = (Guid)entity.Entity.Entity.GUID_DEPARTMENT;
                         if (entity.Entity.Entity.GUID_DOCTYPE != null)
                             newWORKPACK.GUID_DDOCTYPE = (Guid)entity.Entity.Entity.GUID_DOCTYPE;
 
-                        string newInternalName;
-                        if (IsPhaseVisible)
-                            newInternalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2(loadPROJECT, newWORKPACK, WORKPACKCollection, AREACollection, SUBAREACollection, DISCIPLINECollection, PHASECollection, DOCTYPECollection);
-                        else
-                            newInternalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber1(loadPROJECT, newWORKPACK, WORKPACKCollection, AREACollection, DISCIPLINECollection, DOCTYPECollection);
-
-                        newWORKPACK.INTERNAL_NAME1 = newInternalName;
+                        newWORKPACK.INTERNAL_NAME1 = internalName;
                         newWORKPACK.STARTDATE = DateTime.Now;
                         newWORKPACK.ENDDATE =
                             BluePrintsDataUtils.WORKPACK_Calculate_EndDate((DateTime)newWORKPACK.STARTDATE, loadPROJECT);

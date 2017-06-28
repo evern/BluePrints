@@ -1,6 +1,7 @@
 ﻿using BaseModel.Helpers;
 using BaseModel.ViewModel.Base;
 using BluePrints.Common.Projections;
+using BluePrints.Common.Resources;
 using BluePrints.Data;
 using System;
 using System.Collections.Generic;
@@ -310,47 +311,26 @@ namespace BluePrints.Common.ViewModel.Utils
         /// <summary>
         /// Generate internal number2 when all required fields are populated
         /// </summary>
-        public static string WORKPACK_Generate_InternalNumber2(PROJECT fromPROJECT, WORKPACK fromWORKPACK,
-            IEnumerable<WORKPACK> WORKPACKEntities, IEnumerable<AREA> lookUpAREA, IEnumerable<AREA> lookUpSUBAREA, 
-            IEnumerable<DISCIPLINE> lookUpDISCIPLINE, IEnumerable<PHASE> lookUpPHASE, IEnumerable<DOCTYPE> lookUpDOCTYPE)
+        public static string WORKPACK_Generate_InternalNumber2(Guid? entityAreaGuid, Guid? entitySubAreaGuid, PROJECT PROJECT, IEnumerable<AREA> AREACollection, IEnumerable<AREA> SUBAREACollection, Guid? entityPhaseGuid = null, IEnumerable<PHASE> PHASECollection = null)
         {
-            AREA findAREA;
-            AREA findSUBAREA;
-            DISCIPLINE findDISCIPLINE;
-            PHASE findPHASE;
-            DOCTYPE findDOCTYPE;
+            if (entityAreaGuid == Guid.Empty)
+                return string.Empty;
 
-            if (fromWORKPACK.AREA == null || fromWORKPACK.DISCIPLINE == null || fromWORKPACK.AREA == null || fromWORKPACK.DOCTYPE == null || fromWORKPACK.AREA1 == null)
+            AREA area = AREACollection.FirstOrDefault(x => x.GUID == entityAreaGuid);
+            AREA subarea = SUBAREACollection.FirstOrDefault(x => x.GUID == entitySubAreaGuid);
+            PHASE phase = null;
+            if(entityPhaseGuid != null)
+                PHASECollection.FirstOrDefault(x => x.GUID == entityPhaseGuid);
+
+            if (area != null)
             {
-                findAREA = lookUpAREA.FirstOrDefault(area => area.GUID == fromWORKPACK.GUID_DAREA);
-                findSUBAREA = lookUpSUBAREA.FirstOrDefault(subarea => subarea.GUID == fromWORKPACK.GUID_DSUBAREA);
-                findPHASE = lookUpPHASE.FirstOrDefault(phase => phase.GUID == fromWORKPACK.GUID_DPHASE);
-                findDISCIPLINE =
-                    lookUpDISCIPLINE.FirstOrDefault(discipline => discipline.GUID == fromWORKPACK.GUID_DDISCIPLINE);
-                findDOCTYPE = lookUpDOCTYPE.FirstOrDefault(doctype => doctype.GUID == fromWORKPACK.GUID_DDOCTYPE);
-            }
-            else
-            {
-                findAREA = fromWORKPACK.AREA;
-                findPHASE = fromWORKPACK.PHASE;
-                findDISCIPLINE = fromWORKPACK.DISCIPLINE;
-                findDOCTYPE = fromWORKPACK.DOCTYPE;
-                findSUBAREA = fromWORKPACK.AREA1;
-            }
+                string phaseNumber = phase == null ? BluePrintsResources.WorkpackDefaultDesignPhase : phase.INTERNAL_NUM;
+                string subAreaNumber = subarea == null ? BluePrintsResources.WorkpackDefaultSubArea : subarea.INTERNAL_NUM;
 
-            if (findAREA != null && findDISCIPLINE != null && findPHASE != null && findSUBAREA != null)
-            {
-                var InternalName = fromPROJECT.NUMBER;
-                InternalName += "-" + findPHASE.INTERNAL_NUM;
-                InternalName += "-" + findAREA.INTERNAL_NUM;
-                InternalName += "-" + findSUBAREA.INTERNAL_NUM;
-                InternalName += "-" + findDISCIPLINE.CODE;
-
-                var InternalNameCount =
-                    WORKPACKEntities.Count(
-                        obj => obj.INTERNAL_NAME1 != null && obj.INTERNAL_NAME1.Contains(InternalName)) + 1;
-
-                InternalName += InternalNameCount.ToString();
+                var InternalName = PROJECT.NUMBER;
+                InternalName += "-" + area.INTERNAL_NUM;
+                InternalName += "-" + subAreaNumber;
+                InternalName += "-" + phaseNumber;
 
                 return InternalName;
             }

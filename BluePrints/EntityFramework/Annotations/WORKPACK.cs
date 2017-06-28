@@ -15,6 +15,7 @@ namespace BluePrints.Data
         {
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
             WORKPACK_ASSIGNMENT = new HashSet<WORKPACK_ASSIGNMENT>();
+            ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
             STARTDATE = DateTime.Now;
             ENDDATE = DateTime.Now;
             REVIEWSTARTDATE = DateTime.Now;

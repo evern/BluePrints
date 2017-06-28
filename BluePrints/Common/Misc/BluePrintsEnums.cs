@@ -189,6 +189,13 @@ namespace BluePrints.Common
         Overhead = 3
     }
 
+    public enum DialogAction
+    {
+        Add,
+        Edit,
+        Cancel
+    }
+
     public enum CostGroup
     {
         [Display(Name = "Offsite")]

@@ -35,6 +35,15 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <dxmvvm:Interaction.Behaviors>
+            <dx:DialogService x:Name="CommodityCodeDialogService">
+                <dx:DialogService.DialogStyle>
+                    <Style TargetType="dx:DXDialogWindow">
+                        <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                    </Style>
+                </dx:DialogService.DialogStyle>
+            </dx:DialogService>
+        </dxmvvm:Interaction.Behaviors>
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False"
@@ -81,6 +90,14 @@
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM" 
                                      Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
+                            <dxg:GridColumn Name="colWORKPACK" FieldName="Entity.GUID_WORKPACK" Header="WORKPACK" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings
+                                        ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NAME1"
+                                        ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn Name="colAREA" FieldName="Entity.GUID_AREA" Header="AREA">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
@@ -200,16 +217,16 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <!--<dxg:GridColumn Header="SUPPLY RATE" FieldName="COMMODITY_CODE.RATE_SUPPLY" ReadOnly="True">
+                            <dxg:GridColumn Header="SUPPLY RATE" FieldName="COMMODITY_CODE.RATE_SUPPLY">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True" Increment="10" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="INSTALL HOURS" FieldName="COMMODITY_CODE.HOURS_INSTALL" ReadOnly="True">
+                            <dxg:GridColumn Header="INSTALL HOURS" FieldName="COMMODITY_CODE.HOURS_INSTALL">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True" Increment="10" />
                                 </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>-->
+                            </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.GroupSummary>
                             <dxg:GridSummaryItem FieldName="Entity.COMMENTS" SummaryType="Count"

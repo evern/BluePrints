@@ -511,6 +511,33 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to C1.
+        /// </summary>
+        internal static string WorkpackDefaultConstructionPhase {
+            get {
+                return ResourceManager.GetString("WorkpackDefaultConstructionPhase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to D1.
+        /// </summary>
+        internal static string WorkpackDefaultDesignPhase {
+            get {
+                return ResourceManager.GetString("WorkpackDefaultDesignPhase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 00.
+        /// </summary>
+        internal static string WorkpackDefaultSubArea {
+            get {
+                return ResourceManager.GetString("WorkpackDefaultSubArea", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to BluePrints.
         /// </summary>
         internal static string XMLDefaultDirectory {

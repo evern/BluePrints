@@ -13,6 +13,8 @@
 
         public Guid GUID_ORIGINAL { get; set; }
 
+        public Guid? GUID_WORKPACK { get; set; }
+
         public Guid GUID_ESTIMATION_DIRECT { get; set; }
 
         public Guid? GUID_VARIATION { get; set; }
@@ -55,10 +57,14 @@
 
         public virtual AREA AREA1 { get; set; }
 
+        public virtual COMMODITY_CODE COMMODITY_CODE { get; set; }
+
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 
         public virtual ESTIMATION_DIRECT ESTIMATION_DIRECT { get; set; }
 
         public virtual VARIATION VARIATION { get; set; }
+
+        public virtual WORKPACK WORKPACK { get; set; }
     }
 }

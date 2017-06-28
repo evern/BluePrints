@@ -275,7 +275,7 @@ namespace BluePrints.ViewModels
             {
                 string newInternalName;
                 if(IsPhaseVisible)
-                    newInternalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2(loadPROJECT, changedWORKPACK.Entity, MainViewModel.Entities.Select(x => x.Entity), AREACollection, SUBAREACollection, DISCIPLINECollection, PHASECollection, DOCTYPECollection);
+                    newInternalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2(changedWORKPACK.Entity.GUID_DAREA, changedWORKPACK.Entity.GUID_DSUBAREA, loadPROJECT, AREACollection, SUBAREACollection, changedWORKPACK.Entity.GUID_DPHASE, PHASECollection);
                 else
                     newInternalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber1(loadPROJECT, changedWORKPACK.Entity, MainViewModel.Entities.Select(x => x.Entity), AREACollection, DISCIPLINECollection, DOCTYPECollection);
 
@@ -290,8 +290,7 @@ namespace BluePrints.ViewModels
             }
             if(e.Column.FieldName == "Entity.GUID_DPHASE" && IsPhaseVisible)
             {
-                var newInternalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2(loadPROJECT,
-                    changedWORKPACK.Entity, MainViewModel.Entities.Select(x => x.Entity), AREACollection, SUBAREACollection, DISCIPLINECollection, PHASECollection, DOCTYPECollection);
+                var newInternalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2(changedWORKPACK.Entity.GUID_DAREA, changedWORKPACK.Entity.GUID_DSUBAREA, loadPROJECT, AREACollection, SUBAREACollection, changedWORKPACK.Entity.GUID_DPHASE, PHASECollection);
 
                 if (newInternalName == string.Empty)
                     return;
@@ -478,9 +477,9 @@ namespace BluePrints.ViewModels
                         , MainViewModel.Entities.Select(x => x.Entity), AREACollection, DISCIPLINECollection,
                         DOCTYPECollection);
                 else
-                    newInternalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2(loadPROJECT, newProjection.Entity
-                        , MainViewModel.Entities.Select(x => x.Entity), AREACollection, SUBAREACollection, DISCIPLINECollection,
-                        PHASECollection, DOCTYPECollection);
+                    newInternalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2(
+                        newProjection.Entity.GUID_DAREA, newProjection.Entity.GUID_DSUBAREA, loadPROJECT, 
+                        AREACollection, SUBAREACollection, newProjection.Entity.GUID_DPHASE, PHASECollection);
 
                 newProjection.Entity.INTERNAL_NAME1 = newInternalName;
                 MainViewModel.EntitiesUndoRedoManager.AddUndo(newProjection, null, null, null, EntityMessageType.Added);
@@ -524,8 +523,10 @@ namespace BluePrints.ViewModels
 
                 string generatedInternalName;
                 if(IsPhaseVisible)
-                    generatedInternalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2(loadPROJECT,
-                    entity.Entity, MainViewModel.Entities.Select(x => x.Entity), AREACollection, SUBAREACollection, DISCIPLINECollection, PHASECollection, DOCTYPECollection);
+                    generatedInternalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2
+                    (entity.Entity.GUID_DAREA, 
+                    entity.Entity.GUID_DSUBAREA, loadPROJECT,
+                    AREACollection, SUBAREACollection, entity.Entity.GUID_DPHASE, PHASECollection);
                 else
                     generatedInternalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber1(loadPROJECT,
                     entity.Entity, MainViewModel.Entities.Select(x => x.Entity), AREACollection, DISCIPLINECollection, DOCTYPECollection);

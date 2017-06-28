@@ -273,4 +273,13 @@
   <data name="UncategorisedStockCode" xml:space="preserve">
     <value>Uncategorised</value>
   </data>
+  <data name="WorkpackDefaultConstructionPhase" xml:space="preserve">
+    <value>C1</value>
+  </data>
+  <data name="WorkpackDefaultDesignPhase" xml:space="preserve">
+    <value>D1</value>
+  </data>
+  <data name="WorkpackDefaultSubArea" xml:space="preserve">
+    <value>00</value>
+  </data>
 </root>

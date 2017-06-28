@@ -416,6 +416,9 @@
     <Compile Include="Common\ViewModel\Converters\CollectionConverter.cs" />
     <Compile Include="Common\ViewModel\Misc\P6ActivityAssignmentDialogViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\XMLSettings.cs" />
+    <Compile Include="Common\View\BasicMessageBox.xaml.cs">
+      <DependentUpon>BasicMessageBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Common\View\DXSplashScreen\LoadingScreen.cs" />
     <Compile Include="Common\View\DXSplashScreen\LoadingScreen.xaml.cs">
       <DependentUpon>LoadingScreen.xaml</DependentUpon>
@@ -1241,6 +1244,10 @@
     <Compile Include="Views\WORKPACK_ASSIGNMENT\WORKPACKAssignmentView.xaml.cs">
       <DependentUpon>WORKPACKAssignmentView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Common\View\BasicMessageBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Common\View\DXSplashScreen\LoadingScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
