@@ -27,6 +27,8 @@
 
         public Guid? GUID_COMMODITY_CODE { get; set; }
 
+        public Guid? GUID_STOCK_CODE { get; set; }
+
         [Required]
         public int DISCIPLINE_NUM { get; set; }
 
@@ -62,6 +64,8 @@
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 
         public virtual ESTIMATION_DIRECT ESTIMATION_DIRECT { get; set; }
+
+        public virtual STOCK_CODE STOCK_CODE { get; set; }
 
         public virtual VARIATION VARIATION { get; set; }
 

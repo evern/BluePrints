@@ -17,6 +17,7 @@ using BluePrints.P6EntitiesDataModel;
 using BluePrints.View;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Bars;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
@@ -82,11 +83,12 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, x => defaultConstructionDEPARTMENT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc, x => defaultConstructionPHASE = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc, x => loadESTIMATION_DIRECT = x);
-            loaderCollection.AddLoaderDescription<COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -113,6 +115,11 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == WorkpackType.SiteDirect);
         }
 
+        private Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
+        {
+            return query => query.Include(x => x.PROJECT);
+        }
+
         private Func<IRepositoryQuery<DEPARTMENT>, IQueryable<DEPARTMENT>> DEPARTMENTProjectionFunc()
         {
             return query => query.Where(x => x.NAME == BluePrintsResources.DefaultConstructionDepartment);
@@ -125,12 +132,17 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadESTIMATION_DIRECT.PROJECT.GUID && x.GUID == defaultConstructionDEPARTMENT.GUID && x.COST_GROUP == CostGroup.Site);
+            return query => query.Where(x => x.GUID_PROJECT == loadESTIMATION_DIRECT.PROJECT.GUID && x.GUID_DEPARTMENT == defaultConstructionDEPARTMENT.GUID && x.COST_GROUP == CostGroup.Site);
         }
 
         private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadESTIMATION_DIRECT.PROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()
+        {
+            return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID || x.GUID_PROJECT == null));
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
@@ -142,12 +154,11 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ESTIMATION_DIRECT_ITEMProjection>>
             ConstructMainViewModelProjection()
         {
-            return query => ESTIMATION_DIRECT_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(query, loadESTIMATION_DIRECT, loaderCollection.GetCollection<RATE>(), loaderCollection.GetCollection<COMMODITY_CODE>());
+            return query => ESTIMATION_DIRECT_ITEMProjectionQueries.ESTIMATION_DIRECT_ITEMProjectionQuery(query, loadESTIMATION_DIRECT, loaderCollection.GetCollection<RATE>(), loaderCollection.GetCollection<COMMODITY_CODE>(), ProjectSTOCK_CODECollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATION_DIRECT_ITEMProjection> entities)
         {
-            //MainViewModel.ExistingRowAddUndoAndSaveCallBack = ExistingRowAddUndoAndSaveCallBack;
             MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -313,20 +324,105 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
+        #region Duplicate Behavior
+        private bool _isProcessingMultiple;
+        public bool CanDuplicateMultiple(BarEditItem barEdit)
+        {
+            if (MainViewModel == null || MainViewModel.SelectedEntities.Count == 0)
+                return false;
+
+            return true;
+        }
+
+        public void DuplicateMultiple(BarEditItem barEdit)
+        {
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            _isProcessingMultiple = true;
+            var timesToDuplicate = 0;
+            List<ESTIMATION_DIRECT_ITEMProjection> newEntities = new List<ESTIMATION_DIRECT_ITEMProjection>();
+            if (int.TryParse(barEdit.EditValue.ToString(), out timesToDuplicate))
+            {
+                List<ESTIMATION_DIRECT_ITEMProjection> currentEnumerationSaveEntities = getNewEntities(timesToDuplicate, false);
+                newEntities.AddRange(currentEnumerationSaveEntities);
+            }
+
+            MainViewModel.BulkSave(newEntities);
+            _isProcessingMultiple = false;
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        public bool CanDuplicate()
+        {
+            if (MainViewModel == null || MainViewModel.SelectedEntities.Count == 0)
+                return false;
+
+            return true;
+        }
+
+        public void Duplicate()
+        {
+            if (!_isProcessingMultiple)
+                MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+
+            List<ESTIMATION_DIRECT_ITEMProjection> newEntities = getNewEntities(1, false);
+            MainViewModel.BulkSave(newEntities);
+            if (!_isProcessingMultiple)
+                MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        List<ESTIMATION_DIRECT_ITEMProjection> getNewEntities(int timesToDuplicate, bool isInsert)
+        {
+            List<ESTIMATION_DIRECT_ITEMProjection> unsavedEntities = new List<ESTIMATION_DIRECT_ITEMProjection>();
+            for (int i = 0; i < timesToDuplicate; i++)
+            {
+                foreach (var selectedEntity in MainViewModel.SelectedEntities)
+                {
+                    var newProjection = new ESTIMATION_DIRECT_ITEMProjection();
+                    DataUtils.ShallowCopy(newProjection.Entity, selectedEntity.Entity);
+                    newProjection.Entity.EntityKey = Guid.Empty;
+                    newProjection.Entity.GUID_ORIGINAL = Guid.Empty;
+                    //newProjection.Entity.ESTIMATED_QUANTITY = IsBASELINELocked ? 0 : selectedEntity.Entity.ESTIMATED_QUANTITY;
+
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(newProjection, null, null, null, EntityMessageType.Added);
+                    unsavedEntities.Add(newProjection);
+                }
+            }
+
+            return unsavedEntities;
+        }
+        #endregion
+
         /// <summary>
         /// Remove redundant project commodity codes when view is closed
         /// </summary>
         protected override void OnClose(CancelEventArgs e)
         {
-            List<COMMODITY_CODE> removeCommodityCodes = new List<COMMODITY_CODE>();
-            foreach(COMMODITY_CODE projectCommodityCode in ProjectCOMMODITY_CODECollection)
+            if(COMMODITY_CODECollectionViewModel != null)
             {
-                if (!MainViewModel.Entities.Any(x => x.COMMODITY_CODE.GUID == projectCommodityCode.GUID))
-                    removeCommodityCodes.Add(projectCommodityCode);
+                List<COMMODITY_CODE> removeCommodityCodes = new List<COMMODITY_CODE>();
+                foreach (COMMODITY_CODE projectCommodityCode in ProjectCOMMODITY_CODECollection)
+                {
+                    if (!MainViewModel.Entities.Any(x => x.Entity.GUID_COMMODITY_CODE == projectCommodityCode.GUID))
+                        removeCommodityCodes.Add(projectCommodityCode);
+                }
+                COMMODITY_CODECollectionViewModel.BaseBulkDelete(removeCommodityCodes);
             }
 
-            COMMODITY_CODECollectionViewModel.BaseBulkDelete(removeCommodityCodes);
             base.OnClose(e);
+        }
+
+        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        {
+            if(changedType == typeof(COMMODITY_CODE))
+            {
+                foreach(var entities in MainViewModel.Entities)
+                {
+                    entities.Update();
+                }
+                return false;
+            }
+
+            return true;
         }
 
         protected override void CellValueAnyRowChanging(CellValueChangedEventArgs e)
@@ -526,6 +622,50 @@ namespace BluePrints.ViewModels
                     return null;
 
                 return COMMODITY_CODECollection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            }
+        }
+
+        public IEnumerable<STOCK_CODE> STOCK_CODECollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_CODE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.CODE);
+                return collection;
+            }
+        }
+
+        public IEnumerable<STOCK_CODE> GlobalSTOCK_CODECollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_CODE>();
+                if (collection != null)
+                    collection = collection.Where(x => x.GUID_PROJECT == null).OrderBy(x => x.CODE);
+                return collection;
+            }
+        }
+
+        public IEnumerable<STOCK_CODE> ProjectSTOCK_CODECollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_CODE>();
+                if (collection != null)
+                    collection = collection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.CODE);
+                return collection;
+            }
+        }
+
+        public CollectionViewModel<STOCK_CODE, STOCK_CODE, Guid, IBluePrintsEntitiesUnitOfWork> STOCK_CODECollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<STOCK_CODE, STOCK_CODE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<STOCK_CODE>();
             }
         }
 

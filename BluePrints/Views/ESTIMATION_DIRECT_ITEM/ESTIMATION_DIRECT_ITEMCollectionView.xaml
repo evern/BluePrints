@@ -159,11 +159,13 @@
                                         AutoPopulateColumns="False"
                                         NullValueButtonPlacement="None"
                                         ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}">
+                                        <dxg:LookUpEditSettings.StyleSettings>
+                                            <dxg:SearchLookUpEditStyleSettings/>
+                                        </dxg:LookUpEditSettings.StyleSettings>
                                         <dxg:LookUpEditSettings.PopupContentTemplate>
                                             <ControlTemplate TargetType="ContentControl">
-                                                <custom:GridControlEx x:Name="PART_GridControl" ShowBorder="False" 
-                                                                     SelectionMode="Row">
-                                                    <custom:GridControlEx.Columns>
+                                                <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False" SelectionMode="Row">
+                                                    <dxg:GridControl.Columns>
                                                         <dxg:GridColumn FieldName="CODE" ReadOnly="True" />
                                                         <dxg:GridColumn FieldName="ProjectNumber" ReadOnly="True" />
                                                         <dxg:GridColumn FieldName="NAME" ReadOnly="True" />
@@ -183,18 +185,24 @@
                                                                     Increment="10" />
                                                             </dxg:GridColumn.EditSettings>
                                                         </dxg:GridColumn>
-                                                    </custom:GridControlEx.Columns>
+                                                    </dxg:GridControl.Columns>
                                                     <dxg:GridControl.View>
                                                         <dxg:TableView
-                                                            ShowAutoFilterRow="True"
                                                             ShowSelectionRectangle="True"
                                                             ShowFocusedRectangle="True"
-                                                            ShowSearchPanelMode="Always" />
+                                                            ShowSearchPanelMode="Always"
+                                                            ShowGroupPanel="True"
+                                                            ShowSearchPanelNavigationButtons="True"/>
                                                     </dxg:GridControl.View>
-                                                </custom:GridControlEx>
+                                                </dxg:GridControl>
                                             </ControlTemplate>
                                         </dxg:LookUpEditSettings.PopupContentTemplate>
                                     </dxg:LookUpEditSettings>
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Name="colTRACK" FieldName="Entity.TRACK" Header="TRACK">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:CheckEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.COMMENTS" Header="COMMENTS" />
@@ -224,9 +232,53 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="INSTALL HOURS" FieldName="COMMODITY_CODE.HOURS_INSTALL">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True" Increment="10" />
+                                    <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True" Increment="1" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn Header="STOCK CODE" FieldName="StockCodeGuid">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:ComboBoxEdit 
+                                                  x:Name="PART_Editor"
+                                                  ItemsSource="{Binding RowData.Row.StockCodeCollection}"
+                                                  DisplayMember="CODE" 
+                                                  ValueMember="GUID"
+                                                  ValidateOnTextInput="True"
+                                                  ValidateOnEnterKeyPressed="True"
+                                                  IncrementalFiltering="True"
+                                                  NullValueButtonPlacement="Popup"
+                                                  ImmediatePopup="True">
+                                        </dxe:ComboBoxEdit>
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                                <!--For Filtering-->
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
+                                                              ItemsSource="{Binding DataContext.ProjectSTOCK_CODECollection, ElementName=userControl}"
+                                                              IsTextEditable="True" AutoComplete="True"
+                                                              DisplayMember="CODE" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="TOTAL INSTALL HOURS" FieldName="Total_Install_Hours" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="SUPPLY COST" FieldName="Supply_Cost" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="INSTALL COST" FieldName="Install_Cost" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="UOM" FieldName="COMMODITY_CODE.UOM" ReadOnly="True" />
+                            <dxg:GridColumn Header="NAME" FieldName="COMMODITY_CODE.NAME" ReadOnly="True" />
+                            <dxg:GridColumn Header="TYPE" FieldName="COMMODITY_CODE.TYPE" ReadOnly="True" />
+                            <dxg:GridColumn Header="SPEC" FieldName="COMMODITY_CODE.SPEC" ReadOnly="True" />
+                            <dxg:GridColumn Header="DESCRIPTION" FieldName="COMMODITY_CODE.DESCRIPTION" ReadOnly="True" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.GroupSummary>
                             <dxg:GridSummaryItem FieldName="Entity.COMMENTS" SummaryType="Count"
@@ -234,12 +286,30 @@
                             <dxg:GridSummaryItem FieldName="Entity.ESTIMATED_QUANTITY" SummaryType="Sum"
                                                  ShowInColumn="Entity.ESTIMATED_QUANTITY"
                                                  DisplayFormat="Total: {0}" />
+                            <dxg:GridSummaryItem FieldName="Total_Install_Hours" SummaryType="Sum"
+                                                 ShowInColumn="Total_Install_Hours"
+                                                 DisplayFormat="Total: {0}" />
+                            <dxg:GridSummaryItem FieldName="Supply_Cost" SummaryType="Sum"
+                                                 ShowInColumn="Supply_Cost"
+                                                 DisplayFormat="Total: {0}" />
+                            <dxg:GridSummaryItem FieldName="Install_Cost" SummaryType="Sum"
+                                                 ShowInColumn="Install_Cost"
+                                                 DisplayFormat="Total: {0}" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem FieldName="Entity.COMMENTS" SummaryType="Count"
                                                  Alignment="Right" DisplayFormat="Total {0} Records" />
                             <dxg:GridSummaryItem FieldName="Entity.ESTIMATED_QUANTITY" SummaryType="Sum"
                                                  ShowInColumn="Entity.ESTIMATED_QUANTITY"
+                                                 DisplayFormat="Total: {0}" />
+                            <dxg:GridSummaryItem FieldName="Total_Install_Hours" SummaryType="Sum"
+                                                 ShowInColumn="Total_Install_Hours"
+                                                 DisplayFormat="Total: {0}" />
+                            <dxg:GridSummaryItem FieldName="Supply_Cost" SummaryType="Sum"
+                                                 ShowInColumn="Supply_Cost"
+                                                 DisplayFormat="Total: {0}" />
+                            <dxg:GridSummaryItem FieldName="Install_Cost" SummaryType="Sum"
+                                                 ShowInColumn="Install_Cost"
                                                  DisplayFormat="Total: {0}" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
@@ -256,10 +326,6 @@
                                     <dxb:BarButtonItem Name="contextMenuFillDown" Content="Fill Down"
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}"
                                                        Command="{Binding View.DataContext.FillDownCommand}"
-                                                       CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <!--<dxb:BarButtonItem Name="contextMenuPopulate" Content="Populate"
-                                                       Glyph="{dx:DXImageOffice2013 Image=PictureShapeFillColor_16x16.png}"
-                                                       Command="{Binding DataContext.AutoPopulateCommand, ElementName=userControl}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                     <dxb:BarButtonItem x:Name="contextMenuDuplicate" Content="Duplicate"
                                                        Command="{Binding DataContext.DuplicateCommand, ElementName=userControl}"
@@ -288,33 +354,6 @@
                                             </dxb:BarEditItem.EditSettings>
                                         </dxb:BarEditItem>
                                     </dxb:BarSubItem>
-                                    <dxb:BarButtonItem x:Name="contextMenuInsert" Content="Insert"
-                                                       Command="{Binding DataContext.InsertCommand, ElementName=userControl}"
-                                                       Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" />
-                                    <dxb:BarSubItem x:Name="contextMenuInsertMulti" Content="Insert Multiple"
-                                                    Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}">
-                                        <dxb:BarEditItem x:Name="contextMenuInsertMultiCount" Content="Count"
-                                                         EditValue="2">
-                                            <dxb:BarEditItem.EditSettings>
-                                                <dxe:SpinEditSettings IsTextEditable="True" IsFloatValue="False"
-                                                                      Increment="1" MinValue="2" MaxValue="99"
-                                                                      MaskType="Numeric" Mask="n0"
-                                                                      MaskUseAsDisplayFormat="True">
-                                                    <dxe:SpinEditSettings.Buttons>
-                                                        <dxe:ButtonInfo x:Name="contextMenuInsertMultiCountBtn"
-                                                                        GlyphKind="Apply">
-                                                            <dxmvvm:Interaction.Behaviors>
-                                                                <dxmvvm:EventToCommand
-                                                                    Command="{Binding DataContext.InsertMultipleCommand, ElementName=userControl}"
-                                                                    CommandParameter="{Binding ElementName=contextMenuInsertMultiCount}"
-                                                                    EventName="Click" />
-                                                            </dxmvvm:Interaction.Behaviors>
-                                                        </dxe:ButtonInfo>
-                                                    </dxe:SpinEditSettings.Buttons>
-                                                </dxe:SpinEditSettings>
-                                            </dxb:BarEditItem.EditSettings>
-                                        </dxb:BarEditItem>
-                                    </dxb:BarSubItem>-->
                                     <dxb:BarButtonItem Content="Delete"
                                                        Command="{Binding View.DataContext.BulkDeleteCommand}"
                                                        CommandParameter="{Binding View.DataContext.SelectedEntities}"
@@ -323,11 +362,6 @@
                                                        Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 </custom:TableViewEx.RowCellMenuCustomizations>
-                                <custom:TableViewEx.FormatConditions>
-                                    <dxg:UniqueDuplicateRuleFormatCondition FieldName="Entity.INTERNAL_NUM">
-                                        <dxc:Format Background="Salmon" TextDecorations="{x:Null}"/>
-                                    </dxg:UniqueDuplicateRuleFormatCondition>
-                                </custom:TableViewEx.FormatConditions>
                             </custom:TableViewEx>
                         </dxg:GridControl.View>
                     </custom:GridControlEx>

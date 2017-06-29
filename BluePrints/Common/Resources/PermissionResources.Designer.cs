@@ -187,6 +187,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to manage stock codes.
+        /// </summary>
+        internal static string ManageStockCode {
+            get {
+                return ResourceManager.GetString("ManageStockCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to manage other users.
         /// </summary>
         internal static string ManageUser {

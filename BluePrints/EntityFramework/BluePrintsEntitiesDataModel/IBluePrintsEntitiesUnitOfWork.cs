@@ -150,6 +150,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<SETTINGS_GLOBAL, Guid> SETTINGS_GLOBALS { get; }
 
         /// <summary>
+        /// The STOCK_CODES entities repository.
+        /// </summary>
+        IRepository<STOCK_CODE, Guid> STOCK_CODES { get; }
+
+        /// <summary>
         /// The UOM entities repository.
         /// </summary>
         IRepository<UOM, Guid> UOMS { get; }

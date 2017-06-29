@@ -51,8 +51,7 @@ namespace BluePrints.ViewModels
 
         protected override void InitializeParameters(object parameter)
         {
-            var PROJECTParameter =
-                (EntitiesParameter<Data.PROJECT>) parameter;
+            var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
         }
 

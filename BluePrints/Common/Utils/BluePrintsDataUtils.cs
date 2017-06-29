@@ -39,6 +39,35 @@ namespace BluePrints.Common.ViewModel.Utils
             return StartDate;
         }
 
+        public static string GenerateStockCode(Guid areaGuid, Guid disciplineGuid, string stock_code, bool createDefaultSubArea, IEnumerable<AREA> areaCollection, IEnumerable<DISCIPLINE> disciplineCollection, Guid? subAreaGuid = null, IEnumerable<AREA> subAreaCollection = null)
+        {
+            AREA area = areaCollection.FirstOrDefault(x => x.GUID == areaGuid);
+            if (area == null)
+                return string.Empty;
+
+            DISCIPLINE discipline = disciplineCollection.FirstOrDefault(x => x.GUID == disciplineGuid);
+            if (discipline == null)
+                return string.Empty;
+
+            AREA subArea = null;
+            if (subAreaGuid != null && subAreaCollection != null)
+                subArea = subAreaCollection.FirstOrDefault(x => x.GUID == subAreaGuid);
+
+
+            string subAreaName;
+            if (subArea == null)
+            {
+                if (createDefaultSubArea)
+                    subAreaName = BluePrintsResources.WorkpackDefaultSubArea;
+                else
+                    return string.Empty;
+            }
+            else
+                subAreaName = subArea.INTERNAL_NUM;
+
+            return area.INTERNAL_NUM + "-" + discipline.CODE + "-" + subAreaName + "-" + stock_code;
+        }
+
         /// <summary>
         /// Calculate the review start date or end date
         /// </summary>

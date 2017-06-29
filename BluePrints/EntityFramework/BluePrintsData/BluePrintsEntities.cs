@@ -39,6 +39,7 @@ namespace BluePrints.Data
         public virtual DbSet<ROLE> ROLE { get; set; }
         public virtual DbSet<ROLE_PERMISSION> ROLE_PERMISSION { get; set; }
         public virtual DbSet<SETTINGS_GLOBAL> SETTINGS_GLOBAL { get; set; }
+        public virtual DbSet<STOCK_CODE> STOCK_CODE { get; set; }
         public virtual DbSet<UOM> UOM { get; set; }
         public virtual DbSet<USER> USER { get; set; }
         public virtual DbSet<VARIATION> VARIATION { get; set; }
@@ -107,6 +108,16 @@ namespace BluePrints.Data
                 .HasMany(e => e.REGISTER_RISK)
                 .WithOptional(e => e.AREA)
                 .HasForeignKey(e => e.GUID_AREA);
+
+            modelBuilder.Entity<AREA>()
+                .HasMany(e => e.STOCK_CODE)
+                .WithOptional(e => e.AREA)
+                .HasForeignKey(e => e.GUID_AREA);
+
+            modelBuilder.Entity<AREA>()
+                .HasMany(e => e.STOCK_CODE1)
+                .WithOptional(e => e.AREA1)
+                .HasForeignKey(e => e.GUID_SUBAREA);
 
             modelBuilder.Entity<AREA>()
                 .HasMany(e => e.WORKPACK)
@@ -238,6 +249,11 @@ namespace BluePrints.Data
                 .WithRequired(e => e.DISCIPLINE)
                 .HasForeignKey(e => e.GUID_DDISCIPLINE)
                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<DISCIPLINE>()
+                .HasMany(e => e.STOCK_CODE)
+                .WithRequired(e => e.DISCIPLINE)
+                .HasForeignKey(e => e.GUID_DISCIPLINE);
 
             modelBuilder.Entity<DOCTYPE>()
                 .HasMany(e => e.BASELINE_ITEM)
@@ -385,6 +401,11 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.STOCK_CODE)
+                .WithOptional(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT);
+
+            modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.VARIATION)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
@@ -422,6 +443,11 @@ namespace BluePrints.Data
             modelBuilder.Entity<SETTINGS_GLOBAL>()
                 .Property(e => e.REVIEW_PERIOD)
                 .HasPrecision(2, 0);
+
+            modelBuilder.Entity<STOCK_CODE>()
+                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
+                .WithOptional(e => e.STOCK_CODE)
+                .HasForeignKey(e => e.GUID_STOCK_CODE);
 
             modelBuilder.Entity<USER>()
                 .HasMany(e => e.BASELINE_ITEM)

@@ -1,19 +1,15 @@
-﻿using BaseModel.Misc;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace BluePrints.Data
 {
-    public partial class ESTIMATION_DIRECT_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate
-    {
-        public ESTIMATION_DIRECT_ITEM()
-        {
-            DISCIPLINE_NUM = 1;
-            TRACK = true;
-        }
+    using BaseModel.Attributes;
+    using BaseModel.Misc;
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Linq;
 
+    [ConstraintAttributes("CODE")]
+    public partial class STOCK_CODE : IGuidEntityKey, IHaveCreatedDate
+    {
         [NotMapped]
         public Guid EntityKey
         {
@@ -29,25 +25,12 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public Guid OriginalEntityKey
-        {
-            get
-            {
-                return GUID_ORIGINAL;
-            }
-
-            set
-            {
-                GUID_ORIGINAL = value;
-            }
-        }
-
-        [NotMapped]
         public DateTime EntityCreatedDate
         {
             get { return CREATED; }
             set { CREATED = value; }
         }
+
 
         //Used for direct property access validation in fill/undo-redo
         [NotMapped]

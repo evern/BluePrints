@@ -159,6 +159,9 @@
   <data name="ManageRole" xml:space="preserve">
     <value>Allow user to manage roles</value>
   </data>
+  <data name="ManageStockCode" xml:space="preserve">
+    <value>Allow user to manage stock codes</value>
+  </data>
   <data name="ManageUser" xml:space="preserve">
     <value>Allow user to manage other users</value>
   </data>

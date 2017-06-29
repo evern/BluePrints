@@ -155,6 +155,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<SETTINGS_GLOBAL>(), (SETTINGS_GLOBAL x) => x.GUID); }
         }
 
+        IRepository<STOCK_CODE, Guid> IBluePrintsEntitiesUnitOfWork.STOCK_CODES
+        {
+            get { return GetRepository(x => x.Set<STOCK_CODE>(), (STOCK_CODE x) => x.GUID); }
+        }
+
         IRepository<UOM, Guid> IBluePrintsEntitiesUnitOfWork.UOMS
         {
             get { return GetRepository(x => x.Set<UOM>(), (UOM x) => x.GUID); }

@@ -14,7 +14,8 @@ namespace BluePrints.Common.Projections
         public ESTIMATION_DIRECT_ITEMProjection()
             : base()
         {
-
+            //need to initialize commodity code here so that copy/paste is able to get property info within COMMODITY_CODE
+            commodity_code = new COMMODITY_CODE();
         }
 
         public RATE RATE { get; set; }
@@ -28,15 +29,12 @@ namespace BluePrints.Common.Projections
             }
             set
             {
-                if (commodity_code == null)
-                    commodity_code = new COMMODITY_CODE();
-
                 //Always go by value
                 DataUtils.ShallowCopy(commodity_code, value);
             }
         }
 
-        public decimal ITEMRATE
+        public decimal ItemRate
         {
             get
             {
@@ -47,18 +45,68 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public decimal ESTIMATED_COSTS
+        public decimal Total_Install_Hours
+        {
+            get
+            {
+                if (COMMODITY_CODE == null || COMMODITY_CODE.HOURS_INSTALL == 0)
+                    return 0;
+
+                return COMMODITY_CODE.HOURS_INSTALL;
+            }
+        }
+
+        public decimal Supply_Cost
+        {
+            get
+            {
+                if (COMMODITY_CODE == null || COMMODITY_CODE.RATE_SUPPLY == 0)
+                    return 0;
+
+                return COMMODITY_CODE.RATE_SUPPLY * Entity.ESTIMATED_QUANTITY;
+            }
+        }
+
+        public decimal Install_Cost
         {
             get
             {
                 if (Entity == null)
                     return 0;
 
-                if (RATE == null || RATE.RATE1 == null)
-                    return 0;
 
-                return Entity.ESTIMATED_QUANTITY * (decimal)RATE.RATE1;
+                return Entity.ESTIMATED_QUANTITY * Total_Install_Hours * ItemRate;
             }
+        }
+
+        public IEnumerable<STOCK_CODE> StockCodeCollection { get; set; }
+
+        //Used for direct property access validation in fill/undo-redo
+        public Guid? StockCodeGuid
+        {
+            get
+            {
+                return Entity.GUID_STOCK_CODE;
+            }
+            set
+            {
+                Guid? setValue = (Guid?)value;
+                if (setValue == null)
+                    Entity.GUID_STOCK_CODE = null;
+                else if (IsStockCodeValid(setValue))
+                    Entity.GUID_STOCK_CODE = setValue;
+            }
+        }
+
+        public bool IsStockCodeValid(Guid? stockCodeGuid)
+        {
+            if (stockCodeGuid == null)
+                return false;
+
+            if (StockCodeCollection == null)
+                return false;
+
+            return StockCodeCollection.Any(x => x.GUID == stockCodeGuid);
         }
 
         /// <summary>
@@ -72,19 +120,24 @@ namespace BluePrints.Common.Projections
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries
     {
-        public static IQueryable<ESTIMATION_DIRECT_ITEMProjection> BASELINE_ITEMProjectionQuery(
+        public static IQueryable<ESTIMATION_DIRECT_ITEMProjection> ESTIMATION_DIRECT_ITEMProjectionQuery(
             IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, ESTIMATION_DIRECT ESTIMATION_DIRECT,
-            IEnumerable<RATE> RATES, IEnumerable<COMMODITY_CODE> COMMODITY_CODES)
+            IEnumerable<RATE> RATES, IEnumerable<COMMODITY_CODE> COMMODITY_CODES, IEnumerable<STOCK_CODE> STOCK_CODES)
         {
             return
-                ESTIMATION_DIRECT_ITEMS.ToArray()
+                ESTIMATION_DIRECT_ITEMS.OrderBy(x => x.CREATED).ToArray()
                     .Select(
                         estimate_direct_item =>
                             new ESTIMATION_DIRECT_ITEMProjection()
                             {
                                 Entity = estimate_direct_item,
                                 COMMODITY_CODE = COMMODITY_CODES.FirstOrDefault(commoditycode => commoditycode.GUID == estimate_direct_item.GUID_COMMODITY_CODE),
-                                RATE = RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE)
+                                RATE = RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
+                                StockCodeCollection = STOCK_CODES
+                                .Where(stockcode =>
+                                stockcode.GUID_AREA == estimate_direct_item.GUID_AREA 
+                                && stockcode.GUID_SUBAREA == estimate_direct_item.GUID_SUBAREA 
+                                && stockcode.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE)
                             }).AsQueryable();
         }
     }
