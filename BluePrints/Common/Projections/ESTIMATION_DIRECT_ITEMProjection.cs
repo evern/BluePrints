@@ -79,6 +79,36 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public IEnumerable<COMMODITY_CODE> CommodityCodeCollection { get; set; }
+
+        //Used for direct property access validation in fill/undo-redo
+        public Guid? CommodityCodeGuid
+        {
+            get
+            {
+                return Entity.GUID_COMMODITY_CODE;
+            }
+            set
+            {
+                Guid? setValue = (Guid?)value;
+                if (setValue == null)
+                    Entity.GUID_COMMODITY_CODE = null;
+                else if (IsCommodityCodeValid(setValue))
+                    Entity.GUID_COMMODITY_CODE = setValue;
+            }
+        }
+
+        public bool IsCommodityCodeValid(Guid? commodityCodeGuid)
+        {
+            if (commodityCodeGuid == null)
+                return false;
+
+            if (CommodityCodeCollection == null)
+                return false;
+
+            return CommodityCodeCollection.Any(x => x.GUID == commodityCodeGuid);
+        }
+
         public IEnumerable<STOCK_CODE> StockCodeCollection { get; set; }
 
         //Used for direct property access validation in fill/undo-redo
@@ -98,15 +128,15 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public bool IsStockCodeValid(Guid? stockCodeGuid)
+        public bool IsStockCodeValid(Guid? commodityCodeGuid)
         {
-            if (stockCodeGuid == null)
+            if (commodityCodeGuid == null)
                 return false;
 
             if (StockCodeCollection == null)
                 return false;
 
-            return StockCodeCollection.Any(x => x.GUID == stockCodeGuid);
+            return StockCodeCollection.Any(x => x.GUID == commodityCodeGuid);
         }
 
         /// <summary>
@@ -133,6 +163,7 @@ namespace BluePrints.Common.Projections
                                 Entity = estimate_direct_item,
                                 COMMODITY_CODE = COMMODITY_CODES.FirstOrDefault(commoditycode => commoditycode.GUID == estimate_direct_item.GUID_COMMODITY_CODE),
                                 RATE = RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
+                                CommodityCodeCollection = COMMODITY_CODES.Where(commoditycode => commoditycode.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
                                 StockCodeCollection = STOCK_CODES
                                 .Where(stockcode =>
                                 stockcode.GUID_AREA == estimate_direct_item.GUID_AREA 

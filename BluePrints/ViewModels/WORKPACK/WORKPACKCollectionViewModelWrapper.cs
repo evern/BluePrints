@@ -337,7 +337,7 @@ namespace BluePrints.ViewModels
                 }
 
                 //SubArea must be removed immediately to nullify subarea selection
-                if (e.Value != null && changingWORKPACK.Entity.GUID_DSUBAREA != null)
+                if (changingWORKPACK.Entity.GUID_DSUBAREA != null)
                 {
                     changingWORKPACK.Entity.GUID_DSUBAREA = null;
                     changingWORKPACK.Update();
@@ -374,7 +374,7 @@ namespace BluePrints.ViewModels
             {
                 var changingWORKPACK = (WORKPACKProjection)e.Row;
                 Guid? oldValue = changingWORKPACK.Entity.GUID_DSUBAREA;
-                if (e.Value != null && oldValue != null)
+                if (oldValue != null)
                 {
                     Guid? newValue = (Guid?)null;
                     string subAreaFieldName = BindableBase.GetPropertyName(() => new WORKPACKProjection().Entity) + "." +

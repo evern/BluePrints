@@ -148,57 +148,60 @@
                                                                       MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colCOMMODITY_CODE" FieldName="Entity.GUID_COMMODITY_CODE" Header="COMMODITY CODE">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxg:LookUpEditSettings
-                                        AutoComplete="True"
-                                        ValueMember="GUID"
-                                        DisplayMember="CODE"
-                                        IsTextEditable="true"
-                                        PopupMinWidth="1500"
-                                        AutoPopulateColumns="False"
-                                        NullValueButtonPlacement="None"
-                                        ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}">
-                                        <dxg:LookUpEditSettings.StyleSettings>
-                                            <dxg:SearchLookUpEditStyleSettings/>
-                                        </dxg:LookUpEditSettings.StyleSettings>
-                                        <dxg:LookUpEditSettings.PopupContentTemplate>
-                                            <ControlTemplate TargetType="ContentControl">
-                                                <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False" SelectionMode="Row">
-                                                    <dxg:GridControl.Columns>
-                                                        <dxg:GridColumn FieldName="CODE" ReadOnly="True" />
-                                                        <dxg:GridColumn FieldName="ProjectNumber" ReadOnly="True" />
-                                                        <dxg:GridColumn FieldName="NAME" ReadOnly="True" />
-                                                        <dxg:GridColumn FieldName="TYPE" ReadOnly="True" />
-                                                        <dxg:GridColumn FieldName="SPEC" ReadOnly="True" />
-                                                        <dxg:GridColumn FieldName="DESCRIPTION" ReadOnly="True" />
-                                                        <dxg:GridColumn FieldName="UOM" ReadOnly="True" />
-                                                        <dxg:GridColumn FieldName="RATE_SUPPLY" ReadOnly="True">
-                                                            <dxg:GridColumn.EditSettings>
-                                                                <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True"
+                            <dxg:GridColumn Name="colCOMMODITY_CODE" FieldName="CommodityCodeGuid" Header="COMMODITY CODE">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxg:LookUpEdit
+                                            Name="PART_Editor"
+                                            AutoComplete="True"
+                                            ValueMember="GUID"
+                                            DisplayMember="CODE"
+                                            IsTextEditable="true"
+                                            PopupMinWidth="1500"
+                                            AutoPopulateColumns="False"
+                                            NullValueButtonPlacement="None"
+                                            ItemsSource="{Binding RowData.Row.CommodityCodeCollection}">
+                                            <dxg:LookUpEdit.StyleSettings>
+                                                <dxg:SearchLookUpEditStyleSettings/>
+                                            </dxg:LookUpEdit.StyleSettings>
+                                            <dxg:LookUpEdit.PopupContentTemplate>
+                                                <ControlTemplate TargetType="ContentControl">
+                                                    <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False" SelectionMode="Row">
+                                                        <dxg:GridControl.Columns>
+                                                            <dxg:GridColumn FieldName="CODE" ReadOnly="True" />
+                                                            <dxg:GridColumn FieldName="ProjectNumber" ReadOnly="True" />
+                                                            <dxg:GridColumn FieldName="NAME" ReadOnly="True" />
+                                                            <dxg:GridColumn FieldName="TYPE" ReadOnly="True" />
+                                                            <dxg:GridColumn FieldName="SPEC" ReadOnly="True" />
+                                                            <dxg:GridColumn FieldName="DESCRIPTION" ReadOnly="True" />
+                                                            <dxg:GridColumn FieldName="UOM" ReadOnly="True" />
+                                                            <dxg:GridColumn FieldName="RATE_SUPPLY" ReadOnly="True">
+                                                                <dxg:GridColumn.EditSettings>
+                                                                    <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True"
                                                                     Increment="10" />
-                                                            </dxg:GridColumn.EditSettings>
-                                                        </dxg:GridColumn>
-                                                        <dxg:GridColumn FieldName="HOURS_INSTALL" ReadOnly="True">
-                                                            <dxg:GridColumn.EditSettings>
-                                                                <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True"
+                                                                </dxg:GridColumn.EditSettings>
+                                                            </dxg:GridColumn>
+                                                            <dxg:GridColumn FieldName="HOURS_INSTALL" ReadOnly="True">
+                                                                <dxg:GridColumn.EditSettings>
+                                                                    <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True"
                                                                     Increment="10" />
-                                                            </dxg:GridColumn.EditSettings>
-                                                        </dxg:GridColumn>
-                                                    </dxg:GridControl.Columns>
-                                                    <dxg:GridControl.View>
-                                                        <dxg:TableView
+                                                                </dxg:GridColumn.EditSettings>
+                                                            </dxg:GridColumn>
+                                                        </dxg:GridControl.Columns>
+                                                        <dxg:GridControl.View>
+                                                            <dxg:TableView
                                                             ShowSelectionRectangle="True"
                                                             ShowFocusedRectangle="True"
                                                             ShowSearchPanelMode="Always"
                                                             ShowGroupPanel="True"
                                                             ShowSearchPanelNavigationButtons="True"/>
-                                                    </dxg:GridControl.View>
-                                                </dxg:GridControl>
-                                            </ControlTemplate>
-                                        </dxg:LookUpEditSettings.PopupContentTemplate>
-                                    </dxg:LookUpEditSettings>
-                                </dxg:GridColumn.EditSettings>
+                                                        </dxg:GridControl.View>
+                                                    </dxg:GridControl>
+                                                </ControlTemplate>
+                                            </dxg:LookUpEdit.PopupContentTemplate>
+                                        </dxg:LookUpEdit>
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn Name="colTRACK" FieldName="Entity.TRACK" Header="TRACK">
                                 <dxg:GridColumn.EditSettings>

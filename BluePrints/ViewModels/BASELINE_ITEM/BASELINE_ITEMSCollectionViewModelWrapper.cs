@@ -329,7 +329,7 @@ namespace BluePrints.ViewModels
             {
                 var activeBASELINE_ITEM = (PROGRESS_ITEMProjection)e.Row;
                 Guid? oldValue = activeBASELINE_ITEM.Entity.Entity.GUID_SUBAREA;
-                if (e.Value != null && oldValue != null)
+                if (oldValue != null)
                 {
                     Guid? newValue = (Guid?)null;
                     string subAreaFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
@@ -352,7 +352,7 @@ namespace BluePrints.ViewModels
             {
                 var activeBASELINE_ITEM = (PROGRESS_ITEMProjection)e.Row;
                 Guid? oldValue = activeBASELINE_ITEM.Entity.Entity.GUID_STATUS;
-                if (e.Value != null && oldValue != null)
+                if (oldValue != null)
                 {
                     Guid? newValue = (Guid?)null;
                     string deliverableStatusFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
@@ -384,7 +384,7 @@ namespace BluePrints.ViewModels
                 }
 
                 //SubArea must be removed immediately to nullify subarea selection
-                if (e.Value != null && activeBASELINE_ITEM.Entity.Entity.GUID_SUBAREA != null)
+                if (activeBASELINE_ITEM.Entity.Entity.GUID_SUBAREA != null)
                 {
                     activeBASELINE_ITEM.Entity.Entity.GUID_SUBAREA = null;
                     activeBASELINE_ITEM.Update();

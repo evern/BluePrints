@@ -432,6 +432,7 @@ namespace BluePrints.ViewModels
 
             savePROGRESS_ITEM.EARNED_DATE = projectionEntity.loadPROGRESS.DATA_DATE;
             savePROGRESS_ITEM.GUID_PROGRESS = projectionEntity.loadPROGRESS.GUID;
+            savePROGRESS_ITEM.TYPE = ProgressType.Design;
             savePROGRESS_ITEM.GUID_ORIBASEITEM = projectionEntity.Entity.Entity.GUID_ORIGINAL;
             //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
             if (savePROGRESS_ITEM.CREATED.Date.Year == 1)

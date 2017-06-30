@@ -222,6 +222,14 @@ namespace BluePrints.Common
         Construct = 1
     }
 
+    public enum ProgressType
+    {
+        [Display(Name = "Design")]
+        Design = 0,
+        [Display(Name = "Construct")]
+        Construct = 1
+    }
+
     public enum COMMODITY_CODEProjectionType
     {
         [Display(Name = "Grouped Project Specific")] ProjectSpecificGrouped,

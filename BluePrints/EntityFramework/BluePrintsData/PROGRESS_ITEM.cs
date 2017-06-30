@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using BluePrints.Common;
     using System;
     using System.ComponentModel.DataAnnotations;
 
@@ -11,6 +12,8 @@ namespace BluePrints.Data
         public Guid GUID_PROGRESS { get; set; }
 
         public Guid GUID_ORIBASEITEM { get; set; }
+
+        public ProgressType TYPE { get; set; }
 
         public decimal EARNED_UNITS { get; set; }
 

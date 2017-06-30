@@ -62,8 +62,8 @@ namespace BluePrints.ViewModels
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
-            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
+            //loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
+            //loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
 
             InvokeEntitiesLoaderDescriptionLoading();
         }
@@ -182,44 +182,44 @@ namespace BluePrints.ViewModels
         #region View Behavior
         protected override void OnClose(CancelEventArgs e)
         {
-            if (STOCK_CODECollectionViewModel != null && DisplayEntities != null)
-            {
-                List<STOCK_CODE> addStockCodes = new List<STOCK_CODE>();
-                foreach (AREAMasterDetailProjection area in DisplayEntities)
-                {
-                    //if default subarea already exists
-                    if (!ProjectSTOCK_CODECollection.Any(x => x.GUID_AREA == area.GUID))
-                    {
-                        addStockCodes.AddRange(getAreaStockCodes(area.Entity));
-                    }
+            //if (STOCK_CODECollectionViewModel != null && DisplayEntities != null)
+            //{
+            //    List<STOCK_CODE> addStockCodes = new List<STOCK_CODE>();
+            //    foreach (AREAMasterDetailProjection area in DisplayEntities)
+            //    {
+            //        //if default subarea already exists
+            //        if (!ProjectSTOCK_CODECollection.Any(x => x.GUID_AREA == area.GUID))
+            //        {
+            //            addStockCodes.AddRange(getAreaStockCodes(area.Entity));
+            //        }
 
-                    foreach (AREAMasterDetailProjection subArea in area.DetailEntities)
-                    {
-                        addStockCodes.AddRange(getAreaStockCodes(area.Entity, subArea.Entity));
-                    }
-                }
+            //        foreach (AREAMasterDetailProjection subArea in area.DetailEntities)
+            //        {
+            //            addStockCodes.AddRange(getAreaStockCodes(area.Entity, subArea.Entity));
+            //        }
+            //    }
 
-                STOCK_CODECollectionViewModel.BulkSave(addStockCodes);
-            }
+            //    STOCK_CODECollectionViewModel.BulkSave(addStockCodes);
+            //}
 
             base.OnClose(e);
         }
 
-        private List<STOCK_CODE> getAreaStockCodes(AREA area, AREA subArea = null)
-        {
-            List<STOCK_CODE> areaStockCodes = new List<STOCK_CODE>();
-            Guid? subAreaGuid = null;
-            if (subArea != null)
-                subAreaGuid = subArea.GUID;
+        //private List<STOCK_CODE> getAreaStockCodes(AREA area, AREA subArea = null)
+        //{
+        //    List<STOCK_CODE> areaStockCodes = new List<STOCK_CODE>();
+        //    Guid? subAreaGuid = null;
+        //    if (subArea != null)
+        //        subAreaGuid = subArea.GUID;
             
-            foreach (STOCK_CODE globalStockCode in GlobalSTOCK_CODECollection)
-            {
-                if (!ProjectSTOCK_CODECollection.Any(x => x.CODE == globalStockCode.CODE && x.GUID_AREA == area.GUID && x.GUID_SUBAREA == subAreaGuid && x.GUID_DISCIPLINE == globalStockCode.GUID_DISCIPLINE))
-                    areaStockCodes.Add(new STOCK_CODE() { GUID_AREA = area.GUID, GUID_DISCIPLINE = globalStockCode.GUID_DISCIPLINE, GUID_PROJECT = loadPROJECT.GUID, GUID_SUBAREA = subAreaGuid, CODE = globalStockCode.CODE });
-            }
+        //    foreach (STOCK_CODE globalStockCode in GlobalSTOCK_CODECollection)
+        //    {
+        //        if (!ProjectSTOCK_CODECollection.Any(x => x.CODE == globalStockCode.CODE && x.GUID_AREA == area.GUID && x.GUID_SUBAREA == subAreaGuid && x.GUID_DISCIPLINE == globalStockCode.GUID_DISCIPLINE))
+        //            areaStockCodes.Add(new STOCK_CODE() { GUID_AREA = area.GUID, GUID_DISCIPLINE = globalStockCode.GUID_DISCIPLINE, GUID_PROJECT = loadPROJECT.GUID, GUID_SUBAREA = subAreaGuid, CODE = globalStockCode.CODE });
+        //    }
 
-            return areaStockCodes;
-        }
+        //    return areaStockCodes;
+        //}
         #endregion
     }
 }

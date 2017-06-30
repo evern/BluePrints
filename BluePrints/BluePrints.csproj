@@ -381,6 +381,7 @@
     <Compile Include="Common\Reports\UserReportDesigner.Designer.cs">
       <DependentUpon>UserReportDesigner.cs</DependentUpon>
     </Compile>
+    <Compile Include="Common\Reports\ViewModel\IReportable.cs" />
     <Compile Include="Common\Reports\XtraReportBASELINE_ITEMS.cs">
       <SubType>Component</SubType>
     </Compile>

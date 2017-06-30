@@ -569,7 +569,7 @@ namespace BluePrints.ViewModels
                  BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA))
             {
                 Guid? oldValue = activeVARIATION_ITEM.Entity.Entity.GUID_SUBAREA;
-                if (e.Value != null && oldValue != null)
+                if (oldValue != null)
                 {
                     Guid? newValue = (Guid?)null;
                     string subAreaFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
@@ -600,7 +600,7 @@ namespace BluePrints.ViewModels
                     activeVARIATION_ITEM.Update();
                 }
 
-                if (e.Value != null && activeVARIATION_ITEM.Entity.Entity.GUID_SUBAREA != null)
+                if (activeVARIATION_ITEM.Entity.Entity.GUID_SUBAREA != null)
                 {
                     activeVARIATION_ITEM.Entity.Entity.GUID_SUBAREA = null;
                 }
