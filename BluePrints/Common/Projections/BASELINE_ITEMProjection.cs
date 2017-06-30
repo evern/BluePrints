@@ -1,5 +1,6 @@
 ﻿using BaseModel.Attributes;
 using BluePrints.Common.Base;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Linq;
 namespace BluePrints.Common.Projections
 {
     [ConstraintAttributes("Entity.GUID_BASELINE, Entity.INTERNAL_NUM")]
-    public class BASELINE_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEM>
+    public class BASELINE_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEM>, IDeliverable
     {
         public BASELINE_ITEMProjection()
             : base()
@@ -131,6 +132,62 @@ namespace BluePrints.Common.Projections
             {
                 return BASELINE_ITEM_ASSIGNMENTS.Sum(x => (x.HIGH_VALUE - (x.LOW_VALUE - 0.01m)));
             }
+        }
+
+
+        public Guid Original_Guid
+        {
+            get { return Entity.GUID_ORIGINAL; }
+        }
+
+        public string ReportableItem_Name
+        {
+            get { return Entity.INTERNAL_NUM; }
+        }
+
+        public string Commodity_Code
+        {
+            get { return Entity.CommodityCode; }
+        }
+
+        public string Stock_Code
+        {
+            get { return Entity.StockCode; }
+        }
+
+        public Guid? Workpack_Guid
+        {
+            get { return Entity.GUID_WORKPACK; }
+        }
+
+        public decimal TotalHoursIncludeByDuration
+        {
+            get { return Entity.Total_HoursIncludeByDuration; }
+        }
+
+        public decimal EstimatedHours
+        {
+            get { return Entity.ESTIMATED_HOURS; }
+        }
+
+        public decimal TotalHours
+        {
+            get { return Entity.TOTAL_HOURS; }
+        }
+
+        public decimal EstimatedCosts
+        {
+            get { return ESTIMATED_COSTS; }
+        }
+
+        public decimal TotalCosts
+        {
+            get { return TOTAL_COSTS; }
+        }
+
+        public decimal ItemRate
+        {
+            get { return ITEMRATE; }
         }
     }
 

@@ -83,13 +83,13 @@ namespace BluePrints.Common.Projections
         private List<StockCode_Dashboard> constructAllPossibleStockCodes(SummaryStats workpackSummaryStats, IEnumerable<ExoDataPoint> burnedDataPoints)
         {
             List<StockCode_Dashboard> stockCodeDashboards = new List<StockCode_Dashboard>();
-            foreach(PROGRESS_ITEMProjection deliverable in workpackSummaryStats.Deliverable)
+            foreach(IReportable reportable in workpackSummaryStats.Reportables)
             {
-                string stockCode = deliverable.Entity.Entity.StockCode;
+                string stockCode = reportable.Deliverable.Stock_Code;
                 if (!stockCodeDashboards.Any(x => x.Stock_Code == stockCode))
                 {
                     StockCode_Dashboard newStockCode = new StockCode_Dashboard() { Stock_Code = stockCode };
-                    assignAllPossibleCommodityCodes(newStockCode, workpackSummaryStats.Deliverable, burnedDataPoints);
+                    assignAllPossibleCommodityCodes(newStockCode, workpackSummaryStats.Reportables, burnedDataPoints);
                     stockCodeDashboards.Add(newStockCode);
                 }
             }
@@ -100,7 +100,7 @@ namespace BluePrints.Common.Projections
                 if (!stockCodeDashboards.Any(x => x.Stock_Code == stockCode))
                 {
                     StockCode_Dashboard newStockCode = new StockCode_Dashboard() { Stock_Code = stockCode };
-                    assignAllPossibleCommodityCodes(newStockCode, workpackSummaryStats.Deliverable, burnedDataPoints);
+                    assignAllPossibleCommodityCodes(newStockCode, workpackSummaryStats.Reportables, burnedDataPoints);
                     stockCodeDashboards.Add(newStockCode);
                 }
             }
@@ -108,12 +108,12 @@ namespace BluePrints.Common.Projections
             return stockCodeDashboards;
         }
 
-        private void assignAllPossibleCommodityCodes(StockCode_Dashboard stockCodeDashboards, IEnumerable<PROGRESS_ITEMProjection> workpackDeliverables, IEnumerable<ExoDataPoint> burnedDataPoints)
+        private void assignAllPossibleCommodityCodes(StockCode_Dashboard stockCodeDashboards, IEnumerable<IReportable> workpackReportables, IEnumerable<ExoDataPoint> burnedDataPoints)
         {
             List<CommodityCode_Dashboard> commodityCodes = new List<CommodityCode_Dashboard>();
-            foreach (PROGRESS_ITEMProjection deliverable in workpackDeliverables)
+            foreach (IReportable reportable in workpackReportables)
             {
-                string commodityCode = deliverable.Entity.Entity.DOCTYPE.CODE;
+                string commodityCode = reportable.Deliverable.Commodity_Code;
                 if(!commodityCodes.Any(x => x.Commodity_Code == commodityCode))
                 {
                     commodityCodes.Add(new CommodityCode_Dashboard() { Commodity_Code = commodityCode });

@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class PROGRESS_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEMProjection>, IHaveStats
+    public class PROGRESS_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEMProjection>, IReportable
     {
         readonly DateTime ReportingDataDate;
 
@@ -475,6 +475,11 @@ namespace BluePrints.Common.Projections
                         return Entity.Entity.DELIVERABLES_STATUS.MAX_PERCENTAGE;
                 }
             }
+        }
+
+        public IDeliverable Deliverable
+        {
+            get { return Entity; }
         }
     }
 

@@ -11,17 +11,17 @@ namespace BluePrints.Common.ViewModel.Reporting
     /// </summary>
     public static class ProjectionHelpers
     {
-        public static void InitializePROGRESS_ITEMStats(IEnumerable<PROGRESS_ITEMProjection> PROGRESS_ITEMS, IEnumerable<VariationAdjustment> variationAdjustments, PROGRESS livePROGRESS, bool progressHaveStats)
+        public static void InitializePROGRESS_ITEMStats(IEnumerable<IReportable> reportableItems, IEnumerable<VariationAdjustment> variationAdjustments, PROGRESS livePROGRESS, bool progressHaveStats)
         {
-            foreach (PROGRESS_ITEMProjection progressItem in PROGRESS_ITEMS)
+            foreach (IReportable reportableItem in reportableItems)
             {
-                List<VariationAdjustment> currentProgressItemAdjustments = variationAdjustments.Where(x => x.DeliverableOriginalGuid == progressItem.Entity.Entity.GUID_ORIGINAL).ToList();
+                List<VariationAdjustment> currentProgressItemAdjustments = variationAdjustments.Where(x => x.DeliverableOriginalGuid == reportableItem.Deliverable.Original_Guid).ToList();
                 if(!progressHaveStats)
-                    progressItem.Stats = new ProgressStats(livePROGRESS, progressItem.Entity.Entity.Total_HoursIncludeByDuration, progressItem.Entity .Entity.TOTAL_HOURS, progressItem.Entity.ESTIMATED_COSTS, progressItem.Entity.TOTAL_COSTS, currentProgressItemAdjustments);
+                    reportableItem.Stats = new ProgressStats(livePROGRESS, reportableItem.Deliverable.TotalHoursIncludeByDuration, reportableItem.Deliverable.TotalHours, reportableItem.Deliverable.EstimatedCosts, reportableItem.Deliverable.TotalCosts, currentProgressItemAdjustments);
             }
         }
 
-        public static List<VariationAdjustment> BuildProjectVariationAdjustments(IQueryable<VARIATION> VARIATION, IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEM)
+        public static List<VariationAdjustment> BuildProjectVariationAdjustments(IQueryable<VARIATION> VARIATION, IEnumerable<IDeliverable> deliverables)
         {
             List<VariationAdjustment> variationAdjustments = new List<VariationAdjustment>();
             IQueryable<VARIATION> ApprovedVARIATION = VARIATION.Where(x => x.APPROVED != null && x.TYPE == VariationType.External);
@@ -30,10 +30,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                 IEnumerable<VARIATION_ITEM> applicableVariation_Item = variation.VARIATION_ITEM.Where(x => x.ACTION == VariationAction.Add || x.ACTION == VariationAction.Append);
                 foreach (VARIATION_ITEM variation_item in applicableVariation_Item)
                 {
-                    BASELINE_ITEMProjection findBASELINE_ITEM = BASELINE_ITEM.FirstOrDefault(x => x.Entity.GUID_ORIGINAL == variation_item.GUID_ORIBASEITEM);
-                    if (findBASELINE_ITEM != null)
+                    IDeliverable lookUpDeliverable = deliverables.FirstOrDefault(x => x.Original_Guid == variation_item.GUID_ORIBASEITEM);
+                    if (lookUpDeliverable != null)
                     {
-                        variationAdjustments.Add(new VariationAdjustment(variation_item.GUID_ORIBASEITEM) { AdjustmentDate = (DateTime)variation.APPROVED, AdjustmentUnits = variation_item.VARIATION_UNITS, AdjustmentRate = findBASELINE_ITEM.ITEMRATE });
+                        variationAdjustments.Add(new VariationAdjustment(variation_item.GUID_ORIBASEITEM) { AdjustmentDate = (DateTime)variation.APPROVED, AdjustmentUnits = variation_item.VARIATION_UNITS, AdjustmentRate = lookUpDeliverable.ItemRate });
                     }
                 }
             }

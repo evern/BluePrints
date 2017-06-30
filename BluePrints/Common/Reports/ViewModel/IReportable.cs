@@ -8,11 +8,22 @@ namespace BluePrints.Common.ViewModel.Reporting
 {
     public interface IReportable : IHaveStats
     {
-        string Commodity_Code { get; set; }
-        string Stock_Code { get; set; }
-        string Workpack_Guid { get; set; }
-        string ReportableItem_Name { get; set; }
-        bool IsPlannedFromP6 { get; set; }
-        bool IsRemainingFromP6 { get; set; }
+        IDeliverable Deliverable { get; }
+    }
+
+    public interface IDeliverable
+    {
+        string ReportableItem_Name { get; }
+        string Commodity_Code { get; }
+        string Stock_Code { get; }
+        Guid? Workpack_Guid { get; }
+
+        decimal TotalHoursIncludeByDuration { get; }
+        decimal EstimatedHours { get; }
+        decimal TotalHours { get; }
+        decimal EstimatedCosts { get; }
+        decimal TotalCosts { get; }
+        Guid Original_Guid { get; }
+        decimal ItemRate { get; }
     }
 }

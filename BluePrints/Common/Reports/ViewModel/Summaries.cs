@@ -14,7 +14,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public List<WORKPACK> ExoMissingWORKPACKS { get; private set; }
         #endregion
 
-        public ProjectSummaryStats(IEnumerable<PROGRESS_ITEMProjection> progressItem, PROGRESS livePROGRESS, IEnumerable<VariationAdjustment> projectVariationAdjustments)
+        public ProjectSummaryStats(IEnumerable<IReportable> progressItem, PROGRESS livePROGRESS, IEnumerable<VariationAdjustment> projectVariationAdjustments)
             : base(progressItem, livePROGRESS, projectVariationAdjustments)
         {
             progress = livePROGRESS;
@@ -25,7 +25,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public SummaryStats GroupStatsByWorkpack(WORKPACK workpack, bool isLegacyProject = true)
         {
             //set budgeted, current and earned
-            IEnumerable<PROGRESS_ITEMProjection> progressItemStatsByWorkpack = Deliverable.Where(x => x.Entity.Entity.GUID_WORKPACK == workpack.GUID);
+            IEnumerable<IReportable> progressItemStatsByWorkpack = Reportables.Where(x => x.Deliverable.Workpack_Guid == workpack.GUID);
 
             DateTime progressItemReportingDataDate = this.ReportingDataDate;
             List<VariationAdjustment> workpackVariationAdjustments = progressItemStatsByWorkpack.SelectMany(x => x.Stats.VariationAdjustments).ToList();
@@ -46,7 +46,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public SummaryStats GroupStatsByStockCode(SummaryStats progressItemStatsByWorkpack, string stockCode)
         {
-            IEnumerable<PROGRESS_ITEMProjection> progressItemStatsByStockCode = progressItemStatsByWorkpack.Deliverable.Where(x => x.Entity.Entity.StockCode == stockCode);
+            IEnumerable<IReportable> progressItemStatsByStockCode = progressItemStatsByWorkpack.Reportables.Where(x => x.Deliverable.Stock_Code == stockCode);
             List<VariationAdjustment> stockCodeVariationAdjustments = progressItemStatsByStockCode.SelectMany(x => x.Stats.VariationAdjustments).ToList();
             SummaryStats stockCodeSummary = new SummaryStats(progressItemStatsByStockCode, progress, stockCodeVariationAdjustments);
             stockCodeSummary.GenerateSummary();
@@ -72,7 +72,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public SummaryStats GroupStatsByCommodityCode(SummaryStats progressItemStatsByStockCode, string commodityCode)
         {
-            IEnumerable<PROGRESS_ITEMProjection> progressItemStatsByCommodityCode = progressItemStatsByStockCode.Deliverable.Where(x => x.Entity.Entity.CommodityCode == commodityCode);
+            IEnumerable<IReportable> progressItemStatsByCommodityCode = progressItemStatsByStockCode.Reportables.Where(x => x.Deliverable.Commodity_Code == commodityCode);
             List<VariationAdjustment> commodityCodeVariationAdjustments = progressItemStatsByCommodityCode.SelectMany(x => x.Stats.VariationAdjustments).ToList();
             SummaryStats commodityCodeSummary = new SummaryStats(progressItemStatsByCommodityCode, progress, commodityCodeVariationAdjustments);
             commodityCodeSummary.GenerateSummary();
@@ -100,7 +100,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     public class SummaryStats : ProgressStats
     {
         #region Compulsory Parameters
-        public IEnumerable<PROGRESS_ITEMProjection> Deliverable { get; private set; }
+        public IEnumerable<IReportable> Reportables { get; private set; }
         #endregion
 
         #region Local Variables
@@ -121,10 +121,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <param name="livePROGRESS">Live progress for reporting data date, generating first aligned data date and interval</param>
         /// <param name="projectVariationAdjustments">Project variation adjustments that will be matched against each deliverable projection</param>
         /// <param name="progressItemHaveStats">Deliverable projection stats area already generated</param>
-        public SummaryStats(IEnumerable<PROGRESS_ITEMProjection> progressItem, PROGRESS livePROGRESS, IEnumerable<VariationAdjustment> projectVariationAdjustments)
-            : base(livePROGRESS, progressItem.Sum(x => x.Entity.Entity.ESTIMATED_HOURS), progressItem.Sum(x => x.Entity.Entity.TOTAL_HOURS), progressItem.Sum(x => x.Entity.ESTIMATED_COSTS), progressItem.Sum(x => x.Entity.TOTAL_COSTS), projectVariationAdjustments)
+        public SummaryStats(IEnumerable<IReportable> progressItem, PROGRESS livePROGRESS, IEnumerable<VariationAdjustment> projectVariationAdjustments)
+            : base(livePROGRESS, progressItem.Sum(x => x.Deliverable.EstimatedHours), progressItem.Sum(x => x.Deliverable.TotalHours), progressItem.Sum(x => x.Deliverable.EstimatedCosts), progressItem.Sum(x => x.Deliverable.TotalCosts), projectVariationAdjustments)
         {
-            Deliverable = progressItem;
+            Reportables = progressItem;
 
             //Since this is only used by workpack to rolldown from project, progress already have stats
             ProjectionHelpers.InitializePROGRESS_ITEMStats(progressItem, projectVariationAdjustments,livePROGRESS, true);
@@ -140,7 +140,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             : base(summaryStats)
         {
             IEnumerable<SummaryStats> cleanSummaryStats = summaryStats.Where(x => x != null);
-            Deliverable = cleanSummaryStats.Where(x => x != null).SelectMany(x => x.Deliverable).ToList();
+            Reportables = cleanSummaryStats.Where(x => x != null).SelectMany(x => x.Reportables).ToList();
 
             Burned = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             Burned.SetData(cleanSummaryStats.Where(x => x.Burned != null && x.Burned.DataPoints != null).SelectMany(x => x.Burned.DataPoints).ToList());
@@ -151,10 +151,10 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public void GenerateSummary()
         {
-            this.Budgeted.SetData(Deliverable.SelectMany(x => x.Stats.Budgeted.GetData()));
-            this.Current.SetData(Deliverable.SelectMany(x => x.Stats.Current.GetData()));
-            this.Earned.SetData(Deliverable.SelectMany(x => x.Stats.Earned.GetData()));
-            this.Remaining.SetData(Deliverable.SelectMany(x => x.Stats.Remaining.GetData()));
+            this.Budgeted.SetData(Reportables.SelectMany(x => x.Stats.Budgeted.GetData()));
+            this.Current.SetData(Reportables.SelectMany(x => x.Stats.Current.GetData()));
+            this.Earned.SetData(Reportables.SelectMany(x => x.Stats.Earned.GetData()));
+            this.Remaining.SetData(Reportables.SelectMany(x => x.Stats.Remaining.GetData()));
         }
 
         public void RecalculateStats(bool isCost = false)

@@ -135,13 +135,13 @@ namespace BluePrints.Common.ViewModel
                 return false;
 
             SummaryStats summaryStats = DisplaySelectedEntity.Stats as SummaryStats;
-            if (summaryStats == null || summaryStats.Deliverable == null)
+            if (summaryStats == null || summaryStats.Reportables == null)
                 return false;
 
-            if (!summaryStats.Deliverable.Any(x => x.Stats != null && x.Stats.Budgeted != null && x.Stats.Budgeted.FromP6))
+            if (!summaryStats.Reportables.Any(x => x.Stats != null && x.Stats.Budgeted != null && x.Stats.Budgeted.FromP6))
                 return true;
 
-            if (!summaryStats.Deliverable.Any(x => x.Stats != null && x.Stats.Remaining != null && x.Stats.Remaining.FromP6))
+            if (!summaryStats.Reportables.Any(x => x.Stats != null && x.Stats.Remaining != null && x.Stats.Remaining.FromP6))
                 return true;
 
             return false;
@@ -156,7 +156,7 @@ namespace BluePrints.Common.ViewModel
             if (summaryStats == null)
                 return;
 
-            DialogCollectionViewModel<PROGRESS_ITEMProjection> viewModel = DialogCollectionViewModel<PROGRESS_ITEMProjection>.Create(summaryStats.Deliverable);
+            DialogCollectionViewModel<IReportable> viewModel = DialogCollectionViewModel<IReportable>.Create(summaryStats.Reportables);
             IssuesDialogService.ShowDialog(MessageButton.OK, "P6 Affinity Report", "PrimaveraAffinityReport", viewModel);
         }
         #endregion

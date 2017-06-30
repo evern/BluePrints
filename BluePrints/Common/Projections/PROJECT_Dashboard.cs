@@ -25,15 +25,15 @@ namespace BluePrints.Common.Projections
 
         FullSummarizer projectSummarizer { get; set; }
 
-        public void InitializeSummarizer(IEnumerable<PROGRESS_ITEMProjection> progress_items, BASELINE LiveBASELINE, PROGRESS LivePROGRESS, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENTS, IEnumerable<VARIATION> VARIATIONS, IBluePrintsEntitiesUnitOfWork BluePrintsUOW = null, IP6EntitiesUnitOfWork P6UOW = null, IPrimeroEntitiesUnitOfWork PrimeroUOW = null, string projectNumber = "")
+        public void InitializeSummarizer(IEnumerable<IReportable> reportableItems, BASELINE LiveBASELINE, PROGRESS LivePROGRESS, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENTS, IEnumerable<VARIATION> VARIATIONS, IBluePrintsEntitiesUnitOfWork BluePrintsUOW = null, IP6EntitiesUnitOfWork P6UOW = null, IPrimeroEntitiesUnitOfWork PrimeroUOW = null, string projectNumber = "")
         {
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(LivePROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(LivePROGRESS);
-            List<VariationAdjustment> projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONS.AsQueryable(), progress_items.Select(x => x.Entity));
+            List<VariationAdjustment> projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONS.AsQueryable(), reportableItems.Select(x => x.Deliverable));
 
             FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(Entity, LiveBASELINE, LivePROGRESS, WORKPACKS, WORKPACK_ASSIGNMENTS, P6UOW, PrimeroUOW);
 
-            Stats = new ProjectSummaryStats(progress_items, LivePROGRESS, projectVariationAdjustments);
+            Stats = new ProjectSummaryStats(reportableItems, LivePROGRESS, projectVariationAdjustments);
             projectSummarizer = new FullSummarizer((ProjectSummaryStats)Stats, fullStatsBuilder, projectNumber);
         }
 
