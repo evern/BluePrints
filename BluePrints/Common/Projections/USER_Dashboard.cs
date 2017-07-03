@@ -73,9 +73,4 @@ namespace BluePrints.Common.Projections
             }
         }
     }
-
-    public static class USER_DashboardQueries
-    {
-        
-    }
 }

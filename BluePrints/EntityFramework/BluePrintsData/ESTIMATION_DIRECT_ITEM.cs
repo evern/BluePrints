@@ -39,6 +39,8 @@
         
         public bool TRACK { get; set; }
 
+        public bool STANDALONE { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

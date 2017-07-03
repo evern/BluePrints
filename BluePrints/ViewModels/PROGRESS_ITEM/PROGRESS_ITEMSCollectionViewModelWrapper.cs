@@ -157,7 +157,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID);
+            return query => query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID).Where(x => x.TYPE == ProgressType.Design);
         }
 
         private Func<IRepositoryQuery<DELIVERABLES_STATUS>, IQueryable<DELIVERABLES_STATUS>> DELIVERABLES_STATUSProjectionFunc()
@@ -176,7 +176,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.COST_GROUP == CostGroup.Offsite);
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
@@ -792,7 +792,7 @@ namespace BluePrints.ViewModels
                 //if (currentPROGRESS_ITEM.Stats == null)
                 //    continue;
 
-                if (currentPROGRESS_ITEM.PROGRESS_ITEMSUpToCurrentDate == null || currentPROGRESS_ITEM.PROGRESS_ITEMSUpToCurrentDate.Count == 0)
+                if (currentPROGRESS_ITEM.PROGRESS_ITEMSUpToCurrentDate == null || currentPROGRESS_ITEM.PROGRESS_ITEMSUpToCurrentDate.Count() == 0)
                     continue;
 
                 DateTime firstEarnedDate = currentPROGRESS_ITEM.PROGRESS_ITEMSUpToCurrentDate.Min(x => x.EARNED_DATE);

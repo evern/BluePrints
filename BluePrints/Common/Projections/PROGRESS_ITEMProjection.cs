@@ -11,7 +11,7 @@ namespace BluePrints.Common.Projections
 {
     public class PROGRESS_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEMProjection>, IReportable
     {
-        readonly DateTime ReportingDataDate;
+        public DateTime ReportingDataDate { get; set; }
 
         #region Stats Parameters
         SingleObjectSummarizer StatSummarizer { get; set; }
@@ -102,9 +102,9 @@ namespace BluePrints.Common.Projections
 
         private IEnumerable<VARIATION_ITEM> VARIATION_ITEMS { get; set; }
 
-        private IEnumerable<PROGRESS_ITEM> progress_items;
+        private List<PROGRESS_ITEM> progress_items;
 
-        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS
+        public List<PROGRESS_ITEM> PROGRESS_ITEMS
         {
             get { return progress_items; }
             set
@@ -161,23 +161,23 @@ namespace BluePrints.Common.Projections
             set { progress_itemCurrent = value; }
         }
 
-        private List<PROGRESS_ITEM> PROGRESS_ITEMSafterreportingdate;
+        private IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMSafterreportingdate;
 
-        public List<PROGRESS_ITEM> PROGRESS_ITEMSAfterReportingDate
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMSAfterReportingDate
         {
             get { return PROGRESS_ITEMSafterreportingdate; }
         }
 
-        private List<PROGRESS_ITEM> PROGRESS_ITEMSbeforereportingdate;
+        private IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMSbeforereportingdate;
 
-        public List<PROGRESS_ITEM> PROGRESS_ITEMSBeforeReportingDate
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMSBeforeReportingDate
         {
             get { return PROGRESS_ITEMSbeforereportingdate; }
         }
 
-        private List<PROGRESS_ITEM> PROGRESS_ITEMSuptocurrentdate;
+        private IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMSuptocurrentdate;
 
-        public List<PROGRESS_ITEM> PROGRESS_ITEMSUpToCurrentDate
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMSUpToCurrentDate
         {
             get { return PROGRESS_ITEMSuptocurrentdate; }
         }
@@ -191,7 +191,7 @@ namespace BluePrints.Common.Projections
                     return BluePrintsConstants.DurationBasedDisplayUnits;
 
                 decimal currentUnits = PROGRESS_ITEMCurrent == null ? 0 : PROGRESS_ITEMCurrent.EARNED_UNITS;
-                return PastPROGRESS_ITEMS_UNITS + currentUnits;
+                return PastPROGRESS_ITEMS_UNITS + currentUnits - Entity.Entity.DC_HOURS;
             }
         }
 
@@ -479,8 +479,43 @@ namespace BluePrints.Common.Projections
 
         public IDeliverable Deliverable
         {
-            get { return Entity; }
+            get { return Entity.Entity; }
         }
+
+        public decimal ItemRate => Entity.ItemRate;
+
+        public decimal EstimatedCosts => Entity.EstimatedCosts;
+
+        public decimal TotalCosts => Entity.TotalCosts;
+
+        public string ReportableItem_Name => Entity.ReportableItem_Name;
+
+        public string Commodity_Code => Entity.Commodity_Code;
+
+        public string Stock_Code => Entity.Stock_Code;
+
+        public Guid? Workpack_Guid => Entity.Workpack_Guid;
+
+        public decimal TotalHoursIncludeByDuration => Entity.TotalHoursIncludeByDuration;
+
+        public decimal EstimatedHours => Entity.EstimatedHours;
+
+        public decimal TotalHours => Entity.TotalHours;
+
+        public Guid OriginalEntityKey
+        {
+            get { return Entity.OriginalEntityKey; }
+            set { Entity.OriginalEntityKey = value; }
+        }
+
+        public Guid? Area_Guid { get => Entity.Entity.GUID_AREA; }
+        public Guid? SubArea_Guid { get => Entity.Entity.GUID_SUBAREA; }
+
+        public decimal Estimated_Quantity => throw new NotImplementedException();
+
+        public decimal Total_Quantity => throw new NotImplementedException();
+
+        public string UOM => throw new NotImplementedException();
     }
 
     public static class PROGRESS_ITEMProjectionQueries
@@ -555,7 +590,7 @@ namespace BluePrints.Common.Projections
                                 EntityKey = x.EntityKey,
                                 Entity = x,
                                 loadPROGRESS = PROGRESS,
-                                PROGRESS_ITEMS = LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.Entity.GUID_ORIGINAL), 
+                                PROGRESS_ITEMS = LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.Entity.OriginalEntityKey).ToList(), 
                             }).AsQueryable();
         }
 
@@ -597,7 +632,7 @@ namespace BluePrints.Common.Projections
                         {
                             EntityKey = x.EntityKey,
                             loadPROGRESS = PROGRESS, 
-                            PROGRESS_ITEMS = LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.Entity.GUID_ORIGINAL)
+                            PROGRESS_ITEMS = LoadPROGRESS_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.Entity.OriginalEntityKey).ToList()
                         }).ToList();
 
             foreach(PROGRESS_ITEMProjection progress_item in progress_items)

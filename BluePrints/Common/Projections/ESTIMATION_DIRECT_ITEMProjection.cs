@@ -1,6 +1,7 @@
 ﻿using BaseModel.Attributes;
 using BaseModel.Data.Helpers;
 using BluePrints.Common.Base;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>
+    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IReportable
     {
         public ESTIMATION_DIRECT_ITEMProjection()
             : base()
@@ -139,6 +140,122 @@ namespace BluePrints.Common.Projections
             return StockCodeCollection.Any(x => x.GUID == commodityCodeGuid);
         }
 
+        public IDeliverable Deliverable
+        {
+            get { return this; }
+        }
+
+        public ProgressStats Stats { get; set; }
+
+        public string ReportableItem_Name
+        {
+            get { return COMMODITY_CODE.CODE; }
+        }
+
+        public string Commodity_Code
+        {
+            get { return COMMODITY_CODE.CODE; }
+        }
+
+        public string Stock_Code
+        {
+            get
+            {
+                if (Entity.STOCK_CODE == null)
+                    return string.Empty;
+
+                return Entity.STOCK_CODE.CODE;
+            }
+        }
+
+        public Guid? Area_Guid
+        {
+            get
+            {
+                return Entity.GUID_AREA;
+            }
+        }
+
+        public Guid? SubArea_Guid
+        {
+            get
+            {
+                return Entity.GUID_SUBAREA;
+            }
+        }
+
+        public Guid? Workpack_Guid
+        {
+            get { return Entity.WORKPACK.GUID; }
+        }
+
+        public decimal TotalHoursIncludeByDuration
+        {
+            get { return EstimatedHours; }
+        }
+
+        public decimal EstimatedHours
+        {
+            get
+            {
+                if (COMMODITY_CODE == null)
+                    return 0;
+
+                return Entity.ESTIMATED_QUANTITY * COMMODITY_CODE.HOURS_INSTALL;
+            }
+        }
+
+        public decimal TotalHours
+        {
+            get
+            {
+                return EstimatedHours;
+            }
+        }
+
+        public decimal EstimatedCosts
+        {
+            get
+            {
+                return EstimatedHours * ItemRate;
+            }
+        }
+
+        public decimal TotalCosts
+        {
+            get
+            {
+                return EstimatedCosts;
+            }
+        }
+
+        public Guid Original_Guid
+        {
+            get
+            {
+                return Entity.OriginalEntityKey;
+            }
+        }
+
+        public Guid OriginalEntityKey
+        {
+            get { return Entity.OriginalEntityKey; }
+            set { Entity.OriginalEntityKey = value; }
+        }
+
+        public DateTime EntityCreatedDate
+        {
+            get { return Entity.EntityCreatedDate; }
+            set { Entity.EntityCreatedDate = value; }
+        }
+
+        public DateTime ReportingDataDate { get; set; }
+        public List<PROGRESS_ITEM> PROGRESS_ITEMS { get; set; }
+        public decimal Estimated_Quantity => Entity.ESTIMATED_QUANTITY;
+        public decimal Total_Quantity => Entity.ESTIMATED_QUANTITY;
+
+        public string UOM => Entity.COMMODITY_CODE.UOM;
+
         /// <summary>
         /// Refreshes current row
         /// </summary>
@@ -151,8 +268,8 @@ namespace BluePrints.Common.Projections
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries
     {
         public static IQueryable<ESTIMATION_DIRECT_ITEMProjection> ESTIMATION_DIRECT_ITEMProjectionQuery(
-            IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, ESTIMATION_DIRECT ESTIMATION_DIRECT,
-            IEnumerable<RATE> RATES, IEnumerable<COMMODITY_CODE> COMMODITY_CODES, IEnumerable<STOCK_CODE> STOCK_CODES)
+            IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, 
+            IEnumerable<RATE> RATES, IEnumerable<COMMODITY_CODE> projectCOMMODITY_CODES, IEnumerable<STOCK_CODE> projectSTOCK_CODES)
         {
             return
                 ESTIMATION_DIRECT_ITEMS.OrderBy(x => x.CREATED).ToArray()
@@ -161,10 +278,10 @@ namespace BluePrints.Common.Projections
                             new ESTIMATION_DIRECT_ITEMProjection()
                             {
                                 Entity = estimate_direct_item,
-                                COMMODITY_CODE = COMMODITY_CODES.FirstOrDefault(commoditycode => commoditycode.GUID == estimate_direct_item.GUID_COMMODITY_CODE),
+                                COMMODITY_CODE = projectCOMMODITY_CODES.FirstOrDefault(commoditycode => commoditycode.GUID == estimate_direct_item.GUID_COMMODITY_CODE),
                                 RATE = RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
-                                CommodityCodeCollection = COMMODITY_CODES.Where(commoditycode => commoditycode.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
-                                StockCodeCollection = STOCK_CODES
+                                CommodityCodeCollection = projectCOMMODITY_CODES.Where(commoditycode => commoditycode.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
+                                StockCodeCollection = projectSTOCK_CODES
                                 .Where(stockcode =>
                                 stockcode.GUID_AREA == estimate_direct_item.GUID_AREA 
                                 && stockcode.GUID_SUBAREA == estimate_direct_item.GUID_SUBAREA 

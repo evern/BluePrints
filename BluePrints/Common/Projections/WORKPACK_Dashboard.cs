@@ -85,7 +85,7 @@ namespace BluePrints.Common.Projections
             List<StockCode_Dashboard> stockCodeDashboards = new List<StockCode_Dashboard>();
             foreach(IReportable reportable in workpackSummaryStats.Reportables)
             {
-                string stockCode = reportable.Deliverable.Stock_Code;
+                string stockCode = reportable.Stock_Code;
                 if (!stockCodeDashboards.Any(x => x.Stock_Code == stockCode))
                 {
                     StockCode_Dashboard newStockCode = new StockCode_Dashboard() { Stock_Code = stockCode };
@@ -113,7 +113,7 @@ namespace BluePrints.Common.Projections
             List<CommodityCode_Dashboard> commodityCodes = new List<CommodityCode_Dashboard>();
             foreach (IReportable reportable in workpackReportables)
             {
-                string commodityCode = reportable.Deliverable.Commodity_Code;
+                string commodityCode = reportable.Commodity_Code;
                 if(!commodityCodes.Any(x => x.Commodity_Code == commodityCode))
                 {
                     commodityCodes.Add(new CommodityCode_Dashboard() { Commodity_Code = commodityCode });

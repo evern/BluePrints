@@ -3,6 +3,8 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using BluePrints.Common.Projections;
+using BluePrints.Common.ViewModel.Reporting;
 
 namespace BluePrints.Data
 {

@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using BluePrints.Common.ViewModel.Reporting;
     using Common;
     using System;
     using System.ComponentModel.DataAnnotations;

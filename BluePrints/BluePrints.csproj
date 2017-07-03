@@ -360,6 +360,7 @@
     <Compile Include="Common\Base\BluePrintsProjectionMasterDetailBase.cs" />
     <Compile Include="Common\Misc\Messages.cs" />
     <Compile Include="Common\Misc\RiskMatrix.cs" />
+    <Compile Include="Common\Projections\ProgressProjection.cs" />
     <Compile Include="Common\Projections\STOCK_CODEProjection.cs" />
     <Compile Include="Common\Projections\ESTIMATION_DIRECT_ITEMProjection.cs" />
     <Compile Include="Common\Projections\BASELINE_ITEM_ASSIGNMENTSProjection.cs" />
@@ -516,6 +517,7 @@
     <Compile Include="Common\Misc\BluePrintsEnums.cs" />
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATION_DIRECT_ITEM\ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROGRESS_ITEM\SiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_HOLDCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_ISSUECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_CHANGECollectionViewModelWrapper.cs" />
@@ -535,6 +537,9 @@
     </Compile>
     <Compile Include="Views\ESTIMATION_DIRECT_ITEM\ESTIMATION_DIRECT_ITEMCollectionView.xaml.cs">
       <DependentUpon>ESTIMATION_DIRECT_ITEMCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROGRESS_ITEM\SiteDirectProgressItemCollectionView.xaml.cs">
+      <DependentUpon>SiteDirectProgressItemCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECTDashboardPreloadUserControl.xaml.cs">
       <DependentUpon>PROJECTDashboardPreloadUserControl.xaml</DependentUpon>
@@ -1299,6 +1304,10 @@
     <Page Include="Views\ESTIMATION_DIRECT_ITEM\ESTIMATION_DIRECT_ITEMCollectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PROGRESS_ITEM\SiteDirectProgressItemCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROJECTDashboardPreloadUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>

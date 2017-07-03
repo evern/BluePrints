@@ -1,5 +1,10 @@
 ﻿using BaseModel.Misc;
+using BluePrints.Common.Projections;
+using BluePrints.Data;
 using System;
+using System.Linq;
+using System.Collections.Generic;
+using BluePrints.Common.ViewModel.Reporting;
 
 namespace BluePrints.Common.Base
 {

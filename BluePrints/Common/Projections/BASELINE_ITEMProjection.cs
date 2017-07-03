@@ -10,7 +10,7 @@ using System.Linq;
 namespace BluePrints.Common.Projections
 {
     [ConstraintAttributes("Entity.GUID_BASELINE, Entity.INTERNAL_NUM")]
-    public class BASELINE_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEM>, IDeliverable
+    public class BASELINE_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEM>, IDisplayDeliverable
     {
         public BASELINE_ITEMProjection()
             : base()
@@ -134,45 +134,9 @@ namespace BluePrints.Common.Projections
             }
         }
 
-
-        public Guid Original_Guid
+        public decimal ItemRate
         {
-            get { return Entity.GUID_ORIGINAL; }
-        }
-
-        public string ReportableItem_Name
-        {
-            get { return Entity.INTERNAL_NUM; }
-        }
-
-        public string Commodity_Code
-        {
-            get { return Entity.CommodityCode; }
-        }
-
-        public string Stock_Code
-        {
-            get { return Entity.StockCode; }
-        }
-
-        public Guid? Workpack_Guid
-        {
-            get { return Entity.GUID_WORKPACK; }
-        }
-
-        public decimal TotalHoursIncludeByDuration
-        {
-            get { return Entity.Total_HoursIncludeByDuration; }
-        }
-
-        public decimal EstimatedHours
-        {
-            get { return Entity.ESTIMATED_HOURS; }
-        }
-
-        public decimal TotalHours
-        {
-            get { return Entity.TOTAL_HOURS; }
+            get { return ITEMRATE; }
         }
 
         public decimal EstimatedCosts
@@ -185,10 +149,35 @@ namespace BluePrints.Common.Projections
             get { return TOTAL_COSTS; }
         }
 
-        public decimal ItemRate
+        public string ReportableItem_Name => Entity.ReportableItem_Name;
+
+        public string Commodity_Code => Entity.Commodity_Code;
+
+        public string Stock_Code => Entity.Stock_Code;
+
+        public Guid? Workpack_Guid => Entity.Workpack_Guid;
+
+        public decimal TotalHoursIncludeByDuration => Entity.TotalHoursIncludeByDuration;
+
+        public decimal EstimatedHours => Entity.EstimatedHours;
+
+        public decimal TotalHours => Entity.TotalHours;
+
+        public Guid OriginalEntityKey
         {
-            get { return ITEMRATE; }
+            get { return Entity.OriginalEntityKey; }
+            set { Entity.OriginalEntityKey = value; }
         }
+
+        public Guid? Area_Guid => Entity.GUID_AREA;
+
+        public Guid? SubArea_Guid => Entity.GUID_SUBAREA;
+
+        public decimal Estimated_Quantity => throw new NotImplementedException();
+
+        public decimal Total_Quantity => throw new NotImplementedException();
+
+        public string UOM => throw new NotImplementedException();
     }
 
     public static class BASELINE_ITEMProjectionQueries

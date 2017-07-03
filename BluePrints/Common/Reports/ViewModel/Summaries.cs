@@ -25,7 +25,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public SummaryStats GroupStatsByWorkpack(WORKPACK workpack, bool isLegacyProject = true)
         {
             //set budgeted, current and earned
-            IEnumerable<IReportable> progressItemStatsByWorkpack = Reportables.Where(x => x.Deliverable.Workpack_Guid == workpack.GUID);
+            IEnumerable<IReportable> progressItemStatsByWorkpack = Reportables.Where(x => x.Workpack_Guid == workpack.GUID);
 
             DateTime progressItemReportingDataDate = this.ReportingDataDate;
             List<VariationAdjustment> workpackVariationAdjustments = progressItemStatsByWorkpack.SelectMany(x => x.Stats.VariationAdjustments).ToList();
@@ -46,7 +46,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public SummaryStats GroupStatsByStockCode(SummaryStats progressItemStatsByWorkpack, string stockCode)
         {
-            IEnumerable<IReportable> progressItemStatsByStockCode = progressItemStatsByWorkpack.Reportables.Where(x => x.Deliverable.Stock_Code == stockCode);
+            IEnumerable<IReportable> progressItemStatsByStockCode = progressItemStatsByWorkpack.Reportables.Where(x => x.Stock_Code == stockCode);
             List<VariationAdjustment> stockCodeVariationAdjustments = progressItemStatsByStockCode.SelectMany(x => x.Stats.VariationAdjustments).ToList();
             SummaryStats stockCodeSummary = new SummaryStats(progressItemStatsByStockCode, progress, stockCodeVariationAdjustments);
             stockCodeSummary.GenerateSummary();
@@ -72,7 +72,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public SummaryStats GroupStatsByCommodityCode(SummaryStats progressItemStatsByStockCode, string commodityCode)
         {
-            IEnumerable<IReportable> progressItemStatsByCommodityCode = progressItemStatsByStockCode.Reportables.Where(x => x.Deliverable.Commodity_Code == commodityCode);
+            IEnumerable<IReportable> progressItemStatsByCommodityCode = progressItemStatsByStockCode.Reportables.Where(x => x.Commodity_Code == commodityCode);
             List<VariationAdjustment> commodityCodeVariationAdjustments = progressItemStatsByCommodityCode.SelectMany(x => x.Stats.VariationAdjustments).ToList();
             SummaryStats commodityCodeSummary = new SummaryStats(progressItemStatsByCommodityCode, progress, commodityCodeVariationAdjustments);
             commodityCodeSummary.GenerateSummary();
@@ -122,7 +122,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <param name="projectVariationAdjustments">Project variation adjustments that will be matched against each deliverable projection</param>
         /// <param name="progressItemHaveStats">Deliverable projection stats area already generated</param>
         public SummaryStats(IEnumerable<IReportable> progressItem, PROGRESS livePROGRESS, IEnumerable<VariationAdjustment> projectVariationAdjustments)
-            : base(livePROGRESS, progressItem.Sum(x => x.Deliverable.EstimatedHours), progressItem.Sum(x => x.Deliverable.TotalHours), progressItem.Sum(x => x.Deliverable.EstimatedCosts), progressItem.Sum(x => x.Deliverable.TotalCosts), projectVariationAdjustments)
+            : base(livePROGRESS, progressItem.Sum(x => x.EstimatedHours), progressItem.Sum(x => x.TotalHours), progressItem.Sum(x => x.EstimatedCosts), progressItem.Sum(x => x.TotalCosts), projectVariationAdjustments)
         {
             Reportables = progressItem;
 

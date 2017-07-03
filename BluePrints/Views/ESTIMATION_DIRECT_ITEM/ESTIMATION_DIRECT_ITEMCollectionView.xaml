@@ -208,6 +208,11 @@
                                     <dxe:CheckEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn Name="colSTANDALONE" FieldName="Entity.STANDALONE" Header="STANDALONE">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:CheckEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.COMMENTS" Header="COMMENTS" />
                             <dxg:GridColumn Name="colESTIMATED_QUANTITY" FieldName="Entity.ESTIMATED_QUANTITY"
                                             Header="ESTIMATED_QUANTITY">

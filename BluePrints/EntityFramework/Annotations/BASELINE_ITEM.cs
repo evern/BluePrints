@@ -3,13 +3,14 @@ namespace BluePrints.Data
     using BaseModel.Attributes;
     using BaseModel.Misc;
     using BluePrints.Common;
+    using BluePrints.Common.ViewModel.Reporting;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
 
     [ConstraintAttributes("GUID_BASELINE, INTERNAL_NUM")]
-    public partial class BASELINE_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate
+    public partial class BASELINE_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable
     {
         public BASELINE_ITEM()
         {
@@ -248,5 +249,48 @@ namespace BluePrints.Data
                             (x.FOR_TASK && DELIVERABLE_TYPE == DeliverableType.Task)).OrderBy(x => x.AUTO_PERCENTAGE);
             }
         }
+
+        public string ReportableItem_Name
+        {
+            get { return INTERNAL_NUM; }
+        }
+
+        public string Commodity_Code
+        {
+            get { return CommodityCode; }
+        }
+
+        public string Stock_Code
+        {
+            get { return StockCode; }
+        }
+
+        public Guid? Workpack_Guid
+        {
+            get { return GUID_WORKPACK; }
+        }
+
+        public decimal TotalHoursIncludeByDuration
+        {
+            get { return Total_HoursIncludeByDuration; }
+        }
+
+        public decimal EstimatedHours
+        {
+            get { return ESTIMATED_HOURS; }
+        }
+
+        public decimal TotalHours
+        {
+            get { return TOTAL_HOURS; }
+        }
+
+        public Guid? Area_Guid => GUID_AREA;
+
+        public Guid? SubArea_Guid => GUID_SUBAREA;
+
+        public decimal Estimated_Quantity => EstimatedHours;
+
+        public decimal Total_Quantity => TotalHours;
     }
 }

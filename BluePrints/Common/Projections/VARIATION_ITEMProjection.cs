@@ -216,7 +216,7 @@ namespace BluePrints.Common.Projections
                         APPROVED = approvedDate,
                         PROGRESS_ITEMS =
                             LoadPROGRESS_ITEMS.Where(
-                                    y => y.GUID_ORIBASEITEM == x.Entity.Entity.GUID_ORIGINAL)
+                                    y => y.GUID_ORIBASEITEM == x.Entity.Entity.GUID_ORIGINAL).ToList()
                     }).AsQueryable();
         }
     }
