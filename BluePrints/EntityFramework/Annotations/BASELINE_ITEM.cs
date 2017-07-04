@@ -10,7 +10,7 @@ namespace BluePrints.Data
     using System.Linq;
 
     [ConstraintAttributes("GUID_BASELINE, INTERNAL_NUM")]
-    public partial class BASELINE_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable
+    public partial class BASELINE_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IBasicDeliverable
     {
         public BASELINE_ITEM()
         {
@@ -250,47 +250,58 @@ namespace BluePrints.Data
             }
         }
 
+        [NotMapped]
         public string ReportableItem_Name
         {
             get { return INTERNAL_NUM; }
         }
 
+        [NotMapped]
         public string Commodity_Code
         {
             get { return CommodityCode; }
         }
 
+        [NotMapped]
         public string Stock_Code
         {
             get { return StockCode; }
         }
 
+        [NotMapped]
         public Guid? Workpack_Guid
         {
             get { return GUID_WORKPACK; }
         }
 
+        [NotMapped]
         public decimal TotalHoursIncludeByDuration
         {
             get { return Total_HoursIncludeByDuration; }
         }
 
+        [NotMapped]
         public decimal EstimatedHours
         {
             get { return ESTIMATED_HOURS; }
         }
 
+        [NotMapped]
         public decimal TotalHours
         {
             get { return TOTAL_HOURS; }
         }
 
+        [NotMapped]
         public Guid? Area_Guid => GUID_AREA;
 
+        [NotMapped]
         public Guid? SubArea_Guid => GUID_SUBAREA;
 
+        [NotMapped]
         public decimal Estimated_Quantity => EstimatedHours;
 
+        [NotMapped]
         public decimal Total_Quantity => TotalHours;
     }
 }

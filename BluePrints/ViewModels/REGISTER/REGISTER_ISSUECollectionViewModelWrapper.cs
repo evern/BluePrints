@@ -117,7 +117,7 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_ISSUE> entities)
         {
             MainViewModel.AdditionalValidateCellCallBack = AdditionalCellValidation;
-            MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
+            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -137,12 +137,13 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
-        public void OnBeforeEntitySaved(REGISTER_ISSUE entity)
+        public bool OnBeforeEntitySaved(REGISTER_ISSUE entity)
         {
             if (entity.GUID == Guid.Empty && entity.DATE_RAISED == null)
                 entity.DATE_RAISED = DateTime.Now;
 
             entity.GUID_PROJECT = loadPROJECT.GUID;
+            return true;
         }
 
         private void AdditionalCellValidation(GridCellValidationEventArgs e)

@@ -200,7 +200,7 @@ namespace BluePrints.ViewModels
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             MainViewModel.ValidateBulkEditCallBack = ValidateBulkEditCallBack;
             MainViewModel.CanBulkDeleteCallBack = CanBulkDeleteCallBack;
-            MainViewModel.SetParentAssociationCallBack = NewProjectionInitializeCallBack;
+            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = NewProjectionInitializeCallBack;
             MainViewModel.ExistingRowAddUndoAndSaveCallBack = ExistingProjectionEditCallBack;
             MainViewModel.IsContinueSaveCallBack = MainEntityPreSaveWithNewEntityDetection;
             //MainViewModel.OnAfterEntitySavedCallBack = MainEntitySaveVariation;
@@ -378,9 +378,10 @@ namespace BluePrints.ViewModels
         }
 
 
-        public void NewProjectionInitializeCallBack(VARIATION_ITEMProjection projectionEntity)
+        public bool NewProjectionInitializeCallBack(VARIATION_ITEMProjection projectionEntity)
         {
             projectionEntity.VARIATION_ITEM.GUID_VARIATION = loadVARIATION.GUID;
+            return true;
             //projectionEntity.VARIATION_ITEM.ACTION = VariationAction.Add;
         }
 

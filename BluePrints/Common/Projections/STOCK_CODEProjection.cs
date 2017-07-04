@@ -11,22 +11,16 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class STOCK_CODEProjection : BluePrintsProjectionBase<STOCK_CODE>, IReportableGroup
+    public class STOCK_CODEProjection : BluePrintsProjectionBase<STOCK_CODE>, IQuantityDeliverableGroupProjection, ICanUpdate
     {
         public STOCK_CODEProjection()
             : base()
         {
         }
 
-        public List<IReportable> Reportables { get; set; }
+        public Estimation_Direct_ItemProgress Estimation_Direct_Items { get; set; }
 
-        public IDeliverable Deliverable => throw new NotImplementedException();
-
-        public ProgressStats Stats
-        {
-            get { return new ProgressStats(Reportables.Select(x => x.Stats)); }
-            set => throw new NotImplementedException();
-        }
+        public IEnumerable<IQuantityReportable> Reportables { get; set; }
 
         public string ReportableItem_Name
         {
@@ -68,28 +62,10 @@ namespace BluePrints.Common.Projections
         }
 
         public DateTime ReportingDataDate { get; set; }
-        public List<PROGRESS_ITEM> PROGRESS_ITEMS
-        {
-            get { return Reportables.SelectMany(x => x.PROGRESS_ITEMS).ToList(); }
-            set => throw new NotImplementedException();
-        }
-
-        public decimal Estimated_Quantity
-        {
-            get { return Reportables.Sum(x => x.Estimated_Quantity); }
-        }
-
-        public decimal Total_Quantity => Reportables.Sum(x => x.Estimated_Quantity);
 
         public decimal ItemRate => Reportables.Sum(x => x.ItemRate);
 
-        public string UOM => Entity.UOM;
-
-        public string Commodity_Code => string.Empty;
-
-        public Guid? Workpack_Guid => null;
-
-        public Guid OriginalEntityKey { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IEnumerable<IDeliverableProjection> Deliverables { get; set; }
 
         /// <summary>
         /// Refreshes current row
@@ -99,10 +75,20 @@ namespace BluePrints.Common.Projections
             RaisePropertyChanged();
         }
 
-        public void UpdateGroup()
-        {
-            Reportables.ForEach(x => x.Update());
-        }
+        public decimal Estimated_Quantity => Reportables.Sum(x => x.Estimated_Quantity);
+
+        public decimal Total_Quantity => Reportables.Sum(x => x.Total_Quantity);
+
+        public string UOM => Entity.UOM;
+
+        #region Access Violation Properties Due to IBasicDeliverable
+        public string Commodity_Code => string.Empty;
+
+        public Guid? Workpack_Guid => null;
+
+        public Guid OriginalEntityKey { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        #endregion
     }
 
     public static class STOCK_CODEProjectionQueries

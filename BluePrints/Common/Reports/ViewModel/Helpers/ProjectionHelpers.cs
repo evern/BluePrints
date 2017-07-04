@@ -11,17 +11,17 @@ namespace BluePrints.Common.ViewModel.Reporting
     /// </summary>
     public static class ProjectionHelpers
     {
-        public static void InitializePROGRESS_ITEMStats(IEnumerable<IDeliverable> reportableItems, IEnumerable<VariationAdjustment> variationAdjustments, PROGRESS livePROGRESS, bool progressHaveStats)
+        public static void InitializePROGRESS_ITEMStats(IEnumerable<IBasicDeliverable> reportableItems, IEnumerable<VariationAdjustment> variationAdjustments, PROGRESS livePROGRESS, bool progressHaveStats)
         {
             foreach (IReportable reportableItem in reportableItems)
             {
-                List<VariationAdjustment> currentProgressItemAdjustments = variationAdjustments.Where(x => x.DeliverableOriginalGuid == reportableItem.OriginalEntityKey).ToList();
+                List<VariationAdjustment> currentProgressItemAdjustments = variationAdjustments.Where(x => x.DeliverableOriginalGuid == ((IBasicDeliverable)reportableItem).OriginalEntityKey).ToList();
                 if(!progressHaveStats)
                     reportableItem.Stats = new ProgressStats(livePROGRESS, reportableItem.TotalHoursIncludeByDuration, reportableItem.TotalHours, reportableItem.EstimatedCosts, reportableItem.TotalCosts, currentProgressItemAdjustments);
             }
         }
 
-        public static List<VariationAdjustment> BuildProjectVariationAdjustments(IQueryable<VARIATION> VARIATION, IEnumerable<IDisplayDeliverable> deliverables)
+        public static List<VariationAdjustment> BuildProjectVariationAdjustments(IQueryable<VARIATION> VARIATION, IEnumerable<IDeliverableProjection> deliverables)
         {
             List<VariationAdjustment> variationAdjustments = new List<VariationAdjustment>();
             IQueryable<VARIATION> ApprovedVARIATION = VARIATION.Where(x => x.APPROVED != null && x.TYPE == VariationType.External);
@@ -30,7 +30,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 IEnumerable<VARIATION_ITEM> applicableVariation_Item = variation.VARIATION_ITEM.Where(x => x.ACTION == VariationAction.Add || x.ACTION == VariationAction.Append);
                 foreach (VARIATION_ITEM variation_item in applicableVariation_Item)
                 {
-                    IDisplayDeliverable lookUpDeliverable = deliverables.FirstOrDefault(x => x.OriginalEntityKey == variation_item.GUID_ORIBASEITEM);
+                    IDeliverableProjection lookUpDeliverable = deliverables.FirstOrDefault(x => ((IBasicDeliverable)x).OriginalEntityKey == variation_item.GUID_ORIBASEITEM);
                     if (lookUpDeliverable != null)
                     {
                         variationAdjustments.Add(new VariationAdjustment(variation_item.GUID_ORIBASEITEM) { AdjustmentDate = (DateTime)variation.APPROVED, AdjustmentUnits = variation_item.VARIATION_UNITS, AdjustmentRate = lookUpDeliverable.ItemRate });

@@ -88,7 +88,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_NC> entities)
         {
-            MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
+            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.AdditionalValidateCellCallBack = AdditionalCellValidation;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -98,11 +98,12 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
-        public void OnBeforeEntitySaved(REGISTER_NC entity)
+        public bool OnBeforeEntitySaved(REGISTER_NC entity)
         {
             entity.GUID_PROJECT = loadPROJECT.GUID;
             if(entity.GUID == Guid.Empty && entity.DATE_IDENTIFIED == null)
                 entity.DATE_IDENTIFIED = DateTime.Now.Date;
+            return true;
         }
 
         private void AdditionalCellValidation(GridCellValidationEventArgs e)

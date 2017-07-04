@@ -52,7 +52,6 @@ namespace BluePrints.Data
             }
         }
 
-        [NotMapped]
         public IEnumerable<AREA> SubAreaCollection
         {
             get
@@ -63,7 +62,7 @@ namespace BluePrints.Data
                 return AREA.AREA1;
             }
         }
-        
+
         public bool IsSubAreaValid(Guid? subAreaGuid)
         {
             if (subAreaGuid == null)

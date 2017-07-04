@@ -114,7 +114,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATIONProjection> entities)
         {
-            MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
+            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.IsContinueSaveCallBack = BeforeSaveValidation;
 
             variationSummaryBackgroundWorker.RunWorkerAsync(entities);
@@ -173,7 +173,7 @@ namespace BluePrints.ViewModels
             base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
         }
 
-        public void OnBeforeEntitySaved(VARIATIONProjection entity)
+        public bool OnBeforeEntitySaved(VARIATIONProjection entity)
         {
             entity.Entity.GUID_PROJECT = loadPROJECT.GUID;
 
@@ -181,6 +181,8 @@ namespace BluePrints.ViewModels
                 entity.Entity.GUID_ORIBASELINE = entity.Entity.GUID_ORIBASELINE ?? LiveBASELINE.GUID;
             else
                 entity.Entity.GUID_ORIBASELINE = null;
+
+            return true;
         }
         #endregion
 

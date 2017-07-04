@@ -100,6 +100,16 @@ namespace BluePrints.Common.Projections
             StatSummarizer.BuildBudgetedOnly();
         }
 
+        public decimal GetCurrentPeriodPercentage(decimal newTotalQuantity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public decimal GetCurrentPeriodHours(decimal newTotalQuantity)
+        {
+            throw new NotImplementedException();
+        }
+
         private IEnumerable<VARIATION_ITEM> VARIATION_ITEMS { get; set; }
 
         private List<PROGRESS_ITEM> progress_items;
@@ -477,11 +487,6 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public IDeliverable Deliverable
-        {
-            get { return Entity.Entity; }
-        }
-
         public decimal ItemRate => Entity.ItemRate;
 
         public decimal EstimatedCosts => Entity.EstimatedCosts;
@@ -511,11 +516,13 @@ namespace BluePrints.Common.Projections
         public Guid? Area_Guid { get => Entity.Entity.GUID_AREA; }
         public Guid? SubArea_Guid { get => Entity.Entity.GUID_SUBAREA; }
 
-        public decimal Estimated_Quantity => throw new NotImplementedException();
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_BeforeDataDate => PROGRESS_ITEMSBeforeReportingDate;
 
-        public decimal Total_Quantity => throw new NotImplementedException();
+        public PROGRESS_ITEM PROGRESS_ITEM_Current => PROGRESS_ITEMCurrent;
 
-        public string UOM => throw new NotImplementedException();
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_UpToCurrentDataDate => PROGRESS_ITEMSUpToCurrentDate;
+
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_AfterDataDate => PROGRESS_ITEMSAfterReportingDate;
     }
 
     public static class PROGRESS_ITEMProjectionQueries

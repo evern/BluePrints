@@ -107,7 +107,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<STOCK_CODEProjection> entities)
         {
-            MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
+            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -116,10 +116,11 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
-        public void OnBeforeEntitySaved(STOCK_CODEProjection entity)
+        public bool OnBeforeEntitySaved(STOCK_CODEProjection entity)
         {
             if (IsProjectSpecific)
                 entity.Entity.GUID_PROJECT = loadPROJECT.GUID;
+            return true;
         }
         #endregion
 

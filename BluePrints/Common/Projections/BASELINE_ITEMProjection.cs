@@ -10,7 +10,7 @@ using System.Linq;
 namespace BluePrints.Common.Projections
 {
     [ConstraintAttributes("Entity.GUID_BASELINE, Entity.INTERNAL_NUM")]
-    public class BASELINE_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEM>, IDisplayDeliverable
+    public class BASELINE_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEM>, IDeliverableProjection
     {
         public BASELINE_ITEMProjection()
             : base()
@@ -178,6 +178,24 @@ namespace BluePrints.Common.Projections
         public decimal Total_Quantity => throw new NotImplementedException();
 
         public string UOM => throw new NotImplementedException();
+
+        public decimal QuantityPerHour => throw new NotImplementedException();
+
+        public decimal TotalPercentage => throw new NotImplementedException();
+
+        public decimal PastInstalledQuantity => throw new NotImplementedException();
+
+        public decimal CurrentTotalInstalledQuantity => throw new NotImplementedException();
+
+        public decimal GetCurrentPeriodPercentage(decimal newTotalQuantity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public decimal GetCurrentPeriodHours(decimal newTotalQuantity)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public static class BASELINE_ITEMProjectionQueries

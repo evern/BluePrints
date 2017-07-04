@@ -160,7 +160,7 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATION_DIRECT_ITEMProjection> entities)
         {
             MainViewModel.DisablePasting = true;
-            MainViewModel.SetParentAssociationCallBack = OnBeforeEntitySaved;
+            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -219,11 +219,12 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
-        public void OnBeforeEntitySaved(ESTIMATION_DIRECT_ITEMProjection entity)
+        public bool OnBeforeEntitySaved(ESTIMATION_DIRECT_ITEMProjection entity)
         {
             onBeforeSavedGenerateAndAssignWorkpack(entity);
             onBeforeSavedProjectCommodityCodeLogging(entity);
             entity.Entity.GUID_ESTIMATION_DIRECT = loadESTIMATION_DIRECT.GUID;
+            return true;
         }
 
         private void onBeforeSavedGenerateAndAssignWorkpack(ESTIMATION_DIRECT_ITEMProjection entity)

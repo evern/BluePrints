@@ -8,12 +8,15 @@ using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Threading;
+using System.Collections.ObjectModel;
 
 namespace BluePrints.ViewModels
 {
@@ -88,6 +91,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECT_ITEMS, ESTIMATION_DIRECT_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -126,6 +130,11 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
+        private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID && x.TYPE == ProgressType.Construct);
+        }
+
         protected override void OnAllEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS);
@@ -134,11 +143,12 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<ProgressDisplay>> ConstructMainViewModelProjection()
         {
-            return query => ProgressItemQueries.SiteDirectProgressItemTransformation(query.Where(x => x.TYPE == ProgressType.Construct), STOCK_CODECollection, ESTIMATION_DIRECT_ITEMCollection, RATECollection, COMMODITY_CODECollection, loadPROGRESS.DATA_DATE);
+            return query => ProgressItemQueries.SiteDirectProgressItemTransformation(query.Where(x => x.TYPE == ProgressType.Construct && x.GUID_PROGRESS == loadPROGRESS.GUID), STOCK_CODECollection, ESTIMATION_DIRECT_ITEMCollection, RATECollection, COMMODITY_CODECollection, loadPROGRESS.DATA_DATE);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ProgressDisplay> entities)
         {
+            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -246,6 +256,76 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
+        #region View Behavior
+        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        {
+            if(changedType == typeof(PROGRESS_ITEM))
+            {
+                foreach(ProgressDisplay entity in MainViewModel.Entities)
+                {
+                    entity.Update();
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public override ObservableCollection<ProgressDisplay> DisplayEntities => base.DisplayEntities;
+
+        /// <summary>
+        /// Intercept MainViewModel Saving because bulk or single selective saving is required
+        /// </summary>
+        public bool OnBeforeEntitySaved(ProgressDisplay entity)
+        {
+            decimal newQuantity = entity.ProgressItem.CurrentTotalInstalledQuantity;
+            decimal currentPeriodPercentage = entity.ProgressItem.GetCurrentPeriodPercentage(newQuantity);
+            GroupDisplayReportable groupEntity = entity.ProgressItem as GroupDisplayReportable;
+            List<PROGRESS_ITEM> newPRORESS_ITEMS = new List<PROGRESS_ITEM>();
+            if (groupEntity != null)
+            {
+                foreach (DisplayReportable reportable in entity.Reportables)
+                {
+                    PROGRESS_ITEM savePROGRESS_ITEM;
+                    if (reportable.PROGRESS_ITEM_Current != null)
+                        savePROGRESS_ITEM = reportable.PROGRESS_ITEM_Current;
+                    else
+                        savePROGRESS_ITEM = createNewPROGRESS_ITEM(reportable.OriginalEntityKey);
+
+                    savePROGRESS_ITEM.EARNED_UNITS = reportable.GetCurrentPeriodHours(currentPeriodPercentage);
+                    newPRORESS_ITEMS.Add(savePROGRESS_ITEM);
+                }
+            }
+            else
+            {
+                PROGRESS_ITEM savePROGRESS_ITEM;
+                if (entity.ProgressItem.PROGRESS_ITEM_Current != null)
+                    savePROGRESS_ITEM = entity.ProgressItem.PROGRESS_ITEM_Current;
+                else
+                    savePROGRESS_ITEM = createNewPROGRESS_ITEM(entity.ProgressItem.OriginalEntityKey);
+
+                savePROGRESS_ITEM.EARNED_UNITS = entity.ProgressItem.GetCurrentPeriodHours(currentPeriodPercentage);
+                newPRORESS_ITEMS.Add(savePROGRESS_ITEM);
+            }
+
+            PROGRESS_ITEMSCollectionViewModel.BulkSave(newPRORESS_ITEMS);
+            return false;
+        }
+
+        private PROGRESS_ITEM createNewPROGRESS_ITEM(Guid originalEntityKey)
+        {
+            PROGRESS_ITEM savePROGRESS_ITEM = new PROGRESS_ITEM();
+            savePROGRESS_ITEM.GUID_ORIBASEITEM = originalEntityKey;
+            savePROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
+            savePROGRESS_ITEM.TYPE = ProgressType.Construct;
+            savePROGRESS_ITEM.EARNED_DATE = loadPROGRESS.DATA_DATE;
+            savePROGRESS_ITEM.CREATED = DateTime.Now;
+
+            return savePROGRESS_ITEM;
+        }
+        #endregion
+
         #region View Properties
 
         /// <summary>
@@ -317,6 +397,20 @@ namespace BluePrints.ViewModels
             {
                 var collection = GetEntities<RATE>();
                 return collection;
+            }
+        }
+
+        public CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>
+            PROGRESS_ITEMSCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<PROGRESS_ITEM>();
             }
         }
         #endregion

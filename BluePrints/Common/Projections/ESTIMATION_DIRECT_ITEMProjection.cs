@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IReportable
+    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IQuantityDeliverableProjection, ICanUpdate
     {
         public ESTIMATION_DIRECT_ITEMProjection()
             : base()
@@ -140,11 +140,6 @@ namespace BluePrints.Common.Projections
             return StockCodeCollection.Any(x => x.GUID == commodityCodeGuid);
         }
 
-        public IDeliverable Deliverable
-        {
-            get { return this; }
-        }
-
         public ProgressStats Stats { get; set; }
 
         public string ReportableItem_Name
@@ -256,12 +251,30 @@ namespace BluePrints.Common.Projections
 
         public string UOM => Entity.COMMODITY_CODE.UOM;
 
+        public decimal QuantityPerHour => throw new NotImplementedException();
+
+        public decimal TotalPercentage => throw new NotImplementedException();
+
+        public decimal PastInstalledQuantity => throw new NotImplementedException();
+
+        public decimal CurrentTotalInstalledQuantity => throw new NotImplementedException();
+
         /// <summary>
         /// Refreshes current row
         /// </summary>
         public void Update()
         {
             RaisePropertyChanged();
+        }
+
+        public decimal GetCurrentPeriodPercentage(decimal newTotalQuantity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public decimal GetCurrentPeriodHours(decimal newTotalQuantity)
+        {
+            throw new NotImplementedException();
         }
     }
 
