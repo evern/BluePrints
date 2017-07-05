@@ -55,7 +55,7 @@ namespace BluePrints.Data
                     IOriginalGuidEntityKey originalGuidKeyEntity = dbEntry.Entity as IOriginalGuidEntityKey;
                     if(originalGuidKeyEntity != null && originalGuidKeyEntity.OriginalEntityKey == Guid.Empty)
                     {
-                        originalGuidKeyEntity.OriginalEntityKey = newGuid;
+                        originalGuidKeyEntity.SetOriginalEntityKey(newGuid);
                     }
                 }
             }

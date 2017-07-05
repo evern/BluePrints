@@ -13,8 +13,6 @@ namespace BluePrints.Data
 
         public Guid GUID_ORIBASEITEM { get; set; }
 
-        public ProgressType TYPE { get; set; }
-
         public decimal EARNED_UNITS { get; set; }
 
         public DateTime EARNED_DATE { get; set; }

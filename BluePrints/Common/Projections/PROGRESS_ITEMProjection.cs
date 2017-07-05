@@ -511,8 +511,9 @@ namespace BluePrints.Common.Projections
         public Guid OriginalEntityKey
         {
             get { return Entity.OriginalEntityKey; }
-            set { Entity.OriginalEntityKey = value; }
         }
+
+        public void SetOriginalEntityKey(Guid newGuid) { }
 
         public Guid? Area_Guid { get => Entity.Entity.GUID_AREA; }
         public Guid? SubArea_Guid { get => Entity.Entity.GUID_SUBAREA; }

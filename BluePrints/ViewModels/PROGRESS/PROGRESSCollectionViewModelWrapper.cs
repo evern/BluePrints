@@ -3,6 +3,7 @@ using BaseModel.Misc;
 using BaseModel.ViewModel.Document;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Data;
 using BluePrints.P6Data;
@@ -154,7 +155,11 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new OptionalEntitiesParameter<PROJECT, PROGRESS>(null, DisplaySelectedEntity), "PROGRESS_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Progress");
+            DocumentInfo DocumentInfo;
+            if(DisplaySelectedEntity.TYPE == ProgressType.Design)
+                DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new OptionalEntitiesParameter<PROJECT, PROGRESS>(null, DisplaySelectedEntity), "PROGRESS_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Progress");
+            else
+                DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new OptionalEntitiesParameter<PROJECT, PROGRESS>(null, DisplaySelectedEntity), "SiteDirectProgressItemCollectionView", "[" + loadPROJECT.NUMBER + "] Progress");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }

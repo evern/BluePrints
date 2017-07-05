@@ -267,7 +267,7 @@
                                                               DisplayMember="CODE" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="TOTAL INSTALL HOURS" FieldName="Total_Install_Hours" ReadOnly="True">
+                            <dxg:GridColumn Header="TOTAL INSTALL HOURS" FieldName="TotalHours" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>

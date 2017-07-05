@@ -135,9 +135,9 @@ namespace BluePrints.ViewModels
             if (isQueryForLiveStatus)
                 return
                     query =>
-                        query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == ProgressStatus.Live);
+                        query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == ProgressType.Design && x.STATUS == ProgressStatus.Live);
             else
-                return query => query.Where(x => x.GUID == loadPROGRESS.GUID);
+                return query => query.Where(x => x.GUID == loadPROGRESS.GUID && x.TYPE == ProgressType.Design);
         }
 
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
@@ -157,7 +157,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID).Where(x => x.TYPE == ProgressType.Design);
+            return query => query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID);
         }
 
         private Func<IRepositoryQuery<DELIVERABLES_STATUS>, IQueryable<DELIVERABLES_STATUS>> DELIVERABLES_STATUSProjectionFunc()
@@ -432,7 +432,6 @@ namespace BluePrints.ViewModels
 
             savePROGRESS_ITEM.EARNED_DATE = projectionEntity.loadPROGRESS.DATA_DATE;
             savePROGRESS_ITEM.GUID_PROGRESS = projectionEntity.loadPROGRESS.GUID;
-            savePROGRESS_ITEM.TYPE = ProgressType.Design;
             savePROGRESS_ITEM.GUID_ORIBASEITEM = projectionEntity.Entity.Entity.GUID_ORIGINAL;
             //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
             if (savePROGRESS_ITEM.CREATED.Date.Year == 1)

@@ -18,54 +18,31 @@ namespace BluePrints.Common.Projections
         {
         }
 
-        public Estimation_Direct_ItemProgress Estimation_Direct_Items { get; set; }
-
         public IEnumerable<IQuantityReportable> Reportables { get; set; }
 
-        public string ReportableItem_Name
-        {
-            get { return string.Empty; }
-        }
-
-        public string Stock_Code
-        {
-            get { return Entity.CODE; }
-        }
+        public string Stock_Code => Entity.CODE;
 
         public Guid? Area_Guid => Entity.GUID_AREA;
 
         public Guid? SubArea_Guid => Entity.GUID_SUBAREA;
 
-        public decimal TotalHoursIncludeByDuration
-        {
-            get { return Reportables.Sum(x => x.TotalHoursIncludeByDuration); }
-        }
+        public decimal TotalHoursIncludeByDuration => Reportables.Sum(x => x.TotalHoursIncludeByDuration);
 
-        public decimal EstimatedHours
-        {
-            get { return Reportables.Sum(x => x.EstimatedHours); }
-        }
+        public decimal EstimatedHours => Reportables.Sum(x => x.EstimatedHours);
 
-        public decimal TotalHours
-        {
-            get { return Reportables.Sum(x => x.TotalHours); }
-        }
-
-        public decimal EstimatedCosts
-        {
-            get { return Reportables.Sum(x => ((ISortableDeliverableProjection)x.Deliverable).EstimatedCosts); }
-        }
-
-        public decimal TotalCosts
-        {
-            get { return Reportables.Sum(x => ((ISortableDeliverableProjection)x.Deliverable).TotalCosts); }
-        }
+        public decimal TotalHours => Reportables.Where(x => (bool)x.Track).Sum(x => x.TotalHours);
 
         public decimal ItemRate => Reportables.Sum(x => ((ISortableDeliverableProjection)x.Deliverable).ItemRate);
 
-        public DateTime ReportingDataDate { get; set; }
+        public decimal EstimatedCosts => Reportables.Sum(x => ((ISortableDeliverableProjection)x.Deliverable).EstimatedCosts);
 
-        public IEnumerable<ISortableDeliverableProjection> Deliverables { get; set; }
+        public decimal TotalCosts => Reportables.Sum(x => ((ISortableDeliverableProjection)x.Deliverable).TotalCosts);
+
+        public decimal Estimated_Quantity => Reportables.Sum(x => x.Estimated_Quantity);
+
+        public decimal Total_Quantity => Reportables.Where(x => (bool)x.Track).Sum(x => x.Total_Quantity);
+
+        public string UOM => Entity.UOM;
 
         /// <summary>
         /// Refreshes current row
@@ -74,21 +51,6 @@ namespace BluePrints.Common.Projections
         {
             RaisePropertyChanged();
         }
-
-        public decimal Estimated_Quantity => Reportables.Sum(x => x.Estimated_Quantity);
-
-        public decimal Total_Quantity => Reportables.Sum(x => x.Total_Quantity);
-
-        public string UOM => Entity.UOM;
-
-        #region Access Violation Properties Due to IBasicDeliverable
-        public string Commodity_Code => string.Empty;
-
-        public Guid? Workpack_Guid => null;
-
-        public Guid OriginalEntityKey { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        #endregion
     }
 
     public static class STOCK_CODEProjectionQueries

@@ -85,6 +85,7 @@ namespace BluePrints.ViewModels
             base.CleanUpEntitiesLoader();
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, SetPROGRESStoCurrentDateOnLoaded);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
@@ -95,14 +96,22 @@ namespace BluePrints.ViewModels
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
+        private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
+        {
+            if (isQueryForLiveStatus)
+                return query => query.Where(x => x.GUID == loadPROJECT.GUID);
+            else
+                return query => query.Where(x => x.GUID == loadPROGRESS.GUID_PROJECT).OrderBy(x => x.NUMBER);
+        }
+
         private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
         {
             if (isQueryForLiveStatus)
                 return
                     query =>
-                        query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == ProgressStatus.Live);
+                        query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == ProgressType.Construct && x.STATUS == ProgressStatus.Live);
             else
-                return query => query.Where(x => x.GUID == loadPROGRESS.GUID);
+                return query => query.Where(x => x.GUID == loadPROGRESS.GUID && x.TYPE == ProgressType.Construct);
         }
 
         private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
@@ -132,7 +141,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID && x.TYPE == ProgressType.Construct);
+            return query => query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID);
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
@@ -143,7 +152,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<ProgressDisplay>> ConstructMainViewModelProjection()
         {
-            return query => ProgressItemQueries.SiteDirectProgressItemTransformation(query.Where(x => x.TYPE == ProgressType.Construct && x.GUID_PROGRESS == loadPROGRESS.GUID), STOCK_CODECollection, ESTIMATION_DIRECT_ITEMCollection, RATECollection, COMMODITY_CODECollection, loadPROGRESS.DATA_DATE);
+            return query => ProgressItemQueries.SiteDirectProgressItemTransformation(query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID), STOCK_CODECollection, ESTIMATION_DIRECT_ITEMCollection, RATECollection, COMMODITY_CODECollection, loadPROGRESS.DATA_DATE);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ProgressDisplay> entities)
@@ -254,6 +263,41 @@ namespace BluePrints.ViewModels
 
             delayedPROGRESSSavingDispatcher.Start();
         }
+
+        public bool CanDateBackward()
+        {
+            //if (isBusy)
+            //    return false;
+
+            if (MainViewModel == null || MainViewModel.IsLoading)
+                return false;
+
+            if (loadPROGRESS.DATA_DATE > loadPROGRESS.PROGRESS_START)
+                return true;
+
+            return false;
+        }
+
+        public bool CanDateForward()
+        {
+            //if (isBusy)
+            //    return false;
+
+            if (MainViewModel == null || MainViewModel.IsLoading)
+                return false;
+
+            return true;
+        }
+
+        public void DateForward()
+        {
+            DateChange(DateNavigationType.Forward);
+        }
+
+        public void DateBackward()
+        {
+            DateChange(DateNavigationType.Backward);
+        }
         #endregion
 
         #region View Behavior
@@ -261,15 +305,73 @@ namespace BluePrints.ViewModels
         {
             if(changedType == typeof(PROGRESS_ITEM))
             {
-                foreach(ProgressDisplay entity in MainViewModel.Entities)
+                PROGRESS_ITEM newPROGRESSITEM = PROGRESS_ITEMCollection.FirstOrDefault(x => x.GUID == (Guid)key);
+                if(newPROGRESSITEM != null)
                 {
-                    entity.Update();
+                    ProgressDisplay affectedDisplayEntity = getAffectedDisplayEntity(newPROGRESSITEM);
+                    if (affectedDisplayEntity != null)
+                        affectedDisplayEntity.Update();
                 }
 
                 return true;
             }
 
             return false;
+        }
+
+        private ProgressDisplay getAffectedDisplayEntity(PROGRESS_ITEM newPROGRESS_ITEM)
+        {
+            foreach (ProgressDisplay entity in MainViewModel.Entities)
+            {
+                if(entity.Reportables != null)
+                {
+                    foreach(DisplayReportable reportable in entity.Reportables)
+                    {
+                        IReportable reportableProjection = reportable.Deliverable as IReportable;
+                        if(reportableProjection != null)
+                        {
+                            ISortableDeliverable sortableProjection = reportableProjection.Deliverable as ISortableDeliverable;
+                            if (sortableProjection != null && sortableProjection.OriginalEntityKey == newPROGRESS_ITEM.GUID_ORIBASEITEM)
+                            {
+                                setReportableNewProgress(reportable.Deliverable, newPROGRESS_ITEM);
+                                return entity;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    IReportable reportableProjection = entity.ProgressItem as IReportable;
+                    if (reportableProjection != null)
+                    {
+                        IReportable nestedDeliverableProjection = reportableProjection.Deliverable as IReportable;
+                        if (nestedDeliverableProjection != null)
+                        {
+                            ISortableDeliverable sortableDeliverable = nestedDeliverableProjection.Deliverable as ISortableDeliverable;
+                            if(sortableDeliverable != null && sortableDeliverable.OriginalEntityKey == newPROGRESS_ITEM.GUID_ORIBASEITEM)
+                            {
+                                setReportableNewProgress(nestedDeliverableProjection, newPROGRESS_ITEM);
+                                return entity;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private void setReportableNewProgress(IDeliverable updateEntity, PROGRESS_ITEM newPROGRESS_ITEM)
+        {
+            IReportable reportableProjection = updateEntity as IReportable;
+            ICanSetProgresses setProgressEntity = updateEntity as ICanSetProgresses;
+            if(reportableProjection != null && setProgressEntity != null)
+            {
+                if (reportableProjection.PROGRESS_ITEM_Current == null)
+                {
+                    setProgressEntity.AppendProgressItem(newPROGRESS_ITEM);
+                }
+            }
         }
 
         public override ObservableCollection<ProgressDisplay> DisplayEntities => base.DisplayEntities;
@@ -294,7 +396,6 @@ namespace BluePrints.ViewModels
                         savePROGRESS_ITEM = progress.PROGRESS_ITEM_Current;
                     else
                     {
-
                         savePROGRESS_ITEM = createNewPROGRESS_ITEM(((ISortableDeliverableProjection)deliverable.Deliverable).OriginalEntityKey);
                     }
 
@@ -327,7 +428,6 @@ namespace BluePrints.ViewModels
             PROGRESS_ITEM savePROGRESS_ITEM = new PROGRESS_ITEM();
             savePROGRESS_ITEM.GUID_ORIBASEITEM = originalEntityKey;
             savePROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
-            savePROGRESS_ITEM.TYPE = ProgressType.Construct;
             savePROGRESS_ITEM.EARNED_DATE = loadPROGRESS.DATA_DATE;
             savePROGRESS_ITEM.CREATED = DateTime.Now;
 
@@ -343,6 +443,17 @@ namespace BluePrints.ViewModels
         protected override string ViewName
         {
             get { return "SiteDirectProgressCollectionViewModelWrapper"; }
+        }
+
+        public string DataDate
+        {
+            get
+            {
+                if (loadPROGRESS == null || loadPROGRESS.DATA_DATE == null)
+                    return string.Empty;
+
+                return loadPROGRESS.DATA_DATE.ToString("g");
+            }
         }
 
         public IEnumerable<AREA> AREACollection
@@ -394,8 +505,6 @@ namespace BluePrints.ViewModels
             get
             {
                 var collection = GetEntities<ESTIMATION_DIRECT_ITEM>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.COMMODITY_CODE.CODE);
                 return collection;
             }
         }
@@ -405,6 +514,15 @@ namespace BluePrints.ViewModels
             get
             {
                 var collection = GetEntities<RATE>();
+                return collection;
+            }
+        }
+
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMCollection
+        {
+            get
+            {
+                var collection = GetEntities<PROGRESS_ITEM>();
                 return collection;
             }
         }

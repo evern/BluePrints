@@ -19,8 +19,7 @@ namespace BluePrints.Common.Projections
             commodity_code = new COMMODITY_CODE();
         }
 
-        public RATE RATE { get; set; }
-
+        public IEnumerable<COMMODITY_CODE> CommodityCodeCollection { get; set; }
         private COMMODITY_CODE commodity_code;
         public COMMODITY_CODE COMMODITY_CODE
         {
@@ -30,57 +29,11 @@ namespace BluePrints.Common.Projections
             }
             set
             {
-                //Always go by value
-                DataUtils.ShallowCopy(commodity_code, value);
+                //Always go by value so that changes can be identified in view
+                if (value != null)
+                    DataUtils.ShallowCopy(commodity_code, value);
             }
         }
-
-        public decimal ItemRate
-        {
-            get
-            {
-                if (RATE == null || RATE.RATE1 == null)
-                    return 0;
-
-                return (decimal)RATE.RATE1;
-            }
-        }
-
-        public decimal Total_Install_Hours
-        {
-            get
-            {
-                if (COMMODITY_CODE == null || COMMODITY_CODE.HOURS_INSTALL == 0)
-                    return 0;
-
-                return COMMODITY_CODE.HOURS_INSTALL;
-            }
-        }
-
-        public decimal Supply_Cost
-        {
-            get
-            {
-                if (COMMODITY_CODE == null || COMMODITY_CODE.RATE_SUPPLY == 0)
-                    return 0;
-
-                return COMMODITY_CODE.RATE_SUPPLY * Entity.ESTIMATED_QUANTITY;
-            }
-        }
-
-        public decimal Install_Cost
-        {
-            get
-            {
-                if (Entity == null)
-                    return 0;
-
-
-                return Entity.ESTIMATED_QUANTITY * Total_Install_Hours * ItemRate;
-            }
-        }
-
-        public IEnumerable<COMMODITY_CODE> CommodityCodeCollection { get; set; }
 
         //Used for direct property access validation in fill/undo-redo
         public Guid? CommodityCodeGuid
@@ -140,126 +93,46 @@ namespace BluePrints.Common.Projections
             return StockCodeCollection.Any(x => x.GUID == commodityCodeGuid);
         }
 
-        public ProgressStats Stats { get; set; }
+        public RATE RATE { get; set; }
 
-        public string ReportableItem_Name
-        {
-            get { return COMMODITY_CODE.CODE; }
-        }
+        public string ReportableItem_Name => Entity.COMMODITY_CODE == null ? string.Empty : Entity.COMMODITY_CODE.CODE;
 
-        public string Commodity_Code
-        {
-            get { return COMMODITY_CODE.CODE; }
-        }
+        public string Commodity_Code => Entity.COMMODITY_CODE == null ? string.Empty : Entity.COMMODITY_CODE.CODE;
 
-        public string Stock_Code
-        {
-            get
-            {
-                if (Entity.STOCK_CODE == null)
-                    return string.Empty;
+        public Guid? Workpack_Guid => Entity.GUID_WORKPACK;
 
-                return Entity.STOCK_CODE.CODE;
-            }
-        }
+        public string Stock_Code => Entity.STOCK_CODE == null ? string.Empty : Entity.STOCK_CODE.CODE;
 
-        public Guid? Area_Guid
-        {
-            get
-            {
-                return Entity.GUID_AREA;
-            }
-        }
+        public Guid? Area_Guid => Entity.GUID_AREA;
 
-        public Guid? SubArea_Guid
-        {
-            get
-            {
-                return Entity.GUID_SUBAREA;
-            }
-        }
+        public Guid? SubArea_Guid => Entity.GUID_SUBAREA;
 
-        public Guid? Workpack_Guid
-        {
-            get { return Entity.WORKPACK.GUID; }
-        }
+        public decimal TotalHoursIncludeByDuration => EstimatedHours;
 
-        public decimal TotalHoursIncludeByDuration
-        {
-            get { return EstimatedHours; }
-        }
+        public decimal EstimatedHours => Entity.COMMODITY_CODE == null ? 0 : Entity.ESTIMATED_QUANTITY * COMMODITY_CODE.HOURS_INSTALL;
 
-        public decimal EstimatedHours
-        {
-            get
-            {
-                if (COMMODITY_CODE == null)
-                    return 0;
+        public decimal TotalHours => EstimatedHours;
 
-                return Entity.ESTIMATED_QUANTITY * COMMODITY_CODE.HOURS_INSTALL;
-            }
-        }
+        public Guid OriginalEntityKey { get => Entity.GUID_ORIGINAL; }
+        public void SetOriginalEntityKey(Guid newGuid) { }
 
-        public decimal TotalHours
-        {
-            get
-            {
-                return EstimatedHours;
-            }
-        }
+        public decimal ItemRate => RATE == null || RATE.RATE1 == null ? 0 : (decimal)RATE.RATE1;
 
-        public decimal EstimatedCosts
-        {
-            get
-            {
-                return EstimatedHours * ItemRate;
-            }
-        }
+        public decimal EstimatedCosts => EstimatedHours * ItemRate;
 
-        public decimal TotalCosts
-        {
-            get
-            {
-                return EstimatedCosts;
-            }
-        }
+        public decimal TotalCosts => EstimatedCosts;
 
-        public Guid Original_Guid
-        {
-            get
-            {
-                return Entity.OriginalEntityKey;
-            }
-        }
-
-        public Guid OriginalEntityKey
-        {
-            get { return Entity.OriginalEntityKey; }
-            set { Entity.OriginalEntityKey = value; }
-        }
-
-        public DateTime EntityCreatedDate
-        {
-            get { return Entity.EntityCreatedDate; }
-            set { Entity.EntityCreatedDate = value; }
-        }
-
-        public DateTime ReportingDataDate { get; set; }
-        public List<PROGRESS_ITEM> PROGRESS_ITEMS { get; set; }
         public decimal Estimated_Quantity => Entity.ESTIMATED_QUANTITY;
-        public decimal Total_Quantity => Entity.ESTIMATED_QUANTITY;
 
-        public string UOM => Entity.COMMODITY_CODE.UOM;
+        public decimal Total_Quantity => Estimated_Quantity;
 
-        public decimal QuantityPerHour => throw new NotImplementedException();
-
-        public decimal TotalPercentage => throw new NotImplementedException();
-
-        public decimal PastInstalledQuantity => throw new NotImplementedException();
-
-        public decimal CurrentTotalInstalledQuantity => throw new NotImplementedException();
+        public string UOM => Entity.COMMODITY_CODE == null ? string.Empty : Entity.COMMODITY_CODE.UOM;
 
         public bool? Track => Entity.TRACK;
+
+        public decimal Supply_Cost => Entity.COMMODITY_CODE == null ? 0 : COMMODITY_CODE.RATE_SUPPLY * Estimated_Quantity;
+
+        public decimal Install_Cost => TotalHours * ItemRate;
 
         /// <summary>
         /// Refreshes current row

@@ -37,12 +37,9 @@ namespace BluePrints.Data
             {
                 return GUID_ORIGINAL;
             }
-
-            set
-            {
-                GUID_ORIGINAL = value;
-            }
         }
+
+        public void SetOriginalEntityKey(Guid newGuid) { GUID_ORIGINAL = newGuid; }
 
         [NotMapped]
         public DateTime EntityCreatedDate

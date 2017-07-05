@@ -23,9 +23,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         IDeliverable Deliverable { get; }
     }
 
-    public interface IQuantityDeliverableGroupProjection : IQuantityDeliverableProjection
+    public interface IQuantityDeliverableGroupProjection : IDeliverable, IHaveCosts, IHaveQuantity
     {
-        IEnumerable<IQuantityReportable> Reportables { get; set; }
+        IEnumerable<IQuantityReportable> Reportables { get; }
     }
 
     public interface IGroupDeliverableProjection : IDeliverable, IHaveQuantity
@@ -75,7 +75,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal QuantityPerHour { get; }
         decimal TotalPercentage { get; }
         decimal PastInstalledQuantity { get; }
-        decimal CurrentTotalInstalledQuantity { get; set; }
+        decimal CurrentTotalInstalledQuantity { get; }
         decimal GetCurrentPeriodPercentage(decimal newTotalQuantity);
         decimal GetCurrentPeriodHours(decimal newPeriodPercentage);
     }
@@ -87,6 +87,13 @@ namespace BluePrints.Common.ViewModel.Reporting
     #endregion
 
     #region Property Specification Interfaces
+    public interface ICanSetProgresses
+    {
+        void SetReportingDataDate(DateTime dataDate);
+        void SetProgressItems(List<PROGRESS_ITEM> progresses);
+        void AppendProgressItem(PROGRESS_ITEM currentProgress);
+    }
+
     public interface ICanTrack
     {
         bool? Track { get; }
@@ -127,8 +134,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         PROGRESS_ITEM PROGRESS_ITEM_Current { get; }
         IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_UpToCurrentDataDate { get; }
         IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_AfterDataDate { get; }
-        DateTime ReportingDataDate { get; set; }
-        List<PROGRESS_ITEM> PROGRESS_ITEMS { get; set; }
+        DateTime ReportingDataDate { get; }
+        List<PROGRESS_ITEM> PROGRESS_ITEMS { get; }
     } 
     #endregion
 }

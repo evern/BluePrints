@@ -34,9 +34,6 @@
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Home">
                             <dxr:RibbonPageGroup Caption="Site Direct Progress Tasks">
-                                <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"
-                                                   LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"
-                                                   Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
@@ -54,6 +51,30 @@
                                                    Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}"
                                                    Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
+                                <dxb:BarItemSeparator />
+                                <dxb:BarButtonItem Content="Backward"
+                                                   Command="{Binding DataContext.DateBackwardCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" />
+                                <dxb:BarButtonItem Content="Forward"
+                                                   Command="{Binding DataContext.DateForwardCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" >
+                                    <dxb:BarButtonItem.GlyphTemplate>
+                                        <DataTemplate>
+                                            <Image
+                                                Source="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=dxb:BarItemLinkInfo}, Path=Item.LargeGlyph}"
+                                                RenderTransformOrigin="0.5,0.5">
+                                                <Image.RenderTransform>
+                                                    <ScaleTransform ScaleX="-1" />
+                                                </Image.RenderTransform>
+                                            </Image>
+                                        </DataTemplate>
+                                    </dxb:BarButtonItem.GlyphTemplate>
+                                </dxb:BarButtonItem>
+                                <dxb:BarItemSeparator />
+                                <dxb:BarStaticItem Content="Data Date" />
+                                <dxb:BarStaticItem Content="{Binding DataContext.DataDate, ElementName=userControl}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -88,12 +109,12 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="ProgressItem.Stock_Code" Header="STOCK_CODE" ReadOnly="True" IsEnabled="False" />
+                            <dxg:GridColumn FieldName="ProgressItem.ReportableItem_Name" Header="COMMODITY_CODE" ReadOnly="True" IsEnabled="False" />
                             <dxg:GridColumn FieldName="ProgressItem.Total_Quantity" Header="TOTAL_QUANTITY" ReadOnly="True" IsEnabled="False" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ProgressItem.UOM" Header="UOM" ReadOnly="True" IsEnabled="False" />
                             <dxg:GridColumn FieldName="ProgressItem.TotalHours" Header="TOTAL_INSTALL_HOURS" ReadOnly="True" IsEnabled="False" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
@@ -110,10 +131,15 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="ProgressItem.CurrentTotalInstalledQuantity" Header="INSTALLED_QTY" IsEnabled="False" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" MinValue="0"
+                                            Increment="1" MaskUseAsDisplayFormat="True"
+                                            MaxValue="{Binding RowData.Row.ProgressItem.MaxCurrentQuantity}" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="ProgressItem.UOM" Header="UOM" ReadOnly="True" IsEnabled="False" />
                             <dxg:GridColumn FieldName="ProgressItem.TotalInstalledQuantity" Header="TOTAL_INSTALLED_QTY" IsEnabled="False" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
@@ -157,7 +183,6 @@
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="UOM" Header="UOM" ReadOnly="True" IsEnabled="False" />
                                         <dxg:GridColumn FieldName="TotalHours" Header="TOTAL_INSTALL_HOURS" ReadOnly="True" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
@@ -178,11 +203,12 @@
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="CurrentTotalInstalledQuantity" Header="INSTALLED_QTY" IsEnabled="False" >
+                                        <dxg:GridColumn FieldName="CurrentTotalInstalledQuantity" Header="INSTALLED_QTY" ReadOnly="True" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="UOM" Header="UOM" ReadOnly="True" IsEnabled="False" />
                                         <dxg:GridColumn FieldName="TotalInstalledQuantity" Header="TOTAL_INSTALLED_QTY" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
