@@ -79,7 +79,7 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ProgressItem.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText" ReadOnly="True">
+                            <dxg:GridColumn FieldName="ProgressItem.SubArea_Guid" Header="SUBAREA" ColumnFilterMode="DisplayText" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
                                                               ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}"
@@ -114,6 +114,21 @@
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="ProgressItem.TotalInstalledQuantity" Header="TOTAL_INSTALLED_QTY" IsEnabled="False" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="ProgressItem.CurrentPeriodHours" Header="CURRENT_HOURS" IsEnabled="False" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="ProgressItem.CurrentPeriodCosts" Header="CURRENT_COSTS" IsEnabled="False" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.DetailDescriptor>
                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Reportables}">
@@ -127,7 +142,7 @@
                                                     ValueMember="GUID" />
                                                 </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="SubAreaGuid" Header="SUBAREA" ReadOnly="True">
+                                        <dxg:GridColumn FieldName="SubArea_Guid" Header="SUBAREA" ReadOnly="True">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:ComboBoxEditSettings 
                                                               ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}"
@@ -153,12 +168,32 @@
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="Track" Header="TRACK" ReadOnly="True" IsEnabled="False" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:CheckEditSettings />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="QuantityPerHour" Header="QTY_PER_HOUR" ReadOnly="True" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="CurrentTotalInstalledQuantity" Header="INSTALLED_QTY" IsEnabled="False" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="TotalInstalledQuantity" Header="TOTAL_INSTALLED_QTY" IsEnabled="False" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="CurrentPeriodHours" Header="CURRENT_HOURS" IsEnabled="False" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="CurrentPeriodCosts" Header="CURRENT_COSTS" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>

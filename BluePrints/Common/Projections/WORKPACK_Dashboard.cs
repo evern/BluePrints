@@ -113,7 +113,7 @@ namespace BluePrints.Common.Projections
             List<CommodityCode_Dashboard> commodityCodes = new List<CommodityCode_Dashboard>();
             foreach (IReportable reportable in workpackReportables)
             {
-                string commodityCode = ((IBasicDeliverable)reportable).Commodity_Code;
+                string commodityCode = ((ISortableDeliverable)reportable).Commodity_Code;
                 if(!commodityCodes.Any(x => x.Commodity_Code == commodityCode))
                 {
                     commodityCodes.Add(new CommodityCode_Dashboard() { Commodity_Code = commodityCode });

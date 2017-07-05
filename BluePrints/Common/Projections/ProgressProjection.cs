@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    public class ProgressDisplay : IGuidEntityKey, ICanUpdate
+    public class ProgressDisplay : BindableBase, IGuidEntityKey, ICanUpdate
     {
         public Guid GUID
         {
@@ -28,9 +28,12 @@ namespace BluePrints.Common.Projections
         {
             get
             {
+                if (isSetNull)
+                    return null;
+
                 GroupDisplayReportable reportable = ProgressItem as GroupDisplayReportable;
                 if (reportable != null)
-                    return reportable.ChildDeliverables;
+                    return reportable.ChildReportables;
 
                 return null;
             }
@@ -47,23 +50,37 @@ namespace BluePrints.Common.Projections
 
         public void Update()
         {
-            ProgressItem.Update();
+            RaisePropertyChanged(() => ProgressItem);
+            RefreshChild();
+        }
+
+        bool isSetNull;
+        private void RefreshChild()
+        {
+            isSetNull = true;
+            GroupDisplayReportable reportable = ProgressItem as GroupDisplayReportable;
+            if (reportable != null)
+            {
+                RaisePropertyChanged(() => Reportables);
+                isSetNull = false;
+                RaisePropertyChanged(() => Reportables);
+            }
         }
     }
 
     public class GroupDisplayReportable : DisplayReportable
     {
-        public IEnumerable<DisplayReportable> ChildDeliverables;
-        public GroupDisplayReportable(IReportableGroup reportableGroup)
+        public IEnumerable<DisplayReportable> ChildReportables;
+        public GroupDisplayReportable(IQuantityReportableGroup reportableGroup)
             : base(reportableGroup)
         {
-            this.ChildDeliverables = reportableGroup.Deliverables.Select(x => new DisplayReportable(x));
+            this.ChildReportables = reportableGroup.Deliverables.Select(x => new DisplayReportable(x));
         }
     }
 
-    public class DisplayReportable : IReportable, ICanUpdate
+    public class DisplayReportable : BindableBase, IReportable, ICanUpdate
     {
-        readonly IReportable deliverable;
+        readonly IDeliverable deliverable;
 
         //For bindableBase property name usage only
         public DisplayReportable()
@@ -71,18 +88,23 @@ namespace BluePrints.Common.Projections
 
         }
 
-        public DisplayReportable(IReportable deliverable)
+        public DisplayReportable(IDeliverable deliverable)
         {
             this.deliverable = deliverable;
+        }
+
+        public IDeliverable Deliverable
+        {
+            get { return deliverable; }
         }
 
         public string ReportableItem_Name
         {
             get
             {
-                IBasicDeliverable basicDeliverable = deliverable as IBasicDeliverable;
-                if (basicDeliverable != null)
-                    return basicDeliverable.ReportableItem_Name;
+                ISortableDeliverable deliverableProjection = getSortableDeliverable();
+                if (deliverableProjection != null)
+                    return deliverableProjection.ReportableItem_Name;
 
                 return string.Empty;
             }
@@ -92,7 +114,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                IBasicDeliverable basicDeliverable = deliverable as IBasicDeliverable;
+                ISortableDeliverable basicDeliverable = deliverable as ISortableDeliverable;
                 if (basicDeliverable != null)
                     return basicDeliverable.Commodity_Code;
 
@@ -104,7 +126,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                IBasicDeliverable basicDeliverable = deliverable as IBasicDeliverable;
+                ISortableDeliverable basicDeliverable = deliverable as ISortableDeliverable;
                 if (basicDeliverable != null)
                     return basicDeliverable.Workpack_Guid;
 
@@ -116,7 +138,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                IBasicDeliverable basicDeliverable = deliverable as IBasicDeliverable;
+                ISortableDeliverable basicDeliverable = deliverable as ISortableDeliverable;
                 if (basicDeliverable != null)
                     return basicDeliverable.OriginalEntityKey;
 
@@ -124,7 +146,7 @@ namespace BluePrints.Common.Projections
             }
             set
             {
-                IBasicDeliverable basicDeliverable = deliverable as IBasicDeliverable;
+                ISortableDeliverable basicDeliverable = deliverable as ISortableDeliverable;
                 if (basicDeliverable != null)
                 {
                     basicDeliverable.OriginalEntityKey = value;
@@ -148,11 +170,95 @@ namespace BluePrints.Common.Projections
 
         public decimal TotalHours => deliverable.TotalHours;
 
-        public decimal ItemRate => deliverable.ItemRate;
+        public decimal ItemRate
+        {
+            get
+            {
+                IHaveCosts costProjection = getCostProjection();
+                return costProjection == null ? 0 : costProjection.ItemRate;
+            }
+        }
 
-        public decimal EstimatedCosts => deliverable.EstimatedCosts;
+        public decimal EstimatedCosts
+        {
+            get
+            {
+                IHaveCosts costProjection = getCostProjection();
+                return costProjection == null ? 0 : costProjection.EstimatedCosts;
+            }
+        }
 
-        public decimal TotalCosts => deliverable.TotalCosts;
+        public decimal TotalCosts
+        {
+            get
+            {
+                IHaveCosts costProjection = getCostProjection();
+                return costProjection == null ? 0 : costProjection.TotalCosts;
+            }
+        }
+
+        public bool? Track
+        {
+            get
+            {
+                ICanTrack trackableProjection = getTrackableProjection();
+                return trackableProjection == null ? null : trackableProjection.Track;
+            }
+        }
+
+        private ISortableDeliverable getSortableDeliverable()
+        {
+            IDeliverable deliverableProjection = getDeliverableProjection();
+            if (deliverableProjection != null)
+            {
+                ISortableDeliverable sortableProjection = deliverableProjection as ISortableDeliverable;
+                if (sortableProjection != null)
+                    return sortableProjection;
+            }
+
+            return null;
+        }
+
+        private ICanTrack getTrackableProjection()
+        {
+            IDeliverable deliverableProjection = getDeliverableProjection();
+            if (deliverableProjection != null)
+            {
+                ICanTrack TrackableProjection = deliverableProjection as ICanTrack;
+                if (TrackableProjection != null)
+                    return TrackableProjection;
+            }
+
+            return null;
+        }
+
+        private IHaveCosts getCostProjection()
+        {
+            IDeliverable deliverableProjection = getDeliverableProjection();
+            if (deliverableProjection != null)
+            {
+                IHaveCosts costProjection = deliverableProjection as IHaveCosts;
+                if (costProjection != null)
+                    return costProjection;
+            }
+
+            return null;
+        }
+
+        private IDeliverable getDeliverableProjection()
+        {
+            IQuantityReportableGroup groupProjection = deliverable as IQuantityReportableGroup;
+            if (groupProjection != null)
+                return groupProjection.Deliverable;
+            else
+            {
+                IQuantityReportable reportableProjection = deliverable as IQuantityReportable;
+                if (reportableProjection != null)
+                    return reportableProjection.Deliverable;
+            }
+
+            return null;
+        }
 
         public decimal Estimated_Quantity
         {
@@ -204,6 +310,22 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public decimal CurrentPeriodHours
+        {
+            get
+            {
+                return QuantityPerHour * CurrentTotalInstalledQuantity;
+            }
+        }
+
+        public decimal CurrentPeriodCosts
+        {
+            get
+            {
+                return CurrentPeriodHours * ItemRate;
+            }
+        }
+
         public decimal TotalPercentage
         {
             get
@@ -231,37 +353,101 @@ namespace BluePrints.Common.Projections
         decimal? currentTotalInstalledQuantity { get; set; }
         public decimal CurrentTotalInstalledQuantity
         {
+            get { return getActualCurrentTotalInstalledQuantity(); }
+            set { currentTotalInstalledQuantity = value; }
+        }
+
+        public decimal getActualCurrentTotalInstalledQuantity()
+        {
+            if(currentTotalInstalledQuantity == null)
+            {
+                ICanProgressByQuantity quantityProjection = deliverable as ICanProgressByQuantity;
+                if (quantityProjection != null)
+                    currentTotalInstalledQuantity = quantityProjection.CurrentTotalInstalledQuantity;
+                else
+                    currentTotalInstalledQuantity = 0;
+            }
+
+            return (decimal)currentTotalInstalledQuantity;
+        }
+
+        public decimal TotalInstalledQuantity
+        {
             get
             {
-                if(currentTotalInstalledQuantity == null)
-                {
-                    ICanProgressByQuantity quantityDeliverable = deliverable as ICanProgressByQuantity;
-                    if (quantityDeliverable != null)
-                        currentTotalInstalledQuantity = quantityDeliverable.CurrentTotalInstalledQuantity;
-                    else
-                        currentTotalInstalledQuantity = 0;
-                }
-
-                return (decimal)currentTotalInstalledQuantity;
-            }
-            set
-            {
-                currentTotalInstalledQuantity = value;
+                return PastInstalledQuantity + CurrentTotalInstalledQuantity;
             }
         }
 
         public DateTime ReportingDataDate { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public List<PROGRESS_ITEM> PROGRESS_ITEMS { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_BeforeDataDate => deliverable.PROGRESS_ITEM_BeforeDataDate;
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_BeforeDataDate
+        {
+            get
+            {
+                IReportable reportable = deliverable as IReportable;
+                if (reportable != null)
+                    return reportable.PROGRESS_ITEM_BeforeDataDate;
 
-        public PROGRESS_ITEM PROGRESS_ITEM_Current => deliverable.PROGRESS_ITEM_Current;
+                return new List<PROGRESS_ITEM>();
+            }
+        }
 
-        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_UpToCurrentDataDate => deliverable.PROGRESS_ITEM_UpToCurrentDataDate;
+        public PROGRESS_ITEM PROGRESS_ITEM_Current
+        {
+            get
+            {
+                IReportable reportable = deliverable as IReportable;
+                if (reportable != null)
+                    return reportable.PROGRESS_ITEM_Current;
 
-        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_AfterDataDate => deliverable.PROGRESS_ITEM_AfterDataDate;
+                return null;
+            }
+        }
 
-        public ProgressStats Stats { get => deliverable.Stats; set => deliverable.Stats = value; }
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_UpToCurrentDataDate
+        {
+            get
+            {
+                IReportable reportable = deliverable as IReportable;
+                if (reportable != null)
+                    return reportable.PROGRESS_ITEM_UpToCurrentDataDate;
+
+                return new List<PROGRESS_ITEM>();
+            }
+        }
+
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_AfterDataDate
+        {
+            get
+            {
+                IReportable reportable = deliverable as IReportable;
+                if (reportable != null)
+                    return reportable.PROGRESS_ITEM_AfterDataDate;
+
+                return new List<PROGRESS_ITEM>();
+            }
+        }
+
+        public ProgressStats Stats
+        {
+            get
+            {
+                IReportable reportable = deliverable as IReportable;
+                if (reportable != null)
+                    return reportable.Stats;
+
+                return null;
+            }
+            set
+            {
+                IReportable reportable = deliverable as IReportable;
+                if (reportable != null)
+                    reportable.Stats = value;
+
+            }
+        }
 
         public decimal GetCurrentPeriodHours(decimal newPeriodPercentage)
         {
@@ -283,11 +469,21 @@ namespace BluePrints.Common.Projections
 
         public void Update()
         {
-            deliverable.Update();
+            GroupDisplayReportable groupReportable = this as GroupDisplayReportable;
+            if (groupReportable != null)
+            {
+                foreach (DisplayReportable reportable in groupReportable.ChildReportables)
+                {
+                    reportable.Update();
+                }
+            }
+
+            currentTotalInstalledQuantity = getActualCurrentTotalInstalledQuantity();
+            RaisePropertyChanged(() => CurrentTotalInstalledQuantity);
         }
     }
 
-    public class Stock_CodeProgress : BluePrintsProgressableByQuantityProjectionBase<STOCK_CODEProjection>, IReportableGroup
+    public class Stock_CodeProgress : BluePrintsProgressableByQuantityProjectionBase<STOCK_CODEProjection>, IQuantityReportableGroup
     {
         public IEnumerable<IQuantityReportable> Deliverables { get; set; }
 
@@ -315,7 +511,10 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                return Entity.Total_Quantity / Entity.TotalHours;
+                if (TotalHours == 0)
+                    return 0;
+
+                return Total_Quantity / TotalHours;
             }
         }
 
@@ -358,26 +557,53 @@ namespace BluePrints.Common.Projections
 
         public decimal Estimated_Quantity => Entity.Estimated_Quantity;
 
-        public decimal Total_Quantity => Entity.Total_Quantity;
+        public decimal Total_Quantity
+        {
+            get
+            {
+                IQuantityDeliverableGroupProjection quantityGroup = Entity as IQuantityDeliverableGroupProjection;
+                if (quantityGroup != null)
+                {
+                    return quantityGroup.Reportables.Where(x => (bool)x.Track).Sum(x => x.TotalHours);
+                }
+                else
+                    return Entity.TotalHours;
+            }
+        }
 
         public string UOM => Entity.UOM;
 
+        public bool? Track
+        {
+            get
+            {
+                ICanTrack trackableEntity = Entity as ICanTrack;
+                if (trackableEntity != null)
+                    return trackableEntity.Track;
+
+                return null;
+            }
+        }
+
         public virtual decimal GetCurrentPeriodPercentage(decimal newTotalQuantity)
         {
-            if (Entity.Total_Quantity == 0)
+            if (Total_Quantity == 0)
                 return 0;
-            return (newTotalQuantity - PastInstalledQuantity) / Entity.Total_Quantity;
+
+            return (newTotalQuantity - PastInstalledQuantity) / Total_Quantity;
         }
 
         public decimal GetCurrentPeriodHours(decimal currentPeriodPercentage)
         {
-            return currentPeriodPercentage * Entity.TotalHours;
+            return currentPeriodPercentage * TotalHours;
         }
     }
 
     public abstract class BluePrintsProgressableProjectionBase<TEntity> : BluePrintsProjectionBase<TEntity>, IReportable
-        where TEntity : class, IDeliverableProjection, ICanUpdate, new()
+        where TEntity : class, ISortableDeliverableProjection, ICanUpdate, new()
     {
+        public IDeliverable Deliverable => Entity;
+
         public void SetPROGRESS_ITEMS(IEnumerable<PROGRESS_ITEM> progress_items)
         {
             PROGRESS_ITEMS = progress_items.ToList();
@@ -415,7 +641,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                IBasicDeliverable reportableItem = Entity as IBasicDeliverable;
+                ISortableDeliverable reportableItem = Entity as ISortableDeliverable;
                 if(reportableItem != null)
                     return PROGRESS_ITEMS.FirstOrDefault(y => y.GUID_ORIBASEITEM == reportableItem.OriginalEntityKey && y.EARNED_DATE == ReportingDataDate);
 
@@ -500,19 +726,19 @@ namespace BluePrints.Common.Projections
                 estimationDirectItemProgress.Add(newEstimation_Direct_itemProgress);
             }
 
-            var trackableESTIMATION_DIRECT_ITEMProjectionGroupByStockCode = estimationDirectItemProgress.Where(x => !x.Entity.Entity.STANDALONE)
-                .GroupBy(x => x.Entity.Entity.GUID_STOCK_CODE).Select(group => new { StockCodeGuid = group.Key, Estimation_Direct_ItemProjection = group.ToList() });
+            var estimationDirectProgressByStockCode = estimationDirectItemProgress.Where(x => !x.Entity.Entity.STANDALONE)
+                .GroupBy(x => x.Entity.Entity.GUID_STOCK_CODE).Select(group => new { StockCodeGuid = group.Key, Estimation_Direct_ItemProgress = group.ToList() });
 
             foreach (STOCK_CODE STOCK_CODE in projectSTOCK_CODES)
             {
                 Stock_CodeProgress newStock_CodeProgress = new Stock_CodeProgress();
                 newStock_CodeProgress.Entity.Entity = STOCK_CODE;
                 
-                var currentStockCodeReportables = trackableESTIMATION_DIRECT_ITEMProjectionGroupByStockCode.FirstOrDefault(x => x.StockCodeGuid == STOCK_CODE.GUID);
-                if(currentStockCodeReportables != null)
+                var currentStockCodeProgresses = estimationDirectProgressByStockCode.FirstOrDefault(x => x.StockCodeGuid == STOCK_CODE.GUID);
+                if(currentStockCodeProgresses != null)
                 {
-                    newStock_CodeProgress.Entity.Reportables = currentStockCodeReportables.Estimation_Direct_ItemProjection;
-                    newStock_CodeProgress.Deliverables = currentStockCodeReportables.Estimation_Direct_ItemProjection.ToList();
+                    newStock_CodeProgress.Entity.Reportables = currentStockCodeProgresses.Estimation_Direct_ItemProgress;
+                    newStock_CodeProgress.Deliverables = currentStockCodeProgresses.Estimation_Direct_ItemProgress.ToList();
                     newStock_CodeProgress.SetReportingDataDate(reportingDataDate);
                     ProgressDisplay newProgressDisplay = new ProgressDisplay();
                     newProgressDisplay.ProgressItem = new GroupDisplayReportable(newStock_CodeProgress);
@@ -529,7 +755,7 @@ namespace BluePrints.Common.Projections
         {
             foreach(dynamic item in PROGRESS_ITEMSByOriginalGuid)
             {
-                IBasicDeliverable basicDeliverable = reportable as IBasicDeliverable;
+                ISortableDeliverable basicDeliverable = reportable.Deliverable as ISortableDeliverable;
                 if (basicDeliverable == null)
                     break;
 

@@ -8,30 +8,43 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public interface IReportableGroup : IQuantityReportable
+    public interface IQuantityReportableGroup : IQuantityReportable
     {
         IEnumerable<IQuantityReportable> Deliverables { get; }
     }
 
-    public interface IQuantityReportable : IReportable, ICanProgressByQuantity
+    public interface IQuantityReportable : IReportable, ICanProgressByQuantity, ICanTrack
     {
 
     }
 
-    public interface IReportable : IDeliverableProjection, IHaveStats, IHaveProgresses, ICanUpdate
+    public interface IReportable : IDeliverable, IHaveStats, IHaveProgresses, ICanUpdate
     {
-
+        IDeliverable Deliverable { get; }
     }
 
-    public interface IQuantityDeliverableGroupProjection : IQuantityDeliverableProjection, IHaveQuantity
+    public interface IQuantityDeliverableGroupProjection : IQuantityDeliverableProjection
     {
         IEnumerable<IQuantityReportable> Reportables { get; set; }
+    }
+
+    public interface IGroupDeliverableProjection : IDeliverable, IHaveQuantity
+    {
+
     }
 
     /// <summary>
     /// Deliverables with Rates and Quantity
     /// </summary>
-    public interface IQuantityDeliverableProjection : IDeliverableProjection, IHaveQuantity
+    public interface ITrackableQuantityDeliverableProjection : IQuantityDeliverableProjection, ICanTrack
+    {
+
+    }
+
+    /// <summary>
+    /// Deliverables with Rates and Quantity
+    /// </summary>
+    public interface IQuantityDeliverableProjection : ISortableDeliverableProjection, IHaveQuantity
     {
 
     }
@@ -39,17 +52,21 @@ namespace BluePrints.Common.ViewModel.Reporting
     /// <summary>
     /// Deliverables with Rates
     /// </summary>
-    public interface IDeliverableProjection : IBasicDeliverable, IGuidEntityKey, IHaveCosts
+    public interface ISortableDeliverableProjection : ISortableDeliverable, IHaveCosts
     {
 
     }
 
-
-    public interface IBasicDeliverable : IOriginalGuidEntityKey, IHaveStockCode, IHaveHours
+    public interface ISortableDeliverable : IDeliverable, IOriginalGuidEntityKey
     {
         string ReportableItem_Name { get; }
         string Commodity_Code { get; }
         Guid? Workpack_Guid { get; }
+    }
+
+    public interface IDeliverable : IGuidEntityKey, IHaveStockCode, IHaveHours
+    {
+
     }
 
     #region Ability Specification Interfaces
@@ -70,6 +87,11 @@ namespace BluePrints.Common.ViewModel.Reporting
     #endregion
 
     #region Property Specification Interfaces
+    public interface ICanTrack
+    {
+        bool? Track { get; }
+    }
+
     public interface IHaveCosts
     {
         decimal ItemRate { get; }

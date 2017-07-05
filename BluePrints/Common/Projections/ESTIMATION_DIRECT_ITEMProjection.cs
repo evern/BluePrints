@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IQuantityDeliverableProjection, ICanUpdate
+    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, ITrackableQuantityDeliverableProjection, ICanUpdate
     {
         public ESTIMATION_DIRECT_ITEMProjection()
             : base()
@@ -259,22 +259,14 @@ namespace BluePrints.Common.Projections
 
         public decimal CurrentTotalInstalledQuantity => throw new NotImplementedException();
 
+        public bool? Track => Entity.TRACK;
+
         /// <summary>
         /// Refreshes current row
         /// </summary>
         public void Update()
         {
             RaisePropertyChanged();
-        }
-
-        public decimal GetCurrentPeriodPercentage(decimal newTotalQuantity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public decimal GetCurrentPeriodHours(decimal newTotalQuantity)
-        {
-            throw new NotImplementedException();
         }
     }
 

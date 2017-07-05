@@ -10,7 +10,7 @@ using System.Linq;
 namespace BluePrints.Common.Projections
 {
     [ConstraintAttributes("Entity.GUID_BASELINE, Entity.INTERNAL_NUM")]
-    public class BASELINE_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEM>, IDeliverableProjection
+    public class BASELINE_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEM>, ISortableDeliverableProjection
     {
         public BASELINE_ITEMProjection()
             : base()

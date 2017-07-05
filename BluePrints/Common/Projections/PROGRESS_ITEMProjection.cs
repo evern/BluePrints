@@ -11,6 +11,7 @@ namespace BluePrints.Common.Projections
 {
     public class PROGRESS_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEMProjection>, IReportable
     {
+        public IDeliverable Deliverable => Entity;
         public DateTime ReportingDataDate { get; set; }
 
         #region Stats Parameters

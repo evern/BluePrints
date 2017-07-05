@@ -53,19 +53,19 @@ namespace BluePrints.Common.Projections
 
         public decimal EstimatedCosts
         {
-            get { return Reportables.Sum(x => x.EstimatedCosts); }
+            get { return Reportables.Sum(x => ((ISortableDeliverableProjection)x.Deliverable).EstimatedCosts); }
         }
 
         public decimal TotalCosts
         {
-            get { return Reportables.Sum(x => x.TotalCosts); }
+            get { return Reportables.Sum(x => ((ISortableDeliverableProjection)x.Deliverable).TotalCosts); }
         }
+
+        public decimal ItemRate => Reportables.Sum(x => ((ISortableDeliverableProjection)x.Deliverable).ItemRate);
 
         public DateTime ReportingDataDate { get; set; }
 
-        public decimal ItemRate => Reportables.Sum(x => x.ItemRate);
-
-        public IEnumerable<IDeliverableProjection> Deliverables { get; set; }
+        public IEnumerable<ISortableDeliverableProjection> Deliverables { get; set; }
 
         /// <summary>
         /// Refreshes current row

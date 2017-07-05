@@ -10,7 +10,7 @@ namespace BluePrints.Data
     using System.Linq;
 
     [ConstraintAttributes("GUID_BASELINE, INTERNAL_NUM")]
-    public partial class BASELINE_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IBasicDeliverable
+    public partial class BASELINE_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, ISortableDeliverable
     {
         public BASELINE_ITEM()
         {

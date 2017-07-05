@@ -285,25 +285,34 @@ namespace BluePrints.ViewModels
             List<PROGRESS_ITEM> newPRORESS_ITEMS = new List<PROGRESS_ITEM>();
             if (groupEntity != null)
             {
-                foreach (DisplayReportable reportable in entity.Reportables)
+                foreach (DisplayReportable progress in entity.Reportables)
                 {
                     PROGRESS_ITEM savePROGRESS_ITEM;
-                    if (reportable.PROGRESS_ITEM_Current != null)
-                        savePROGRESS_ITEM = reportable.PROGRESS_ITEM_Current;
-                    else
-                        savePROGRESS_ITEM = createNewPROGRESS_ITEM(reportable.OriginalEntityKey);
+                    IReportable deliverable = progress.Deliverable as IReportable;
 
-                    savePROGRESS_ITEM.EARNED_UNITS = reportable.GetCurrentPeriodHours(currentPeriodPercentage);
+                    if (progress.PROGRESS_ITEM_Current != null)
+                        savePROGRESS_ITEM = progress.PROGRESS_ITEM_Current;
+                    else
+                    {
+
+                        savePROGRESS_ITEM = createNewPROGRESS_ITEM(((ISortableDeliverableProjection)deliverable.Deliverable).OriginalEntityKey);
+                    }
+
+                    savePROGRESS_ITEM.EARNED_UNITS = progress.GetCurrentPeriodHours(currentPeriodPercentage);
                     newPRORESS_ITEMS.Add(savePROGRESS_ITEM);
                 }
             }
             else
             {
                 PROGRESS_ITEM savePROGRESS_ITEM;
+                IReportable reportable = entity.ProgressItem.Deliverable as IReportable;
+                if (reportable == null)
+                    return false;
+
                 if (entity.ProgressItem.PROGRESS_ITEM_Current != null)
                     savePROGRESS_ITEM = entity.ProgressItem.PROGRESS_ITEM_Current;
                 else
-                    savePROGRESS_ITEM = createNewPROGRESS_ITEM(entity.ProgressItem.OriginalEntityKey);
+                    savePROGRESS_ITEM = createNewPROGRESS_ITEM(((ISortableDeliverableProjection)reportable.Deliverable).OriginalEntityKey);
 
                 savePROGRESS_ITEM.EARNED_UNITS = entity.ProgressItem.GetCurrentPeriodHours(currentPeriodPercentage);
                 newPRORESS_ITEMS.Add(savePROGRESS_ITEM);
