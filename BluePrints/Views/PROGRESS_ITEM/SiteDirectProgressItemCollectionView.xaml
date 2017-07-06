@@ -193,11 +193,6 @@
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="Track" Header="TRACK" ReadOnly="True" IsEnabled="False" >
-                                            <dxg:GridColumn.EditSettings>
-                                                <dxe:CheckEditSettings />
-                                            </dxg:GridColumn.EditSettings>
-                                        </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="QuantityPerHour" Header="QTY_PER_HOUR" ReadOnly="True" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
@@ -222,6 +217,11 @@
                                         <dxg:GridColumn FieldName="CurrentPeriodCosts" Header="CURRENT_COSTS" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="Track" Header="TRACK" ReadOnly="True" IsEnabled="False" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:CheckEditSettings />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                     </dxg:GridControl.Columns>

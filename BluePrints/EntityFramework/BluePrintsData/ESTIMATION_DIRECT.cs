@@ -33,6 +33,12 @@ namespace BluePrints.Data
 
         public EstimationStatus STATUS { get; set; }
 
+        [StringLength(20)]
+        public string P6BASELINE_NAME { get; set; }
+
+        [StringLength(20)]
+        public string P6MODBASELINE_NAME { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

@@ -419,6 +419,8 @@
     <Compile Include="Common\Reports\ViewModel\Helpers\ProjectionHelpers.cs" />
     <Compile Include="Common\Reports\ViewModel\Summarizers.cs" />
     <Compile Include="Common\ViewModel\Converters\CollectionConverter.cs" />
+    <Compile Include="Common\ViewModel\GanttChart\GanttCanvas.cs" />
+    <Compile Include="Common\ViewModel\GanttChart\GanttData.cs" />
     <Compile Include="Common\ViewModel\Misc\P6ActivityAssignmentDialogViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\XMLSettings.cs" />
     <Compile Include="Common\View\BasicMessageBox.xaml.cs">
@@ -518,6 +520,7 @@
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\BluePrintsEntitiesUnitOfWorkSource.cs" />
     <Compile Include="Common\Misc\BluePrintsEnums.cs" />
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\ESTIMATION_DIRECT_ITEM\ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATION_DIRECT_ITEM\ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\SiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_HOLDCollectionViewModelWrapper.cs" />
@@ -536,6 +539,9 @@
     </Compile>
     <Compile Include="Views\DXSplashScreen\BluePrintsSplashScreen.xaml.cs">
       <DependentUpon>BluePrintsSplashScreen.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ESTIMATION_DIRECT_ITEM\ESTIMATION_DIRECT_ITEMSchedulingView.xaml.cs">
+      <DependentUpon>ESTIMATION_DIRECT_ITEMSchedulingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ESTIMATION_DIRECT_ITEM\ESTIMATION_DIRECT_ITEMCollectionView.xaml.cs">
       <DependentUpon>ESTIMATION_DIRECT_ITEMCollectionView.xaml</DependentUpon>
@@ -1302,6 +1308,10 @@
     <Page Include="Views\DXSplashScreen\BluePrintsSplashScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ESTIMATION_DIRECT_ITEM\ESTIMATION_DIRECT_ITEMSchedulingView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ESTIMATION_DIRECT_ITEM\ESTIMATION_DIRECT_ITEMCollectionView.xaml">
       <SubType>Designer</SubType>

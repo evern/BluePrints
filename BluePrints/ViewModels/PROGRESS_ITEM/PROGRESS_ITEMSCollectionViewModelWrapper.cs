@@ -346,6 +346,10 @@ namespace BluePrints.ViewModels
 
         protected virtual void InitializeSummarizer()
         {
+            //when view is closed too fast
+            if (MainViewModel == null)
+                return;
+
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
             List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), MainViewModel.Entities.Select(x => x.Entity));

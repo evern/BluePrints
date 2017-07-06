@@ -649,8 +649,7 @@ namespace BluePrints.ViewModels
                 updateProjectionCommodityCodeCollection(activeESTIMATION_DIRECT_ITEM, (Guid?)e.Value);
             }
             else if (e.Column.FieldName ==
-                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
-                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_COMMODITY_CODE))
+                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().CommodityCodeGuid))
             {
                 setProjectionCommodityCode(activeESTIMATION_DIRECT_ITEM, (Guid?)e.Value);
             }
@@ -680,11 +679,11 @@ namespace BluePrints.ViewModels
             if (projectCommodityCode != null)
                 isExists = true;
 
-            if (isExists && projectCommodityCode.RATE_SUPPLY == commodity_code.RATE_SUPPLY && projectCommodityCode.HOURS_INSTALL == commodity_code.HOURS_INSTALL)
+            if (isExists && projectCommodityCode.CODE == commodity_code.CODE && projectCommodityCode.RATE_SUPPLY == commodity_code.RATE_SUPPLY && projectCommodityCode.HOURS_INSTALL == commodity_code.HOURS_INSTALL)
                 return projectCommodityCodeStatus.Exists;
 
             //look for other project commodity code with same meta
-            COMMODITY_CODE sameMetaCommodityCode = ProjectCOMMODITY_CODECollection.FirstOrDefault(x => x.RATE_SUPPLY == commodity_code.RATE_SUPPLY && x.HOURS_INSTALL == commodity_code.HOURS_INSTALL);
+            COMMODITY_CODE sameMetaCommodityCode = ProjectCOMMODITY_CODECollection.FirstOrDefault(x => x.CODE == commodity_code.CODE && x.RATE_SUPPLY == commodity_code.RATE_SUPPLY && x.HOURS_INSTALL == commodity_code.HOURS_INSTALL);
             if (isExists && sameMetaCommodityCode == null)
                 return projectCommodityCodeStatus.ExistsWithDifferentRateHours;
 

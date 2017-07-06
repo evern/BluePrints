@@ -96,6 +96,14 @@
                                                               ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:EstimationStatus}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="P6BASELINE_NAME">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                                              ItemsSource="{Binding DataContext.P6PROJECTSCollection, ElementName=userControl}"
+                                                              DisplayMember="wbs_short_name"
+                                                              ValueMember="wbs_short_name" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />

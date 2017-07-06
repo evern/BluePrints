@@ -24,6 +24,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         public static List<VariationAdjustment> BuildProjectVariationAdjustments(IQueryable<VARIATION> VARIATION, IEnumerable<ISortableDeliverableProjection> deliverables)
         {
             List<VariationAdjustment> variationAdjustments = new List<VariationAdjustment>();
+            if (VARIATION.Count() == 0)
+                return variationAdjustments;
+
             IQueryable<VARIATION> ApprovedVARIATION = VARIATION.Where(x => x.APPROVED != null && x.TYPE == VariationType.External);
             foreach (VARIATION variation in ApprovedVARIATION)
             {

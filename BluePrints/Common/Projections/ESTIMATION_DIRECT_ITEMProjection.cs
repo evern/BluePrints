@@ -134,6 +134,40 @@ namespace BluePrints.Common.Projections
 
         public decimal Install_Cost => TotalHours * ItemRate;
 
+        public ICollection<BASELINE_ITEM_ASSIGNMENT> ObservableBASELINE_ITEM_ASSIGNMENT { get; set; }
+
+        private List<BASELINE_ITEM_ASSIGNMENT> p6assignments;
+        public List<BASELINE_ITEM_ASSIGNMENT> P6Assignments
+        {
+            get
+            {
+                return p6assignments;
+            }
+            set
+            {
+                if (p6assignments == null)
+                    p6assignments = new List<BASELINE_ITEM_ASSIGNMENT>();
+
+                p6assignments = value;
+            }
+        }
+
+        public decimal Remaining_Percentage
+        {
+            get
+            {
+                return 1 - AssignedPercentage;
+            }
+        }
+
+        public decimal AssignedPercentage
+        {
+            get
+            {
+                return P6Assignments.Sum(x => (x.HIGH_VALUE - (x.LOW_VALUE - 0.01m)));
+            }
+        }
+
         /// <summary>
         /// Refreshes current row
         /// </summary>

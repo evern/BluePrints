@@ -673,6 +673,28 @@
                                                         ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:EstimationStatus}}" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
+                                            <dxg:GridColumn FieldName="P6BASELINE_NAME" MinWidth="200">
+                                                <dxg:GridColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <dxlc:LayoutGroup Orientation="Horizontal">
+                                                            <dxe:ComboBoxEdit x:Name="PART_Editor" IsTextEditable="True"
+                                                                      NullValueButtonPlacement="Popup"
+                                                                      AutoComplete="True"
+                                                                      ItemsSource="{Binding View.DataContext.P6PROJECTSCollection}"
+                                                                      DisplayMember="wbs_short_name"
+                                                                      ValueMember="wbs_short_name" />
+                                                            <Button Width="50"
+                                                            Command="{Binding View.DataContext.P6BASELINE_ASSIGNCommand}">
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Image Source="{dx:DXImageOffice2013 Image=Edit_16x16.png}"
+                                                                   Width="16" Height="16" Margin="0, 0, 3, 0" />
+                                                                    <TextBlock VerticalAlignment="Center" />
+                                                                </StackPanel>
+                                                            </Button>
+                                                        </dxlc:LayoutGroup>
+                                                    </DataTemplate>
+                                                </dxg:GridColumn.CellTemplate>
+                                            </dxg:GridColumn>
                                         </dxg:GridControl.Columns>
                                         <dxg:GridControl.TotalSummary>
                                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />

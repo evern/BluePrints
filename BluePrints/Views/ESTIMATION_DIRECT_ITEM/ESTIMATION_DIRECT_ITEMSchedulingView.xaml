@@ -1,0 +1,442 @@
+﻿<UserControl 
+             x:Name="userControl" 
+             x:Class="BluePrints.Views.ESTIMATION_DIRECT_ITEMSchedulingView"
+             xmlns:view="clr-namespace:BluePrints.Views"
+             xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxa="http://schemas.devexpress.com/winfx/2008/xaml/accordion"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+             xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
+             xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
+             xmlns:converters="clr-namespace:BluePrints.Common.ViewModel.Converters"
+             xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
+             xmlns:common="clr-namespace:BluePrints.Common"
+             xmlns:commonviewmodel ="clr-namespace:BluePrints.Common.ViewModel"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:helper="clr-namespace:BluePrints.Common.Helpers"
+             xmlns:themes="http://schemas.devexpress.com/winfx/2008/xaml/editors/themekeys"
+             xmlns:dxgt="http://schemas.devexpress.com/winfx/2008/xaml/grid/themekeys"
+             xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel"
+             xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
+             xmlns:local="clr-namespace:BluePrints.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="900" d:DesignWidth="900"
+             DataContext="{dxmvvm:ViewModelSource viewmodel:ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Style x:Key="BackgroundStyle" TargetType="{x:Type dxg:RowControl}">
+                <Setter Property="Background">
+                    <Setter.Value>
+                        <Binding Path="Row.WBSLevel" >
+                            <Binding.Converter>
+                                <dxmvvm:ObjectToObjectConverter>
+                                    <dxmvvm:MapItem Source="1" Target="PowderBlue"/>
+                                    <dxmvvm:MapItem Source="2"  Target="PaleGreen"/>
+                                    <dxmvvm:MapItem Source="3" Target="Tomato"/>
+                                    <dxmvvm:MapItem Source="4" Target="PeachPuff"/>
+                                    <dxmvvm:MapItem Source="5"  Target="PaleTurquoise"/>
+                                    <dxmvvm:MapItem Source="6" Target="MistyRose"/>
+                                    <dxmvvm:MapItem Source="7" Target="Plum"/>
+                                </dxmvvm:ObjectToObjectConverter>
+                            </Binding.Converter>
+                        </Binding>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <DataTemplate x:Key="TimeTemplate">
+                <dxe:DateEdit x:Name="PART_Editor" Mask="dd-MMM-yy" MaskUseAsDisplayFormat="True">
+                </dxe:DateEdit>
+            </DataTemplate>
+            <DataTemplate x:Key="GanttTemplate">
+                <commonviewmodel:GanttCanvas EditRange="{Binding SelectionRange, ElementName=GanttRange}" DataContext="{Binding Value}" x:Name="LayoutRoot">
+                    <Border Canvas.Top="2" CornerRadius="3"
+        			    Canvas.Left="{Binding Left, Mode=OneWay}"
+        			    Height="16" Opacity="1"
+        			    Width="{Binding Width, Mode=OneWay}"
+        			    BorderThickness="1" BorderBrush="DimGray">
+                    </Border>
+                    <ItemsControl ItemsSource="{Binding Days, Mode=OneWay}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Rectangle Width="{Binding DataContext.DayWidth, ElementName=LayoutRoot, Mode=OneWay}"
+        						       Height="20" Stroke="Gray" StrokeThickness="0.1"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </commonviewmodel:GanttCanvas>
+            </DataTemplate>
+            <ControlTemplate x:Key="{themes:CalendarClientThemeKey IsThemeIndependent=True, ResourceKey=CalendarItemTemplate}" 
+                         TargetType="{x:Type dxe:CalendarItem}">
+                <Border x:Name="Border" Background="#FFB9BAC3" BorderThickness="0">
+                    <TextBlock x:Name="Text" Text="{TemplateBinding Text}" TextAlignment="Center" 
+        			HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0" />
+                </Border>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter TargetName="Border" Property="Background" Value="LightSteelBlue" />
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <dxmvvm:Interaction.Behaviors>
+            <dx:DialogService x:Name="CommodityCodeDialogService">
+                <dx:DialogService.DialogStyle>
+                    <Style TargetType="dx:DXDialogWindow">
+                        <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                    </Style>
+                </dx:DialogService.DialogStyle>
+            </dx:DialogService>
+        </dxmvvm:Interaction.Behaviors>
+        <Grid DataContext="{Binding MainViewModel}">
+            <DockPanel>
+                <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False"
+                                   MDIMergeStyle="Always">
+                    <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
+                        <dxr:RibbonPage Caption="Home">
+                            <dxr:RibbonPageGroup Caption="BASELINE ITEM Tasks">
+                                <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"
+                                                   LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}"
+                                                   LargeGlyph="{dx:DXImage Image=Undo_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=Undo_16x16.png}" />
+                                <dxb:BarButtonItem Content="Redo" Command="{Binding RedoCommand}"
+                                                   LargeGlyph="{dx:DXImage Image=Redo_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=Redo_16x16.png}" />
+                                <dxb:BarButtonItem Content="Save Layout"
+                                                   Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImage Image=Save_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=Save_16x16.png}" />
+                                <dxb:BarButtonItem Content="Reset Layout"
+                                                   Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
+                                <dxb:BarItemSeparator />
+                                <dxb:BarButtonItem Content="Export"
+                                                   Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
+                            </dxr:RibbonPageGroup>
+                        </dxr:RibbonPage>
+                    </dxr:RibbonDefaultPageCategory>
+                </dxr:RibbonControl>
+                <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
+                    <dxr:RibbonStatusBarControl.LeftItems>
+                        <dxb:BarStaticItem
+                            Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                    </dxr:RibbonStatusBarControl.LeftItems>
+                </dxr:RibbonStatusBarControl>
+                <Grid>
+                    <dxlc:LayoutControl x:Name="layoutControl" Orientation="Vertical">
+                        <dxlc:LayoutGroup Name="LayoutGroupTreeGrid" View="Group" Orientation="Vertical">
+                            <!--<dxe:RangeControl x:Name="GanttRange" DockPanel.Dock="Top" 
+			                      HorizontalAlignment="Right"
+			                      Width="{Binding DataContext.CanvasWidth, Mode=OneWay, ElementName=userControl}"
+			                      RangeStart="{Binding DataContext.Beg, ElementName=userControl}"
+			                      RangeEnd="{Binding DataContext.End, ElementName=userControl}"
+			                      VisibleRangeStart="{Binding DataContext.VisBeg, ElementName=userControl}"
+			                      VisibleRangeEnd="{Binding DataContext.VisEnd, ElementName=userControl}"
+			                      SelectionRangeStart="{Binding DataContext.SelBeg, ElementName=userControl}"
+			                      SelectionRangeEnd="{Binding DataContext.SelEnd, ElementName=userControl}"
+			                      ShowNavigationButtons="True" 
+			                      ShowLabels="True" ShowRangeBar="False"
+			                      AllowScroll="False" AllowZoom="False" UpdateDelay="500"
+			                      Margin="0 10 18 0" Height="25">
+                                <dxe:CalendarClient FontSize="12" FontWeight="Medium"  AllowGrouping="False">
+                                    <dxe:CalendarClient.IntervalFactories>
+                                        <dxe:MonthIntervalFactory/>
+                                    </dxe:CalendarClient.IntervalFactories>
+                                </dxe:CalendarClient>
+                            </dxe:RangeControl>-->
+                            <dxg:GridControl ItemsSource="{Binding DataContext.P6Activities, ElementName=userControl}" DesignTimeDataObjectType="{x:Type commonviewmodel:GanttData}">
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn FieldName="Description" IsSmart="True" Header="Task" FilterPopupMode="CheckedList" />
+                                    <dxg:GridColumn FieldName="DisplayActivityType" IsSmart="True" FixedWidth="True" Width="150" Header="Task" FilterPopupMode="CheckedList" />
+                                    <dxg:GridColumn FieldName="Start" IsSmart="True" FixedWidth="True" Width="150" Header="Begin" CellTemplate="{StaticResource TimeTemplate}" />
+                                    <dxg:GridColumn FieldName="End" IsSmart="True" FixedWidth="True" Width="150" Header="End" CellTemplate="{StaticResource TimeTemplate}" />
+                                    <!--<dxg:GridColumn Binding="{Binding}" CellTemplate="{StaticResource GanttTemplate}" Header="Chart" />-->
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.View>
+                                    <dxg:TreeListView x:Name="treeView" AllowPerPixelScrolling="True" 
+					                  ShowTotalSummary="False"
+					                  AutoWidth="True"
+					                  AllowEditing="False"
+                                      NavigationStyle="Row"
+					                  ParentFieldName="ParentId"
+					                  KeyFieldName="Id"
+                                      AutoExpandAllNodes="True"
+                                      RowStyle="{StaticResource BackgroundStyle}"
+					                  TreeDerivationMode="Selfreference">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand EventName="NodeExpanded" Command="{Binding DataContext.NodeExpandedCommand, ElementName=userControl}"/>
+                                        </dxmvvm:Interaction.Behaviors>
+                                    </dxg:TreeListView>
+                                </dxg:GridControl.View>
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxg:TreeListDragDropManager AllowDrop="True" Drop="TreeListDragDropManager_Drop" Dropped="TreeListDragDropManager_Dropped" />
+                                </dxmvvm:Interaction.Behaviors>
+                            </dxg:GridControl>
+                            <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlESTIMATION_DIRECT_ITEM" 
+                                     Style="{StaticResource DefaultGridControlTemplate}">
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn Name="colAREA" FieldName="Entity.GUID_AREA" Header="AREA" ReadOnly="True" AllowEditing="False" >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings
+                                        ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM"
+                                        ValueMember="GUID" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Name="colSUBAREA" FieldName="Entity.SubAreaGuid" Header="SUBAREA" ReadOnly="True" AllowEditing="False" ColumnFilterMode="DisplayText">
+                                        <dxg:GridColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <dxe:ComboBoxEdit 
+                                                  x:Name="PART_Editor"
+                                                  ItemsSource="{Binding RowData.Row.Entity.SubAreaCollection}"
+                                                  DisplayMember="INTERNAL_NUM" 
+                                                  ValueMember="GUID"
+                                                  ValidateOnTextInput="True"
+                                                  ValidateOnEnterKeyPressed="True"
+                                                  IncrementalFiltering="True"
+                                                  NullValueButtonPlacement="Popup"
+                                                  ImmediatePopup="True">
+                                                </dxe:ComboBoxEdit>
+                                            </DataTemplate>
+                                        </dxg:GridColumn.CellTemplate>
+                                        <!--For Filtering-->
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
+                                                              ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}"
+                                                              IsTextEditable="True" AutoComplete="True"
+                                                              DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.GUID_DISCIPLINE" Header="DISCIPLINE" ReadOnly="True" AllowEditing="False" >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings
+                                        ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
+                                        ValueMember="GUID" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Name="colDISCIPLINE_NUM" FieldName="Entity.DISCIPLINE_NUM" Header="DISC. NUM" ReadOnly="True" AllowEditing="False" >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:SpinEditSettings IsTextEditable="True" IsFloatValue="False"
+                                                                      Increment="1" MinValue="1" MaxValue="99"
+                                                                      MaskType="Numeric" Mask="n0"
+                                                                      MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Name="colCOMMODITY_CODE" FieldName="CommodityCodeGuid" Header="COMMODITY CODE" ReadOnly="True" AllowEditing="False" >
+                                        <dxg:GridColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <dxg:LookUpEdit
+                                            Name="PART_Editor"
+                                            AutoComplete="True"
+                                            ValueMember="GUID"
+                                            DisplayMember="CODE"
+                                            IsTextEditable="true"
+                                            PopupMinWidth="1500"
+                                            AutoPopulateColumns="False"
+                                            NullValueButtonPlacement="None"
+                                            ItemsSource="{Binding RowData.Row.CommodityCodeCollection}">
+                                                    <dxg:LookUpEdit.StyleSettings>
+                                                        <dxg:SearchLookUpEditStyleSettings/>
+                                                    </dxg:LookUpEdit.StyleSettings>
+                                                    <dxg:LookUpEdit.PopupContentTemplate>
+                                                        <ControlTemplate TargetType="ContentControl">
+                                                            <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False" SelectionMode="Row">
+                                                                <dxg:GridControl.Columns>
+                                                                    <dxg:GridColumn FieldName="CODE" ReadOnly="True" AllowEditing="False" />
+                                                                    <dxg:GridColumn FieldName="ProjectNumber" ReadOnly="True" AllowEditing="False" />
+                                                                    <dxg:GridColumn FieldName="NAME" ReadOnly="True" AllowEditing="False" />
+                                                                    <dxg:GridColumn FieldName="TYPE" ReadOnly="True" AllowEditing="False" />
+                                                                    <dxg:GridColumn FieldName="SPEC" ReadOnly="True" AllowEditing="False" />
+                                                                    <dxg:GridColumn FieldName="DESCRIPTION" ReadOnly="True" AllowEditing="False" />
+                                                                    <dxg:GridColumn FieldName="UOM" ReadOnly="True" AllowEditing="False" />
+                                                                    <dxg:GridColumn FieldName="RATE_SUPPLY" ReadOnly="True">
+                                                                        <dxg:GridColumn.EditSettings>
+                                                                            <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True"
+                                                                    Increment="10" />
+                                                                        </dxg:GridColumn.EditSettings>
+                                                                    </dxg:GridColumn>
+                                                                    <dxg:GridColumn FieldName="HOURS_INSTALL" ReadOnly="True" AllowEditing="False" >
+                                                                        <dxg:GridColumn.EditSettings>
+                                                                            <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True"
+                                                                    Increment="10" />
+                                                                        </dxg:GridColumn.EditSettings>
+                                                                    </dxg:GridColumn>
+                                                                </dxg:GridControl.Columns>
+                                                                <dxg:GridControl.View>
+                                                                    <dxg:TableView
+                                                            ShowSelectionRectangle="True"
+                                                            ShowFocusedRectangle="True"
+                                                            ShowSearchPanelMode="Always"
+                                                            ShowGroupPanel="True"
+                                                            ShowSearchPanelNavigationButtons="True"/>
+                                                                </dxg:GridControl.View>
+                                                            </dxg:GridControl>
+                                                        </ControlTemplate>
+                                                    </dxg:LookUpEdit.PopupContentTemplate>
+                                                </dxg:LookUpEdit>
+                                            </DataTemplate>
+                                        </dxg:GridColumn.CellTemplate>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Name="colTRACK" FieldName="Entity.TRACK" Header="TRACK" ReadOnly="True">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:CheckEditSettings />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Name="colSTANDALONE" FieldName="Entity.STANDALONE" Header="STANDALONE" ReadOnly="True" AllowEditing="False" >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:CheckEditSettings />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.COMMENTS" Header="COMMENTS" ReadOnly="True" AllowEditing="False" />
+                                    <dxg:GridColumn Name="colESTIMATED_QUANTITY" FieldName="Entity.ESTIMATED_QUANTITY" Header="ESTIMATED_QUANTITY" ReadOnly="True" AllowEditing="False" >
+                                        <dxg:GridColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="3" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n"
+                                                              MaskUseAsDisplayFormat="True" Increment="1"
+                                                              MinValue="0"
+                                                              Grid.Column="2">
+                                                    </dxe:SpinEdit>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </dxg:GridColumn.CellTemplate>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="SUPPLY RATE" FieldName="COMMODITY_CODE.RATE_SUPPLY" ReadOnly="True" AllowEditing="False" >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True" Increment="10" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="INSTALL HOURS" FieldName="COMMODITY_CODE.HOURS_INSTALL" ReadOnly="True" AllowEditing="False" >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True" Increment="1" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="STOCK CODE" FieldName="StockCodeGuid" ReadOnly="True" AllowEditing="False" >
+                                        <dxg:GridColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <dxe:ComboBoxEdit 
+                                                  x:Name="PART_Editor"
+                                                  ItemsSource="{Binding RowData.Row.StockCodeCollection}"
+                                                  DisplayMember="CODE" 
+                                                  ValueMember="GUID"
+                                                  ValidateOnTextInput="True"
+                                                  ValidateOnEnterKeyPressed="True"
+                                                  IncrementalFiltering="True"
+                                                  NullValueButtonPlacement="Popup"
+                                                  ImmediatePopup="True">
+                                                </dxe:ComboBoxEdit>
+                                            </DataTemplate>
+                                        </dxg:GridColumn.CellTemplate>
+                                        <!--For Filtering-->
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
+                                                              ItemsSource="{Binding DataContext.ProjectSTOCK_CODECollection, ElementName=userControl}"
+                                                              IsTextEditable="True" AutoComplete="True"
+                                                              DisplayMember="CODE" ValueMember="GUID" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="TOTAL INSTALL HOURS" FieldName="TotalHours" ReadOnly="True" AllowEditing="False" >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="SUPPLY COST" FieldName="Supply_Cost" ReadOnly="True" AllowEditing="False" >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="INSTALL COST" FieldName="Install_Cost" ReadOnly="True" AllowEditing="False" >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="UOM" FieldName="COMMODITY_CODE.UOM" ReadOnly="True" AllowEditing="False" />
+                                    <dxg:GridColumn Header="NAME" FieldName="COMMODITY_CODE.NAME" ReadOnly="True" AllowEditing="False" />
+                                    <dxg:GridColumn Header="TYPE" FieldName="COMMODITY_CODE.TYPE" ReadOnly="True" AllowEditing="False" />
+                                    <dxg:GridColumn Header="SPEC" FieldName="COMMODITY_CODE.SPEC" ReadOnly="True" AllowEditing="False" />
+                                    <dxg:GridColumn Header="DESCRIPTION" FieldName="COMMODITY_CODE.DESCRIPTION" ReadOnly="True" AllowEditing="False" />
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.GroupSummary>
+                                    <dxg:GridSummaryItem FieldName="Entity.COMMENTS" SummaryType="Count"
+                                                 Alignment="Right" DisplayFormat="Total {0} Records" />
+                                    <dxg:GridSummaryItem FieldName="Entity.ESTIMATED_QUANTITY" SummaryType="Sum"
+                                                 ShowInColumn="Entity.ESTIMATED_QUANTITY"
+                                                 DisplayFormat="Total: {0}" />
+                                    <dxg:GridSummaryItem FieldName="Total_Install_Hours" SummaryType="Sum"
+                                                 ShowInColumn="Total_Install_Hours"
+                                                 DisplayFormat="Total: {0}" />
+                                    <dxg:GridSummaryItem FieldName="Supply_Cost" SummaryType="Sum"
+                                                 ShowInColumn="Supply_Cost"
+                                                 DisplayFormat="Total: {0}" />
+                                    <dxg:GridSummaryItem FieldName="Install_Cost" SummaryType="Sum"
+                                                 ShowInColumn="Install_Cost"
+                                                 DisplayFormat="Total: {0}" />
+                                </dxg:GridControl.GroupSummary>
+                                <dxg:GridControl.TotalSummary>
+                                    <dxg:GridSummaryItem FieldName="Entity.COMMENTS" SummaryType="Count"
+                                                 Alignment="Right" DisplayFormat="Total {0} Records" />
+                                    <dxg:GridSummaryItem FieldName="Entity.ESTIMATED_QUANTITY" SummaryType="Sum"
+                                                 ShowInColumn="Entity.ESTIMATED_QUANTITY"
+                                                 DisplayFormat="Total: {0}" />
+                                    <dxg:GridSummaryItem FieldName="Total_Install_Hours" SummaryType="Sum"
+                                                 ShowInColumn="Total_Install_Hours"
+                                                 DisplayFormat="Total: {0}" />
+                                    <dxg:GridSummaryItem FieldName="Supply_Cost" SummaryType="Sum"
+                                                 ShowInColumn="Supply_Cost"
+                                                 DisplayFormat="Total: {0}" />
+                                    <dxg:GridSummaryItem FieldName="Install_Cost" SummaryType="Sum"
+                                                 ShowInColumn="Install_Cost"
+                                                 DisplayFormat="Total: {0}" />
+                                </dxg:GridControl.TotalSummary>
+                                <dxg:GridControl.View>
+                                    <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" >
+                                        <dxg:TableView.RowCellMenuCustomizations>
+                                            <dxb:BarButtonItem Content="Refresh"
+                                                       Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
+                                                       Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                        </dxg:TableView.RowCellMenuCustomizations>
+                                    </dxg:TableView>
+                                </dxg:GridControl.View>
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxg:GridDragDropManager AllowDrag="True" AllowScrolling="True" />
+                                </dxmvvm:Interaction.Behaviors>
+                            </dxg:GridControl>
+                        </dxlc:LayoutGroup>
+                    </dxlc:LayoutControl>
+                </Grid>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</UserControl>

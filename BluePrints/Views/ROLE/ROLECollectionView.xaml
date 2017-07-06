@@ -81,8 +81,7 @@
                         <dxg:TreeListControl Name="treeListControl" dx:DXSerializer.SerializationID="ROLETree" MaxHeight="2000" MouseUp="treeListControl_MouseUp" SelectionMode="Cell"
                                          Style="{StaticResource DefaultTreeListControlTemplate}">
                             <dxmvvm:Interaction.Behaviors>
-                                <dxg:TreeListDragDropManager x:Name="dragDropManager" Dropped="dragDropManager_Dropped"
-                                                         Drop="dragDropManager_Drop" />
+                                <dxg:TreeListDragDropManager x:Name="dragDropManager" Dropped="dragDropManager_Dropped" Drop="dragDropManager_Drop" />
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:TreeListControl.Columns>
                                 <dxg:TreeListColumn Header="NAME" FieldName="Entity.NAME" VisibleIndex="10" />
@@ -95,7 +94,7 @@
                             </dxg:TreeListControl.Columns>
                             <dxg:TreeListControl.View>
                                 <dxg:TreeListView x:Name="treeListView" AllowSorting="True" 
-                                              ParentFieldName="ParentGuid" ExpandStateFieldName="IsExpanded" 
+                                              ParentFieldName="ParentEntityKey" ExpandStateFieldName="IsExpanded" 
                                               KeyFieldName="EntityGuid" >
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:EventToCommand PassEventArgsToCommand="True"

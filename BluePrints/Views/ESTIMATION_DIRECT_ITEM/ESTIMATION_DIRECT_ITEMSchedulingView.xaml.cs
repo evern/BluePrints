@@ -1,0 +1,40 @@
+﻿using BaseModel.Misc;
+using BluePrints.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace BluePrints.Views
+{
+    /// <summary>
+    /// Interaction logic for ESTIMATION_DIRECT_ITEMCollectionView.xaml
+    /// </summary>
+    public partial class ESTIMATION_DIRECT_ITEMSchedulingView : UserControl
+    {
+        public ESTIMATION_DIRECT_ITEMSchedulingView()
+        {
+            InitializeComponent();
+        }
+
+        private void TreeListDragDropManager_Dropped(object sender, DevExpress.Xpf.Grid.DragDrop.TreeListDroppedEventArgs e)
+        {
+            return;
+        }
+
+        private void TreeListDragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.TreeListDropEventArgs e)
+        {
+            e.Handled = true;
+        }
+    }
+}

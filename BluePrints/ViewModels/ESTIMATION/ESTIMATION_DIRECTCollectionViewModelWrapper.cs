@@ -3,6 +3,7 @@ using BaseModel.Misc;
 using BaseModel.ViewModel.Document;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Data;
 using BluePrints.P6Data;
@@ -62,12 +63,18 @@ namespace BluePrints.ViewModels
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
+            loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJWBS, P6PROJECTProjectionFunc);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
         {
             return query => query.Where(x => x.GUID == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<PROJWBS>, IQueryable<PROJWBS>> P6PROJECTProjectionFunc()
+        {
+            return query => query.Where(x => x.proj_node_flag == "Y" && x.wbs_short_name.Contains(loadPROJECT.NUMBER)).OrderBy(proj => proj.wbs_short_name);
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
@@ -154,6 +161,21 @@ namespace BluePrints.ViewModels
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }
 
+        public bool CanP6BASELINE_ASSIGN()
+        {
+            return DisplaySelectedEntity != null && DisplaySelectedEntity.P6BASELINE_NAME != null &&
+                   DisplaySelectedEntity.P6BASELINE_NAME != string.Empty;
+        }
+
+        public void P6BASELINE_ASSIGN()
+        {
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
+                new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original },
+                "ESTIMATION_DIRECT_ITEMSchedulingView",
+                DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping");
+
+            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+        }
         #endregion
     }
 }

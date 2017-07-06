@@ -1,4 +1,5 @@
 ﻿using BluePrints.Common.Projections;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using System.ComponentModel.DataAnnotations;
 
@@ -406,18 +407,18 @@ namespace BluePrints.Common
     /// </summary>
     public class P6ActivityAssignment
     {
-        public P6ActivityAssignment(BASELINE_ITEMProjection baseline_itemProjection, BASELINE_ITEM_ASSIGNMENT baseline_item_assignment)
+        public P6ActivityAssignment(ISortableDeliverableProjection deliverableProjection, BASELINE_ITEM_ASSIGNMENT baseline_item_assignment)
         {
-            this.baseline_itemProjection = baseline_itemProjection;
+            this.deliverableProjection = deliverableProjection;
             this.baseline_item_assignment = baseline_item_assignment;
         }
 
         public readonly BASELINE_ITEM_ASSIGNMENT baseline_item_assignment;
-        public readonly BASELINE_ITEMProjection baseline_itemProjection;
+        public readonly ISortableDeliverableProjection deliverableProjection;
 
         public string INTERNAL_NUM
         {
-            get { return baseline_itemProjection.Entity.INTERNAL_NUM; }
+            get { return deliverableProjection.ReportableItem_Name; }
         }
 
         public string P6_ACTIVITY
@@ -427,7 +428,7 @@ namespace BluePrints.Common
 
         public decimal UNITS
         {
-            get { return ((baseline_item_assignment.HIGH_VALUE - baseline_item_assignment.LOW_VALUE) + 0.01m) * baseline_itemProjection.TotalUnitsIncludeByDuration; }
+            get { return ((baseline_item_assignment.HIGH_VALUE - baseline_item_assignment.LOW_VALUE) + 0.01m) * deliverableProjection.TotalHoursIncludeByDuration; }
         }
 
         public void Reassign(string p6NewActivity)
