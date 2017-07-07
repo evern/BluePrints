@@ -351,6 +351,10 @@
     <Compile Include="Common\Base\BluePrintsEntitiesMasterDetailCollectionsWrapper.cs" />
     <Compile Include="Common\Base\BluePrintsEntitiesTreeCollectionWrapper.cs" />
     <Compile Include="Common\Base\DashboardCollectionViewModelWrapper.cs" />
+    <Compile Include="Common\DragDrop\CustomChildSelector.cs" />
+    <Compile Include="Common\DragDrop\CustomTreeListDragDropManager.cs" />
+    <Compile Include="Common\DragDrop\RowColorConverter.cs" />
+    <Compile Include="Common\DragDrop\RowNameConverter.cs" />
     <Compile Include="Common\Misc\ActiveDirectory.cs" />
     <Compile Include="Common\Helpers\CommonMethods.cs" />
     <Compile Include="Common\Helpers\CustomMessageBoxService.cs" />
@@ -376,7 +380,6 @@
     <Compile Include="Common\Projections\WORKPACKProjection.cs" />
     <Compile Include="Common\Projections\USER_Dashboard.cs" />
     <Compile Include="Common\Projections\WORKPACK_Dashboard.cs" />
-    <Compile Include="Common\Reports\DataModel.cs" />
     <Compile Include="Common\Reports\UserReportDesigner.cs">
       <SubType>Form</SubType>
     </Compile>

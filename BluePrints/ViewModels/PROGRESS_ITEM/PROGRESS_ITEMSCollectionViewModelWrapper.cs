@@ -319,7 +319,8 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentViewModel(this);
             //mainThreadDispatcher.BeginInvoke(new Action(() => InitializeSummarizer(entities)));
 
-            onMainViewModelFirstLoadedTimer.Start();
+            if(!isClickedDateChange)
+                onMainViewModelFirstLoadedTimer.Start();
 
             base.AssignCallBacksAndRaisePropertyChange(entities);
             isFirstLoaded = true;
@@ -457,6 +458,11 @@ namespace BluePrints.ViewModels
             }
 
             return true;
+        }
+
+        public void ClickedRefresh()
+        {
+            isClickedDateChange = false;
         }
 
         public override void FullRefresh()
@@ -665,13 +671,16 @@ namespace BluePrints.ViewModels
             return true;
         }
 
+        bool isClickedDateChange = false;
         public void DateForward()
         {
+            isClickedDateChange = true;
             DateChange(DateNavigationType.Forward);
         }
 
         public void DateBackward()
         {
+            isClickedDateChange = true;
             DateChange(DateNavigationType.Backward);
         }
 

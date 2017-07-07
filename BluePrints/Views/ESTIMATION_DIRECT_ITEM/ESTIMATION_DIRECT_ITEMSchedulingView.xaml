@@ -32,6 +32,7 @@
              DataContext="{dxmvvm:ViewModelSource viewmodel:ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
+            <common:RowNameConverter x:Key="RowNameConverter" />
             <Style x:Key="BackgroundStyle" TargetType="{x:Type dxg:RowControl}">
                 <Setter Property="Background">
                     <Setter.Value>
@@ -195,7 +196,31 @@
                                     </dxg:TreeListView>
                                 </dxg:GridControl.View>
                                 <dxmvvm:Interaction.Behaviors>
-                                    <dxg:TreeListDragDropManager AllowDrop="True" Drop="TreeListDragDropManager_Drop" Dropped="TreeListDragDropManager_Dropped" />
+                                    <common:CustomTreeListDragDropManager AllowDrop="True" Drop="TreeListDragDropManager_Drop" Dropped="TreeListDragDropManager_Dropped" >
+                                        <dxg:TreeListDragDropManager.DragElementTemplate>
+                                            <DataTemplate>
+                                                <Border Background="White" CornerRadius="5" BorderThickness="2" BorderBrush="LightGray">
+                                                    <StackPanel Orientation="Vertical" Background="White" HorizontalAlignment="Left" Margin="5">
+                                                        <StackPanel Margin="5" Orientation="Vertical" Background="White">
+                                                            <TextBlock Padding="3" FontWeight="Bold" Text="{Binding Path=DraggingRows.Count, StringFormat='Dragging {0} row(s)'}" />
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Source: " />
+                                                                <TextBlock Padding="0,3,3,3" Text="{Binding Path=DraggingRows, Converter={StaticResource RowNameConverter}}"/>
+                                                            </StackPanel>
+                                                        </StackPanel>
+                                                        <Separator />
+                                                        <StackPanel Margin="5" Orientation="Horizontal">
+                                                            <!--<StackPanel.Background>
+                                                                <Binding Path="." Converter="{StaticResource RowColorConverter}" UpdateSourceTrigger="PropertyChanged"/>
+                                                            </StackPanel.Background>-->
+                                                            <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Target: " />
+                                                            <TextBlock Padding="0,3,3,0" Text="{Binding Path=DropTargetRow, Converter={StaticResource RowNameConverter}}"/>
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </dxg:TreeListDragDropManager.DragElementTemplate>
+                                    </common:CustomTreeListDragDropManager>
                                 </dxmvvm:Interaction.Behaviors>
                             </dxg:GridControl>
                             <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlESTIMATION_DIRECT_ITEM" 
@@ -430,7 +455,31 @@
                                     </dxg:TableView>
                                 </dxg:GridControl.View>
                                 <dxmvvm:Interaction.Behaviors>
-                                    <dxg:GridDragDropManager AllowDrag="True" AllowScrolling="True" />
+                                    <dxg:GridDragDropManager AllowDrag="True" AllowScrolling="True" >
+                                        <dxg:GridDragDropManager.DragElementTemplate>
+                                            <DataTemplate>
+                                                <Border Background="White" CornerRadius="5" BorderThickness="2" BorderBrush="LightGray">
+                                                    <StackPanel Orientation="Vertical" Background="White" HorizontalAlignment="Left" Margin="5">
+                                                        <StackPanel Margin="5" Orientation="Vertical" Background="White">
+                                                            <TextBlock Padding="3" FontWeight="Bold" Text="{Binding Path=DraggingRows.Count, StringFormat='Dragging {0} row(s)'}" />
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Source: " />
+                                                                <TextBlock Padding="0,3,3,3" Text="{Binding Path=DraggingRows, Converter={StaticResource RowNameConverter}}"/>
+                                                            </StackPanel>
+                                                        </StackPanel>
+                                                        <Separator />
+                                                        <StackPanel Margin="5" Orientation="Horizontal">
+                                                            <!--<StackPanel.Background>
+                                                                <Binding Path="." Converter="{StaticResource RowColorConverter}" UpdateSourceTrigger="PropertyChanged"/>
+                                                            </StackPanel.Background>-->
+                                                            <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Target: " />
+                                                            <TextBlock Padding="0,3,3,0" Text="{Binding Path=DropTargetRow, Converter={StaticResource RowNameConverter}}"/>
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </dxg:GridDragDropManager.DragElementTemplate>
+                                    </dxg:GridDragDropManager>
                                 </dxmvvm:Interaction.Behaviors>
                             </dxg:GridControl>
                         </dxlc:LayoutGroup>

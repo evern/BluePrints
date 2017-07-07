@@ -166,6 +166,7 @@ namespace BluePrints.ViewModels
                         GUID_DISCIPLINE = globalStockCode.GUID_DISCIPLINE,
                         GUID_PROJECT = loadPROJECT.GUID,
                         GUID_SUBAREA = subAreaGuid,
+                        UOM = globalStockCode.UOM,
                         CODE = globalStockCode.CODE,
                         DESCRIPTION = globalStockCode.DESCRIPTION
                     });
