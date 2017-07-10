@@ -23,14 +23,6 @@ namespace BluePrints.Common.Projections
         public PROGRESS loadPROGRESS { get; set; }
         #endregion
 
-        /// <summary>
-        /// Refreshes current row when stats budgeted datapoints are set
-        /// </summary>
-        public void Update()
-        {
-            RaisePropertyChanged();
-        }
-
         public PROGRESS_ITEMProjection()
         {
         }
@@ -81,7 +73,7 @@ namespace BluePrints.Common.Projections
             List<VariationAdjustment> currentProgressItemAdjustments = projectVariationAdjustments.Where(x => x.DeliverableOriginalGuid == this.Entity.Entity.GUID_ORIGINAL).ToList();
 
             PartialStatsBuilder partialStatsBuilder = new PartialStatsBuilder(PROJECT, LiveBASELINE, LivePROGRESS, WORKPACKS, WORKPACKS.SelectMany(x => x.WORKPACK_ASSIGNMENT).ToList(), P6UOW);
-            this.Stats = new ProgressStats(LivePROGRESS, this.Entity.Entity.ESTIMATED_HOURS, this.Entity.Entity.TOTAL_HOURS, this.Entity.ESTIMATED_COSTS, this.Entity.TOTAL_COSTS, projectVariationAdjustments.Where(x => x.DeliverableOriginalGuid == this.Entity.Entity.GUID_ORIGINAL).ToList());
+            this.Stats = new ProgressStats(LivePROGRESS, this.Entity.Entity.ESTIMATED_HOURS, this.Entity.Entity.TOTAL_HOURS, this.Entity.EstimatedCosts, this.Entity.TotalCosts, projectVariationAdjustments.Where(x => x.DeliverableOriginalGuid == this.Entity.OriginalEntityKey).ToList());
             StatSummarizer = new SingleObjectSummarizer(this, partialStatsBuilder);
         }
 
@@ -356,7 +348,6 @@ namespace BluePrints.Common.Projections
             }
         }
 
-
         private decimal? total_earned_percentage;
 
         public decimal TOTAL_EARNED_PERCENTAGE
@@ -374,7 +365,7 @@ namespace BluePrints.Common.Projections
                         var earnedUnits = TOTAL_EARNED_UNITS;
                         total_earned_percentage = earnedUnits / BluePrintsConstants.DurationBasedTotalUnits;
                     }
-                    else if(totalUnits > 0)
+                    else if (totalUnits > 0)
                     {
                         var earnedUnits = TOTAL_EARNED_UNITS;
                         total_earned_percentage = earnedUnits / totalUnits;
@@ -403,7 +394,7 @@ namespace BluePrints.Common.Projections
 
                     PROGRESS_ITEMCurrent.EARNED_UNITS = earnedUnits;
                 }
-                else if(Entity.Entity.BY_DURATION)
+                else if (Entity.Entity.BY_DURATION)
                 {
                     decimal earnedUnits = value * BluePrintsConstants.DurationBasedTotalUnits;
                     earnedUnits -= PastPROGRESS_ITEMS_UNITS;
@@ -417,6 +408,8 @@ namespace BluePrints.Common.Projections
                 total_earned_percentage = value;
             }
         }
+
+
 
         //xaml use only
         public decimal DisplayTotalEarnedUnits
@@ -490,11 +483,11 @@ namespace BluePrints.Common.Projections
 
         public Guid? Workpack_Guid => Entity.Workpack_Guid;
 
-        public decimal TotalHoursIncludeByDuration => Entity.TotalHoursIncludeByDuration;
+        public decimal TotalUnitsIncludeByDuration => Entity.TotalUnitsIncludeByDuration;
 
-        public decimal EstimatedHours => Entity.EstimatedHours;
+        public decimal EstimatedUnits => Entity.EstimatedUnits;
 
-        public decimal TotalHours => Entity.TotalHours;
+        public decimal TotalUnits => Entity.TotalUnits;
 
         public Guid OriginalEntityKey
         {

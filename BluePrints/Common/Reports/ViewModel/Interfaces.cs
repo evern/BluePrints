@@ -18,7 +18,12 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     }
 
-    public interface IReportable : IDeliverable, IHaveStats, IHaveProgresses, ICanUpdate
+    public interface IReportableStats : IReportable
+    {
+        SingleObjectSummarizer StatSummarizer { get; }
+    }
+
+    public interface IReportable : IDeliverable, IHaveStats, IHaveProgresses
     {
         IDeliverable Deliverable { get; }
     }
@@ -79,19 +84,15 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal GetCurrentPeriodPercentage(decimal newTotalQuantity);
         decimal GetCurrentPeriodHours(decimal newPeriodPercentage);
     }
-
-    public interface ICanUpdate
-    {
-        void Update();
-    } 
     #endregion
 
     #region Property Specification Interfaces
     public interface ICanSetProgresses
     {
+        decimal Current_Total_Percentage { get; }
         void SetReportingDataDate(DateTime dataDate);
         void SetProgressItems(List<PROGRESS_ITEM> progresses);
-        void AppendProgressItem(PROGRESS_ITEM currentProgress);
+        void AppendCurrentProgressItem(PROGRESS_ITEM currentProgress);
     }
 
     public interface ICanTrack
@@ -103,6 +104,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         decimal ItemRate { get; }
         decimal EstimatedCosts { get; }
+        decimal VariationCosts { get; }
         decimal TotalCosts { get; }
     }
 
@@ -114,11 +116,17 @@ namespace BluePrints.Common.ViewModel.Reporting
         Guid? SubArea_Guid { get; }
     }
 
+    public interface ISupportByDuration
+    {
+        bool IsByDuration { get; }
+    }
+
     public interface IHaveHours
     {
-        decimal TotalHoursIncludeByDuration { get; }
-        decimal EstimatedHours { get; }
-        decimal TotalHours { get; }
+        decimal TotalUnitsIncludeByDuration { get; }
+        decimal EstimatedUnits { get; }
+        decimal TotalUnits { get; }
+        decimal VariationUnits { get; }
     }
 
     public interface IHaveQuantity

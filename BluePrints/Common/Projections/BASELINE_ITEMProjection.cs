@@ -19,87 +19,7 @@ namespace BluePrints.Common.Projections
         }
 
         public RATE RATE { get; set; }
-
-
-        public decimal ITEMRATE
-        {
-            get
-            {
-                if (RATE == null || RATE.RATE1 == null)
-                    return 0;
-
-                return (decimal) RATE.RATE1;
-            }
-        }
-
-        public decimal ESTIMATED_COSTS
-        {
-            get
-            {
-                if (Entity == null)
-                    return 0;
-
-                if (RATE == null || RATE.RATE1 == null)
-                    return 0;
-
-                return Entity.ESTIMATED_HOURS * (decimal) RATE.RATE1;
-            }
-        }
-
-        public decimal DC_COSTS
-        {
-            get
-            {
-                if (Entity == null)
-                    return 0;
-
-                if (RATE == null || RATE.RATE1 == null)
-                    return 0;
-
-                return Entity.DC_HOURS * (decimal)RATE.RATE1;
-            }
-        }
-
-        public decimal TotalUnitsIncludeByDuration
-        {
-            get
-            {
-                if (Entity == null)
-                    return 0;
-
-                if (Entity.BY_DURATION)
-                    return BluePrintsConstants.DurationBasedTotalUnits;
-
-                return Entity.TOTAL_HOURS + Entity.DC_HOURS;
-            }
-        }
-
-        public decimal TOTAL_UNITS
-        {
-            get
-            {
-                if (Entity == null)
-                    return 0;
-
-                return Entity.TOTAL_HOURS + Entity.DC_HOURS;
-            }
-        }
-
-        public decimal TOTAL_COSTS
-        {
-            get
-            {
-                if (Entity == null)
-                    return 0;
-
-                if (RATE == null || RATE.RATE1 == null)
-                    return 0;
-
-                return Entity.TOTAL_HOURS * ITEMRATE;
-            }
-        }
-
-
+        
         public ICollection<BASELINE_ITEM_ASSIGNMENT> ObservableBASELINE_ITEM_ASSIGNMENT { get; set; }
 
         private List<BASELINE_ITEM_ASSIGNMENT> baseline_item_assignments;
@@ -136,18 +56,18 @@ namespace BluePrints.Common.Projections
 
         public decimal ItemRate
         {
-            get { return ITEMRATE; }
+            get
+            {
+                if (RATE == null || RATE.RATE1 == null)
+                    return 0;
+
+                return (decimal)RATE.RATE1;
+            }
         }
 
-        public decimal EstimatedCosts
-        {
-            get { return ESTIMATED_COSTS; }
-        }
+        public decimal EstimatedCosts => EstimatedUnits * ItemRate;
 
-        public decimal TotalCosts
-        {
-            get { return TOTAL_COSTS; }
-        }
+        public decimal TotalCosts => TotalUnits * ItemRate;
 
         public string ReportableItem_Name => Entity.ReportableItem_Name;
 
@@ -155,24 +75,25 @@ namespace BluePrints.Common.Projections
 
         public Guid? Workpack_Guid => Entity.Workpack_Guid;
 
-        public decimal TotalHoursIncludeByDuration => Entity.TotalHoursIncludeByDuration;
+        public decimal EstimatedUnits => Entity.EstimatedUnits;
 
-        public decimal EstimatedHours => Entity.EstimatedHours;
+        public decimal TotalUnits => Entity.TotalUnits;
 
-        public decimal TotalHours => Entity.TotalHours;
+        public decimal TotalUnitsIncludeByDuration => Entity.TotalUnitsIncludeByDuration;
 
-        public Guid OriginalEntityKey
-        {
-            get { return Entity.OriginalEntityKey; }
-        }
+        public Guid OriginalEntityKey => Entity.OriginalEntityKey;
 
-        public void SetOriginalEntityKey(Guid newGuid) { }
+        public void SetOriginalEntityKey(Guid newGuid) => Entity.SetOriginalEntityKey(newGuid);
 
         public Guid? Area_Guid => Entity.GUID_AREA;
 
         public Guid? SubArea_Guid => Entity.GUID_SUBAREA;
 
         public string Discipline_Code => Entity.Discipline_Code;
+
+        public decimal VariationUnits => Entity.VariationUnits;
+
+        public decimal VariationCosts => Entity.VariationUnits * ItemRate;
     }
 
     public static class BASELINE_ITEMProjectionQueries

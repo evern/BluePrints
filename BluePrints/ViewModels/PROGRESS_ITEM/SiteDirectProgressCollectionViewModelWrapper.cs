@@ -325,7 +325,7 @@ namespace BluePrints.ViewModels
             {
                 if(entity.Reportables != null)
                 {
-                    foreach(DisplayReportable reportable in entity.Reportables)
+                    foreach(StandaloneDisplayReportable reportable in entity.Reportables)
                     {
                         IReportable reportableProjection = reportable.Deliverable as IReportable;
                         if(reportableProjection != null)
@@ -369,7 +369,7 @@ namespace BluePrints.ViewModels
             {
                 if (reportableProjection.PROGRESS_ITEM_Current == null)
                 {
-                    setProgressEntity.AppendProgressItem(newPROGRESS_ITEM);
+                    setProgressEntity.AppendCurrentProgressItem(newPROGRESS_ITEM);
                 }
             }
         }
@@ -387,7 +387,7 @@ namespace BluePrints.ViewModels
             List<PROGRESS_ITEM> newPRORESS_ITEMS = new List<PROGRESS_ITEM>();
             if (groupEntity != null)
             {
-                foreach (DisplayReportable progress in entity.Reportables)
+                foreach (StandaloneDisplayReportable progress in entity.Reportables)
                 {
                     PROGRESS_ITEM savePROGRESS_ITEM;
                     IReportable deliverable = progress.Deliverable as IReportable;

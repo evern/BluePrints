@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public class ProgressDisplay : BindableBase, IGuidEntityKey, ICanUpdate
+    public class ProgressDisplay : BindableBase, IGuidEntityKey
     {
         public Guid GUID { get => ProgressItem.EntityKey; set => ProgressItem.EntityKey = value; }
         public Guid EntityKey { get => ProgressItem.EntityKey; set => ProgressItem.EntityKey = value; }
-        public DisplayReportable ProgressItem { get; set; }
+        public StandaloneDisplayReportable ProgressItem { get; set; }
 
-        public IEnumerable<DisplayReportable> Reportables
+        public IEnumerable<StandaloneDisplayReportable> Reportables
         {
             get
             {
@@ -59,27 +59,27 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class GroupDisplayReportable : DisplayReportable
+    public class GroupDisplayReportable : StandaloneDisplayReportable
     {
-        public IEnumerable<DisplayReportable> ChildReportables;
+        public IEnumerable<StandaloneDisplayReportable> ChildReportables;
         public GroupDisplayReportable(IQuantityReportableGroup reportableGroup)
             : base(reportableGroup)
         {
-            this.ChildReportables = reportableGroup.Deliverables.Select(x => new DisplayReportable(x));
+            this.ChildReportables = reportableGroup.Deliverables.Select(x => new StandaloneDisplayReportable(x));
         }
     }
 
-    public class DisplayReportable : BindableBase, IReportable, ICanUpdate
+    public class StandaloneDisplayReportable : BindableBase, IReportable
     {
         readonly IReportable reportable;
 
         //For bindableBase property name usage only
-        public DisplayReportable()
+        public StandaloneDisplayReportable()
         {
 
         }
 
-        public DisplayReportable(IReportable deliverable)
+        public StandaloneDisplayReportable(IReportable deliverable)
         {
             this.reportable = deliverable;
         }
@@ -139,11 +139,11 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid? SubArea_Guid => reportable.SubArea_Guid;
 
-        public decimal TotalHoursIncludeByDuration => reportable.TotalHoursIncludeByDuration;
+        public decimal TotalUnitsIncludeByDuration => reportable.TotalUnitsIncludeByDuration;
 
-        public decimal EstimatedHours => reportable.EstimatedHours;
+        public decimal EstimatedUnits => reportable.EstimatedUnits;
 
-        public decimal TotalHours => reportable.TotalHours;
+        public decimal TotalUnits => reportable.TotalUnits;
 
         public decimal ItemRate
         {
@@ -300,73 +300,23 @@ namespace BluePrints.Common.ViewModel.Reporting
             return (decimal)currentTotalInstalledQuantity;
         }
 
-        public decimal TotalInstalledQuantity
-        {
-            get
-            {
-                return PastInstalledQuantity + CurrentTotalInstalledQuantity;
-            }
-        }
+        public decimal TotalInstalledQuantity => PastInstalledQuantity + CurrentTotalInstalledQuantity;
 
-        public DateTime ReportingDataDate
-        {
-            get
-            {
-                return reportable.ReportingDataDate;
-            }
-        }
+        public DateTime ReportingDataDate => reportable.ReportingDataDate;
 
-        public List<PROGRESS_ITEM> PROGRESS_ITEMS
-        {
-            get
-            {
-                return reportable.PROGRESS_ITEMS;
-            }
-        }
+        public List<PROGRESS_ITEM> PROGRESS_ITEMS => reportable.PROGRESS_ITEMS;
 
-        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_BeforeDataDate
-        {
-            get
-            {
-                return reportable.PROGRESS_ITEM_BeforeDataDate;
-            }
-        }
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_BeforeDataDate => reportable.PROGRESS_ITEM_BeforeDataDate;
 
-        public PROGRESS_ITEM PROGRESS_ITEM_Current
-        {
-            get
-            {
-                return reportable.PROGRESS_ITEM_Current;
-            }
-        }
+        public PROGRESS_ITEM PROGRESS_ITEM_Current => reportable.PROGRESS_ITEM_Current;
 
-        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_UpToCurrentDataDate
-        {
-            get
-            {
-                return reportable.PROGRESS_ITEM_UpToCurrentDataDate;
-            }
-        }
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_UpToCurrentDataDate => reportable.PROGRESS_ITEM_UpToCurrentDataDate;
 
-        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_AfterDataDate
-        {
-            get
-            {
-                return reportable.PROGRESS_ITEM_AfterDataDate;
-            }
-        }
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_AfterDataDate => reportable.PROGRESS_ITEM_AfterDataDate;
 
-        public ProgressStats Stats
-        {
-            get
-            {
-                return reportable.Stats;
-            }
-            set
-            {
-                reportable.Stats = value;
-            }
-        }
+        public ProgressStats Stats { get => reportable.Stats; set => reportable.Stats = value; }
+
+        public decimal VariationUnits => reportable.VariationUnits;
 
         public decimal GetCurrentPeriodHours(decimal newPeriodPercentage)
         {
@@ -438,21 +388,6 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
 
             return null;
-        }
-
-        public void Update()
-        {
-            GroupDisplayReportable groupReportable = this as GroupDisplayReportable;
-            if (groupReportable != null)
-            {
-                foreach (DisplayReportable reportable in groupReportable.ChildReportables)
-                {
-                    reportable.Update();
-                }
-            }
-
-            currentTotalInstalledQuantity = getActualCurrentTotalInstalledQuantity();
-            RaisePropertyChanged(() => CurrentTotalInstalledQuantity);
         }
     }
 }

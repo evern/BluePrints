@@ -428,7 +428,7 @@ namespace BluePrints.Common
 
         public decimal UNITS
         {
-            get { return ((baseline_item_assignment.HIGH_VALUE - baseline_item_assignment.LOW_VALUE) + 0.01m) * deliverableProjection.TotalHoursIncludeByDuration; }
+            get { return ((baseline_item_assignment.HIGH_VALUE - baseline_item_assignment.LOW_VALUE) + 0.01m) * deliverableProjection.TotalUnitsIncludeByDuration; }
         }
 
         public void Reassign(string p6NewActivity)

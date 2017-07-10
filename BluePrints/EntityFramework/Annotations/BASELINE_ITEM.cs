@@ -10,7 +10,7 @@ namespace BluePrints.Data
     using System.Linq;
 
     [ConstraintAttributes("GUID_BASELINE, INTERNAL_NUM")]
-    public partial class BASELINE_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, ISortableDeliverable
+    public partial class BASELINE_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, ISortableDeliverable, ISupportByDuration
     {
         public BASELINE_ITEM()
         {
@@ -263,19 +263,19 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public decimal TotalHoursIncludeByDuration
+        public decimal TotalUnitsIncludeByDuration
         {
             get { return Total_HoursIncludeByDuration; }
         }
 
         [NotMapped]
-        public decimal EstimatedHours
+        public decimal EstimatedUnits
         {
             get { return ESTIMATED_HOURS; }
         }
 
         [NotMapped]
-        public decimal TotalHours
+        public decimal TotalUnits
         {
             get { return TOTAL_HOURS; }
         }
@@ -287,9 +287,15 @@ namespace BluePrints.Data
         public Guid? SubArea_Guid => GUID_SUBAREA;
 
         [NotMapped]
-        public decimal Estimated_Quantity => EstimatedHours;
+        public decimal Estimated_Quantity => EstimatedUnits;
 
         [NotMapped]
-        public decimal Total_Quantity => TotalHours;
+        public decimal Total_Quantity => TotalUnits;
+
+        [NotMapped]
+        public decimal VariationUnits => DC_HOURS;
+
+        [NotMapped]
+        public bool IsByDuration => BY_DURATION;
     }
 }

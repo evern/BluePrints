@@ -26,11 +26,11 @@ namespace BluePrints.Common.Projections
 
         public Guid? SubArea_Guid => Entity.GUID_SUBAREA;
 
-        public decimal TotalHoursIncludeByDuration => Reportables.Sum(x => x.TotalHoursIncludeByDuration);
+        public decimal TotalUnitsIncludeByDuration => Reportables.Sum(x => x.TotalUnitsIncludeByDuration);
 
-        public decimal EstimatedHours => Reportables.Sum(x => x.EstimatedHours);
+        public decimal EstimatedUnits => Reportables.Sum(x => x.EstimatedUnits);
 
-        public decimal TotalHours => Reportables.Where(x => (bool)x.Track).Sum(x => x.TotalHours);
+        public decimal TotalUnits => Reportables.Where(x => (bool)x.Track).Sum(x => x.TotalUnits);
 
         public decimal ItemRate => Reportables.Sum(x => ((ISortableDeliverableProjection)x.Deliverable).ItemRate);
 

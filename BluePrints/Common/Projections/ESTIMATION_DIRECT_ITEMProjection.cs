@@ -105,18 +105,18 @@ namespace BluePrints.Common.Projections
 
         public Guid? SubArea_Guid => Entity.GUID_SUBAREA;
 
-        public decimal TotalHoursIncludeByDuration => EstimatedHours;
+        public decimal TotalUnitsIncludeByDuration => EstimatedUnits;
 
-        public decimal EstimatedHours => STOCK_CODE == null ? 0 : Entity.ESTIMATED_QUANTITY * STOCK_CODE.HOURS_INSTALL;
+        public decimal EstimatedUnits => STOCK_CODE == null ? 0 : Entity.ESTIMATED_QUANTITY * STOCK_CODE.HOURS_INSTALL;
 
-        public decimal TotalHours => EstimatedHours;
+        public decimal TotalUnits => EstimatedUnits;
 
         public Guid OriginalEntityKey { get => Entity.GUID_ORIGINAL; }
         public void SetOriginalEntityKey(Guid newGuid) { }
 
         public decimal ItemRate => RATE == null || RATE.RATE1 == null ? 0 : (decimal)RATE.RATE1;
 
-        public decimal EstimatedCosts => EstimatedHours * ItemRate;
+        public decimal EstimatedCosts => EstimatedUnits * ItemRate;
 
         public decimal TotalCosts => EstimatedCosts;
 
@@ -130,7 +130,7 @@ namespace BluePrints.Common.Projections
 
         public decimal Supply_Cost => STOCK_CODE == null ? 0 : STOCK_CODE.RATE_SUPPLY * Estimated_Quantity;
 
-        public decimal Install_Cost => TotalHours * ItemRate;
+        public decimal Install_Cost => TotalUnits * ItemRate;
 
         public ICollection<BASELINE_ITEM_ASSIGNMENT> ObservableBASELINE_ITEM_ASSIGNMENT { get; set; }
 

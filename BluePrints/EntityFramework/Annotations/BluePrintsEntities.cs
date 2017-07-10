@@ -68,9 +68,9 @@ namespace BluePrints.Data
             Entry(entity).Reload();
         }
 
-        public List<StoredProcedure_PlannedDataPoint> QueryDeliverablePlannedDataPoints(Guid baselineItemGuid)
+        public List<StoredProcedure_PlannedDataPoint> QueryDeliverablePlannedDataPoints(Guid deliverable_guid)
         {
-            return this.DataPoint.Where(x => x.Deliverable_Guid == baselineItemGuid && x.IsPlanned == true).ToList()
+            return this.DataPoint.Where(x => x.Deliverable_Guid == deliverable_guid && x.IsPlanned == true).ToList()
                 .Select(x => new StoredProcedure_PlannedDataPoint()
                 {
                     Deliverable_Guid = x.Deliverable_Guid,
@@ -118,9 +118,9 @@ namespace BluePrints.Data
             return result;
         }
 
-        public List<StoredProcedure_RemainingDataPoint> QueryDeliverableRemainingDataPoints(Guid baselineItemGuid)
+        public List<StoredProcedure_RemainingDataPoint> QueryDeliverableRemainingDataPoints(Guid deliverable_guid)
         {
-            return this.DataPoint.Where(x => x.Deliverable_Guid == baselineItemGuid && x.IsPlanned == true).ToList()
+            return this.DataPoint.Where(x => x.Deliverable_Guid == deliverable_guid && x.IsPlanned == true).ToList()
                 .Select(x => new StoredProcedure_RemainingDataPoint()
                 {
                     Deliverable_Guid = x.Deliverable_Guid,
