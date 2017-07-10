@@ -4,6 +4,7 @@ namespace BluePrints.Data
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
 
     [Table("DEPARTMENT")]
     public partial class DEPARTMENT
@@ -12,7 +13,7 @@ namespace BluePrints.Data
         public DEPARTMENT()
         {
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
-            COMMODITY_CODE = new HashSet<COMMODITY_CODE>();
+            STOCK_CODE = new HashSet<STOCK_CODE>();
             DOCTYPE = new HashSet<DOCTYPE>();
             RATE = new HashSet<RATE>();
             WORKPACK = new HashSet<WORKPACK>();
@@ -47,7 +48,7 @@ namespace BluePrints.Data
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<COMMODITY_CODE> COMMODITY_CODE { get; set; }
+        public virtual ICollection<STOCK_CODE> STOCK_CODE { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DOCTYPE> DOCTYPE { get; set; }

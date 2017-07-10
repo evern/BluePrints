@@ -4,6 +4,7 @@ namespace BluePrints.Data
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
 
     [Table("ROLE")]
     public partial class ROLE
@@ -27,9 +28,9 @@ namespace BluePrints.Data
         public bool ISMANAGER { get; set; }
 
         public bool ISEXPANDED { get; set; }
-
         [NotMapped]
         public int? OLDSORTORDER { get; set; }
+
 
         public int SORTORDER { get; set; }
 

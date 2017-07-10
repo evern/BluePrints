@@ -2,28 +2,25 @@ namespace BluePrints.Data
 {
     using BaseModel.Attributes;
     using BaseModel.Misc;
-    using BluePrints.Common.Projections;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Linq;
-    using BluePrints.Common.ViewModel.Reporting;
 
-    [ConstraintAttributes("CODE")]
     public partial class STOCK_CODE : IGuidEntityKey, IHaveCreatedDate
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public STOCK_CODE()
+        {
+            ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
+            RATE_SUPPLY = 0;
+            HOURS_INSTALL = 0;
+        }
+
         [NotMapped]
         public Guid EntityKey
         {
-            get
-            {
-                return GUID;
-            }
-
-            set
-            {
-                GUID = value;
-            }
+            get { return GUID; }
+            set { GUID = value; }
         }
 
         [NotMapped]
@@ -33,45 +30,15 @@ namespace BluePrints.Data
             set { CREATED = value; }
         }
 
-
-        //Used for direct property access validation in fill/undo-redo
-        [NotMapped]
-        public Guid? SubAreaGuid
+        public string ProjectNumber
         {
             get
             {
-                return GUID_SUBAREA;
+                if (PROJECT == null)
+                    return string.Empty;
+
+                return PROJECT.NUMBER;
             }
-            set
-            {
-                Guid? setValue = (Guid?)value;
-                if (setValue == null)
-                    GUID_SUBAREA = null;
-                else if (IsSubAreaValid(setValue))
-                    GUID_SUBAREA = setValue;
-            }
-        }
-
-        public IEnumerable<AREA> SubAreaCollection
-        {
-            get
-            {
-                if (AREA == null)
-                    return null;
-
-                return AREA.AREA1;
-            }
-        }
-
-        public bool IsSubAreaValid(Guid? subAreaGuid)
-        {
-            if (subAreaGuid == null)
-                return false;
-
-            if (SubAreaCollection == null)
-                return false;
-
-            return SubAreaCollection.Any(x => x.GUID == subAreaGuid);
         }
     }
 }

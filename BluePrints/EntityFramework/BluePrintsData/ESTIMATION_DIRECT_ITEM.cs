@@ -1,4 +1,4 @@
-﻿namespace BluePrints.Data
+namespace BluePrints.Data
 {
     using System;
     using System.Collections.Generic;
@@ -25,9 +25,9 @@
 
         public Guid? GUID_DISCIPLINE { get; set; }
 
-        public Guid? GUID_COMMODITY_CODE { get; set; }
-
         public Guid? GUID_STOCK_CODE { get; set; }
+
+        public Guid? GUID_COMMODITY_CODE { get; set; }
 
         [Required]
         public int DISCIPLINE_NUM { get; set; }
@@ -36,7 +36,7 @@
         public string COMMENTS { get; set; }
 
         public decimal ESTIMATED_QUANTITY { get; set; }
-        
+
         public bool TRACK { get; set; }
 
         public bool STANDALONE { get; set; }

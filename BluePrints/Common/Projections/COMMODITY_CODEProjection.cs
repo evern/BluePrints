@@ -11,9 +11,9 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class STOCK_CODEProjection : BluePrintsProjectionBase<STOCK_CODE>, IQuantityDeliverableGroupProjection, ICanUpdate
+    public class COMMODITY_CODEProjection : BluePrintsProjectionBase<COMMODITY_CODE>, IQuantityDeliverableGroupProjection, ICanUpdate
     {
-        public STOCK_CODEProjection()
+        public COMMODITY_CODEProjection()
             : base()
         {
         }
@@ -53,16 +53,16 @@ namespace BluePrints.Common.Projections
         }
     }
 
-    public static class STOCK_CODEProjectionQueries
+    public static class COMMODITY_CODEProjectionQueries
     {
-        public static IQueryable<STOCK_CODEProjection> STOCK_CODEProjectionQuery(
-            IQueryable<STOCK_CODE> STOCK_CODES)
+        public static IQueryable<COMMODITY_CODEProjection> COMMODITY_CODEProjectionQuery(
+            IQueryable<COMMODITY_CODE> COMMODITY_CODES)
         {
             return
-                STOCK_CODES.OrderBy(x => x.CODE).ToArray()
+                COMMODITY_CODES.OrderBy(x => x.CODE).ToArray()
                     .Select(
                         stock_code =>
-                            new STOCK_CODEProjection()
+                            new COMMODITY_CODEProjection()
                             {
                                 Entity = stock_code,
                             }).AsQueryable();

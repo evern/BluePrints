@@ -154,7 +154,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ESTIMATION_DIRECT_ITEMProjection>>
             ConstructMainViewModelProjection()
         {
-            return query => ESTIMATION_DIRECT_ITEMProjectionQueries.ESTIMATION_DIRECT_ITEMProjectionQuery(query, loaderCollection.GetCollection<RATE>(), loaderCollection.GetCollection<COMMODITY_CODE>(), ProjectSTOCK_CODECollection);
+            return query => ESTIMATION_DIRECT_ITEMProjectionQueries.ESTIMATION_DIRECT_ITEMProjectionQuery(query, loaderCollection.GetCollection<RATE>(), ProjectSTOCK_CODECollection, loaderCollection.GetCollection<COMMODITY_CODE>());
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATION_DIRECT_ITEMProjection> entities)
@@ -174,23 +174,23 @@ namespace BluePrints.ViewModels
 
         private void createAndAssignProjectSpecificCOMMODITY_CODE(ESTIMATION_DIRECT_ITEMProjection projectionEntity)
         {
-            if (projectionEntity.Entity.GUID_COMMODITY_CODE == null)
+            if (projectionEntity.Entity.GUID_STOCK_CODE == null)
                 return;
 
-            if(!ProjectCOMMODITY_CODECollection.Any(x => x.GUID == projectionEntity.Entity.GUID_COMMODITY_CODE))
+            if(!ProjectSTOCK_CODECollection.Any(x => x.GUID == projectionEntity.Entity.GUID_STOCK_CODE))
             {
-                COMMODITY_CODE commodity_code = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == projectionEntity.Entity.GUID_COMMODITY_CODE);
-                if (commodity_code != null)
+                STOCK_CODE stock_code = STOCK_CODECollection.FirstOrDefault(x => x.GUID == projectionEntity.Entity.GUID_STOCK_CODE);
+                if (stock_code != null)
                 {
-                    COMMODITY_CODE projectCOMMODITY_CODE = new COMMODITY_CODE();
-                    DataUtils.ShallowCopy(projectCOMMODITY_CODE, commodity_code);
-                    projectCOMMODITY_CODE.GUID = Guid.Empty;
-                    projectCOMMODITY_CODE.GUID_PROJECT = loadPROJECT.GUID;
-                    COMMODITY_CODECollectionViewModel.Save(projectCOMMODITY_CODE);
-                    projectionEntity.Entity.GUID_COMMODITY_CODE = projectCOMMODITY_CODE.GUID;
+                    STOCK_CODE projectSTOCK_CODE = new STOCK_CODE();
+                    DataUtils.ShallowCopy(projectSTOCK_CODE, stock_code);
+                    projectSTOCK_CODE.GUID = Guid.Empty;
+                    projectSTOCK_CODE.GUID_PROJECT = loadPROJECT.GUID;
+                    STOCK_CODECollectionViewModel.Save(projectSTOCK_CODE);
+                    projectionEntity.Entity.GUID_STOCK_CODE = projectSTOCK_CODE.GUID;
 
                     //commodity code is by value with shallow copy in setter so that user edited changes can be cross check with existing project commodity code
-                    projectionEntity.COMMODITY_CODE = projectCOMMODITY_CODE;
+                    projectionEntity.STOCK_CODE = projectSTOCK_CODE;
                 }
                 else
                     return;
@@ -199,22 +199,22 @@ namespace BluePrints.ViewModels
             return;
         }
 
-        private Guid createNewCOMMODITY_CODE(COMMODITY_CODE fromCommodityCode)
+        private Guid createNewSTOCK_CODE(STOCK_CODE fromStockCode)
         {
-            COMMODITY_CODE newCommodityCode = new COMMODITY_CODE();
-            DataUtils.ShallowCopy(newCommodityCode, fromCommodityCode);
-            newCommodityCode.GUID = Guid.Empty;
-            newCommodityCode.GUID_PROJECT = loadPROJECT.GUID;
-            COMMODITY_CODECollectionViewModel.Save(newCommodityCode);
-            return newCommodityCode.GUID;
+            STOCK_CODE newStockCode = new STOCK_CODE();
+            DataUtils.ShallowCopy(newStockCode, fromStockCode);
+            newStockCode.GUID = Guid.Empty;
+            newStockCode.GUID_PROJECT = loadPROJECT.GUID;
+            STOCK_CODECollectionViewModel.Save(newStockCode);
+            return newStockCode.GUID;
         }
 
-        private void updateCOMMODITY_CODE(COMMODITY_CODE commodityCode)
+        private void updateCOMMODITY_CODE(STOCK_CODE stock_code)
         {
-            if (commodityCode.GUID == Guid.Empty)
+            if (stock_code.GUID == Guid.Empty)
                 return;
 
-            COMMODITY_CODECollectionViewModel.Save(commodityCode);
+            STOCK_CODECollectionViewModel.Save(stock_code);
         }
 
         /// <summary>
@@ -275,18 +275,18 @@ namespace BluePrints.ViewModels
 
         private void onBeforeSavedProjectCommodityCodeLogging(ESTIMATION_DIRECT_ITEMProjection entity)
         {
-            COMMODITY_CODE projectCommodityCode;
-            projectCommodityCodeStatus commodityCodeStatus = getProjectCommodityCodeStatus(entity.COMMODITY_CODE, out projectCommodityCode);
-            if (commodityCodeStatus == projectCommodityCodeStatus.IsEmpty)
+            STOCK_CODE projectCommodityCode;
+            projectStock_CodeStatus commodityCodeStatus = getProjectCommodityCodeStatus(entity.STOCK_CODE, out projectCommodityCode);
+            if (commodityCodeStatus == projectStock_CodeStatus.IsEmpty)
                 return;
-            else if (commodityCodeStatus == projectCommodityCodeStatus.DontExists)
+            else if (commodityCodeStatus == projectStock_CodeStatus.DontExists)
                 createAndAssignProjectSpecificCOMMODITY_CODE(entity);
-            else if (commodityCodeStatus == projectCommodityCodeStatus.MetaExistsOnDifferentRecord)
+            else if (commodityCodeStatus == projectStock_CodeStatus.MetaExistsOnDifferentRecord)
             {
                 entity.Entity.GUID_COMMODITY_CODE = projectCommodityCode.GUID;
-                entity.COMMODITY_CODE = projectCommodityCode;
+                entity.STOCK_CODE = projectCommodityCode;
             }
-            else if (commodityCodeStatus == projectCommodityCodeStatus.ExistsWithDifferentRateHours)
+            else if (commodityCodeStatus == projectStock_CodeStatus.ExistsWithDifferentRateHours)
             {
                 UICommand addCommand = new UICommand()
                 {
@@ -314,17 +314,17 @@ namespace BluePrints.ViewModels
 
                 string message = String.Format("Current commodity code with\nSupply Rate: {0:#} Install Hours: {1:#}\n" +
                     "Is changed to\nSupply Rate: {2:#} Install Hours: {3:#}\n" +
-                    "Do you wish to add new or update?", projectCommodityCode.RATE_SUPPLY, projectCommodityCode.HOURS_INSTALL, entity.COMMODITY_CODE.RATE_SUPPLY, entity.COMMODITY_CODE.HOURS_INSTALL);
+                    "Do you wish to add new or update?", projectCommodityCode.RATE_SUPPLY, projectCommodityCode.HOURS_INSTALL, entity.STOCK_CODE.RATE_SUPPLY, entity.STOCK_CODE.HOURS_INSTALL);
 
                 BasicMessageBoxViewModel viewModel = BasicMessageBoxViewModel.Create(message);
                 UICommand result = CommodityCodeDialogService.ShowDialog(new List<UICommand>() { addCommand, editCommand, cancelCommand }, "Commodity Code", "BasicMessageBox", viewModel);
                 if (result == addCommand)
                 {
-                    Guid newCommodityCodeGuid = createNewCOMMODITY_CODE(entity.COMMODITY_CODE);
+                    Guid newCommodityCodeGuid = createNewSTOCK_CODE(entity.STOCK_CODE);
                     entity.Entity.GUID_COMMODITY_CODE = newCommodityCodeGuid;
                 }
                 else if (result == editCommand)
-                    updateCOMMODITY_CODE(entity.COMMODITY_CODE);
+                    updateCOMMODITY_CODE(entity.STOCK_CODE);
             }
         }
         #endregion
@@ -404,15 +404,15 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override void OnClose(CancelEventArgs e)
         {
-            if(COMMODITY_CODECollectionViewModel != null)
+            if(STOCK_CODECollectionViewModel != null)
             {
-                List<COMMODITY_CODE> removeCommodityCodes = new List<COMMODITY_CODE>();
-                foreach (COMMODITY_CODE projectCommodityCode in ProjectCOMMODITY_CODECollection)
+                List<STOCK_CODE> removeStockCodes = new List<STOCK_CODE>();
+                foreach (STOCK_CODE projectStockCode in ProjectSTOCK_CODECollection)
                 {
-                    if (!MainViewModel.Entities.Any(x => x.Entity.GUID_COMMODITY_CODE == projectCommodityCode.GUID))
-                        removeCommodityCodes.Add(projectCommodityCode);
+                    if (!MainViewModel.Entities.Any(x => x.Entity.GUID_COMMODITY_CODE == projectStockCode.GUID))
+                        removeStockCodes.Add(projectStockCode);
                 }
-                COMMODITY_CODECollectionViewModel.BaseBulkDelete(removeCommodityCodes);
+                STOCK_CODECollectionViewModel.BaseBulkDelete(removeStockCodes);
             }
 
             base.OnClose(e);
@@ -420,16 +420,16 @@ namespace BluePrints.ViewModels
 
         protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
-            if(changedType == typeof(COMMODITY_CODE))
+            if(changedType == typeof(STOCK_CODE))
             {
-                COMMODITY_CODE changedCommodity_Code = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == (Guid)key);
-                if(changedCommodity_Code != null)
+                STOCK_CODE changedStock_Code = STOCK_CODECollection.FirstOrDefault(x => x.GUID == (Guid)key);
+                if(changedStock_Code != null)
                 {
                     foreach (var entities in MainViewModel.Entities)
                     {
-                        if (entities.COMMODITY_CODE.GUID == (Guid)key)
+                        if (entities.STOCK_CODE.GUID == (Guid)key)
                         {
-                            entities.COMMODITY_CODE = changedCommodity_Code;
+                            entities.STOCK_CODE = changedStock_Code;
                             entities.Update();
                         }
                     }
@@ -540,29 +540,29 @@ namespace BluePrints.ViewModels
         private void setProjectionCommodityCode(ESTIMATION_DIRECT_ITEMProjection projection, Guid? commoditycodeGuid)
         {
             if (commoditycodeGuid != null)
-                projection.COMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == (Guid)commoditycodeGuid);
+                projection.STOCK_CODE = STOCK_CODECollection.FirstOrDefault(x => x.GUID == (Guid)commoditycodeGuid);
             else
-                projection.COMMODITY_CODE = null;
+                projection.STOCK_CODE = null;
 
             projection.Update();
         }
 
-        private void updateProjectionCommodityCodeCollection(ESTIMATION_DIRECT_ITEMProjection projection, Guid? disciplineGuid)
+        private void updateProjectionStockCodeCollection(ESTIMATION_DIRECT_ITEMProjection projection, Guid? disciplineGuid)
         {
             if (disciplineGuid != null)
                 //commodity code collection must be updated by discipline filter
-                projection.CommodityCodeCollection = COMMODITY_CODECollection.Where(x => x.GUID_DISCIPLINE == disciplineGuid);
+                projection.StockCodeCollection = STOCK_CODECollection.Where(x => x.GUID_DISCIPLINE == disciplineGuid);
             else
-                projection.CommodityCodeCollection = new List<COMMODITY_CODE>();
+                projection.StockCodeCollection = new List<STOCK_CODE>();
 
             projection.Update();
         }
 
-        private void updateProjectionStockCodeCollection(ESTIMATION_DIRECT_ITEMProjection projection, Guid? areaGuid, Guid? subAreaGuid, Guid? disciplineGuid)
+        private void updateProjectionCommodityCodeCollection(ESTIMATION_DIRECT_ITEMProjection projection, Guid? areaGuid, Guid? subAreaGuid, Guid? disciplineGuid)
         {
             if (areaGuid != null && disciplineGuid != null)
-                projection.StockCodeCollection = STOCK_CODECollection
-                                                .Where(x => x.GUID_AREA == areaGuid && x.GUID_SUBAREA == subAreaGuid && x.GUID_DISCIPLINE == (Guid)disciplineGuid);
+                projection.CommodityCodeCollection = COMMODITY_CODECollection
+                .Where(x => x.GUID_AREA == areaGuid && x.GUID_SUBAREA == subAreaGuid && x.GUID_DISCIPLINE == (Guid)disciplineGuid);
             else
                 projection.StockCodeCollection = new List<STOCK_CODE>();
 
@@ -633,20 +633,20 @@ namespace BluePrints.ViewModels
                     activeESTIMATION_DIRECT_ITEM.Update();
                 }
 
-                updateProjectionStockCodeCollection(activeESTIMATION_DIRECT_ITEM, (Guid?)e.Value, activeESTIMATION_DIRECT_ITEM.Entity.SubAreaGuid, activeESTIMATION_DIRECT_ITEM.Entity.GUID_DISCIPLINE);
+                updateProjectionCommodityCodeCollection(activeESTIMATION_DIRECT_ITEM, (Guid?)e.Value, activeESTIMATION_DIRECT_ITEM.Entity.SubAreaGuid, activeESTIMATION_DIRECT_ITEM.Entity.GUID_DISCIPLINE);
             }
             else if (e.Column.FieldName ==
                  BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
                  BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().SubAreaGuid))
             {
-                updateProjectionStockCodeCollection(activeESTIMATION_DIRECT_ITEM, activeESTIMATION_DIRECT_ITEM.Entity.GUID_AREA, (Guid?)e.Value, activeESTIMATION_DIRECT_ITEM.Entity.GUID_DISCIPLINE);
+                updateProjectionCommodityCodeCollection(activeESTIMATION_DIRECT_ITEM, activeESTIMATION_DIRECT_ITEM.Entity.GUID_AREA, (Guid?)e.Value, activeESTIMATION_DIRECT_ITEM.Entity.GUID_DISCIPLINE);
             }
             else if (e.Column.FieldName ==
                  BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
                  BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_DISCIPLINE))
             {
-                updateProjectionStockCodeCollection(activeESTIMATION_DIRECT_ITEM, activeESTIMATION_DIRECT_ITEM.Entity.GUID_AREA, activeESTIMATION_DIRECT_ITEM.Entity.GUID_SUBAREA, (Guid?)e.Value);
-                updateProjectionCommodityCodeCollection(activeESTIMATION_DIRECT_ITEM, (Guid?)e.Value);
+                updateProjectionCommodityCodeCollection(activeESTIMATION_DIRECT_ITEM, activeESTIMATION_DIRECT_ITEM.Entity.GUID_AREA, activeESTIMATION_DIRECT_ITEM.Entity.GUID_SUBAREA, (Guid?)e.Value);
+                updateProjectionStockCodeCollection(activeESTIMATION_DIRECT_ITEM, (Guid?)e.Value);
             }
             else if (e.Column.FieldName ==
                  BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().CommodityCodeGuid))
@@ -659,7 +659,7 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Commodity Code Helpers
-        private enum projectCommodityCodeStatus
+        private enum projectStock_CodeStatus
         {
             IsEmpty,
             DontExists,
@@ -668,32 +668,32 @@ namespace BluePrints.ViewModels
             Exists
         }
 
-        private projectCommodityCodeStatus getProjectCommodityCodeStatus(COMMODITY_CODE commodity_code, out COMMODITY_CODE projectCommodityCode)
+        private projectStock_CodeStatus getProjectCommodityCodeStatus(STOCK_CODE stock_code, out STOCK_CODE projectStock_Code)
         {
-            projectCommodityCode = null;
-            if (commodity_code == null)
-                return projectCommodityCodeStatus.IsEmpty;
+            projectStock_Code = null;
+            if (stock_code == null)
+                return projectStock_CodeStatus.IsEmpty;
 
-            projectCommodityCode = ProjectCOMMODITY_CODECollection.FirstOrDefault(x => x.GUID == commodity_code.GUID);
+            projectStock_Code = ProjectSTOCK_CODECollection.FirstOrDefault(x => x.GUID == stock_code.GUID);
             bool isExists = false;
-            if (projectCommodityCode != null)
+            if (projectStock_Code != null)
                 isExists = true;
 
-            if (isExists && projectCommodityCode.CODE == commodity_code.CODE && projectCommodityCode.RATE_SUPPLY == commodity_code.RATE_SUPPLY && projectCommodityCode.HOURS_INSTALL == commodity_code.HOURS_INSTALL)
-                return projectCommodityCodeStatus.Exists;
+            if (isExists && projectStock_Code.CODE == stock_code.CODE && projectStock_Code.RATE_SUPPLY == stock_code.RATE_SUPPLY && projectStock_Code.HOURS_INSTALL == stock_code.HOURS_INSTALL)
+                return projectStock_CodeStatus.Exists;
 
             //look for other project commodity code with same meta
-            COMMODITY_CODE sameMetaCommodityCode = ProjectCOMMODITY_CODECollection.FirstOrDefault(x => x.CODE == commodity_code.CODE && x.RATE_SUPPLY == commodity_code.RATE_SUPPLY && x.HOURS_INSTALL == commodity_code.HOURS_INSTALL);
-            if (isExists && sameMetaCommodityCode == null)
-                return projectCommodityCodeStatus.ExistsWithDifferentRateHours;
+            STOCK_CODE sameMetaStockCode = ProjectSTOCK_CODECollection.FirstOrDefault(x => x.CODE == stock_code.CODE && x.RATE_SUPPLY == stock_code.RATE_SUPPLY && x.HOURS_INSTALL == stock_code.HOURS_INSTALL);
+            if (isExists && sameMetaStockCode == null)
+                return projectStock_CodeStatus.ExistsWithDifferentRateHours;
 
-            if (sameMetaCommodityCode != null)
+            if (sameMetaStockCode != null)
             {
-                projectCommodityCode = sameMetaCommodityCode;
-                return projectCommodityCodeStatus.MetaExistsOnDifferentRecord;
+                projectStock_Code = sameMetaStockCode;
+                return projectStock_CodeStatus.MetaExistsOnDifferentRecord;
             }
 
-            return projectCommodityCodeStatus.DontExists;
+            return projectStock_CodeStatus.DontExists;
         }
         #endregion
 
@@ -777,14 +777,14 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<COMMODITY_CODE> ProjectCOMMODITY_CODECollection
+        public IEnumerable<STOCK_CODE> ProjectSTOCK_CODECollection
         {
             get
             {
                 if (loadPROJECT == null)
                     return null;
 
-                return COMMODITY_CODECollection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+                return STOCK_CODECollection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
             }
         }
 
@@ -810,11 +810,11 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<STOCK_CODE> ProjectSTOCK_CODECollection
+        public IEnumerable<COMMODITY_CODE> ProjectCOMMODITY_CODECollection
         {
             get
             {
-                var collection = GetEntities<STOCK_CODE>();
+                var collection = GetEntities<COMMODITY_CODE>();
                 if (collection != null)
                     collection = collection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.CODE);
                 return collection;

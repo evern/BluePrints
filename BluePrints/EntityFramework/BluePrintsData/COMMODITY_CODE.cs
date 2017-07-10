@@ -1,6 +1,5 @@
-﻿namespace BluePrints.Data
+namespace BluePrints.Data
 {
-    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -9,43 +8,32 @@
 
     public partial class COMMODITY_CODE
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public COMMODITY_CODE()
+        {
+            ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
+        }
+
         [Key]
         public Guid GUID { get; set; }
 
         public Guid? GUID_PROJECT { get; set; }
 
-        public Guid GUID_DEPARTMENT { get; set; }
+        public Guid? GUID_AREA { get; set; }
 
-        [Required]
+        public Guid? GUID_SUBAREA { get; set; }
+
         public Guid GUID_DISCIPLINE { get; set; }
-
-        public CommodityCodeType COMMODITYCODETYPE { get; set; }
-
-        [Required]
-        [StringLength(100)]
-        public string NAME { get; set; }
-
-        [StringLength(100)]
-        public string TYPE { get; set; }
-
-        [StringLength(100)]
-        public string SPEC { get; set; }
-
-        [StringLength(500)]
-        public string DESCRIPTION { get; set; }
 
         [Required]
         [StringLength(50)]
         public string CODE { get; set; }
 
-        [StringLength(50)]
+        [StringLength(200)]
+        public string DESCRIPTION { get; set; }
+
+        [StringLength(10)]
         public string UOM { get; set; }
-
-        [Column(TypeName = "numeric")]
-        public decimal RATE_SUPPLY { get; set; }
-
-        [Column(TypeName = "numeric")]
-        public decimal HOURS_INSTALL { get; set; }
 
         public DateTime CREATED { get; set; }
 
@@ -59,13 +47,15 @@
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual DEPARTMENT DEPARTMENT { get; set; }
+        public virtual AREA AREA { get; set; }
+
+        public virtual AREA AREA1 { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 
         public virtual PROJECT PROJECT { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
     }
 }

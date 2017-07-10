@@ -69,13 +69,13 @@ namespace BluePrints.ViewModels
         public void EVERNPCLogin()
         {
 #if DEBUG
-            if (Environment.MachineName == "EVERN-PC")
-            {
-                UserName = BluePrintsResources.AdminUsername;
-                UserPassword = BluePrintsResources.AdminPassword;
-                delayedHideDispatcher.Start();
-                Login();
-            }
+            //if (Environment.MachineName == "EVERN-PC")
+            //{
+            //    UserName = BluePrintsResources.AdminUsername;
+            //    UserPassword = BluePrintsResources.AdminPassword;
+            //    delayedHideDispatcher.Start();
+            //    Login();
+            //}
 #endif
         }
 

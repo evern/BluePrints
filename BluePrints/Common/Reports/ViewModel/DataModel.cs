@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public class Stock_CodeProgress : BluePrintsProgressableByQuantityProjectionBase<STOCK_CODEProjection>, IQuantityReportableGroup
+    public class Commodity_CodeProgress : BluePrintsProgressableByQuantityProjectionBase<COMMODITY_CODEProjection>, IQuantityReportableGroup
     {
         public IEnumerable<IQuantityReportable> Deliverables { get; set; }
 
@@ -209,7 +209,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     public static class ProgressItemQueries
     {
         public static IQueryable<ProgressDisplay> SiteDirectProgressItemTransformation(
-            IQueryable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<STOCK_CODE> projectSTOCK_CODES, IEnumerable<ESTIMATION_DIRECT_ITEM> projectESTIMATION_DIRECT_ITEMS, IEnumerable<RATE> projectRATES, IEnumerable<COMMODITY_CODE> projectCOMMODITY_CODES, DateTime reportingDataDate)
+            IQueryable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<COMMODITY_CODE> projectCOMMODITY_CODES, IEnumerable<STOCK_CODE> projectSTOCK_CODES, IEnumerable<ESTIMATION_DIRECT_ITEM> projectESTIMATION_DIRECT_ITEMS, IEnumerable<RATE> projectRATES, DateTime reportingDataDate)
         {
             IEnumerable<PROGRESS_ITEM> arrPROGRESS_ITEMS = PROGRESS_ITEMS.ToArray();
             List<ProgressDisplay> progressItems = new List<ProgressDisplay>();
@@ -217,9 +217,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             
             IEnumerable<ESTIMATION_DIRECT_ITEMProjection> ESTIMATION_DIRECT_ITEMProjection = 
                 ESTIMATION_DIRECT_ITEMProjectionQueries.ESTIMATION_DIRECT_ITEMProjectionQuery(projectESTIMATION_DIRECT_ITEMS.AsQueryable(), 
-                                                                                                projectRATES, 
-                                                                                                projectCOMMODITY_CODES, 
-                                                                                                projectSTOCK_CODES).AsEnumerable();
+                                                                                                projectRATES,
+                                                                                                projectSTOCK_CODES,
+                                                                                                projectCOMMODITY_CODES).AsEnumerable();
 
             List<Estimation_Direct_ItemProgress> estimationDirectItemProgress = new List<Estimation_Direct_ItemProgress>();
             foreach (ESTIMATION_DIRECT_ITEMProjection ESTIMATION_DIRECT_ITEM in ESTIMATION_DIRECT_ITEMProjection)
@@ -231,15 +231,15 @@ namespace BluePrints.Common.ViewModel.Reporting
                 estimationDirectItemProgress.Add(newEstimation_Direct_itemProgress);
             }
 
-            var estimationDirectProgressByStockCode = estimationDirectItemProgress.Where(x => !x.Entity.Entity.STANDALONE)
-                .GroupBy(x => x.Entity.Entity.GUID_STOCK_CODE).Select(group => new { StockCodeGuid = group.Key, Estimation_Direct_ItemProgress = group.ToList() });
+            var estimationDirectProgressByCommodityCode = estimationDirectItemProgress.Where(x => !x.Entity.Entity.STANDALONE)
+                .GroupBy(x => x.Entity.Entity.GUID_STOCK_CODE).Select(group => new { CommodityCodeGuid = group.Key, Estimation_Direct_ItemProgress = group.ToList() });
 
-            foreach (STOCK_CODE STOCK_CODE in projectSTOCK_CODES)
+            foreach (COMMODITY_CODE COMMODITY_CODE in projectCOMMODITY_CODES)
             {
-                Stock_CodeProgress newStock_CodeProgress = new Stock_CodeProgress();
-                newStock_CodeProgress.Entity.Entity = STOCK_CODE;
+                Commodity_CodeProgress newStock_CodeProgress = new Commodity_CodeProgress();
+                newStock_CodeProgress.Entity.Entity = COMMODITY_CODE;
                 
-                var currentStockCodeProgresses = estimationDirectProgressByStockCode.FirstOrDefault(x => x.StockCodeGuid == STOCK_CODE.GUID);
+                var currentStockCodeProgresses = estimationDirectProgressByCommodityCode.FirstOrDefault(x => x.CommodityCodeGuid == COMMODITY_CODE.GUID);
                 if(currentStockCodeProgresses != null)
                 {
                     newStock_CodeProgress.Entity.Reportables = currentStockCodeProgresses.Estimation_Direct_ItemProgress;

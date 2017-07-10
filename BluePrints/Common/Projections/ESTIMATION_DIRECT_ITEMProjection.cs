@@ -16,22 +16,22 @@ namespace BluePrints.Common.Projections
             : base()
         {
             //need to initialize commodity code here so that copy/paste is able to get property info within COMMODITY_CODE
-            commodity_code = new COMMODITY_CODE();
+            stock_code = new STOCK_CODE();
         }
 
-        public IEnumerable<COMMODITY_CODE> CommodityCodeCollection { get; set; }
-        private COMMODITY_CODE commodity_code;
-        public COMMODITY_CODE COMMODITY_CODE
+        public IEnumerable<STOCK_CODE> StockCodeCollection { get; set; }
+        private STOCK_CODE stock_code;
+        public STOCK_CODE STOCK_CODE
         {
             get
             {
-                return commodity_code;
+                return stock_code;
             }
             set
             {
                 //Always go by value so that changes can be identified in view
                 if (value != null)
-                    DataUtils.ShallowCopy(commodity_code, value);
+                    DataUtils.ShallowCopy(stock_code, value);
             }
         }
 
@@ -63,7 +63,7 @@ namespace BluePrints.Common.Projections
             return CommodityCodeCollection.Any(x => x.GUID == commodityCodeGuid);
         }
 
-        public IEnumerable<STOCK_CODE> StockCodeCollection { get; set; }
+        public IEnumerable<COMMODITY_CODE> CommodityCodeCollection { get; set; }
 
         //Used for direct property access validation in fill/undo-redo
         public Guid? StockCodeGuid
@@ -109,7 +109,7 @@ namespace BluePrints.Common.Projections
 
         public decimal TotalHoursIncludeByDuration => EstimatedHours;
 
-        public decimal EstimatedHours => Entity.COMMODITY_CODE == null ? 0 : Entity.ESTIMATED_QUANTITY * COMMODITY_CODE.HOURS_INSTALL;
+        public decimal EstimatedHours => Entity.STOCK_CODE == null ? 0 : Entity.ESTIMATED_QUANTITY * STOCK_CODE.HOURS_INSTALL;
 
         public decimal TotalHours => EstimatedHours;
 
@@ -130,7 +130,7 @@ namespace BluePrints.Common.Projections
 
         public bool? Track => Entity.TRACK;
 
-        public decimal Supply_Cost => Entity.COMMODITY_CODE == null ? 0 : COMMODITY_CODE.RATE_SUPPLY * Estimated_Quantity;
+        public decimal Supply_Cost => Entity.COMMODITY_CODE == null ? 0 : STOCK_CODE.RATE_SUPPLY * Estimated_Quantity;
 
         public decimal Install_Cost => TotalHours * ItemRate;
 
@@ -181,7 +181,7 @@ namespace BluePrints.Common.Projections
     {
         public static IQueryable<ESTIMATION_DIRECT_ITEMProjection> ESTIMATION_DIRECT_ITEMProjectionQuery(
             IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, 
-            IEnumerable<RATE> RATES, IEnumerable<COMMODITY_CODE> projectCOMMODITY_CODES, IEnumerable<STOCK_CODE> projectSTOCK_CODES)
+            IEnumerable<RATE> RATES, IEnumerable<STOCK_CODE> projectSTOCK_CODES, IEnumerable<COMMODITY_CODE> projectCOMMODITY_CODES)
         {
             return
                 ESTIMATION_DIRECT_ITEMS.OrderBy(x => x.CREATED).ToArray()
@@ -190,14 +190,16 @@ namespace BluePrints.Common.Projections
                             new ESTIMATION_DIRECT_ITEMProjection()
                             {
                                 Entity = estimate_direct_item,
-                                COMMODITY_CODE = projectCOMMODITY_CODES.FirstOrDefault(commoditycode => commoditycode.GUID == estimate_direct_item.GUID_COMMODITY_CODE),
+                                STOCK_CODE = projectSTOCK_CODES.FirstOrDefault(commoditycode => commoditycode.GUID == estimate_direct_item.GUID_COMMODITY_CODE),
                                 RATE = RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
-                                CommodityCodeCollection = projectCOMMODITY_CODES.Where(commoditycode => commoditycode.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
                                 StockCodeCollection = projectSTOCK_CODES
-                                .Where(stockcode =>
-                                stockcode.GUID_AREA == estimate_direct_item.GUID_AREA 
-                                && stockcode.GUID_SUBAREA == estimate_direct_item.GUID_SUBAREA 
-                                && stockcode.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE)
+                                .Where(commoditycode => 
+                                commoditycode.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
+                                CommodityCodeCollection = projectCOMMODITY_CODES
+                                .Where(commodity_code =>
+                                commodity_code.GUID_AREA == estimate_direct_item.GUID_AREA 
+                                && commodity_code.GUID_SUBAREA == estimate_direct_item.GUID_SUBAREA 
+                                && commodity_code.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE)
                             }).AsQueryable();
         }
     }

@@ -1,5 +1,6 @@
-﻿namespace BluePrints.Data
+namespace BluePrints.Data
 {
+    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -8,32 +9,42 @@
 
     public partial class STOCK_CODE
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public STOCK_CODE()
-        {
-            ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
-        }
-
         [Key]
         public Guid GUID { get; set; }
 
         public Guid? GUID_PROJECT { get; set; }
 
-        public Guid? GUID_AREA { get; set; }
-
-        public Guid? GUID_SUBAREA { get; set; }
+        public Guid GUID_DEPARTMENT { get; set; }
 
         public Guid GUID_DISCIPLINE { get; set; }
+
+        public StockCodeType STOCK_CODE_TYPE { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public string NAME { get; set; }
+
+        [StringLength(100)]
+        public string TYPE { get; set; }
+
+        [StringLength(100)]
+        public string SPEC { get; set; }
+
+        [StringLength(500)]
+        public string DESCRIPTION { get; set; }
 
         [Required]
         [StringLength(50)]
         public string CODE { get; set; }
 
-        [StringLength(200)]
-        public string DESCRIPTION { get; set; }
-
-        [StringLength(10)]
+        [StringLength(50)]
         public string UOM { get; set; }
+
+        [Column(TypeName = "numeric")]
+        public decimal RATE_SUPPLY { get; set; }
+
+        [Column(TypeName = "numeric")]
+        public decimal HOURS_INSTALL { get; set; }
 
         public DateTime CREATED { get; set; }
 
@@ -47,9 +58,7 @@
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual AREA AREA { get; set; }
-
-        public virtual AREA AREA1 { get; set; }
+        public virtual DEPARTMENT DEPARTMENT { get; set; }
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 

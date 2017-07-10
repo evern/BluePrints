@@ -5,6 +5,7 @@ namespace BluePrints.Data
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
 
     [Table("PHASE")]
     public partial class PHASE
@@ -26,11 +27,11 @@ namespace BluePrints.Data
         [StringLength(100)]
         public string CLIENT_NUM { get; set; }
 
+        public PhaseType? PHASE_TYPE { get; set; }
+
         [Required]
         [StringLength(200)]
         public string TITLE { get; set; }
-
-        public PhaseType? PHASE_TYPE { get; set; }
 
         public DateTime CREATED { get; set; }
 

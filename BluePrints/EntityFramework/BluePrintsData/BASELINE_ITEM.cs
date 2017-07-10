@@ -3,7 +3,10 @@ namespace BluePrints.Data
     using BluePrints.Common.ViewModel.Reporting;
     using Common;
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
 
     public partial class BASELINE_ITEM
     {
@@ -34,6 +37,9 @@ namespace BluePrints.Data
 
         public Guid? GUID_USER { get; set; }
 
+        [Required]
+        public int DISCIPLINE_NUM { get; set; }
+
         [StringLength(200)]
         public string INTERNAL_NUM { get; set; }
 
@@ -57,9 +63,6 @@ namespace BluePrints.Data
 
         [StringLength(50)]
         public string REVISION_NUMBER { get; set; }
-
-        [Required]
-        public int DISCIPLINE_NUM { get; set; }
 
         public decimal? P6_ASSIGNMENT_STARTUNIT { get; set; }
 

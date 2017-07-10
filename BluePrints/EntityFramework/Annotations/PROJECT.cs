@@ -20,16 +20,16 @@ namespace BluePrints.Data
             DELIVERABLES_STATUS = new HashSet<DELIVERABLES_STATUS>();
             ESTIMATION_DIRECT = new HashSet<ESTIMATION_DIRECT>();
             PROGRESS = new HashSet<PROGRESS>();
+            STOCK_CODE = new HashSet<STOCK_CODE>();
             REGISTER = new HashSet<REGISTER>();
+            PROJECT_REPORT = new HashSet<PROJECT_REPORT>();
+            RATE = new HashSet<RATE>();
             REGISTER_CHANGE = new HashSet<REGISTER_CHANGE>();
             REGISTER_HOLD = new HashSet<REGISTER_HOLD>();
             REGISTER_ISSUE = new HashSet<REGISTER_ISSUE>();
             REGISTER_LL = new HashSet<REGISTER_LL>();
             REGISTER_NC = new HashSet<REGISTER_NC>();
             REGISTER_RISK = new HashSet<REGISTER_RISK>();
-            STOCK_CODE = new HashSet<STOCK_CODE>();
-            PROJECT_REPORT = new HashSet<PROJECT_REPORT>();
-            RATE = new HashSet<RATE>();
             VARIATION = new HashSet<VARIATION>();
             WORKPACK = new HashSet<WORKPACK>();
 

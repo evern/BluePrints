@@ -3,10 +3,11 @@ namespace BluePrints.Data
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
 
     public partial class DELIVERABLES_STATUS
     {
-
         [Key]
         public Guid GUID { get; set; }
 
@@ -18,9 +19,9 @@ namespace BluePrints.Data
         [StringLength(500)]
         public string NAME { get; set; }
 
-        public decimal? AUTO_PERCENTAGE { get; set; }
-
         public decimal MAX_PERCENTAGE { get; set; }
+
+        public decimal? AUTO_PERCENTAGE { get; set; }
 
         public bool FOR_DELIVERABLE { get; set; }
 

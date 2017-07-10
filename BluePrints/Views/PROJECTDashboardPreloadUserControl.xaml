@@ -39,18 +39,6 @@
                                                    Command="{Binding DataContext.EditCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Line_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Line_32x32.png}" />
-                                <dxb:BarCheckItem x:Name="biCheckUnits" Content="Units"
-                                                  Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}"
-                                                  CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}"
-                                                  Glyph="{dx:DXImageOffice2013 Image=Time_16x16.png}"
-                                                  LargeGlyph="{dx:DXImageOffice2013 Image=Time_32x32.png}"
-                                                  IsChecked="True" />
-                                <dxb:BarCheckItem x:Name="biCheckCosts" Content="Costs"
-                                                  Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}"
-                                                  CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}"
-                                                  Glyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}"
-                                                  LargeGlyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}"
-                                                  IsChecked="{Binding ElementName=biCheckUnits, Path=IsChecked, Converter={StaticResource BooleanNegationConverter}}" />
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
                                                    Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />
@@ -79,7 +67,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical"
+                    <!--<dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical"
                                       dxlc:LayoutControl.AllowVerticalSizing="True">
                         <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDashboardPROJECT"
                                          Style="{StaticResource DefaultGridControlTemplate}">
@@ -262,7 +250,7 @@
                                                      ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum"
                                                      DisplayFormat="{}{0:n}" />
-                                <!--<dxg:GridSummaryItem x:Name="groupSummaryCumulativeEarnedPercentage"
+                                --><!--<dxg:GridSummaryItem x:Name="groupSummaryCumulativeEarnedPercentage"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
                                                      FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
                                                      SummaryType="Custom" DisplayFormat="{}{0:p}" />-->
@@ -279,7 +267,7 @@
                                                      DisplayFormat="{}{0:p}" />
                                 <dxg:GridSummaryItem x:Name="groupSummaryProgressRatio"
                                                      FieldName="ProjectDashboard_ProgressRatio" SummaryType="Custom"
-                                                     DisplayFormat="{}{0:p}" />-->
+                                                     DisplayFormat="{}{0:p}" />--><!--
                                 <dxg:GridSummaryItem x:Name="groupSummaryCumulativeEarned"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
@@ -314,7 +302,7 @@
                                                      ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum"
                                                      DisplayFormat="{}{0:n}" />
-                                <!--<dxg:GridSummaryItem x:Name="totalSummaryCumulativeEarnedPercentage"
+                                --><!--<dxg:GridSummaryItem x:Name="totalSummaryCumulativeEarnedPercentage"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
                                                      FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
                                                      SummaryType="Custom" DisplayFormat="{}{0:p}" />-->
@@ -330,7 +318,7 @@
                                                      DisplayFormat="{}{0:p}" />
                                 <dxg:GridSummaryItem x:Name="totalSummaryProgressRatio"
                                                      FieldName="ProjectDashboard_ProgressRatio" SummaryType="Custom"
-                                                     DisplayFormat="{}{0:p}" />-->
+                                                     DisplayFormat="{}{0:p}" />--><!--
                                 <dxg:GridSummaryItem x:Name="totalSummaryCumulativeEarned"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
@@ -373,7 +361,7 @@
                                                            Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                            Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                     </custom:TableViewEx.RowCellMenuCustomizations>
-                                    <!--<custom:TableViewEx.FormatConditions>
+                                    --><!--<custom:TableViewEx.FormatConditions>
                                         <dxg:FormatCondition
                                             Expression="[Stats.Earned.CurrentPeriodCumulativeDataPoint.Units] / [Stats.Planned.CurrentPeriodCumulativeDataPoint.Units] &lt; 0.8"
                                             FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage">
@@ -416,7 +404,7 @@
                                                                     MaxValue="1" MinValue="-1">
                                             <dx:DataBarFormat FillNegative="#FFFF9B98" Fill="#FF9ACCFF" />
                                         </dxg:DataBarFormatCondition>
-                                    </custom:TableViewEx.FormatConditions>-->
+                                    </custom:TableViewEx.FormatConditions>--><!--
                                 </custom:TableViewEx>
                             </dxg:GridControl.View>
                         </custom:GridControlEx>
@@ -514,7 +502,7 @@
                                 </dxc:XYDiagram2D>
                             </dxc:ChartControl.Diagram>
                         </dxc:ChartControl>
-                    </dxlc:LayoutGroup>
+                    </dxlc:LayoutGroup>-->
                 </dxlc:LayoutControl>
             </DockPanel>
         </Grid>

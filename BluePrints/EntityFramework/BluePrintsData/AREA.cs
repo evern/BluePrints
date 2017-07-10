@@ -4,6 +4,7 @@ namespace BluePrints.Data
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
 
     [Table("AREA")]
     public partial class AREA
@@ -11,20 +12,21 @@ namespace BluePrints.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public AREA()
         {
+            AREA1 = new HashSet<AREA>();
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
             BASELINE_ITEM1 = new HashSet<BASELINE_ITEM>();
             ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
             ESTIMATION_DIRECT_ITEM1 = new HashSet<ESTIMATION_DIRECT_ITEM>();
-            WORKPACK = new HashSet<WORKPACK>();
-            WORKPACK1 = new HashSet<WORKPACK>();
             REGISTER_CHANGE = new HashSet<REGISTER_CHANGE>();
             REGISTER_HOLD = new HashSet<REGISTER_HOLD>();
             REGISTER_ISSUE = new HashSet<REGISTER_ISSUE>();
             REGISTER_LL = new HashSet<REGISTER_LL>();
             REGISTER_NC = new HashSet<REGISTER_NC>();
             REGISTER_RISK = new HashSet<REGISTER_RISK>();
-            STOCK_CODE = new HashSet<STOCK_CODE>();
-            STOCK_CODE1 = new HashSet<STOCK_CODE>();
+            COMMODITY_CODE = new HashSet<COMMODITY_CODE>();
+            COMMODITY_CODE1 = new HashSet<COMMODITY_CODE>();
+            WORKPACK = new HashSet<WORKPACK>();
+            WORKPACK1 = new HashSet<WORKPACK>();
         }
 
         [Key]
@@ -95,10 +97,10 @@ namespace BluePrints.Data
         public virtual ICollection<REGISTER_RISK> REGISTER_RISK { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<STOCK_CODE> STOCK_CODE { get; set; }
+        public virtual ICollection<COMMODITY_CODE> COMMODITY_CODE { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<STOCK_CODE> STOCK_CODE1 { get; set; }
+        public virtual ICollection<COMMODITY_CODE> COMMODITY_CODE1 { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<WORKPACK> WORKPACK { get; set; }

@@ -1,10 +1,10 @@
 ﻿using BaseModel.DataModel;
 using BaseModel.Misc;
-using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common;
 using BluePrints.Common.Base;
-using BluePrints.Common.Projections;
+using BluePrints.Common.Resources;
 using BluePrints.Data;
 using DevExpress.Mvvm.POCO;
 using System;
@@ -15,7 +15,7 @@ namespace BluePrints.ViewModels
 {
     public class STOCK_CODECollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
-        <STOCK_CODE, STOCK_CODEProjection, Guid, IBluePrintsEntitiesUnitOfWork>
+        <STOCK_CODE, STOCK_CODE, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of STOCK_CODECollectionViewModelWrapper as a POCO view model.
@@ -41,20 +41,23 @@ namespace BluePrints.ViewModels
         #region Database Operations
 
         private PROJECT loadPROJECT;
-
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        public bool IsProjectSpecific
+        private StockCodeType loadCommodityCodeType;
+        private DEPARTMENT defaultDepartment;
+        private bool isProjectSpecific
         {
             get { return loadPROJECT != null; }
         }
+
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
+            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
         protected override void InitializeParameters(object parameter)
         {
             if (parameter != null)
             {
-                var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
-                loadPROJECT = PROJECTParameter.GetEntity();
+                var projectCodeTypeParameter = (OptionalEntitiesParameter<PROJECT, StockCodeTypeClass>)parameter;
+                loadPROJECT = projectCodeTypeParameter.GetFirstEntity();
+                loadCommodityCodeType = projectCodeTypeParameter.GetSecondEntity().commodityCodeType;
             }
         }
 
@@ -65,30 +68,15 @@ namespace BluePrints.ViewModels
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
-            loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, x => defaultDepartment = x);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.UOMS);
-            //need to add another viewmodel so that all stock codes are loaded for stock codes generation
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
-        private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
+        private Func<IRepositoryQuery<DEPARTMENT>, IQueryable<DEPARTMENT>> DEPARTMENTProjectionFunc()
         {
-            if (IsProjectSpecific)
-                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
-            else
-                //not necessary to load anything when it's global commodity code
-                return query => query.Where(x => x.GUID_PROJECT == Guid.Empty);
-        }
-
-        private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()
-        {
-            if (IsProjectSpecific)
-                return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID || x.GUID_PROJECT == null));
-            else
-                return query => query.Where(x => x.GUID == Guid.Empty);
+            return query => query.Where(x => x.NAME == BluePrintsResources.DefaultConstructionDepartment);
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
@@ -97,15 +85,15 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODEProjection>> ConstructMainViewModelProjection()
+        protected override Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> ConstructMainViewModelProjection()
         {
-            if(IsProjectSpecific)
-                return query => STOCK_CODEProjectionQueries.STOCK_CODEProjectionQuery(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID));
+            if (isProjectSpecific)
+                return query => query.Where(x => x.STOCK_CODE_TYPE == loadCommodityCodeType).Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.CODE);
             else
-                return query => STOCK_CODEProjectionQueries.STOCK_CODEProjectionQuery(query.Where(x => x.GUID_PROJECT == null));
+                return query => query.Where(x => x.STOCK_CODE_TYPE == loadCommodityCodeType).Where(x => x.GUID_PROJECT == null).OrderBy(x => x.CODE);
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<STOCK_CODEProjection> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<STOCK_CODE> entities)
         {
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
@@ -113,67 +101,22 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
+
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
-        public bool OnBeforeEntitySaved(STOCK_CODEProjection entity)
+        public bool OnBeforeEntitySaved(STOCK_CODE entity)
         {
-            if (IsProjectSpecific)
-                entity.Entity.GUID_PROJECT = loadPROJECT.GUID;
+            if(isProjectSpecific)
+                entity.GUID_PROJECT = loadPROJECT.GUID;
+
+            entity.GUID_DEPARTMENT = defaultDepartment.GUID;
+            entity.STOCK_CODE_TYPE = loadCommodityCodeType;
             return true;
         }
-        #endregion
 
         #endregion
 
-        #region View Commands
-        public void GenerateStockCodes()
-        {
-            if (STOCK_CODECollectionViewModel != null && DisplayEntities != null)
-            {
-                List<STOCK_CODE> addStockCodes = new List<STOCK_CODE>();
-                foreach (AREA area in AREACollection)
-                {
-                    //if default subarea already exists
-                    if (!ProjectSTOCK_CODECollection.Any(x => x.GUID_AREA == area.GUID))
-                    {
-                        addStockCodes.AddRange(getAreaStockCodes(area));
-                    }
-
-                    IEnumerable<AREA> currentSubArea = SUBAREACollection.Where(x => x.GUID_PARENT == area.GUID);
-                    foreach (AREA subArea in currentSubArea)
-                    {
-                        addStockCodes.AddRange(getAreaStockCodes(area, subArea));
-                    }
-                }
-
-                STOCK_CODECollectionViewModel.BulkSave(addStockCodes);
-            }
-        }
-
-        private List<STOCK_CODE> getAreaStockCodes(AREA area, AREA subArea = null)
-        {
-            List<STOCK_CODE> areaStockCodes = new List<STOCK_CODE>();
-            Guid? subAreaGuid = null;
-            if (subArea != null)
-                subAreaGuid = subArea.GUID;
-
-            foreach (STOCK_CODE globalStockCode in GlobalSTOCK_CODECollection)
-            {
-                if (!ProjectSTOCK_CODECollection.Any(x => x.CODE == globalStockCode.CODE && x.GUID_AREA == area.GUID && x.GUID_SUBAREA == subAreaGuid && x.GUID_DISCIPLINE == globalStockCode.GUID_DISCIPLINE))
-                    areaStockCodes.Add(new STOCK_CODE()
-                    {   GUID_AREA = area.GUID,
-                        GUID_DISCIPLINE = globalStockCode.GUID_DISCIPLINE,
-                        GUID_PROJECT = loadPROJECT.GUID,
-                        GUID_SUBAREA = subAreaGuid,
-                        UOM = globalStockCode.UOM,
-                        CODE = globalStockCode.CODE,
-                        DESCRIPTION = globalStockCode.DESCRIPTION
-                    });
-            }
-
-            return areaStockCodes;
-        }
         #endregion
 
         #region View Properties
@@ -184,28 +127,6 @@ namespace BluePrints.ViewModels
         protected override string ViewName
         {
             get { return "STOCK_CODECollectionViewModelWrapper"; }
-        }
-
-        public IEnumerable<AREA> AREACollection
-        {
-            get
-            {
-                var collection = GetEntities<AREA>();
-                if (collection != null)
-                    collection = collection.Where(x => x.GUID_PARENT == null).OrderBy(x => x.INTERNAL_NUM);
-                return collection;
-            }
-        }
-
-        public IEnumerable<AREA> SUBAREACollection
-        {
-            get
-            {
-                var collection = GetEntities<AREA>();
-                if (collection != null)
-                    collection = collection.Where(x => x.GUID_PARENT != null).OrderBy(x => x.INTERNAL_NUM);
-                return collection;
-            }
         }
 
         public IEnumerable<DEPARTMENT> DEPARTMENTCollection
@@ -238,39 +159,6 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.UOM1);
                 return collection;
-            }
-        }
-       
-        public IEnumerable<STOCK_CODE> GlobalSTOCK_CODECollection
-        {
-            get
-            {
-                var collection = GetEntities<STOCK_CODE>();
-                if (collection != null)
-                    collection = collection.Where(x => x.GUID_PROJECT == null).OrderBy(x => x.CODE);
-                return collection;
-            }
-        }
-
-        public IEnumerable<STOCK_CODE> ProjectSTOCK_CODECollection
-        {
-            get
-            {
-                var collection = GetEntities<STOCK_CODE>();
-                if (collection != null)
-                    collection = collection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.CODE);
-                return collection;
-            }
-        }
-
-        public CollectionViewModel<STOCK_CODE, STOCK_CODE, Guid, IBluePrintsEntitiesUnitOfWork> STOCK_CODECollectionViewModel
-        {
-            get
-            {
-                if (MainViewModel == null)
-                    return null;
-
-                return (CollectionViewModel<STOCK_CODE, STOCK_CODE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<STOCK_CODE>();
             }
         }
         #endregion

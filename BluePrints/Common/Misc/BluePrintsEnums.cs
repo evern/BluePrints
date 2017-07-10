@@ -182,7 +182,7 @@ namespace BluePrints.Common
         External
     }
 
-    public enum CommodityCodeType
+    public enum StockCodeType
     {
         Direct = 0,
         Design = 1,
@@ -392,11 +392,11 @@ namespace BluePrints.Common
     /// <summary>
     /// Used for optional parameter purpose
     /// </summary>
-    public class CommodityCodeTypeClass
+    public class StockCodeTypeClass
     {
-        public CommodityCodeType commodityCodeType { get; set; }
+        public StockCodeType commodityCodeType { get; set; }
 
-        public CommodityCodeTypeClass(CommodityCodeType commodityCodeType)
+        public StockCodeTypeClass(StockCodeType commodityCodeType)
         {
             this.commodityCodeType = commodityCodeType;
         }
