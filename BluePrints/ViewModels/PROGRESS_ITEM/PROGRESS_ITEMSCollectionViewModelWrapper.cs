@@ -463,6 +463,7 @@ namespace BluePrints.ViewModels
         public void ClickedRefresh()
         {
             isClickedDateChange = false;
+            FullRefresh();
         }
 
         public override void FullRefresh()
@@ -494,6 +495,7 @@ namespace BluePrints.ViewModels
                 var textEditor = view.ActiveEditor as TextEdit;
                 if (textEditor == null)
                     return false;
+
 
                 Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                 {

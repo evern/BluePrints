@@ -452,7 +452,7 @@
                                                        Command="{Binding View.DataContext.FillDownCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                     <dxb:BarButtonItem Content="Refresh"
-                                                       Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
+                                                       Command="{Binding DataContext.ClickedRefreshCommand, ElementName=userControl}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 </custom:TableViewEx.RowCellMenuCustomizations>
                             </custom:TableViewEx>
