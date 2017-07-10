@@ -101,16 +101,6 @@ namespace BluePrints.Common.Projections
             StatSummarizer.BuildBudgetedOnly();
         }
 
-        public decimal GetCurrentPeriodPercentage(decimal newTotalQuantity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public decimal GetCurrentPeriodHours(decimal newTotalQuantity)
-        {
-            throw new NotImplementedException();
-        }
-
         private IEnumerable<VARIATION_ITEM> VARIATION_ITEMS { get; set; }
 
         private List<PROGRESS_ITEM> progress_items;
@@ -498,8 +488,6 @@ namespace BluePrints.Common.Projections
 
         public string Commodity_Code => Entity.Commodity_Code;
 
-        public string Stock_Code => Entity.Stock_Code;
-
         public Guid? Workpack_Guid => Entity.Workpack_Guid;
 
         public decimal TotalHoursIncludeByDuration => Entity.TotalHoursIncludeByDuration;
@@ -525,6 +513,7 @@ namespace BluePrints.Common.Projections
         public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_UpToCurrentDataDate => PROGRESS_ITEMSUpToCurrentDate;
 
         public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_AfterDataDate => PROGRESS_ITEMSAfterReportingDate;
+
     }
 
     public static class PROGRESS_ITEMProjectionQueries

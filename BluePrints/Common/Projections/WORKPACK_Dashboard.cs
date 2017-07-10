@@ -9,9 +9,9 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class StockCode_Dashboard : IHaveStats
+    public class DisciplineCode_Dashboard : IHaveStats
     {
-        public string Stock_Code { get; set; }
+        public string Discipline_Code { get; set; }
         public List<CommodityCode_Dashboard> Commodity_Codes { get; set; }
         public ProgressStats Stats { get; set; }
     }
@@ -27,13 +27,13 @@ namespace BluePrints.Common.Projections
         public ProgressStats Stats { get; set; }
         public IEnumerable<AREA> AvailableSubAreas { get; set; }
 
-        public List<StockCode_Dashboard> StockCodes { get; set; }
+        public List<DisciplineCode_Dashboard> DisciplineCodes { get; set; }
 
-        public bool HaveStockCodes
+        public bool HaveDisciplineCodes
         {
             get
             {
-                return StockCodes.Count() > 0;
+                return DisciplineCodes.Count() > 0;
             }
         }
 
@@ -43,22 +43,22 @@ namespace BluePrints.Common.Projections
             if (!isLegacyProject)
             {
                 IEnumerable<ExoDataPoint> burnedDataPoints = projectStats.GetBurnedDataPoints();
-                StockCodes = constructAllPossibleStockCodes((SummaryStats)Stats, burnedDataPoints);
-                List<StockCode_Dashboard> removeStockCodes = new List<StockCode_Dashboard>();
+                DisciplineCodes = constructAllPossibleDisciplineCodes((SummaryStats)Stats, burnedDataPoints);
+                List<DisciplineCode_Dashboard> removeDisciplineCodes = new List<DisciplineCode_Dashboard>();
 
-                foreach(StockCode_Dashboard stockCode in StockCodes)
+                foreach(DisciplineCode_Dashboard disciplineCode in DisciplineCodes)
                 {
-                    stockCode.Stats = projectStats.GroupStatsByStockCode((SummaryStats)Stats, stockCode.Stock_Code);
-                    if (stockCode.Stats == null)
+                    disciplineCode.Stats = projectStats.GroupStatsByDisciplineCode((SummaryStats)Stats, disciplineCode.Discipline_Code);
+                    if (disciplineCode.Stats == null)
                     {
-                        removeStockCodes.Add(stockCode);
+                        removeDisciplineCodes.Add(disciplineCode);
                         continue;
                     }
 
                     List<CommodityCode_Dashboard> removeCommodityCodes = new List<CommodityCode_Dashboard>();
-                    foreach (CommodityCode_Dashboard commodityCode in stockCode.Commodity_Codes)
+                    foreach (CommodityCode_Dashboard commodityCode in disciplineCode.Commodity_Codes)
                     {
-                        commodityCode.Stats = projectStats.GroupStatsByCommodityCode((SummaryStats)stockCode.Stats, commodityCode.Commodity_Code);
+                        commodityCode.Stats = projectStats.GroupStatsByCommodityCode((SummaryStats)disciplineCode.Stats, commodityCode.Commodity_Code);
                         if(commodityCode.Stats == null)
                         {
                             removeCommodityCodes.Add(commodityCode);
@@ -68,47 +68,51 @@ namespace BluePrints.Common.Projections
                     //omit stock codes without any stats
                     foreach (CommodityCode_Dashboard removeCommodityCode in removeCommodityCodes)
                     {
-                        stockCode.Commodity_Codes.Remove(removeCommodityCode);
+                        disciplineCode.Commodity_Codes.Remove(removeCommodityCode);
                     }
                 }
 
                 //omit stock codes without any stats
-                foreach(StockCode_Dashboard removeStockCode in removeStockCodes)
+                foreach(DisciplineCode_Dashboard removeDisciplineCode in removeDisciplineCodes)
                 {
-                    StockCodes.Remove(removeStockCode);
+                    DisciplineCodes.Remove(removeDisciplineCode);
                 }
             }
         }
 
-        private List<StockCode_Dashboard> constructAllPossibleStockCodes(SummaryStats workpackSummaryStats, IEnumerable<ExoDataPoint> burnedDataPoints)
+        private List<DisciplineCode_Dashboard> constructAllPossibleDisciplineCodes(SummaryStats workpackSummaryStats, IEnumerable<ExoDataPoint> burnedDataPoints)
         {
-            List<StockCode_Dashboard> stockCodeDashboards = new List<StockCode_Dashboard>();
+            List<DisciplineCode_Dashboard> disciplineCodeDashboard = new List<DisciplineCode_Dashboard>();
             foreach(IReportable reportable in workpackSummaryStats.Reportables)
             {
-                string stockCode = reportable.Stock_Code;
-                if (!stockCodeDashboards.Any(x => x.Stock_Code == stockCode))
+                ISortableDeliverableProjection sortableDeliverable = reportable.Deliverable as ISortableDeliverableProjection;
+                if(sortableDeliverable != null)
                 {
-                    StockCode_Dashboard newStockCode = new StockCode_Dashboard() { Stock_Code = stockCode };
-                    assignAllPossibleCommodityCodes(newStockCode, workpackSummaryStats.Reportables, burnedDataPoints);
-                    stockCodeDashboards.Add(newStockCode);
+                    string discipline_code = sortableDeliverable.Discipline_Code;
+                    if (!disciplineCodeDashboard.Any(x => x.Discipline_Code == discipline_code))
+                    {
+                        DisciplineCode_Dashboard newDisciplineCode = new DisciplineCode_Dashboard() { Discipline_Code = discipline_code };
+                        assignAllPossibleCommodityCodes(newDisciplineCode, workpackSummaryStats.Reportables, burnedDataPoints);
+                        disciplineCodeDashboard.Add(newDisciplineCode);
+                    }
                 }
             }
 
             foreach(ExoDataPoint burnedDataPoint in burnedDataPoints)
             {
-                string stockCode = burnedDataPoint.StockCode;
-                if (!stockCodeDashboards.Any(x => x.Stock_Code == stockCode))
+                string disciplineCode = burnedDataPoint.DisciplineCode;
+                if (!disciplineCodeDashboard.Any(x => x.Discipline_Code == disciplineCode))
                 {
-                    StockCode_Dashboard newStockCode = new StockCode_Dashboard() { Stock_Code = stockCode };
-                    assignAllPossibleCommodityCodes(newStockCode, workpackSummaryStats.Reportables, burnedDataPoints);
-                    stockCodeDashboards.Add(newStockCode);
+                    DisciplineCode_Dashboard newDisciplineCode = new DisciplineCode_Dashboard() { Discipline_Code = disciplineCode };
+                    assignAllPossibleCommodityCodes(newDisciplineCode, workpackSummaryStats.Reportables, burnedDataPoints);
+                    disciplineCodeDashboard.Add(newDisciplineCode);
                 }
             }
 
-            return stockCodeDashboards;
+            return disciplineCodeDashboard;
         }
 
-        private void assignAllPossibleCommodityCodes(StockCode_Dashboard stockCodeDashboards, IEnumerable<IReportable> workpackReportables, IEnumerable<ExoDataPoint> burnedDataPoints)
+        private void assignAllPossibleCommodityCodes(DisciplineCode_Dashboard stockCodeDashboards, IEnumerable<IReportable> workpackReportables, IEnumerable<ExoDataPoint> burnedDataPoints)
         {
             List<CommodityCode_Dashboard> commodityCodes = new List<CommodityCode_Dashboard>();
             foreach (IReportable reportable in workpackReportables)

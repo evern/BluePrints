@@ -67,7 +67,7 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public string StockCode
+        public string Discipline_Code
         {
             get
             {
@@ -79,7 +79,7 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public string CommodityCode
+        public string Commodity_Code
         {
             get
             {
@@ -254,18 +254,6 @@ namespace BluePrints.Data
         public string ReportableItem_Name
         {
             get { return INTERNAL_NUM; }
-        }
-
-        [NotMapped]
-        public string Commodity_Code
-        {
-            get { return CommodityCode; }
-        }
-
-        [NotMapped]
-        public string Stock_Code
-        {
-            get { return StockCode; }
         }
 
         [NotMapped]

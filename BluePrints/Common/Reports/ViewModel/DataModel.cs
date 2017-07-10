@@ -153,7 +153,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         public IDeliverable Deliverable => Entity;
 
-        public string Stock_Code => Entity.Stock_Code;
+        public string Commodity_Code => Entity.Commodity_Code;
 
         public Guid? Area_Guid => Entity.Area_Guid;
 
@@ -232,21 +232,21 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
 
             var estimationDirectProgressByCommodityCode = estimationDirectItemProgress.Where(x => !x.Entity.Entity.STANDALONE)
-                .GroupBy(x => x.Entity.Entity.GUID_STOCK_CODE).Select(group => new { CommodityCodeGuid = group.Key, Estimation_Direct_ItemProgress = group.ToList() });
+                .GroupBy(x => x.Entity.Entity.GUID_COMMODITY_CODE).Select(group => new { CommodityCodeGuid = group.Key, Estimation_Direct_ItemProgress = group.ToList() });
 
             foreach (COMMODITY_CODE COMMODITY_CODE in projectCOMMODITY_CODES)
             {
-                Commodity_CodeProgress newStock_CodeProgress = new Commodity_CodeProgress();
-                newStock_CodeProgress.Entity.Entity = COMMODITY_CODE;
+                Commodity_CodeProgress newCommodity_CodeProgress = new Commodity_CodeProgress();
+                newCommodity_CodeProgress.Entity.Entity = COMMODITY_CODE;
                 
-                var currentStockCodeProgresses = estimationDirectProgressByCommodityCode.FirstOrDefault(x => x.CommodityCodeGuid == COMMODITY_CODE.GUID);
-                if(currentStockCodeProgresses != null)
+                var currentCommodity_CodeProgresses = estimationDirectProgressByCommodityCode.FirstOrDefault(x => x.CommodityCodeGuid == COMMODITY_CODE.GUID);
+                if(currentCommodity_CodeProgresses != null)
                 {
-                    newStock_CodeProgress.Entity.Reportables = currentStockCodeProgresses.Estimation_Direct_ItemProgress;
-                    newStock_CodeProgress.Deliverables = currentStockCodeProgresses.Estimation_Direct_ItemProgress.ToList();
-                    newStock_CodeProgress.SetReportingDataDate(reportingDataDate);
+                    newCommodity_CodeProgress.Entity.Reportables = currentCommodity_CodeProgresses.Estimation_Direct_ItemProgress;
+                    newCommodity_CodeProgress.Deliverables = currentCommodity_CodeProgresses.Estimation_Direct_ItemProgress.ToList();
+                    newCommodity_CodeProgress.SetReportingDataDate(reportingDataDate);
                     ProgressDisplay newProgressDisplay = new ProgressDisplay();
-                    newProgressDisplay.ProgressItem = new GroupDisplayReportable(newStock_CodeProgress);
+                    newProgressDisplay.ProgressItem = new GroupDisplayReportable(newCommodity_CodeProgress);
                     progressItems.Add(newProgressDisplay);
                 }
             }

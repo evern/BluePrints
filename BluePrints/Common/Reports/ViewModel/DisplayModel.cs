@@ -71,7 +71,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public class DisplayReportable : BindableBase, IReportable, ICanUpdate
     {
-        readonly IDeliverable deliverable;
+        readonly IReportable reportable;
 
         //For bindableBase property name usage only
         public DisplayReportable()
@@ -79,14 +79,14 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         }
 
-        public DisplayReportable(IDeliverable deliverable)
+        public DisplayReportable(IReportable deliverable)
         {
-            this.deliverable = deliverable;
+            this.reportable = deliverable;
         }
 
         public IDeliverable Deliverable
         {
-            get { return deliverable; }
+            get { return reportable.Deliverable; }
         }
 
         public string ReportableItem_Name
@@ -105,11 +105,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                ISortableDeliverable basicDeliverable = deliverable as ISortableDeliverable;
-                if (basicDeliverable != null)
-                    return basicDeliverable.Commodity_Code;
-
-                return string.Empty;
+                return reportable.Commodity_Code;
             }
         }
 
@@ -117,7 +113,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                ISortableDeliverable basicDeliverable = deliverable as ISortableDeliverable;
+                ISortableDeliverable basicDeliverable = reportable as ISortableDeliverable;
                 if (basicDeliverable != null)
                     return basicDeliverable.Workpack_Guid;
 
@@ -129,7 +125,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                ISortableDeliverable basicDeliverable = deliverable as ISortableDeliverable;
+                ISortableDeliverable basicDeliverable = reportable as ISortableDeliverable;
                 if (basicDeliverable != null)
                     return basicDeliverable.OriginalEntityKey;
 
@@ -139,17 +135,15 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public void SetOriginalEntityKey(Guid newGuid) { }
 
-        public string Stock_Code => deliverable.Stock_Code;
+        public Guid? Area_Guid => reportable.Area_Guid;
 
-        public Guid? Area_Guid => deliverable.Area_Guid;
+        public Guid? SubArea_Guid => reportable.SubArea_Guid;
 
-        public Guid? SubArea_Guid => deliverable.SubArea_Guid;
+        public decimal TotalHoursIncludeByDuration => reportable.TotalHoursIncludeByDuration;
 
-        public decimal TotalHoursIncludeByDuration => deliverable.TotalHoursIncludeByDuration;
+        public decimal EstimatedHours => reportable.EstimatedHours;
 
-        public decimal EstimatedHours => deliverable.EstimatedHours;
-
-        public decimal TotalHours => deliverable.TotalHours;
+        public decimal TotalHours => reportable.TotalHours;
 
         public decimal ItemRate
         {
@@ -191,7 +185,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                IHaveQuantity quantityDeliverable = deliverable as IHaveQuantity;
+                IHaveQuantity quantityDeliverable = reportable as IHaveQuantity;
                 if (quantityDeliverable != null)
                     return quantityDeliverable.Estimated_Quantity;
 
@@ -203,7 +197,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                IHaveQuantity quantityDeliverable = deliverable as IHaveQuantity;
+                IHaveQuantity quantityDeliverable = reportable as IHaveQuantity;
                 if (quantityDeliverable != null)
                     return quantityDeliverable.Total_Quantity;
 
@@ -215,7 +209,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                IHaveQuantity quantityDeliverable = deliverable as IHaveQuantity;
+                IHaveQuantity quantityDeliverable = reportable as IHaveQuantity;
                 if (quantityDeliverable != null)
                     return quantityDeliverable.UOM;
 
@@ -223,13 +217,13 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public Guid EntityKey { get => deliverable.EntityKey; set => deliverable.EntityKey = value; }
+        public Guid EntityKey { get => reportable.EntityKey; set => reportable.EntityKey = value; }
 
         public decimal QuantityPerHour
         {
             get
             {
-                ICanProgressByQuantity quantityDeliverable = deliverable as ICanProgressByQuantity;
+                ICanProgressByQuantity quantityDeliverable = reportable as ICanProgressByQuantity;
                 if (quantityDeliverable != null)
                     return quantityDeliverable.QuantityPerHour;
 
@@ -257,7 +251,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                ICanProgressByQuantity quantityDeliverable = deliverable as ICanProgressByQuantity;
+                ICanProgressByQuantity quantityDeliverable = reportable as ICanProgressByQuantity;
                 if (quantityDeliverable != null)
                     return quantityDeliverable.TotalPercentage;
 
@@ -269,7 +263,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                ICanProgressByQuantity quantityDeliverable = deliverable as ICanProgressByQuantity;
+                ICanProgressByQuantity quantityDeliverable = reportable as ICanProgressByQuantity;
                 if (quantityDeliverable != null)
                     return quantityDeliverable.PastInstalledQuantity;
 
@@ -296,7 +290,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             if (currentTotalInstalledQuantity == null)
             {
-                ICanProgressByQuantity quantityProjection = deliverable as ICanProgressByQuantity;
+                ICanProgressByQuantity quantityProjection = reportable as ICanProgressByQuantity;
                 if (quantityProjection != null)
                     currentTotalInstalledQuantity = quantityProjection.CurrentTotalInstalledQuantity;
                 else
@@ -314,18 +308,27 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public DateTime ReportingDataDate { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public List<PROGRESS_ITEM> PROGRESS_ITEMS { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public DateTime ReportingDataDate
+        {
+            get
+            {
+                return reportable.ReportingDataDate;
+            }
+        }
+
+        public List<PROGRESS_ITEM> PROGRESS_ITEMS
+        {
+            get
+            {
+                return reportable.PROGRESS_ITEMS;
+            }
+        }
 
         public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_BeforeDataDate
         {
             get
             {
-                IReportable reportable = deliverable as IReportable;
-                if (reportable != null)
-                    return reportable.PROGRESS_ITEM_BeforeDataDate;
-
-                return new List<PROGRESS_ITEM>();
+                return reportable.PROGRESS_ITEM_BeforeDataDate;
             }
         }
 
@@ -333,11 +336,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                IReportable reportable = deliverable as IReportable;
-                if (reportable != null)
-                    return reportable.PROGRESS_ITEM_Current;
-
-                return null;
+                return reportable.PROGRESS_ITEM_Current;
             }
         }
 
@@ -345,11 +344,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                IReportable reportable = deliverable as IReportable;
-                if (reportable != null)
-                    return reportable.PROGRESS_ITEM_UpToCurrentDataDate;
-
-                return new List<PROGRESS_ITEM>();
+                return reportable.PROGRESS_ITEM_UpToCurrentDataDate;
             }
         }
 
@@ -357,11 +352,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                IReportable reportable = deliverable as IReportable;
-                if (reportable != null)
-                    return reportable.PROGRESS_ITEM_AfterDataDate;
-
-                return new List<PROGRESS_ITEM>();
+                return reportable.PROGRESS_ITEM_AfterDataDate;
             }
         }
 
@@ -369,24 +360,17 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                IReportable reportable = deliverable as IReportable;
-                if (reportable != null)
-                    return reportable.Stats;
-
-                return null;
+                return reportable.Stats;
             }
             set
             {
-                IReportable reportable = deliverable as IReportable;
-                if (reportable != null)
-                    reportable.Stats = value;
-
+                reportable.Stats = value;
             }
         }
 
         public decimal GetCurrentPeriodHours(decimal newPeriodPercentage)
         {
-            ICanProgressByQuantity quantityDeliverable = deliverable as ICanProgressByQuantity;
+            ICanProgressByQuantity quantityDeliverable = reportable as ICanProgressByQuantity;
             if (quantityDeliverable != null)
                 return quantityDeliverable.GetCurrentPeriodHours(newPeriodPercentage);
 
@@ -395,7 +379,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal GetCurrentPeriodPercentage(decimal newTotalQuantity)
         {
-            ICanProgressByQuantity quantityDeliverable = deliverable as ICanProgressByQuantity;
+            ICanProgressByQuantity quantityDeliverable = reportable as ICanProgressByQuantity;
             if (quantityDeliverable != null)
                 return quantityDeliverable.GetCurrentPeriodPercentage(newTotalQuantity);
 
@@ -443,12 +427,12 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         private IDeliverable getDeliverableProjection()
         {
-            IQuantityReportableGroup groupProjection = deliverable as IQuantityReportableGroup;
+            IQuantityReportableGroup groupProjection = reportable as IQuantityReportableGroup;
             if (groupProjection != null)
                 return groupProjection.Deliverable;
             else
             {
-                IQuantityReportable reportableProjection = deliverable as IQuantityReportable;
+                IQuantityReportable reportableProjection = reportable as IQuantityReportable;
                 if (reportableProjection != null)
                     return reportableProjection.Deliverable;
             }

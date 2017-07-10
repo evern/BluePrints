@@ -153,8 +153,6 @@ namespace BluePrints.Common.Projections
 
         public string Commodity_Code => Entity.Commodity_Code;
 
-        public string Stock_Code => Entity.Stock_Code;
-
         public Guid? Workpack_Guid => Entity.Workpack_Guid;
 
         public decimal TotalHoursIncludeByDuration => Entity.TotalHoursIncludeByDuration;
@@ -174,29 +172,7 @@ namespace BluePrints.Common.Projections
 
         public Guid? SubArea_Guid => Entity.GUID_SUBAREA;
 
-        public decimal Estimated_Quantity => throw new NotImplementedException();
-
-        public decimal Total_Quantity => throw new NotImplementedException();
-
-        public string UOM => throw new NotImplementedException();
-
-        public decimal QuantityPerHour => throw new NotImplementedException();
-
-        public decimal TotalPercentage => throw new NotImplementedException();
-
-        public decimal PastInstalledQuantity => throw new NotImplementedException();
-
-        public decimal CurrentTotalInstalledQuantity => throw new NotImplementedException();
-
-        public decimal GetCurrentPeriodPercentage(decimal newTotalQuantity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public decimal GetCurrentPeriodHours(decimal newTotalQuantity)
-        {
-            throw new NotImplementedException();
-        }
+        public string Discipline_Code => Entity.Discipline_Code;
     }
 
     public static class BASELINE_ITEMProjectionQueries

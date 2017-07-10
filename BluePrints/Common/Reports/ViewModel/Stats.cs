@@ -213,7 +213,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string CostGroup { get; set; }
         public string CostType { get; set; }
 
-        public string StockCode
+        public string DisciplineCode
         {
             get
             {

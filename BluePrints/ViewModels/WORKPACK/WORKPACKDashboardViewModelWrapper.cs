@@ -47,20 +47,20 @@ namespace BluePrints.ViewModels
 
         private PROJECT_Dashboard projectDashboard;
 
-        public ObservableCollection<StockCode_Dashboard> SelectedStockCodes { get; set; }
+        public ObservableCollection<DisciplineCode_Dashboard> SelectedDisciplineCodes { get; set; }
         public ObservableCollection<CommodityCode_Dashboard> SelectedCommodityCodes { get; set; }
         protected override void InitializeParameters(object parameter)
         {
             projectDashboard = (PROJECT_Dashboard)parameter;
-            SelectedStockCodes = new ObservableCollection<StockCode_Dashboard>();
+            SelectedDisciplineCodes = new ObservableCollection<DisciplineCode_Dashboard>();
             SelectedCommodityCodes = new ObservableCollection<CommodityCode_Dashboard>();
-            SelectedStockCodes.CollectionChanged += SelectedStockCode_CollectionChanged;
+            SelectedDisciplineCodes.CollectionChanged += SelectedDisciplineCodes_CollectionChanged;
             SelectedCommodityCodes.CollectionChanged += SelectedCommodityCodes_CollectionChanged;
         }
 
-        private void SelectedStockCode_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void SelectedDisciplineCodes_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            IEnumerable<SummaryStats> entitiesSummary = SelectedStockCodes.Select(x => (SummaryStats)x.Stats);
+            IEnumerable<SummaryStats> entitiesSummary = SelectedDisciplineCodes.Select(x => (SummaryStats)x.Stats);
             SummaryEntity.Stats = new SummaryStats(entitiesSummary);
             this.RaisePropertyChanged(x => x.SummaryEntity);
         }

@@ -8,7 +8,7 @@ using BluePrints.Common.ViewModel.Reporting;
 
 namespace BluePrints.Data
 {
-    public partial class ESTIMATION_DIRECT_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate
+    public partial class ESTIMATION_DIRECT_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, ISortableDeliverable
     {
         public ESTIMATION_DIRECT_ITEM()
         {
@@ -88,5 +88,34 @@ namespace BluePrints.Data
 
             return SubAreaCollection.Any(x => x.GUID == subAreaGuid);
         }
+
+        public string ReportableItem_Name => STOCK_CODE == null ? string.Empty : STOCK_CODE.CODE;
+
+        public Guid? Workpack_Guid => GUID_WORKPACK;
+
+        [NotMapped]
+        public string Discipline_Code
+        {
+            get
+            {
+                if (DISCIPLINE == null)
+                    return string.Empty;
+
+                return DISCIPLINE.CODE + DISCIPLINE_NUM;
+            }
+        }
+
+        public string Commodity_Code => COMMODITY_CODE == null ? string.Empty : COMMODITY_CODE.CODE;
+
+        public Guid? Area_Guid => GUID_AREA;
+
+        public Guid? SubArea_Guid => GUID_SUBAREA;
+
+        public decimal TotalHoursIncludeByDuration => EstimatedHours;
+
+        public decimal EstimatedHours => STOCK_CODE == null ? 0 : ESTIMATED_QUANTITY * STOCK_CODE.HOURS_INSTALL;
+
+        public decimal TotalHours => EstimatedHours;
+
     }
 }

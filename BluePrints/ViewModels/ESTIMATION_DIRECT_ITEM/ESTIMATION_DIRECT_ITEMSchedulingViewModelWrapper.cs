@@ -128,9 +128,9 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == WorkpackType.SiteDirect);
         }
 
-        private Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
+        private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()
         {
-            return query => query.Include(x => x.PROJECT);
+            return query => query.Where(x => x.STOCK_CODE_TYPE == StockCodeType.Direct).Include(x => x.PROJECT);
         }
 
         private Func<IRepositoryQuery<DEPARTMENT>, IQueryable<DEPARTMENT>> DEPARTMENTProjectionFunc()
@@ -153,9 +153,9 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadESTIMATION_DIRECT.PROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()
+        private Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
         {
-            return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID || x.GUID_PROJECT == null));
+            return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID));
         }
 
         private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
@@ -216,7 +216,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ESTIMATION_DIRECT_ITEMProjection>>
             ConstructMainViewModelProjection()
         {
-            return query => ESTIMATION_DIRECT_ITEMProjectionQueries.ESTIMATION_DIRECT_ITEMProjectionQuery(query, loaderCollection.GetCollection<RATE>(), ProjectSTOCK_CODECollection, loaderCollection.GetCollection<COMMODITY_CODE>());
+            return query => ESTIMATION_DIRECT_ITEMProjectionQueries.ESTIMATION_DIRECT_ITEMProjectionQuery(query, loaderCollection.GetCollection<RATE>(), STOCK_CODECollection, loaderCollection.GetCollection<COMMODITY_CODE>());
         }
 
         //Used by baseline_item scheduling view model to fix assignment

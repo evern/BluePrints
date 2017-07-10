@@ -59,12 +59,12 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public interface ISortableDeliverable : IDeliverable, IOriginalGuidEntityKey
     {
+        string Discipline_Code { get; }
         string ReportableItem_Name { get; }
-        string Commodity_Code { get; }
         Guid? Workpack_Guid { get; }
     }
 
-    public interface IDeliverable : IGuidEntityKey, IHaveStockCode, IHaveHours
+    public interface IDeliverable : IGuidEntityKey, IHaveCommodity_Code, IHaveHours
     {
 
     }
@@ -106,10 +106,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal TotalCosts { get; }
     }
 
-    public interface IHaveStockCode
+    public interface IHaveCommodity_Code
     {
-        //must use string because stock code is not actual entity in design
-        string Stock_Code { get; }
+        //must use string because commodity code is not actual entity in design
+        string Commodity_Code { get; }
         Guid? Area_Guid { get; }
         Guid? SubArea_Guid { get; }
     }

@@ -108,8 +108,8 @@
                                                               DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ProgressItem.Stock_Code" Header="STOCK_CODE" ReadOnly="True" IsEnabled="False" />
-                            <dxg:GridColumn FieldName="ProgressItem.ReportableItem_Name" Header="COMMODITY_CODE" ReadOnly="True" IsEnabled="False" />
+                            <dxg:GridColumn FieldName="ProgressItem.Commodity_Code" Header="COMMODITY_CODE" ReadOnly="True" IsEnabled="False" />
+                            <dxg:GridColumn FieldName="ProgressItem.ReportableItem_Name" Header="STOCK_CODE" ReadOnly="True" IsEnabled="False" />
                             <dxg:GridColumn FieldName="ProgressItem.Total_Quantity" Header="TOTAL_QUANTITY" ReadOnly="True" IsEnabled="False" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
@@ -176,8 +176,8 @@
                                                               DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="Stock_Code" Header="STOCK_CODE" ReadOnly="True" IsEnabled="False" />
-                                        <dxg:GridColumn FieldName="ReportableItem_Name" Header="COMMODITY_CODE" ReadOnly="True" IsEnabled="False" />
+                                        <dxg:GridColumn FieldName="Commodity_Code" Header="COMMODITY_CODE" ReadOnly="True" IsEnabled="False" />
+                                        <dxg:GridColumn FieldName="ReportableItem_Name" Header="STOCK_CODE" ReadOnly="True" IsEnabled="False" />
                                         <dxg:GridColumn FieldName="Total_Quantity" Header="TOTAL_QUANTITY" ReadOnly="True" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />

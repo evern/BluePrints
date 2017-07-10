@@ -44,25 +44,25 @@ namespace BluePrints.Common.ViewModel.Reporting
             return workpackSummaryStats;
         }
 
-        public SummaryStats GroupStatsByStockCode(SummaryStats progressItemStatsByWorkpack, string stockCode)
+        public SummaryStats GroupStatsByDisciplineCode(SummaryStats progressItemStatsByWorkpack, string disciplineCode)
         {
-            IEnumerable<IReportable> progressItemStatsByStockCode = progressItemStatsByWorkpack.Reportables.Where(x => x.Stock_Code == stockCode);
-            List<VariationAdjustment> stockCodeVariationAdjustments = progressItemStatsByStockCode.SelectMany(x => x.Stats.VariationAdjustments).ToList();
-            SummaryStats stockCodeSummary = new SummaryStats(progressItemStatsByStockCode, progress, stockCodeVariationAdjustments);
-            stockCodeSummary.GenerateSummary();
+            IEnumerable<IReportable> progressItemStatsByStockCode = progressItemStatsByWorkpack.Reportables.Where(x => ((ISortableDeliverable)x.Deliverable).Discipline_Code == disciplineCode);
+            List<VariationAdjustment> disciplineCodeVariationAdjustments = progressItemStatsByStockCode.SelectMany(x => x.Stats.VariationAdjustments).ToList();
+            SummaryStats disciplineCodeSummary = new SummaryStats(progressItemStatsByStockCode, progress, disciplineCodeVariationAdjustments);
+            disciplineCodeSummary.GenerateSummary();
 
             IEnumerable<ExoDataPoint> workpackBurnedDataPoints = progressItemStatsByWorkpack.Burned.GetData().Select(x => (ExoDataPoint)x);
             IEnumerable<ExoDataPoint> workpackActualDataPoints = progressItemStatsByWorkpack.Actual.GetData().Select(x => (ExoDataPoint)x);
-            IEnumerable<ExoDataPoint> burnedRawDataPoints = workpackBurnedDataPoints.Where(x => x.StockCode == stockCode);
-            stockCodeSummary.Burned.SetData(burnedRawDataPoints);
-            IEnumerable<ExoDataPoint> actualRawDataPoints = workpackActualDataPoints.Where(x => x.StockCode == stockCode);
-            stockCodeSummary.Actual.SetData(actualRawDataPoints);
-            stockCodeSummary.RecalculateStats(false);
+            IEnumerable<ExoDataPoint> burnedRawDataPoints = workpackBurnedDataPoints.Where(x => x.DisciplineCode == disciplineCode);
+            disciplineCodeSummary.Burned.SetData(burnedRawDataPoints);
+            IEnumerable<ExoDataPoint> actualRawDataPoints = workpackActualDataPoints.Where(x => x.DisciplineCode == disciplineCode);
+            disciplineCodeSummary.Actual.SetData(actualRawDataPoints);
+            disciplineCodeSummary.RecalculateStats(false);
 
             if (progressItemStatsByStockCode.Count() == 0 && burnedRawDataPoints.Count() == 0 && actualRawDataPoints.Count() == 0)
                 return null;
 
-            return stockCodeSummary;
+            return disciplineCodeSummary;
         }
 
         public IEnumerable<ExoDataPoint> GetBurnedDataPoints()
@@ -70,15 +70,15 @@ namespace BluePrints.Common.ViewModel.Reporting
             return this.Burned.GetData().Select(x => (ExoDataPoint)x);
         }
 
-        public SummaryStats GroupStatsByCommodityCode(SummaryStats progressItemStatsByStockCode, string commodityCode)
+        public SummaryStats GroupStatsByCommodityCode(SummaryStats progressItemStatsByDisciplineCode, string commodityCode)
         {
-            IEnumerable<IReportable> progressItemStatsByCommodityCode = progressItemStatsByStockCode.Reportables.Where(x => ((ISortableDeliverableProjection)x.Deliverable).Commodity_Code == commodityCode);
+            IEnumerable<IReportable> progressItemStatsByCommodityCode = progressItemStatsByDisciplineCode.Reportables.Where(x => x.Commodity_Code == commodityCode);
             List<VariationAdjustment> commodityCodeVariationAdjustments = progressItemStatsByCommodityCode.SelectMany(x => x.Stats.VariationAdjustments).ToList();
             SummaryStats commodityCodeSummary = new SummaryStats(progressItemStatsByCommodityCode, progress, commodityCodeVariationAdjustments);
             commodityCodeSummary.GenerateSummary();
 
-            IEnumerable<ExoDataPoint> stockCodeBurnedDataPoints = progressItemStatsByStockCode.Burned.GetData().Select(x => (ExoDataPoint)x);
-            IEnumerable<ExoDataPoint> stockCodeActualDataPoints = progressItemStatsByStockCode.Actual.GetData().Select(x => (ExoDataPoint)x);
+            IEnumerable<ExoDataPoint> stockCodeBurnedDataPoints = progressItemStatsByDisciplineCode.Burned.GetData().Select(x => (ExoDataPoint)x);
+            IEnumerable<ExoDataPoint> stockCodeActualDataPoints = progressItemStatsByDisciplineCode.Actual.GetData().Select(x => (ExoDataPoint)x);
             IEnumerable<ExoDataPoint> burnedRawDataPoints = stockCodeBurnedDataPoints.Where(x => x.CommodityCode == commodityCode);
             commodityCodeSummary.Burned.SetData(burnedRawDataPoints);
             IEnumerable<ExoDataPoint> actualRawDataPoints = stockCodeActualDataPoints.Where(x => x.CommodityCode == commodityCode);

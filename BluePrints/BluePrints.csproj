@@ -534,7 +534,7 @@
     <Compile Include="ViewModels\REGISTER\REGISTER_RISKCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEM_ASSIGNMENTViewModel.cs" />
-    <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODECollectionViewModelWrapper1.cs" />
+    <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\USER_PROGRESS_ITEMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\WORKPACK_ASSIGNMENT\WORKPACKSchedulingViewModelWrapper.cs" />
     <Compile Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml.cs">

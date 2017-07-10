@@ -127,7 +127,7 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Commands
-        public void GenerateStockCodes()
+        public void GenerateCommodityCodes()
         {
             if (COMMODITY_CODECollectionViewModel != null && DisplayEntities != null)
             {

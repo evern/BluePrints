@@ -20,7 +20,7 @@ namespace BluePrints.Common.Projections
 
         public IEnumerable<IQuantityReportable> Reportables { get; set; }
 
-        public string Stock_Code => Entity.CODE;
+        public string Commodity_Code => Entity.CODE;
 
         public Guid? Area_Guid => Entity.GUID_AREA;
 
@@ -61,10 +61,10 @@ namespace BluePrints.Common.Projections
             return
                 COMMODITY_CODES.OrderBy(x => x.CODE).ToArray()
                     .Select(
-                        stock_code =>
+                        commodity_code =>
                             new COMMODITY_CODEProjection()
                             {
-                                Entity = stock_code,
+                                Entity = commodity_code,
                             }).AsQueryable();
         }
     }

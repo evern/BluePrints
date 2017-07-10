@@ -36,7 +36,7 @@
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <dxmvvm:Interaction.Behaviors>
-            <dx:DialogService x:Name="CommodityCodeDialogService">
+            <dx:DialogService x:Name="StockCodeDialogService">
                 <dx:DialogService.DialogStyle>
                     <Style TargetType="dx:DXDialogWindow">
                         <Setter Property="SizeToContent" Value="WidthAndHeight" />
@@ -282,7 +282,7 @@
                                     <dxe:TextEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="UOM" FieldName="STOCK_CODE.UOM" ReadOnly="True" />
+                            <dxg:GridColumn Header="UOM" Binding="{Binding STOCK_CODE.UOM}" ReadOnly="True" />
                             <dxg:GridColumn Header="NAME" FieldName="STOCK_CODE.NAME" ReadOnly="True" />
                             <dxg:GridColumn Header="TYPE" FieldName="STOCK_CODE.TYPE" ReadOnly="True" />
                             <dxg:GridColumn Header="SPEC" FieldName="STOCK_CODE.SPEC" ReadOnly="True" />
@@ -293,32 +293,32 @@
                                                  Alignment="Right" DisplayFormat="Total {0} Records" />
                             <dxg:GridSummaryItem FieldName="Entity.ESTIMATED_QUANTITY" SummaryType="Sum"
                                                  ShowInColumn="Entity.ESTIMATED_QUANTITY"
-                                                 DisplayFormat="Total: {0}" />
+                                                 DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="Total_Install_Hours" SummaryType="Sum"
                                                  ShowInColumn="Total_Install_Hours"
-                                                 DisplayFormat="Total: {0}" />
+                                                 DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="Supply_Cost" SummaryType="Sum"
                                                  ShowInColumn="Supply_Cost"
-                                                 DisplayFormat="Total: {0}" />
+                                                 DisplayFormat="Total: {0:c}" />
                             <dxg:GridSummaryItem FieldName="Install_Cost" SummaryType="Sum"
                                                  ShowInColumn="Install_Cost"
-                                                 DisplayFormat="Total: {0}" />
+                                                 DisplayFormat="Total: {0:c}" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem FieldName="Entity.COMMENTS" SummaryType="Count"
                                                  Alignment="Right" DisplayFormat="Total {0} Records" />
                             <dxg:GridSummaryItem FieldName="Entity.ESTIMATED_QUANTITY" SummaryType="Sum"
                                                  ShowInColumn="Entity.ESTIMATED_QUANTITY"
-                                                 DisplayFormat="Total: {0}" />
+                                                 DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="Total_Install_Hours" SummaryType="Sum"
                                                  ShowInColumn="Total_Install_Hours"
-                                                 DisplayFormat="Total: {0}" />
+                                                 DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="Supply_Cost" SummaryType="Sum"
                                                  ShowInColumn="Supply_Cost"
-                                                 DisplayFormat="Total: {0}" />
+                                                 DisplayFormat="Total: {0:c}" />
                             <dxg:GridSummaryItem FieldName="Install_Cost" SummaryType="Sum"
                                                  ShowInColumn="Install_Cost"
-                                                 DisplayFormat="Total: {0}" />
+                                                 DisplayFormat="Total: {0:c}" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
                             <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" >
