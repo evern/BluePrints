@@ -73,7 +73,7 @@ namespace BluePrints.Data
         public virtual ICollection<BASELINE> BASELINE { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<BASELINE_ITEM_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENT { get; set; }
+        public virtual ICollection<P6_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENT { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<COMMODITY_CODE> COMMODITY_CODE { get; set; }

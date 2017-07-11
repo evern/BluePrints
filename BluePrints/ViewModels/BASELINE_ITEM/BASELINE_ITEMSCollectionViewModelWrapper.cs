@@ -60,7 +60,7 @@ namespace BluePrints.ViewModels
         #region Database Operations
         private PROJECT loadPROJECT;
         private BASELINE _LoadBaseline;
-        private PROGRESS _LiveProgress;
+        private PROGRESS livePROGRESS;
         private bool _isQueryForLiveStatus;
         public bool IsPhaseVisible
         {
@@ -140,7 +140,7 @@ namespace BluePrints.ViewModels
 
         private void SetPROGRESStoCurrentDateOnLoaded(PROGRESS entity)
         {
-            _LiveProgress = entity;
+            livePROGRESS = entity;
         }
 
         private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
@@ -176,10 +176,10 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
         {
-            if(_LiveProgress == null)
+            if(livePROGRESS == null)
                 return query => query.Where(x => x.GUID_PROGRESS == Guid.Empty);
             else
-                return query => query.Where(x => x.GUID_PROGRESS == _LiveProgress.GUID);
+                return query => query.Where(x => x.GUID_PROGRESS == livePROGRESS.GUID);
         }
 
         private Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
@@ -200,18 +200,11 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<PROGRESS_ITEMProjection>>
             ConstructMainViewModelProjection()
         {
-            var getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
-            var getBASELINEFunc = loaderCollection.GetObjectFunc<BASELINE>();
-            var getDELIVERABLES_STATUSESFunc =
-                loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
-            var getPROGRESSFunc = loaderCollection.GetObjectFunc<PROGRESS>();
-            var getPROGRESS_ITEMSFunc = loaderCollection.GetCollectionFunc<PROGRESS_ITEM>();
-
             return
                 query =>
                     PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
-                        query.OrderBy(x => x.CREATED), getPROGRESSFunc, getBASELINEFunc, getPROGRESS_ITEMSFunc,
-                        getRATESFunc, getDELIVERABLES_STATUSESFunc, GetSUBAREACollection);
+                        query.Where(x => x.GUID_BASELINE == _LoadBaseline.GUID).OrderBy(x => x.CREATED), livePROGRESS, PROGRESS_ITEMCollection,
+                        RATECollection, DELIVERABLES_STATUSCollection, SUBAREACollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROGRESS_ITEMProjection> entities)
@@ -891,6 +884,22 @@ namespace BluePrints.ViewModels
                 ShowWORKPACKInternalName1();
             else
                 ShowWORKPACKInternalName2();
+        }
+
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMCollection
+        {
+            get
+            {
+                return GetEntities<PROGRESS_ITEM>();
+            }
+        }
+
+        public IEnumerable<RATE> RATECollection
+        {
+            get
+            {
+                return GetEntities<RATE>();
+            }
         }
 
         public IEnumerable<WORKPACK> WORKPACKCollection

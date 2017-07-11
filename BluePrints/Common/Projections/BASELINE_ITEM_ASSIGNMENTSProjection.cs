@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    public class BASELINE_ITEM_ASSIGNMENTSProjection : BluePrintsProjectionBase<BASELINE_ITEM_ASSIGNMENT>
+    public class BASELINE_ITEM_ASSIGNMENTSProjection : BluePrintsProjectionBase<P6_ASSIGNMENT>
     {
         public BASELINE_ITEM_ASSIGNMENTSProjection()
             : base()

@@ -388,6 +388,7 @@
     </Compile>
     <Compile Include="Common\Reports\ViewModel\DisplayModel.cs" />
     <Compile Include="Common\Reports\ViewModel\Interfaces.cs" />
+    <Compile Include="Common\Reports\ViewModel\Queries.cs" />
     <Compile Include="Common\Reports\XtraReportBASELINE_ITEMS.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -453,7 +454,7 @@
     <Compile Include="EntityFramework\Annotations\REGISTER_NC.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_LL.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_RISK.cs" />
-    <Compile Include="EntityFramework\Annotations\BASELINE_ITEM_ASSIGNMENT.cs" />
+    <Compile Include="EntityFramework\Annotations\P6_ASSIGNMENT.cs" />
     <Compile Include="EntityFramework\Annotations\BluePrintsEntities.cs" />
     <Compile Include="EntityFramework\Annotations\DELIVERABLES_STATUS.cs" />
     <Compile Include="EntityFramework\Annotations\ESTIMATION_DIRECT.cs" />
@@ -493,7 +494,7 @@
     <Compile Include="EntityFramework\BluePrintsData\VARIATION.cs" />
     <Compile Include="EntityFramework\BluePrintsData\VARIATION_ITEM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\WORKPACK.cs" />
-    <Compile Include="EntityFramework\BluePrintsData\BASELINE_ITEM_ASSIGNMENT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\P6_ASSIGNMENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\WORKPACK_ASSIGNMENT.cs" />
     <Compile Include="EntityFramework\Annotations\AREA.cs" />
     <Compile Include="EntityFramework\Annotations\BASELINE.cs" />
@@ -522,6 +523,7 @@
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\IBluePrintsEntitiesUnitOfWork.cs" />
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\BluePrintsEntitiesUnitOfWorkSource.cs" />
     <Compile Include="Common\Misc\BluePrintsEnums.cs" />
+    <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\STOCK_CODE\STOCK_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATION_DIRECT_ITEM\ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATION_DIRECT_ITEM\ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.cs" />

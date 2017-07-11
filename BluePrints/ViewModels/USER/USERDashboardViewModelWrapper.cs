@@ -91,9 +91,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<PROGRESS_ITEMProjection>>
             ConstructMainViewModelProjection()
         {
-            var getDELIVERABLES_STATUSESFunc = loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
-
-            return query => PROGRESS_ITEMProjectionQueries.GetUserDeliverables(query, getDELIVERABLES_STATUSESFunc, _loadUSER);
+            return query => PROGRESS_ITEMProjectionQueries.GetUserDeliverables(query, DELIVERABLES_STATUSCollection, _loadUSER);
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<PROGRESS_ITEMProjection> entities)

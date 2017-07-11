@@ -20,7 +20,7 @@ namespace BluePrints.Views
             PROJECT PROJECT, 
             IEnumerable<TASK_AppointmentInfo> ALLTASK_Appointments,
             IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMS,
-            CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACK_ASSIGNMENTSViewModel,
+            CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACK_ASSIGNMENTSViewModel,
             bool IsModified,
             Appointment SelectedTASK_Appointment = null,
             IEnumerable<BASELINE_ITEMProjection> selectedBASELINE_ITEMProjections = null)

@@ -126,7 +126,7 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<BASELINE_ITEM_ASSIGNMENT>, IQueryable<BASELINE_ITEM_ASSIGNMENT>>
+        private Func<IRepositoryQuery<P6_ASSIGNMENT>, IQueryable<P6_ASSIGNMENT>>
             BASELINE_ITEM_ASSIGNMENTProjectionFunc()
         {
             return
@@ -187,7 +187,7 @@ namespace BluePrints.ViewModels
             BASELINE BASELINE = loaderCollection.GetObject<BASELINE>();
             IEnumerable<RATE> RATES = loaderCollection.GetCollection<RATE>();
             IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSES = loaderCollection.GetCollection<DELIVERABLES_STATUS>();
-            IEnumerable<BASELINE_ITEM_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENTS = loaderCollection.GetCollection<BASELINE_ITEM_ASSIGNMENT>();
+            IEnumerable<P6_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENTS = loaderCollection.GetCollection<P6_ASSIGNMENT>();
 
             return
                 query =>
@@ -197,7 +197,7 @@ namespace BluePrints.ViewModels
         public
             Action
             <BluePrints.Data.PROJECT, IEnumerable<TASK>, IEnumerable<PROJWBS>, IEnumerable<BASELINE_ITEMProjection>,
-                CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>, bool
+                CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>, bool
             > WinformFormHostInitialization { get; set; }
 
         public Action RefreshWinformView { get; set; }
@@ -303,7 +303,7 @@ namespace BluePrints.ViewModels
         {
             LoadingScreenManager.ShowLoadingScreen(projections.Count());
 
-            List<BASELINE_ITEM_ASSIGNMENT> newAssignments = new List<BASELINE_ITEM_ASSIGNMENT>();
+            List<P6_ASSIGNMENT> newAssignments = new List<P6_ASSIGNMENT>();
             foreach (WORKPACK_Dashboard workpack in projections)
             {
                 IEnumerable<WORKPACK_ASSIGNMENT> projectWORKPACK_ASSIGNMENTS = workpack.ObservableWORKPACK_ASSIGNMENTS;
@@ -312,7 +312,7 @@ namespace BluePrints.ViewModels
                     IEnumerable<BASELINE_ITEMProjection> baseline_items = MainViewModel.Entities.Where(x => x.Entity.GUID_WORKPACK == workpack.GUID);
                     foreach(var baseline_item in baseline_items)
                     {
-                        newAssignments.Add(new BASELINE_ITEM_ASSIGNMENT()
+                        newAssignments.Add(new P6_ASSIGNMENT()
                         {
                             GUID = Guid.Empty,
                             GUID_PROJECT = loadPROJECT.GUID,
@@ -364,9 +364,9 @@ namespace BluePrints.ViewModels
                 List<P6ActivityAssignment> missingActivities = new List<P6ActivityAssignment>();
                 foreach(BASELINE_ITEMProjection baseline_item in MainViewModel.Entities)
                 {
-                    IEnumerable<BASELINE_ITEM_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = baseline_item.BASELINE_ITEM_ASSIGNMENTS;
+                    IEnumerable<P6_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = baseline_item.BASELINE_ITEM_ASSIGNMENTS;
 
-                    foreach (BASELINE_ITEM_ASSIGNMENT BASELINE_ITEM_ASSIGNMENT in projectBASELINE_ITEM_ASSIGNMENTS)
+                    foreach (P6_ASSIGNMENT BASELINE_ITEM_ASSIGNMENT in projectBASELINE_ITEM_ASSIGNMENTS)
                     {
                         TASK existingTask = P6Tasks.FirstOrDefault(x => x.task_code == BASELINE_ITEM_ASSIGNMENT.P6_ACTIVITYID);
                         P6ActivityAssignment P6Assignment = new P6ActivityAssignment(baseline_item, BASELINE_ITEM_ASSIGNMENT);
@@ -488,8 +488,8 @@ namespace BluePrints.ViewModels
                 validTASKS = P6PROJECT.TASK.ToArray().AsEnumerable();
                 foreach (BASELINE_ITEMProjection baseline_item in MainViewModel.Entities)
                 {
-                    IEnumerable<BASELINE_ITEM_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = baseline_item.BASELINE_ITEM_ASSIGNMENTS;
-                    foreach (BASELINE_ITEM_ASSIGNMENT BASELINE_ITEM_ASSIGNMENT in projectBASELINE_ITEM_ASSIGNMENTS)
+                    IEnumerable<P6_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = baseline_item.BASELINE_ITEM_ASSIGNMENTS;
+                    foreach (P6_ASSIGNMENT BASELINE_ITEM_ASSIGNMENT in projectBASELINE_ITEM_ASSIGNMENTS)
                     {
                         if(getAllActivities)
                             missingActivities.Add(new P6ActivityAssignment(baseline_item, BASELINE_ITEM_ASSIGNMENT));
@@ -515,11 +515,11 @@ namespace BluePrints.ViewModels
             RefreshWinformView?.Invoke();
         }
 
-        public IEnumerable<BASELINE_ITEM_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENTCollection
+        public IEnumerable<P6_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENTCollection
         {
             get
             {
-                var collection = GetEntities<BASELINE_ITEM_ASSIGNMENT>();
+                var collection = GetEntities<P6_ASSIGNMENT>();
                 return collection;
             }
         }
@@ -538,7 +538,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> BASELINE_ITEM_ASSIGNMENTSCollectionViewModel
+        public CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> BASELINE_ITEM_ASSIGNMENTSCollectionViewModel
         {
             get
             {
@@ -546,8 +546,8 @@ namespace BluePrints.ViewModels
                     return null;
 
                 return
-                    (CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>)
-                    loaderCollection.GetViewModel<BASELINE_ITEM_ASSIGNMENT>();
+                    (CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<P6_ASSIGNMENT>();
             }
         }
         #endregion

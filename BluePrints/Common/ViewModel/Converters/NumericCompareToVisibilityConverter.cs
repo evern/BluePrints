@@ -24,7 +24,10 @@ namespace BluePrints.Common.ViewModel.Converters
                 valueUnmatchedVisibility = Visibility.Hidden;
             }
 
-            if (values[0] == DependencyProperty.UnsetValue && values[1] == DependencyProperty.UnsetValue)
+            if (values[0] == DependencyProperty.UnsetValue || values[1] == DependencyProperty.UnsetValue)
+                return valueUnmatchedVisibility;
+
+            if (values[0] == null || values[1] == null)
                 return valueUnmatchedVisibility;
 
             try

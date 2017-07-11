@@ -71,7 +71,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public class StandaloneDisplayReportable : BindableBase, IReportable
     {
-        readonly IReportable reportable;
+        readonly IReportableStats reportable;
+        private SingleObjectSummarizer statsSummarizer;
+        public SingleObjectSummarizer StatSummarizer => statsSummarizer;
 
         //For bindableBase property name usage only
         public StandaloneDisplayReportable()
@@ -79,7 +81,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         }
 
-        public StandaloneDisplayReportable(IReportable deliverable)
+        public StandaloneDisplayReportable(IReportableStats deliverable)
         {
             this.reportable = deliverable;
         }
@@ -139,11 +141,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid? SubArea_Guid => reportable.SubArea_Guid;
 
-        public decimal TotalUnitsIncludeByDuration => reportable.TotalUnitsIncludeByDuration;
+        public decimal Estimated_Units => reportable.Estimated_Units;
 
-        public decimal EstimatedUnits => reportable.EstimatedUnits;
-
-        public decimal TotalUnits => reportable.TotalUnits;
+        public decimal Total_Units => reportable.Total_Units;
 
         public decimal ItemRate
         {
@@ -168,7 +168,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             get
             {
                 IHaveCosts costProjection = getCostProjection();
-                return costProjection == null ? 0 : costProjection.TotalCosts;
+                return costProjection == null ? 0 : costProjection.Total_Costs;
             }
         }
 
@@ -185,11 +185,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                IHaveQuantity quantityDeliverable = reportable as IHaveQuantity;
-                if (quantityDeliverable != null)
-                    return quantityDeliverable.Estimated_Quantity;
-
-                return 0;
+                IHaveQuantity quantityProjection = reportable as IHaveQuantity;
+                return quantityProjection == null ? 0 : quantityProjection.Estimated_Quantity;
             }
         }
 
@@ -197,11 +194,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                IHaveQuantity quantityDeliverable = reportable as IHaveQuantity;
-                if (quantityDeliverable != null)
-                    return quantityDeliverable.Total_Quantity;
-
-                return 0;
+                IHaveQuantity quantityProjection = reportable as IHaveQuantity;
+                return quantityProjection == null ? 0 : quantityProjection.Total_Quantity;
             }
         }
 
@@ -209,11 +203,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                IHaveQuantity quantityDeliverable = reportable as IHaveQuantity;
-                if (quantityDeliverable != null)
-                    return quantityDeliverable.UOM;
-
-                return string.Empty;
+                IHaveQuantity quantityProjection = reportable as IHaveQuantity;
+                return quantityProjection == null ? string.Empty : quantityProjection.UOM;
             }
         }
 
@@ -224,60 +215,24 @@ namespace BluePrints.Common.ViewModel.Reporting
             get
             {
                 ICanProgressByQuantity quantityDeliverable = reportable as ICanProgressByQuantity;
-                if (quantityDeliverable != null)
-                    return quantityDeliverable.QuantityPerHour;
-
-                return 0;
+                return quantityDeliverable == null ? 0 : quantityDeliverable.QuantityPerHour;
             }
         }
 
-        public decimal CurrentPeriodHours
-        {
-            get
-            {
-                return CurrentTotalInstalledQuantity / QuantityPerHour;
-            }
-        }
+        public decimal CurrentPeriodHours => CurrentTotalInstalledQuantity / QuantityPerHour;
 
-        public decimal CurrentPeriodCosts
-        {
-            get
-            {
-                return CurrentPeriodHours * ItemRate;
-            }
-        }
-
-        public decimal TotalPercentage
-        {
-            get
-            {
-                ICanProgressByQuantity quantityDeliverable = reportable as ICanProgressByQuantity;
-                if (quantityDeliverable != null)
-                    return quantityDeliverable.TotalPercentage;
-
-                return 0;
-            }
-        }
+        public decimal CurrentPeriodCosts => CurrentPeriodHours * ItemRate;
 
         public decimal PastInstalledQuantity
         {
             get
             {
-                ICanProgressByQuantity quantityDeliverable = reportable as ICanProgressByQuantity;
-                if (quantityDeliverable != null)
-                    return quantityDeliverable.PastInstalledQuantity;
-
-                return 0;
+                ICanProgressByQuantity quantityProjection = reportable as ICanProgressByQuantity;
+                return quantityProjection == null ? 0 : quantityProjection.PastInstalledQuantity;
             }
         }
 
-        public decimal MaxCurrentQuantity
-        {
-            get
-            {
-                return Total_Quantity - PastInstalledQuantity;
-            }
-        }
+        public decimal MaxCurrentQuantity => Total_Quantity - PastInstalledQuantity;
 
         decimal? currentTotalInstalledQuantity { get; set; }
         public decimal CurrentTotalInstalledQuantity
@@ -318,73 +273,47 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal VariationUnits => reportable.VariationUnits;
 
+        public decimal Current_Total_Percentage => throw new NotImplementedException();
+
         public decimal GetCurrentPeriodHours(decimal newPeriodPercentage)
         {
-            ICanProgressByQuantity quantityDeliverable = reportable as ICanProgressByQuantity;
-            if (quantityDeliverable != null)
-                return quantityDeliverable.GetCurrentPeriodHours(newPeriodPercentage);
-
-            return 0;
+            return reportable.GetCurrentPeriodHours(newPeriodPercentage);
         }
 
-        public decimal GetCurrentPeriodPercentage(decimal newTotalQuantity)
+        public decimal GetCurrentPeriodPercentageByQuantity(decimal newTotalQuantity)
         {
             ICanProgressByQuantity quantityDeliverable = reportable as ICanProgressByQuantity;
             if (quantityDeliverable != null)
-                return quantityDeliverable.GetCurrentPeriodPercentage(newTotalQuantity);
+                return quantityDeliverable.GetCurrentPeriodPercentageByQuantity(newTotalQuantity);
 
             return 0;
         }
 
         private ISortableDeliverable getSortableDeliverable()
         {
-            IDeliverable deliverableProjection = getDeliverableProjection();
-            if (deliverableProjection != null)
-            {
-                ISortableDeliverable sortableProjection = deliverableProjection as ISortableDeliverable;
-                if (sortableProjection != null)
-                    return sortableProjection;
-            }
+            ISortableDeliverable sortableProjection = reportable.Deliverable as ISortableDeliverable;
+            if (sortableProjection != null)
+                return sortableProjection;
 
             return null;
         }
 
         private ICanTrack getTrackableProjection()
         {
-            IDeliverable deliverableProjection = getDeliverableProjection();
-            if (deliverableProjection != null)
-            {
-                ICanTrack TrackableProjection = deliverableProjection as ICanTrack;
-                if (TrackableProjection != null)
-                    return TrackableProjection;
-            }
+            ICanTrack TrackableProjection = reportable.Deliverable as ICanTrack;
+            if (TrackableProjection != null)
+                return TrackableProjection;
 
             return null;
         }
 
         private IHaveCosts getCostProjection()
         {
-            IDeliverable deliverableProjection = getDeliverableProjection();
-            if (deliverableProjection != null)
+            if (reportable.Deliverable != null)
             {
-                IHaveCosts costProjection = deliverableProjection as IHaveCosts;
+                IHaveCosts costProjection = reportable.Deliverable as IHaveCosts;
                 if (costProjection != null)
                     return costProjection;
-            }
-
-            return null;
-        }
-
-        private IDeliverable getDeliverableProjection()
-        {
-            IQuantityReportableGroup groupProjection = reportable as IQuantityReportableGroup;
-            if (groupProjection != null)
-                return groupProjection.Deliverable;
-            else
-            {
-                IQuantityReportable reportableProjection = reportable as IQuantityReportable;
-                if (reportableProjection != null)
-                    return reportableProjection.Deliverable;
             }
 
             return null;

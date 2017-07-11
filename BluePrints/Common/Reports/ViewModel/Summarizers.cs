@@ -101,11 +101,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
                 List<StoredProcedure_PlannedDataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPointsByProject(this.projectNumber);
-                foreach (PROGRESS_ITEMProjection reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
+                foreach (IReportableStats reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
                 {
                     List<StoredProcedure_PlannedDataPoint> currentDeliverableDataPoints = new List<StoredProcedure_PlannedDataPoint>();
 
-                    currentDeliverableDataPoints.AddRange(plannedDataPoints.Where(x => x.Deliverable_Guid == reportableObject.Entity.EntityKey));
+                    currentDeliverableDataPoints.AddRange(plannedDataPoints.Where(x => x.Deliverable_Guid == reportableObject.EntityKey));
 
                     reportableObject.Stats.Budgeted.SetPlannedData(currentDeliverableDataPoints);
                     reportableObject.Stats.Current.SetPlannedData(currentDeliverableDataPoints);
@@ -158,10 +158,10 @@ namespace BluePrints.Common.ViewModel.Reporting
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
                 List<StoredProcedure_RemainingDataPoint> remainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPointsByProject(this.projectNumber);
-                foreach (PROGRESS_ITEMProjection reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
+                foreach (IReportableStats reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
                 {
                     List<StoredProcedure_RemainingDataPoint> currentDeliverableDataPoints = new List<StoredProcedure_RemainingDataPoint>();
-                    currentDeliverableDataPoints.AddRange(remainingDataPoints.Where(x => x.Deliverable_Guid == reportableObject.Entity.EntityKey));
+                    currentDeliverableDataPoints.AddRange(remainingDataPoints.Where(x => x.Deliverable_Guid == reportableObject.EntityKey));
 
                     reportableObject.Stats.Remaining.SetRemainingData(currentDeliverableDataPoints, reportableObject.Stats.Earned.DataPoints);
                     reportableObject.Update();

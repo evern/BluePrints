@@ -25,7 +25,7 @@ namespace BluePrints.Views
         public void windowsFormHostViewInitialization(BluePrints.Data.PROJECT PROJECT, IEnumerable<TASK> TASKS,
             IEnumerable<PROJWBS> P6WBSs,
             IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMProjections,
-            CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
+            CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
                 BASELINE_ITEM_ASSIGNMENTSViewModel,
             bool IsModified)
         {

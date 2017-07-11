@@ -275,13 +275,13 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                     var newDataPoint = new DataPoint()
                     {
-                        BudgetedCosts = currentBASELINE_ITEM.TOTAL_COSTS,
+                        BudgetedCosts = currentBASELINE_ITEM.Total_Costs,
                         BudgetedUnits = currentBASELINE_ITEM.Entity.TOTAL_HOURS,
                         Units = periodUnits,
                         ProgressDate = remainingCountDataDate
                     };
 
-                    newDataPoint.Costs = currentBASELINE_ITEM.ITEMRATE * currencyConversion;
+                    newDataPoint.Costs = currentBASELINE_ITEM.ItemRate * currencyConversion;
                     remainingDataPoints.Add(newDataPoint);
                     remainingUnits -= periodUnits;
                 }
@@ -289,7 +289,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 {
                     var newDataPoint = new DataPoint()
                     {
-                        BudgetedCosts = currentBASELINE_ITEM.TOTAL_COSTS,
+                        BudgetedCosts = currentBASELINE_ITEM.Total_Costs,
                         BudgetedUnits = currentBASELINE_ITEM.Entity.TOTAL_HOURS,
                         Units = 0,
                         Costs = 0,

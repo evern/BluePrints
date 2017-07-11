@@ -184,19 +184,18 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK_Dashboard>>
             ConstructMainViewModelProjection()
         {
-            var getBASELINEFunc = loaderCollection.GetObjectFunc<BASELINE>();
-            var getPROGRESSFunc = loaderCollection.GetObjectFunc<PROGRESS>();
-            var getBASELINE_ITEMSFunc = loaderCollection.GetCollectionFunc<BASELINE_ITEM>();
-            var getPROGRESS_ITEMSFunc = loaderCollection.GetCollectionFunc<PROGRESS_ITEM>();
-            var getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
-            var getDELIVERABLES_STATUSESFunc = loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
+            var BASELINE = loaderCollection.GetObject<BASELINE>();
+            var PROGRESS = loaderCollection.GetObject<PROGRESS>();
+            var BASELINE_ITEMS = loaderCollection.GetCollection<BASELINE_ITEM>();
+            var PROGRESS_ITEMS = loaderCollection.GetCollection<PROGRESS_ITEM>();
+            var RATES = loaderCollection.GetCollection<RATE>();
+            var DELIVERABLES_STATUSES = loaderCollection.GetCollection<DELIVERABLES_STATUS>();
 
             return
                 query =>
                     WORKPACK_DashboardQueries.SummarizeWORKPACKDashboard(
-                        query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID), getPROGRESSFunc, getBASELINEFunc,
-                        getBASELINE_ITEMSFunc, getPROGRESS_ITEMSFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, 
-                        mappingType == BaselineMappingSelectionType.Modified);
+                        query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID), PROGRESS, BASELINE,
+                        BASELINE_ITEMS, PROGRESS_ITEMS, RATES, DELIVERABLES_STATUSES);
         }
 
         public

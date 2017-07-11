@@ -4,7 +4,7 @@ namespace BluePrints.Data
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class BASELINE_ITEM_ASSIGNMENT : IGuidEntityKey, IHaveCreatedDate
+    public partial class P6_ASSIGNMENT : IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

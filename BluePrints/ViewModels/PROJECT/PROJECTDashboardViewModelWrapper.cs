@@ -120,17 +120,17 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT_Dashboard>>
             ConstructMainViewModelProjection()
         {
-            var getBASELINESFunc = loaderCollection.GetCollectionFunc<BASELINE>();
-            var getPROGRESSESFunc = loaderCollection.GetCollectionFunc<PROGRESS>();
-            var getPROGRESS_ITEMSFunc = loaderCollection.GetCollectionFunc<PROGRESS_ITEM>();
-            var getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
-            var getVARIATIONSFunc = loaderCollection.GetCollectionFunc<VARIATION>();
-            var getDELIVERABLES_STATUSESFunc = loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
+            var BASELINES = loaderCollection.GetCollection<BASELINE>();
+            var PROGRESSES = loaderCollection.GetCollection<PROGRESS>();
+            var PROGRESS_ITEMS = loaderCollection.GetCollection<PROGRESS_ITEM>();
+            var RATES = loaderCollection.GetCollection<RATE>();
+            var VARIATIONS = loaderCollection.GetCollection<VARIATION>();
+            var DELIVERABLE_STATUSES = loaderCollection.GetCollection<DELIVERABLES_STATUS>();
 
             return
                 query =>
-                    PROJECT_DashboardQueries.SummarizePROJECTDashboard(query.OrderBy(x => x.NUMBER), getPROGRESSESFunc,
-                        getPROGRESS_ITEMSFunc, getBASELINESFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, getVARIATIONSFunc,
+                    PROJECT_DashboardQueries.SummarizePROJECTDashboard(query.OrderBy(x => x.NUMBER), PROGRESSES,
+                        PROGRESS_ITEMS, BASELINES, RATES, DELIVERABLE_STATUSES, VARIATIONS,
                         () => RaisePropertyChanged(), null, false);
         }
 

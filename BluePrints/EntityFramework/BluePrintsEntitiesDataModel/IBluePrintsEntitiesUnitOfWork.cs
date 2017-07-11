@@ -182,7 +182,7 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// <summary>
         /// The BASELINE_ITEM_ASSIGNMENTS entities repository.
         /// </summary>
-        IRepository<BASELINE_ITEM_ASSIGNMENT, Guid> BASELINE_ITEM_ASSIGNMENTS { get; }
+        IRepository<P6_ASSIGNMENT, Guid> BASELINE_ITEM_ASSIGNMENTS { get; }
 
         /// <summary>
         /// The WORKPACK entities repository.

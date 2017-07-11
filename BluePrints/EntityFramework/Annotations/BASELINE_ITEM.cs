@@ -55,18 +55,6 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public decimal Total_HoursIncludeByDuration
-        {
-            get
-            {
-                if (BY_DURATION)
-                    return BluePrintsConstants.DurationBasedTotalUnits;
-
-                return ESTIMATED_HOURS + DC_HOURS;
-            }
-        }
-
-        [NotMapped]
         public string Discipline_Code
         {
             get
@@ -263,21 +251,27 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public decimal TotalUnitsIncludeByDuration
+        public decimal Estimated_Units
         {
-            get { return Total_HoursIncludeByDuration; }
+            get
+            {
+                if (IsByDuration)
+                    return BluePrintsConstants.DurationBasedTotalUnits;
+
+                return ESTIMATED_HOURS;
+            }
         }
 
         [NotMapped]
-        public decimal EstimatedUnits
+        public decimal Total_Units
         {
-            get { return ESTIMATED_HOURS; }
-        }
+            get
+            {
+                if (IsByDuration)
+                    return BluePrintsConstants.DurationBasedTotalUnits;
 
-        [NotMapped]
-        public decimal TotalUnits
-        {
-            get { return TOTAL_HOURS; }
+                return TOTAL_HOURS;
+            }
         }
 
         [NotMapped]
@@ -287,10 +281,10 @@ namespace BluePrints.Data
         public Guid? SubArea_Guid => GUID_SUBAREA;
 
         [NotMapped]
-        public decimal Estimated_Quantity => EstimatedUnits;
+        public decimal Estimated_Quantity => Estimated_Units;
 
         [NotMapped]
-        public decimal Total_Quantity => TotalUnits;
+        public decimal Total_Quantity => Total_Units;
 
         [NotMapped]
         public decimal VariationUnits => DC_HOURS;

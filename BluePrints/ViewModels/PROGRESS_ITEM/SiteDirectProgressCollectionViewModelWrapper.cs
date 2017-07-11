@@ -22,7 +22,7 @@ namespace BluePrints.ViewModels
 {
     public class SiteDirectProgressItemCollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
-        <PROGRESS_ITEM, ProgressDisplay, Guid, IBluePrintsEntitiesUnitOfWork>
+        <ESTIMATION_DIRECT_ITEM, ProgressDisplay, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of SiteDirectProgressCollectionViewModelWrapper as a POCO view model.
@@ -62,6 +62,7 @@ namespace BluePrints.ViewModels
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private PROJECT loadPROJECT;
         private PROGRESS loadPROGRESS;
+        private ESTIMATION_DIRECT loadESTIMATION_DIRECT;
         private bool isQueryForLiveStatus;
         private DispatcherTimer delayedPROGRESSSavingDispatcher;
         
@@ -89,6 +90,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, SetPROGRESStoCurrentDateOnLoaded);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc, x => loadESTIMATION_DIRECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECT_ITEMS, ESTIMATION_DIRECT_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
@@ -129,6 +131,11 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.ESTIMATION_DIRECT.GUID_PROJECT == loadPROJECT.GUID);
         }
 
+        private Func<IRepositoryQuery<ESTIMATION_DIRECT>, IQueryable<ESTIMATION_DIRECT>> ESTIMATION_DIRECTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
         private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.COST_GROUP == CostGroup.Site);
@@ -146,13 +153,13 @@ namespace BluePrints.ViewModels
 
         protected override void OnAllEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECT_ITEMS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<ProgressDisplay>> ConstructMainViewModelProjection()
+        protected override Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ProgressDisplay>> ConstructMainViewModelProjection()
         {
-            return query => ProgressItemQueries.SiteDirectProgressItemTransformation(query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID), COMMODITY_CODECollection, STOCK_CODECollection, ESTIMATION_DIRECT_ITEMCollection, RATECollection, loadPROGRESS.DATA_DATE);
+            return query => ProgressItemQueries.SiteDirectProgressItemTransformation(query.Where(x => x.GUID_ESTIMATION_DIRECT == loadESTIMATION_DIRECT.GUID), PROGRESS_ITEMCollection, COMMODITY_CODECollection, STOCK_CODECollection, RATECollection, loadPROGRESS.DATA_DATE);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ProgressDisplay> entities)
@@ -164,22 +171,10 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Stats Calculation
-        ProjectSummaryStats projectSummary;
         private void onMainViewModelFirstLoaded(object sender, EventArgs e)
         {
             onMainViewModelFirstLoadedTimer.Stop();
-            InitializeSummarizer();
             calculatePlannedBackgroundWorker.RunWorkerAsync();
-        }
-
-        protected virtual void InitializeSummarizer()
-        {
-            //TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
-            //DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-            //List<VariationAdjustment> projectVariationAdjustment = new List<VariationAdjustment>();
-            //projectSummary = new ProjectSummaryStats(MainViewModel.Entities, loadPROGRESS, projectVariationAdjustment);
-            //FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT, loadBASELINE, loadPROGRESS, WORKPACKCollection, WORKPACKCollection.SelectMany(x => x.WORKPACK_ASSIGNMENT).ToList(), p6UOW);
-            //fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER);
         }
 
         private void calculatePlannedBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -202,8 +197,7 @@ namespace BluePrints.ViewModels
 
         protected virtual void BackgroundWorkerBuildStats()
         {
-            //fullSummarizer.BuildBudgetedOnly();
-            //fullSummarizer.BuildEarnedAndRemaining();
+
         }
 
         bool isFirstLoaded { get; set; }
@@ -327,15 +321,11 @@ namespace BluePrints.ViewModels
                 {
                     foreach(StandaloneDisplayReportable reportable in entity.Reportables)
                     {
-                        IReportable reportableProjection = reportable.Deliverable as IReportable;
-                        if(reportableProjection != null)
+                        ISortableDeliverable sortableProjection = reportable.Deliverable as ISortableDeliverable;
+                        if (sortableProjection != null && sortableProjection.OriginalEntityKey == newPROGRESS_ITEM.GUID_ORIBASEITEM)
                         {
-                            ISortableDeliverable sortableProjection = reportableProjection.Deliverable as ISortableDeliverable;
-                            if (sortableProjection != null && sortableProjection.OriginalEntityKey == newPROGRESS_ITEM.GUID_ORIBASEITEM)
-                            {
-                                setReportableNewProgress(reportable.Deliverable, newPROGRESS_ITEM);
-                                return entity;
-                            }
+                            setReportableNewProgress(reportable.Deliverable, newPROGRESS_ITEM);
+                            return entity;
                         }
                     }
                 }
@@ -344,15 +334,11 @@ namespace BluePrints.ViewModels
                     IReportable reportableProjection = entity.ProgressItem as IReportable;
                     if (reportableProjection != null)
                     {
-                        IReportable nestedDeliverableProjection = reportableProjection.Deliverable as IReportable;
-                        if (nestedDeliverableProjection != null)
+                        ISortableDeliverable sortableDeliverable = reportableProjection.Deliverable as ISortableDeliverable;
+                        if(sortableDeliverable != null && sortableDeliverable.OriginalEntityKey == newPROGRESS_ITEM.GUID_ORIBASEITEM)
                         {
-                            ISortableDeliverable sortableDeliverable = nestedDeliverableProjection.Deliverable as ISortableDeliverable;
-                            if(sortableDeliverable != null && sortableDeliverable.OriginalEntityKey == newPROGRESS_ITEM.GUID_ORIBASEITEM)
-                            {
-                                setReportableNewProgress(nestedDeliverableProjection, newPROGRESS_ITEM);
-                                return entity;
-                            }
+                            setReportableNewProgress(sortableDeliverable, newPROGRESS_ITEM);
+                            return entity;
                         }
                     }
                 }
@@ -382,7 +368,7 @@ namespace BluePrints.ViewModels
         public bool OnBeforeEntitySaved(ProgressDisplay entity)
         {
             decimal newQuantity = entity.ProgressItem.CurrentTotalInstalledQuantity;
-            decimal currentPeriodPercentage = entity.ProgressItem.GetCurrentPeriodPercentage(newQuantity);
+            decimal currentPeriodPercentage = entity.ProgressItem.GetCurrentPeriodPercentageByQuantity(newQuantity);
             GroupDisplayReportable groupEntity = entity.ProgressItem as GroupDisplayReportable;
             List<PROGRESS_ITEM> newPRORESS_ITEMS = new List<PROGRESS_ITEM>();
             if (groupEntity != null)

@@ -20,7 +20,7 @@ namespace BluePrints.ViewModels
     {
         public static BASELINE_ITEM_ASSIGNMENTViewModel Create(PROJECT PROJECT, IEnumerable<TASK_AppointmentInfo> ALLTASK_Appointments,
             IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMS,
-            CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
+            CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
                 BASELINE_ITEM_ASSIGNMENTSViewModel, bool IsModified, Appointment SelectedTASK_Appointment = null,
             IEnumerable<BASELINE_ITEMProjection> dropBASELINE_ITEMS = null, Action recalculateUnits = null)
         {
@@ -39,7 +39,7 @@ namespace BluePrints.ViewModels
 
         protected BASELINE_ITEM_ASSIGNMENTViewModel(PROJECT PROJECT, IEnumerable<TASK_AppointmentInfo> ALLTASK_Appointments,
             IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMS,
-            CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
+            CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
                 BASELINE_ITEM_ASSIGNMENTSViewModel, bool IsModified, Appointment SelectedTASK_Appointment = null,
             IEnumerable<BASELINE_ITEMProjection> droppedBASELINE_ITEMS = null, Action recalculateUnits = null)
         {
@@ -97,7 +97,7 @@ namespace BluePrints.ViewModels
 
         #region Public Properties
 
-        private CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
+        private CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
             BASELINE_ITEM_ASSIGNMENTSViewModel { get; set; }
 
         private decimal assignmentValue { get; set; }
@@ -132,7 +132,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public List<BASELINE_ITEM_ASSIGNMENT> TASK_ASSIGNMENTS
+        public List<P6_ASSIGNMENT> TASK_ASSIGNMENTS
         {
             get
             {
@@ -279,7 +279,7 @@ namespace BluePrints.ViewModels
                 if (baseline_item.ASSIGNED_PERCENTAGE == AssignmentValue)
                     continue;
 
-                baseline_item.BASELINE_ITEM_ASSIGNMENTS.Add(new BASELINE_ITEM_ASSIGNMENT()
+                baseline_item.BASELINE_ITEM_ASSIGNMENTS.Add(new P6_ASSIGNMENT()
                 {
                     GUID = Guid.Empty,
                     GUID_PROJECT = loadPROJECT.GUID,
@@ -317,7 +317,7 @@ namespace BluePrints.ViewModels
                 List<BASELINE_ITEM_ASSIGNMENTSProjection> baseline_item_assignments = new List<BASELINE_ITEM_ASSIGNMENTSProjection>();
                 foreach(BASELINE_ITEMProjection baseline_item in SelectedBASELINE_ITEMS)
                 {
-                    foreach(BASELINE_ITEM_ASSIGNMENT baseline_item_assignment in baseline_item.BASELINE_ITEM_ASSIGNMENTS)
+                    foreach(P6_ASSIGNMENT baseline_item_assignment in baseline_item.BASELINE_ITEM_ASSIGNMENTS)
                     {
                         if(SelectedTASK == null || baseline_item_assignment.P6_ACTIVITYID == SelectedTASK.Subject)
                             baseline_item_assignments.Add(new BASELINE_ITEM_ASSIGNMENTSProjection() { GUID_ORIGINAL = baseline_item.Entity.GUID_ORIGINAL, INTERNAL_NUM = baseline_item.Entity.INTERNAL_NUM, Entity = baseline_item_assignment });
@@ -361,8 +361,8 @@ namespace BluePrints.ViewModels
             activeBASELINE_ITEM.BASELINE_ITEM_ASSIGNMENTS.RemoveAll(x => x.GUID == removeBASELINE_ITEM_ASSIGNMENT.GUID);
             BASELINE_ITEM_ASSIGNMENTSViewModel.Delete(removeBASELINE_ITEM_ASSIGNMENT.Entity);
 
-            ObservableCollection<BASELINE_ITEM_ASSIGNMENT> workpackAssignmentsInOrder = 
-                new ObservableCollection<BASELINE_ITEM_ASSIGNMENT>(activeBASELINE_ITEM.BASELINE_ITEM_ASSIGNMENTS
+            ObservableCollection<P6_ASSIGNMENT> workpackAssignmentsInOrder = 
+                new ObservableCollection<P6_ASSIGNMENT>(activeBASELINE_ITEM.BASELINE_ITEM_ASSIGNMENTS
                 .Where(x => x.LOW_VALUE > removingBASELINE_ITEM_ASSIGNMENTLowValue).OrderBy(x => x.LOW_VALUE).ToList());
 
             for (var i = 0; i < workpackAssignmentsInOrder.Count(); i++)
@@ -379,15 +379,15 @@ namespace BluePrints.ViewModels
         }
 
 
-        private IEnumerable<BASELINE_ITEM_ASSIGNMENT> MovePriority(bool isUp, BASELINE_ITEM_ASSIGNMENTSProjection selectedAssignment)
+        private IEnumerable<P6_ASSIGNMENT> MovePriority(bool isUp, BASELINE_ITEM_ASSIGNMENTSProjection selectedAssignment)
         {
             BASELINE_ITEMProjection contextBASELINE_ITEM = BASELINE_ITEMSource.First(x => x.Entity.GUID_ORIGINAL == selectedAssignment.GUID_ORIGINAL);
-            BASELINE_ITEM_ASSIGNMENT contextASSIGNMENT = selectedAssignment.Entity;
+            P6_ASSIGNMENT contextASSIGNMENT = selectedAssignment.Entity;
 
             var BASELINE_ITEM_ASSIGNMENTSInOrder =
                 contextBASELINE_ITEM.BASELINE_ITEM_ASSIGNMENTS.OrderBy(x => x.LOW_VALUE).ToList();
 
-            BASELINE_ITEM_ASSIGNMENT swapBASELINE_ITEM_ASSIGNMENT;
+            P6_ASSIGNMENT swapBASELINE_ITEM_ASSIGNMENT;
             //look for next assignment in sequence
             if(!isUp)
                 swapBASELINE_ITEM_ASSIGNMENT = ContextBASELINE_ITEMS.Where(x => x.GUID == contextBASELINE_ITEM.GUID)
@@ -433,31 +433,31 @@ namespace BluePrints.ViewModels
 
         public void PriorityUp()
         {
-            List<BASELINE_ITEM_ASSIGNMENT> saveAssignments = new List<BASELINE_ITEM_ASSIGNMENT>();
+            List<P6_ASSIGNMENT> saveAssignments = new List<P6_ASSIGNMENT>();
 
             foreach (var selectedAssignment in SelectedASSIGNMENTS)
             {
-                IEnumerable<BASELINE_ITEM_ASSIGNMENT> editedAssignments = MovePriority(true, selectedAssignment);
+                IEnumerable<P6_ASSIGNMENT> editedAssignments = MovePriority(true, selectedAssignment);
                 if (editedAssignments != null)
                     saveAssignments.AddRange(editedAssignments);
             }
 
-            BASELINE_ITEM_ASSIGNMENTSViewModel.BulkSave(new ObservableCollection<BASELINE_ITEM_ASSIGNMENT>(saveAssignments));
+            BASELINE_ITEM_ASSIGNMENTSViewModel.BulkSave(new ObservableCollection<P6_ASSIGNMENT>(saveAssignments));
             this.RaisePropertiesChanged();
         }
 
         public void PriorityDown()
         {
-            List<BASELINE_ITEM_ASSIGNMENT> saveAssignments = new List<BASELINE_ITEM_ASSIGNMENT>();
+            List<P6_ASSIGNMENT> saveAssignments = new List<P6_ASSIGNMENT>();
 
             foreach (var selectedAssignment in SelectedASSIGNMENTS)
             {
-                IEnumerable<BASELINE_ITEM_ASSIGNMENT> editedAssignments = MovePriority(false, selectedAssignment);
+                IEnumerable<P6_ASSIGNMENT> editedAssignments = MovePriority(false, selectedAssignment);
                 if (editedAssignments != null)
                     saveAssignments.AddRange(editedAssignments);
             }
 
-            BASELINE_ITEM_ASSIGNMENTSViewModel.BulkSave(new ObservableCollection<BASELINE_ITEM_ASSIGNMENT>(saveAssignments));
+            BASELINE_ITEM_ASSIGNMENTSViewModel.BulkSave(new ObservableCollection<P6_ASSIGNMENT>(saveAssignments));
             this.RaisePropertiesChanged();
         }
 

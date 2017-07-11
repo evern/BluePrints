@@ -26,17 +26,15 @@ namespace BluePrints.Common.Projections
 
         public Guid? SubArea_Guid => Entity.GUID_SUBAREA;
 
-        public decimal TotalUnitsIncludeByDuration => Reportables.Sum(x => x.TotalUnitsIncludeByDuration);
+        public decimal Estimated_Units => Reportables.Sum(x => x.Estimated_Units);
 
-        public decimal EstimatedUnits => Reportables.Sum(x => x.EstimatedUnits);
-
-        public decimal TotalUnits => Reportables.Where(x => (bool)x.Track).Sum(x => x.TotalUnits);
+        public decimal Total_Units => Reportables.Where(x => (bool)x.Track).Sum(x => x.Total_Units);
 
         public decimal ItemRate => Reportables.Sum(x => ((ISortableDeliverableProjection)x.Deliverable).ItemRate);
 
         public decimal EstimatedCosts => Reportables.Sum(x => ((ISortableDeliverableProjection)x.Deliverable).EstimatedCosts);
 
-        public decimal TotalCosts => Reportables.Sum(x => ((ISortableDeliverableProjection)x.Deliverable).TotalCosts);
+        public decimal Total_Costs => Reportables.Sum(x => ((ISortableDeliverableProjection)x.Deliverable).Total_Costs);
 
         public decimal Estimated_Quantity => Reportables.Sum(x => x.Estimated_Quantity);
 
@@ -44,13 +42,9 @@ namespace BluePrints.Common.Projections
 
         public string UOM => Entity.UOM;
 
-        /// <summary>
-        /// Refreshes current row
-        /// </summary>
-        public void Update()
-        {
-            RaisePropertyChanged();
-        }
+        public decimal VariationUnits => Reportables.Sum(x => x.VariationUnits);
+
+        public decimal VariationCosts => Reportables.Sum(x => ((ISortableDeliverableProjection)x.Deliverable).VariationCosts);
     }
 
     public static class COMMODITY_CODEProjectionQueries

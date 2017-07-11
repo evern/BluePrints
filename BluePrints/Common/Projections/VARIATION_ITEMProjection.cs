@@ -146,7 +146,7 @@ namespace BluePrints.Common.Projections
             get
             {
                 return (Entity.Entity.TOTAL_HOURS + VARIATION_ITEM.VARIATION_UNITS) *
-                       Entity.ITEMRATE;
+                       Entity.ItemRate;
             }
         }
 
@@ -154,7 +154,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                return FORECAST_UNITS * Entity.ITEMRATE;
+                return FORECAST_UNITS * Entity.ItemRate;
             }
         }
     }
@@ -162,27 +162,10 @@ namespace BluePrints.Common.Projections
     public static class VARIATION_ITEMProjectionQuery
     {
         public static IQueryable<VARIATION_ITEMProjection> JoinRATESAndPROGRESS_ITEMSAndVARIATION_ITEMSOnBASELINE_ITEMS(
-            IQueryable<BASELINE_ITEM> BASELINE_ITEMS, Func<PROGRESS> getPROGRESSFunc, Func<BASELINE> getBASELINEFunc,
-            Func<VARIATION> getVARIATIONFunc, Func<IEnumerable<PROGRESS_ITEM>> getPROGRESS_ITEMSFunc,
-            Func<IEnumerable<VARIATION_ITEM>> getVARIATION_ITEMSFunc, Func<IEnumerable<RATE>> getRATESFunc, Func<IEnumerable<DELIVERABLES_STATUS>> getDELIVERABLES_STATUSESFunc, Func<IEnumerable<AREA>> getSUBAREAFunc, DateTime? submittedDate, DateTime? approvedDate)
+            IQueryable<BASELINE_ITEM> BASELINE_ITEMS, PROGRESS PROGRESS, BASELINE BASELINE,
+            VARIATION VARIATION, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
+            IEnumerable<VARIATION_ITEM> VARIATION_ITEMS, IEnumerable<RATE> RATES, IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSES, IEnumerable<AREA> SUBAREA, DateTime? submittedDate, DateTime? approvedDate)
         {
-            var BASELINE = getBASELINEFunc();
-            var PROGRESS = getPROGRESSFunc();
-            var VARIATION = getVARIATIONFunc();
-            var RATES = getRATESFunc();
-
-            IEnumerable<VARIATION_ITEM> LoadVARIATION_ITEMS;
-            if (VARIATION == null)
-                LoadVARIATION_ITEMS = new List<VARIATION_ITEM>();
-            else
-                LoadVARIATION_ITEMS = getVARIATION_ITEMSFunc();
-
-            IEnumerable<PROGRESS_ITEM> LoadPROGRESS_ITEMS;
-            if (PROGRESS == null)
-                LoadPROGRESS_ITEMS = new List<PROGRESS_ITEM>();
-            else
-                LoadPROGRESS_ITEMS = getPROGRESS_ITEMSFunc();
-
             IQueryable<PROGRESS_ITEMProjection> BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS;
             if (PROGRESS == null || VARIATION == null)
                 BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS = new List<PROGRESS_ITEMProjection>().AsQueryable();
@@ -192,13 +175,11 @@ namespace BluePrints.Common.Projections
                     BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS =
                         PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
                             BASELINE_ITEMS.Where(x => x.GUID_VARIATION == VARIATION.GUID && x.GUID_BASELINE == VARIATION.GUID_BASELINE),
-                            getPROGRESSFunc, getBASELINEFunc, getPROGRESS_ITEMSFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, getSUBAREAFunc, true);
+                            PROGRESS, PROGRESS_ITEMS, RATES, DELIVERABLES_STATUSES, SUBAREA);
                 else
                     BASELINE_ITEMJoinRATESJoinPROGRESS_ITEMS =
                         PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
-                            BASELINE_ITEMS.Where(
-                                x => x.GUID_BASELINE == BASELINE.GUID || x.GUID_VARIATION == VARIATION.GUID && x.GUID_BASELINE == null), getPROGRESSFunc,
-                            getBASELINEFunc, getPROGRESS_ITEMSFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, getSUBAREAFunc, true);
+                            BASELINE_ITEMS.Where(x => x.GUID_BASELINE == BASELINE.GUID || x.GUID_VARIATION == VARIATION.GUID && x.GUID_BASELINE == null), PROGRESS, PROGRESS_ITEMS, RATES, DELIVERABLES_STATUSES, SUBAREA);
             }
 
             var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
@@ -208,14 +189,14 @@ namespace BluePrints.Common.Projections
                     {
                         EntityKey = x.EntityKey,
                         VARIATION_ITEM =
-                            LoadVARIATION_ITEMS.Where(
+                            VARIATION_ITEMS.Where(
                                     y => y.GUID_ORIBASEITEM == x.Entity.Entity.GUID_ORIGINAL)
                                 .FirstOrDefault(),
                         Entity = x.Entity,
                         SUBMITTED = submittedDate,
                         APPROVED = approvedDate,
                         PROGRESS_ITEMS =
-                            LoadPROGRESS_ITEMS.Where(
+                            PROGRESS_ITEMS.Where(
                                     y => y.GUID_ORIBASEITEM == x.Entity.Entity.GUID_ORIGINAL).ToList()
                     }).AsQueryable();
         }

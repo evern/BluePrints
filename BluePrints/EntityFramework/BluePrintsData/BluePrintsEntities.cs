@@ -13,7 +13,7 @@ namespace BluePrints.Data
         public virtual DbSet<AREA> AREA { get; set; }
         public virtual DbSet<BASELINE> BASELINE { get; set; }
         public virtual DbSet<BASELINE_ITEM> BASELINE_ITEM { get; set; }
-        public virtual DbSet<BASELINE_ITEM_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENT { get; set; }
+        public virtual DbSet<P6_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENT { get; set; }
         public virtual DbSet<BASELINE_ITEM_WORK> BASELINE_ITEM_WORK { get; set; }
         public virtual DbSet<COMMODITY_CODE> COMMODITY_CODE { get; set; }
         public virtual DbSet<DataPoint> DataPoint { get; set; }
@@ -156,11 +156,11 @@ namespace BluePrints.Data
                 .Property(e => e.P6_ASSIGNMENT_STARTUNIT)
                 .HasPrecision(18, 0);
 
-            modelBuilder.Entity<BASELINE_ITEM_ASSIGNMENT>()
+            modelBuilder.Entity<P6_ASSIGNMENT>()
                 .Property(e => e.LOW_VALUE)
                 .HasPrecision(10, 2);
 
-            modelBuilder.Entity<BASELINE_ITEM_ASSIGNMENT>()
+            modelBuilder.Entity<P6_ASSIGNMENT>()
                 .Property(e => e.HIGH_VALUE)
                 .HasPrecision(10, 2);
 

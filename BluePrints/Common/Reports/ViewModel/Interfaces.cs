@@ -8,19 +8,25 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public interface IQuantityReportableGroup : IQuantityReportable
+    public interface IQuantityReportableGroup : IReportableGroup, ICanProgressByQuantity
+    {
+
+    }
+
+    public interface IQuantityReportable : IReportableStats, ICanProgressByQuantity, ICanTrack
+    {
+
+    }
+
+    public interface IReportableGroup : IReportableStats
     {
         IEnumerable<IQuantityReportable> Deliverables { get; }
     }
-
-    public interface IQuantityReportable : IReportable, ICanProgressByQuantity, ICanTrack
-    {
-
-    }
-
-    public interface IReportableStats : IReportable
+    
+    public interface IReportableStats : IReportable, ICanSetProgresses, ICanUpdate
     {
         SingleObjectSummarizer StatSummarizer { get; }
+        decimal GetCurrentPeriodHours(decimal newPeriodPercentage);
     }
 
     public interface IReportable : IDeliverable, IHaveStats, IHaveProgresses
@@ -78,18 +84,20 @@ namespace BluePrints.Common.ViewModel.Reporting
     public interface ICanProgressByQuantity : IHaveQuantity
     {
         decimal QuantityPerHour { get; }
-        decimal TotalPercentage { get; }
         decimal PastInstalledQuantity { get; }
         decimal CurrentTotalInstalledQuantity { get; }
-        decimal GetCurrentPeriodPercentage(decimal newTotalQuantity);
-        decimal GetCurrentPeriodHours(decimal newPeriodPercentage);
+        decimal GetCurrentPeriodPercentageByQuantity(decimal newTotalQuantity);
     }
     #endregion
 
     #region Property Specification Interfaces
     public interface ICanSetProgresses
     {
-        decimal Current_Total_Percentage { get; }
+        decimal Earned_Units_BeforeDataDate { get; }
+        decimal Earned_Units_OnDataDate { get; }
+        decimal Earned_Units_ToDate { get; }
+        decimal Earned_Units_AfterDataDate { get; }
+        decimal Total_Earned_Percentage { get; set; }
         void SetReportingDataDate(DateTime dataDate);
         void SetProgressItems(List<PROGRESS_ITEM> progresses);
         void AppendCurrentProgressItem(PROGRESS_ITEM currentProgress);
@@ -105,7 +113,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal ItemRate { get; }
         decimal EstimatedCosts { get; }
         decimal VariationCosts { get; }
-        decimal TotalCosts { get; }
+        decimal Total_Costs { get; }
     }
 
     public interface IHaveCommodity_Code
@@ -121,11 +129,15 @@ namespace BluePrints.Common.ViewModel.Reporting
         bool IsByDuration { get; }
     }
 
+    public interface IHaveDeliverableStatus
+    {
+        DELIVERABLES_STATUS Deliverable_Status { get; }
+    }
+
     public interface IHaveHours
     {
-        decimal TotalUnitsIncludeByDuration { get; }
-        decimal EstimatedUnits { get; }
-        decimal TotalUnits { get; }
+        decimal Estimated_Units { get; }
+        decimal Total_Units { get; }
         decimal VariationUnits { get; }
     }
 

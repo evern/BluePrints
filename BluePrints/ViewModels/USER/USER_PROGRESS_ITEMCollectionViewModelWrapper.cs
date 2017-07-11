@@ -63,10 +63,8 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<PROGRESS_ITEMProjection>> ConstructMainViewModelProjection()
         {
-            var getDELIVERABLES_STATUSESFunc = loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
-            return query => PROGRESS_ITEMProjectionQueries.GetUserDeliverables(query, getDELIVERABLES_STATUSESFunc, _loadUSER, false);
+            return query => PROGRESS_ITEMProjectionQueries.GetUserDeliverables(query, DELIVERABLES_STATUSCollection, _loadUSER, false);
         }
-
         
         protected override void InitializeSummarizer()
         {
@@ -83,7 +81,7 @@ namespace BluePrints.ViewModels
 
                 List <VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(projectVARIATIONS.AsQueryable(), deliverableGroupByProject.Deliverables.Select(x => x.Entity));
                 ProjectSummaryStats projectSummary = new ProjectSummaryStats(MainViewModel.Entities, livePROGRESS, projectVariationAdjustment);
-                FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(deliverableGroupByProject.Project, liveBASELINE, livePROGRESS, projectWORKPACKS, projectWORKPACKS.SelectMany(x => x.WORKPACK_ASSIGNMENT).ToList(), p6UOW);
+                FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(deliverableGroupByProject.Project, livePROGRESS, projectWORKPACKS);
                 FullSummarizer fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, deliverableGroupByProject.Project.NUMBER);
                 firstLoadProjectStatsSummarizers.Add(fullSummarizer);
             }

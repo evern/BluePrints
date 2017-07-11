@@ -17,7 +17,7 @@
              xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
              xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
              mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
-             DataContext="{dxmvvm:ViewModelSource viewmodel:PROGRESS_ITEMSCollectionViewModelWrapper}">
+             DataContext="{dxmvvm:ViewModelSource viewmodel:OffsiteDirectProgressCollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -232,7 +232,7 @@
                                                               MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnRate" FieldName="Entity.ITEMRATE"
+                                <dxg:GridColumn Name="columnRate" FieldName="Entity.ItemRate"
                                                 Header="RATE" ReadOnly="True" IsEnabled="False" Visible="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1"
@@ -278,13 +278,13 @@
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandCumulative" Header="Cumulative">
                                 <dxg:GridColumn Name="columnBaselinePercentage" Header="BASELINE %"
-                                                FieldName="BASELINE_PERCENTAGE" ReadOnly="True" IsEnabled="False">
+                                                FieldName="Baseline_Percentage" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnTotalPercentage" Header="TOTAL %"
-                                                FieldName="TOTAL_PERCENTAGE" ReadOnly="True" IsEnabled="False" Visible="False">
+                                                FieldName="Total_Percentage" ReadOnly="True" IsEnabled="False" Visible="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
@@ -312,7 +312,7 @@
                                         <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnTotalEarnedPercentage" FieldName="TOTAL_EARNED_PERCENTAGE"
+                                <dxg:GridColumn Name="columnTotalEarnedPercentage" FieldName="Total_Earned_Percentage"
                                                 Header="CURRENT %" AllowEditing="True">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
@@ -354,7 +354,7 @@
                                                 </Image>
                                                 <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="p0"
                                                               MaskUseAsDisplayFormat="True" Increment="0.01"
-                                                              MaxValue="{Binding RowData.Row.MAX_PERCENTAGE_WITH_DELIVERABLE_STATUS_LIMIT}"
+                                                              MaxValue="{Binding RowData.Row.DeliverableStatusMaxPercentage}"
                                                               MinValue="{Binding RowData.Row.MinPercentage}"
                                                               Grid.Column="2" />
                                             </Grid>
@@ -362,13 +362,13 @@
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnEarnedUnits" Header="EARNED UNITS"
-                                                FieldName="DisplayTotalEarnedUnits" ReadOnly="True" IsEnabled="False">
+                                                FieldName="Earned_Units_ToDate" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnTotalEarnedCost" Header="TOTAL EARNED $"
-                                                FieldName="DisplayTotalEarnedCost" ReadOnly="True" IsEnabled="False" Visible="False">
+                                                FieldName="Earned_Cost_ToDate" ReadOnly="True" IsEnabled="False" Visible="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
@@ -376,20 +376,20 @@
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandPeriod" Header="Period">
                                 <dxg:GridColumn Name="columnPeriodEarnedPercentage" Header="EARNED %"
-                                                FieldName="PERIOD_EARNED_PERCENTAGE" 
+                                                FieldName="Earned_Percentage_OnDataDate" 
                                                 ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnPeriodEarnedUnits" Header="EARNED UNITS"
-                                                FieldName="DisplayPeriodEarnedUnits" ReadOnly="True" IsEnabled="False">
+                                                FieldName="Earned_Units_OnDataDate" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnCurrentEarnedCost" Header="CURRENT EARNED COSTS"
-                                                FieldName="DisplayPeriodEarnedCosts" ReadOnly="True" IsEnabled="False" Visible="False">
+                                                FieldName="Earned_Costs_OnDataDate" ReadOnly="True" IsEnabled="False" Visible="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
@@ -397,14 +397,14 @@
                             </dxg:GridControlBand>
                         </dxg:GridControl.Bands>
                         <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem FieldName="TOTAL_EARNED_PERCENTAGE" SummaryType="Custom"
-                                                 ShowInColumn="TOTAL_EARNED_PERCENTAGE" DisplayFormat="Total: {0:p}" />
-                            <dxg:GridSummaryItem FieldName="PERIOD_EARNED_PERCENTAGE" SummaryType="Custom"
-                                                 ShowInColumn="PERIOD_EARNED_PERCENTAGE" DisplayFormat="Total: {0:p}" />
-                            <dxg:GridSummaryItem FieldName="DisplayPeriodEarnedUnits" SummaryType="Sum"
-                                                 ShowInColumn="DisplayPeriodEarnedUnits" DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="DisplayTotalEarnedUnits" SummaryType="Sum"
-                                                 ShowInColumn="DisplayTotalEarnedUnits" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Total_Earned_Percentage" SummaryType="Custom"
+                                                 ShowInColumn="Total_Earned_Percentage" DisplayFormat="Total: {0:p}" />
+                            <dxg:GridSummaryItem FieldName="Earned_Percentage_OnDataDate" SummaryType="Custom"
+                                                 ShowInColumn="Earned_Percentage_OnDataDate" DisplayFormat="Total: {0:p}" />
+                            <dxg:GridSummaryItem FieldName="Earned_Units_OnDataDate" SummaryType="Sum"
+                                                 ShowInColumn="Earned_Units_OnDataDate" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Earned_Units_ToDate" SummaryType="Sum"
+                                                 ShowInColumn="Earned_Units_ToDate" DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="DisplayPeriodEarnedCosts" SummaryType="Sum"
                                                  ShowInColumn="DisplayPeriodEarnedCosts" DisplayFormat="Total: {0:c2}" />
                             <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS"
@@ -419,14 +419,14 @@
                                                  Alignment="Right" DisplayFormat="Total {0} Records" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem FieldName="TOTAL_EARNED_PERCENTAGE" SummaryType="Custom"
-                                                 ShowInColumn="TOTAL_EARNED_PERCENTAGE" DisplayFormat="Total: {0:p}" />
-                            <dxg:GridSummaryItem FieldName="PERIOD_EARNED_PERCENTAGE" SummaryType="Custom"
-                                                 ShowInColumn="PERIOD_EARNED_PERCENTAGE" DisplayFormat="Total: {0:p}" />
-                            <dxg:GridSummaryItem FieldName="DisplayPeriodEarnedUnits" SummaryType="Sum"
-                                                 ShowInColumn="DisplayPeriodEarnedUnits" DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="DisplayTotalEarnedUnits" SummaryType="Sum"
-                                                 ShowInColumn="DisplayTotalEarnedUnits" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Total_Earned_Percentage" SummaryType="Custom"
+                                                 ShowInColumn="Total_Earned_Percentage" DisplayFormat="Total: {0:p}" />
+                            <dxg:GridSummaryItem FieldName="Earned_Percentage_OnDataDate" SummaryType="Custom"
+                                                 ShowInColumn="Earned_Percentage_OnDataDate" DisplayFormat="Total: {0:p}" />
+                            <dxg:GridSummaryItem FieldName="Earned_Units_OnDataDate" SummaryType="Sum"
+                                                 ShowInColumn="Earned_Units_OnDataDate" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Earned_Units_ToDate" SummaryType="Sum"
+                                                 ShowInColumn="Earned_Units_ToDate" DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="DisplayPeriodEarnedCosts" SummaryType="Sum"
                                                  ShowInColumn="DisplayPeriodEarnedCosts" DisplayFormat="Total: {0:c2}" />
                             <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS"
@@ -452,7 +452,7 @@
                                                        Command="{Binding View.DataContext.FillDownCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                     <dxb:BarButtonItem Content="Refresh"
-                                                       Command="{Binding DataContext.ClickedRefreshCommand, ElementName=userControl}"
+                                                       Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 </custom:TableViewEx.RowCellMenuCustomizations>
                             </custom:TableViewEx>

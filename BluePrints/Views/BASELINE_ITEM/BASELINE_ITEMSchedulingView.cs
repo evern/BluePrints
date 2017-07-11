@@ -28,7 +28,7 @@ namespace BluePrints.Views
         readonly IEnumerable<PROJWBS> P6WBSS;
         readonly IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMProjections;
 
-        private CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
+        private CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
             BASELINE_ITEM_ASSIGNMENTSViewModel;
 
         private IEnumerable<TASK_AppointmentInfo> TASK_Appointments;
@@ -39,7 +39,7 @@ namespace BluePrints.Views
         public BASELINE_ITEMSchedulingView(Data.PROJECT PROJECT, IEnumerable<TASK> TASKS,
             IEnumerable<PROJWBS> P6WBSS,
             IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMProjections,
-            CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
+            CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
                 BASELINE_ITEM_ASSIGNMENTSViewModel, bool IsModified)
         {
             InitializeComponent();
@@ -247,7 +247,7 @@ namespace BluePrints.Views
                         x =>
                             x.BASELINE_ITEM_ASSIGNMENTS.Where(
                                     obj2 => obj2.P6_ACTIVITYID == WBSTASKAppointmentInfo.Subject)
-                                .Sum(obj3 => ((obj3.HIGH_VALUE - obj3.LOW_VALUE) + 0.01m) * x.TOTAL_UNITS));
+                                .Sum(obj3 => ((obj3.HIGH_VALUE - obj3.LOW_VALUE) + 0.01m) * x.Total_Units));
                 WBSTASKAppointmentInfo.AssignedUnits = P6ActivityAssignedUnits;
             }
 

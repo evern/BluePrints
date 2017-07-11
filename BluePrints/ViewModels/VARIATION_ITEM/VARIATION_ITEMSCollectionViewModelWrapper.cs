@@ -169,19 +169,19 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<VARIATION_ITEMProjection>>
             ConstructMainViewModelProjection()
         {
-            var getBASELINEFunc = loaderCollection.GetObjectFunc<BASELINE>();
-            var getPROGRESSFunc = loaderCollection.GetObjectFunc<PROGRESS>();
-            var getVARIATIONFunc = loaderCollection.GetObjectFunc<VARIATION>();
-            var getPROGRESS_ITEMSFunc = loaderCollection.GetCollectionFunc<PROGRESS_ITEM>();
-            var getVARIATION_ITEMSFunc = loaderCollection.GetCollectionFunc<VARIATION_ITEM>();
-            var getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
-            var getDELIVERABLES_STATUSESFunc = loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
+            var BASELINE = loaderCollection.GetObject<BASELINE>();
+            var PROGRESS = loaderCollection.GetObject<PROGRESS>();
+            var VARIATION = loaderCollection.GetObject<VARIATION>();
+            var PROGRESS_ITEMS = loaderCollection.GetCollection<PROGRESS_ITEM>();
+            var VARIATION_ITEMS = loaderCollection.GetCollection<VARIATION_ITEM>();
+            var RATES = loaderCollection.GetCollection<RATE>();
+            var DELIVERABLES_STATUSES = loaderCollection.GetCollection<DELIVERABLES_STATUS>();
 
             return
                 query =>
                     VARIATION_ITEMProjectionQuery.JoinRATESAndPROGRESS_ITEMSAndVARIATION_ITEMSOnBASELINE_ITEMS(query,
-                        getPROGRESSFunc, getBASELINEFunc, getVARIATIONFunc, getPROGRESS_ITEMSFunc,
-                        getVARIATION_ITEMSFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, GetSUBAREACollection, loadVARIATION.SUBMITTED, loadVARIATION.APPROVED);
+                        PROGRESS, BASELINE, VARIATION, PROGRESS_ITEMS,
+                        VARIATION_ITEMS, RATES, DELIVERABLES_STATUSES, SUBAREACollection, loadVARIATION.SUBMITTED, loadVARIATION.APPROVED);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATION_ITEMProjection> entities)

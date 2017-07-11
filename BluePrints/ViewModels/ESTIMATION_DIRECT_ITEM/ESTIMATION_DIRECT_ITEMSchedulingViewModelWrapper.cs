@@ -163,7 +163,7 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == ProgressStatus.Live && x.TYPE == ProgressType.Construct);
         }
 
-        private Func<IRepositoryQuery<BASELINE_ITEM_ASSIGNMENT>, IQueryable<BASELINE_ITEM_ASSIGNMENT>>
+        private Func<IRepositoryQuery<P6_ASSIGNMENT>, IQueryable<P6_ASSIGNMENT>>
             BASELINE_ITEM_ASSIGNMENTProjectionFunc()
         {
             return
@@ -390,11 +390,11 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<BASELINE_ITEM_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENTCollection
+        public IEnumerable<P6_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENTCollection
         {
             get
             {
-                var collection = GetEntities<BASELINE_ITEM_ASSIGNMENT>();
+                var collection = GetEntities<P6_ASSIGNMENT>();
                 return collection;
             }
         }
@@ -418,7 +418,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> BASELINE_ITEM_ASSIGNMENTSCollectionViewModel
+        public CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> BASELINE_ITEM_ASSIGNMENTSCollectionViewModel
         {
             get
             {
@@ -426,8 +426,8 @@ namespace BluePrints.ViewModels
                     return null;
 
                 return
-                    (CollectionViewModel<BASELINE_ITEM_ASSIGNMENT, BASELINE_ITEM_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>)
-                    loaderCollection.GetViewModel<BASELINE_ITEM_ASSIGNMENT>();
+                    (CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<P6_ASSIGNMENT>();
             }
         }
 
@@ -464,9 +464,9 @@ namespace BluePrints.ViewModels
                 List<P6ActivityAssignment> missingActivities = new List<P6ActivityAssignment>();
                 foreach (ESTIMATION_DIRECT_ITEMProjection ESTIMATION_DIRECT_ITEM in MainViewModel.Entities)
                 {
-                    IEnumerable<BASELINE_ITEM_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = ESTIMATION_DIRECT_ITEM.P6Assignments;
+                    IEnumerable<P6_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = ESTIMATION_DIRECT_ITEM.P6Assignments;
 
-                    foreach (BASELINE_ITEM_ASSIGNMENT BASELINE_ITEM_ASSIGNMENT in projectBASELINE_ITEM_ASSIGNMENTS)
+                    foreach (P6_ASSIGNMENT BASELINE_ITEM_ASSIGNMENT in projectBASELINE_ITEM_ASSIGNMENTS)
                     {
                         TASK existingTask = P6Tasks.FirstOrDefault(x => x.task_code == BASELINE_ITEM_ASSIGNMENT.P6_ACTIVITYID);
                         P6ActivityAssignment P6Assignment = new P6ActivityAssignment(ESTIMATION_DIRECT_ITEM, BASELINE_ITEM_ASSIGNMENT);
@@ -588,8 +588,8 @@ namespace BluePrints.ViewModels
                 validTASKS = P6PROJECT.TASK.ToArray().AsEnumerable();
                 foreach (ESTIMATION_DIRECT_ITEMProjection ESTIMATION_DIRECT_ITEM in MainViewModel.Entities)
                 {
-                    IEnumerable<BASELINE_ITEM_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = ESTIMATION_DIRECT_ITEM.P6Assignments;
-                    foreach (BASELINE_ITEM_ASSIGNMENT BASELINE_ITEM_ASSIGNMENT in projectBASELINE_ITEM_ASSIGNMENTS)
+                    IEnumerable<P6_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = ESTIMATION_DIRECT_ITEM.P6Assignments;
+                    foreach (P6_ASSIGNMENT BASELINE_ITEM_ASSIGNMENT in projectBASELINE_ITEM_ASSIGNMENTS)
                     {
                         if (getAllActivities)
                             missingActivities.Add(new P6ActivityAssignment(ESTIMATION_DIRECT_ITEM, BASELINE_ITEM_ASSIGNMENT));

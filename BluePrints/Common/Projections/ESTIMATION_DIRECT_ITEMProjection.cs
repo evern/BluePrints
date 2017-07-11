@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, ITrackableQuantityDeliverableProjection, ICanUpdate
+    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, ITrackableQuantityDeliverableProjection
     {
         public ESTIMATION_DIRECT_ITEMProjection()
             : base()
@@ -105,20 +105,20 @@ namespace BluePrints.Common.Projections
 
         public Guid? SubArea_Guid => Entity.GUID_SUBAREA;
 
-        public decimal TotalUnitsIncludeByDuration => EstimatedUnits;
+        public decimal Total_Units_IncludingByDuration => Estimated_Units;
 
-        public decimal EstimatedUnits => STOCK_CODE == null ? 0 : Entity.ESTIMATED_QUANTITY * STOCK_CODE.HOURS_INSTALL;
+        public decimal Estimated_Units => STOCK_CODE == null ? 0 : Entity.ESTIMATED_QUANTITY * STOCK_CODE.HOURS_INSTALL;
 
-        public decimal TotalUnits => EstimatedUnits;
+        public decimal Total_Units => Estimated_Units;
 
         public Guid OriginalEntityKey { get => Entity.GUID_ORIGINAL; }
         public void SetOriginalEntityKey(Guid newGuid) { }
 
         public decimal ItemRate => RATE == null || RATE.RATE1 == null ? 0 : (decimal)RATE.RATE1;
 
-        public decimal EstimatedCosts => EstimatedUnits * ItemRate;
+        public decimal EstimatedCosts => Estimated_Units * ItemRate;
 
-        public decimal TotalCosts => EstimatedCosts;
+        public decimal Total_Costs => EstimatedCosts;
 
         public decimal Estimated_Quantity => Entity.ESTIMATED_QUANTITY;
 
@@ -130,12 +130,12 @@ namespace BluePrints.Common.Projections
 
         public decimal Supply_Cost => STOCK_CODE == null ? 0 : STOCK_CODE.RATE_SUPPLY * Estimated_Quantity;
 
-        public decimal Install_Cost => TotalUnits * ItemRate;
+        public decimal Install_Cost => Total_Units * ItemRate;
 
-        public ICollection<BASELINE_ITEM_ASSIGNMENT> ObservableBASELINE_ITEM_ASSIGNMENT { get; set; }
+        public ICollection<P6_ASSIGNMENT> ObservableBASELINE_ITEM_ASSIGNMENT { get; set; }
 
-        private List<BASELINE_ITEM_ASSIGNMENT> p6assignments;
-        public List<BASELINE_ITEM_ASSIGNMENT> P6Assignments
+        private List<P6_ASSIGNMENT> p6assignments;
+        public List<P6_ASSIGNMENT> P6Assignments
         {
             get
             {
@@ -144,7 +144,7 @@ namespace BluePrints.Common.Projections
             set
             {
                 if (p6assignments == null)
-                    p6assignments = new List<BASELINE_ITEM_ASSIGNMENT>();
+                    p6assignments = new List<P6_ASSIGNMENT>();
 
                 p6assignments = value;
             }
@@ -168,13 +168,9 @@ namespace BluePrints.Common.Projections
 
         public string Discipline_Code => Entity.Discipline_Code;
 
-        /// <summary>
-        /// Refreshes current row
-        /// </summary>
-        public void Update()
-        {
-            RaisePropertyChanged();
-        }
+        public decimal VariationUnits => Entity.VariationUnits;
+
+        public decimal VariationCosts => 0;
     }
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries

@@ -111,11 +111,12 @@ namespace BluePrints.Data
 
         public Guid? SubArea_Guid => GUID_SUBAREA;
 
-        public decimal TotalUnitsIncludeByDuration => EstimatedUnits;
+        public decimal Total_Units_IncludingByDuration => Estimated_Units;
 
-        public decimal EstimatedUnits => STOCK_CODE == null ? 0 : ESTIMATED_QUANTITY * STOCK_CODE.HOURS_INSTALL;
+        public decimal Estimated_Units => STOCK_CODE == null ? 0 : ESTIMATED_QUANTITY * STOCK_CODE.HOURS_INSTALL;
 
-        public decimal TotalUnits => EstimatedUnits;
+        public decimal Total_Units => Estimated_Units;
 
+        public decimal VariationUnits => 0;
     }
 }

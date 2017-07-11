@@ -144,13 +144,13 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACKProjection>> ConstructMainViewModelProjection()
         {
             IEnumerable<BASELINE_ITEM> BASELINE_ITEMS = loaderCollection.GetCollection<BASELINE_ITEM>();
-            var getBASELINEFunc = loaderCollection.GetObjectFunc<BASELINE>();
-            var getPROGRESSFunc = loaderCollection.GetObjectFunc<PROGRESS>();
-            var getPROGRESS_ITEMSFunc = loaderCollection.GetCollectionFunc<PROGRESS_ITEM>();
-            var getRATESFunc = loaderCollection.GetCollectionFunc<RATE>();
-            var getDELIVERABLES_STATUSESFunc = loaderCollection.GetCollectionFunc<DELIVERABLES_STATUS>();
+            var BASELINE = loaderCollection.GetObject<BASELINE>();
+            var PROGRESS = loaderCollection.GetObject<PROGRESS>();
+            var PROGRESS_ITEMS = loaderCollection.GetCollection<PROGRESS_ITEM>();
+            var RATES = loaderCollection.GetCollection<RATE>();
+            var DELIVERABLE_STATUSES = loaderCollection.GetCollection<DELIVERABLES_STATUS>();
 
-            return query => WORKPACKProjectionQueries.JoinPROGRESSProjectionOnWORKPACKS(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID), BASELINE_ITEMS, getPROGRESSFunc, getBASELINEFunc, getPROGRESS_ITEMSFunc, getRATESFunc, getDELIVERABLES_STATUSESFunc, GetSUBAREACollection);
+            return query => WORKPACKProjectionQueries.JoinPROGRESSProjectionOnWORKPACKS(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID), BASELINE_ITEMS, PROGRESS, BASELINE, PROGRESS_ITEMS, RATES, DELIVERABLE_STATUSES, SUBAREACollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<WORKPACKProjection> entities)
