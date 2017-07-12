@@ -1,4 +1,6 @@
-﻿using BluePrints.Common.Projections;
+﻿using BaseModel.Misc;
+using BluePrints.Common.Projections;
+using BluePrints.Common.ViewModel.Reporting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +9,7 @@ using System.Windows.Data;
 
 namespace BluePrints.Common.ViewModel.Converters
 {
-    public class BaselineItemMaximumUnitsConverter : IMultiValueConverter
+    public class IReportableStatsMaximumUnitsConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter,
             System.Globalization.CultureInfo culture)
@@ -20,21 +22,24 @@ namespace BluePrints.Common.ViewModel.Converters
 
             try
             {
+                IReportableStats projection = values[2] as IReportableStats;
+                if (projection == null)
+                    return 0;
+
                 var totalAllowedUnits = (decimal)values[0];
                 if (totalAllowedUnits == 0)
-                    return 1000000;
+                    return 10000;
 
-                var AllEntities = (IEnumerable<PROGRESS_ITEMProjection>)values[1];
-                PROGRESS_ITEMProjection currentRow = (PROGRESS_ITEMProjection)values[2];
+                var AllEntities = (IEnumerable<IReportableStats>)values[1];
 
-                IEnumerable<PROGRESS_ITEMProjection> allEntitiesExcludingCurrent = AllEntities.Where(x => x.EntityKey != currentRow.EntityKey);
-                decimal currentAssignedUnits = allEntitiesExcludingCurrent.Count() == 0 ? 0 : allEntitiesExcludingCurrent.Sum(x => x.Entity.Entity.ESTIMATED_HOURS);
+                IEnumerable<IReportableStats> allEntitiesExcludingCurrent = AllEntities.Where(x => x.EntityKey != projection.EntityKey);
+                decimal currentAssignedUnits = allEntitiesExcludingCurrent.Count() == 0 ? 0 : allEntitiesExcludingCurrent.Sum(x => x.Estimated_Units);
                 decimal spareUnits = totalAllowedUnits - currentAssignedUnits;
                 return spareUnits > 0 ? spareUnits : 0;
             }
             catch
             {
-                return (int)0;
+                return 0;
             }
         }
 

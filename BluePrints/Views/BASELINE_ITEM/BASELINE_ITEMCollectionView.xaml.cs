@@ -1,5 +1,6 @@
 ﻿using BaseModel.Misc;
 using BluePrints.Common.Projections;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.ViewModels;
 using DevExpress.Xpf.Grid;
 using System;
@@ -21,12 +22,12 @@ namespace BluePrints.Views
                 SetBaselineLockUnlock;
         }
 
-        public IEnumerable<PROGRESS_ITEMProjection> GetGridVisibleRows()
+        public IEnumerable<BASELINE_ITEMProgress> GetGridVisibleRows()
         {
-            List<PROGRESS_ITEMProjection> visibleBaselineItemProjections = new List<PROGRESS_ITEMProjection>();
+            List<BASELINE_ITEMProgress> visibleBaselineItemProjections = new List<BASELINE_ITEMProgress>();
             for (int i = 0; i < GridControl.VisibleRowCount; i++)
             {
-                PROGRESS_ITEMProjection dataRow = (PROGRESS_ITEMProjection)GridControl.GetRow(GridControl.GetRowHandleByVisibleIndex(i));
+                BASELINE_ITEMProgress dataRow = (BASELINE_ITEMProgress)GridControl.GetRow(GridControl.GetRowHandleByVisibleIndex(i));
                 visibleBaselineItemProjections.Add(dataRow);
             }
             return visibleBaselineItemProjections;

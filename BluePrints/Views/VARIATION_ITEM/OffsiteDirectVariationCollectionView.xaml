@@ -1,5 +1,5 @@
 ﻿<custom:ViewStateRestoreUserControl x:Name="userControl" 
-             x:Class="BluePrints.Views.VARIATION_ITEMCollectionView"
+             x:Class="BluePrints.Views.OffsiteDirectVariationCollectionView"
              xmlns:view="clr-namespace:BluePrints.Views"
              xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
              xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters"
@@ -18,7 +18,7 @@
              xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
              xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
              mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
-             DataContext="{dxmvvm:ViewModelSource viewmodel:VARIATION_ITEMSCollectionViewModelWrapper}">
+             DataContext="{dxmvvm:ViewModelSource viewmodel:OffsiteDirectVariationCollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

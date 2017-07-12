@@ -318,13 +318,13 @@
                                         <DataTemplate>
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="3" />
-                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="15" />
+                                                    <ColumnDefinition Width="15" />
                                                     <ColumnDefinition Width="*" />
                                                 </Grid.ColumnDefinitions>
                                                 <Image
                                                     Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}"
-                                                    ToolTip="No progress" Grid.Column="1">
+                                                    ToolTip="No progress" Grid.Column="0">
                                                     <Image.Visibility>
                                                         <MultiBinding
                                                             Converter="{StaticResource NumericCompareToVisibilityConverter}"

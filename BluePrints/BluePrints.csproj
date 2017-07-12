@@ -415,7 +415,7 @@
     <Compile Include="Common\SpellCheck\SpellCheckerHelper.cs" />
     <Compile Include="Common\SpellCheck\SpellCheckerModule.cs" />
     <Compile Include="Common\Utils\BluePrintsStringFormatUtils.cs" />
-    <Compile Include="Common\ViewModel\Converters\BaselineItemMaximumUnitsConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\IReportableStatsMaximumUnitsConverter.cs" />
     <Compile Include="Common\ViewModel\BluePrintsInterfaces.cs" />
     <Compile Include="Common\Reports\ViewModel\Builders.cs" />
     <Compile Include="Common\Reports\ViewModel\Helpers\DataPointsHelpers.cs" />
@@ -1157,7 +1157,7 @@
     <Compile Include="ViewModels\UOM\UOMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\USERCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION\VARIATIONSCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\VARIATION_ITEM\VARIATION_ITEMSCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\VARIATION_ITEM\OffsiteDirectVariationCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\WORKPACK\WORKPACKCollectionViewModelWrapper.cs" />
     <Compile Include="Common\View\BulkEditEnums.xaml.cs">
       <DependentUpon>BulkEditEnums.xaml</DependentUpon>
@@ -1264,8 +1264,8 @@
     <Compile Include="Views\USER\USERCollectionView.xaml.cs">
       <DependentUpon>USERCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\VARIATION_ITEM\VARIATION_ITEMCollectionView.xaml.cs">
-      <DependentUpon>VARIATION_ITEMCollectionView.xaml</DependentUpon>
+    <Compile Include="Views\VARIATION_ITEM\OffsiteDirectVariationCollectionView.xaml.cs">
+      <DependentUpon>OffsiteDirectVariationCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\WORKPACK_ASSIGNMENT\WORKPACKAssignmentView.xaml.cs">
       <DependentUpon>WORKPACKAssignmentView.xaml</DependentUpon>
@@ -1510,7 +1510,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\VARIATION_ITEM\VARIATION_ITEMCollectionView.xaml">
+    <Page Include="Views\VARIATION_ITEM\OffsiteDirectVariationCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

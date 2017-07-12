@@ -26,7 +26,7 @@
              DataContext="{dxmvvm:ViewModelSource viewmodel:BASELINE_ITEMSCollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
-            <converters:BaselineItemMaximumUnitsConverter x:Key="BaselineItemMaximumUnitsConverter" />
+            <converters:IReportableStatsMaximumUnitsConverter x:Key="IReportableStatsMaximumUnitsConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
@@ -237,17 +237,47 @@
                                     <DataTemplate>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="3" />
-                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="15" />
+                                                <ColumnDefinition Width="15" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
+                                            <Image
+                                                    Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}"
+                                                    ToolTip="Cannot reduce more than earned units" Grid.Column="0">
+                                                <Image.Visibility>
+                                                    <MultiBinding
+                                                            Converter="{StaticResource NumericCompareToVisibilityConverter}"
+                                                            FallbackValue="Hidden">
+                                                        <MultiBinding.ConverterParameter>
+                                                            <sys:Boolean>False</sys:Boolean>
+                                                        </MultiBinding.ConverterParameter>
+                                                        <Binding ElementName="PART_Editor" Path="MinValue" />
+                                                        <Binding ElementName="PART_Editor" Path="EditValue" />
+                                                    </MultiBinding>
+                                                </Image.Visibility>
+                                            </Image>
+                                            <Image
+                                                    Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}"
+                                                    ToolTip="Maximum possible units, please reduce other deliverable units to increase this" Grid.Column="1">
+                                                <Image.Visibility>
+                                                    <MultiBinding
+                                                            Converter="{StaticResource NumericCompareToVisibilityConverter}"
+                                                            FallbackValue="Hidden">
+                                                        <MultiBinding.ConverterParameter>
+                                                            <sys:Boolean>False</sys:Boolean>
+                                                        </MultiBinding.ConverterParameter>
+                                                        <Binding ElementName="PART_Editor" Path="MaxValue" />
+                                                        <Binding ElementName="PART_Editor" Path="EditValue" />
+                                                    </MultiBinding>
+                                                </Image.Visibility>
+                                            </Image>
                                             <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n"
                                                               MaskUseAsDisplayFormat="True" Increment="1"
                                                               IsReadOnly="{Binding RowData.Row.Entity.Entity.BY_DURATION}"
-                                                              MinValue="{Binding RowData.Row.CurrentPROGRESS_ITEM_UNITS}"
+                                                              MinValue="{Binding RowData.Row.Earned_Units_Total}"
                                                               Grid.Column="2">
                                                 <dxe:SpinEdit.MaxValue>
-                                                    <MultiBinding Converter="{StaticResource BaselineItemMaximumUnitsConverter}">
+                                                    <MultiBinding Converter="{StaticResource IReportableStatsMaximumUnitsConverter}">
                                                         <Binding ElementName="userControl" Path="DataContext.TotalAllowedUnits" />
                                                         <Binding ElementName="userControl" Path="DataContext.DisplayEntities" />
                                                         <Binding Path="RowData.Row" />

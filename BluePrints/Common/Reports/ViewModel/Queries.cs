@@ -18,44 +18,42 @@ namespace BluePrints.Common.ViewModel.Reporting
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
             IEnumerable<VARIATION> VARIATIONS = null, bool? buildBudgetedOnly = null)
         {
-            IQueryable<BASELINE_ITEMProjection> BASELINE_ITEMProjections;
+            IQueryable<BASELINE_ITEMProjection> baseline_item_projection;
+            //When live PROGRESS doesn't exists don't return anything
             if (PROGRESS == null)
-                BASELINE_ITEMProjections = new List<BASELINE_ITEMProjection>().AsQueryable();
+                baseline_item_projection = new List<BASELINE_ITEMProjection>().AsQueryable();
             else
-                BASELINE_ITEMProjections = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS, RATES);
+                baseline_item_projection = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS, RATES);
 
-            TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(PROGRESS);
-            DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(PROGRESS);
             List<VariationAdjustment> projectVariationAdjustments;
+            //VARIATIONS are only necessary if front-end requires percentages
             if (VARIATIONS != null)
-                projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONS.AsQueryable(), BASELINE_ITEMProjections);
+                projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONS.AsQueryable(), baseline_item_projection);
             else
                 projectVariationAdjustments = new List<VariationAdjustment>();
 
-            List<BASELINE_ITEMProgress> progress_items = BASELINE_ITEMProjections
-                        .Select(x =>
-                        new BASELINE_ITEMProgress(PROJECT, PROGRESS, projectVariationAdjustments)
-                        {
-                            Entity = x,
-                            Live_PROGRESS = PROGRESS
-                        }).ToList();
-
-            var PROGRESS_ITEMSByOriginalGuid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
-
-            foreach (BASELINE_ITEMProgress progress_item in progress_items)
+            List<BASELINE_ITEMProgress> baseline_item_progresses = baseline_item_projection.Select(x => new BASELINE_ITEMProgress(PROJECT, PROGRESS, projectVariationAdjustments)
             {
-                SetReportablePROGRESS_ITEM(progress_item, PROGRESS_ITEMSByOriginalGuid);
+                Entity = x,
+                Live_PROGRESS = PROGRESS
+            }).ToList();
+
+            dynamic PROGRESS_ITEMSByOriginalGuid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
+
+            foreach (BASELINE_ITEMProgress baseline_item_progress in baseline_item_progresses)
+            {
+                SetReportablePROGRESS_ITEM(baseline_item_progress, PROGRESS_ITEMSByOriginalGuid);
                 if (buildBudgetedOnly != null)
                 {
                     if((bool)buildBudgetedOnly)
-                        progress_item.BuildBudgetedStats();
+                        baseline_item_progress.BuildBudgetedStats();
                     else
-                        progress_item.BuildStats();
+                        baseline_item_progress.BuildStats();
                 }
 
             }
 
-            return progress_items.AsQueryable();
+            return baseline_item_progresses.AsQueryable();
         }
 
         public static IQueryable<ProgressDisplay> SiteDirectProgressItemTransformation(

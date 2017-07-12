@@ -26,7 +26,7 @@ namespace BluePrints.Common.Projections
         public PROGRESS_ITEMProjection()
         {
         }
-
+        public decimal Earned_Units_Total { get; }
         public PROGRESS_ITEMProjection(DateTime reportingDataDate)
         {
             ReportingDataDate = reportingDataDate;

@@ -25,7 +25,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single VARIATION object view model.
     /// </summary>
-    public partial class VARIATION_ITEMSCollectionViewModelWrapper :
+    public partial class OffsiteDirectVariationCollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
         <BASELINE_ITEM, BASELINE_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork>
     {
@@ -42,9 +42,9 @@ namespace BluePrints.ViewModels
         /// Creates a new instance of VARIATION_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static VARIATION_ITEMSCollectionViewModelWrapper Create()
+        public static OffsiteDirectVariationCollectionViewModelWrapper Create()
         {
-            return ViewModelSource.Create(() => new VARIATION_ITEMSCollectionViewModelWrapper());
+            return ViewModelSource.Create(() => new OffsiteDirectVariationCollectionViewModelWrapper());
         }
 
         #region Database Operation

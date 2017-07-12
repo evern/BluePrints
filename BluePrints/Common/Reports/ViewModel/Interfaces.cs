@@ -93,6 +93,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     #region Property Specification Interfaces
     public interface ICanSetProgresses
     {
+        decimal Earned_Units_Total { get; }
         decimal Earned_Units_BeforeDataDate { get; }
         decimal Earned_Units_OnDataDate { get; }
         decimal Earned_Units_ToDate { get; }

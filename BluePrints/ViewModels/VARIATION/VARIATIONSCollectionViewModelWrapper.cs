@@ -132,7 +132,7 @@ namespace BluePrints.ViewModels
 
             foreach (var entity in entities)
             {
-                VARIATION_ITEMSCollectionViewModelWrapper variationitemsCollectionViewModelWrapper = CreateVARIATION_ITEMSViewModelWrapper(entity.Entity, entity.EntityKey, OnVARIATION_ITEMSLoadedAssign);
+                OffsiteDirectVariationCollectionViewModelWrapper variationitemsCollectionViewModelWrapper = CreateVARIATION_ITEMSViewModelWrapper(entity.Entity, entity.EntityKey, OnVARIATION_ITEMSLoadedAssign);
             }
         }
 
@@ -189,14 +189,14 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Variation_Item revision
-        public VARIATION_ITEMSCollectionViewModelWrapper CreateVARIATION_ITEMSViewModelWrapper(VARIATION loadVARIATION,
+        public OffsiteDirectVariationCollectionViewModelWrapper CreateVARIATION_ITEMSViewModelWrapper(VARIATION loadVARIATION,
             object OnEntitiesLoadedParameter, Action<IEnumerable<BASELINE_ITEMVariation>, object> OnLoadedAction)
         {
-            VARIATION_ITEMSCollectionViewModelWrapper variation_itemsViewModelWrapper = null;
+            OffsiteDirectVariationCollectionViewModelWrapper variation_itemsViewModelWrapper = null;
 
             if (loadPROJECT != null)
             {
-                variation_itemsViewModelWrapper = new VARIATION_ITEMSCollectionViewModelWrapper();
+                variation_itemsViewModelWrapper = new OffsiteDirectVariationCollectionViewModelWrapper();
                 variation_itemsViewModelWrapper.SuppressNotification = true;
                 //variation_itemsViewModelWrapper.SetParentViewModel(this);
                 variation_itemsViewModelWrapper.OnEntitiesLoadedParameterCallBack = () => OnEntitiesLoadedParameter;
@@ -345,7 +345,7 @@ namespace BluePrints.ViewModels
 
             DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
                 new OptionalEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, DisplaySelectedEntity.Entity),
-                "VARIATION_ITEMCollectionView",
+                "OffsiteDirectVariationCollectionView",
                 "[" + loadPROJECT.NUMBER + "] Variation");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
@@ -414,7 +414,7 @@ namespace BluePrints.ViewModels
         }
 
         // Initialize a separate wrapper for approval because summary wrapper is not persistent to avoid multiple OnMessage event from getting picked up for each variation
-        VARIATION_ITEMSCollectionViewModelWrapper variation_itemsViewModelWrapperForApproval;
+        OffsiteDirectVariationCollectionViewModelWrapper variation_itemsViewModelWrapperForApproval;
         /// <summary>
         /// Approves an entity.
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the ApproveCommand property that can be used as a binding source in views.
