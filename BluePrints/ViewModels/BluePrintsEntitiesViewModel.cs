@@ -329,8 +329,8 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageProgress))
             {
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectOffsiteProgresses" + keyString, projectKey, childTitlePrefix + "Design Progresses", "PROGRESS_ITEMCollectionView", new OptionalEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progresses [Design]"));
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectSiteDirectProgresses" + keyString, projectKey, childTitlePrefix + "Site Direct Progresses", "SiteDirectProgressItemCollectionView", new OptionalEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progresses [Site Direct]"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectOffsiteProgresses" + keyString, projectKey, childTitlePrefix + "Design Progresses", "OffsiteDirectProgressCollectionView", new OptionalEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progresses [Design]"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectSiteDirectProgresses" + keyString, projectKey, childTitlePrefix + "Site Direct Progresses", "SiteDirectProgressCollectionView", new OptionalEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progresses [Site Direct]"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageDeliverableStatuses))

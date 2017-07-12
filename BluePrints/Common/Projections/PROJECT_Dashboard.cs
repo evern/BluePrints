@@ -29,7 +29,7 @@ namespace BluePrints.Common.Projections
         {
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(LivePROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(LivePROGRESS);
-            List<VariationAdjustment> projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONS.AsQueryable(), reportableItems.Select(x => (ISortableDeliverableProjection)x.Deliverable));
+            List<VariationAdjustment> projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONS.AsQueryable(), reportableItems);
 
             FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(Entity, LivePROGRESS, WORKPACKS, PrimeroUOW);
 

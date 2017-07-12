@@ -443,6 +443,7 @@ namespace BluePrints.ViewModels
         protected override void OnBeforeApplyProjectionPropertiesToEntity(BASELINE_ITEMVariation projectionEntity, BASELINE_ITEM entity)
         {
             projectionEntity.Entity.Entity.Entity.GUID_VARIATION = loadVARIATION.GUID;
+
             DataUtils.ShallowCopy(entity, projectionEntity.Entity.Entity.Entity);
             base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
         }

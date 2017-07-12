@@ -13,16 +13,16 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         public Guid GUID { get => ProgressItem.EntityKey; set => ProgressItem.EntityKey = value; }
         public Guid EntityKey { get => ProgressItem.EntityKey; set => ProgressItem.EntityKey = value; }
-        public StandaloneDisplayReportable ProgressItem { get; set; }
+        public DisplayQuantityReportable ProgressItem { get; set; }
 
-        public IEnumerable<StandaloneDisplayReportable> Reportables
+        public IEnumerable<DisplayQuantityReportable> Reportables
         {
             get
             {
                 if (isSetNull)
                     return null;
 
-                GroupDisplayReportable reportable = ProgressItem as GroupDisplayReportable;
+                DisplayQuantityReportableGroup reportable = ProgressItem as DisplayQuantityReportableGroup;
                 if (reportable != null)
                     return reportable.ChildReportables;
 
@@ -34,7 +34,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                GroupDisplayReportable reportable = ProgressItem as GroupDisplayReportable;
+                DisplayQuantityReportableGroup reportable = ProgressItem as DisplayQuantityReportableGroup;
                 return reportable != null;
             }
         }
@@ -49,7 +49,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         private void RefreshChild()
         {
             isSetNull = true;
-            GroupDisplayReportable reportable = ProgressItem as GroupDisplayReportable;
+            DisplayQuantityReportableGroup reportable = ProgressItem as DisplayQuantityReportableGroup;
             if (reportable != null)
             {
                 RaisePropertyChanged(() => Reportables);
@@ -59,81 +59,40 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class GroupDisplayReportable : StandaloneDisplayReportable
+    public class DisplayQuantityReportableGroup : DisplayQuantityReportable
     {
-        public IEnumerable<StandaloneDisplayReportable> ChildReportables;
-        public GroupDisplayReportable(IQuantityReportableGroup reportableGroup)
+        public IEnumerable<DisplayQuantityReportable> ChildReportables;
+        public DisplayQuantityReportableGroup(IReportable_Quantity_Group reportableGroup)
             : base(reportableGroup)
         {
-            this.ChildReportables = reportableGroup.Deliverables.Select(x => new StandaloneDisplayReportable(x));
+            this.ChildReportables = reportableGroup.Reportables.Select(x => new DisplayQuantityReportable(x));
         }
     }
 
-    public class StandaloneDisplayReportable : BindableBase, IReportable
+    public class DisplayQuantityReportable : BindableBase, IReportable_Quantity
     {
-        readonly IReportableStats reportable;
+        readonly IReportable_Quantity reportable;
         private SingleObjectSummarizer statsSummarizer;
         public SingleObjectSummarizer StatSummarizer => statsSummarizer;
 
         //For bindableBase property name usage only
-        public StandaloneDisplayReportable()
+        public DisplayQuantityReportable()
         {
 
         }
 
-        public StandaloneDisplayReportable(IReportableStats deliverable)
+        public DisplayQuantityReportable(IReportable_Quantity deliverable)
         {
             this.reportable = deliverable;
         }
 
-        public IDeliverable Deliverable
-        {
-            get { return reportable.Deliverable; }
-        }
+        public string ReportableItem_Name => reportable.ReportableItem_Name;
 
-        public string ReportableItem_Name
-        {
-            get
-            {
-                ISortableDeliverable deliverableProjection = getSortableDeliverable();
-                if (deliverableProjection != null)
-                    return deliverableProjection.ReportableItem_Name;
+        public string Commodity_Code => reportable.Commodity_Code;
 
-                return string.Empty;
-            }
-        }
+        public Guid? Workpack_Guid => reportable.Workpack_Guid;
 
-        public string Commodity_Code
-        {
-            get
-            {
-                return reportable.Commodity_Code;
-            }
-        }
-
-        public Guid? Workpack_Guid
-        {
-            get
-            {
-                ISortableDeliverable basicDeliverable = reportable as ISortableDeliverable;
-                if (basicDeliverable != null)
-                    return basicDeliverable.Workpack_Guid;
-
-                return null;
-            }
-        }
-
-        public Guid OriginalEntityKey
-        {
-            get
-            {
-                ISortableDeliverable basicDeliverable = reportable as ISortableDeliverable;
-                if (basicDeliverable != null)
-                    return basicDeliverable.OriginalEntityKey;
-
-                throw new NotImplementedException();
-            }
-        }
+        public Guid OriginalEntityKey => reportable.OriginalEntityKey;
 
         public void SetOriginalEntityKey(Guid newGuid) { }
 
@@ -145,117 +104,25 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Total_Units => reportable.Total_Units;
 
-        public decimal ItemRate
-        {
-            get
-            {
-                IHaveCosts costProjection = getCostProjection();
-                return costProjection == null ? 0 : costProjection.ItemRate;
-            }
-        }
+        public decimal ItemRate => reportable.ItemRate;
 
-        public decimal EstimatedCosts
-        {
-            get
-            {
-                IHaveCosts costProjection = getCostProjection();
-                return costProjection == null ? 0 : costProjection.EstimatedCosts;
-            }
-        }
+        public decimal Estimated_Costs => reportable.Estimated_Costs;
 
-        public decimal TotalCosts
-        {
-            get
-            {
-                IHaveCosts costProjection = getCostProjection();
-                return costProjection == null ? 0 : costProjection.Total_Costs;
-            }
-        }
+        public decimal TotalCosts => reportable.Total_Costs;
 
-        public bool? Track
-        {
-            get
-            {
-                ICanTrack trackableProjection = getTrackableProjection();
-                return trackableProjection == null ? null : trackableProjection.Track;
-            }
-        }
+        public bool? Track => reportable.Track;
 
-        public decimal Estimated_Quantity
-        {
-            get
-            {
-                IHaveQuantity quantityProjection = reportable as IHaveQuantity;
-                return quantityProjection == null ? 0 : quantityProjection.Estimated_Quantity;
-            }
-        }
+        public decimal Estimated_Quantity => reportable.Estimated_Quantity;
 
-        public decimal Total_Quantity
-        {
-            get
-            {
-                IHaveQuantity quantityProjection = reportable as IHaveQuantity;
-                return quantityProjection == null ? 0 : quantityProjection.Total_Quantity;
-            }
-        }
+        public decimal Total_Quantity => reportable.Total_Quantity;
 
-        public string UOM
-        {
-            get
-            {
-                IHaveQuantity quantityProjection = reportable as IHaveQuantity;
-                return quantityProjection == null ? string.Empty : quantityProjection.UOM;
-            }
-        }
+        public string UOM => reportable.UOM;
 
         public Guid EntityKey { get => reportable.EntityKey; set => reportable.EntityKey = value; }
 
-        public decimal QuantityPerHour
-        {
-            get
-            {
-                ICanProgressByQuantity quantityDeliverable = reportable as ICanProgressByQuantity;
-                return quantityDeliverable == null ? 0 : quantityDeliverable.QuantityPerHour;
-            }
-        }
+        public decimal QuantityPerHour => reportable.QuantityPerHour;
 
-        public decimal CurrentPeriodHours => CurrentTotalInstalledQuantity / QuantityPerHour;
-
-        public decimal CurrentPeriodCosts => CurrentPeriodHours * ItemRate;
-
-        public decimal PastInstalledQuantity
-        {
-            get
-            {
-                ICanProgressByQuantity quantityProjection = reportable as ICanProgressByQuantity;
-                return quantityProjection == null ? 0 : quantityProjection.PastInstalledQuantity;
-            }
-        }
-
-        public decimal MaxCurrentQuantity => Total_Quantity - PastInstalledQuantity;
-
-        decimal? currentTotalInstalledQuantity { get; set; }
-        public decimal CurrentTotalInstalledQuantity
-        {
-            get { return getActualCurrentTotalInstalledQuantity(); }
-            set { currentTotalInstalledQuantity = value; }
-        }
-
-        public decimal getActualCurrentTotalInstalledQuantity()
-        {
-            if (currentTotalInstalledQuantity == null)
-            {
-                ICanProgressByQuantity quantityProjection = reportable as ICanProgressByQuantity;
-                if (quantityProjection != null)
-                    currentTotalInstalledQuantity = quantityProjection.CurrentTotalInstalledQuantity;
-                else
-                    currentTotalInstalledQuantity = 0;
-            }
-
-            return (decimal)currentTotalInstalledQuantity;
-        }
-
-        public decimal TotalInstalledQuantity => PastInstalledQuantity + CurrentTotalInstalledQuantity;
+        public decimal PastInstalledQuantity => reportable.PastInstalledQuantity;
 
         public DateTime ReportingDataDate => reportable.ReportingDataDate;
 
@@ -271,52 +138,83 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public ProgressStats Stats { get => reportable.Stats; set => reportable.Stats = value; }
 
-        public decimal VariationUnits => reportable.VariationUnits;
+        public decimal Variation_Units => reportable.Variation_Units;
 
-        public decimal Current_Total_Percentage => throw new NotImplementedException();
+        public decimal Total_Percentage => reportable.Total_Percentage;
 
-        public decimal GetCurrentPeriodHours(decimal newPeriodPercentage)
+        public string Discipline_Code => reportable.Discipline_Code;
+
+        public decimal Variation_Costs => reportable.Variation_Costs;
+
+        public decimal Total_Costs => reportable.Total_Costs;
+
+        public decimal Earned_Units_Total => reportable.Earned_Units_Total;
+
+        public decimal Earned_Costs_Total => reportable.Earned_Costs_Total;
+
+        public decimal Earned_Units_BeforeDataDate => reportable.Earned_Units_BeforeDataDate;
+
+        public decimal Earned_Units_OnDataDate => reportable.Earned_Units_OnDataDate;
+
+        public decimal Earned_Units_ToDate => reportable.Earned_Units_ToDate;
+
+        public decimal Earned_Costs_ToDate => reportable.Earned_Costs_ToDate;
+
+        public decimal Earned_Costs_OnDataDate => reportable.Earned_Costs_OnDataDate;
+
+        public decimal Earned_Units_AfterDataDate => reportable.Earned_Units_AfterDataDate;
+
+        public decimal Total_Earned_Percentage { get => reportable.Total_Earned_Percentage; set => reportable.Total_Earned_Percentage = value; }
+
+        public decimal Total_Percentage_ToDate => reportable.Total_Percentage_ToDate;
+
+        public decimal TotalInstalledQuantity => reportable.TotalInstalledQuantity;
+
+        public decimal Baseline_Percentage => reportable.Baseline_Percentage;
+
+        public decimal SchedulePercentage => reportable.SchedulePercentage;
+
+        public decimal MinPercentage => reportable.MinPercentage;
+
+        public decimal MaxPercentage => reportable.MaxPercentage;
+
+        public decimal CurrentPeriodInstalledQuantity { get => reportable.CurrentPeriodInstalledQuantity; set => reportable.CurrentPeriodInstalledQuantity = value; }
+
+        public decimal MaxCurrentQuantity => reportable.MaxCurrentQuantity;
+
+        public void SetReportingDataDate(DateTime dataDate)
         {
-            return reportable.GetCurrentPeriodHours(newPeriodPercentage);
+            reportable.SetReportingDataDate(dataDate);
         }
 
-        public decimal GetCurrentPeriodPercentageByQuantity(decimal newTotalQuantity)
+        public void SetProgressItems(List<PROGRESS_ITEM> progresses)
         {
-            ICanProgressByQuantity quantityDeliverable = reportable as ICanProgressByQuantity;
-            if (quantityDeliverable != null)
-                return quantityDeliverable.GetCurrentPeriodPercentageByQuantity(newTotalQuantity);
-
-            return 0;
+            reportable.SetProgressItems(progresses);
         }
 
-        private ISortableDeliverable getSortableDeliverable()
+        public void AppendProgressItem(PROGRESS_ITEM currentProgress)
         {
-            ISortableDeliverable sortableProjection = reportable.Deliverable as ISortableDeliverable;
-            if (sortableProjection != null)
-                return sortableProjection;
-
-            return null;
+            reportable.AppendProgressItem(currentProgress);
         }
 
-        private ICanTrack getTrackableProjection()
+        public void Update()
         {
-            ICanTrack TrackableProjection = reportable.Deliverable as ICanTrack;
-            if (TrackableProjection != null)
-                return TrackableProjection;
-
-            return null;
+            reportable.Update();
         }
 
-        private IHaveCosts getCostProjection()
+        public PROGRESS_ITEM createNewProgress()
         {
-            if (reportable.Deliverable != null)
-            {
-                IHaveCosts costProjection = reportable.Deliverable as IHaveCosts;
-                if (costProjection != null)
-                    return costProjection;
-            }
+            return reportable.createNewProgress();
+        }
 
-            return null;
+        public decimal getCurrentPeriodEarnedUnits(decimal newPercentage)
+        {
+            return reportable.getCurrentPeriodEarnedUnits(newPercentage);
+        }
+
+        public IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses()
+        {
+            return reportable.GetExistingOrNewEditedProgresses();
         }
     }
 }

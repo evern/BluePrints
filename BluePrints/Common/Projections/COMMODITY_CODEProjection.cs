@@ -11,14 +11,14 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class COMMODITY_CODEProjection : BluePrintsProjectionBase<COMMODITY_CODE>, IQuantityDeliverableGroupProjection, ICanUpdate
+    public class COMMODITY_CODEProjection : BluePrintsProjectionBase<COMMODITY_CODE>, IDeliverable_Quantity_Group, ICanUpdate
     {
         public COMMODITY_CODEProjection()
             : base()
         {
         }
 
-        public IEnumerable<IQuantityReportable> Reportables { get; set; }
+        public IEnumerable<IDeliverable_Quantity> Deliverables { get; set; }
 
         public string Commodity_Code => Entity.CODE;
 
@@ -26,25 +26,40 @@ namespace BluePrints.Common.Projections
 
         public Guid? SubArea_Guid => Entity.GUID_SUBAREA;
 
-        public decimal Estimated_Units => Reportables.Sum(x => x.Estimated_Units);
+        public decimal Estimated_Units => Deliverables.Where(x => (bool)x.Track).Sum(x => x.Estimated_Units);
 
-        public decimal Total_Units => Reportables.Where(x => (bool)x.Track).Sum(x => x.Total_Units);
+        public decimal Total_Units => Deliverables.Where(x => (bool)x.Track).Sum(x => x.Total_Units);
 
-        public decimal ItemRate => Reportables.Sum(x => ((ISortableDeliverableProjection)x.Deliverable).ItemRate);
+        public decimal ItemRate => Deliverables.Sum(x => x.ItemRate);
 
-        public decimal EstimatedCosts => Reportables.Sum(x => ((ISortableDeliverableProjection)x.Deliverable).EstimatedCosts);
+        public decimal Estimated_Costs => Deliverables.Sum(x => x.Estimated_Costs);
 
-        public decimal Total_Costs => Reportables.Sum(x => ((ISortableDeliverableProjection)x.Deliverable).Total_Costs);
+        public decimal Total_Costs => Deliverables.Sum(x => x.Total_Costs);
 
-        public decimal Estimated_Quantity => Reportables.Sum(x => x.Estimated_Quantity);
+        public decimal Estimated_Quantity => Deliverables.Where(x => (bool)x.Track).Sum(x => x.Estimated_Quantity);
 
-        public decimal Total_Quantity => Reportables.Where(x => (bool)x.Track).Sum(x => x.Total_Quantity);
+        public decimal Total_Quantity => Deliverables.Where(x => (bool)x.Track).Sum(x => x.Total_Quantity);
 
         public string UOM => Entity.UOM;
 
-        public decimal VariationUnits => Reportables.Sum(x => x.VariationUnits);
+        public decimal Variation_Units => Deliverables.Sum(x => x.Variation_Units);
 
-        public decimal VariationCosts => Reportables.Sum(x => ((ISortableDeliverableProjection)x.Deliverable).VariationCosts);
+        public decimal Variation_Costs => Deliverables.Sum(x => x.Variation_Costs);
+
+        public string Discipline_Code => string.Empty;
+
+        public string ReportableItem_Name => string.Empty;
+
+        public Guid? Workpack_Guid => Guid.Empty;
+
+        public Guid OriginalEntityKey => throw new NotImplementedException();
+
+        public bool? Track => false;
+
+        public void SetOriginalEntityKey(Guid newGuid)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public static class COMMODITY_CODEProjectionQueries
@@ -58,7 +73,7 @@ namespace BluePrints.Common.Projections
                         commodity_code =>
                             new COMMODITY_CODEProjection()
                             {
-                                Entity = commodity_code,
+                                Entity = commodity_code
                             }).AsQueryable();
         }
     }

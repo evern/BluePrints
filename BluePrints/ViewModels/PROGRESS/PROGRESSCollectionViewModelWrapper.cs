@@ -157,9 +157,9 @@ namespace BluePrints.ViewModels
 
             DocumentInfo DocumentInfo;
             if(DisplaySelectedEntity.TYPE == ProgressType.Design)
-                DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new OptionalEntitiesParameter<PROJECT, PROGRESS>(null, DisplaySelectedEntity), "PROGRESS_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Progress");
+                DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new OptionalEntitiesParameter<PROJECT, PROGRESS>(null, DisplaySelectedEntity), "OffsiteDirectProgressCollectionView", "[" + loadPROJECT.NUMBER + "] Progress");
             else
-                DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new OptionalEntitiesParameter<PROJECT, PROGRESS>(null, DisplaySelectedEntity), "SiteDirectProgressItemCollectionView", "[" + loadPROJECT.NUMBER + "] Progress");
+                DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new OptionalEntitiesParameter<PROJECT, PROGRESS>(null, DisplaySelectedEntity), "SiteDirectProgressCollectionView", "[" + loadPROJECT.NUMBER + "] Progress");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }

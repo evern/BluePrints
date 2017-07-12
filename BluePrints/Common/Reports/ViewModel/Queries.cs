@@ -57,7 +57,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
 
         public static IQueryable<ProgressDisplay> SiteDirectProgressItemTransformation(
-            IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<COMMODITY_CODE> projectCOMMODITY_CODES, IEnumerable<STOCK_CODE> projectSTOCK_CODES, IEnumerable<RATE> projectRATES, DateTime reportingDataDate)
+            IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<COMMODITY_CODE> projectCOMMODITY_CODES, IEnumerable<STOCK_CODE> projectSTOCK_CODES, IEnumerable<RATE> projectRATES)
         {
             IEnumerable<PROGRESS_ITEM> arrPROGRESS_ITEMS = PROGRESS_ITEMS.ToArray();
             List<ProgressDisplay> progressItems = new List<ProgressDisplay>();
@@ -73,8 +73,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             foreach (ESTIMATION_DIRECT_ITEMProjection ESTIMATION_DIRECT_ITEM in ESTIMATION_DIRECT_ITEMProjection)
             {
                 ESTIMATION_DIRECT_ITEMProgress newEstimation_Direct_itemProgress = new ESTIMATION_DIRECT_ITEMProgress();
+                newEstimation_Direct_itemProgress.Live_PROGRESS = PROGRESS;
                 newEstimation_Direct_itemProgress.Entity = ESTIMATION_DIRECT_ITEM;
-                newEstimation_Direct_itemProgress.SetReportingDataDate(reportingDataDate);
+                newEstimation_Direct_itemProgress.SetReportingDataDate(PROGRESS.DATA_DATE);
                 SetReportablePROGRESS_ITEM(newEstimation_Direct_itemProgress, PROGRESS_ITEMSByOriginalGuid);
                 estimationDirectItemProgress.Add(newEstimation_Direct_itemProgress);
             }
@@ -86,20 +87,21 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 COMMODITY_CODEProgress newCommodity_CodeProgress = new COMMODITY_CODEProgress();
                 newCommodity_CodeProgress.Entity.Entity = COMMODITY_CODE;
+                newCommodity_CodeProgress.Live_PROGRESS = PROGRESS;
 
                 var currentCommodity_CodeProgresses = estimationDirectProgressByCommodityCode.FirstOrDefault(x => x.CommodityCodeGuid == COMMODITY_CODE.GUID);
                 if (currentCommodity_CodeProgresses != null)
                 {
-                    newCommodity_CodeProgress.Entity.Reportables = currentCommodity_CodeProgresses.Estimation_Direct_ItemProgress;
-                    newCommodity_CodeProgress.Deliverables = currentCommodity_CodeProgresses.Estimation_Direct_ItemProgress.ToList();
-                    newCommodity_CodeProgress.SetReportingDataDate(reportingDataDate);
+                    newCommodity_CodeProgress.Reportables = currentCommodity_CodeProgresses.Estimation_Direct_ItemProgress;
+                    newCommodity_CodeProgress.Entity.Deliverables = currentCommodity_CodeProgresses.Estimation_Direct_ItemProgress.Select(x => x.Entity);
+                    newCommodity_CodeProgress.SetReportingDataDate(PROGRESS.DATA_DATE);
                     ProgressDisplay newProgressDisplay = new ProgressDisplay();
-                    newProgressDisplay.ProgressItem = new GroupDisplayReportable(newCommodity_CodeProgress);
+                    newProgressDisplay.ProgressItem = new DisplayQuantityReportableGroup(newCommodity_CodeProgress);
                     progressItems.Add(newProgressDisplay);
                 }
             }
 
-            progressItems.AddRange(estimationDirectItemProgress.Where(x => x.Entity.Entity.STANDALONE).Select(x => new ProgressDisplay() { ProgressItem = new StandaloneDisplayReportable(x) }));
+            progressItems.AddRange(estimationDirectItemProgress.Where(x => x.Entity.Entity.STANDALONE).Select(x => new ProgressDisplay() { ProgressItem = new DisplayQuantityReportable(x) }));
 
             return progressItems.AsQueryable();
         }
@@ -112,11 +114,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             foreach (dynamic item in PROGRESS_ITEMSByOriginalGuid)
             {
-                ISortableDeliverable basicDeliverable = reportable.Deliverable as ISortableDeliverable;
-                if (basicDeliverable == null)
-                    break;
-
-                if (item.OriginalGuid == basicDeliverable.OriginalEntityKey)
+                if (item.OriginalGuid == reportable.OriginalEntityKey)
                 {
                     setProgressesProjection.SetProgressItems(item.Progresses);
                     return;

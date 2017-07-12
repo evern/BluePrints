@@ -10,7 +10,7 @@ namespace BluePrints.Data
     using System.Linq;
 
     [ConstraintAttributes("GUID_BASELINE, INTERNAL_NUM")]
-    public partial class BASELINE_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, ISortableDeliverable, ISupportByDuration
+    public partial class BASELINE_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, ISupportByDuration
     {
         public BASELINE_ITEM()
         {
@@ -229,8 +229,17 @@ namespace BluePrints.Data
                 if (DOCTYPE == null || DOCTYPE.DELIVERABLES_STATUS == null)
                     return null;
 
+                if (BASELINE == null && VARIATION == null)
+                    return null;
+
+                PROJECT PROJECT;
+                if (BASELINE != null)
+                    PROJECT = BASELINE.PROJECT;
+                else
+                    PROJECT = VARIATION.PROJECT;
+
                 return DOCTYPE.DELIVERABLES_STATUS
-                    .Where(x => x.GUID_PROJECT == BASELINE.GUID_PROJECT)
+                    .Where(x => x.GUID_PROJECT == PROJECT.GUID)
                     .Where(x => 
                             (x.FOR_DELIVERABLE && DELIVERABLE_TYPE == DeliverableType.Deliverable) ||
                             (x.FOR_NCR && DELIVERABLE_TYPE == DeliverableType.DeliverableNCR) || 
@@ -287,7 +296,7 @@ namespace BluePrints.Data
         public decimal Total_Quantity => Total_Units;
 
         [NotMapped]
-        public decimal VariationUnits => DC_HOURS;
+        public decimal Variation_Units => DC_HOURS;
 
         [NotMapped]
         public bool IsByDuration => BY_DURATION;

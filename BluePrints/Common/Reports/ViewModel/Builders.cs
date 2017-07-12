@@ -125,42 +125,38 @@ namespace BluePrints.Common.ViewModel.Reporting
         protected decimal CurrencyConversion { get; private set; }
         public PartialStatsBuilder(decimal currencyConversion)
         {
-            this.CurrencyConversion = currencyConversion;
+            CurrencyConversion = currencyConversion;
         }
 
-        public void BuildEarnedDataPoints(IReportableStats progressItemStats)
+        public void BuildEarnedDataPoints(IReportable reportable)
         {
-            ISortableDeliverableProjection projection = progressItemStats.Deliverable as ISortableDeliverableProjection;
-            if (projection == null)
-                return;
-
-            IEnumerable<DataPoint> progressItemEarnedDataPoints = progressItemStats.PROGRESS_ITEM_UpToCurrentDataDate.Select(x => new DataPoint()
+            IEnumerable<DataPoint> progressItemEarnedDataPoints = reportable.PROGRESS_ITEM_UpToCurrentDataDate.Select(x => new DataPoint()
             {
-                BudgetedUnits = progressItemStats.Stats.BudgetedUnits,
-                BudgetedCosts = progressItemStats.Stats.BudgetedCosts * this.CurrencyConversion,
+                BudgetedUnits = reportable.Stats.BudgetedUnits,
+                BudgetedCosts = reportable.Stats.BudgetedCosts * CurrencyConversion,
                 Units = x.EARNED_UNITS,
-                Costs = x.EARNED_UNITS * projection.ItemRate * this.CurrencyConversion,
+                Costs = x.EARNED_UNITS * reportable.ItemRate * CurrencyConversion,
                 ProgressDate = x.EARNED_DATE,
             }).ToArray();
-            progressItemStats.Stats.Earned.SetData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
+            reportable.Stats.Earned.SetData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
         }
 
-        public void BuildPlannedDataPointsFromQuery(IReportableStats progressItemStats)
+        public void BuildPlannedDataPointsFromQuery(IReportable reportable)
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                List<StoredProcedure_PlannedDataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPoints(progressItemStats.EntityKey);
-                progressItemStats.Stats.Budgeted.SetPlannedData(plannedDataPoints);
-                progressItemStats.Stats.Current.SetPlannedData(plannedDataPoints);
+                List<StoredProcedure_PlannedDataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPoints(reportable.EntityKey);
+                reportable.Stats.Budgeted.SetPlannedData(plannedDataPoints);
+                reportable.Stats.Current.SetPlannedData(plannedDataPoints);
             }
         }
 
-        public void BuildRemainingDataPointsFromQuery(IReportableStats progressItemStats)
+        public void BuildRemainingDataPointsFromQuery(IReportable reportable)
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                List<StoredProcedure_RemainingDataPoint> RemainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPoints(progressItemStats.EntityKey);
-                progressItemStats.Stats.Remaining.SetRemainingData(RemainingDataPoints, progressItemStats.Stats.Earned.DataPoints);
+                List<StoredProcedure_RemainingDataPoint> RemainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPoints(reportable.EntityKey);
+                reportable.Stats.Remaining.SetRemainingData(RemainingDataPoints, reportable.Stats.Earned.DataPoints);
             }
         }
     }

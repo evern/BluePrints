@@ -15,13 +15,13 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             foreach (IReportable reportableItem in reportableItems)
             {
-                List<VariationAdjustment> currentProgressItemAdjustments = variationAdjustments.Where(x => x.DeliverableOriginalGuid == ((ISortableDeliverableProjection)reportableItem.Deliverable).OriginalEntityKey).ToList();
+                List<VariationAdjustment> currentProgressItemAdjustments = variationAdjustments.Where(x => x.DeliverableOriginalGuid == reportableItem.OriginalEntityKey).ToList();
                 if(!progressHaveStats)
-                    reportableItem.Stats = new ProgressStats(livePROGRESS, reportableItem.Estimated_Units, reportableItem.Total_Units, ((ISortableDeliverableProjection)reportableItem.Deliverable).EstimatedCosts, ((ISortableDeliverableProjection)reportableItem.Deliverable).Total_Costs, currentProgressItemAdjustments);
+                    reportableItem.Stats = new ProgressStats(livePROGRESS, reportableItem.Estimated_Units, reportableItem.Total_Units, reportableItem.Estimated_Costs, reportableItem.Total_Costs, currentProgressItemAdjustments);
             }
         }
 
-        public static List<VariationAdjustment> BuildProjectVariationAdjustments(IQueryable<VARIATION> VARIATION, IEnumerable<ISortableDeliverableProjection> deliverables)
+        public static List<VariationAdjustment> BuildProjectVariationAdjustments(IQueryable<VARIATION> VARIATION, IEnumerable<IDeliverable_Rates> deliverables)
         {
             List<VariationAdjustment> variationAdjustments = new List<VariationAdjustment>();
             if (VARIATION.Count() == 0)
@@ -33,7 +33,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 IEnumerable<VARIATION_ITEM> applicableVariation_Item = variation.VARIATION_ITEM.Where(x => x.ACTION == VariationAction.Add || x.ACTION == VariationAction.Append);
                 foreach (VARIATION_ITEM variation_item in applicableVariation_Item)
                 {
-                    ISortableDeliverableProjection lookUpDeliverable = deliverables.FirstOrDefault(x => x.OriginalEntityKey == variation_item.GUID_ORIBASEITEM);
+                    IDeliverable_Rates lookUpDeliverable = deliverables.FirstOrDefault(x => x.OriginalEntityKey == variation_item.GUID_ORIBASEITEM);
                     if (lookUpDeliverable != null)
                     {
                         variationAdjustments.Add(new VariationAdjustment(variation_item.GUID_ORIBASEITEM) { AdjustmentDate = (DateTime)variation.APPROVED, AdjustmentUnits = variation_item.VARIATION_UNITS, AdjustmentRate = lookUpDeliverable.ItemRate });

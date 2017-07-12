@@ -20,7 +20,7 @@ using System.Collections.ObjectModel;
 
 namespace BluePrints.ViewModels
 {
-    public class SiteDirectProgressItemCollectionViewModelWrapper :
+    public class SiteDirectProgressCollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
         <ESTIMATION_DIRECT_ITEM, ProgressDisplay, Guid, IBluePrintsEntitiesUnitOfWork>
     {
@@ -28,10 +28,10 @@ namespace BluePrints.ViewModels
         /// Creates a new instance of SiteDirectProgressCollectionViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static SiteDirectProgressItemCollectionViewModelWrapper Create(
+        public static SiteDirectProgressCollectionViewModelWrapper Create(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new SiteDirectProgressItemCollectionViewModelWrapper(unitOfWorkFactory));
+            return ViewModelSource.Create(() => new SiteDirectProgressCollectionViewModelWrapper(unitOfWorkFactory));
         }
 
         //ensure mainviewmodel is loaded before calling background worker
@@ -44,7 +44,7 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the DISCIPLINECollectionViewModelWrapper type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected SiteDirectProgressItemCollectionViewModelWrapper(
+        protected SiteDirectProgressCollectionViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
             onMainViewModelFirstLoadedTimer = new DispatcherTimer();
@@ -159,7 +159,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ProgressDisplay>> ConstructMainViewModelProjection()
         {
-            return query => ProgressItemQueries.SiteDirectProgressItemTransformation(query.Where(x => x.GUID_ESTIMATION_DIRECT == loadESTIMATION_DIRECT.GUID), PROGRESS_ITEMCollection, COMMODITY_CODECollection, STOCK_CODECollection, RATECollection, loadPROGRESS.DATA_DATE);
+            return query => ProgressItemQueries.SiteDirectProgressItemTransformation(query.Where(x => x.GUID_ESTIMATION_DIRECT == loadESTIMATION_DIRECT.GUID), loadPROGRESS, PROGRESS_ITEMCollection, COMMODITY_CODECollection, STOCK_CODECollection, RATECollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ProgressDisplay> entities)
@@ -319,27 +319,21 @@ namespace BluePrints.ViewModels
             {
                 if(entity.Reportables != null)
                 {
-                    foreach(StandaloneDisplayReportable reportable in entity.Reportables)
+                    foreach(DisplayQuantityReportable reportable in entity.Reportables)
                     {
-                        ISortableDeliverable sortableProjection = reportable.Deliverable as ISortableDeliverable;
-                        if (sortableProjection != null && sortableProjection.OriginalEntityKey == newPROGRESS_ITEM.GUID_ORIBASEITEM)
+                        if (reportable.OriginalEntityKey == newPROGRESS_ITEM.GUID_ORIBASEITEM)
                         {
-                            setReportableNewProgress(reportable.Deliverable, newPROGRESS_ITEM);
+                            setReportableNewProgress(reportable, newPROGRESS_ITEM);
                             return entity;
                         }
                     }
                 }
                 else
                 {
-                    IReportable reportableProjection = entity.ProgressItem as IReportable;
-                    if (reportableProjection != null)
+                    if (entity.ProgressItem.OriginalEntityKey == newPROGRESS_ITEM.GUID_ORIBASEITEM)
                     {
-                        ISortableDeliverable sortableDeliverable = reportableProjection.Deliverable as ISortableDeliverable;
-                        if(sortableDeliverable != null && sortableDeliverable.OriginalEntityKey == newPROGRESS_ITEM.GUID_ORIBASEITEM)
-                        {
-                            setReportableNewProgress(sortableDeliverable, newPROGRESS_ITEM);
-                            return entity;
-                        }
+                        setReportableNewProgress(entity.ProgressItem, newPROGRESS_ITEM);
+                        return entity;
                     }
                 }
             }
@@ -355,7 +349,7 @@ namespace BluePrints.ViewModels
             {
                 if (reportableProjection.PROGRESS_ITEM_Current == null)
                 {
-                    setProgressEntity.AppendCurrentProgressItem(newPROGRESS_ITEM);
+                    setProgressEntity.AppendProgressItem(newPROGRESS_ITEM);
                 }
             }
         }
@@ -367,44 +361,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public bool OnBeforeEntitySaved(ProgressDisplay entity)
         {
-            decimal newQuantity = entity.ProgressItem.CurrentTotalInstalledQuantity;
-            decimal currentPeriodPercentage = entity.ProgressItem.GetCurrentPeriodPercentageByQuantity(newQuantity);
-            GroupDisplayReportable groupEntity = entity.ProgressItem as GroupDisplayReportable;
-            List<PROGRESS_ITEM> newPRORESS_ITEMS = new List<PROGRESS_ITEM>();
-            if (groupEntity != null)
-            {
-                foreach (StandaloneDisplayReportable progress in entity.Reportables)
-                {
-                    PROGRESS_ITEM savePROGRESS_ITEM;
-                    IReportable deliverable = progress.Deliverable as IReportable;
-
-                    if (progress.PROGRESS_ITEM_Current != null)
-                        savePROGRESS_ITEM = progress.PROGRESS_ITEM_Current;
-                    else
-                    {
-                        savePROGRESS_ITEM = createNewPROGRESS_ITEM(((ISortableDeliverableProjection)deliverable.Deliverable).OriginalEntityKey);
-                    }
-
-                    savePROGRESS_ITEM.EARNED_UNITS = progress.GetCurrentPeriodHours(currentPeriodPercentage);
-                    newPRORESS_ITEMS.Add(savePROGRESS_ITEM);
-                }
-            }
-            else
-            {
-                PROGRESS_ITEM savePROGRESS_ITEM;
-                IReportable reportable = entity.ProgressItem.Deliverable as IReportable;
-                if (reportable == null)
-                    return false;
-
-                if (entity.ProgressItem.PROGRESS_ITEM_Current != null)
-                    savePROGRESS_ITEM = entity.ProgressItem.PROGRESS_ITEM_Current;
-                else
-                    savePROGRESS_ITEM = createNewPROGRESS_ITEM(((ISortableDeliverableProjection)reportable.Deliverable).OriginalEntityKey);
-
-                savePROGRESS_ITEM.EARNED_UNITS = entity.ProgressItem.GetCurrentPeriodHours(currentPeriodPercentage);
-                newPRORESS_ITEMS.Add(savePROGRESS_ITEM);
-            }
-
+            IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = entity.ProgressItem.GetExistingOrNewEditedProgresses();
             PROGRESS_ITEMSCollectionViewModel.BulkSave(newPRORESS_ITEMS);
             return false;
         }

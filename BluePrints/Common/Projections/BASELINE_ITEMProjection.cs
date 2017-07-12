@@ -10,7 +10,7 @@ using System.Linq;
 namespace BluePrints.Common.Projections
 {
     [ConstraintAttributes("Entity.GUID_BASELINE, Entity.INTERNAL_NUM")]
-    public class BASELINE_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEM>, ISortableDeliverableProjection, ISupportByDuration, IHaveDeliverableStatus
+    public class BASELINE_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEM>, IDeliverable_Rates, ISupportByDuration, IHaveDeliverableStatus
     {
         public BASELINE_ITEMProjection()
             : base()
@@ -65,7 +65,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public decimal EstimatedCosts => Estimated_Units * ItemRate;
+        public decimal Estimated_Costs => Estimated_Units * ItemRate;
 
         public decimal Total_Costs => Total_Units * ItemRate;
 
@@ -89,9 +89,9 @@ namespace BluePrints.Common.Projections
 
         public string Discipline_Code => Entity.Discipline_Code;
 
-        public decimal VariationUnits => Entity.VariationUnits;
+        public decimal Variation_Units => Entity.Variation_Units;
 
-        public decimal VariationCosts => Entity.VariationUnits * ItemRate;
+        public decimal Variation_Costs => Entity.Variation_Units * ItemRate;
 
         public bool IsByDuration => Entity.IsByDuration;
 

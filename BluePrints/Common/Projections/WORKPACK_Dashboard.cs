@@ -85,16 +85,12 @@ namespace BluePrints.Common.Projections
             List<DisciplineCode_Dashboard> disciplineCodeDashboard = new List<DisciplineCode_Dashboard>();
             foreach(IReportable reportable in workpackSummaryStats.Reportables)
             {
-                ISortableDeliverableProjection sortableDeliverable = reportable.Deliverable as ISortableDeliverableProjection;
-                if(sortableDeliverable != null)
+                string discipline_code = reportable.Discipline_Code;
+                if (!disciplineCodeDashboard.Any(x => x.Discipline_Code == discipline_code))
                 {
-                    string discipline_code = sortableDeliverable.Discipline_Code;
-                    if (!disciplineCodeDashboard.Any(x => x.Discipline_Code == discipline_code))
-                    {
-                        DisciplineCode_Dashboard newDisciplineCode = new DisciplineCode_Dashboard() { Discipline_Code = discipline_code };
-                        assignAllPossibleCommodityCodes(newDisciplineCode, workpackSummaryStats.Reportables, burnedDataPoints);
-                        disciplineCodeDashboard.Add(newDisciplineCode);
-                    }
+                    DisciplineCode_Dashboard newDisciplineCode = new DisciplineCode_Dashboard() { Discipline_Code = discipline_code };
+                    assignAllPossibleCommodityCodes(newDisciplineCode, workpackSummaryStats.Reportables, burnedDataPoints);
+                    disciplineCodeDashboard.Add(newDisciplineCode);
                 }
             }
 
@@ -117,7 +113,7 @@ namespace BluePrints.Common.Projections
             List<CommodityCode_Dashboard> commodityCodes = new List<CommodityCode_Dashboard>();
             foreach (IReportable reportable in workpackReportables)
             {
-                string commodityCode = ((ISortableDeliverableProjection)reportable.Deliverable).Commodity_Code;
+                string commodityCode = reportable.Commodity_Code;
                 if(!commodityCodes.Any(x => x.Commodity_Code == commodityCode))
                 {
                     commodityCodes.Add(new CommodityCode_Dashboard() { Commodity_Code = commodityCode });

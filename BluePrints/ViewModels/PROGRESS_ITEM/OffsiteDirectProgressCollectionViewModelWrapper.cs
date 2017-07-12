@@ -99,7 +99,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, SetPROGRESStoCurrentDateOnLoaded);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, Baseline_ItemProgressFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, false);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
@@ -162,7 +162,7 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> Baseline_ItemProgressFunc()
+        private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID);
         }
@@ -282,6 +282,46 @@ namespace BluePrints.ViewModels
                         query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection);
         }
 
+        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        {
+            if (changedType == typeof(PROGRESS_ITEM))
+            {
+                PROGRESS_ITEM newPROGRESSITEM = PROGRESS_ITEMCollection.FirstOrDefault(x => x.GUID == (Guid)key);
+                if (newPROGRESSITEM != null)
+                {
+                    IReportable affectedDisplayEntity = getAffectedDisplayEntity(newPROGRESSITEM);
+                    if (affectedDisplayEntity != null)
+                        affectedDisplayEntity.Update();
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private IReportable getAffectedDisplayEntity(PROGRESS_ITEM newPROGRESS_ITEM)
+        {
+            foreach (IReportable entity in MainViewModel.Entities)
+            {
+                if (entity.OriginalEntityKey == newPROGRESS_ITEM.GUID_ORIBASEITEM)
+                {
+                    setReportableNewProgress(entity, newPROGRESS_ITEM);
+                    return entity;
+                }
+            }
+
+            return null;
+        }
+
+        private void setReportableNewProgress(IReportable updateEntity, PROGRESS_ITEM newPROGRESS_ITEM)
+        {
+            if (updateEntity.PROGRESS_ITEM_Current == null)
+            {
+                updateEntity.AppendProgressItem(newPROGRESS_ITEM);
+            }
+        }
+
         bool isFirstLoaded;
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
         {
@@ -344,11 +384,6 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => RefreshView()));
         }
 
-        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
-        {
-            this.RaisePropertiesChanged();
-        }
-
         private void OnMappingAdditionalChangedEntitiesProperties(BASELINE_ITEMProgress existingProjectionEntity, BASELINE_ITEMProgress projectionEntity)
         {
             projectionEntity.Stats = existingProjectionEntity.Stats;
@@ -362,7 +397,8 @@ namespace BluePrints.ViewModels
         /// <param name="isNewEntity"></param>
         protected void OnAfterEntitySavedCallBack(BASELINE_ITEMProgress projectionEntity, bool isNewEntity)
         {
-            PROGRESS_ITEMSCollectionViewModel.Save(projectionEntity.PROGRESS_ITEM_Current);
+            IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projectionEntity.GetExistingOrNewEditedProgresses();
+            PROGRESS_ITEMSCollectionViewModel.Save(newPRORESS_ITEMS.First());
         }
 
         public bool ValidateFillDownCallBack(BASELINE_ITEMProgress fillDownEntity, string fieldName, object fillValue)

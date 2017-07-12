@@ -106,7 +106,6 @@ namespace BluePrints.ViewModels
             entity.Entity.GUID_PROJECT = loadPROJECT.GUID;
             return true;
         }
-
         #endregion
 
         #endregion

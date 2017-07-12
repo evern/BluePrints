@@ -407,14 +407,14 @@ namespace BluePrints.Common
     /// </summary>
     public class P6ActivityAssignment
     {
-        public P6ActivityAssignment(ISortableDeliverableProjection deliverableProjection, P6_ASSIGNMENT baseline_item_assignment)
+        public P6ActivityAssignment(IDeliverable_Rates deliverableProjection, P6_ASSIGNMENT baseline_item_assignment)
         {
             this.deliverableProjection = deliverableProjection;
             this.baseline_item_assignment = baseline_item_assignment;
         }
 
         public readonly P6_ASSIGNMENT baseline_item_assignment;
-        public readonly ISortableDeliverableProjection deliverableProjection;
+        public readonly IDeliverable_Rates deliverableProjection;
 
         public string INTERNAL_NUM
         {

@@ -22,7 +22,7 @@ namespace BluePrints.Common.ViewModel.Converters
 
             try
             {
-                IReportableStats projection = values[2] as IReportableStats;
+                IReportable projection = values[2] as IReportable;
                 if (projection == null)
                     return 0;
 
@@ -30,9 +30,9 @@ namespace BluePrints.Common.ViewModel.Converters
                 if (totalAllowedUnits == 0)
                     return 10000;
 
-                var AllEntities = (IEnumerable<IReportableStats>)values[1];
+                var AllEntities = (IEnumerable<IReportable>)values[1];
 
-                IEnumerable<IReportableStats> allEntitiesExcludingCurrent = AllEntities.Where(x => x.EntityKey != projection.EntityKey);
+                IEnumerable<IReportable> allEntitiesExcludingCurrent = AllEntities.Where(x => x.EntityKey != projection.EntityKey);
                 decimal currentAssignedUnits = allEntitiesExcludingCurrent.Count() == 0 ? 0 : allEntitiesExcludingCurrent.Sum(x => x.Estimated_Units);
                 decimal spareUnits = totalAllowedUnits - currentAssignedUnits;
                 return spareUnits > 0 ? spareUnits : 0;

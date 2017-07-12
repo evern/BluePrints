@@ -551,8 +551,8 @@
     <Compile Include="Views\ESTIMATION_DIRECT_ITEM\ESTIMATION_DIRECT_ITEMCollectionView.xaml.cs">
       <DependentUpon>ESTIMATION_DIRECT_ITEMCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PROGRESS_ITEM\SiteDirectProgressItemCollectionView.xaml.cs">
-      <DependentUpon>SiteDirectProgressItemCollectionView.xaml</DependentUpon>
+    <Compile Include="Views\PROGRESS_ITEM\SiteDirectProgressCollectionView.xaml.cs">
+      <DependentUpon>SiteDirectProgressCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECTDashboardPreloadUserControl.xaml.cs">
       <DependentUpon>PROJECTDashboardPreloadUserControl.xaml</DependentUpon>
@@ -1237,8 +1237,8 @@
     <Compile Include="Views\ESTIMATION\ESTIMATION_DIRECTCollectionView.xaml.cs">
       <DependentUpon>ESTIMATION_DIRECTCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PROGRESS_ITEM\PROGRESS_ITEMCollectionView.xaml.cs">
-      <DependentUpon>PROGRESS_ITEMCollectionView.xaml</DependentUpon>
+    <Compile Include="Views\PROGRESS_ITEM\OffsiteDirectProgressCollectionView.xaml.cs">
+      <DependentUpon>OffsiteDirectProgressCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTCollectionView.xaml.cs">
       <DependentUpon>PROJECTCollectionView.xaml</DependentUpon>
@@ -1322,7 +1322,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\PROGRESS_ITEM\SiteDirectProgressItemCollectionView.xaml">
+    <Page Include="Views\PROGRESS_ITEM\SiteDirectProgressCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1474,7 +1474,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\PROGRESS_ITEM\PROGRESS_ITEMCollectionView.xaml">
+    <Page Include="Views\PROGRESS_ITEM\OffsiteDirectProgressCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

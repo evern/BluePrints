@@ -1,5 +1,5 @@
 ﻿<custom:ViewStateRestoreUserControl x:Name="userControl" 
-             x:Class="BluePrints.Views.PROGRESS_ITEMCollectionView"
+             x:Class="BluePrints.Views.OffsiteDirectProgressCollectionView"
              xmlns:view="clr-namespace:BluePrints.Views"
              xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"

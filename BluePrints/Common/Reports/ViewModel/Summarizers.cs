@@ -101,7 +101,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
                 List<StoredProcedure_PlannedDataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPointsByProject(this.projectNumber);
-                foreach (IReportableStats reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
+                foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
                 {
                     List<StoredProcedure_PlannedDataPoint> currentDeliverableDataPoints = new List<StoredProcedure_PlannedDataPoint>();
 
@@ -141,7 +141,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <returns>Non cumulative earned progress data points</returns>
         public override void SetEarnedDataPoints()
         {
-            foreach (IReportableStats progressItemStat in ((SummaryStats)this.SummaryStats).Reportables)
+            foreach (IReportable progressItemStat in ((SummaryStats)this.SummaryStats).Reportables)
             {
                 partialStatsBuilder.BuildEarnedDataPoints(progressItemStat);
                 LoadingScreenManager.Progress();
@@ -158,7 +158,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
                 List<StoredProcedure_RemainingDataPoint> remainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPointsByProject(this.projectNumber);
-                foreach (IReportableStats reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
+                foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
                 {
                     List<StoredProcedure_RemainingDataPoint> currentDeliverableDataPoints = new List<StoredProcedure_RemainingDataPoint>();
                     currentDeliverableDataPoints.AddRange(remainingDataPoints.Where(x => x.Deliverable_Guid == reportableObject.EntityKey));
@@ -202,7 +202,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public class SingleObjectSummarizer : StatsSummarizer
     {
-        readonly IReportableStats progressItem;
+        readonly IReportable progressItem;
 
         PartialStatsBuilder partialStatsBuilder;
         public PartialStatsBuilder PartialStatsBuilder
@@ -211,7 +211,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             set { partialStatsBuilder = value; }
         }
 
-        public SingleObjectSummarizer(IReportableStats progressItem, PartialStatsBuilder partialStatsBuilder)
+        public SingleObjectSummarizer(IReportable progressItem, PartialStatsBuilder partialStatsBuilder)
         {
             SummaryStats = progressItem.Stats;
             this.progressItem = progressItem;

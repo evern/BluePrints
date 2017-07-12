@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class PROGRESS_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEMProjection>, IReportableStats
+    public class PROGRESS_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEMProjection>, IReportable
     {
         public IDeliverable Deliverable => Entity;
         public DateTime ReportingDataDate { get; set; }
@@ -73,7 +73,7 @@ namespace BluePrints.Common.Projections
             List<VariationAdjustment> currentProgressItemAdjustments = projectVariationAdjustments.Where(x => x.DeliverableOriginalGuid == this.Entity.Entity.GUID_ORIGINAL).ToList();
 
             PartialStatsBuilder partialStatsBuilder = new PartialStatsBuilder(PROJECT.CURRENCYCONVERSION);
-            this.Stats = new ProgressStats(LivePROGRESS, this.Entity.Entity.ESTIMATED_HOURS, this.Entity.Entity.TOTAL_HOURS, this.Entity.EstimatedCosts, this.Entity.Total_Costs, projectVariationAdjustments.Where(x => x.DeliverableOriginalGuid == this.Entity.OriginalEntityKey).ToList());
+            this.Stats = new ProgressStats(LivePROGRESS, this.Entity.Entity.ESTIMATED_HOURS, this.Entity.Entity.TOTAL_HOURS, this.Entity.Estimated_Costs, this.Entity.Total_Costs, projectVariationAdjustments.Where(x => x.DeliverableOriginalGuid == this.Entity.OriginalEntityKey).ToList());
             StatSummarizer = new SingleObjectSummarizer(this, partialStatsBuilder);
         }
 
@@ -473,7 +473,7 @@ namespace BluePrints.Common.Projections
 
         public decimal ItemRate => Entity.ItemRate;
 
-        public decimal EstimatedCosts => Entity.EstimatedCosts;
+        public decimal Estimated_Costs => Entity.Estimated_Costs;
 
         public decimal TotalCosts => Entity.Total_Costs;
 
@@ -509,7 +509,7 @@ namespace BluePrints.Common.Projections
             throw new NotImplementedException();
         }
 
-        public void AppendCurrentProgressItem(PROGRESS_ITEM currentProgress)
+        public void AppendProgressItem(PROGRESS_ITEM currentProgress)
         {
             throw new NotImplementedException();
         }
@@ -525,9 +525,9 @@ namespace BluePrints.Common.Projections
 
         public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_AfterDataDate => PROGRESS_ITEMSAfterReportingDate;
 
-        public decimal VariationUnits => throw new NotImplementedException();
+        public decimal Variation_Units => throw new NotImplementedException();
 
-        SingleObjectSummarizer IReportableStats.StatSummarizer => throw new NotImplementedException();
+        SingleObjectSummarizer IReportable.StatSummarizer => throw new NotImplementedException();
 
         public decimal Current_Total_Percentage => throw new NotImplementedException();
 
@@ -540,6 +540,24 @@ namespace BluePrints.Common.Projections
         public decimal Earned_Units_ToDate => throw new NotImplementedException();
 
         public decimal Earned_Units_AfterDataDate => throw new NotImplementedException();
+
+        public string Discipline_Code => throw new NotImplementedException();
+
+        public decimal Variation_Costs => throw new NotImplementedException();
+
+        public decimal Total_Costs => throw new NotImplementedException();
+
+        public decimal Total_Percentage => throw new NotImplementedException();
+
+        public decimal Total_Percentage_ToDate => throw new NotImplementedException();
+
+        public decimal Baseline_Percentage => throw new NotImplementedException();
+
+        public decimal Earned_Costs_Total => throw new NotImplementedException();
+
+        public decimal Earned_Costs_ToDate => throw new NotImplementedException();
+
+        public decimal Earned_Costs_OnDataDate => throw new NotImplementedException();
     }
 
     public static class PROGRESS_ITEMProjectionQueries

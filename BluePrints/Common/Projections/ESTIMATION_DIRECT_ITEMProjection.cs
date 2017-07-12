@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, ITrackableQuantityDeliverableProjection
+    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IDeliverable_Quantity
     {
         public ESTIMATION_DIRECT_ITEMProjection()
             : base()
@@ -116,9 +116,9 @@ namespace BluePrints.Common.Projections
 
         public decimal ItemRate => RATE == null || RATE.RATE1 == null ? 0 : (decimal)RATE.RATE1;
 
-        public decimal EstimatedCosts => Estimated_Units * ItemRate;
+        public decimal Estimated_Costs => Estimated_Units * ItemRate;
 
-        public decimal Total_Costs => EstimatedCosts;
+        public decimal Total_Costs => Estimated_Costs;
 
         public decimal Estimated_Quantity => Entity.ESTIMATED_QUANTITY;
 
@@ -168,9 +168,9 @@ namespace BluePrints.Common.Projections
 
         public string Discipline_Code => Entity.Discipline_Code;
 
-        public decimal VariationUnits => Entity.VariationUnits;
+        public decimal Variation_Units => Entity.Variation_Units;
 
-        public decimal VariationCosts => 0;
+        public decimal Variation_Costs => 0;
     }
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries

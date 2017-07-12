@@ -8,7 +8,7 @@ using BluePrints.Common.ViewModel.Reporting;
 
 namespace BluePrints.Data
 {
-    public partial class ESTIMATION_DIRECT_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, ISortableDeliverable
+    public partial class ESTIMATION_DIRECT_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable
     {
         public ESTIMATION_DIRECT_ITEM()
         {
@@ -117,6 +117,6 @@ namespace BluePrints.Data
 
         public decimal Total_Units => Estimated_Units;
 
-        public decimal VariationUnits => 0;
+        public decimal Variation_Units => 0;
     }
 }
