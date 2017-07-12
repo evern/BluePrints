@@ -184,14 +184,11 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProjection>>
             ConstructMainViewModelProjection()
         {
-            BASELINE BASELINE = loaderCollection.GetObject<BASELINE>();
             IEnumerable<RATE> RATES = loaderCollection.GetCollection<RATE>();
-            IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSES = loaderCollection.GetCollection<DELIVERABLES_STATUS>();
-            IEnumerable<P6_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENTS = loaderCollection.GetCollection<P6_ASSIGNMENT>();
 
             return
                 query =>
-                    BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(query.OrderBy(x => x.INTERNAL_NUM), BASELINE, RATES, DELIVERABLES_STATUSES, BASELINE_ITEM_ASSIGNMENTS);
+                    BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(query.OrderBy(x => x.INTERNAL_NUM), RATES);
         }
 
         public

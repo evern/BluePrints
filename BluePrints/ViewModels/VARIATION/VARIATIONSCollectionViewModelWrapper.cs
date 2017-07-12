@@ -136,20 +136,20 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void OnVARIATION_ITEMSLoadedAssign(IEnumerable<VARIATION_ITEMProjection> projections, object parameter)
+        private void OnVARIATION_ITEMSLoadedAssign(IEnumerable<BASELINE_ITEMVariation> projections, object parameter)
         {
             Guid variationProjectionGuid = (Guid)parameter;
             mainThreadDispatcher.BeginInvoke(new Action(() => AssignVariationSummary(variationProjectionGuid, projections)));
         }
 
-        private void AssignVariationSummary(Guid variationProjectionGuid, IEnumerable<VARIATION_ITEMProjection> projections)
+        private void AssignVariationSummary(Guid variationProjectionGuid, IEnumerable<BASELINE_ITEMVariation> projections)
         {
             //When refresh button is pushed too fast, MainViewModel may not be initialized
             if (MainViewModel == null)
                 return;
 
             VARIATIONProjection projection = MainViewModel.Entities.First(x => x.EntityKey == variationProjectionGuid);
-            projection.DetailEntities = new ObservableCollection<VARIATION_ITEMProjection>(projections);
+            projection.DetailEntities = new ObservableCollection<BASELINE_ITEMVariation>(projections);
             RefreshView(true);
         }
 
@@ -190,7 +190,7 @@ namespace BluePrints.ViewModels
 
         #region Variation_Item revision
         public VARIATION_ITEMSCollectionViewModelWrapper CreateVARIATION_ITEMSViewModelWrapper(VARIATION loadVARIATION,
-            object OnEntitiesLoadedParameter, Action<IEnumerable<VARIATION_ITEMProjection>, object> OnLoadedAction)
+            object OnEntitiesLoadedParameter, Action<IEnumerable<BASELINE_ITEMVariation>, object> OnLoadedAction)
         {
             VARIATION_ITEMSCollectionViewModelWrapper variation_itemsViewModelWrapper = null;
 
@@ -441,12 +441,12 @@ namespace BluePrints.ViewModels
             variation_itemsViewModelWrapperForApproval = CreateVARIATION_ITEMSViewModelWrapper(DisplaySelectedEntity.Entity, null, OnVARIATION_ITEMSLoaded);
         }
 
-        private void OnVARIATION_ITEMSLoaded(IEnumerable<VARIATION_ITEMProjection> projections, object parameter)
+        private void OnVARIATION_ITEMSLoaded(IEnumerable<BASELINE_ITEMVariation> projections, object parameter)
         {
             mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE(projections.ToList())));
         }
 
-        public void ReviseBASELINE(IEnumerable<VARIATION_ITEMProjection> projections)
+        public void ReviseBASELINE(IEnumerable<BASELINE_ITEMVariation> projections)
         {
             //Must cleanup before doing baseline update to prevent wrapper from refreshing
             //CleanUpVARIATION_ITEMS(variation_itemsViewModelWrapperForApproval);
@@ -469,7 +469,7 @@ namespace BluePrints.ViewModels
 
             //var newBASELINE_ITEMS = new ObservableCollection<BASELINE_ITEM>();
             List<BASELINE_ITEM> baseline_itemForInternalNumberGeneration = new List<BASELINE_ITEM>();
-            List<VARIATION_ITEMProjection> variation_items = projections.ToList();
+            List<BASELINE_ITEMVariation> variation_items = projections.ToList();
             List<BASELINE_ITEM> newBASELINE_ITEMS = new List<BASELINE_ITEM>();
             IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
 
@@ -477,14 +477,14 @@ namespace BluePrints.ViewModels
             foreach (var currentVARIATION_ITEM in variation_items)
             {
                 var newBASELINE_ITEM = new BASELINE_ITEM();
-                DataUtils.ShallowCopy(newBASELINE_ITEM, currentVARIATION_ITEM.Entity.Entity);
+                DataUtils.ShallowCopy(newBASELINE_ITEM, currentVARIATION_ITEM.Entity.Entity.Entity);
 
                 if (currentVARIATION_ITEM.VARIATION_ITEM.ACTION == VariationAction.Cancel)
                 {
-                    if (currentVARIATION_ITEM.TOTAL_EARNED_UNITS == 0)
+                    if (currentVARIATION_ITEM.Entity.Earned_Units_Total == 0)
                         newBASELINE_ITEM.DC_HOURS += -1 * newBASELINE_ITEM.TOTAL_HOURS;
                     else
-                        newBASELINE_ITEM.DC_HOURS += -1 * (newBASELINE_ITEM.TOTAL_HOURS - currentVARIATION_ITEM.TOTAL_EARNED_UNITS);
+                        newBASELINE_ITEM.DC_HOURS += -1 * (newBASELINE_ITEM.TOTAL_HOURS - currentVARIATION_ITEM.Entity.Earned_Units_Total);
 
                     //Save deducted variation units for future viewing
                     currentVARIATION_ITEM.VARIATION_ITEM.VARIATION_UNITS = newBASELINE_ITEM.DC_HOURS;
@@ -494,7 +494,7 @@ namespace BluePrints.ViewModels
                 {
                     if (currentVARIATION_ITEM.VARIATION_ITEM.VARIATION_UNITS < 0)
                     {
-                        decimal maximumReducibleUnits = -1 * currentVARIATION_ITEM.TOTAL_EARNED_UNITS;
+                        decimal maximumReducibleUnits = -1 * currentVARIATION_ITEM.Entity.Earned_Units_Total;
                         if (currentVARIATION_ITEM.VARIATION_ITEM.VARIATION_UNITS < maximumReducibleUnits)
                             newBASELINE_ITEM.DC_HOURS += maximumReducibleUnits;
                         else

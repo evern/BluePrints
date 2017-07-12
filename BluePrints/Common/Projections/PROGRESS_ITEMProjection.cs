@@ -571,11 +571,11 @@ namespace BluePrints.Common.Projections
                 List<PROGRESS_ITEMProjection> activePROGRESS_ITEMS;
                 if (buildStats)
                 {
-                    activePROGRESS_ITEMS = PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMSWithStats(currentProjectDeliverables.AsQueryable(), currentDeliverablePROJECT, livePROGRESS, projectWORKPACK, livePROGRESS_ITEMS, projectRATES, projectDELIVERABLE_STATUSES, approvedVARIATION, subAREAS).ToList();
+                    activePROGRESS_ITEMS = PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMSWithStats(currentProjectDeliverables.AsQueryable(), currentDeliverablePROJECT, livePROGRESS, projectWORKPACK, livePROGRESS_ITEMS, projectRATES, approvedVARIATION).ToList();
                     activePROGRESS_ITEMS.ForEach(x => x.BuildStats());
                 }
                 else
-                    activePROGRESS_ITEMS = PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(currentProjectDeliverables.AsQueryable(), livePROGRESS, livePROGRESS_ITEMS, projectRATES, projectDELIVERABLE_STATUSES, subAREAS).ToList();
+                    activePROGRESS_ITEMS = PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(currentProjectDeliverables.AsQueryable(), livePROGRESS, livePROGRESS_ITEMS, projectRATES).ToList();
 
                 USERDeliverables.AddRange(activePROGRESS_ITEMS);
             }
@@ -585,9 +585,7 @@ namespace BluePrints.Common.Projections
 
         public static IQueryable<PROGRESS_ITEMProjection> JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS, PROGRESS PROGRESS, 
-            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES,
-            IEnumerable<DELIVERABLES_STATUS> DELIVERABLE_STATUSES,
-            IEnumerable<AREA> SUBAREAS)
+            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES)
         {
             IEnumerable<PROGRESS_ITEM> LoadPROGRESS_ITEMS;
             if (PROGRESS == null)
@@ -595,7 +593,7 @@ namespace BluePrints.Common.Projections
             else
                 LoadPROGRESS_ITEMS = PROGRESS_ITEMS;
 
-            IQueryable<BASELINE_ITEMProjection> BASELINE_ITEMProjections = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS, RATES, DELIVERABLE_STATUSES, SUBAREAS);
+            IQueryable<BASELINE_ITEMProjection> BASELINE_ITEMProjections = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS, RATES);
 
             var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
 
@@ -614,9 +612,7 @@ namespace BluePrints.Common.Projections
         public static IQueryable<PROGRESS_ITEMProjection> JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMSWithStats(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS, PROJECT PROJECT, PROGRESS PROGRESS,
             IEnumerable<WORKPACK> WORKPACKS, 
-            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES,
-            IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSES, IEnumerable<VARIATION> VARIATIONS,
-            IEnumerable<AREA> SUBAREA,
+            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES, IEnumerable<VARIATION> VARIATIONS,
             bool buildBudgetedOnly = false)
         {
             IEnumerable<PROGRESS_ITEM> LoadPROGRESS_ITEMS;
@@ -629,7 +625,7 @@ namespace BluePrints.Common.Projections
             if (PROGRESS == null)
                 BASELINE_ITEMProjections = new List<BASELINE_ITEMProjection>().AsQueryable();
             else
-                BASELINE_ITEMProjections = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS, RATES, DELIVERABLES_STATUSES, SUBAREA);
+                BASELINE_ITEMProjections = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS, RATES);
 
             var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
 

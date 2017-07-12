@@ -304,8 +304,7 @@ namespace BluePrints.ViewModels
 
             return
                 query =>
-                    PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
-                        query.OrderBy(x => x.INTERNAL_NUM), loadPROGRESS, PROGRESS_ITEMCollection, RATECollection, DELIVERABLES_STATUSCollection, SUBAREACollection);
+                    PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(query.OrderBy(x => x.INTERNAL_NUM), loadPROGRESS, PROGRESS_ITEMCollection, RATECollection);
         }
 
         bool isFirstLoaded;

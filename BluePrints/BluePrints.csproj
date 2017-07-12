@@ -372,7 +372,7 @@
     <Compile Include="Common\Projections\BASELINE_ITEMProjection.cs" />
     <Compile Include="Common\Projections\PROGRESS_ITEMProjection.cs" />
     <Compile Include="Common\Projections\VARIATIONProjection.cs" />
-    <Compile Include="Common\Projections\VARIATION_ITEMProjection.cs" />
+    <Compile Include="Common\Projections\BASELINE_ITEMVariation.cs" />
     <Compile Include="Common\Projections\PROJECT_Dashboard.cs" />
     <Compile Include="Common\Projections\ROLE_PERMISSIONInfo.cs" />
     <Compile Include="Common\Misc\TASK_AppointmentInfo.cs" />

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public class Commodity_CodeProgress : BluePrintsProgressableByQuantityProjectionBase<COMMODITY_CODEProjection>, IQuantityReportableGroup
+    public class COMMODITY_CODEProgress : BluePrintsProgressableByQuantityProjectionBase<COMMODITY_CODEProjection>, IQuantityReportableGroup
     {
         public IEnumerable<IQuantityReportable> Deliverables { get; set; }
 
@@ -65,19 +65,19 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class Estimation_Direct_ItemProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATION_DIRECT_ITEMProjection>
+    public class ESTIMATION_DIRECT_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATION_DIRECT_ITEMProjection>
     {
 
     }
 
-    public class Baseline_ItemProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>
+    public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>
     {
-        public Baseline_ItemProgress()
+        public BASELINE_ITEMProgress()
         {
 
         }
 
-        public Baseline_ItemProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IEnumerable<VariationAdjustment> projectVariationAdjustments)
+        public BASELINE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IEnumerable<VariationAdjustment> projectVariationAdjustments)
             : base(PROJECT, LivePROGRESS, projectVariationAdjustments)
         {
 
@@ -349,43 +349,6 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public decimal Earned_Percentage_OnDataDate
-        {
-            get { return Total_Units == 0 ? 0 : (Earned_Units_OnDataDate / Total_Units); }
-        }
-
-        public decimal Earned_Units_OnDataDate
-        {
-            get
-            {
-                return PROGRESS_ITEM_Current == null ? 0 : PROGRESS_ITEM_Current.EARNED_UNITS;
-            }
-        }
-
-        public decimal Earned_Costs_OnDataDate
-        {
-            get
-            {
-                return Earned_Units_OnDataDate * Entity.ItemRate;
-            }
-        }
-
-        public virtual decimal Earned_Units_ToDate
-        {
-            get
-            {
-                return Earned_Units_BeforeDataDate + Earned_Units_OnDataDate;
-            }
-        }
-
-        public decimal Earned_Cost_ToDate
-        {
-            get
-            {
-                return Earned_Units_ToDate * Entity.ItemRate;
-            }
-        }
-        
         private decimal? earned_units_afterdatadate;
         public decimal Earned_Units_AfterDataDate
         {
@@ -401,6 +364,18 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public decimal Earned_Percentage_OnDataDate => Total_Units == 0 ? 0 : (Earned_Units_OnDataDate / Total_Units);
+
+        public decimal Earned_Units_OnDataDate => PROGRESS_ITEM_Current == null ? 0 : PROGRESS_ITEM_Current.EARNED_UNITS;
+
+        public decimal Earned_Costs_OnDataDate => Earned_Units_OnDataDate * Entity.ItemRate;
+
+        public virtual decimal Earned_Units_ToDate => Earned_Units_BeforeDataDate + Earned_Units_OnDataDate;
+
+        public decimal Earned_Units_Total => Earned_Units_ToDate + Earned_Units_AfterDataDate;
+
+        public decimal Earned_Cost_ToDate => Earned_Units_ToDate * Entity.ItemRate;
+        
         DateTime reportingDataDate { get; set; }
         public DateTime ReportingDataDate { get { return reportingDataDate; } }
         public void SetReportingDataDate(DateTime dataDate)

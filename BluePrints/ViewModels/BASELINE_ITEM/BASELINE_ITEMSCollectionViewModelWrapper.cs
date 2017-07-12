@@ -203,8 +203,7 @@ namespace BluePrints.ViewModels
             return
                 query =>
                     PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
-                        query.Where(x => x.GUID_BASELINE == _LoadBaseline.GUID).OrderBy(x => x.CREATED), livePROGRESS, PROGRESS_ITEMCollection,
-                        RATECollection, DELIVERABLES_STATUSCollection, SUBAREACollection);
+                        query.Where(x => x.GUID_BASELINE == _LoadBaseline.GUID).OrderBy(x => x.CREATED), livePROGRESS, PROGRESS_ITEMCollection, RATECollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROGRESS_ITEMProjection> entities)

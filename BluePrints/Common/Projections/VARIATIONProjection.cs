@@ -5,9 +5,9 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class VARIATIONProjection : BluePrintsProjectionMasterDetailBase<VARIATION, VARIATION_ITEMProjection>
+    public class VARIATIONProjection : BluePrintsProjectionMasterDetailBase<VARIATION, BASELINE_ITEMVariation>
     {
-        public override ObservableCollection<VARIATION_ITEMProjection> DetailEntities
+        public override ObservableCollection<BASELINE_ITEMVariation> DetailEntities
         {
             get { return GetProperty(() => DetailEntities); }
             set { SetProperty(() => DetailEntities, value, OnVARIATION_ITEMSChanged); }
@@ -26,7 +26,7 @@ namespace BluePrints.Common.Projections
                 if (DetailEntities == null)
                     return 0;
 
-                return DetailEntities.Sum(x => x.FORECAST_UNITS);
+                return DetailEntities.Sum(x => x.Forecast_Units);
             }
         }
 
@@ -37,7 +37,7 @@ namespace BluePrints.Common.Projections
                 if (DetailEntities == null)
                     return 0;
 
-                return DetailEntities.Sum(x => x.VARIATION_COST);
+                return DetailEntities.Sum(x => x.Variation_Cost);
             }
         }
     }

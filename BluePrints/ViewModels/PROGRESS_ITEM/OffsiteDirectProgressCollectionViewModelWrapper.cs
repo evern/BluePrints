@@ -35,7 +35,7 @@ namespace BluePrints.ViewModels
     /// </summary>
     public partial class OffsiteDirectProgressCollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
-        <BASELINE_ITEM, Baseline_ItemProgress, Guid, IBluePrintsEntitiesUnitOfWork>
+        <BASELINE_ITEM, BASELINE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
@@ -203,7 +203,7 @@ namespace BluePrints.ViewModels
                          BluePrintsResources.Warning_Caption, MessageButton.YesNo) == MessageResult.No)
                 return;
 
-            IEnumerable<Baseline_ItemProgress> deliverablesWithStatuses = MainViewModel.Entities.Where(x => x.Entity.Entity.GUID_STATUS != null);
+            IEnumerable<BASELINE_ITEMProgress> deliverablesWithStatuses = MainViewModel.Entities.Where(x => x.Entity.Entity.GUID_STATUS != null);
             List<PROGRESS_ITEM> updateProgress = new List<PROGRESS_ITEM>();
 
             foreach (var deliverableWithStatus in deliverablesWithStatuses)
@@ -273,17 +273,17 @@ namespace BluePrints.ViewModels
             FullRefresh();
         }
 
-        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<Baseline_ItemProgress>>
+        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             ConstructMainViewModelProjection()
         {
             return
                 query =>
                     ProgressItemQueries.OffsiteDirectProgressItemTransformation(
-                        query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), PROGRESS_ITEMCollection, loadPROJECT, loadPROGRESS, WORKPACKCollection, RATECollection, DELIVERABLES_STATUSCollection, VARIATIONCollection, SUBAREACollection);
+                        query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection);
         }
 
         bool isFirstLoaded;
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<Baseline_ItemProgress> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
         {
             //MainViewModel.ExistingRowAddUndoAndSaveCallBack = ExistingRowAddUndoAndSaveCallBack;
             MainViewModel.OnAfterEntitySavedCallBack = OnAfterEntitySavedCallBack;
@@ -349,7 +349,7 @@ namespace BluePrints.ViewModels
             this.RaisePropertiesChanged();
         }
 
-        private void OnMappingAdditionalChangedEntitiesProperties(Baseline_ItemProgress existingProjectionEntity, Baseline_ItemProgress projectionEntity)
+        private void OnMappingAdditionalChangedEntitiesProperties(BASELINE_ITEMProgress existingProjectionEntity, BASELINE_ITEMProgress projectionEntity)
         {
             projectionEntity.Stats = existingProjectionEntity.Stats;
         }
@@ -360,14 +360,14 @@ namespace BluePrints.ViewModels
         /// </summary>
         /// <param name="projectionEntity"></param>
         /// <param name="isNewEntity"></param>
-        protected void OnAfterEntitySavedCallBack(Baseline_ItemProgress projectionEntity, bool isNewEntity)
+        protected void OnAfterEntitySavedCallBack(BASELINE_ITEMProgress projectionEntity, bool isNewEntity)
         {
             PROGRESS_ITEMSCollectionViewModel.Save(projectionEntity.PROGRESS_ITEM_Current);
         }
 
-        public bool ValidateFillDownCallBack(Baseline_ItemProgress fillDownEntity, string fieldName, object fillValue)
+        public bool ValidateFillDownCallBack(BASELINE_ITEMProgress fillDownEntity, string fieldName, object fillValue)
         {
-            if (fieldName == BindableBase.GetPropertyName(() => new Baseline_ItemProgress().Total_Earned_Percentage))
+            if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage))
             {
                 var newPercentage = (decimal)fillValue;
                 if (newPercentage > fillDownEntity.MaxPercentage)
@@ -693,7 +693,7 @@ namespace BluePrints.ViewModels
 
             foreach (BASELINE_ITEMProjection baseline_item in baseline_itemProjection)
             {
-                Baseline_ItemProgress currentPROGRESS_ITEM = MainViewModel.Entities.FirstOrDefault(x => x.GUID == baseline_item.GUID);
+                BASELINE_ITEMProgress currentPROGRESS_ITEM = MainViewModel.Entities.FirstOrDefault(x => x.GUID == baseline_item.GUID);
                 LoadingScreenManager.Progress();
                 if (currentPROGRESS_ITEM == null)
                     continue;

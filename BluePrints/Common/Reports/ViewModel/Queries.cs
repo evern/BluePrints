@@ -10,30 +10,31 @@ namespace BluePrints.Common.ViewModel.Reporting
 {
     public static class ProgressItemQueries
     {
-        public static IQueryable<Baseline_ItemProgress> OffsiteDirectProgressItemTransformation(
+        public static IQueryable<BASELINE_ITEMProgress> OffsiteDirectProgressItemTransformation(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS,
-            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            PROJECT PROJECT, 
+            PROJECT PROJECT,
             PROGRESS PROGRESS,
-            IEnumerable<WORKPACK> WORKPACKS, 
             IEnumerable<RATE> RATES,
-            IEnumerable<DELIVERABLES_STATUS> DELIVERABLE_STATUSES, 
-            IEnumerable<VARIATION> VARIATIONS, 
-            IEnumerable<AREA> SUBAREAS, bool? buildBudgetedOnly = null)
+            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
+            IEnumerable<VARIATION> VARIATIONS = null, bool? buildBudgetedOnly = null)
         {
             IQueryable<BASELINE_ITEMProjection> BASELINE_ITEMProjections;
             if (PROGRESS == null)
                 BASELINE_ITEMProjections = new List<BASELINE_ITEMProjection>().AsQueryable();
             else
-                BASELINE_ITEMProjections = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS, RATES, DELIVERABLE_STATUSES, SUBAREAS);
+                BASELINE_ITEMProjections = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS, RATES);
 
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(PROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(PROGRESS);
-            List<VariationAdjustment> projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONS.AsQueryable(), BASELINE_ITEMProjections);
+            List<VariationAdjustment> projectVariationAdjustments;
+            if (VARIATIONS != null)
+                projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONS.AsQueryable(), BASELINE_ITEMProjections);
+            else
+                projectVariationAdjustments = new List<VariationAdjustment>();
 
-            List<Baseline_ItemProgress> progress_items = BASELINE_ITEMProjections
+            List<BASELINE_ITEMProgress> progress_items = BASELINE_ITEMProjections
                         .Select(x =>
-                        new Baseline_ItemProgress(PROJECT, PROGRESS, projectVariationAdjustments)
+                        new BASELINE_ITEMProgress(PROJECT, PROGRESS, projectVariationAdjustments)
                         {
                             Entity = x,
                             Live_PROGRESS = PROGRESS
@@ -41,7 +42,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             var PROGRESS_ITEMSByOriginalGuid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
 
-            foreach (Baseline_ItemProgress progress_item in progress_items)
+            foreach (BASELINE_ITEMProgress progress_item in progress_items)
             {
                 SetReportablePROGRESS_ITEM(progress_item, PROGRESS_ITEMSByOriginalGuid);
                 if (buildBudgetedOnly != null)
@@ -70,10 +71,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                                                                                                 projectSTOCK_CODES,
                                                                                                 projectCOMMODITY_CODES).AsEnumerable();
 
-            List<Estimation_Direct_ItemProgress> estimationDirectItemProgress = new List<Estimation_Direct_ItemProgress>();
+            List<ESTIMATION_DIRECT_ITEMProgress> estimationDirectItemProgress = new List<ESTIMATION_DIRECT_ITEMProgress>();
             foreach (ESTIMATION_DIRECT_ITEMProjection ESTIMATION_DIRECT_ITEM in ESTIMATION_DIRECT_ITEMProjection)
             {
-                Estimation_Direct_ItemProgress newEstimation_Direct_itemProgress = new Estimation_Direct_ItemProgress();
+                ESTIMATION_DIRECT_ITEMProgress newEstimation_Direct_itemProgress = new ESTIMATION_DIRECT_ITEMProgress();
                 newEstimation_Direct_itemProgress.Entity = ESTIMATION_DIRECT_ITEM;
                 newEstimation_Direct_itemProgress.SetReportingDataDate(reportingDataDate);
                 SetReportablePROGRESS_ITEM(newEstimation_Direct_itemProgress, PROGRESS_ITEMSByOriginalGuid);
@@ -85,7 +86,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             foreach (COMMODITY_CODE COMMODITY_CODE in projectCOMMODITY_CODES)
             {
-                Commodity_CodeProgress newCommodity_CodeProgress = new Commodity_CodeProgress();
+                COMMODITY_CODEProgress newCommodity_CodeProgress = new COMMODITY_CODEProgress();
                 newCommodity_CodeProgress.Entity.Entity = COMMODITY_CODE;
 
                 var currentCommodity_CodeProgresses = estimationDirectProgressByCommodityCode.FirstOrDefault(x => x.CommodityCodeGuid == COMMODITY_CODE.GUID);

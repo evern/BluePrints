@@ -93,24 +93,20 @@ namespace BluePrints.Common.Projections
                 if (livePROGRESS == null)
                     continue;
 
-                IEnumerable<PROGRESS_ITEM> livePROGRESS_ITEM =
-                    PROGRESS_ITEMS.Where(x => x.PROGRESS.GUID == livePROGRESS.GUID);
+                IEnumerable<PROGRESS_ITEM> livePROGRESS_ITEM = PROGRESS_ITEMS.Where(x => x.PROGRESS.GUID == livePROGRESS.GUID);
 
                 IEnumerable<BASELINE_ITEM> liveBASELINE_ITEM = liveBASELINE.BASELINE_ITEM.Where(x => !x.BY_DURATION);
                 IEnumerable<RATE> RATESByProject = RATES.Where(x => x.GUID_PROJECT == localPROJECT.GUID);
                 IEnumerable<VARIATION> ApprovedVARIATIONSByProject = VARIATIONS.Where(x => x.GUID_PROJECT == localPROJECT.GUID);
-                IEnumerable<AREA> SubAREAS = localPROJECT.AREA.Where(x => x.ParentEntityKey != null);
 
                 IEnumerable<PROGRESS_ITEMProjection> projectProgress_Items =
                     PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
-                        liveBASELINE_ITEM.AsQueryable(), livePROGRESS, 
-                        livePROGRESS_ITEM, RATESByProject, DELIVERABLES_STATUSES, SubAREAS).ToArray().AsEnumerable();
+                        liveBASELINE_ITEM.AsQueryable(), livePROGRESS, livePROGRESS_ITEM, RATESByProject).ToArray().AsEnumerable();
 
                 var currentPROJECT_Dashboard = new PROJECT_Dashboard()
                 {
                     EntityKey = localPROJECT.GUID,
                     Entity = localPROJECT
-                    //VARIATIONS = ApprovedVARIATIONSByProject
                 };
                 
                 currentPROJECT_Dashboard.InitializeSummarizer(projectProgress_Items, livePROGRESS, localPROJECT.WORKPACK, ApprovedVARIATIONSByProject, null, localPROJECT.NUMBER);
@@ -133,7 +129,7 @@ namespace BluePrints.Common.Projections
 
             IEnumerable<PROGRESS_ITEMProjection> progress_item =
                 PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
-                        BASELINE_ITEMS.AsQueryable(), PROGRESS, PROGRESS_ITEMS, RATES, DELIVERABLES_STATUSES, SubAREAS)
+                        BASELINE_ITEMS.AsQueryable(), PROGRESS, PROGRESS_ITEMS, RATES)
                     .ToArray()
                     .AsEnumerable();
 

@@ -20,15 +20,13 @@ namespace BluePrints.Common.Projections
     {
         public static IQueryable<WORKPACKProjection> JoinPROGRESSProjectionOnWORKPACKS(
             IQueryable<WORKPACK> WORKPACKS, IEnumerable<BASELINE_ITEM> BASELINE_ITEMS, PROGRESS PROGRESS, BASELINE BASELINE,
-            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES,
-            IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSES,
-            IEnumerable<AREA> SUBAREA)
+            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES)
         {
             IQueryable<BASELINE_ITEMProjection> AllBaselineItems;
             if (PROGRESS == null)
                 AllBaselineItems = new List<BASELINE_ITEMProjection>().AsQueryable();
             else
-                AllBaselineItems = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS.AsQueryable(), RATES, DELIVERABLES_STATUSES, SUBAREA);
+                AllBaselineItems = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS.AsQueryable(), RATES);
 
             var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
             return

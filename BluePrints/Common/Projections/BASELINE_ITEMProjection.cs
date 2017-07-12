@@ -102,9 +102,7 @@ namespace BluePrints.Common.Projections
     {
         public static IQueryable<BASELINE_ITEMProjection> BASELINE_ITEMProjectionQuery(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS, 
-            IEnumerable<RATE> RATES,
-            IEnumerable<DELIVERABLES_STATUS> DELIVERABLE_STATUSES,
-            IEnumerable<AREA> SUBAREAS)
+            IEnumerable<RATE> RATES)
         {
             return
                 BASELINE_ITEMS.ToArray()
@@ -113,36 +111,6 @@ namespace BluePrints.Common.Projections
                                 EntityKey = x.GUID,
                                 Entity = x,
                                 RATE = RATES.FirstOrDefault(y => y.GUID_DEPARTMENT == x.GUID_DEPARTMENT && y.GUID_DISCIPLINE == x.GUID_DISCIPLINE)
-                            }).AsQueryable();
-        }
-
-        public static IQueryable<BASELINE_ITEMProjection> BASELINE_ITEMProjectionQuery(
-            IQueryable<BASELINE_ITEM> BASELINE_ITEMS, BASELINE BASELINE,
-            IEnumerable<RATE> RATES,
-            IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSES, IEnumerable<P6_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENTS)
-        {
-            IQueryable<BASELINE_ITEM> contextBASELINE_ITEMS;
-            if (BASELINE == null)
-                contextBASELINE_ITEMS = new List<BASELINE_ITEM>().AsQueryable();
-            else
-            {
-                contextBASELINE_ITEMS = BASELINE_ITEMS.Where(x => x.GUID_BASELINE == BASELINE.GUID);
-            }
-
-            return
-                contextBASELINE_ITEMS.ToArray()
-                    .Select(
-                        x =>
-                            new BASELINE_ITEMProjection()
-                            {
-                                EntityKey = x.GUID,
-                                Entity = x,
-                                RATE =
-                                    RATES.FirstOrDefault(
-                                        y =>
-                                            y.GUID_DEPARTMENT == x.GUID_DEPARTMENT &&
-                                            y.GUID_DISCIPLINE == x.GUID_DISCIPLINE),
-                                BASELINE_ITEM_ASSIGNMENTS = BASELINE_ITEM_ASSIGNMENTS.Where(y => y.GUID_ORIGINAL == x.GUID_ORIGINAL).ToList()
                             }).AsQueryable();
         }
     }
