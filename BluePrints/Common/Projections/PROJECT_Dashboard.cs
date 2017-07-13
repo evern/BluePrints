@@ -17,15 +17,7 @@ namespace BluePrints.Common.Projections
         {
         }
 
-        public ProgressStats Stats
-        {
-            get { return GetProperty(() => Stats); }
-            set { SetProperty(() => Stats, value); }
-        }
-
-        FullSummarizer projectSummarizer { get; set; }
-
-        public void InitializeSummarizer(IEnumerable<IReportable> reportableItems, PROGRESS LivePROGRESS, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<VARIATION> VARIATIONS, IPrimeroEntitiesUnitOfWork PrimeroUOW = null, string projectNumber = "")
+        public PROJECT_Dashboard(IEnumerable<IReportable> reportableItems, PROGRESS LivePROGRESS, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<VARIATION> VARIATIONS, string project_number, IPrimeroEntitiesUnitOfWork PrimeroUOW = null)
         {
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(LivePROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(LivePROGRESS);
@@ -34,7 +26,14 @@ namespace BluePrints.Common.Projections
             FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(Entity, LivePROGRESS, WORKPACKS, PrimeroUOW);
 
             Stats = new ProjectSummaryStats(reportableItems, LivePROGRESS, projectVariationAdjustments);
-            projectSummarizer = new FullSummarizer((ProjectSummaryStats)Stats, fullStatsBuilder, projectNumber);
+            projectSummarizer = new FullSummarizer((ProjectSummaryStats)Stats, fullStatsBuilder, project_number);
+        }
+
+        FullSummarizer projectSummarizer { get; set; }
+        public ProgressStats Stats
+        {
+            get { return GetProperty(() => Stats); }
+            set { SetProperty(() => Stats, value); }
         }
 
         public void BuildStats(bool showLoadingScreen = true, bool isCosts = false)
@@ -56,95 +55,72 @@ namespace BluePrints.Common.Projections
         }
     }
 
-    public static class PROJECT_DashboardQueries
+    public static class DashboardQueries
     {
-        public static IQueryable<PROJECT_Dashboard> SummarizePROJECTDashboard(IQueryable<PROJECT> PROJECTS,
-            IEnumerable<PROGRESS> PROGRESSES, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<BASELINE> BASELINES, IEnumerable<RATE> RATES, IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSES, 
-            IEnumerable<VARIATION> VARIATIONS = null, Action raisePropertyChanged = null,
-            Guid? SinglePROJECTGuid = null, bool IsShowProgress = true)
+        public static PROJECT_Dashboard Single_Project_DashboardTransformation(PROJECT PROJECT, BASELINE BASELINE, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES,
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false)
         {
-            IQueryable<PROJECT> singleOrActivePROJECT;
+            List<PROJECT> PROJECTS = new List<PROJECT>();
+            List<BASELINE> BASELINES = new List<BASELINE>();
+            List<PROGRESS> PROGRESSES = new List<PROGRESS>();
 
-            if (SinglePROJECTGuid != null)
-                singleOrActivePROJECT = PROJECTS.Where(x => x.GUID == SinglePROJECTGuid);
-                    //process only active PROJECTS
-            else
-                singleOrActivePROJECT = PROJECTS.Where(x => x.STATUS == ProjectStatus.Active);
-            //process only active PROJECTS
+            PROJECTS.Add(BASELINE.PROJECT);
+            BASELINES.Add(BASELINE);
+            PROGRESSES.Add(PROGRESS);
+            var project_dashboard = DashboardQueries.Multiple_Project_DashboardTransformation(PROJECTS.AsQueryable(), BASELINES, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS, BASELINE.GUID_PROJECT, buildStats);
 
-            List<PROJECT_Dashboard> PROJECTDashboard = new List<PROJECT_Dashboard>();
-            var bluePrintsUnitOfWork =
-                BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-            var p6UnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-            //Cannot use primeroUnitOfWork because same context cannot be used on multithreaded environment
-            //var primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-            
-            foreach (var localPROJECT in singleOrActivePROJECT)
-            {
-                BASELINE liveBASELINE =
-                    BASELINES.FirstOrDefault(x => x.GUID_PROJECT == localPROJECT.GUID);
-                if (liveBASELINE == null)
-                    continue;
+            if (project_dashboard.Count() == 0)
+                return null;
 
-                PROGRESS livePROGRESS =
-                    PROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == localPROJECT.GUID && x.STATUS == ProgressStatus.Live);
-
-                if (livePROGRESS == null)
-                    continue;
-
-                IEnumerable<PROGRESS_ITEM> livePROGRESS_ITEM = PROGRESS_ITEMS.Where(x => x.PROGRESS.GUID == livePROGRESS.GUID);
-
-                IEnumerable<BASELINE_ITEM> liveBASELINE_ITEM = liveBASELINE.BASELINE_ITEM.Where(x => !x.BY_DURATION);
-                IEnumerable<RATE> RATESByProject = RATES.Where(x => x.GUID_PROJECT == localPROJECT.GUID);
-                IEnumerable<VARIATION> ApprovedVARIATIONSByProject = VARIATIONS.Where(x => x.GUID_PROJECT == localPROJECT.GUID);
-
-                IEnumerable<PROGRESS_ITEMProjection> projectProgress_Items =
-                    PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
-                        liveBASELINE_ITEM.AsQueryable(), livePROGRESS, livePROGRESS_ITEM, RATESByProject).ToArray().AsEnumerable();
-
-                var currentPROJECT_Dashboard = new PROJECT_Dashboard()
-                {
-                    EntityKey = localPROJECT.GUID,
-                    Entity = localPROJECT
-                };
-                
-                currentPROJECT_Dashboard.InitializeSummarizer(projectProgress_Items, livePROGRESS, localPROJECT.WORKPACK, ApprovedVARIATIONSByProject, null, localPROJECT.NUMBER);
-                PROJECTDashboard.Add(currentPROJECT_Dashboard);
-            }
-
-            return PROJECTDashboard.AsQueryable();
+            return project_dashboard.First();
         }
 
-        public static PROJECT_Dashboard SummarizeSinglePROJECTDashboard(PROJECT PROJECT, PROGRESS PROGRESS,
-            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<BASELINE_ITEM> BASELINE_ITEMS,
-            BASELINE BASELINE, IEnumerable<RATE> RATES, IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSES, bool buildStatsImmediately = false)
+        public static IQueryable<PROJECT_Dashboard> Multiple_Project_DashboardTransformation(IQueryable<PROJECT> PROJECTS,
+            IEnumerable<BASELINE> BASELINES, IEnumerable<PROGRESS> PROGRESSES,
+            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES, 
+            IEnumerable<VARIATION> VARIATIONS = null,
+            Guid? project_guid = null, bool buildStats = false)
         {
-            var bluePrintsUnitOfWork =
-                BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-            var p6UnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            IQueryable<PROJECT> project_single_or_active_selection;
+            if (project_guid != null)
+                project_single_or_active_selection = PROJECTS.Where(x => x.GUID == project_guid);
+            else
+                project_single_or_active_selection = PROJECTS.Where(x => x.STATUS == ProjectStatus.Active);
+
+            List<PROJECT_Dashboard> project_dashboard = new List<PROJECT_Dashboard>();
             var primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
 
-            IEnumerable<AREA> SubAREAS = PROJECT.AREA.Where(x => x.ParentEntityKey != null);
-
-            IEnumerable<PROGRESS_ITEMProjection> progress_item =
-                PROGRESS_ITEMProjectionQueries.JoinRATESAndPROGRESS_ITEMSOnBASELINE_ITEMS(
-                        BASELINE_ITEMS.AsQueryable(), PROGRESS, PROGRESS_ITEMS, RATES)
-                    .ToArray()
-                    .AsEnumerable();
-
-            var currentPROJECT_Dashboard = new PROJECT_Dashboard()
+            foreach (var current_project in project_single_or_active_selection)
             {
-                EntityKey = PROJECT.GUID,
-                Entity = PROJECT
-            };
+                BASELINE live_baseline = BASELINES.FirstOrDefault(x => x.GUID_PROJECT == current_project.GUID);
+                if (live_baseline == null)
+                    continue;
 
-            currentPROJECT_Dashboard.InitializeSummarizer(progress_item, PROGRESS, PROJECT.WORKPACK, PROJECT.VARIATION, primeroUnitOfWork, PROJECT.NUMBER);
+                PROGRESS live_progress = PROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == current_project.GUID && x.STATUS == ProgressStatus.Live);
+                if (live_progress == null)
+                    continue;
 
-            if (buildStatsImmediately)
-                currentPROJECT_Dashboard.BuildStats(false);
+                IEnumerable<PROGRESS_ITEM> live_progresses = PROGRESS_ITEMS.Where(x => x.PROGRESS.GUID == live_progress.GUID);
+                IEnumerable<BASELINE_ITEM> live_baseline_items = live_baseline.BASELINE_ITEM.Where(x => !x.BY_DURATION);
+                IEnumerable<RATE> project_rates = RATES.Where(x => x.GUID_PROJECT == current_project.GUID);
+                IEnumerable<VARIATION> approved_project_variations = VARIATIONS.Where(x => x.GUID_PROJECT == current_project.GUID);
 
-            return currentPROJECT_Dashboard;
+                IEnumerable<BASELINE_ITEMProgress> project_baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(
+                live_baseline_items.AsQueryable(), current_project, live_progress, project_rates, live_progresses, approved_project_variations).ToArray().AsEnumerable();
+
+                var current_project_dashboard = new PROJECT_Dashboard(project_baseline_item_progresses, live_progress, current_project.WORKPACK, approved_project_variations, current_project.NUMBER)
+                {
+                    EntityKey = current_project.GUID,
+                    Entity = current_project
+                };
+
+                if (buildStats)
+                    current_project_dashboard.BuildStats();
+
+                project_dashboard.Add(current_project_dashboard);
+            }
+
+            return project_dashboard.AsQueryable();
         }
     }
 }

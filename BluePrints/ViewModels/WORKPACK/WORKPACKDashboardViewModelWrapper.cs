@@ -105,7 +105,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK_Dashboard>>
             ConstructMainViewModelProjection()
         {
-            return query => WORKPACK_DashboardQueries.SummarizeWORKPACKDashboard(query, projectDashboard, SUBAREACollection);
+            return query => WORKPACK_DashboardQueries.Workpack_Dashboard_Summary(query, projectDashboard, SUBAREACollection);
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<WORKPACK_Dashboard> entities)

@@ -129,9 +129,8 @@ namespace BluePrints.ViewModels
 
             return
                 query =>
-                    PROJECT_DashboardQueries.SummarizePROJECTDashboard(query.OrderBy(x => x.NUMBER), PROGRESSES,
-                        PROGRESS_ITEMS, BASELINES, RATES, DELIVERABLE_STATUSES, VARIATIONS,
-                        () => RaisePropertyChanged(), null, false);
+                    DashboardQueries.Multiple_Project_DashboardTransformation(query.OrderBy(x => x.NUMBER), BASELINES, PROGRESSES,
+                        PROGRESS_ITEMS, RATES, VARIATIONS);
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)

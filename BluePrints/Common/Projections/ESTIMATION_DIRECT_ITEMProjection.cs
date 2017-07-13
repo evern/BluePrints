@@ -175,9 +175,9 @@ namespace BluePrints.Common.Projections
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries
     {
-        public static IQueryable<ESTIMATION_DIRECT_ITEMProjection> ESTIMATION_DIRECT_ITEMProjectionQuery(
+        public static IQueryable<ESTIMATION_DIRECT_ITEMProjection> IDeliverable_Rates_Transformation(
             IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, 
-            IEnumerable<RATE> RATES, IEnumerable<STOCK_CODE> STOCK_CODES, IEnumerable<COMMODITY_CODE> projectCOMMODITY_CODES)
+            IEnumerable<RATE> RATES, IEnumerable<STOCK_CODE> STOCK_CODES, IEnumerable<COMMODITY_CODE> COMMODITY_CODES)
         {
             return
                 ESTIMATION_DIRECT_ITEMS.OrderBy(x => x.CREATED).ToArray()
@@ -191,7 +191,7 @@ namespace BluePrints.Common.Projections
                                 StockCodeCollection = STOCK_CODES
                                 .Where(stockcode => 
                                 stockcode.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
-                                CommodityCodeCollection = projectCOMMODITY_CODES
+                                CommodityCodeCollection = COMMODITY_CODES
                                 .Where(commodity_code =>
                                 commodity_code.GUID_AREA == estimate_direct_item.GUID_AREA 
                                 && commodity_code.GUID_SUBAREA == estimate_direct_item.GUID_SUBAREA 

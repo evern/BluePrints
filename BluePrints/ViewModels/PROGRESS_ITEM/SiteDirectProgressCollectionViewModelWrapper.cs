@@ -22,7 +22,7 @@ namespace BluePrints.ViewModels
 {
     public class SiteDirectProgressCollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
-        <ESTIMATION_DIRECT_ITEM, ProgressDisplay, Guid, IBluePrintsEntitiesUnitOfWork>
+        <ESTIMATION_DIRECT_ITEM, ReportablesDisplay, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of SiteDirectProgressCollectionViewModelWrapper as a POCO view model.
@@ -157,12 +157,12 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ProgressDisplay>> ConstructMainViewModelProjection()
+        protected override Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ReportablesDisplay>> ConstructMainViewModelProjection()
         {
-            return query => ProgressItemQueries.SiteDirectProgressItemTransformation(query.Where(x => x.GUID_ESTIMATION_DIRECT == loadESTIMATION_DIRECT.GUID), loadPROGRESS, PROGRESS_ITEMCollection, COMMODITY_CODECollection, STOCK_CODECollection, RATECollection);
+            return query => ProgressQueries.SiteDirectProgressItemTransformation(query.Where(x => x.GUID_ESTIMATION_DIRECT == loadESTIMATION_DIRECT.GUID), loadPROGRESS, PROGRESS_ITEMCollection, COMMODITY_CODECollection, STOCK_CODECollection, RATECollection);
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ProgressDisplay> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ReportablesDisplay> entities)
         {
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
@@ -302,7 +302,7 @@ namespace BluePrints.ViewModels
                 PROGRESS_ITEM newPROGRESSITEM = PROGRESS_ITEMCollection.FirstOrDefault(x => x.GUID == (Guid)key);
                 if(newPROGRESSITEM != null)
                 {
-                    ProgressDisplay affectedDisplayEntity = getAffectedDisplayEntity(newPROGRESSITEM);
+                    ReportablesDisplay affectedDisplayEntity = getAffectedDisplayEntity(newPROGRESSITEM);
                     if (affectedDisplayEntity != null)
                         affectedDisplayEntity.Update();
                 }
@@ -313,9 +313,9 @@ namespace BluePrints.ViewModels
             return false;
         }
 
-        private ProgressDisplay getAffectedDisplayEntity(PROGRESS_ITEM newPROGRESS_ITEM)
+        private ReportablesDisplay getAffectedDisplayEntity(PROGRESS_ITEM newPROGRESS_ITEM)
         {
-            foreach (ProgressDisplay entity in MainViewModel.Entities)
+            foreach (ReportablesDisplay entity in MainViewModel.Entities)
             {
                 if(entity.Reportables != null)
                 {
@@ -354,12 +354,12 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public override ObservableCollection<ProgressDisplay> DisplayEntities => base.DisplayEntities;
+        public override ObservableCollection<ReportablesDisplay> DisplayEntities => base.DisplayEntities;
 
         /// <summary>
         /// Intercept MainViewModel Saving because bulk or single selective saving is required
         /// </summary>
-        public bool OnBeforeEntitySaved(ProgressDisplay entity)
+        public bool OnBeforeEntitySaved(ReportablesDisplay entity)
         {
             IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = entity.ProgressItem.GetExistingOrNewEditedProgresses();
             PROGRESS_ITEMSCollectionViewModel.BulkSave(newPRORESS_ITEMS);

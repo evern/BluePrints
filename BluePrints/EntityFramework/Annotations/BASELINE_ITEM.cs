@@ -44,16 +44,7 @@ namespace BluePrints.Data
         {
             GUID_ORIGINAL = newGuid;
         }
-
-        [NotMapped]
-        public decimal TOTAL_HOURS
-        {
-            get
-            {
-                return ESTIMATED_HOURS + DC_HOURS;
-            }
-        }
-
+       
         [NotMapped]
         public string Discipline_Code
         {
@@ -86,7 +77,7 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public string WORKPACK_NAME
+        public string Workpack_Name
         {
             get
             {
@@ -97,7 +88,7 @@ namespace BluePrints.Data
             }
         }
 
-        public string AREA_NAME
+        public string Area_Name
         {
             get
             {
@@ -108,7 +99,7 @@ namespace BluePrints.Data
             }
         }
 
-        public string SUBAREA_NAME
+        public string SubArea_Name
         {
             get
             {
@@ -119,7 +110,7 @@ namespace BluePrints.Data
             }
         }
 
-        public string DOCTYPE_NAME
+        public string DocType_Name
         {
             get
             {
@@ -130,7 +121,7 @@ namespace BluePrints.Data
             }
         }
 
-        public string DISCIPLINE_NAME
+        public string Discipline_Name
         {
             get
             {
@@ -141,7 +132,7 @@ namespace BluePrints.Data
             }
         }
 
-        public string DEPARTMENT_NAME
+        public string Department_Name
         {
             get
             {
@@ -279,7 +270,7 @@ namespace BluePrints.Data
                 if (IsByDuration)
                     return BluePrintsConstants.DurationBasedTotalUnits;
 
-                return TOTAL_HOURS;
+                return ESTIMATED_HOURS + DC_HOURS;
             }
         }
 
@@ -288,12 +279,6 @@ namespace BluePrints.Data
 
         [NotMapped]
         public Guid? SubArea_Guid => GUID_SUBAREA;
-
-        [NotMapped]
-        public decimal Estimated_Quantity => Estimated_Units;
-
-        [NotMapped]
-        public decimal Total_Quantity => Total_Units;
 
         [NotMapped]
         public decimal Variation_Units => DC_HOURS;

@@ -100,9 +100,9 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODEProjection>> ConstructMainViewModelProjection()
         {
             if(IsProjectSpecific)
-                return query => COMMODITY_CODEProjectionQueries.COMMODITY_CODEProjectionQuery(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID));
+                return query => COMMODITY_CODEProjectionQueries.Commodity_Code_Group_Transformation(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID));
             else
-                return query => COMMODITY_CODEProjectionQueries.COMMODITY_CODEProjectionQuery(query.Where(x => x.GUID_PROJECT == null));
+                return query => COMMODITY_CODEProjectionQueries.Commodity_Code_Group_Transformation(query.Where(x => x.GUID_PROJECT == null));
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<COMMODITY_CODEProjection> entities)

@@ -202,7 +202,7 @@ namespace BluePrints.ViewModels
             ConstructMainViewModelProjection()
         {
             return
-                query => ProgressItemQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection);
+                query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)

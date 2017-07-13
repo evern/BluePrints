@@ -172,34 +172,27 @@ namespace BluePrints.Common.Projections
 
     public static class WORKPACK_DashboardQueries
     {
-        public static IQueryable<WORKPACK_Dashboard> SummarizeWORKPACKDashboard(IQueryable<WORKPACK> WORKPACKS,
-            PROJECT_Dashboard projectDashboard, IEnumerable<AREA> subAreaCollection = null)
-        {
-            IEnumerable<WORKPACK_Dashboard> projectWORKPACKDashboards =
-                WORKPACKS.Where(x => x.GUID_PROJECT == projectDashboard.EntityKey)
-                    .Select(x => new WORKPACK_Dashboard() {EntityKey = x.GUID, Entity = x});
-            List<WORKPACK_Dashboard> newWORKPACKDashboards = projectWORKPACKDashboards.ToList();
-            newWORKPACKDashboards.ForEach(x => x.GroupProjectStats((ProjectSummaryStats)projectDashboard.Stats, projectDashboard.Entity.USELEGACYWORKPACK));
-            if(subAreaCollection != null)
-                newWORKPACKDashboards.ForEach(x => x.SetAvailableSubAreas(subAreaCollection));
-
-            return newWORKPACKDashboards.AsQueryable();
-        }
-
-        public static IQueryable<WORKPACK_Dashboard> SummarizeWORKPACKDashboard(IQueryable<WORKPACK> WORKPACKS,
+        public static IQueryable<WORKPACK_Dashboard> Workpack_Dashboard(IQueryable<WORKPACK> WORKPACKS,
             PROGRESS PROGRESS, BASELINE BASELINE,
             IEnumerable<BASELINE_ITEM> BASELINE_ITEMS,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
             IEnumerable<RATE> RATES,
             IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSES)
         {
-            var returnWORKPACK_Dashboard = new List<WORKPACK_Dashboard>();
+            var projectDashboard = DashboardQueries.Single_Project_DashboardTransformation(BASELINE.PROJECT, BASELINE, PROGRESS, PROGRESS_ITEMS, RATES, null, true);
+            return Workpack_Dashboard_Summary(WORKPACKS, projectDashboard);
+        }
 
-            var projectDashboard =
-                PROJECT_DashboardQueries.SummarizeSinglePROJECTDashboard(BASELINE.PROJECT, PROGRESS,
-                    PROGRESS_ITEMS, BASELINE_ITEMS, BASELINE, RATES, DELIVERABLES_STATUSES, true);
+        public static IQueryable<WORKPACK_Dashboard> Workpack_Dashboard_Summary(IQueryable<WORKPACK> WORKPACKS,
+            PROJECT_Dashboard projectDashboard, IEnumerable<AREA> subAreaCollection = null)
+        {
+            IEnumerable<WORKPACK_Dashboard> workpack_dashboards = WORKPACKS.Where(x => x.GUID_PROJECT == projectDashboard.EntityKey).Select(x => new WORKPACK_Dashboard() {EntityKey = x.GUID, Entity = x});
+            List<WORKPACK_Dashboard> newWORKPACKDashboards = workpack_dashboards.ToList();
+            newWORKPACKDashboards.ForEach(x => x.GroupProjectStats((ProjectSummaryStats)projectDashboard.Stats, projectDashboard.Entity.USELEGACYWORKPACK));
+            if(subAreaCollection != null)
+                newWORKPACKDashboards.ForEach(x => x.SetAvailableSubAreas(subAreaCollection));
 
-            return SummarizeWORKPACKDashboard(WORKPACKS, projectDashboard);
+            return newWORKPACKDashboards.AsQueryable();
         }
     }
 }

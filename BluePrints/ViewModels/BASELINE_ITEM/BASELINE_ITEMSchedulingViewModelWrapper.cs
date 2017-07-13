@@ -188,7 +188,7 @@ namespace BluePrints.ViewModels
 
             return
                 query =>
-                    BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(query.OrderBy(x => x.INTERNAL_NUM), RATES);
+                    BASELINE_ITEMProjectionQueries.IDeliverable_Rates_Transformation(query.OrderBy(x => x.INTERNAL_NUM), RATES);
         }
 
         public
@@ -262,70 +262,6 @@ namespace BluePrints.ViewModels
         public ICollectionViewModel<BluePrints.P6Data.TASK> P6TASKCollectionViewModel
         {
             get { return (ICollectionViewModel<BluePrints.P6Data.TASK>) loaderCollection.GetViewModel<TASK>(); }
-        }
-
-        public bool CanCopyWorkpackAssignments()
-        {
-            return LoginCredentials.CurrentUser.NAME == BluePrintsResources.AdminUsername;
-        }
-
-        public void CopyWorkpackAssignments()
-        {
-            if (MessageBoxService.ShowMessage("This will clear current assignments and attempt to copy from workpack assignments, are you sure you want to continue?", "Warning", MessageButton.OKCancel) == MessageResult.Cancel)
-                return;
-
-            BASELINE_ITEM_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(BASELINE_ITEM_ASSIGNMENTCollection);
-            CreateWORKPACKSchedulingViewModelWrapper();
-        }
-
-        public WORKPACKSchedulingViewModelWrapper CreateWORKPACKSchedulingViewModelWrapper()
-        {
-            WORKPACKSchedulingViewModelWrapper workpackSchedulingViewModelWrapper = null;
-
-            if (loadPROJECT != null)
-            {
-                workpackSchedulingViewModelWrapper = new WORKPACKSchedulingViewModelWrapper();
-                workpackSchedulingViewModelWrapper.SuppressNotification = true;
-                workpackSchedulingViewModelWrapper.OnEntitiesLoadedWithParameterCallBack = OnWorkpackDashboardLoaded;
-
-                object[] parameter = new object[] { loadBASELINE, BaselineMappingSelectionType.Original };
-                var supportParameterViewModel = workpackSchedulingViewModelWrapper as ISupportParameter;
-                supportParameterViewModel.Parameter = parameter;
-            }
-
-            return workpackSchedulingViewModelWrapper;
-        }
-
-        private void OnWorkpackDashboardLoaded(IEnumerable<WORKPACK_Dashboard> projections, object parameter)
-        {
-            LoadingScreenManager.ShowLoadingScreen(projections.Count());
-
-            List<P6_ASSIGNMENT> newAssignments = new List<P6_ASSIGNMENT>();
-            foreach (WORKPACK_Dashboard workpack in projections)
-            {
-                IEnumerable<WORKPACK_ASSIGNMENT> projectWORKPACK_ASSIGNMENTS = workpack.ObservableWORKPACK_ASSIGNMENTS;
-                foreach (WORKPACK_ASSIGNMENT WORKPACK_ASSIGNMENT in projectWORKPACK_ASSIGNMENTS)
-                {
-                    IEnumerable<BASELINE_ITEMProjection> baseline_items = MainViewModel.Entities.Where(x => x.Entity.GUID_WORKPACK == workpack.GUID);
-                    foreach(var baseline_item in baseline_items)
-                    {
-                        newAssignments.Add(new P6_ASSIGNMENT()
-                        {
-                            GUID = Guid.Empty,
-                            GUID_PROJECT = loadPROJECT.GUID,
-                            HIGH_VALUE = WORKPACK_ASSIGNMENT.HIGH_VALUE,
-                            LOW_VALUE = WORKPACK_ASSIGNMENT.LOW_VALUE,
-                            P6_ACTIVITYID = WORKPACK_ASSIGNMENT.P6_ACTIVITYID,
-                            GUID_ORIGINAL = baseline_item.Entity.GUID_ORIGINAL,
-                            ISMODIFIEDBASELINE = mappingType == BaselineMappingSelectionType.Modified
-                        });
-                    }
-                }
-
-                LoadingScreenManager.Progress();
-            }
-
-            BASELINE_ITEM_ASSIGNMENTSCollectionViewModel.BulkSave(newAssignments);
         }
 
         public void PushToP6()

@@ -482,9 +482,9 @@ namespace BluePrints.ViewModels
                 if (currentVARIATION_ITEM.VARIATION_ITEM.ACTION == VariationAction.Cancel)
                 {
                     if (currentVARIATION_ITEM.Entity.Earned_Units_Total == 0)
-                        newBASELINE_ITEM.DC_HOURS += -1 * newBASELINE_ITEM.TOTAL_HOURS;
+                        newBASELINE_ITEM.DC_HOURS += -1 * newBASELINE_ITEM.Total_Units;
                     else
-                        newBASELINE_ITEM.DC_HOURS += -1 * (newBASELINE_ITEM.TOTAL_HOURS - currentVARIATION_ITEM.Entity.Earned_Units_Total);
+                        newBASELINE_ITEM.DC_HOURS += -1 * (newBASELINE_ITEM.Total_Units - currentVARIATION_ITEM.Entity.Earned_Units_Total);
 
                     //Save deducted variation units for future viewing
                     currentVARIATION_ITEM.VARIATION_ITEM.VARIATION_UNITS = newBASELINE_ITEM.DC_HOURS;

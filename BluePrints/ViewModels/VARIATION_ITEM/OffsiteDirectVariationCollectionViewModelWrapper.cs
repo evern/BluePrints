@@ -565,7 +565,7 @@ namespace BluePrints.ViewModels
                 if (oldValue != null)
                 {
                     Guid? newValue = (Guid?)null;
-                    string subAreaFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEMProjection().Entity) + "." +
+                    string subAreaFieldName = BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
                     BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                     BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_SUBAREA);
                     activeVARIATION_ITEM.Entity.Entity.Entity.GUID_SUBAREA = newValue;

@@ -64,7 +64,7 @@ namespace BluePrints.Common.Projections
 
     public static class COMMODITY_CODEProjectionQueries
     {
-        public static IQueryable<COMMODITY_CODEProjection> COMMODITY_CODEProjectionQuery(
+        public static IQueryable<COMMODITY_CODEProjection> Commodity_Code_Group_Transformation(
             IQueryable<COMMODITY_CODE> COMMODITY_CODES)
         {
             return

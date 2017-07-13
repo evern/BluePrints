@@ -6,6 +6,7 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
@@ -19,7 +20,7 @@ namespace BluePrints.ViewModels
     /// Represents the PROJECTS collection view model.
     /// </summary>
     public class USERDashboardViewModelWrapper :
-        DashboardViewModelWrapper<BASELINE_ITEM, PROGRESS_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>
+        DashboardViewModelWrapper<BASELINE_ITEM, BASELINE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROJECT_ITEMSViewModelWrapper as a POCO view model.
@@ -88,16 +89,16 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<PROGRESS_ITEMProjection>>
+        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             ConstructMainViewModelProjection()
         {
-            return query => PROGRESS_ITEMProjectionQueries.GetUserDeliverables(query, DELIVERABLES_STATUSCollection, _loadUSER);
+            return query => ProgressQueries.User_OffsiteDirectProgressItemTransformation(query, _loadUSER);
         }
 
-        protected override bool OnMainViewModelLoaded(IEnumerable<PROGRESS_ITEMProjection> entities)
+        protected override bool OnMainViewModelLoaded(IEnumerable<BASELINE_ITEMProgress> entities)
         {
             MainViewModel =
-                (CollectionViewModel<BASELINE_ITEM, PROGRESS_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>)
+                (CollectionViewModel<BASELINE_ITEM, BASELINE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>)
                 mainEntityLoaderDescription.GetViewModel();
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             MainViewModel.SetParentViewModel(this);

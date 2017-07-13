@@ -118,18 +118,17 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT_Dashboard>>
             ConstructMainViewModelProjection()
         {
-            var BASELINES = loaderCollection.GetCollection<BASELINE>();
-            var PROGRESSES = loaderCollection.GetCollection<PROGRESS>();
+            var BASELINE = loaderCollection.GetObject<BASELINE>();
+            var PROGRESS = loaderCollection.GetObject<PROGRESS>();
             var PROGRESS_ITEMS = loaderCollection.GetCollection<PROGRESS_ITEM>();
             var RATES = loaderCollection.GetCollection<RATE>();
             var VARIATIONS = loaderCollection.GetCollection<VARIATION>();
-            var DELIVERABLES_STATUSES = loaderCollection.GetCollection<DELIVERABLES_STATUS>();
 
-            return
-                query =>
-                    PROJECT_DashboardQueries.SummarizePROJECTDashboard(query, PROGRESSES, PROGRESS_ITEMS,
-                        BASELINES, RATES, DELIVERABLES_STATUSES, VARIATIONS, () => RaisePropertyChanged(),
-                        loadPROJECT.GUID);
+            List<PROJECT_Dashboard> project_dashboards = new List<PROJECT_Dashboard>();
+            PROJECT_Dashboard project_dashboard = DashboardQueries.Single_Project_DashboardTransformation(loadPROJECT, BASELINE, PROGRESS, PROGRESS_ITEMS, RATES, VARIATIONS);
+
+            project_dashboards.Add(project_dashboard);
+            return query => project_dashboards.AsQueryable();
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECT_Dashboard> entities)

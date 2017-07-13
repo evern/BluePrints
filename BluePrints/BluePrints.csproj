@@ -370,7 +370,6 @@
     <Compile Include="Common\Projections\BASELINE_ITEM_ASSIGNMENTSProjection.cs" />
     <Compile Include="Common\Projections\AREAMasterDetailProjection.cs" />
     <Compile Include="Common\Projections\BASELINE_ITEMProjection.cs" />
-    <Compile Include="Common\Projections\PROGRESS_ITEMProjection.cs" />
     <Compile Include="Common\Projections\VARIATIONProjection.cs" />
     <Compile Include="Common\Projections\BASELINE_ITEMVariation.cs" />
     <Compile Include="Common\Projections\PROJECT_Dashboard.cs" />
@@ -378,7 +377,6 @@
     <Compile Include="Common\Misc\TASK_AppointmentInfo.cs" />
     <Compile Include="Common\Projections\ROLEProjection.cs" />
     <Compile Include="Common\Projections\WORKPACKProjection.cs" />
-    <Compile Include="Common\Projections\USER_Dashboard.cs" />
     <Compile Include="Common\Projections\WORKPACK_Dashboard.cs" />
     <Compile Include="Common\Reports\UserReportDesigner.cs">
       <SubType>Form</SubType>
@@ -537,8 +535,7 @@
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEM_ASSIGNMENTViewModel.cs" />
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODECollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\USER\USER_PROGRESS_ITEMCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\WORKPACK_ASSIGNMENT\WORKPACKSchedulingViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROGRESS_ITEM\User_OffisteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml.cs">
       <DependentUpon>STOCK_CODECollectionView.xaml</DependentUpon>
     </Compile>
@@ -1147,7 +1144,6 @@
     <Compile Include="ViewModels\DISCIPLINE\DISCIPLINECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\DOCTYPE\DOCTYPECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PHASE\PHASECollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\PROGRESS_ITEM\PROGRESS_ITEMSCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS\PROGRESSCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\WORKPACK\WORKPACKDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTDashboardViewModelWrapper.cs" />
@@ -1180,8 +1176,8 @@
     <Compile Include="Views\COMMODITY_CODE\COMMODITY_CODECollectionView.xaml.cs">
       <DependentUpon>COMMODITY_CODECollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\USER\USER_PROGRESS_ITEMCollectionView.xaml.cs">
-      <DependentUpon>USER_PROGRESS_ITEMCollectionView.xaml</DependentUpon>
+    <Compile Include="Views\PROGRESS_ITEM\User_OffisteDirectProgressCollectionView.xaml.cs">
+      <DependentUpon>User_OffisteDirectProgressCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\USER\USERDashboardView.xaml.cs">
       <DependentUpon>USERDashboardView.xaml</DependentUpon>
@@ -1191,15 +1187,6 @@
     </Compile>
     <Compile Include="Views\WORKPACK_ASSIGNMENT\P6ACTIVITYAssignmentView.xaml.cs">
       <DependentUpon>P6ACTIVITYAssignmentView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\WORKPACK_ASSIGNMENT\WORKPACKSchedulingViewHost.xaml.cs">
-      <DependentUpon>WORKPACKSchedulingViewHost.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\WORKPACK_ASSIGNMENT\WORKPACKSchedulingView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Views\WORKPACK_ASSIGNMENT\WORKPACKSchedulingView.Designer.cs">
-      <DependentUpon>WORKPACKSchedulingView.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\BASELINE\BASELINECollectionView.xaml.cs">
       <DependentUpon>BASELINECollectionView.xaml</DependentUpon>
@@ -1402,7 +1389,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\USER\USER_PROGRESS_ITEMCollectionView.xaml">
+    <Page Include="Views\PROGRESS_ITEM\User_OffisteDirectProgressCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1417,10 +1404,6 @@
     <Page Include="Views\WORKPACK_ASSIGNMENT\P6ACTIVITYAssignmentView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\WORKPACK_ASSIGNMENT\WORKPACKSchedulingViewHost.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\BASELINE\BASELINECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -1561,9 +1544,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.resx">
       <DependentUpon>BASELINE_ITEMSchedulingView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\WORKPACK_ASSIGNMENT\WORKPACKSchedulingView.resx">
-      <DependentUpon>WORKPACKSchedulingView.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="App.Debug.config">
       <DependentUpon>App.config</DependentUpon>

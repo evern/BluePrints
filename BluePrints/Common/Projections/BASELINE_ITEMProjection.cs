@@ -100,7 +100,7 @@ namespace BluePrints.Common.Projections
 
     public static class BASELINE_ITEMProjectionQueries
     {
-        public static IQueryable<BASELINE_ITEMProjection> BASELINE_ITEMProjectionQuery(
+        public static IQueryable<BASELINE_ITEMProjection> IDeliverable_Rates_Transformation(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS, 
             IEnumerable<RATE> RATES)
         {

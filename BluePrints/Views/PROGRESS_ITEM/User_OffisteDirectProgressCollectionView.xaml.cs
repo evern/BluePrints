@@ -2,9 +2,9 @@
 
 namespace BluePrints.Views
 {
-    public partial class USER_PROGRESS_ITEMCollectionView : ViewStateRestoreUserControl
+    public partial class User_OffisteDirectProgressCollectionView : ViewStateRestoreUserControl
     {
-        public USER_PROGRESS_ITEMCollectionView()
+        public User_OffisteDirectProgressCollectionView()
         {
             InitializeComponent();
             InitializeViewControl(GridControl, tableView);

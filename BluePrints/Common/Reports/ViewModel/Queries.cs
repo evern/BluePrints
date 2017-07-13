@@ -8,8 +8,39 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public static class ProgressItemQueries
+    public static class ProgressQueries
     {
+        public static IQueryable<BASELINE_ITEMProgress> User_OffsiteDirectProgressItemTransformation(IQueryable<BASELINE_ITEM> query, USER user, bool buildStats = true)
+        {
+            IQueryable<BASELINE_ITEM> user_baseline_item = query.Where(x => x.GUID_USER == user.GUID && x.BASELINE.STATUS == BaselineStatus.Live && x.BASELINE.PROJECT.STATUS == ProjectStatus.Active);
+            List<BASELINE_ITEMProgress> user_baseline_item_progresses = new List<BASELINE_ITEMProgress>();
+
+            var user_baseline_item_by_projects = user_baseline_item.GroupBy(x => x.BASELINE.PROJECT).Select(group => new { Project = group.Key, Deliverables = group.ToList() });
+            foreach (var user_baseline_item_by_project in user_baseline_item_by_projects)
+            {
+                PROJECT project = user_baseline_item_by_project.Project;
+
+                PROGRESS live_progress = project.PROGRESS.FirstOrDefault(x => x.STATUS == ProgressStatus.Live);
+                if (live_progress == null)
+                    continue;
+
+                BASELINE live_baseline = project.BASELINE.FirstOrDefault(x => x.STATUS == BaselineStatus.Live);
+                IEnumerable<BASELINE_ITEM> user_project_baseline_item = user_baseline_item_by_project.Deliverables;
+                IEnumerable<WORKPACK> workpacks = project.WORKPACK;
+                IEnumerable<VARIATION> approved_variations = project.VARIATION.Where(x => x.APPROVED != null);
+                IEnumerable<PROGRESS_ITEM> progresses = live_progress.PROGRESS_ITEM;
+                IEnumerable<RATE> rates = project.RATE;
+
+                List<BASELINE_ITEMProgress> user_project_baseline_item_progress = OffsiteDirectProgressItemTransformation(user_project_baseline_item.AsQueryable(), project, live_progress, rates, progresses, approved_variations).ToList();
+                if (buildStats)
+                    user_project_baseline_item_progress.ForEach(x => x.BuildStats());
+
+                user_baseline_item_progresses.AddRange(user_project_baseline_item_progress);
+            }
+
+            return user_baseline_item_progresses.AsQueryable();
+        }
+
         public static IQueryable<BASELINE_ITEMProgress> OffsiteDirectProgressItemTransformation(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS,
             PROJECT PROJECT,
@@ -23,7 +54,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (PROGRESS == null)
                 baseline_item_projection = new List<BASELINE_ITEMProjection>().AsQueryable();
             else
-                baseline_item_projection = BASELINE_ITEMProjectionQueries.BASELINE_ITEMProjectionQuery(BASELINE_ITEMS, RATES);
+                baseline_item_projection = BASELINE_ITEMProjectionQueries.IDeliverable_Rates_Transformation(BASELINE_ITEMS, RATES);
 
             List<VariationAdjustment> projectVariationAdjustments;
             //VARIATIONS are only necessary if front-end requires percentages
@@ -38,11 +69,11 @@ namespace BluePrints.Common.ViewModel.Reporting
                 Live_PROGRESS = PROGRESS
             }).ToList();
 
-            dynamic PROGRESS_ITEMSByOriginalGuid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
+            dynamic progress_item_by_originalguid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
 
             foreach (BASELINE_ITEMProgress baseline_item_progress in baseline_item_progresses)
             {
-                SetReportablePROGRESS_ITEM(baseline_item_progress, PROGRESS_ITEMSByOriginalGuid);
+                SetReportablePROGRESS_ITEM(baseline_item_progress, progress_item_by_originalguid);
                 if (buildBudgetedOnly != null)
                 {
                     if((bool)buildBudgetedOnly)
@@ -56,54 +87,54 @@ namespace BluePrints.Common.ViewModel.Reporting
             return baseline_item_progresses.AsQueryable();
         }
 
-        public static IQueryable<ProgressDisplay> SiteDirectProgressItemTransformation(
-            IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<COMMODITY_CODE> projectCOMMODITY_CODES, IEnumerable<STOCK_CODE> projectSTOCK_CODES, IEnumerable<RATE> projectRATES)
+        public static IQueryable<ReportablesDisplay> SiteDirectProgressItemTransformation(
+            IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<COMMODITY_CODE> COMMODITY_CODES, IEnumerable<STOCK_CODE> projectSTOCK_CODES, IEnumerable<RATE> projectRATES)
         {
             IEnumerable<PROGRESS_ITEM> arrPROGRESS_ITEMS = PROGRESS_ITEMS.ToArray();
-            List<ProgressDisplay> progressItems = new List<ProgressDisplay>();
+            List<ReportablesDisplay> display_items = new List<ReportablesDisplay>();
             var PROGRESS_ITEMSByOriginalGuid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
 
-            IEnumerable<ESTIMATION_DIRECT_ITEMProjection> ESTIMATION_DIRECT_ITEMProjection =
-                ESTIMATION_DIRECT_ITEMProjectionQueries.ESTIMATION_DIRECT_ITEMProjectionQuery(ESTIMATION_DIRECT_ITEMS,
+            IEnumerable<ESTIMATION_DIRECT_ITEMProjection> estimation_direct_item_rates =
+                ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Rates_Transformation(ESTIMATION_DIRECT_ITEMS,
                                                                                                 projectRATES,
                                                                                                 projectSTOCK_CODES,
-                                                                                                projectCOMMODITY_CODES).AsEnumerable();
+                                                                                                COMMODITY_CODES).AsEnumerable();
 
-            List<ESTIMATION_DIRECT_ITEMProgress> estimationDirectItemProgress = new List<ESTIMATION_DIRECT_ITEMProgress>();
-            foreach (ESTIMATION_DIRECT_ITEMProjection ESTIMATION_DIRECT_ITEM in ESTIMATION_DIRECT_ITEMProjection)
+            List<ESTIMATION_DIRECT_ITEMProgress> estimation_direct_item_progresses = new List<ESTIMATION_DIRECT_ITEMProgress>();
+            foreach (ESTIMATION_DIRECT_ITEMProjection estimation_direct_item_rate in estimation_direct_item_rates)
             {
                 ESTIMATION_DIRECT_ITEMProgress newEstimation_Direct_itemProgress = new ESTIMATION_DIRECT_ITEMProgress();
                 newEstimation_Direct_itemProgress.Live_PROGRESS = PROGRESS;
-                newEstimation_Direct_itemProgress.Entity = ESTIMATION_DIRECT_ITEM;
+                newEstimation_Direct_itemProgress.Entity = estimation_direct_item_rate;
                 newEstimation_Direct_itemProgress.SetReportingDataDate(PROGRESS.DATA_DATE);
                 SetReportablePROGRESS_ITEM(newEstimation_Direct_itemProgress, PROGRESS_ITEMSByOriginalGuid);
-                estimationDirectItemProgress.Add(newEstimation_Direct_itemProgress);
+                estimation_direct_item_progresses.Add(newEstimation_Direct_itemProgress);
             }
 
-            var estimationDirectProgressByCommodityCode = estimationDirectItemProgress.Where(x => !x.Entity.Entity.STANDALONE)
+            var estimation_direct_progress_by_commoditycodeguid = estimation_direct_item_progresses.Where(x => !x.Entity.Entity.STANDALONE)
                 .GroupBy(x => x.Entity.Entity.GUID_COMMODITY_CODE).Select(group => new { CommodityCodeGuid = group.Key, Estimation_Direct_ItemProgress = group.ToList() });
 
-            foreach (COMMODITY_CODE COMMODITY_CODE in projectCOMMODITY_CODES)
+            foreach (COMMODITY_CODE COMMODITY_CODE in COMMODITY_CODES)
             {
                 COMMODITY_CODEProgress newCommodity_CodeProgress = new COMMODITY_CODEProgress();
                 newCommodity_CodeProgress.Entity.Entity = COMMODITY_CODE;
                 newCommodity_CodeProgress.Live_PROGRESS = PROGRESS;
 
-                var currentCommodity_CodeProgresses = estimationDirectProgressByCommodityCode.FirstOrDefault(x => x.CommodityCodeGuid == COMMODITY_CODE.GUID);
+                var currentCommodity_CodeProgresses = estimation_direct_progress_by_commoditycodeguid.FirstOrDefault(x => x.CommodityCodeGuid == COMMODITY_CODE.GUID);
                 if (currentCommodity_CodeProgresses != null)
                 {
                     newCommodity_CodeProgress.Reportables = currentCommodity_CodeProgresses.Estimation_Direct_ItemProgress;
                     newCommodity_CodeProgress.Entity.Deliverables = currentCommodity_CodeProgresses.Estimation_Direct_ItemProgress.Select(x => x.Entity);
                     newCommodity_CodeProgress.SetReportingDataDate(PROGRESS.DATA_DATE);
-                    ProgressDisplay newProgressDisplay = new ProgressDisplay();
+                    ReportablesDisplay newProgressDisplay = new ReportablesDisplay();
                     newProgressDisplay.ProgressItem = new DisplayQuantityReportableGroup(newCommodity_CodeProgress);
-                    progressItems.Add(newProgressDisplay);
+                    display_items.Add(newProgressDisplay);
                 }
             }
 
-            progressItems.AddRange(estimationDirectItemProgress.Where(x => x.Entity.Entity.STANDALONE).Select(x => new ProgressDisplay() { ProgressItem = new DisplayQuantityReportable(x) }));
+            display_items.AddRange(estimation_direct_item_progresses.Where(x => x.Entity.Entity.STANDALONE).Select(x => new ReportablesDisplay() { ProgressItem = new DisplayQuantityReportable(x) }));
 
-            return progressItems.AsQueryable();
+            return display_items.AsQueryable();
         }
 
         private static void SetReportablePROGRESS_ITEM(IReportable reportable, IEnumerable<dynamic> PROGRESS_ITEMSByOriginalGuid)

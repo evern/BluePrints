@@ -135,7 +135,7 @@ namespace BluePrints.Common.Projections
             if (PROGRESS == null || VARIATION == null)
                 Baseline_ItemProgresses = new List<BASELINE_ITEMProgress>().AsQueryable();
             else
-                Baseline_ItemProgresses = ProgressItemQueries.OffsiteDirectProgressItemTransformation(contextBASELINE_ITEMS, PROJECT, PROGRESS, RATES, PROGRESS_ITEMS);
+                Baseline_ItemProgresses = ProgressQueries.OffsiteDirectProgressItemTransformation(contextBASELINE_ITEMS, PROJECT, PROGRESS, RATES, PROGRESS_ITEMS);
 
             return
                 Baseline_ItemProgresses.OrderBy(x => x.Entity.Entity.CREATED).ToArray()

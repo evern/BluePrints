@@ -114,7 +114,7 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPROGRESS_ITEM"
+                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlOffsiteDirectProgress"
                                      Style="{StaticResource DefaultGridControlTemplate}" >
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public class ProgressDisplay : BindableBase, IGuidEntityKey
+    public class ReportablesDisplay : BindableBase, IGuidEntityKey
     {
         public Guid GUID { get => ProgressItem.EntityKey; set => ProgressItem.EntityKey = value; }
         public Guid EntityKey { get => ProgressItem.EntityKey; set => ProgressItem.EntityKey = value; }

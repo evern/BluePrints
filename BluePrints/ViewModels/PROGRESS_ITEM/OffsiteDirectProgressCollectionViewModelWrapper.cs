@@ -47,7 +47,7 @@ namespace BluePrints.ViewModels
         }
 
         //ensure mainviewmodel is loaded before calling background worker
-        private DispatcherTimer onMainViewModelFirstLoadedTimer;
+        protected DispatcherTimer onMainViewModelFirstLoadedTimer;
         //calculates the planned values only for each deliverables
         BackgroundWorker calculatePlannedBackgroundWorker;
         public OffsiteDirectProgressCollectionViewModelWrapper()
@@ -208,7 +208,7 @@ namespace BluePrints.ViewModels
 
             foreach (var deliverableWithStatus in deliverablesWithStatuses)
             {
-                DELIVERABLES_STATUS deliverableStatus = deliverableWithStatus.Entity.Entity.DELIVERABLES_STATUS;
+                DELIVERABLES_STATUS deliverableStatus = deliverableWithStatus.Entity.Deliverable_Status;
 
                 //when this is null it means the deliverable status is no longer valid (e.g. deleted)
                 if (deliverableStatus == null)
@@ -245,7 +245,7 @@ namespace BluePrints.ViewModels
 
                 if (deliverableWithStatus.Total_Earned_Percentage > deliverableStatus.MAX_PERCENTAGE)
                 {
-                    decimal totalDeliverableUnits = deliverableWithStatus.Entity.Entity.TOTAL_HOURS;
+                    decimal totalDeliverableUnits = deliverableWithStatus.Total_Units;
                     decimal maxAllowableEarnedUnit = totalDeliverableUnits * deliverableStatus.MAX_PERCENTAGE;
                     if (maxAllowableEarnedUnit > 0)
                     {
@@ -278,7 +278,7 @@ namespace BluePrints.ViewModels
         {
             return
                 query =>
-                    ProgressItemQueries.OffsiteDirectProgressItemTransformation(
+                    ProgressQueries.OffsiteDirectProgressItemTransformation(
                         query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection);
         }
 
@@ -338,7 +338,7 @@ namespace BluePrints.ViewModels
         }
 
         ProjectSummaryStats projectSummary;
-        private void onMainViewModelFirstLoaded(object sender, EventArgs e)
+        protected virtual void onMainViewModelFirstLoaded(object sender, EventArgs e)
         {
             onMainViewModelFirstLoadedTimer.Stop();
             InitializeSummarizer();
@@ -851,12 +851,12 @@ namespace BluePrints.ViewModels
                     if (((GridSummaryItem)e.Item).FieldName == "TOTAL_EARNED_PERCENTAGE")
                     {
                         var budgetedUnits =
-                            ((PROGRESS_ITEMProjection)e.Row).Entity.Entity.TOTAL_HOURS;
+                            ((BASELINE_ITEMProgress)e.Row).Total_Units;
                         var previousUnits =
-                            ((PROGRESS_ITEMProjection)e.Row).PROGRESS_ITEM_BeforeDataDate.Sum(x => x.EARNED_UNITS);
-                        var currentUnits = ((PROGRESS_ITEMProjection)e.Row).PROGRESS_ITEM_Current == null
+                            ((BASELINE_ITEMProgress)e.Row).PROGRESS_ITEM_BeforeDataDate.Sum(x => x.EARNED_UNITS);
+                        var currentUnits = ((BASELINE_ITEMProgress)e.Row).PROGRESS_ITEM_Current == null
                             ? 0
-                            : ((PROGRESS_ITEMProjection)e.Row).PROGRESS_ITEM_Current.EARNED_UNITS;
+                            : ((BASELINE_ITEMProgress)e.Row).PROGRESS_ITEM_Current.EARNED_UNITS;
 
                         cumulativePrincipalUnits += budgetedUnits;
                         cumulativeCurrentUnits += currentUnits + previousUnits;
@@ -866,10 +866,10 @@ namespace BluePrints.ViewModels
                     else if (((GridSummaryItem)e.Item).FieldName == "PERIOD_EARNED_PERCENTAGE")
                     {
                         var totalUnits =
-                            ((PROGRESS_ITEMProjection)e.Row).Entity.Entity.TOTAL_HOURS;
-                        var currentUnits = ((PROGRESS_ITEMProjection)e.Row).PROGRESS_ITEM_Current == null
+                            ((BASELINE_ITEMProgress)e.Row).Total_Units;
+                        var currentUnits = ((BASELINE_ITEMProgress)e.Row).PROGRESS_ITEM_Current == null
                             ? 0
-                            : ((PROGRESS_ITEMProjection)e.Row).PROGRESS_ITEM_Current.EARNED_UNITS;
+                            : ((BASELINE_ITEMProgress)e.Row).PROGRESS_ITEM_Current.EARNED_UNITS;
 
                         cumulativePrincipalUnits += totalUnits;
                         cumulativeCurrentUnits += currentUnits;

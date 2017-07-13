@@ -216,7 +216,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ESTIMATION_DIRECT_ITEMProjection>>
             ConstructMainViewModelProjection()
         {
-            return query => ESTIMATION_DIRECT_ITEMProjectionQueries.ESTIMATION_DIRECT_ITEMProjectionQuery(query, loaderCollection.GetCollection<RATE>(), STOCK_CODECollection, loaderCollection.GetCollection<COMMODITY_CODE>());
+            return query => ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Rates_Transformation(query, loaderCollection.GetCollection<RATE>(), STOCK_CODECollection, loaderCollection.GetCollection<COMMODITY_CODE>());
         }
 
         //Used by baseline_item scheduling view model to fix assignment

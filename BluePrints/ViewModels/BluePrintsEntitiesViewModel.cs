@@ -215,7 +215,7 @@ namespace BluePrints.ViewModels
                 bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_Dashboard", null, "Dashboard", "PROJECTDashboardView"));
 
             bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_UserDashboard", null, "My Dashboard", "USERDashboardView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser)));
-            bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_UserDeliverables", null, "My Deliverables", "USER_PROGRESS_ITEMCollectionView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser)));
+            bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_UserDeliverables", null, "My Deliverables", "User_OffisteDirectProgressCollectionView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser)));
 
             return bluePrintsEntitiesModuleDescriptions.ToArray();
         }

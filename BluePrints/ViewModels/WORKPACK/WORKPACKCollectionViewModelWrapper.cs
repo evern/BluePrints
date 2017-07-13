@@ -150,7 +150,7 @@ namespace BluePrints.ViewModels
             var RATES = loaderCollection.GetCollection<RATE>();
             var DELIVERABLE_STATUSES = loaderCollection.GetCollection<DELIVERABLES_STATUS>();
 
-            return query => WORKPACKProjectionQueries.JoinPROGRESSProjectionOnWORKPACKS(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID), BASELINE_ITEMS, PROGRESS, BASELINE, PROGRESS_ITEMS, RATES);
+            return query => WORKPACKProjectionQueries.IDeliverable_Rates_Group_Transformation(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID), BASELINE_ITEMS, PROGRESS, BASELINE, PROGRESS_ITEMS, RATES);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<WORKPACKProjection> entities)
