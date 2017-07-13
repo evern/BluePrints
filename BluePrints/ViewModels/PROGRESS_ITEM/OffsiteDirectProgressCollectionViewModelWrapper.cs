@@ -203,54 +203,44 @@ namespace BluePrints.ViewModels
                          BluePrintsResources.Warning_Caption, MessageButton.YesNo) == MessageResult.No)
                 return;
 
-            IEnumerable<BASELINE_ITEMProgress> deliverablesWithStatuses = MainViewModel.Entities.Where(x => x.Entity.Entity.GUID_STATUS != null);
+            IEnumerable<BASELINE_ITEMProgress> deliverables = MainViewModel.Entities.Where(x => x.Entity.Entity.GUID_STATUS != null);
             List<PROGRESS_ITEM> updateProgress = new List<PROGRESS_ITEM>();
 
-            foreach (var deliverableWithStatus in deliverablesWithStatuses)
+            foreach (var deliverable in deliverables)
             {
-                DELIVERABLES_STATUS deliverableStatus = deliverableWithStatus.Entity.Deliverable_Status;
+                DELIVERABLES_STATUS deliverableStatus = deliverable.Entity.Deliverable_Status;
 
                 //when this is null it means the deliverable status is no longer valid (e.g. deleted)
                 if (deliverableStatus == null)
                     continue;
 
                 //user are able to fill up/down on statuses that might result in assigned status isn't valid to doctype, so check if status is valid before continuing
-                bool isValidStatus = deliverableWithStatus.Entity.Entity.DOCTYPE.DELIVERABLES_STATUS.Any(x => x.GUID == deliverableStatus.GUID);
+                bool isValidStatus = deliverable.Entity.Entity.DOCTYPE.DELIVERABLES_STATUS.Any(x => x.GUID == deliverableStatus.GUID);
                 if (!isValidStatus)
                     continue;
 
                 decimal? autoPercentage = deliverableStatus.AUTO_PERCENTAGE;
                 if (autoPercentage != null)
                 {
-                    if (deliverableWithStatus.Total_Earned_Percentage < autoPercentage)
+                    if (deliverable.Total_Earned_Percentage < autoPercentage)
                     {
-                        decimal oldPercentage = deliverableWithStatus.Total_Earned_Percentage;
+                        decimal oldPercentage = deliverable.Total_Earned_Percentage;
                         decimal newPercentage = (decimal)autoPercentage;
 
-                        deliverableWithStatus.Total_Earned_Percentage = newPercentage;
-                        PROGRESS_ITEM updateProgressItem = deliverableWithStatus.PROGRESS_ITEM_Current;
-                        if (updateProgressItem.GUID == Guid.Empty)
-                        {
-                            updateProgressItem.EARNED_DATE = loadPROGRESS.DATA_DATE;
-                            updateProgressItem.GUID_PROGRESS = loadPROGRESS.GUID;
-                            updateProgressItem.GUID_ORIBASEITEM = deliverableWithStatus.Entity.Entity.GUID_ORIGINAL;
-                            //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
-                            if (updateProgressItem.CREATED.Date.Year == 1)
-                                updateProgressItem.CREATED = DateTime.Now;
-                        }
-
-                        updateProgress.Add(deliverableWithStatus.PROGRESS_ITEM_Current);
+                        deliverable.Total_Earned_Percentage = newPercentage;
+                        IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = deliverable.GetExistingOrNewEditedProgresses();
+                        updateProgress.AddRange(newPRORESS_ITEMS);
                     }
                 }
 
-                if (deliverableWithStatus.Total_Earned_Percentage > deliverableStatus.MAX_PERCENTAGE)
+                if (deliverable.Total_Earned_Percentage > deliverableStatus.MAX_PERCENTAGE)
                 {
-                    decimal totalDeliverableUnits = deliverableWithStatus.Total_Units;
+                    decimal totalDeliverableUnits = deliverable.Total_Units;
                     decimal maxAllowableEarnedUnit = totalDeliverableUnits * deliverableStatus.MAX_PERCENTAGE;
                     if (maxAllowableEarnedUnit > 0)
                     {
                         decimal iterateEarnedUnits = 0;
-                        List<PROGRESS_ITEM> progressesByDate = deliverableWithStatus.PROGRESS_ITEMS.OrderBy(x => x.EARNED_DATE).ToList();
+                        List<PROGRESS_ITEM> progressesByDate = deliverable.PROGRESS_ITEMS.OrderBy(x => x.EARNED_DATE).ToList();
                         foreach (PROGRESS_ITEM progressByDate in progressesByDate)
                         {
                             decimal postProgressEarnedUnit = (iterateEarnedUnits + progressByDate.EARNED_UNITS);
@@ -276,9 +266,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             ConstructMainViewModelProjection()
         {
-            return
-                query =>
-                    ProgressQueries.OffsiteDirectProgressItemTransformation(
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(
                         query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection);
         }
 
@@ -329,6 +317,7 @@ namespace BluePrints.ViewModels
             MainViewModel.OnAfterEntitySavedCallBack = OnAfterEntitySavedCallBack;
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             MainViewModel.OnMappingAdditionalChangedEntitiesProperties = OnMappingAdditionalChangedEntitiesProperties;
+            MainViewModel.OnBeforeAssignRepositoryToExistingProjection = OnBeforeAssignRepositoryToExistingProjection;
             PROGRESS_ITEMSCollectionViewModel.SetParentViewModel(this);
             MainViewModel.SetParentViewModel(this);
             //mainThreadDispatcher.BeginInvoke(new Action(() => InitializeSummarizer(entities)));
@@ -343,6 +332,11 @@ namespace BluePrints.ViewModels
             onMainViewModelFirstLoadedTimer.Stop();
             InitializeSummarizer();
             calculatePlannedBackgroundWorker.RunWorkerAsync();
+        }
+
+        private void OnBeforeAssignRepositoryToExistingProjection(BASELINE_ITEMProgress existingProjection, BASELINE_ITEMProgress repositoryProjection)
+        {
+            repositoryProjection.Stats = existingProjection.Stats;
         }
 
         protected virtual void InitializeSummarizer()
@@ -397,8 +391,11 @@ namespace BluePrints.ViewModels
         /// <param name="isNewEntity"></param>
         protected void OnAfterEntitySavedCallBack(BASELINE_ITEMProgress projectionEntity, bool isNewEntity)
         {
-            IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projectionEntity.GetExistingOrNewEditedProgresses();
-            PROGRESS_ITEMSCollectionViewModel.Save(newPRORESS_ITEMS.First());
+            if(projectionEntity.ShouldSaveProgress)
+            {
+                IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projectionEntity.GetExistingOrNewEditedProgresses();
+                PROGRESS_ITEMSCollectionViewModel.Save(newPRORESS_ITEMS.First());
+            }
         }
 
         public bool ValidateFillDownCallBack(BASELINE_ITEMProgress fillDownEntity, string fieldName, object fillValue)

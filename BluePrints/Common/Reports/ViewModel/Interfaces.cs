@@ -87,6 +87,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal SchedulePercentage { get; }
         decimal MinPercentage { get; }
         decimal MaxPercentage { get; }
+        bool ShouldSaveProgress { get; }
         void SetReportingDataDate(DateTime dataDate);
         void SetProgressItems(List<PROGRESS_ITEM> progresses);
         void AppendProgressItem(PROGRESS_ITEM currentProgress);

@@ -361,8 +361,12 @@ namespace BluePrints.ViewModels
         /// </summary>
         public bool OnBeforeEntitySaved(ReportablesDisplay entity)
         {
-            IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = entity.ProgressItem.GetExistingOrNewEditedProgresses();
-            PROGRESS_ITEMSCollectionViewModel.BulkSave(newPRORESS_ITEMS);
+            if(entity.ProgressItem.ShouldSaveProgress)
+            {
+                IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = entity.ProgressItem.GetExistingOrNewEditedProgresses();
+                PROGRESS_ITEMSCollectionViewModel.BulkSave(newPRORESS_ITEMS);
+            }
+
             return false;
         }
 

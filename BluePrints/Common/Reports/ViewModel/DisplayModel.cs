@@ -182,6 +182,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal MaxCurrentQuantity => reportable.MaxCurrentQuantity;
 
+        public bool ShouldSaveProgress => reportable.ShouldSaveProgress;
+
         public void SetReportingDataDate(DateTime dataDate)
         {
             reportable.SetReportingDataDate(dataDate);

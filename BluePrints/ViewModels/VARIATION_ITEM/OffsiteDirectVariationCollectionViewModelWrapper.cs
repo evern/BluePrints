@@ -208,7 +208,6 @@ namespace BluePrints.ViewModels
             MainViewModel.OnBeforeBulkEditSaveCallBack = OnBeforeBulkEditSaveCallBack;
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = ApplyEntityPropertiesToProjectionCallBack;
             MainViewModel.OnBeforeEntityDeleteCallBack = EntityBeforeDeletionCallBack;
-            MainViewModel.CreateNewProjectionFromNewEntityCallBack = CreateNewProjectionFromNewEntity;
             MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
             MainViewModel.SetParentViewModel(this);
 
@@ -224,11 +223,14 @@ namespace BluePrints.ViewModels
 
             if (changedType == typeof(VARIATION_ITEM))
             {
-                BASELINE_ITEMVariation mainEntity = MainViewModel.Entities.Where(x => x.VARIATION_ITEM != null).FirstOrDefault(x => x.VARIATION_ITEM.GUID.ToString() == key.ToString());
-                if (mainEntity != null)
+                BASELINE_ITEMVariation affectedEntity = MainViewModel.Entities.Where(x => x.VARIATION_ITEM != null).FirstOrDefault(x => x.VARIATION_ITEM.GUID == (Guid)key);
+                if (affectedEntity != null)
                 {
-                    //got to make sure sender is not MainViewModel or else it'll not be refreshed
-                    mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(mainEntity.EntityKey, EntityMessageType.Changed, this))));
+                    VARIATION_ITEM changed_variation_item = VARIATION_ITEMCollection.FirstOrDefault(x => x.GUID == (Guid)key);
+                    if (changed_variation_item != null)
+                        affectedEntity.VARIATION_ITEM = changed_variation_item;
+                    ////got to make sure sender is not MainViewModel or else it'll not be refreshed
+                    //mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(affectedEntity.EntityKey, EntityMessageType.Changed, this))));
                     return true;
                 }
             }
@@ -237,13 +239,6 @@ namespace BluePrints.ViewModels
         }
 
         #region CallBacks
-        public BASELINE_ITEMVariation CreateNewProjectionFromNewEntity()
-        {
-            var newVARIATION_ITEM = new BASELINE_ITEMVariation();
-            newVARIATION_ITEM.VARIATION_ITEM.ACTION = VariationAction.Add;
-            return newVARIATION_ITEM;
-        }
-
         public bool CanFillDownCallBack(IEnumerable<BASELINE_ITEMVariation> selectedEntities, GridMenuInfo info)
         {
             if (loadVARIATION.SUBMITTED != null ||
@@ -928,21 +923,21 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private CollectionViewModel<VARIATION_ITEM, VARIATION_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>
-            variation_itemsCollectionViewModel;
+        public IEnumerable<VARIATION_ITEM> VARIATION_ITEMCollection
+        {
+            get
+            {
+                return GetEntities<VARIATION_ITEM>();
+            }
+        }
 
         private CollectionViewModel<VARIATION_ITEM, VARIATION_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>
             VARIATION_ITEMSCollectionViewModel
         {
             get
             {
-                if (variation_itemsCollectionViewModel == null)
-                    if (MainViewModel != null)
-                        variation_itemsCollectionViewModel =
-                            (CollectionViewModel<VARIATION_ITEM, VARIATION_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>)
-                            loaderCollection.GetViewModel<VARIATION_ITEM>();
-
-                return variation_itemsCollectionViewModel;
+                return (CollectionViewModel<VARIATION_ITEM, VARIATION_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>)
+                        loaderCollection.GetViewModel<VARIATION_ITEM>();
             }
         }
         #endregion

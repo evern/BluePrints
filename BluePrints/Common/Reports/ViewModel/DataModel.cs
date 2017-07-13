@@ -157,12 +157,14 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        protected decimal? currentPeriodInstalledQuantity { get; set; }
+        protected decimal? set_current_period_quantity { get; set; }
         public virtual decimal CurrentPeriodInstalledQuantity
         {
             get => Earned_Units_OnDataDate * QuantityPerHour;
-            set => currentPeriodInstalledQuantity = value;
+            set => set_current_period_quantity = value;
         }
+
+        public override bool ShouldSaveProgress => set_current_period_quantity != null;
 
         public decimal PastInstalledQuantity
         {
@@ -207,7 +209,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (Total_Quantity == 0)
                 return 0;
 
-            return currentPeriodInstalledQuantity == null ? 0 : (decimal)currentPeriodInstalledQuantity / Total_Quantity;
+            return set_current_period_quantity == null ? 0 : (decimal)set_current_period_quantity / Total_Quantity;
         }
 
         public override decimal getCurrentPeriodEarnedUnits(decimal newPercentage)
@@ -307,6 +309,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                 set_total_earned_percentage = value;
             }
         }
+
+        //because entity goes through repository.reload() process this will be null since it's not meddled in the query
+        public virtual bool ShouldSaveProgress => set_total_earned_percentage != null;
 
         public decimal SchedulePercentage
         {

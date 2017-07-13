@@ -207,7 +207,6 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
         {
-            MainViewModel.CreateNewProjectionFromNewEntityCallBack = CreateNewProjectionFromNewEntityCallBack;
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
             MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
             MainViewModel.PasteListener = this.PasteListener;
@@ -253,11 +252,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
-
-        public BASELINE_ITEMProgress CreateNewProjectionFromNewEntityCallBack()
-        {
-            return new BASELINE_ITEMProgress();
-        }
 
         private void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
         {

@@ -155,18 +155,12 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<WORKPACKProjection> entities)
         {
-            MainViewModel.CreateNewProjectionFromNewEntityCallBack = CreateNewProjectionFromNewEntityCallBack;
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitySavedCallBack;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         #region Collection Call Backs
-        public WORKPACKProjection CreateNewProjectionFromNewEntityCallBack()
-        {
-            return new WORKPACKProjection();
-        }
-
         protected override void OnBeforeApplyProjectionPropertiesToEntity(WORKPACKProjection projectionEntity, WORKPACK entity)
         {
             projectionEntity.Entity.GUID_PROJECT = loadPROJECT.GUID;

@@ -47,9 +47,10 @@ namespace BluePrints.Common.ViewModel.Reporting
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS = null, bool? buildBudgetedOnly = null)
+            IEnumerable<VARIATION> VARIATIONS = null, Func<bool> isBuildStatsFunc = null)
         {
             IQueryable<BASELINE_ITEMProjection> baseline_item_projection;
+
             //When live PROGRESS doesn't exists don't return anything
             if (PROGRESS == null)
                 baseline_item_projection = new List<BASELINE_ITEMProjection>().AsQueryable();
@@ -74,13 +75,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             foreach (BASELINE_ITEMProgress baseline_item_progress in baseline_item_progresses)
             {
                 SetReportablePROGRESS_ITEM(baseline_item_progress, progress_item_by_originalguid);
-                if (buildBudgetedOnly != null)
-                {
-                    if((bool)buildBudgetedOnly)
-                        baseline_item_progress.BuildBudgetedStats();
-                    else
-                        baseline_item_progress.BuildStats();
-                }
+                if (isBuildStatsFunc != null && isBuildStatsFunc())
+                    baseline_item_progress.BuildStats();
 
             }
 
