@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IDeliverable_Quantity
+    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IDeliverable_Quantity, ICanAssignP6
     {
         public ESTIMATION_DIRECT_ITEMProjection()
             : base()
@@ -95,7 +95,7 @@ namespace BluePrints.Common.Projections
 
         public RATE RATE { get; set; }
 
-        public string ReportableItem_Name => STOCK_CODE == null ? string.Empty : STOCK_CODE.CODE;
+        public string Deliverable_Name => STOCK_CODE == null ? string.Empty : STOCK_CODE.CODE;
 
         public string Commodity_Code => Entity.COMMODITY_CODE == null ? string.Empty : Entity.COMMODITY_CODE.CODE;
 
@@ -134,19 +134,19 @@ namespace BluePrints.Common.Projections
 
         public ICollection<P6_ASSIGNMENT> ObservableBASELINE_ITEM_ASSIGNMENT { get; set; }
 
-        private List<P6_ASSIGNMENT> p6assignments;
-        public List<P6_ASSIGNMENT> P6Assignments
+        private List<P6_ASSIGNMENT> p6_assignments;
+        public List<P6_ASSIGNMENT> P6_Assignments
         {
             get
             {
-                return p6assignments;
+                return p6_assignments;
             }
             set
             {
-                if (p6assignments == null)
-                    p6assignments = new List<P6_ASSIGNMENT>();
+                if (p6_assignments == null)
+                    p6_assignments = new List<P6_ASSIGNMENT>();
 
-                p6assignments = value;
+                p6_assignments = value;
             }
         }
 
@@ -154,15 +154,15 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                return 1 - AssignedPercentage;
+                return 1 - Assigned_Percentage;
             }
         }
 
-        public decimal AssignedPercentage
+        public decimal Assigned_Percentage
         {
             get
             {
-                return P6Assignments.Sum(x => (x.HIGH_VALUE - (x.LOW_VALUE - 0.01m)));
+                return p6_assignments.Sum(x => (x.HIGH_VALUE - (x.LOW_VALUE - 0.01m)));
             }
         }
 

@@ -89,7 +89,7 @@ namespace BluePrints.Data
             return SubAreaCollection.Any(x => x.GUID == subAreaGuid);
         }
 
-        public string ReportableItem_Name => STOCK_CODE == null ? string.Empty : STOCK_CODE.CODE;
+        public string Deliverable_Name => STOCK_CODE == null ? string.Empty : STOCK_CODE.CODE;
 
         public Guid? Workpack_Guid => GUID_WORKPACK;
 

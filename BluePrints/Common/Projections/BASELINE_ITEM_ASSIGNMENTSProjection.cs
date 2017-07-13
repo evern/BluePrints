@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    public class BASELINE_ITEM_ASSIGNMENTSProjection : BluePrintsProjectionBase<P6_ASSIGNMENT>
+    public class P6_ASSIGNMENTSProjection : BluePrintsProjectionBase<P6_ASSIGNMENT>
     {
-        public BASELINE_ITEM_ASSIGNMENTSProjection()
+        public P6_ASSIGNMENTSProjection()
             : base()
         {
 
         }
 
-        public string INTERNAL_NUM { get; set; }
-        public Guid GUID_ORIGINAL { get; set; }
+        public string Deliverable_Name { get; set; }
+        public Guid Deliverable_OriginalEntityKey { get; set; }
     }
 }

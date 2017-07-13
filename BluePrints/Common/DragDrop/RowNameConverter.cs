@@ -21,7 +21,7 @@ namespace BluePrints.Common
             {
                 var estimation_item = value as ESTIMATION_DIRECT_ITEMProjection;
 
-                return estimation_item.ReportableItem_Name;
+                return estimation_item.Deliverable_Name;
             }
 
             if (value is GanttData)
@@ -37,7 +37,7 @@ namespace BluePrints.Common
                 var estimation_direct_item = listTreeListNodes.FirstOrDefault() as ESTIMATION_DIRECT_ITEMProjection;
                 if (estimation_direct_item != null)
                 {
-                    return estimation_direct_item.ReportableItem_Name;
+                    return estimation_direct_item.Deliverable_Name;
                 }
             }
             else

@@ -109,7 +109,7 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="ProgressItem.Commodity_Code" Header="COMMODITY_CODE" ReadOnly="True" IsEnabled="False" />
-                            <dxg:GridColumn FieldName="ProgressItem.ReportableItem_Name" Header="STOCK_CODE" ReadOnly="True" IsEnabled="False" />
+                            <dxg:GridColumn FieldName="ProgressItem.Deliverable_Name" Header="STOCK_CODE" ReadOnly="True" IsEnabled="False" />
                             <dxg:GridColumn FieldName="ProgressItem.Total_Quantity" Header="TOTAL_QUANTITY" ReadOnly="True" IsEnabled="False" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
@@ -177,7 +177,7 @@
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="Commodity_Code" Header="COMMODITY_CODE" ReadOnly="True" IsEnabled="False" />
-                                        <dxg:GridColumn FieldName="ReportableItem_Name" Header="STOCK_CODE" ReadOnly="True" IsEnabled="False" />
+                                        <dxg:GridColumn FieldName="Deliverable_Name" Header="STOCK_CODE" ReadOnly="True" IsEnabled="False" />
                                         <dxg:GridColumn FieldName="Total_Quantity" Header="TOTAL_QUANTITY" ReadOnly="True" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />

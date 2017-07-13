@@ -26,15 +26,5 @@ namespace BluePrints.Views
         {
             InitializeComponent();
         }
-
-        private void TreeListDragDropManager_Dropped(object sender, DevExpress.Xpf.Grid.DragDrop.TreeListDroppedEventArgs e)
-        {
-            return;
-        }
-
-        private void TreeListDragDropManager_Drop(object sender, DevExpress.Xpf.Grid.DragDrop.TreeListDropEventArgs e)
-        {
-            e.Handled = true;
-        }
     }
 }

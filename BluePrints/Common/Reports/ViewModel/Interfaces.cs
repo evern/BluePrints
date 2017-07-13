@@ -51,7 +51,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     public interface IDeliverable : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCommodity_Code, IHaveHours
     {
         string Discipline_Code { get; }
-        string ReportableItem_Name { get; }
+        string Deliverable_Name { get; }
         Guid? Workpack_Guid { get; }
     }
 
@@ -70,6 +70,13 @@ namespace BluePrints.Common.ViewModel.Reporting
     #endregion
 
     #region Property Specification Interfaces
+    public interface ICanAssignP6 : IDeliverable
+    {
+        List<P6_ASSIGNMENT> P6_Assignments { get; set; }
+        decimal Assigned_Percentage { get; }
+        decimal Remaining_Percentage { get; }
+    }
+
     public interface ICanSetProgresses
     {
         decimal Earned_Units_Total { get; }

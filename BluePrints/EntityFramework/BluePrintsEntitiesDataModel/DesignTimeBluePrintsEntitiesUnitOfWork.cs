@@ -187,7 +187,7 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((WORKPACK_ASSIGNMENT x) => x.GUID); }
         }
 
-        IRepository<P6_ASSIGNMENT, Guid> IBluePrintsEntitiesUnitOfWork.BASELINE_ITEM_ASSIGNMENTS
+        IRepository<P6_ASSIGNMENT, Guid> IBluePrintsEntitiesUnitOfWork.P6_ASSIGNMENTS
         {
             get { return GetRepository((P6_ASSIGNMENT x) => x.GUID); }
         }

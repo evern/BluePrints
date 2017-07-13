@@ -245,7 +245,7 @@ namespace BluePrints.Views
                 var P6ActivityAssignedUnits =
                     BASELINE_ITEMProjections.Sum(
                         x =>
-                            x.BASELINE_ITEM_ASSIGNMENTS.Where(
+                            x.P6_ASSIGNMENTS.Where(
                                     obj2 => obj2.P6_ACTIVITYID == WBSTASKAppointmentInfo.Subject)
                                 .Sum(obj3 => ((obj3.HIGH_VALUE - obj3.LOW_VALUE) + 0.01m) * x.Total_Units));
                 WBSTASKAppointmentInfo.AssignedUnits = P6ActivityAssignedUnits;

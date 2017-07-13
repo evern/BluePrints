@@ -742,11 +742,11 @@ namespace BluePrints.ViewModels
                 decimal totalEarnedUnits = currentPROGRESS_ITEM.PROGRESS_ITEM_UpToCurrentDataDate.Sum(x => x.EARNED_UNITS);
 
                 decimal baseline_itemEarnedPercentage = totalEarnedUnits / baseline_item.Total_Units;
-                if (baseline_item.BASELINE_ITEM_ASSIGNMENTS.Count == 0)
+                if (baseline_item.P6_ASSIGNMENTS.Count == 0)
                     continue;
 
                 //only process applicable assignments
-                List<P6_ASSIGNMENT> baseline_itemAssignments = baseline_item.BASELINE_ITEM_ASSIGNMENTS.Where(assignment => assignment.LOW_VALUE <= baseline_itemEarnedPercentage).OrderBy(assignment => assignment.LOW_VALUE).ToList();
+                List<P6_ASSIGNMENT> baseline_itemAssignments = baseline_item.P6_ASSIGNMENTS.Where(assignment => assignment.LOW_VALUE <= baseline_itemEarnedPercentage).OrderBy(assignment => assignment.LOW_VALUE).ToList();
  
                 for (int i = 0; i < baseline_itemAssignments.Count; i++)
                 {

@@ -86,7 +86,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.reportable = deliverable;
         }
 
-        public string ReportableItem_Name => reportable.ReportableItem_Name;
+        public string Deliverable_Name => reportable.Deliverable_Name;
 
         public string Commodity_Code => reportable.Commodity_Code;
 

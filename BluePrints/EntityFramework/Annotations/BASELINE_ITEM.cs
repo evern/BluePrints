@@ -239,7 +239,7 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public string ReportableItem_Name
+        public string Deliverable_Name
         {
             get { return INTERNAL_NUM; }
         }

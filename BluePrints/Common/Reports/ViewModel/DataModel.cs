@@ -395,7 +395,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public string Discipline_Code => Entity.Discipline_Code;
 
-        public string ReportableItem_Name => Entity.ReportableItem_Name;
+        public string Deliverable_Name => Entity.Deliverable_Name;
 
         public Guid? Workpack_Guid => Entity.Workpack_Guid;
 

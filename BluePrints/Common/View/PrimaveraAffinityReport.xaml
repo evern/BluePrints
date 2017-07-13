@@ -15,7 +15,7 @@
                 <dxlc:LayoutItem Height="230" >
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPrimaveraAffinity" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="INTERNAL NUM" MinWidth="200" IsSmart="True" ReadOnly="True" FieldName="Deliverable.ReportableItem_Name" />
+                            <dxg:GridColumn Header="INTERNAL NUM" MinWidth="200" IsSmart="True" ReadOnly="True" FieldName="Deliverable.Deliverable_Name" />
                             <dxg:GridColumn Header="PLANNED FROM P6" IsSmart="True" ReadOnly="True" FieldName="Stats.Budgeted.FromP6" />
                             <!--<dxg:GridColumn Header="EARNED FROM P6" IsSmart="True" ReadOnly="True" FieldName="isEarnedDataPointsFromP6" />-->
                             <dxg:GridColumn Header="REMAINING FROM P6" IsSmart="True" ReadOnly="True" FieldName="Stats.Remaining.FromP6" />

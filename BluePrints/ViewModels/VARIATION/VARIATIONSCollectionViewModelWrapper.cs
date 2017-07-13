@@ -108,8 +108,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATIONProjection>> ConstructMainViewModelProjection()
         {
-            return query => VARIATIONProjectionQueries.JoinVARIATION_ITEMSOnVARIATIONS(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID)
-                .OrderBy(x => x.NAME));
+            return query => VARIATIONProjectionQueries.VariationProjection_Transformation(query, loadPROJECT);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATIONProjection> entities)

@@ -12,11 +12,13 @@ using BluePrints.Common.ViewModel;
 using BluePrints.Data;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
+using BluePrints.Views;
 using DevExpress.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Utils;
 using DevExpress.Xpf.Grid;
+using DevExpress.Xpf.Grid.DragDrop;
 using DevExpress.XtraGrid.Views.Grid.ViewInfo;
 using System;
 using System.Collections.Generic;
@@ -104,7 +106,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
 
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, x => loadPROGRESS = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEM_ASSIGNMENTS, BASELINE_ITEM_ASSIGNMENTProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.P6_ASSIGNMENTS, P6_ASSIGNMENTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECT_ITEMS, ESTIMATION_DIRECT_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJECT, P6PROJECTProjectionFunc, x => loadP6PROJECT = x);
@@ -163,14 +165,10 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == ProgressStatus.Live && x.TYPE == ProgressType.Construct);
         }
 
-        private Func<IRepositoryQuery<P6_ASSIGNMENT>, IQueryable<P6_ASSIGNMENT>>
-            BASELINE_ITEM_ASSIGNMENTProjectionFunc()
+        private Func<IRepositoryQuery<P6_ASSIGNMENT>, IQueryable<P6_ASSIGNMENT>> P6_ASSIGNMENTProjectionFunc()
         {
             return
-                query =>
-                    query.Where(
-                        x =>
-                            x.GUID_PROJECT == loadPROJECT.GUID);
+                query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ESTIMATION_DIRECT_ITEM>> ESTIMATION_DIRECT_ITEMProjectionFunc()
@@ -255,7 +253,12 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "PROJECTESTIMATION_DIRECT_ITEMSMappingViewModelWrapper"; }
+            get { return "ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper"; }
+        }
+
+        private IDialogService P6_Assignment_DialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("P6_Assignment_Dialog"); }
         }
 
         public IEnumerable<TASK> P6TASKCollection
@@ -399,6 +402,17 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> P6_AssignmentCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<P6_ASSIGNMENT>();
+            }
+        }
+
         public ICollectionViewModel<BluePrints.P6Data.TASK> P6TASKCollectionViewModel
         {
             get { return (ICollectionViewModel<BluePrints.P6Data.TASK>)loaderCollection.GetViewModel<TASK>(); }
@@ -464,7 +478,7 @@ namespace BluePrints.ViewModels
                 List<P6ActivityAssignment> missingActivities = new List<P6ActivityAssignment>();
                 foreach (ESTIMATION_DIRECT_ITEMProjection ESTIMATION_DIRECT_ITEM in MainViewModel.Entities)
                 {
-                    IEnumerable<P6_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = ESTIMATION_DIRECT_ITEM.P6Assignments;
+                    IEnumerable<P6_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = ESTIMATION_DIRECT_ITEM.P6_Assignments;
 
                     foreach (P6_ASSIGNMENT BASELINE_ITEM_ASSIGNMENT in projectBASELINE_ITEM_ASSIGNMENTS)
                     {
@@ -588,7 +602,7 @@ namespace BluePrints.ViewModels
                 validTASKS = P6PROJECT.TASK.ToArray().AsEnumerable();
                 foreach (ESTIMATION_DIRECT_ITEMProjection ESTIMATION_DIRECT_ITEM in MainViewModel.Entities)
                 {
-                    IEnumerable<P6_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = ESTIMATION_DIRECT_ITEM.P6Assignments;
+                    IEnumerable<P6_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = ESTIMATION_DIRECT_ITEM.P6_Assignments;
                     foreach (P6_ASSIGNMENT BASELINE_ITEM_ASSIGNMENT in projectBASELINE_ITEM_ASSIGNMENTS)
                     {
                         if (getAllActivities)
@@ -617,8 +631,18 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region DragDrop
-        
+        public void Scheduler_Drop(TreeListDropEventArgs e)
+        {
+            e.Handled = true;
+        }
 
+        public void Scheduler_Dropped(TreeListDroppedEventArgs e)
+        {
+            IEnumerable<ESTIMATION_DIRECT_ITEMProjection> dropped_deliverables = ((IEnumerable<object>)e.DraggedRows).Select(x => (ESTIMATION_DIRECT_ITEMProjection)x).AsEnumerable();
+            GanttData target_activity = (GanttData)e.TargetNode.Content;
+            P6_AssignmentView view = new P6_AssignmentView(loadPROJECT, P6Activities, MainViewModel.Entities, P6_AssignmentCollectionViewModel, false, target_activity, dropped_deliverables);
+            view.Show();
+        }
         #endregion
 
         #region GanttChart Properties

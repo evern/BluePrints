@@ -15,6 +15,7 @@ namespace BluePrints.Common.ViewModel
 
         public int Id { get; set; }
         public int ParentId { get; set; }
+        public string P6_ActivityId { get; set; }
         public string Description { get; set; }
         public AppointmentActivityType? ActivityType { get; set; }
         public string DisplayActivityType

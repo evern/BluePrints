@@ -48,7 +48,7 @@ namespace BluePrints.Common.Projections
 
         public string Discipline_Code => string.Empty;
 
-        public string ReportableItem_Name => string.Empty;
+        public string Deliverable_Name => string.Empty;
 
         public Guid? Workpack_Guid => Guid.Empty;
 

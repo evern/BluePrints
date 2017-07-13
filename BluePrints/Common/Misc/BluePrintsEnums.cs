@@ -418,7 +418,7 @@ namespace BluePrints.Common
 
         public string INTERNAL_NUM
         {
-            get { return deliverableProjection.ReportableItem_Name; }
+            get { return deliverableProjection.Deliverable_Name; }
         }
 
         public string P6_ACTIVITY

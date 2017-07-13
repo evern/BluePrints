@@ -19,23 +19,18 @@ namespace BluePrints.Common.Projections
         }
 
         public RATE RATE { get; set; }
-        
-        public ICollection<P6_ASSIGNMENT> ObservableBASELINE_ITEM_ASSIGNMENT { get; set; }
 
-        private List<P6_ASSIGNMENT> baseline_item_assignments;
-        public List<P6_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENTS
+        List<P6_ASSIGNMENT> p6_assignments;
+        public List<P6_ASSIGNMENT> P6_ASSIGNMENTS
         {
             get
             {
-                return baseline_item_assignments;
-            }
-            set
-            {
-                if (baseline_item_assignments == null)
-                    baseline_item_assignments = new List<P6_ASSIGNMENT>();
+                if (p6_assignments == null)
+                    p6_assignments = new List<P6_ASSIGNMENT>();
 
-                baseline_item_assignments = value;
+                return p6_assignments;
             }
+            set { p6_assignments = value; }
         }
 
         public decimal Remaining_Percentage
@@ -50,7 +45,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                return BASELINE_ITEM_ASSIGNMENTS.Sum(x => (x.HIGH_VALUE - (x.LOW_VALUE - 0.01m)));
+                return P6_ASSIGNMENTS.Sum(x => (x.HIGH_VALUE - (x.LOW_VALUE - 0.01m)));
             }
         }
 
@@ -69,7 +64,7 @@ namespace BluePrints.Common.Projections
 
         public decimal Total_Costs => Total_Units * ItemRate;
 
-        public string ReportableItem_Name => Entity.ReportableItem_Name;
+        public string Deliverable_Name => Entity.Deliverable_Name;
 
         public string Commodity_Code => Entity.Commodity_Code;
 
@@ -102,7 +97,7 @@ namespace BluePrints.Common.Projections
     {
         public static IQueryable<BASELINE_ITEMProjection> IDeliverable_Rates_Transformation(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS, 
-            IEnumerable<RATE> RATES)
+            IEnumerable<RATE> RATES, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null)
         {
             return
                 BASELINE_ITEMS.ToArray()
@@ -110,7 +105,8 @@ namespace BluePrints.Common.Projections
                             {
                                 EntityKey = x.GUID,
                                 Entity = x,
-                                RATE = RATES.FirstOrDefault(y => y.GUID_DEPARTMENT == x.GUID_DEPARTMENT && y.GUID_DISCIPLINE == x.GUID_DISCIPLINE)
+                                RATE = RATES.FirstOrDefault(y => y.GUID_DEPARTMENT == x.GUID_DEPARTMENT && y.GUID_DISCIPLINE == x.GUID_DISCIPLINE),
+                                P6_ASSIGNMENTS = P6_ASSIGNMENTS == null ? null : P6_ASSIGNMENTS.Where(y => y.GUID_ORIGINAL == x.GUID_ORIGINAL).ToList()
                             }).AsQueryable();
         }
     }

@@ -85,7 +85,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, x => loadPROGRESS = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEM_ASSIGNMENTS, BASELINE_ITEM_ASSIGNMENTProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.P6_ASSIGNMENTS, P6_ASSIGNMENTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
@@ -127,7 +127,7 @@ namespace BluePrints.ViewModels
         }
 
         private Func<IRepositoryQuery<P6_ASSIGNMENT>, IQueryable<P6_ASSIGNMENT>>
-            BASELINE_ITEM_ASSIGNMENTProjectionFunc()
+            P6_ASSIGNMENTProjectionFunc()
         {
             return
                 query =>
@@ -185,10 +185,18 @@ namespace BluePrints.ViewModels
             ConstructMainViewModelProjection()
         {
             IEnumerable<RATE> RATES = loaderCollection.GetCollection<RATE>();
+            IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = loaderCollection.GetCollection<P6_ASSIGNMENT>();
 
             return
                 query =>
-                    BASELINE_ITEMProjectionQueries.IDeliverable_Rates_Transformation(query.OrderBy(x => x.INTERNAL_NUM), RATES);
+                    BASELINE_ITEMProjectionQueries.IDeliverable_Rates_Transformation
+                    (query.Where(x => x.GUID_BASELINE == baseline_guid).OrderBy(x => x.INTERNAL_NUM), RATES, P6_ASSIGNMENTS);
+        }
+
+        //Entity save invoke property
+        private Guid baseline_guid
+        {
+            get { return loadBASELINE.GUID; }
         }
 
         public
@@ -297,7 +305,7 @@ namespace BluePrints.ViewModels
                 List<P6ActivityAssignment> missingActivities = new List<P6ActivityAssignment>();
                 foreach(BASELINE_ITEMProjection baseline_item in MainViewModel.Entities)
                 {
-                    IEnumerable<P6_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = baseline_item.BASELINE_ITEM_ASSIGNMENTS;
+                    IEnumerable<P6_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = baseline_item.P6_ASSIGNMENTS;
 
                     foreach (P6_ASSIGNMENT BASELINE_ITEM_ASSIGNMENT in projectBASELINE_ITEM_ASSIGNMENTS)
                     {
@@ -421,7 +429,7 @@ namespace BluePrints.ViewModels
                 validTASKS = P6PROJECT.TASK.ToArray().AsEnumerable();
                 foreach (BASELINE_ITEMProjection baseline_item in MainViewModel.Entities)
                 {
-                    IEnumerable<P6_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = baseline_item.BASELINE_ITEM_ASSIGNMENTS;
+                    IEnumerable<P6_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = baseline_item.P6_ASSIGNMENTS;
                     foreach (P6_ASSIGNMENT BASELINE_ITEM_ASSIGNMENT in projectBASELINE_ITEM_ASSIGNMENTS)
                     {
                         if(getAllActivities)

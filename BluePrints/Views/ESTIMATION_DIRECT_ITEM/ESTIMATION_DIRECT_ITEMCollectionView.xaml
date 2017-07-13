@@ -282,7 +282,7 @@
                                     <dxe:TextEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="UOM" Binding="{Binding STOCK_CODE.UOM}" ReadOnly="True" />
+                            <dxg:GridColumn Header="UOM"  FieldName="STOCK_CODE.UOM" ReadOnly="True" />
                             <dxg:GridColumn Header="NAME" FieldName="STOCK_CODE.NAME" ReadOnly="True" />
                             <dxg:GridColumn Header="TYPE" FieldName="STOCK_CODE.TYPE" ReadOnly="True" />
                             <dxg:GridColumn Header="SPEC" FieldName="STOCK_CODE.SPEC" ReadOnly="True" />

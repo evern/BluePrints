@@ -44,10 +44,10 @@ namespace BluePrints.Common.Projections
 
     public static class VARIATIONProjectionQueries
     {
-        public static IQueryable<VARIATIONProjection> JoinVARIATION_ITEMSOnVARIATIONS(
-            IQueryable<VARIATION> VARIATIONS)
+        public static IQueryable<VARIATIONProjection> VariationProjection_Transformation(
+            IQueryable<VARIATION> VARIATIONS, PROJECT PROJECT)
         {
-            return VARIATIONS.Select(x => new VARIATIONProjection() { EntityKey = x.GUID, Entity = x });
+            return VARIATIONS.ToArray().Where(x => x.GUID_PROJECT == PROJECT.GUID).OrderBy(x => x.NAME).Select(x => new VARIATIONProjection() { Entity = x }).AsQueryable();
         }
     }
 }
