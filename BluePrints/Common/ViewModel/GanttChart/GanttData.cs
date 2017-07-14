@@ -73,6 +73,7 @@ namespace BluePrints.Common.ViewModel
             : this(parentViewModel)
         {
             Id = task.task_id;
+            P6_ActivityId = task.task_code;
             Start = (DateTime)task.target_start_date;
             End = (DateTime)task.target_end_date;
             Description = task.task_name;
@@ -89,6 +90,8 @@ namespace BluePrints.Common.ViewModel
             Id = projWBS.wbs_id;
             if(projWBS.parent_wbs_id != null)
                 ParentId = (int)projWBS.parent_wbs_id;
+
+            P6_ActivityId = projWBS.wbs_short_name;
             Description = projWBS.wbs_name;
             ActivityType = AppointmentActivityType.WBS;
             WBSLevel = 0;

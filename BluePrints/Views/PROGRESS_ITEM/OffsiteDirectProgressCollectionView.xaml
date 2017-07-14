@@ -324,7 +324,7 @@
                                                 </Grid.ColumnDefinitions>
                                                 <Image
                                                     Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}"
-                                                    ToolTip="No progress" Grid.Column="0">
+                                                    ToolTip="Minimum Possible Progress" Grid.Column="0">
                                                     <Image.Visibility>
                                                         <MultiBinding
                                                             Converter="{StaticResource NumericCompareToVisibilityConverter}"
@@ -339,7 +339,7 @@
                                                 </Image>
                                                 <Image
                                                     Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}"
-                                                    ToolTip="Max progress" Grid.Column="1">
+                                                    ToolTip="Maximum Possible Progress" Grid.Column="1">
                                                     <Image.Visibility>
                                                         <MultiBinding
                                                             Converter="{StaticResource NumericCompareToVisibilityConverter}"

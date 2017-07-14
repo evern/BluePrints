@@ -1,4 +1,6 @@
 ﻿using BluePrints.Common.Projections;
+using BluePrints.Common.ViewModel;
+using BluePrints.Common.ViewModel.Reporting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +17,18 @@ namespace BluePrints.Common.Misc
         }
 
         public IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMProjections { get; private set; }
+    }
+
+    public class P6_Deliverable_Assignment_Message
+    {
+        public P6_Deliverable_Assignment_Message(GanttData selected_activity, IEnumerable<ICanAssignP6> selected_deliverables)
+        {
+            Selected_Activity = selected_activity;
+            Selected_Deliverables = selected_deliverables;
+        }
+
+        public GanttData Selected_Activity { get; private set; }
+        public IEnumerable<ICanAssignP6> Selected_Deliverables { get; private set; }
     }
 
     public class SelectIntIdMessage

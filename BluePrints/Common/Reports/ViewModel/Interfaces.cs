@@ -70,7 +70,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     #endregion
 
     #region Property Specification Interfaces
-    public interface ICanAssignP6 : IDeliverable
+    public interface ICanAssignP6 : IDeliverable, ICanUpdate
     {
         List<P6_ASSIGNMENT> P6_Assignments { get; set; }
         decimal Assigned_Percentage { get; }
@@ -113,6 +113,14 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Total_Costs { get; }
     }
 
+    public interface IHaveStockCode
+    {
+        string UOM { get; }
+        string Stock_Code_Type { get; }
+        string Stock_Code_Spec { get; }
+        string Stock_Code_Desription { get; }
+    }
+
     public interface IHaveCommodity_Code
     {
         //must use string because commodity code is not actual entity in design
@@ -129,6 +137,12 @@ namespace BluePrints.Common.ViewModel.Reporting
     public interface IHaveDeliverableStatus
     {
         DELIVERABLES_STATUS Deliverable_Status { get; }
+    }
+
+    public interface IHaveP6Baselines
+    {
+        string P6_Baseline_Name { get; }
+        string P6_Mod_Baseline_Name { get; }
     }
 
     public interface IHaveHours

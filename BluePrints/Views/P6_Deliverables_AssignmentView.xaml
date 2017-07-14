@@ -1,6 +1,6 @@
 ﻿<dx:DXWindow 
              x:Name="userControl"
-             x:Class="BluePrints.Views.P6_AssignmentView"
+             x:Class="BluePrints.Views.P6_Deliverables_AssignmentView"
              xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -9,20 +9,23 @@
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
-             Height="700" Width="1700" Title="Deliverable's Activity Assignment" WindowStartupLocation="CenterScreen" Closing="userControl_Closing">
+             Height="700" Width="2000" Title="Deliverable's Activity Assignment" WindowStartupLocation="CenterScreen" Closing="userControl_Closing">
     <dxlc:LayoutControl Orientation="Vertical" MaxHeight="1000">
         <dxlc:LayoutGroup Name="LayoutGroupContainer" View="Group" Header="Current Deliverable" Orientation="Horizontal">
-            <dxlc:LayoutGroup Name="LayoutGroupBaseline_Items" View="GroupBox" Width="500" Header="Selected Deliverables" Orientation="Horizontal">
-                <dxg:GridControl x:Name="gridControlBASELINE_ITEMS" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM_ASSIGNMENTS" 
-                                      SelectionMode="Row" 
-                                      ShowBorder="False"
-                                      ItemsSource="{Binding ContextBASELINE_ITEMS}"
-                                      CurrentItem="{Binding DataContext.SelectedBASELINE_ITEM, Mode=TwoWay, ElementName=userControl}"
-                                      SelectedItems="{Binding DataContext.SelectedBASELINE_ITEMS, Mode=TwoWay, ElementName=userControl}"
-                                      >
+            <dxlc:LayoutGroup Name="LayoutGroupDeliverables" View="GroupBox" Width="800" Header="Selected Deliverables" Orientation="Horizontal">
+                <dxg:GridControl 
+                    SelectionMode="Row" 
+                    ShowBorder="False"
+                    ItemsSource="{Binding Context_Deliverables}"
+                    CurrentItem="{Binding DataContext.Selected_Deliverable, Mode=TwoWay, ElementName=userControl}"
+                    SelectedItems="{Binding DataContext.Selected_Deliverables, Mode=TwoWay, ElementName=userControl}" >
                     <dxg:GridControl.Columns>
-                        <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="INTERNAL NUM" FieldName="Entity.INTERNAL_NUM" VisibleIndex="0" />
-                        <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="ASSIGNED %" FieldName="ASSIGNED_PERCENTAGE" VisibleIndex="10" >
+                        <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="INTERNAL NUM" Binding="{Binding Deliverable_Name}" VisibleIndex="10" />
+                        <dxg:GridColumn Header="UOM" FieldName="UOM" ReadOnly="True" AllowEditing="False" Visible="{Binding Is_Stock_Code}" VisibleIndex="20" />
+                        <dxg:GridColumn Header="TYPE" Binding="{Binding Stock_Code_Type}" ReadOnly="True" AllowEditing="False" Visible="{Binding Is_Stock_Code}" VisibleIndex="30"/>
+                        <dxg:GridColumn Header="SPEC" Binding="{Binding Stock_Code_Spec}" ReadOnly="True" AllowEditing="False" Visible="{Binding Is_Stock_Code}" VisibleIndex="40" />
+                        <dxg:GridColumn Header="DESCRIPTION" Binding="{Binding Stock_Code_Desription}" ReadOnly="True" AllowEditing="False" Visible="{Binding Is_Stock_Code}" VisibleIndex="50"/>
+                        <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="ASSIGNED %" FieldName="Assigned_Percentage" VisibleIndex="60" >
                             <dxg:GridColumn.EditSettings>
                                 <dxe:TextEditSettings DisplayFormat="p2" />
                             </dxg:GridColumn.EditSettings>
@@ -39,8 +42,7 @@
                 <dxlc:LayoutGroup Orientation="Horizontal">
                     <dxlc:LayoutItem Height="25" Label="Activity:" IsRequired="True">
                         <dxg:LookUpEdit AutoPopulateColumns="False" x:Name="lookupActivity" NullValueButtonPlacement="EditBox"
-                            SelectedItem="{Binding SelectedTASK, Mode=TwoWay}" DisplayMember="Description"
-                            ItemsSource="{Binding TASKSItemSource}">
+                            SelectedItem="{Binding Selected_Activity, Mode=TwoWay}" DisplayMember="Description" ItemsSource="{Binding Activities_Source}">
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EventToCommand EventName="EditValueChanging"
                                             Command="{Binding lookupActivity_EditValueChangingCommand}"
@@ -48,15 +50,13 @@
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:LookUpEdit.PopupContentTemplate>
                                 <ControlTemplate TargetType="ContentControl">
-                                    <dxg:GridControl x:Name="PART_GridControl" dx:DXSerializer.SerializationID="GridControlAssignmentBASELINE_ITEM" ShowBorder="False">
+                                    <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False">
                                         <dxg:GridControl.Columns>
-                                            <dxg:GridColumn IsSmart="True" AllowEditing="False" FieldName="Subject" />
-                                            <dxg:GridColumn IsSmart="True" AllowEditing="False" Width="500"
-                                                FieldName="Description" />
+                                            <dxg:GridColumn IsSmart="True" AllowEditing="False" FieldName="P6_ActivityId" />
+                                            <dxg:GridColumn IsSmart="True" AllowEditing="False" Width="500" FieldName="Description" />
                                         </dxg:GridControl.Columns>
                                         <dxg:GridControl.View>
-                                            <dxg:TreeListView Name="treeListView1" TreeDerivationMode="Selfreference"
-                                                    KeyFieldName="task_id" ParentFieldName="ParentId" />
+                                            <dxg:TreeListView Name="treeListView1" TreeDerivationMode="Selfreference" KeyFieldName="Id" ParentFieldName="ParentId" />
                                         </dxg:GridControl.View>
                                     </dxg:GridControl>
                                 </ControlTemplate>
@@ -64,8 +64,8 @@
                         </dxg:LookUpEdit>
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Width="80">
-                        <Button x:Name="btnMatchAssignment" VerticalAlignment="Top" Width="25" Height="25" ToolTip="Match Selected Assignment"
-                            Padding="0, 0, 0, 0" Command="{Binding MatchSelectedBASELINE_ITEM_ASSIGNMENTCommand}">
+                        <Button VerticalAlignment="Top" Width="25" Height="25" ToolTip="Lookup Assignment Activity"
+                            Padding="0, 0, 0, 0" Command="{Binding LookUpAssignment_ActivityCommand}">
                             <StackPanel>
                                 <Image Source="{dx:DXImageOffice2013 Image=Find_32x32.png}" />
                             </StackPanel>
@@ -74,13 +74,11 @@
                 </dxlc:LayoutGroup>
                 <dxlc:LayoutGroup Orientation="Horizontal">
                     <dxlc:LayoutItem Height="25" Label="Percentage:" IsRequired="True">
-                        <dxe:SpinEdit
-                    EditValue="{Binding AssignmentValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    MinValue="{Binding AssignmentMinValue}" MaxValue="{Binding AssignmentMaxValue}" Increment="0.1"
-                    MaskType="Numeric" Mask="p2" MaskUseAsDisplayFormat="True" />
+                        <dxe:SpinEdit EditValue="{Binding Assignment_Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinValue="{Binding Assignment_MinValue}" MaxValue="{Binding Assignment_MaxValue}" Increment="0.1"
+                             MaskType="Numeric" Mask="p2" MaskUseAsDisplayFormat="True" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Width="80" HorizontalAlignment="Right">
-                        <Button Height="25" x:Name="btnMaxUnits" Command="{Binding MaxUnitsCommand}">
+                        <Button Height="25" Command="{Binding SetMaxUnitsCommand}">
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="{dx:DXImageOffice2013 Image=MoveUp_32x32.png}" />
                                 <TextBlock VerticalAlignment="Center" Text="Max" />
@@ -90,7 +88,7 @@
                 </dxlc:LayoutGroup>
                 <dxlc:LayoutGroup Orientation="Horizontal">
                     <dxlc:LayoutItem Width="80" HorizontalAlignment="Center">
-                        <Button x:Name="btnAddP6Activity" Command="{Binding AddAssignmentCommand}">
+                        <Button Command="{Binding Add_AssignmentsCommand}">
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="{dx:DXImageOffice2013 Image=Add_32x32.png}" />
                                 <TextBlock VerticalAlignment="Center" Text="Add" />
@@ -100,44 +98,35 @@
                 </dxlc:LayoutGroup>
                 <dxlc:LayoutGroup View="GroupBox" Header="Assignments" Orientation="Horizontal">
                     <dxlc:LayoutItem HorizontalAlignment="Left" Height="460" >
-                        <dxg:GridControl x:Name="gridControlBASELINE_ITEM_ASSIGNMENTS" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM_ASSIGNMENTS" SelectionMode="Row" ShowBorder="False"
-                                    CurrentItem="{Binding DataContext.SelectedASSIGNMENT, Mode=TwoWay, ElementName=userControl}"
-                                    SelectedItems="{Binding DataContext.SelectedASSIGNMENTS, Mode=TwoWay, ElementName=userControl}"
-                                    ItemsSource="{Binding ContextBASELINE_ITEM_ASSIGNMENTS}">
+                        <dxg:GridControl SelectionMode="Row" ShowBorder="False"
+                                    CurrentItem="{Binding DataContext.Selected_P6_Assignment, Mode=TwoWay, ElementName=userControl}"
+                                    SelectedItems="{Binding DataContext.Selected_P6_Assignments, Mode=TwoWay, ElementName=userControl}"
+                                    ItemsSource="{Binding Deliverables_P6_Assignments}">
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="Deliverable" FieldName="INTERNAL_NUM" Width="200" VisibleIndex="0"/>
-                                <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="P6 ID"
-                                        FieldName="Entity.P6_ACTIVITYID" VisibleIndex="10" />
-                                <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="P6 Description"
-                                        FieldName="Entity.P6_ACTIVITYID" VisibleIndex="20" Width="300">
+                                <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="Deliverable" FieldName="Deliverable_Name" Width="200" />
+                                <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="P6 Id" FieldName="Entity.P6_ACTIVITYID" />
+                                <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="P6 Description" FieldName="Entity.P6_ACTIVITYID" Width="300">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings ItemsSource="{Binding TASKSItemSource}"
-                                                            ValueMember="Subject" DisplayMember="Description" />
+                                        <dxe:ComboBoxEditSettings ItemsSource="{Binding Activities_Source}" ValueMember="P6_ActivityId" DisplayMember="Description" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="From %"
-                                        FieldName="Entity.LOW_VALUE" VisibleIndex="30">
+                                <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="From %" FieldName="Entity.LOW_VALUE">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings DisplayFormat="p2" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="To %"
-                                        FieldName="Entity.HIGH_VALUE" VisibleIndex="40">
+                                <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="To %" FieldName="Entity.HIGH_VALUE" >
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings DisplayFormat="p2" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.View>
-                                <dxg:TableView x:Name="GridViewBaseline_ItemAssignment"
-                                        FocusedRow="{Binding SelectedBASELINE_ITEM_ASSIGNMENT, Mode=TwoWay}"
-                                        NavigationStyle="Row" ShowGroupPanel="False" AutoWidth="False"
-                                        AllowEditing="False" />
+                                <dxg:TableView FocusedRow="{Binding Selected_P6_Assignment, Mode=TwoWay}" NavigationStyle="Row" ShowGroupPanel="False" AutoWidth="False" AllowEditing="False" />
                             </dxg:GridControl.View>
                         </dxg:GridControl>
                     </dxlc:LayoutItem>
-                    <dxlc:LayoutGroup x:Name="assignmentNavigationLayoutGroup" HorizontalAlignment="Right"
-                                Orientation="Vertical">
+                    <dxlc:LayoutGroup HorizontalAlignment="Right" Orientation="Vertical">
                         <dxlc:LayoutItem>
                             <Button x:Name="btnPriorityUp" VerticalAlignment="Top" Width="40" Height="40"
                             Padding="0, 0, 0, 0" Command="{Binding PriorityUpCommand}">
@@ -156,7 +145,7 @@
                         </dxlc:LayoutItem>
                         <dxlc:LayoutItem>
                             <Button x:Name="btnAssignmentDelete" VerticalAlignment="Top" Width="40" Height="40"
-                            Padding="0, 0, 0, 0" Command="{Binding DeleteAssignmentCommand}">
+                            Padding="0, 0, 0, 0" Command="{Binding Delete_AssignmentsCommand}">
                                 <StackPanel>
                                     <Image Source="{dx:DXImageOffice2013 Image=DeleteFooter_32x32.png}" />
                                 </StackPanel>

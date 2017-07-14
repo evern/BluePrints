@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IDeliverable_Quantity, ICanAssignP6
+    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IDeliverable_Quantity, ICanAssignP6, IHaveStockCode
     {
         public ESTIMATION_DIRECT_ITEMProjection()
             : base()
@@ -139,13 +139,13 @@ namespace BluePrints.Common.Projections
         {
             get
             {
+                if (p6_assignments == null)
+                    p6_assignments = new List<P6_ASSIGNMENT>();
+
                 return p6_assignments;
             }
             set
             {
-                if (p6_assignments == null)
-                    p6_assignments = new List<P6_ASSIGNMENT>();
-
                 p6_assignments = value;
             }
         }
@@ -162,7 +162,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                return p6_assignments.Sum(x => (x.HIGH_VALUE - (x.LOW_VALUE - 0.01m)));
+                return P6_Assignments.Sum(x => (x.HIGH_VALUE - (x.LOW_VALUE - 0.01m)));
             }
         }
 
@@ -171,13 +171,19 @@ namespace BluePrints.Common.Projections
         public decimal Variation_Units => Entity.Variation_Units;
 
         public decimal Variation_Costs => 0;
+
+        public string Stock_Code_Type => STOCK_CODE == null ? string.Empty : STOCK_CODE.TYPE;
+
+        public string Stock_Code_Spec => STOCK_CODE == null ? string.Empty : STOCK_CODE.SPEC;
+
+        public string Stock_Code_Desription => STOCK_CODE == null ? string.Empty : STOCK_CODE.DESCRIPTION;
     }
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries
     {
         public static IQueryable<ESTIMATION_DIRECT_ITEMProjection> IDeliverable_Rates_Transformation(
             IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, 
-            IEnumerable<RATE> RATES, IEnumerable<STOCK_CODE> STOCK_CODES, IEnumerable<COMMODITY_CODE> COMMODITY_CODES)
+            IEnumerable<RATE> RATES, IEnumerable<STOCK_CODE> STOCK_CODES, IEnumerable<COMMODITY_CODE> COMMODITY_CODES, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null)
         {
             return
                 ESTIMATION_DIRECT_ITEMS.OrderBy(x => x.CREATED).ToArray()
@@ -195,7 +201,8 @@ namespace BluePrints.Common.Projections
                                 .Where(commodity_code =>
                                 commodity_code.GUID_AREA == estimate_direct_item.GUID_AREA 
                                 && commodity_code.GUID_SUBAREA == estimate_direct_item.GUID_SUBAREA 
-                                && commodity_code.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE).OrderBy(x => x.CODE)
+                                && commodity_code.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE).OrderBy(x => x.CODE),
+                                P6_Assignments = P6_ASSIGNMENTS == null ? null : P6_ASSIGNMENTS.Where(assignment => assignment.GUID_ORIGINAL == estimate_direct_item.GUID_ORIGINAL).ToList()
                             }).AsQueryable();
         }
     }

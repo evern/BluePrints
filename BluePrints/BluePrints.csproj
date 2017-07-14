@@ -537,8 +537,8 @@
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEM_ASSIGNMENTViewModel.cs" />
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\User_OffisteDirectProgressCollectionViewModelWrapper.cs" />
-    <Compile Include="Views\P6_AssignmentView.xaml.cs">
-      <DependentUpon>P6_AssignmentView.xaml</DependentUpon>
+    <Compile Include="Views\P6_Deliverables_AssignmentView.xaml.cs">
+      <DependentUpon>P6_Deliverables_AssignmentView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml.cs">
       <DependentUpon>STOCK_CODECollectionView.xaml</DependentUpon>
@@ -1297,7 +1297,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\P6_AssignmentView.xaml">
+    <Page Include="Views\P6_Deliverables_AssignmentView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

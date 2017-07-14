@@ -14,259 +14,227 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Threading;
 
 namespace BluePrints.ViewModels
 {
     public class P6_AssignmentViewModel : BindableBase, IDisposable
     {
-        public static P6_AssignmentViewModel Create(PROJECT PROJECT, IEnumerable<GanttData> activities,
-            IEnumerable<ICanAssignP6> deliverables,
-            CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
-                P6_ASSIGNMENTCollectionViewModel, bool isModified, GanttData selected_activity = null,
-            IEnumerable<ICanAssignP6> dropped_deliverables = null, Action recalculateUnits = null)
+        public static P6_AssignmentViewModel Create(PROJECT PROJECT, IEnumerable<GanttData> activities, IEnumerable<ICanAssignP6> deliverables,
+            CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> P6_ASSIGNMENTCollectionViewModel, bool is_stock_code, GanttData selected_activity = null,
+            IEnumerable<ICanAssignP6> dropped_deliverables = null, Action on_close = null, Action summarize_activities_assigned_units = null, bool isModified = false)
         {
-            return
-                ViewModelSource.Create(
-                    () =>
-                        new P6_AssignmentViewModel(PROJECT, activities, deliverables, P6_ASSIGNMENTCollectionViewModel,
-                            isModified, selected_activity, dropped_deliverables, recalculateUnits));
+            return ViewModelSource.Create(() => new P6_AssignmentViewModel(PROJECT, activities, deliverables, P6_ASSIGNMENTCollectionViewModel, is_stock_code, selected_activity, dropped_deliverables, on_close, summarize_activities_assigned_units, isModified));
         }
 
-        private bool IsModified { get; set; }
-        public Action RecalculateUnits { get; set; }
-        private DispatcherTimer dispatchTimer;
-        private DispatcherTimer selectAllDispatcherTimer;
-        private DispatcherTimer maxUnitsDispatcherTimer;
-
-        protected P6_AssignmentViewModel(PROJECT PROJECT, IEnumerable<GanttData> activities,
-            IEnumerable<ICanAssignP6> deliverables,
-            CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
-                P6_ASSIGNMENTCollectionViewModel, bool isModified, GanttData selected_activity = null,
-            IEnumerable<ICanAssignP6> dropped_deliverables = null, Action recalculateUnits = null)
+        private Dispatcher current_dispatcher = Application.Current.Dispatcher;
+        private PROJECT loadPROJECT;
+        private bool is_modified { get; set; }
+        private CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> P6_ASSIGNMENTCollectionViewModel { get; set; }
+        private Action on_close;
+        private Action summarize_activities_assigned_units;
+        public bool Is_Stock_Code { get; set; }
+        protected P6_AssignmentViewModel(PROJECT PROJECT, IEnumerable<GanttData> activities, IEnumerable<ICanAssignP6> deliverables,
+            CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> P6_ASSIGNMENTCollectionViewModel, bool is_stock_code, GanttData selected_activity = null,
+            IEnumerable<ICanAssignP6> dropped_deliverables = null, Action on_close = null, Action summarize_activities_assigned_units = null, bool is_modified = false)
         {
-            Activities = activities.ToArray().AsEnumerable();
+            loadPROJECT = PROJECT;
+            Activities_Source = activities;
             Deliverables_Source = deliverables;
-            RecalculateUnits = recalculateUnits;
+            this.on_close = on_close;
+            this.summarize_activities_assigned_units = summarize_activities_assigned_units;
             this.P6_ASSIGNMENTCollectionViewModel = P6_ASSIGNMENTCollectionViewModel;
-            IsModified = isModified;
-            Selected_Activity = selected_activity != null
-                ? activities.First(x => x.Id == selected_activity.Id)
-                : null;
-            this.loadPROJECT = PROJECT;
+            this.is_modified = is_modified;
+            this.Is_Stock_Code = is_stock_code;
+            Selected_Activity = selected_activity != null ? activities.First(x => x.Id == selected_activity.Id) : null;
 
-            dispatchTimer = new DispatcherTimer();
-            dispatchTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
-            selectAllDispatcherTimer = new DispatcherTimer();
-            selectAllDispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
-            selectAllDispatcherTimer.Tick += SelectAllDispatcherTimer_Tick;
-
-            maxUnitsDispatcherTimer = new DispatcherTimer();
-            maxUnitsDispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
-            maxUnitsDispatcherTimer.Tick += maxUnitsDispatcherTimer_Tick;
-
-            InitializeBASELINE_ITEMSContext(dropped_deliverables);
+            InitializeContext(dropped_deliverables);
+            RegisterMessage();
         }
 
-        private void InitializeBASELINE_ITEMSContext(IEnumerable<ICanAssignP6> dropped_deliverables)
+        private void InitializeContext(IEnumerable<ICanAssignP6> dropped_deliverables)
         {
-            this.Context_Deliverables = dropped_deliverables != null ? new ObservableCollection<ICanAssignP6>(dropped_deliverables) : new ObservableCollection<ICanAssignP6>();
+            Context_Deliverables = dropped_deliverables != null ? new ObservableCollection<ICanAssignP6>(dropped_deliverables) : new ObservableCollection<ICanAssignP6>();
 
-            this.Selected_Deliverable = new ObservableCollection<ICanAssignP6>();
-            this.Selected_Activities = new ObservableCollection<P6_ASSIGNMENTSProjection>();
-            this.Selected_Deliverable.CollectionChanged += SelectedBASELINE_ITEMS_CollectionChanged;
+            Selected_Deliverables = new ObservableCollection<ICanAssignP6>();
+            Selected_P6_Assignments = new ObservableCollection<P6_ASSIGNMENTProjection>();
+            Selected_Deliverables.CollectionChanged += Selected_Deliverable_CollectionChanged;
 
-            selectAllDispatcherTimer.Start();
+            current_dispatcher.BeginInvoke(new Action(() => select_all_deliverables()));
+            current_dispatcher.BeginInvoke(new Action(() => SetMaxUnits()));
         }
 
-        private void maxUnitsDispatcherTimer_Tick(object sender, EventArgs e)
+        private void select_all_deliverables()
         {
-            maxUnitsDispatcherTimer.Stop();
-            MaxUnits();
-        }
-
-        private void SelectAllDispatcherTimer_Tick(object sender, EventArgs e)
-        {
-            selectAllDispatcherTimer.Stop();
-            Selected_Deliverable.Clear();
+            Selected_Deliverables.Clear();
             foreach (ICanAssignP6 contextDeliverable in Context_Deliverables)
-                Selected_Deliverable.Add(contextDeliverable);
-
-            maxUnitsDispatcherTimer.Start();
+                Selected_Deliverables.Add(contextDeliverable);
         }
 
-        #region Public Properties
-
-        private CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>
-            P6_ASSIGNMENTCollectionViewModel { get; set; }
-
-        private decimal assignmentValue { get; set; }
-
-        public decimal AssignmentValue
+        #region Messaging
+        private void RegisterMessage()
         {
-            get { return assignmentValue; }
-            set
-            {
-                assignmentValue = value;
-                this.RaiseCanExecuteChanged(x => x.AddAssignment());
-            }
+            Messenger.Default.Register<P6_Deliverable_Assignment_Message>(this, x => OnMessage(x));
         }
 
-        public decimal AssignmentMinValue
+        private void UnregisterMessageHandler()
         {
-            get
-            {
-                if (Selected_Deliverable.Count == 0)
-                    return 0;
-
-                decimal assigned_Percentage = Selected_Deliverable.Min(x => x.Assigned_Percentage);
-                return assigned_Percentage > 1 ? 1 : assigned_Percentage;
-            }
+            Messenger.Default.Unregister(this);
         }
 
-        public decimal AssignmentMaxValue
+        private void OnMessage(P6_Deliverable_Assignment_Message message)
         {
-            get
-            {
-                return 1;
-            }
+            Context_Deliverables = message.Selected_Deliverables != null ? new ObservableCollection<ICanAssignP6>(message.Selected_Deliverables) : new ObservableCollection<ICanAssignP6>();
+            select_all_deliverables();
+
+            this.RaisePropertyChanged(x => x.Selected_Deliverables);
+            Selected_Activity = message.Selected_Activity;
+        }
+        #endregion
+
+        #region Assignment Selected Items
+        private void Selected_Deliverable_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            current_dispatcher.BeginInvoke(new Action(() => SetMaxUnits()));
+            this.RaisePropertyChanged(x => x.Deliverables_P6_Assignments);
         }
 
-        public List<P6_ASSIGNMENT> TASK_ASSIGNMENTS
+        /// <summary>
+        /// Updates the total assigned percentages on each deliverable
+        /// </summary>
+        private void raise_deliverable_assignment_changes()
+        {
+            foreach(ICanAssignP6 deliverable in Deliverables_Source)
+            {
+                deliverable.Update();
+            }
+
+            this.RaisePropertyChanged(x => x.Deliverables_P6_Assignments);
+        }
+        #endregion
+
+        #region Assignment View Properties
+        public IEnumerable<GanttData> Activities_Source { get; set; }
+
+        private GanttData selected_activity;
+        public GanttData Selected_Activity { get => selected_activity; set { selected_activity = value; this.RaisePropertiesChanged(); } }
+
+        public IEnumerable<ICanAssignP6> Deliverables_Source { get; set; }
+
+        public List<P6_ASSIGNMENT> P6_Assignments
         {
             get
             {
                 if (Deliverables_Source == null || Selected_Activity == null)
                     return null;
 
-                return
-                    Deliverables_Source.SelectMany(x => x.P6_Assignments)
-                        .Where(x => x.P6_ACTIVITYID == Selected_Activity.P6_ActivityId)
-                        .ToList();
+                return Deliverables_Source.SelectMany(x => x.P6_Assignments).Where(x => x.P6_ACTIVITYID == Selected_Activity.P6_ActivityId).ToList();
             }
         }
 
-        #endregion
 
-        #region Selected Items
+        private ObservableCollection<ICanAssignP6> context_deliverables;
+        public ObservableCollection<ICanAssignP6> Context_Deliverables { get => context_deliverables; set { context_deliverables = value; this.RaisePropertyChanged(x => x.Context_Deliverables); } }
 
-        private GanttData selectedTASK { get; set; }
+        public ObservableCollection<ICanAssignP6> Selected_Deliverables { get; set; }
 
-        public GanttData Selected_Activity
+        public ICanAssignP6 Selected_Deliverable { get; set; }
+
+        public P6_ASSIGNMENTProjection Selected_P6_Assignment { get; set; }
+        public ObservableCollection<P6_ASSIGNMENTProjection> Selected_P6_Assignments { get; set; }
+        public IEnumerable<P6_ASSIGNMENTProjection> Deliverables_P6_Assignments
         {
-            get { return selectedTASK; }
+            get
+            {
+                List<P6_ASSIGNMENTProjection> baseline_item_assignments = new List<P6_ASSIGNMENTProjection>();
+                foreach (ICanAssignP6 selected_deliverable in Selected_Deliverables)
+                {
+                    foreach (P6_ASSIGNMENT p6_assignments in selected_deliverable.P6_Assignments)
+                    {
+                        if (Selected_Activity == null || p6_assignments.P6_ACTIVITYID == Selected_Activity.P6_ActivityId)
+                            baseline_item_assignments.Add(new P6_ASSIGNMENTProjection() { Deliverable_OriginalEntityKey = selected_deliverable.OriginalEntityKey, Deliverable_Name = selected_deliverable.Deliverable_Name, Entity = p6_assignments });
+                    }
+                }
+
+                return baseline_item_assignments.OrderBy(x => x.Deliverable_Name);
+            }
+        }
+
+        private decimal assignment_value { get; set; }
+
+        public decimal Assignment_Value
+        {
+            get { return assignment_value; }
             set
             {
-                selectedTASK = value;
-                this.RaisePropertiesChanged();
+                assignment_value = value;
+                this.RaiseCanExecuteChanged(x => x.Add_Assignments());
             }
         }
 
-        public ObservableCollection<ICanAssignP6> Selected_Deliverable { get; set; }
-        public ICanAssignP6 SelectedBASELINE_ITEM { get; set; }
-
-        private ObservableCollection<ICanAssignP6> contextBASELINE_ITEMS { get; set; }
-        public ObservableCollection<ICanAssignP6> Context_Deliverables
+        public decimal Assignment_MinValue
         {
-            get { return contextBASELINE_ITEMS; }
-            set
+            get
             {
-                contextBASELINE_ITEMS = value;
-                this.RaisePropertyChanged(x => x.Context_Deliverables);
+                if (Selected_Deliverables.Count == 0)
+                    return 0;
+
+                decimal assigned_Percentage = Selected_Deliverables.Min(x => x.Assigned_Percentage);
+                return assigned_Percentage > 1 ? 1 : assigned_Percentage;
             }
         }
 
-        private void SelectedBASELINE_ITEMS_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        public decimal Assignment_MaxValue
         {
-            dispatchTimer.Tick -= dispatchTimer_Tick;
-            dispatchTimer.Tick += dispatchTimer_Tick;
-            dispatchTimer.Start();
-        }
-
-        private void dispatchTimer_Tick(object sender, EventArgs e)
-        {
-            ResetAssignmentValue();
-            this.RaisePropertiesChanged();
-            dispatchTimer.Stop();
-        }
-
-        private void ResetAssignmentValue()
-        {
-            AssignmentValue = AssignmentMinValue;
-        }
-
-        public bool CanMatchSelectedBASELINE_ITEM_ASSIGNMENT()
-        {
-            return SelectedASSIGNMENT != null;
-        }
-
-        public void MatchSelectedBASELINE_ITEM_ASSIGNMENT()
-        {
-            if (SelectedASSIGNMENT == null)
-                return;
-
-            GanttData taskAppointment = Activities.FirstOrDefault(x => x.P6_ActivityId == SelectedASSIGNMENT.Entity.P6_ACTIVITYID);
-
-            if (taskAppointment != null)
-                Selected_Activity = taskAppointment;
-        }
-        #endregion
-
-        #region Item Source
-
-        public IEnumerable<GanttData> Activities { get; set; }
-        public IEnumerable<ICanAssignP6> Deliverables_Source { get; set; }
-        public PROJECT loadPROJECT;
-        #endregion
-
-        #region Commands
-
-        public void MaxUnits()
-        {
-            AssignmentValue = AssignmentMaxValue;
-            this.RaisePropertiesChanged();
-        }
-
-        public bool CanMaxUnits()
-        {
-            return CanAddAssignment();
-        }
-
-        public Action RefreshBASELINE_ITEM_ASSIGNMENTCallBack { get; set; }
-        public Action<P6_ASSIGNMENTSProjection> SetSelectedItemCallBack { get; set; }
-        public void Refresh()
-        {
-            RefreshBASELINE_ITEM_ASSIGNMENTCallBack?.Invoke();
-            this.RaisePropertiesChanged();
-        }
-
-        public void AddAssignment()
-        {
-            foreach(ICanAssignP6 deliverable in Selected_Deliverable)
+            get
             {
-                if (deliverable.Assigned_Percentage == AssignmentValue)
+                return 1;
+            }
+        }
+        #endregion
+
+        #region Assignment View Commands
+        public void SetMaxUnits()
+        {
+            Assignment_Value = Assignment_MaxValue;
+            this.RaisePropertyChanged(x => x.Assignment_Value);
+        }
+
+        public bool CanSetMaxUnits()
+        {
+            return CanAdd_Assignments();
+        }
+
+        public Action<P6_ASSIGNMENTProjection> Set_SelectedItem_CallBack { get; set; }
+
+        public void Add_Assignments()
+        {
+            foreach(ICanAssignP6 deliverable in Selected_Deliverables)
+            {
+                if (deliverable.Assigned_Percentage == Assignment_Value)
                     continue;
 
                 deliverable.P6_Assignments.Add(new P6_ASSIGNMENT()
                 {
                     GUID = Guid.Empty,
                     GUID_PROJECT = loadPROJECT.GUID,
-                    HIGH_VALUE = AssignmentValue,
+                    HIGH_VALUE = Assignment_Value,
                     LOW_VALUE = deliverable.Assigned_Percentage + 0.01m,
                     P6_ACTIVITYID = Selected_Activity.P6_ActivityId,
                     GUID_ORIGINAL = deliverable.OriginalEntityKey,
-                    ISMODIFIEDBASELINE = IsModified
+                    ISMODIFIEDBASELINE = is_modified
                 });
             }
 
-            P6_ASSIGNMENTCollectionViewModel.BulkSave(Selected_Deliverable.SelectMany(x => x.P6_Assignments.Where(y => y.GUID == Guid.Empty)));
-            ResetAssignmentValue();
-            Refresh();
+            P6_ASSIGNMENTCollectionViewModel.BulkSave(Selected_Deliverables.SelectMany(x => x.P6_Assignments.Where(y => y.GUID == Guid.Empty)));
+            SetMaxUnits();
+            raise_deliverable_assignment_changes();
         }
 
-        public bool CanAddAssignment()
+        public bool CanAdd_Assignments()
         {
-            if (Selected_Deliverable == null)
+            if (Selected_Deliverables == null || Selected_Deliverables.Count == 0)
                 return false;
 
             if (Selected_Activity == null)
@@ -275,50 +243,29 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public P6_ASSIGNMENTSProjection SelectedASSIGNMENT { get; set; }
-        public ObservableCollection<P6_ASSIGNMENTSProjection> Selected_Activities { get; set; }
-
-        public IEnumerable<P6_ASSIGNMENTSProjection> ContextBASELINE_ITEM_ASSIGNMENTS
+        public bool CanDelete_Assignments()
         {
-            get
-            {
-                List<P6_ASSIGNMENTSProjection> baseline_item_assignments = new List<P6_ASSIGNMENTSProjection>();
-                foreach(ICanAssignP6 selected_deliverable in Selected_Deliverable)
-                {
-                    foreach(P6_ASSIGNMENT p6_assignments in selected_deliverable.P6_Assignments)
-                    {
-                        if(Selected_Activity == null || p6_assignments.P6_ACTIVITYID == Selected_Activity.P6_ActivityId)
-                            baseline_item_assignments.Add(new P6_ASSIGNMENTSProjection() { Deliverable_OriginalEntityKey = selected_deliverable.OriginalEntityKey, Deliverable_Name = selected_deliverable.Deliverable_Name, Entity = p6_assignments });
-                    }
-                }
-
-                return baseline_item_assignments.OrderBy(x => x.Deliverable_Name);
-            }
-        }
-
-        public bool CanDeleteAssignment()
-        {
-            if (Selected_Activities.Count == 0)
+            if (Selected_P6_Assignments == null || Selected_P6_Assignments.Count == 0)
                 return false;
 
             return true;
         }
 
-        public void DeleteAssignment()
+        public void Delete_Assignments()
         {
-            if (Selected_Activities.Count == 0)
+            if (Selected_P6_Assignments.Count == 0)
                 return;
 
-            foreach(P6_ASSIGNMENTSProjection selectedASSIGNMENT in Selected_Activities)
+            foreach(P6_ASSIGNMENTProjection selectedASSIGNMENT in Selected_P6_Assignments)
             {
                 RemoveWorkpackAssignment(selectedASSIGNMENT);
             }
 
-            ResetAssignmentValue();
-            Refresh();
+            SetMaxUnits();
+            raise_deliverable_assignment_changes();
         }
 
-        private void RemoveWorkpackAssignment(P6_ASSIGNMENTSProjection remove_p6_assignments)
+        private void RemoveWorkpackAssignment(P6_ASSIGNMENTProjection remove_p6_assignments)
         {
             var low_value = remove_p6_assignments.Entity.LOW_VALUE;
             var active_deliverable = Deliverables_Source.FirstOrDefault(x => x.OriginalEntityKey == remove_p6_assignments.Deliverable_OriginalEntityKey);
@@ -342,7 +289,7 @@ namespace BluePrints.ViewModels
         }
 
 
-        private IEnumerable<P6_ASSIGNMENT> MovePriority(bool isUp, P6_ASSIGNMENTSProjection selectedAssignment)
+        private IEnumerable<P6_ASSIGNMENT> MovePriority(bool isUp, P6_ASSIGNMENTProjection selectedAssignment)
         {
             ICanAssignP6 context_deliverable = Deliverables_Source.First(x => x.OriginalEntityKey == selectedAssignment.Deliverable_OriginalEntityKey);
             P6_ASSIGNMENT contextASSIGNMENT = selectedAssignment.Entity;
@@ -372,7 +319,7 @@ namespace BluePrints.ViewModels
 
         public bool CanPriorityUp()
         {
-            if (Selected_Activities.Count == 0)
+            if (Selected_P6_Assignments == null || Selected_P6_Assignments.Count == 0)
                 return false;
 
             return true;
@@ -380,7 +327,7 @@ namespace BluePrints.ViewModels
 
         public bool CanPriorityDown()
         {
-            if (Selected_Activities.Count == 0)
+            if (Selected_P6_Assignments == null || Selected_P6_Assignments.Count == 0)
                 return false;
 
             return true;
@@ -390,7 +337,7 @@ namespace BluePrints.ViewModels
         {
             List<P6_ASSIGNMENT> saveAssignments = new List<P6_ASSIGNMENT>();
 
-            foreach (var selectedAssignment in Selected_Activities)
+            foreach (var selectedAssignment in Selected_P6_Assignments)
             {
                 IEnumerable<P6_ASSIGNMENT> editedAssignments = MovePriority(true, selectedAssignment);
                 if (editedAssignments != null)
@@ -405,7 +352,7 @@ namespace BluePrints.ViewModels
         {
             List<P6_ASSIGNMENT> saveAssignments = new List<P6_ASSIGNMENT>();
 
-            foreach (var selectedAssignment in Selected_Activities)
+            foreach (var selectedAssignment in Selected_P6_Assignments)
             {
                 IEnumerable<P6_ASSIGNMENT> editedAssignments = MovePriority(false, selectedAssignment);
                 if (editedAssignments != null)
@@ -414,6 +361,21 @@ namespace BluePrints.ViewModels
 
             P6_ASSIGNMENTCollectionViewModel.BulkSave(new ObservableCollection<P6_ASSIGNMENT>(saveAssignments));
             this.RaisePropertiesChanged();
+        }
+
+        public bool CanLookUpAssignment_Activity()
+        {
+            return Selected_P6_Assignment != null;
+        }
+
+        public void LookUpAssignment_Activity()
+        {
+            if (Selected_P6_Assignment == null)
+                return;
+
+            GanttData activity = Activities_Source.FirstOrDefault(x => x.P6_ActivityId == Selected_P6_Assignment.Entity.P6_ACTIVITYID);
+            if (activity != null)
+                Selected_Activity = activity;
         }
 
         /// <summary>
@@ -431,16 +393,17 @@ namespace BluePrints.ViewModels
                 }
             }
         }
-
         #endregion
 
         public void Dispose()
         {
-            RecalculateUnits?.Invoke();
-            RecalculateUnits = null;
-            Activities = null;
+            UnregisterMessageHandler();
+            summarize_activities_assigned_units?.Invoke();
+            summarize_activities_assigned_units = null;
+            Activities_Source = null;
             Deliverables_Source = null;
             P6_ASSIGNMENTCollectionViewModel.OnDestroy();
+            on_close?.Invoke();
         }
     }
 }

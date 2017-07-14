@@ -410,10 +410,10 @@ namespace BluePrints.Common
         public P6ActivityAssignment(IDeliverable_Rates deliverableProjection, P6_ASSIGNMENT baseline_item_assignment)
         {
             this.deliverableProjection = deliverableProjection;
-            this.baseline_item_assignment = baseline_item_assignment;
+            this.deliverable_assignment = baseline_item_assignment;
         }
 
-        public readonly P6_ASSIGNMENT baseline_item_assignment;
+        public readonly P6_ASSIGNMENT deliverable_assignment;
         public readonly IDeliverable_Rates deliverableProjection;
 
         public string INTERNAL_NUM
@@ -423,12 +423,12 @@ namespace BluePrints.Common
 
         public string P6_ACTIVITY
         {
-            get { return baseline_item_assignment.P6_ACTIVITYID; }
+            get { return deliverable_assignment.P6_ACTIVITYID; }
         }
 
         public decimal UNITS
         {
-            get { return ((baseline_item_assignment.HIGH_VALUE - baseline_item_assignment.LOW_VALUE) + 0.01m) * deliverableProjection.Total_Units; }
+            get { return ((deliverable_assignment.HIGH_VALUE - deliverable_assignment.LOW_VALUE) + 0.01m) * deliverableProjection.Total_Units; }
         }
 
         public void Reassign(string p6NewActivity)
@@ -436,7 +436,7 @@ namespace BluePrints.Common
             if (p6NewActivity == null || p6NewActivity == string.Empty)
                 return;
 
-            baseline_item_assignment.P6_ACTIVITYID = p6NewActivity;
+            deliverable_assignment.P6_ACTIVITYID = p6NewActivity;
         }
     }
 

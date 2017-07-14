@@ -381,7 +381,7 @@ namespace BluePrints.ViewModels
 
                     if(reassignActivities.Count > 0)
                     {
-                        BASELINE_ITEM_ASSIGNMENTSCollectionViewModel.BulkSave(reassignActivities.Select(x => x.baseline_item_assignment));
+                        BASELINE_ITEM_ASSIGNMENTSCollectionViewModel.BulkSave(reassignActivities.Select(x => x.deliverable_assignment));
                         RefreshWinformView?.Invoke();
 
                         MessageBoxService.ShowMessage(reassignActivities.Count + " activities re-assigned");
@@ -403,7 +403,7 @@ namespace BluePrints.ViewModels
 
                 if (MessageBoxService.ShowMessage("Do you want to continue deleting all invalid assignments?", "Warning", MessageButton.OKCancel) == MessageResult.OK)
                 {
-                    BASELINE_ITEM_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(missingActivities.Select(x => x.baseline_item_assignment));
+                    BASELINE_ITEM_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(missingActivities.Select(x => x.deliverable_assignment));
                     FullRefresh();
                     RefreshWinformView?.Invoke();
                 }

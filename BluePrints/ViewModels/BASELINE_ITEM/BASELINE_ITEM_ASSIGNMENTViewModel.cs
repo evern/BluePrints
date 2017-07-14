@@ -73,7 +73,7 @@ namespace BluePrints.ViewModels
             this.ContextBASELINE_ITEMS = droppedBASELINE_ITEMS != null ? new ObservableCollection<BASELINE_ITEMProjection>(droppedBASELINE_ITEMS) : new ObservableCollection<BASELINE_ITEMProjection>();
 
             this.SelectedBASELINE_ITEMS = new ObservableCollection<BASELINE_ITEMProjection>();
-            this.SelectedASSIGNMENTS = new ObservableCollection<P6_ASSIGNMENTSProjection>();
+            this.SelectedASSIGNMENTS = new ObservableCollection<P6_ASSIGNMENTProjection>();
             this.SelectedBASELINE_ITEMS.CollectionChanged += SelectedBASELINE_ITEMS_CollectionChanged;
 
             selectAllDispatcherTimer.Start();
@@ -265,7 +265,7 @@ namespace BluePrints.ViewModels
         }
 
         public Action RefreshBASELINE_ITEM_ASSIGNMENTCallBack { get; set; }
-        public Action<P6_ASSIGNMENTSProjection> SetSelectedItemCallBack { get; set; }
+        public Action<P6_ASSIGNMENTProjection> SetSelectedItemCallBack { get; set; }
         public void Refresh()
         {
             RefreshBASELINE_ITEM_ASSIGNMENTCallBack?.Invoke();
@@ -307,20 +307,20 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public P6_ASSIGNMENTSProjection SelectedASSIGNMENT { get; set; }
-        public ObservableCollection<P6_ASSIGNMENTSProjection> SelectedASSIGNMENTS { get; set; }
+        public P6_ASSIGNMENTProjection SelectedASSIGNMENT { get; set; }
+        public ObservableCollection<P6_ASSIGNMENTProjection> SelectedASSIGNMENTS { get; set; }
 
-        public IEnumerable<P6_ASSIGNMENTSProjection> ContextBASELINE_ITEM_ASSIGNMENTS
+        public IEnumerable<P6_ASSIGNMENTProjection> ContextBASELINE_ITEM_ASSIGNMENTS
         {
             get
             {
-                List<P6_ASSIGNMENTSProjection> baseline_item_assignments = new List<P6_ASSIGNMENTSProjection>();
+                List<P6_ASSIGNMENTProjection> baseline_item_assignments = new List<P6_ASSIGNMENTProjection>();
                 foreach(BASELINE_ITEMProjection baseline_item in SelectedBASELINE_ITEMS)
                 {
                     foreach(P6_ASSIGNMENT baseline_item_assignment in baseline_item.P6_ASSIGNMENTS)
                     {
                         if(SelectedTASK == null || baseline_item_assignment.P6_ACTIVITYID == SelectedTASK.Subject)
-                            baseline_item_assignments.Add(new P6_ASSIGNMENTSProjection() { Deliverable_OriginalEntityKey = baseline_item.Entity.GUID_ORIGINAL, Deliverable_Name = baseline_item.Entity.INTERNAL_NUM, Entity = baseline_item_assignment });
+                            baseline_item_assignments.Add(new P6_ASSIGNMENTProjection() { Deliverable_OriginalEntityKey = baseline_item.Entity.GUID_ORIGINAL, Deliverable_Name = baseline_item.Entity.INTERNAL_NUM, Entity = baseline_item_assignment });
                     }
                 }
 
@@ -341,7 +341,7 @@ namespace BluePrints.ViewModels
             if (SelectedASSIGNMENTS.Count == 0)
                 return;
 
-            foreach(P6_ASSIGNMENTSProjection selectedASSIGNMENT in SelectedASSIGNMENTS)
+            foreach(P6_ASSIGNMENTProjection selectedASSIGNMENT in SelectedASSIGNMENTS)
             {
                 RemoveWorkpackAssignment(selectedASSIGNMENT);
             }
@@ -350,7 +350,7 @@ namespace BluePrints.ViewModels
             Refresh();
         }
 
-        private void RemoveWorkpackAssignment(P6_ASSIGNMENTSProjection removeBASELINE_ITEM_ASSIGNMENT)
+        private void RemoveWorkpackAssignment(P6_ASSIGNMENTProjection removeBASELINE_ITEM_ASSIGNMENT)
         {
             var removingBASELINE_ITEM_ASSIGNMENTLowValue = removeBASELINE_ITEM_ASSIGNMENT.Entity.LOW_VALUE;
             var activeBASELINE_ITEM =
@@ -379,7 +379,7 @@ namespace BluePrints.ViewModels
         }
 
 
-        private IEnumerable<P6_ASSIGNMENT> MovePriority(bool isUp, P6_ASSIGNMENTSProjection selectedAssignment)
+        private IEnumerable<P6_ASSIGNMENT> MovePriority(bool isUp, P6_ASSIGNMENTProjection selectedAssignment)
         {
             BASELINE_ITEMProjection contextBASELINE_ITEM = BASELINE_ITEMSource.First(x => x.Entity.GUID_ORIGINAL == selectedAssignment.Deliverable_OriginalEntityKey);
             P6_ASSIGNMENT contextASSIGNMENT = selectedAssignment.Entity;
