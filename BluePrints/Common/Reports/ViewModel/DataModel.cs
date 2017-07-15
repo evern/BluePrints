@@ -9,6 +9,7 @@ using DevExpress.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -59,22 +60,19 @@ namespace BluePrints.Common.ViewModel.Reporting
             get { return Reportables.SelectMany(x => x.PROGRESS_ITEMS).ToList(); }
         }
         
-        public override IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses()
+        public override IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func)
         {
             List<PROGRESS_ITEM> editPROGRESS_ITEMS = new List<PROGRESS_ITEM>();
             decimal newPercentage = getNewPercentage();
             foreach (IReportable_Quantity quantityReportable in Reportables)
             {
-                PROGRESS_ITEM savePROGRESS_ITEM;
-                if (quantityReportable.PROGRESS_ITEM_Current != null)
-                    savePROGRESS_ITEM = quantityReportable.PROGRESS_ITEM_Current;
-                else
+                IEnumerable<PROGRESS_ITEM> savePROGRESS_ITEMS = quantityReportable.GetExistingOrNewEditedProgresses(repository_find_actual_func);
+                if(savePROGRESS_ITEMS.Count() > 0)
                 {
-                    savePROGRESS_ITEM = quantityReportable.createNewProgress();
+                    PROGRESS_ITEM savePROGRESS_ITEM = savePROGRESS_ITEMS.First();
+                    savePROGRESS_ITEM.EARNED_UNITS = quantityReportable.getCurrentPeriodEarnedUnits(newPercentage);
+                    editPROGRESS_ITEMS.Add(savePROGRESS_ITEM);
                 }
-
-                savePROGRESS_ITEM.EARNED_UNITS = quantityReportable.getCurrentPeriodEarnedUnits(newPercentage);
-                editPROGRESS_ITEMS.Add(savePROGRESS_ITEM);
             }
 
             return editPROGRESS_ITEMS;
@@ -160,11 +158,28 @@ namespace BluePrints.Common.ViewModel.Reporting
         protected decimal? set_current_period_quantity { get; set; }
         public virtual decimal CurrentPeriodInstalledQuantity
         {
-            get => Earned_Units_OnDataDate * QuantityPerHour;
+            get
+            {
+                if (set_current_period_quantity == null)
+                    set_current_period_quantity = get_actual_earned_quantity();
+
+                return (decimal)set_current_period_quantity;
+            }
             set => set_current_period_quantity = value;
         }
 
-        public override bool ShouldSaveProgress => set_current_period_quantity != null;
+        public override void Update()
+        {
+            set_current_period_quantity = null;
+            base.Update();
+        }
+
+        public override bool ShouldSaveProgress => get_actual_earned_quantity() != set_current_period_quantity;
+        
+        public decimal get_actual_earned_quantity()
+        {
+            return Earned_Units_OnDataDate * QuantityPerHour;
+        }
 
         public decimal PastInstalledQuantity
         {
@@ -296,13 +311,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                ISupportByDuration supportByDurationProjection = Entity as ISupportByDuration;
-                if(supportByDurationProjection != null && supportByDurationProjection.IsByDuration)
-                    return Earned_Units_ToDate / BluePrintsConstants.DurationBasedDisplayUnits;
-                else if (Total_Units > 0)
-                    return Earned_Units_ToDate / Total_Units;
-                else
-                    return 1;
+                if(set_total_earned_percentage == null)
+                    set_total_earned_percentage = get_actual_total_earned_percentage();
+
+                return (decimal)set_total_earned_percentage;
             }
             set
             {
@@ -310,8 +322,30 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public override void Update()
+        {
+            set_total_earned_percentage = null;
+            base.Update();
+        }
+
         //because entity goes through repository.reload() process this will be null since it's not meddled in the query
-        public virtual bool ShouldSaveProgress => set_total_earned_percentage != null;
+        public virtual bool ShouldSaveProgress => get_actual_total_earned_percentage(true) != set_total_earned_percentage;
+
+        public virtual decimal? get_actual_total_earned_percentage(bool can_return_null = false)
+        {
+            //this happens during undo when first PROGRESS_ITEM is created in the same session
+            if (Earned_Units_OnDataDate == 0 && PROGRESS_ITEM_Current == null && can_return_null)
+                return null;
+
+            ISupportByDuration supportByDurationProjection = Entity as ISupportByDuration;
+
+            if (supportByDurationProjection != null && supportByDurationProjection.IsByDuration)
+                return Earned_Units_ToDate / BluePrintsConstants.DurationBasedDisplayUnits;
+            else if (Total_Units > 0)
+                return Earned_Units_ToDate / Total_Units;
+            else
+                return 1;
+        }
 
         public decimal SchedulePercentage
         {
@@ -424,19 +458,20 @@ namespace BluePrints.Common.ViewModel.Reporting
             Entity.SetOriginalEntityKey(newGuid);
         }
 
-        public virtual IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses()
+        public virtual IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func)
         {
-            PROGRESS_ITEM editPROGRESS_ITEM;
+            PROGRESS_ITEM edit_PROGRESS_ITEM;
             if (PROGRESS_ITEM_Current != null)
-                editPROGRESS_ITEM = PROGRESS_ITEM_Current;
+                edit_PROGRESS_ITEM = PROGRESS_ITEM_Current;
             else
-                editPROGRESS_ITEM = createNewProgress();
+                edit_PROGRESS_ITEM = createNewProgress(repository_find_actual_func);
 
-            editPROGRESS_ITEM.EARNED_UNITS = getCurrentPeriodEarnedUnits(getNewPercentage());
+
+            edit_PROGRESS_ITEM.EARNED_UNITS = getCurrentPeriodEarnedUnits(getNewPercentage());
 
             //use list because overriding member will be a group
             List<PROGRESS_ITEM> editPROGRESS_ITEMS = new List<PROGRESS_ITEM>();
-            editPROGRESS_ITEMS.Add(editPROGRESS_ITEM);
+            editPROGRESS_ITEMS.Add(edit_PROGRESS_ITEM);
 
             return editPROGRESS_ITEMS;
         }
@@ -453,8 +488,12 @@ namespace BluePrints.Common.ViewModel.Reporting
             return current_period_earned_units;
         }
 
-        public PROGRESS_ITEM createNewProgress()
+        public PROGRESS_ITEM createNewProgress(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func)
         {
+            PROGRESS_ITEM actual_PROGRESS_ITEM = repository_find_actual_func(x => x.EARNED_DATE == ReportingDataDate && x.GUID_ORIBASEITEM == OriginalEntityKey && x.GUID_PROGRESS == Live_PROGRESS.GUID);
+            if (actual_PROGRESS_ITEM != null)
+                return actual_PROGRESS_ITEM;
+
             PROGRESS_ITEM savePROGRESS_ITEM = new PROGRESS_ITEM();
             savePROGRESS_ITEM.GUID_ORIBASEITEM = Entity.OriginalEntityKey;
             savePROGRESS_ITEM.GUID_PROGRESS = Live_PROGRESS.GUID;

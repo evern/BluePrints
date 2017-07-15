@@ -75,6 +75,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             foreach (BASELINE_ITEMProgress baseline_item_progress in baseline_item_progresses)
             {
                 SetReportablePROGRESS_ITEM(baseline_item_progress, progress_item_by_originalguid);
+
                 if (isBuildStatsFunc != null && isBuildStatsFunc())
                     baseline_item_progress.BuildStats();
 

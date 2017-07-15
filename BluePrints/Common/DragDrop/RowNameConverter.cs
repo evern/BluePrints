@@ -1,5 +1,6 @@
 ﻿using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel;
+using BluePrints.Common.ViewModel.Reporting;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
@@ -17,11 +18,11 @@ namespace BluePrints.Common
         {
             if (value == null) return string.Empty;
 
-            if (value is ESTIMATION_DIRECT_ITEMProjection)
+            if (value is IDeliverable)
             {
-                var estimation_item = value as ESTIMATION_DIRECT_ITEMProjection;
+                var deliverable = value as IDeliverable;
 
-                return estimation_item.Deliverable_Name;
+                return deliverable.Deliverable_Name;
             }
 
             if (value is GanttData)
@@ -34,10 +35,10 @@ namespace BluePrints.Common
             var listTreeListNodes = new List<Object>((IEnumerable<object>)value);
             if (listTreeListNodes.Count == 1)
             {
-                var estimation_direct_item = listTreeListNodes.FirstOrDefault() as ESTIMATION_DIRECT_ITEMProjection;
-                if (estimation_direct_item != null)
+                var deliverable = listTreeListNodes.FirstOrDefault() as IDeliverable;
+                if (deliverable != null)
                 {
-                    return estimation_direct_item.Deliverable_Name;
+                    return deliverable.Deliverable_Name;
                 }
             }
             else

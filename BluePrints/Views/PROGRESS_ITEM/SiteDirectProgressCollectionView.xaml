@@ -160,7 +160,7 @@
                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Reportables}">
                                 <dxg:GridControl x:Name="gridControlChild" >
                                     <dxg:GridControl.Columns>
-                                        <dxg:GridColumn FieldName="Area_Guid" Header="AREA" ReadOnly="True">
+                                        <dxg:GridColumn Binding="{Binding Area_Guid}" Header="AREA" ReadOnly="True">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:ComboBoxEditSettings
                                                     ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
@@ -168,7 +168,7 @@
                                                     ValueMember="GUID" />
                                                 </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="SubArea_Guid" Header="SUBAREA" ReadOnly="True">
+                                        <dxg:GridColumn Binding="{Binding SubArea_Guid}" Header="SUBAREA" ReadOnly="True">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:ComboBoxEditSettings 
                                                               ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}"
@@ -176,50 +176,50 @@
                                                               DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="Commodity_Code" Header="COMMODITY_CODE" ReadOnly="True" IsEnabled="False" />
-                                        <dxg:GridColumn FieldName="Deliverable_Name" Header="STOCK_CODE" ReadOnly="True" IsEnabled="False" />
-                                        <dxg:GridColumn FieldName="Total_Quantity" Header="TOTAL_QUANTITY" ReadOnly="True" IsEnabled="False" >
+                                        <dxg:GridColumn Binding="{Binding Commodity_Code}" Header="COMMODITY_CODE" ReadOnly="True" IsEnabled="False" />
+                                        <dxg:GridColumn Binding="{Binding Deliverable_Name}" Header="STOCK_CODE" ReadOnly="True" IsEnabled="False" />
+                                        <dxg:GridColumn Binding="{Binding Total_Quantity}" Header="TOTAL_QUANTITY" ReadOnly="True" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="Earned_Units_Total" Header="TOTAL_INSTALL_HOURS" ReadOnly="True" IsEnabled="False" >
+                                        <dxg:GridColumn Binding="{Binding Earned_Units_Total}" Header="TOTAL_INSTALL_HOURS" ReadOnly="True" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="Earned_Costs_Total" Header="TOTAL_INSTALL_COSTS" ReadOnly="True" IsEnabled="False" >
+                                        <dxg:GridColumn Binding="{Binding Earned_Costs_Total}" Header="TOTAL_INSTALL_COSTS" ReadOnly="True" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="QuantityPerHour" Header="QTY_PER_HOUR" ReadOnly="True" IsEnabled="False" >
+                                        <dxg:GridColumn Binding="{Binding QuantityPerHour}" Header="QTY_PER_HOUR" ReadOnly="True" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="CurrentPeriodInstalledQuantity" Header="INSTALLED_QTY" ReadOnly="True" IsEnabled="False" >
+                                        <dxg:GridColumn Binding="{Binding CurrentPeriodInstalledQuantity}" Header="INSTALLED_QTY" ReadOnly="True" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="UOM" Header="UOM" ReadOnly="True" IsEnabled="False" />
-                                        <dxg:GridColumn FieldName="TotalInstalledQuantity" Header="TOTAL_INSTALLED_QTY" IsEnabled="False" >
+                                        <dxg:GridColumn Binding="{Binding UOM}" Header="UOM" ReadOnly="True" IsEnabled="False" />
+                                        <dxg:GridColumn Binding="{Binding TotalInstalledQuantity}" Header="TOTAL_INSTALLED_QTY" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="Earned_Units_OnDataDate" Header="CURRENT_HOURS" IsEnabled="False" >
+                                        <dxg:GridColumn Binding="{Binding Earned_Units_OnDataDate}" Header="CURRENT_HOURS" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="Earned_Costs_OnDataDate" Header="CURRENT_COSTS" IsEnabled="False" >
+                                        <dxg:GridColumn Binding="{Binding Earned_Costs_OnDataDate}" Header="CURRENT_COSTS" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="Track" Header="TRACK" ReadOnly="True" IsEnabled="False" >
+                                        <dxg:GridColumn Binding="{Binding Track}" Header="TRACK" ReadOnly="True" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:CheckEditSettings />
                                             </dxg:GridColumn.EditSettings>

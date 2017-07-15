@@ -363,7 +363,7 @@ namespace BluePrints.ViewModels
         {
             if(entity.ProgressItem.ShouldSaveProgress)
             {
-                IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = entity.ProgressItem.GetExistingOrNewEditedProgresses();
+                IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = entity.ProgressItem.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
                 PROGRESS_ITEMSCollectionViewModel.BulkSave(newPRORESS_ITEMS);
             }
 

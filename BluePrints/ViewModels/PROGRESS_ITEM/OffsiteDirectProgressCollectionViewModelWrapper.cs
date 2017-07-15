@@ -228,7 +228,7 @@ namespace BluePrints.ViewModels
                         decimal newPercentage = (decimal)autoPercentage;
 
                         deliverable.Total_Earned_Percentage = newPercentage;
-                        IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = deliverable.GetExistingOrNewEditedProgresses();
+                        IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = deliverable.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
                         updateProgress.AddRange(newPRORESS_ITEMS);
                     }
                 }
@@ -393,7 +393,7 @@ namespace BluePrints.ViewModels
         {
             if(projectionEntity.ShouldSaveProgress)
             {
-                IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projectionEntity.GetExistingOrNewEditedProgresses();
+                IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projectionEntity.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
                 PROGRESS_ITEMSCollectionViewModel.Save(newPRORESS_ITEMS.First());
             }
         }

@@ -3,6 +3,7 @@ using BluePrints.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -63,9 +64,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal CurrentPeriodInstalledQuantity { get; set; }
         decimal MaxCurrentQuantity { get; }
         decimal TotalInstalledQuantity { get; }
-        PROGRESS_ITEM createNewProgress();
         decimal getCurrentPeriodEarnedUnits(decimal newPercentage);
-        IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses();
     }
     #endregion
 
@@ -95,6 +94,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal MinPercentage { get; }
         decimal MaxPercentage { get; }
         bool ShouldSaveProgress { get; }
+
+        IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func);
         void SetReportingDataDate(DateTime dataDate);
         void SetProgressItems(List<PROGRESS_ITEM> progresses);
         void AppendProgressItem(PROGRESS_ITEM currentProgress);

@@ -4,6 +4,7 @@ using DevExpress.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -41,7 +42,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public void Update()
         {
-            RaisePropertyChanged(() => ProgressItem);
+            ProgressItem.Update();
             RefreshChild();
         }
 
@@ -66,6 +67,14 @@ namespace BluePrints.Common.ViewModel.Reporting
             : base(reportableGroup)
         {
             this.ChildReportables = reportableGroup.Reportables.Select(x => new DisplayQuantityReportable(x));
+        }
+
+        public override void Update()
+        {
+            foreach (DisplayQuantityReportable child_reportable in ChildReportables)
+                child_reportable.Update();
+
+            base.Update();
         }
     }
 
@@ -199,14 +208,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             reportable.AppendProgressItem(currentProgress);
         }
 
-        public void Update()
+        public virtual void Update()
         {
             reportable.Update();
-        }
-
-        public PROGRESS_ITEM createNewProgress()
-        {
-            return reportable.createNewProgress();
         }
 
         public decimal getCurrentPeriodEarnedUnits(decimal newPercentage)
@@ -214,9 +218,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             return reportable.getCurrentPeriodEarnedUnits(newPercentage);
         }
 
-        public IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses()
+        public IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func)
         {
-            return reportable.GetExistingOrNewEditedProgresses();
+            return reportable.GetExistingOrNewEditedProgresses(repository_find_actual_func);
         }
     }
 }
