@@ -29,7 +29,7 @@ namespace BluePrints.Common.ViewModel
             }
         }
 
-        public decimal AssignedUnits { get; set; }
+        public decimal Assigned_Units { get; set; }
         public int WBSLevel { get; set; }
 
         public virtual DateTime Start { get; set; }

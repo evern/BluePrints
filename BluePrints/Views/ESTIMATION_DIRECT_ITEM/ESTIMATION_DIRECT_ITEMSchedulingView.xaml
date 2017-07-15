@@ -158,10 +158,12 @@
                             <dxlc:LayoutGroup HorizontalAlignment="Stretch"  dxlc:LayoutControl.AllowHorizontalSizing="True">
                                 <dxg:GridControl dx:DXSerializer.SerializationID="GridControlActivities" SelectedItem="{Binding DataContext.Selected_Activity, Mode=TwoWay, ElementName=userControl}" ItemsSource="{Binding DataContext.Activities_Source, ElementName=userControl}" DesignTimeDataObjectType="{x:Type commonviewmodel:GanttData}">
                                     <dxg:GridControl.Columns>
+                                        <dxg:GridColumn FieldName="P6_ActivityId" IsSmart="True" Header="Activity Id" FixedWidth="True" Width="100" FilterPopupMode="CheckedList" />
                                         <dxg:GridColumn FieldName="Description" IsSmart="True" Header="Task" FilterPopupMode="CheckedList" />
                                         <dxg:GridColumn FieldName="DisplayActivityType" IsSmart="True" FixedWidth="True" Width="150" Header="Task" FilterPopupMode="CheckedList" />
                                         <dxg:GridColumn FieldName="Start" IsSmart="True" FixedWidth="True" Width="150" Header="Begin" CellTemplate="{StaticResource TimeTemplate}" />
                                         <dxg:GridColumn FieldName="End" IsSmart="True" FixedWidth="True" Width="150" Header="End" CellTemplate="{StaticResource TimeTemplate}" />
+                                        <dxg:GridColumn FieldName="Assigned_Units" IsSmart="True" FixedWidth="True" Width="150" />
                                         <!--<dxg:GridColumn Binding="{Binding}" CellTemplate="{StaticResource GanttTemplate}" Header="Chart" />-->
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.View>
