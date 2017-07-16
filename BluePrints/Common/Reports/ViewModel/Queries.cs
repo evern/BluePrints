@@ -90,24 +90,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             IEnumerable<PROGRESS_ITEM> arrPROGRESS_ITEMS = PROGRESS_ITEMS.ToArray();
             List<ReportablesDisplay> display_items = new List<ReportablesDisplay>();
-            var PROGRESS_ITEMSByOriginalGuid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
 
-            IEnumerable<ESTIMATION_DIRECT_ITEMProjection> estimation_direct_item_rates =
-                ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Rates_Transformation(ESTIMATION_DIRECT_ITEMS,
+            IEnumerable<ESTIMATION_DIRECT_ITEMProgress> estimation_direct_item_progresses =
+                ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATION_DIRECT_ITEMS,
                                                                                                 projectRATES,
                                                                                                 projectSTOCK_CODES,
-                                                                                                COMMODITY_CODES).AsEnumerable();
-
-            List<ESTIMATION_DIRECT_ITEMProgress> estimation_direct_item_progresses = new List<ESTIMATION_DIRECT_ITEMProgress>();
-            foreach (ESTIMATION_DIRECT_ITEMProjection estimation_direct_item_rate in estimation_direct_item_rates)
-            {
-                ESTIMATION_DIRECT_ITEMProgress newEstimation_Direct_itemProgress = new ESTIMATION_DIRECT_ITEMProgress();
-                newEstimation_Direct_itemProgress.Live_PROGRESS = PROGRESS;
-                newEstimation_Direct_itemProgress.Entity = estimation_direct_item_rate;
-                newEstimation_Direct_itemProgress.SetReportingDataDate(PROGRESS.DATA_DATE);
-                SetReportablePROGRESS_ITEM(newEstimation_Direct_itemProgress, PROGRESS_ITEMSByOriginalGuid);
-                estimation_direct_item_progresses.Add(newEstimation_Direct_itemProgress);
-            }
+                                                                                                COMMODITY_CODES, PROGRESS, PROGRESS_ITEMS).AsEnumerable();
 
             var estimation_direct_progress_by_commoditycodeguid = estimation_direct_item_progresses.Where(x => x.Entity.Progress_Type != Estimation_DirectProgressType.Standalone)
                 .GroupBy(x => x.Entity.Entity.GUID_COMMODITY_CODE).Select(group => new { CommodityCodeGuid = group.Key, Estimation_Direct_ItemProgress = group.ToList() });
@@ -135,7 +123,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return display_items.AsQueryable();
         }
 
-        private static void SetReportablePROGRESS_ITEM(IReportable reportable, IEnumerable<dynamic> PROGRESS_ITEMSByOriginalGuid)
+        public static void SetReportablePROGRESS_ITEM(IReportable reportable, IEnumerable<dynamic> PROGRESS_ITEMSByOriginalGuid)
         {
             ICanSetProgresses setProgressesProjection = reportable as ICanSetProgresses;
             if (setProgressesProjection == null)

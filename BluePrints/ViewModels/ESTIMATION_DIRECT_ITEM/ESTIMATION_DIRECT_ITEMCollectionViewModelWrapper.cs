@@ -423,12 +423,13 @@ namespace BluePrints.ViewModels
         {
             if(changedType == typeof(STOCK_CODE))
             {
+                this.RaisePropertyChanged(x => x.STOCK_CODECollection);
                 STOCK_CODE changedStock_Code = STOCK_CODECollection.FirstOrDefault(x => x.GUID == (Guid)key);
                 if(changedStock_Code != null)
                 {
                     foreach (var entities in MainViewModel.Entities)
                     {
-                        if (entities.STOCK_CODE.GUID == (Guid)key)
+                        if(entities.Entity.GUID_STOCK_CODE == (Guid)key)
                         {
                             entities.STOCK_CODE = changedStock_Code;
                             entities.Update();
@@ -646,7 +647,7 @@ namespace BluePrints.ViewModels
 
         private DevExpress.Mvvm.IDialogService StockCodeDialogService
         {
-            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("CommodityCodeDialogService"); }
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("StockCodeDialogService"); }
         }
 
         public IEnumerable<PHASE> PHASECollection

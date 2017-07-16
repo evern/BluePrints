@@ -135,38 +135,6 @@ namespace BluePrints.Common.ViewModel.Reporting
                 return MaxPercentage;
             }
         }
-
-        private List<P6_ASSIGNMENT> p6_assignments;
-        public List<P6_ASSIGNMENT> P6_Assignments
-        {
-            get
-            {
-                if (p6_assignments == null)
-                    p6_assignments = new List<P6_ASSIGNMENT>();
-
-                return p6_assignments;
-            }
-            set
-            {
-                p6_assignments = value;
-            }
-        }
-
-        public decimal Remaining_Percentage
-        {
-            get
-            {
-                return 1 - Assigned_Percentage;
-            }
-        }
-
-        public decimal Assigned_Percentage
-        {
-            get
-            {
-                return P6_Assignments.Sum(x => (x.HIGH_VALUE - (x.LOW_VALUE - 0.01m)));
-            }
-        }
     }
 
     public abstract class BluePrintsProgressableByQuantityProjectionBase<TEntity> : BluePrintsProgressableProjectionBase<TEntity>, IReportable_Quantity
@@ -265,7 +233,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public abstract class BluePrintsProgressableProjectionBase<TEntity> : BluePrintsProjectionBase<TEntity>, IReportable, ICanSetProgresses
+    public abstract class BluePrintsProgressableProjectionBase<TEntity> : BluePrintsProjectionBase<TEntity>, IReportable, ICanSetProgresses, ICanAssignP6
         where TEntity : class, IDeliverable, IHaveCosts, new()
     {
         #region Stats Parameters
@@ -533,6 +501,38 @@ namespace BluePrints.Common.ViewModel.Reporting
             savePROGRESS_ITEM.CREATED = DateTime.Now;
 
             return savePROGRESS_ITEM;
+        }
+
+        private List<P6_ASSIGNMENT> p6_assignments;
+        public List<P6_ASSIGNMENT> P6_Assignments
+        {
+            get
+            {
+                if (p6_assignments == null)
+                    p6_assignments = new List<P6_ASSIGNMENT>();
+
+                return p6_assignments;
+            }
+            set
+            {
+                p6_assignments = value;
+            }
+        }
+
+        public decimal Remaining_Percentage
+        {
+            get
+            {
+                return 1 - Assigned_Percentage;
+            }
+        }
+
+        public decimal Assigned_Percentage
+        {
+            get
+            {
+                return P6_Assignments.Sum(x => (x.HIGH_VALUE - (x.LOW_VALUE - 0.01m)));
+            }
         }
     }
 }

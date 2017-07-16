@@ -431,21 +431,19 @@ namespace BluePrints.Common.Base
 
             foreach (ICanAssignP6 deliverable in deliverables)
             {
-                IReportable current_progress = MainViewModel.Entities.FirstOrDefault(x => x.EntityKey == deliverable.EntityKey);
                 LoadingScreenManager.Progress();
-                if (current_progress == null)
+
+                IReportable current_progress_deliverable = deliverable as IReportable;
+                if (current_progress_deliverable == null)
                     continue;
 
-                //if (currentPROGRESS_ITEM.Stats == null)
-                //    continue;
-
-                if (current_progress.PROGRESS_ITEM_UpToCurrentDataDate == null || current_progress.PROGRESS_ITEM_UpToCurrentDataDate.Count() == 0)
+                if (current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate == null || current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Count() == 0)
                     continue;
 
-                DateTime first_progress_date = current_progress.PROGRESS_ITEM_UpToCurrentDataDate.Min(x => x.EARNED_DATE);
-                DateTime last_progress_date = current_progress.PROGRESS_ITEM_UpToCurrentDataDate.Max(x => x.EARNED_DATE);
+                DateTime first_progress_date = current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Min(x => x.EARNED_DATE);
+                DateTime last_progress_date = current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Max(x => x.EARNED_DATE);
 
-                decimal total_percentage_to_date = current_progress.Total_Percentage_ToDate;
+                decimal total_percentage_to_date = current_progress_deliverable.Total_Percentage_ToDate;
                 if (deliverable.P6_Assignments.Count == 0)
                     continue;
 

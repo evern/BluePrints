@@ -35,7 +35,7 @@ using System.Windows.Input;
 namespace BluePrints.ViewModels
 {
     public class ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper :
-        BluePrintsEntitiesSchedulingCollectionWrapper<ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>, IHaveCanvasWidth
+        BluePrintsEntitiesSchedulingCollectionWrapper<ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>, IHaveCanvasWidth
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
@@ -47,7 +47,6 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operation
-        private ESTIMATION_DIRECT loadESTIMATION_DIRECT;
         private DEPARTMENT defaultConstructionDEPARTMENT;
         private Data.PHASE defaultConstructionPHASE;
 
@@ -63,31 +62,28 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, x => defaultConstructionDEPARTMENT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc, x => defaultConstructionPHASE = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc, x => loadESTIMATION_DIRECT = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc, x => p6_baseline_entity = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
-            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECT_ITEMS, ESTIMATION_DIRECT_ITEMProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
 
             base.InitializeAndLoadEntitiesLoaderDescription();
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
         {
-            return query => query.Where(x => x.GUID == p6_baseline_entity.project_guid);
+            if (isFromPROGRESS)
+                return query => query.Where(x => x.GUID == live_PROGRESS.GUID_PROJECT);
+            else
+                return query => query.Where(x => x.GUID == p6_baseline_entity.project_guid);
         }
 
         private Func<IRepositoryQuery<ESTIMATION_DIRECT>, IQueryable<ESTIMATION_DIRECT>> ESTIMATION_DIRECTProjectionFunc()
         {
-            return query => query.Where(x => x.GUID == p6_baseline_entity.EntityKey);
-        }
-
-        private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == WorkpackType.SiteDirect);
+            if (isFromPROGRESS)
+                return query => query.Where(x => x.GUID_PROJECT == live_PROGRESS.GUID_PROJECT && x.STATUS == EstimationStatus.Live);
+            else
+                return query => query.Where(x => x.GUID == p6_baseline_entity.EntityKey);
         }
 
         private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()
@@ -105,24 +101,14 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.INTERNAL_NUM == BluePrintsResources.WorkpackDefaultConstructionPhase);
         }
 
-        private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROJECT == loadESTIMATION_DIRECT.PROJECT.GUID && x.GUID_DEPARTMENT == defaultConstructionDEPARTMENT.GUID && x.COST_GROUP == CostGroup.Site);
-        }
-
-        private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROJECT == loadESTIMATION_DIRECT.PROJECT.GUID);
-        }
-
         private Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
         {
             return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID));
         }
 
-        private Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ESTIMATION_DIRECT_ITEM>> ESTIMATION_DIRECT_ITEMProjectionFunc()
+        private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_ESTIMATION_DIRECT == loadESTIMATION_DIRECT.GUID);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.GUID_DEPARTMENT == defaultConstructionDEPARTMENT.GUID && x.COST_GROUP == CostGroup.Site);
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
@@ -131,11 +117,11 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ESTIMATION_DIRECT_ITEMProjection>>
+        protected override Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ESTIMATION_DIRECT_ITEMProgress>>
             ConstructMainViewModelProjection()
         {
             IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = GetEntities<P6_ASSIGNMENT>();
-            return query => ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Rates_Transformation(query, loaderCollection.GetCollection<RATE>(), STOCK_CODECollection, loaderCollection.GetCollection<COMMODITY_CODE>(), P6_ASSIGNMENTS);
+            return query => ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query, loaderCollection.GetCollection<RATE>(), STOCK_CODECollection, loaderCollection.GetCollection<COMMODITY_CODE>(), live_PROGRESS, PROGRESS_ITEMCollection, P6_ASSIGNMENTS);
         }
         #endregion
 
@@ -148,58 +134,11 @@ namespace BluePrints.ViewModels
             get { return "ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper"; }
         }
 
-        public IEnumerable<Data.PHASE> PHASECollection
+        public IEnumerable<RATE> RATECollection
         {
             get
             {
-                var collection = GetEntities<Data.PHASE>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
-                return collection;
-            }
-        }
-
-        public IEnumerable<WORKPACK> WORKPACKCollection
-        {
-            get
-            {
-                var collection = GetEntities<WORKPACK>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.INTERNAL_NAME1);
-                return collection;
-            }
-        }
-
-        public IEnumerable<AREA> AREACollection
-        {
-            get
-            {
-                var collection = GetEntities<AREA>();
-                if (collection != null)
-                    collection = collection.Where(x => x.GUID_PARENT == null).OrderBy(x => x.INTERNAL_NUM);
-                return collection;
-            }
-        }
-
-        public IEnumerable<AREA> SUBAREACollection
-        {
-            get
-            {
-                var collection = GetEntities<AREA>();
-                if (collection != null)
-                    collection = collection.Where(x => x.GUID_PARENT != null).OrderBy(x => x.INTERNAL_NUM);
-                return collection;
-            }
-        }
-
-        public IEnumerable<DISCIPLINE> DISCIPLINECollection
-        {
-            get
-            {
-                var collection = GetEntities<DISCIPLINE>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.NAME);
-                return collection;
+                return GetEntities<RATE>();
             }
         }
 

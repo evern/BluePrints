@@ -181,9 +181,35 @@ namespace BluePrints.Common.Projections
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries
     {
+        public static IQueryable<ESTIMATION_DIRECT_ITEMProgress> IDeliverable_Progress_Transformation(
+            IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS,
+            IEnumerable<RATE> RATES, IEnumerable<STOCK_CODE> STOCK_CODES, IEnumerable<COMMODITY_CODE> COMMODITY_CODES, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null)
+        {
+            var PROGRESS_ITEMSByOriginalGuid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
+            List<ESTIMATION_DIRECT_ITEMProjection> estimation_direct_item_rates =
+            ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Rates_Transformation(ESTIMATION_DIRECT_ITEMS,
+                                                                                            RATES,
+                                                                                            STOCK_CODES,
+                                                                                            COMMODITY_CODES).ToList();
+
+            List<ESTIMATION_DIRECT_ITEMProgress> estimation_direct_item_progresses = new List<ESTIMATION_DIRECT_ITEMProgress>();
+            foreach (ESTIMATION_DIRECT_ITEMProjection estimation_direct_item_rate in estimation_direct_item_rates)
+            {
+                ESTIMATION_DIRECT_ITEMProgress newEstimation_Direct_itemProgress = new ESTIMATION_DIRECT_ITEMProgress();
+                newEstimation_Direct_itemProgress.P6_Assignments = P6_ASSIGNMENTS == null ? null : P6_ASSIGNMENTS.Where(assignment => assignment.GUID_ORIGINAL == estimation_direct_item_rate.OriginalEntityKey).ToList();
+                newEstimation_Direct_itemProgress.Live_PROGRESS = PROGRESS;
+                newEstimation_Direct_itemProgress.Entity = estimation_direct_item_rate;
+                ProgressQueries.SetReportablePROGRESS_ITEM(newEstimation_Direct_itemProgress, PROGRESS_ITEMSByOriginalGuid);
+                newEstimation_Direct_itemProgress.SetReportingDataDate(PROGRESS.DATA_DATE);
+                estimation_direct_item_progresses.Add(newEstimation_Direct_itemProgress);
+            }
+
+            return estimation_direct_item_progresses.AsQueryable();
+        }
+
         public static IQueryable<ESTIMATION_DIRECT_ITEMProjection> IDeliverable_Rates_Transformation(
             IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, 
-            IEnumerable<RATE> RATES, IEnumerable<STOCK_CODE> STOCK_CODES, IEnumerable<COMMODITY_CODE> COMMODITY_CODES, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null)
+            IEnumerable<RATE> RATES, IEnumerable<STOCK_CODE> STOCK_CODES, IEnumerable<COMMODITY_CODE> COMMODITY_CODES)
         {
             return
                 ESTIMATION_DIRECT_ITEMS.OrderBy(x => x.CREATED).ToArray()
@@ -201,8 +227,7 @@ namespace BluePrints.Common.Projections
                                 .Where(commodity_code =>
                                 commodity_code.GUID_AREA == estimate_direct_item.GUID_AREA 
                                 && commodity_code.GUID_SUBAREA == estimate_direct_item.GUID_SUBAREA 
-                                && commodity_code.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE).OrderBy(x => x.CODE),
-                                P6_Assignments = P6_ASSIGNMENTS == null ? null : P6_ASSIGNMENTS.Where(assignment => assignment.GUID_ORIGINAL == estimate_direct_item.GUID_ORIGINAL).ToList()
+                                && commodity_code.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE).OrderBy(x => x.CODE)
                             }).AsQueryable();
         }
     }

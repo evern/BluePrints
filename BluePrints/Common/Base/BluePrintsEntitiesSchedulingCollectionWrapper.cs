@@ -50,6 +50,13 @@ namespace BluePrints.Common.Base
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJECT, P6PROJECTProjectionFunc, x => loadP6PROJECT = x);
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.TASK, P6TASKProjectionFunc);
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJWBS, PROJWBSProjectionFunc);
+
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
+            loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
+            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
+            loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
+
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -66,6 +73,16 @@ namespace BluePrints.Common.Base
                 projectName = p6_baseline_entity.P6_Baseline_Name;
 
             return query => query.Where(x => x.proj_short_name == projectName);
+        }
+
+        private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == WorkpackType.SiteDirect);
+        }
+
+        private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<TASK>, IQueryable<TASK>> P6TASKProjectionFunc()
@@ -104,7 +121,7 @@ namespace BluePrints.Common.Base
 
         protected P6Data.PROJECT loadP6PROJECT;
         protected PROGRESS live_PROGRESS;
-        protected IHaveP6Baselines p6_baseline_entity { get; private set; }
+        protected IHaveP6Baselines p6_baseline_entity { get; set; }
         protected Data.PROJECT loadPROJECT;
         protected BaselineMappingSelectionType mappingType;
 
@@ -131,16 +148,28 @@ namespace BluePrints.Common.Base
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<TMainProjectionEntity> entities)
         {
-            if(Activities_Source.Count > 0)
+            if (isFromPROGRESS)
             {
-                Beg = Activities_Source.Where(x => x.Start != null).Min(x => (DateTime)x.Start);
-                End = Activities_Source.Where(x => x.End != null).Max(x => (DateTime)x.End);
+                mainThreadDispatcher.BeginInvoke(new Action(() => OnViewModelLoaded(entities)));
+                return;
+            }
 
-                VisBeg = new DateTime(Beg.Ticks);
-                VisEnd = new DateTime(End.Ticks);
+            if (Activities_Source.Count > 0)
+            {
+                IEnumerable<P6_Activity> activities_with_start_date = Activities_Source.Where(x => x.Start != null);
+                IEnumerable<P6_Activity> activities_with_end_date = Activities_Source.Where(x => x.End != null);
 
-                SelBeg = new DateTime(Beg.Ticks);
-                SelEnd = new DateTime(End.Ticks);
+                if(activities_with_start_date.Count() > 0 && activities_with_end_date.Count() > 0)
+                {
+                    Beg = activities_with_start_date.Min(x => (DateTime)x.Start);
+                    End = activities_with_end_date.Max(x => (DateTime)x.End);
+
+                    VisBeg = new DateTime(Beg.Ticks);
+                    VisEnd = new DateTime(End.Ticks);
+
+                    SelBeg = new DateTime(Beg.Ticks);
+                    SelEnd = new DateTime(End.Ticks);
+                }
             }
 
             MainViewModel.SetParentViewModel(this);
@@ -310,6 +339,7 @@ namespace BluePrints.Common.Base
         private void Selected_Deliverables_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             mainThreadDispatcher.BeginInvoke(new Action(() => SetMaxUnits()));
+            this.RaisePropertyChanged(x => x.Assignment_MinValue);
             refresh_p6_assignments();
         }
 
@@ -356,6 +386,7 @@ namespace BluePrints.Common.Base
                     LOW_VALUE = deliverable.Assigned_Percentage + 0.01m,
                     P6_ACTIVITYID = Selected_Activity.P6_ActivityId,
                     GUID_ORIGINAL = deliverable.OriginalEntityKey,
+                    TYPE = progress_type,
                     ISMODIFIEDBASELINE = false
                 });
             }
@@ -625,7 +656,7 @@ namespace BluePrints.Common.Base
                     if(P6PROJWBSCollection.Count() > 0)
                         activities_source.AddRange(P6PROJWBSCollection.OrderBy(x => x.wbs_short_name).Select(x => P6_Activity.Create(x, this)).ToArray().AsEnumerable());
 
-                    summarizeActivities(activities_source);
+                    summarizeActivities(activities_source, true);
                 }
 
                 return activities_source;
@@ -643,7 +674,7 @@ namespace BluePrints.Common.Base
             }
         }
 
-        private void summarizeActivities(IEnumerable<P6_Activity> activities)
+        private void summarizeActivities(IEnumerable<P6_Activity> activities, bool trim = false)
         {
             foreach (var activity in activities)
             {
@@ -653,6 +684,7 @@ namespace BluePrints.Common.Base
                 }
             }
 
+            List<P6_Activity> remove_activities = new List<P6_Activity>();
             foreach (var activity in activities)
                 if (activity.ActivityType == AppointmentActivityType.WBS)
                 {
@@ -664,7 +696,15 @@ namespace BluePrints.Common.Base
                         activity.Start = allChildrenActivities.Min(x => x.Start);
                         activity.End = allChildrenActivities.Max(x => x.End);
                     }
+                    else if(trim)
+                        remove_activities.Add(activity);
                 }
+
+            if(trim)
+            {
+                foreach (P6_Activity activity in remove_activities)
+                    activities_source.Remove(activity);
+            }
         }
 
         private void getAllChildrens(IEnumerable<P6_Activity> allActivities, P6_Activity parentActivity, List<P6_Activity> childrenCollection)
@@ -676,7 +716,9 @@ namespace BluePrints.Common.Base
 
             foreach (var childActivity in childActivities)
             {
-                childrenCollection.Add(childActivity);
+                if(childActivity.ActivityType == AppointmentActivityType.Activity)
+                    childrenCollection.Add(childActivity);
+
                 getAllChildrens(allActivities, childActivity, childrenCollection);
             }
         }
@@ -879,7 +921,7 @@ namespace BluePrints.Common.Base
             }
         }
 
-        protected CollectionViewModel<TASK, TASK, Guid, IBluePrintsEntitiesUnitOfWork> P6TASKCollectionViewModel
+        protected CollectionViewModel<TASK, TASK, int, IP6EntitiesUnitOfWork> P6TASKCollectionViewModel
         {
             get
             {
@@ -887,8 +929,71 @@ namespace BluePrints.Common.Base
                     return null;
 
                 return
-                    (CollectionViewModel<TASK, TASK, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    (CollectionViewModel<TASK, TASK, int, IP6EntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<TASK>();
+            }
+        }
+
+        public IEnumerable<WORKPACK> WORKPACKCollection
+        {
+            get
+            {
+                var collection = GetEntities<WORKPACK>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NAME1);
+                return collection;
+            }
+        }
+
+        public IEnumerable<AREA> AREACollection
+        {
+            get
+            {
+                var collection = GetEntities<AREA>();
+                if (collection != null)
+                    collection = collection.Where(x => x.GUID_PARENT == null).OrderBy(x => x.INTERNAL_NUM);
+                return collection;
+            }
+        }
+
+        public IEnumerable<AREA> SUBAREACollection
+        {
+            get
+            {
+                var collection = GetEntities<AREA>();
+                if (collection != null)
+                    collection = collection.Where(x => x.GUID_PARENT != null).OrderBy(x => x.INTERNAL_NUM);
+                return collection;
+            }
+        }
+
+        public IEnumerable<DEPARTMENT> DEPARTMENTCollection
+        {
+            get
+            {
+                var collection = GetEntities<DEPARTMENT>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
+        public IEnumerable<DISCIPLINE> DISCIPLINECollection
+        {
+            get
+            {
+                var collection = GetEntities<DISCIPLINE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMCollection
+        {
+            get
+            {
+                return GetEntities<PROGRESS_ITEM>();
             }
         }
 

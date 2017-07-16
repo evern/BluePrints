@@ -85,11 +85,8 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, SetBASELINEIsLocked);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
-            loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
-            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, DELIVERABLES_STATUSProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
@@ -99,16 +96,23 @@ namespace BluePrints.ViewModels
         
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
         {
-            return query => query.Where(x => x.GUID == p6_baseline_entity.project_guid);
+            if (isFromPROGRESS)
+                return query => query.Where(x => x.GUID == live_PROGRESS.GUID_PROJECT);
+            else
+                return query => query.Where(x => x.GUID == p6_baseline_entity.project_guid);
         }
 
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
         {
-            return query => query.Where(x => x.GUID == p6_baseline_entity.EntityKey);
+            if (isFromPROGRESS)
+                return query => query.Where(x => x.GUID_PROJECT == live_PROGRESS.GUID_PROJECT && x.STATUS == BaselineStatus.Live);
+            else
+                return query => query.Where(x => x.GUID == p6_baseline_entity.EntityKey);
         }
 
         private void SetBASELINEIsLocked(BASELINE entity)
         {
+            p6_baseline_entity = entity;
             loadBASELINE = entity;
             if (entity.BUDGETED_UNITS != null && entity.BUDGETED_UNITS > 0)
                 SetBaselineLockUnlock?.Invoke(true);
@@ -838,60 +842,11 @@ namespace BluePrints.ViewModels
                 ShowWORKPACKInternalName2();
         }
 
-        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMCollection
-        {
-            get
-            {
-                return GetEntities<PROGRESS_ITEM>();
-            }
-        }
-
         public IEnumerable<RATE> RATECollection
         {
             get
             {
                 return GetEntities<RATE>();
-            }
-        }
-
-        public IEnumerable<WORKPACK> WORKPACKCollection
-        {
-            get
-            {
-                var collection = GetEntities<WORKPACK>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.INTERNAL_NAME1);
-                return collection;
-            }
-        }
-
-        public IEnumerable<Data.PHASE> PHASECollection
-        {
-            get
-            {
-                var collection = GetEntities<Data.PHASE>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
-                return collection;
-            }
-        }
-
-        public IEnumerable<AREA> AREACollection
-        {
-            get
-            {
-                var collection = GetEntities<AREA>();
-                if (collection != null)
-                    collection = collection.Where(x => x.GUID_PARENT == null).OrderBy(x => x.INTERNAL_NUM);
-                return collection;
-            }
-        }
-
-        public IEnumerable<AREA> SUBAREACollection
-        {
-            get
-            {
-                return GetSUBAREACollection();
             }
         }
 
@@ -901,28 +856,6 @@ namespace BluePrints.ViewModels
             if (collection != null)
                 collection = collection.Where(x => x.GUID_PARENT != null).OrderBy(x => x.INTERNAL_NUM);
             return collection;
-        }
-
-        public IEnumerable<DEPARTMENT> DEPARTMENTCollection
-        {
-            get
-            {
-                var collection = GetEntities<DEPARTMENT>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.NAME);
-                return collection;
-            }
-        }
-
-        public IEnumerable<DISCIPLINE> DISCIPLINECollection
-        {
-            get
-            {
-                var collection = GetEntities<DISCIPLINE>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.NAME);
-                return collection;
-            }
         }
 
         public IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection
@@ -944,6 +877,14 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
                 return collection;
+            }
+        }
+
+        public IEnumerable<Data.PHASE> PHASECollection
+        {
+            get
+            {
+                return GetEntities<Data.PHASE>();
             }
         }
 

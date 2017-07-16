@@ -12,20 +12,5 @@ namespace BluePrints
         {
             InitializeComponent();
         }
-
-        private void DXWindow_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Left)
-            {
-                try
-                {
-                    this.DragMove();
-                }
-                catch
-                {
-
-                }
-            }
-        }
     }
 }

@@ -535,7 +535,6 @@
     <Compile Include="ViewModels\REGISTER\REGISTER_NCCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_LLCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_RISKCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEM_ASSIGNMENTViewModel.cs" />
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\User_OffisteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.xaml.cs">
@@ -576,12 +575,6 @@
     </Compile>
     <Compile Include="Views\REGISTER\REGISTER_RISKCollectionView.xaml.cs">
       <DependentUpon>REGISTER_RISKCollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMAssignmentActivityView.xaml.cs">
-      <DependentUpon>BASELINE_ITEMAssignmentActivityView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMAssignmentView.xaml.cs">
-      <DependentUpon>BASELINE_ITEMAssignmentView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
@@ -1338,14 +1331,6 @@
       <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
     <Page Include="Views\REGISTER\REGISTER_RISKCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\BASELINE_ITEM\BASELINE_ITEMAssignmentActivityView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>XamlIntelliSenseFileGenerator</Generator>
-    </Page>
-    <Page Include="Views\BASELINE_ITEM\BASELINE_ITEMAssignmentView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
