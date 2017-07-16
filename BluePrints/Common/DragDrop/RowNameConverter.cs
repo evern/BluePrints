@@ -25,9 +25,9 @@ namespace BluePrints.Common
                 return deliverable.Deliverable_Name;
             }
 
-            if (value is GanttData)
+            if (value is P6_Activity)
             {
-                var p6Activity = value as GanttData;
+                var p6Activity = value as P6_Activity;
 
                 return p6Activity.Description;
             }

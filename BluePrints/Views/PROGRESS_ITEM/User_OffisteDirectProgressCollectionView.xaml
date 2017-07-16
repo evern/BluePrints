@@ -17,7 +17,7 @@
              xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
              xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
              mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
-             DataContext="{dxmvvm:ViewModelSource viewmodel:User_OffisteDirectProgressCollectionViewModelWrapper}">
+             DataContext="{dxmvvm:ViewModelSource viewmodel:User_OffsiteDirectProgressCollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

@@ -103,7 +103,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public interface ICanTrack
     {
-        bool? Track { get; }
+        Estimation_DirectProgressType Progress_Type { get; }
     }
 
     public interface IHaveCosts
@@ -140,8 +140,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         DELIVERABLES_STATUS Deliverable_Status { get; }
     }
 
-    public interface IHaveP6Baselines
+    public interface IHaveP6Baselines : IGuidEntityKey
     {
+        Guid project_guid { get; }
         string P6_Baseline_Name { get; }
         string P6_Mod_Baseline_Name { get; }
     }

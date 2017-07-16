@@ -21,51 +21,20 @@ using System.Collections.ObjectModel;
 namespace BluePrints.ViewModels
 {
     public class SiteDirectProgressCollectionViewModelWrapper :
-        BluePrintsEntitiesCollectionWrapper
+        BluePrintsEntitiesProgressCollectionWrapper
         <ESTIMATION_DIRECT_ITEM, ReportablesDisplay, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of SiteDirectProgressCollectionViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static SiteDirectProgressCollectionViewModelWrapper Create(
-            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        public static SiteDirectProgressCollectionViewModelWrapper Create()
         {
-            return ViewModelSource.Create(() => new SiteDirectProgressCollectionViewModelWrapper(unitOfWorkFactory));
-        }
-
-        //ensure mainviewmodel is loaded before calling background worker
-        private DispatcherTimer onMainViewModelFirstLoadedTimer;
-        //calculates the planned values only for each deliverables
-        BackgroundWorker calculatePlannedBackgroundWorker;
-
-        /// <summary>
-        /// Initializes a new instance of the DISCIPLINECollectionViewModelWrapper class.
-        /// This constructor is declared protected to avoid undesired instantiation of the DISCIPLINECollectionViewModelWrapper type without the POCO proxy factory.
-        /// </summary>
-        /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected SiteDirectProgressCollectionViewModelWrapper(
-            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
-        {
-            onMainViewModelFirstLoadedTimer = new DispatcherTimer();
-            onMainViewModelFirstLoadedTimer.Interval = new TimeSpan(0, 0, 0, 1);
-            onMainViewModelFirstLoadedTimer.Tick += onMainViewModelFirstLoaded;
-            calculatePlannedBackgroundWorker = new BackgroundWorker();
-            calculatePlannedBackgroundWorker.DoWork += calculatePlannedBackgroundWorker_DoWork;
-            calculatePlannedBackgroundWorker.RunWorkerCompleted += CalculatePlannedBackgroundWorker_RunWorkerCompleted;
-            calculatePlannedBackgroundWorker.WorkerSupportsCancellation = true;
+            return ViewModelSource.Create(() => new SiteDirectProgressCollectionViewModelWrapper());
         }
 
         #region Database Operations
-
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        private PROJECT loadPROJECT;
-        private PROGRESS loadPROGRESS;
         private ESTIMATION_DIRECT loadESTIMATION_DIRECT;
-        private bool isQueryForLiveStatus;
-        private DispatcherTimer delayedPROGRESSSavingDispatcher;
-        
         protected override void InitializeParameters(object parameter)
         {
             delayedPROGRESSSavingDispatcher = new DispatcherTimer();
@@ -87,15 +56,12 @@ namespace BluePrints.ViewModels
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, SetPROGRESStoCurrentDateOnLoaded);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc, x => loadESTIMATION_DIRECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECT_ITEMS, ESTIMATION_DIRECT_ITEMProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
-            InvokeEntitiesLoaderDescriptionLoading();
+
+            base.InitializeAndLoadEntitiesLoaderDescription();
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
@@ -104,21 +70,6 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID == loadPROJECT.GUID);
             else
                 return query => query.Where(x => x.GUID == loadPROGRESS.GUID_PROJECT).OrderBy(x => x.NUMBER);
-        }
-
-        private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
-        {
-            if (isQueryForLiveStatus)
-                return
-                    query =>
-                        query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == ProgressType.Construct && x.STATUS == ProgressStatus.Live);
-            else
-                return query => query.Where(x => x.GUID == loadPROGRESS.GUID && x.TYPE == ProgressType.Construct);
-        }
-
-        private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()
@@ -136,19 +87,9 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.COST_GROUP == CostGroup.Site);
-        }
-
         private Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
-        }
-
-        private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID);
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
@@ -167,130 +108,6 @@ namespace BluePrints.ViewModels
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
-        }
-        #endregion
-
-        #region Stats Calculation
-        private void onMainViewModelFirstLoaded(object sender, EventArgs e)
-        {
-            onMainViewModelFirstLoadedTimer.Stop();
-            calculatePlannedBackgroundWorker.RunWorkerAsync();
-        }
-
-        private void calculatePlannedBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            isBusy = true;
-            if (calculatePlannedBackgroundWorker.CancellationPending)
-            {
-                e.Cancel = true;
-                return;
-            }
-
-            BackgroundWorkerBuildStats();
-        }
-
-        private void CalculatePlannedBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            isBusy = false;
-            mainThreadDispatcher.BeginInvoke(new Action(() => RefreshView()));
-        }
-
-        protected virtual void BackgroundWorkerBuildStats()
-        {
-
-        }
-
-        bool isFirstLoaded { get; set; }
-        private void SetPROGRESStoCurrentDateOnLoaded(PROGRESS entity)
-        {
-            loadPROGRESS = entity;
-            if (!isFirstLoaded)
-                mainThreadDispatcher.BeginInvoke(new Action(() => DateChange(DateNavigationType.Current)));
-        }
-
-        private void delayedPROGRESSSavingDispatcher_Tick(object sender, EventArgs e)
-        {
-            delayedPROGRESSSavingDispatcher.Stop();
-            var PROGRESSCollectionViewModel =
-                (CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>)
-                loaderCollection.GetViewModel<PROGRESS>();
-            mainThreadDispatcher.BeginInvoke(new Action(() => PROGRESSCollectionViewModel.Save(loadPROGRESS)));
-            CancelBackgroundWorker();
-            FullRefresh();
-        }
-
-        public bool isBusy { get; set; }
-        private void DateChange(DateNavigationType navigationType)
-        {
-            if (isBusy)
-                return;
-
-            var interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
-            int multiplier;
-            if (navigationType == DateNavigationType.Current)
-            {
-                var timeDifferenceFromCurrent = loadPROGRESS.DATA_DATE - DateTime.Now;
-
-                if (timeDifferenceFromCurrent.TotalSeconds > interval.TotalSeconds)
-                {
-                    do
-                    {
-                        loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(-1 * interval.Days);
-                    } while (loadPROGRESS.DATA_DATE > DateTime.Now);
-                }
-                else
-                {
-                    if (timeDifferenceFromCurrent.TotalSeconds < -1 * interval.TotalSeconds)
-                        do
-                        {
-                            loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(1 * interval.Days);
-                        } while (loadPROGRESS.DATA_DATE < DateTime.Now - interval);
-                    else
-                        return;
-                }
-            }
-            else
-            {
-                multiplier = navigationType == DateNavigationType.Forward ? 1 : -1;
-                loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(multiplier * interval.Days);
-            }
-
-            delayedPROGRESSSavingDispatcher.Start();
-        }
-
-        public bool CanDateBackward()
-        {
-            //if (isBusy)
-            //    return false;
-
-            if (MainViewModel == null || MainViewModel.IsLoading)
-                return false;
-
-            if (loadPROGRESS.DATA_DATE > loadPROGRESS.PROGRESS_START)
-                return true;
-
-            return false;
-        }
-
-        public bool CanDateForward()
-        {
-            //if (isBusy)
-            //    return false;
-
-            if (MainViewModel == null || MainViewModel.IsLoading)
-                return false;
-
-            return true;
-        }
-
-        public void DateForward()
-        {
-            DateChange(DateNavigationType.Forward);
-        }
-
-        public void DateBackward()
-        {
-            DateChange(DateNavigationType.Backward);
         }
         #endregion
 
@@ -392,39 +209,6 @@ namespace BluePrints.ViewModels
             get { return "SiteDirectProgressCollectionViewModelWrapper"; }
         }
 
-        public string DataDate
-        {
-            get
-            {
-                if (loadPROGRESS == null || loadPROGRESS.DATA_DATE == null)
-                    return string.Empty;
-
-                return loadPROGRESS.DATA_DATE.ToString("g");
-            }
-        }
-
-        public IEnumerable<AREA> AREACollection
-        {
-            get
-            {
-                var collection = GetEntities<AREA>();
-                if (collection != null)
-                    collection = collection.Where(x => x.GUID_PARENT == null).OrderBy(x => x.INTERNAL_NUM);
-                return collection;
-            }
-        }
-
-        public IEnumerable<AREA> SUBAREACollection
-        {
-            get
-            {
-                var collection = GetEntities<AREA>();
-                if (collection != null)
-                    collection = collection.Where(x => x.GUID_PARENT != null).OrderBy(x => x.INTERNAL_NUM);
-                return collection;
-            }
-        }
-
         public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection
         {
             get
@@ -456,37 +240,24 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<RATE> RATECollection
+        protected override CostGroup cost_group => CostGroup.Site;
+
+        protected override IEnumerable<IReportable> ReportableCollection => MainViewModel == null || MainViewModel.Entities == null ? new ObservableCollection<ESTIMATION_DIRECT_ITEMProgress>() : MainViewModel.Entities.Select(x => x.ProgressItem.Reportable);
+
+        private ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper ESTIMATION_DIRECT_ITEM_scheduling_view_model;
+        protected override IEntitiesSchedulingCollectionWrapper scheduling_view_model
         {
             get
             {
-                var collection = GetEntities<RATE>();
-                return collection;
+                if (ESTIMATION_DIRECT_ITEM_scheduling_view_model == null)
+                    ESTIMATION_DIRECT_ITEM_scheduling_view_model = ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper.Create();
+
+                return ESTIMATION_DIRECT_ITEM_scheduling_view_model;
             }
+            set => ESTIMATION_DIRECT_ITEM_scheduling_view_model = (ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper)value;
         }
 
-        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMCollection
-        {
-            get
-            {
-                var collection = GetEntities<PROGRESS_ITEM>();
-                return collection;
-            }
-        }
-
-        public CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>
-            PROGRESS_ITEMSCollectionViewModel
-        {
-            get
-            {
-                if (MainViewModel == null)
-                    return null;
-
-                return
-                    (CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>)
-                    loaderCollection.GetViewModel<PROGRESS_ITEM>();
-            }
-        }
+        protected override ProgressType progress_type => ProgressType.Construct;
         #endregion
 
         #region Disposing

@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -37,9 +38,7 @@ namespace BluePrints.Data
 
         public decimal ESTIMATED_QUANTITY { get; set; }
 
-        public bool TRACK { get; set; }
-
-        public bool STANDALONE { get; set; }
+        public Estimation_DirectProgressType PROGRESS_TYPE { get; set; }
 
         public DateTime CREATED { get; set; }
 

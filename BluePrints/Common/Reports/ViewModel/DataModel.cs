@@ -24,7 +24,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             get
             {
                 PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
-                decimal totalCurrentUnits = Reportables.Where(x => (bool)x.Track).Where(x => x.PROGRESS_ITEM_Current != null).Sum(x => x.PROGRESS_ITEM_Current.EARNED_UNITS);
+                decimal totalCurrentUnits = Reportables.Where(x => x.Progress_Type == Estimation_DirectProgressType.Trackable).Where(x => x.PROGRESS_ITEM_Current != null).Sum(x => x.PROGRESS_ITEM_Current.EARNED_UNITS);
                 newPROGRESS_ITEM.EARNED_UNITS = totalCurrentUnits;
                 newPROGRESS_ITEM.EARNED_DATE = ReportingDataDate;
                 return newPROGRESS_ITEM;
@@ -35,7 +35,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                return Reportables.Where(x => (bool)x.Track).SelectMany(x => x.PROGRESS_ITEM_BeforeDataDate);
+                return Reportables.Where(x => x.Progress_Type == Estimation_DirectProgressType.Trackable).SelectMany(x => x.PROGRESS_ITEM_BeforeDataDate);
             }
         }
 
@@ -43,7 +43,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                return Reportables.Where(x => (bool)x.Track).SelectMany(x => x.PROGRESS_ITEM_AfterDataDate);
+                return Reportables.Where(x => x.Progress_Type == Estimation_DirectProgressType.Trackable).SelectMany(x => x.PROGRESS_ITEM_AfterDataDate);
             }
         }
 
@@ -51,7 +51,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                return Reportables.Where(x => (bool)x.Track).SelectMany(x => x.PROGRESS_ITEM_UpToCurrentDataDate);
+                return Reportables.Where(x => x.Progress_Type == Estimation_DirectProgressType.Trackable).SelectMany(x => x.PROGRESS_ITEM_UpToCurrentDataDate);
             }
         }
 
@@ -84,7 +84,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     }
 
-    public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>
+    public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ICanAssignP6
     {
         public BASELINE_ITEMProgress()
         {
@@ -133,6 +133,38 @@ namespace BluePrints.Common.ViewModel.Reporting
                 }
 
                 return MaxPercentage;
+            }
+        }
+
+        private List<P6_ASSIGNMENT> p6_assignments;
+        public List<P6_ASSIGNMENT> P6_Assignments
+        {
+            get
+            {
+                if (p6_assignments == null)
+                    p6_assignments = new List<P6_ASSIGNMENT>();
+
+                return p6_assignments;
+            }
+            set
+            {
+                p6_assignments = value;
+            }
+        }
+
+        public decimal Remaining_Percentage
+        {
+            get
+            {
+                return 1 - Assigned_Percentage;
+            }
+        }
+
+        public decimal Assigned_Percentage
+        {
+            get
+            {
+                return P6_Assignments.Sum(x => (x.HIGH_VALUE - (x.LOW_VALUE - 0.01m)));
             }
         }
     }
@@ -207,15 +239,15 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal MaxCurrentQuantity => Total_Quantity - TotalInstalledQuantity;
 
-        public bool? Track
+        public Estimation_DirectProgressType Progress_Type
         {
             get
             {
                 ICanTrack trackableEntity = Entity as ICanTrack;
                 if (trackableEntity != null)
-                    return trackableEntity.Track;
+                    return trackableEntity.Progress_Type;
 
-                return null;
+                return Estimation_DirectProgressType.Standalone;
             }
         }
 

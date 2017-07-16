@@ -1,79 +1,79 @@
-﻿using BaseModel.DataModel;
+﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
+using BaseModel.Helpers;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
-using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
+using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
-using BluePrints.Common.ViewModel;
+using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
+using BluePrints.Reports;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Bars;
+using DevExpress.Xpf.Grid;
+using DevExpress.Xpf.Printing;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Windows;
 
 namespace BluePrints.ViewModels
 {
-    public class BASELINE_ITEMSchedulingViewModelWrapper :
-        BluePrintsEntitiesCollectionWrapper
-        <BASELINE_ITEM, BASELINE_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>
+    /// <summary>
+    /// Represents the single BASELINE object view model.
+    /// </summary>
+    public partial class BASELINE_ITEMSchedulingViewModelWrapper :
+        BluePrintsEntitiesSchedulingCollectionWrapper
+        <BASELINE_ITEM, BASELINE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>
     {
+        public Action ShowWORKPACKInternalName1;
+        public Action ShowWORKPACKInternalName2;
+        public Action<bool> SetBaselineLockUnlock;
+
         /// <summary>
-        /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
+        /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static BASELINE_ITEMSchedulingViewModelWrapper Create()
+        public static BASELINE_ITEMSchedulingViewModelWrapper Create(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new BASELINE_ITEMSchedulingViewModelWrapper());
+            return ViewModelSource.Create(() => new BASELINE_ITEMSchedulingViewModelWrapper(unitOfWorkFactory));
         }
 
-        #region Used as Dependency Delegate
-
-        public Action<IEnumerable<BASELINE_ITEMProjection>> OnMappingViewModelLoaded { get; set; }
-
-        private bool isFromPROGRESS
+        /// <summary>
+        /// Initializes a new instance of the BASELINEViewModel class.
+        /// This constructor is declared protected to avoid undesired instantiation of the BASELINEViewModel type without the POCO proxy factory.
+        /// </summary>
+        /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
+        protected BASELINE_ITEMSchedulingViewModelWrapper(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            get { return OnMappingViewModelLoaded != null; }
         }
 
-        #endregion
-
-        #region Database Operation
-
-        private Data.PROJECT loadPROJECT;
-        private P6Data.PROJECT loadP6PROJECT;
-        private PROGRESS loadPROGRESS;
+        #region Database Operations
         private BASELINE loadBASELINE;
-        private BaselineMappingSelectionType mappingType;
-
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
-        private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory =
-            P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
-        private IDialogService ActivityDetailDialogService
+        public bool IsPhaseVisible
         {
-            get { return this.GetRequiredService<IDialogService>("ActivityIdDialog"); }
+            get
+            {
+                if (loadPROJECT == null)
+                    return false;
+
+                return !loadPROJECT.USELEGACYWORKPACK;
+            }
         }
 
-        protected override void InitializeParameters(object parameter)
-        {
-            var obj = (object[]) parameter;
-
-            if (isFromPROGRESS)
-                loadPROGRESS = (PROGRESS) obj[0];
-            else
-                loadBASELINE = (BASELINE) obj[0];
-
-            mappingType = (BaselineMappingSelectionType) obj[1];
-        }
+        protected override ProgressType progress_type => ProgressType.Design;
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
         {
@@ -81,64 +81,54 @@ namespace BluePrints.ViewModels
             base.CleanUpEntitiesLoader();
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, x => loadBASELINE = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, x => loadPROGRESS = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, SetBASELINEIsLocked);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.P6_ASSIGNMENTS, P6_ASSIGNMENTProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
-            loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
-            loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJECT, P6PROJECTProjectionFunc, x => loadP6PROJECT = x);
-            loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.TASK, P6TASKProjectionFunc);
-            loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJWBS, PROJWBSProjectionFunc);
-            InvokeEntitiesLoaderDescriptionLoading();
-        }
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
+            loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
+            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
+            loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, DELIVERABLES_STATUSProjectionFunc);
+            loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
 
+            base.InitializeAndLoadEntitiesLoaderDescription();
+        }
+        
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
         {
-            return query => query.Where(x => x.GUID == loadBASELINE.GUID_PROJECT);
-        }
-
-        private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
-        {
-            if (isFromPROGRESS)
-                return query => query.Where(x => x.GUID == loadPROGRESS.GUID);
-            else
-                return
-                    query =>
-                        query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == ProgressStatus.Live && x.TYPE == ProgressType.Design);
+            return query => query.Where(x => x.GUID == p6_baseline_entity.project_guid);
         }
 
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
         {
-            if (isFromPROGRESS)
-                return
-                    query =>
-                        query.Where(x => x.GUID_PROJECT == loadPROGRESS.GUID_PROJECT && x.STATUS == BaselineStatus.Live);
+            return query => query.Where(x => x.GUID == p6_baseline_entity.EntityKey);
+        }
+
+        private void SetBASELINEIsLocked(BASELINE entity)
+        {
+            loadBASELINE = entity;
+            if (entity.BUDGETED_UNITS != null && entity.BUDGETED_UNITS > 0)
+                SetBaselineLockUnlock?.Invoke(true);
             else
-                return query => query.Where(x => x.GUID == loadBASELINE.GUID);
+                SetBaselineLockUnlock?.Invoke(false);
         }
 
         private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
         {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == WorkpackType.OffsiteDirect);
+        }
+
+        private Func<IRepositoryQuery<Data.PHASE>, IQueryable<Data.PHASE>> PHASEProjectionFunc()
+        {
+            return query => query.Where(x => x.PHASE_TYPE == PhaseType.Design);
+        }
+
+        private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
+        {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
-        }
-
-        private Func<IRepositoryQuery<P6_ASSIGNMENT>, IQueryable<P6_ASSIGNMENT>>
-            P6_ASSIGNMENTProjectionFunc()
-        {
-            return
-                query =>
-                    query.Where(
-                        x =>
-                            x.GUID_PROJECT == loadPROJECT.GUID);
-        }
-
-        private Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BASELINE_ITEMProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID);
         }
 
         private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
@@ -146,33 +136,21 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
+        private Func<IRepositoryQuery<DELIVERABLES_STATUS>, IQueryable<DELIVERABLES_STATUS>> DELIVERABLES_STATUSProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<P6Data.PROJECT>, IQueryable<P6Data.PROJECT>> P6PROJECTProjectionFunc
-            ()
+        private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
         {
-            string projectName;
-            if (isFromPROGRESS)
-                projectName = loadPROGRESS.P6PROGRESS_NAME;
-            else if (mappingType == BaselineMappingSelectionType.Modified)
-                projectName = loadBASELINE.P6MODBASELINE_NAME;
-            else
-                projectName = loadBASELINE.P6BASELINE_NAME;
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == ProgressStatus.Live);
 
-            return query => query.Where(x => x.proj_short_name == projectName);
         }
 
-        private Func<IRepositoryQuery<TASK>, IQueryable<TASK>> P6TASKProjectionFunc()
+        private Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
         {
-            return query => query.Where(x => x.proj_id == loadP6PROJECT.proj_id);
-        }
-
-        private Func<IRepositoryQuery<PROJWBS>, IQueryable<PROJWBS>> PROJWBSProjectionFunc()
-        {
-            return query => query.Where(x => x.proj_id == loadP6PROJECT.proj_id);
+            return
+                query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Baseline_Report.ToString());
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
@@ -181,78 +159,698 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProjection>>
+        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             ConstructMainViewModelProjection()
         {
-            IEnumerable<RATE> RATES = loaderCollection.GetCollection<RATE>();
-            IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = loaderCollection.GetCollection<P6_ASSIGNMENT>();
-
-            return
-                query =>
-                    BASELINE_ITEMProjectionQueries.IDeliverable_Rates_Transformation
-                    (query.Where(x => x.GUID_BASELINE == baseline_guid).OrderBy(x => x.INTERNAL_NUM), RATES, P6_ASSIGNMENTS);
+            IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = GetEntities<P6_ASSIGNMENT>();
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, live_PROGRESS, RATECollection, PROGRESS_ITEMCollection, null, null, P6_ASSIGNMENTS);
         }
 
-        //Entity save invoke property
-        private Guid baseline_guid
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
         {
-            get { return loadBASELINE.GUID; }
+            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
+            MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
+            MainViewModel.PasteListener = this.PasteListener;
+            MainViewModel.SetParentViewModel(this);
+
+            base.AssignCallBacksAndRaisePropertyChange(entities);
+            //mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
 
-        public
-            Action
-            <BluePrints.Data.PROJECT, IEnumerable<TASK>, IEnumerable<PROJWBS>, IEnumerable<BASELINE_ITEMProjection>,
-                CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>, bool
-            > WinformFormHostInitialization { get; set; }
-
-        public Action RefreshWinformView { get; set; }
-
-        //Used by baseline_item scheduling view model to fix assignment
-        public Func<object> OnEntitiesLoadedParameterCallBack;
-        public Action<IEnumerable<BASELINE_ITEMProjection>, object> OnEntitiesLoadedWithParameterCallBack;
-
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProjection> entities)
+        #region Collection Call Backs
+        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
-            if (OnEntitiesLoadedWithParameterCallBack != null)
+            if (changedType == typeof(PROGRESS_ITEM))
             {
-                object onLoadedParameter = OnEntitiesLoadedParameterCallBack?.Invoke();
-                OnEntitiesLoadedWithParameterCallBack?.Invoke(entities, onLoadedParameter);
-
-                //Self destruct after entities has been returned
-                CleanUpEntitiesLoader();
+                FullRefreshWithoutClearingUndoRedo();
                 return;
             }
 
-            if (isFromPROGRESS)
-                mainThreadDispatcher.BeginInvoke(new Action(() => OnMappingViewModelLoaded(entities)));
+            base.OnAfterAffectingEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
+        }
+
+        private void PasteListener(PasteStatus pasteStatus)
+        {
+
+        }
+
+        protected override void OnBeforeApplyProjectionPropertiesToEntity(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity)
+        {
+            projectionEntity.Entity.Entity.GUID_BASELINE = loadBASELINE.GUID;
+            //because TProjection is not IProjection<TMainEntity>, do it manually here
+            DataUtils.ShallowCopy(entity, projectionEntity.Entity.Entity);
+            base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
+        }
+
+        public void OnEntitiesSavedCallBack(Guid primaryKey, BASELINE_ITEMProgress projectionEntity,
+            BASELINE_ITEM entity, bool isNewEntity)
+        {
+            projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
+        }
+        #endregion
+
+        #endregion
+
+        #region View Behavior
+
+        private void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
+        {
+            //estimated hours field is disabled but just in case
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEM().ESTIMATED_HOURS))
+            {
+                BASELINE_ITEMProgress validateEntity = (BASELINE_ITEMProgress)e.Row;
+                if (validateEntity.Entity.Entity.BY_DURATION && ((decimal)e.Value) > 0)
+                {
+                    e.IsValid = false;
+                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                    e.ErrorContent = "Cannot set estimated hours when deliverable is by duration";
+                }
+            }
+            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
+            {
+                BASELINE_ITEMProgress validateEntity = (BASELINE_ITEMProgress)e.Row;
+                if (validateEntity.Earned_Units_Total > 0)
+                {
+                    e.IsValid = false;
+                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                    e.ErrorContent = "Cannot change deliverable tracking type when percentage is already earned";
+                }
+            }
+        }
+
+        /// <summary>
+        /// Allow undo-redo behavior to be added for automated cell value changing. This behavior doesn't have to be applied on new row because AddUndo for EntityMessageType.Added is already handling this
+        /// </summary>
+        protected override void CellValueExistingRowChanging(CellValueChangedEventArgs e)
+        {
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                            BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                            BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
+            {
+                var activeBASELINE_ITEM = (BASELINE_ITEMProgress)e.Row;
+                if ((bool)e.Value)
+                {
+                    decimal oldValue = activeBASELINE_ITEM.Entity.Entity.ESTIMATED_HOURS;
+                    if (oldValue > 0)
+                    {
+                        decimal newValue = 0;
+                        string estimatedHoursFieldName = BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                        BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                        BindableBase.GetPropertyName(() => new BASELINE_ITEM().ESTIMATED_HOURS);
+                        activeBASELINE_ITEM.Entity.Entity.ESTIMATED_HOURS = newValue;
+                        MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(activeBASELINE_ITEM, estimatedHoursFieldName, oldValue, newValue, EntityMessageType.Changed);
+                    }
+                }
+            }
+            else if (e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA))
+            {
+                var activeBASELINE_ITEM = (BASELINE_ITEMProgress)e.Row;
+                Guid? oldValue = activeBASELINE_ITEM.Entity.Entity.GUID_SUBAREA;
+                if (oldValue != null)
+                {
+                    Guid? newValue = (Guid?)null;
+                    string subAreaFieldName = BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                    BindableBase.GetPropertyName(() => new BASELINE_ITEM().SubAreaGuid);
+                    activeBASELINE_ITEM.Entity.Entity.GUID_SUBAREA = newValue;
+                    MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(activeBASELINE_ITEM, subAreaFieldName, oldValue, newValue, EntityMessageType.Changed);
+                }
+            }
+            else if (
+                 e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE) ||
+                 e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().DELIVERABLE_TYPE))
+            {
+                var activeBASELINE_ITEM = (BASELINE_ITEMProgress)e.Row;
+                Guid? oldValue = activeBASELINE_ITEM.Entity.Entity.GUID_STATUS;
+                if (oldValue != null)
+                {
+                    Guid? newValue = (Guid?)null;
+                    string deliverableStatusFieldName = BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                    BindableBase.GetPropertyName(() => new BASELINE_ITEM().DeliverableStatusGuid);
+                    activeBASELINE_ITEM.Entity.Entity.GUID_STATUS = newValue;
+                    MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(activeBASELINE_ITEM, deliverableStatusFieldName, oldValue, newValue, EntityMessageType.Changed);
+                }
+            }
+
+            base.CellValueExistingRowChanging(e);
+        }
+
+        protected override void CellValueNewRowChanging(CellValueChangedEventArgs e)
+        {
+            var activeBASELINE_ITEM = (BASELINE_ITEMProgress)e.Row;
+            if (e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA))
+            {
+                if (e.Value != null)
+                {
+                    activeBASELINE_ITEM.Entity.Entity.GUID_AREA = (Guid)e.Value;
+                    //Area is required immediately for subarea selection
+                    activeBASELINE_ITEM.Entity.Entity.AREA = AREACollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
+                    activeBASELINE_ITEM.Update();
+                }
+
+                //SubArea must be removed immediately to nullify subarea selection
+                if (activeBASELINE_ITEM.Entity.Entity.GUID_SUBAREA != null)
+                {
+                    activeBASELINE_ITEM.Entity.Entity.GUID_SUBAREA = null;
+                    activeBASELINE_ITEM.Update();
+                }
+            }
+
+            if (e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE))
+            {
+                var chosenDOCTYPE = DOCTYPECollection.FirstOrDefault(entity => entity.GUID == (Guid)e.Value);
+                if (chosenDOCTYPE != null)
+                {
+                    if(chosenDOCTYPE.GUID_DDEPARTMENT != null)
+                        activeBASELINE_ITEM.Entity.Entity.GUID_DEPARTMENT = chosenDOCTYPE.DEPARTMENT.GUID;
+
+                    //Baseline and Department is required immediately for deliverables status selection
+                    activeBASELINE_ITEM.Entity.Entity.BASELINE = loadBASELINE;
+                    activeBASELINE_ITEM.Entity.Entity.DOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
+                    activeBASELINE_ITEM.Update();
+                }
+            }
+
+            if (e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().DELIVERABLE_TYPE))
+            {
+                activeBASELINE_ITEM.Update();
+            }
+
+            if (e.Column.FieldName ==
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_WORKPACK))
+            {
+                var chosenWORKPACK = WORKPACKCollection.FirstOrDefault(entity => entity.GUID == (Guid)e.Value);
+                if (chosenWORKPACK != null)
+                {
+                    activeBASELINE_ITEM.Entity.Entity.GUID_AREA = chosenWORKPACK.GUID_DAREA;
+                    //Area is required immediately for subarea selection
+                    activeBASELINE_ITEM.Entity.Entity.AREA = AREACollection.FirstOrDefault(x => x.GUID == chosenWORKPACK.GUID_DAREA);
+                    activeBASELINE_ITEM.Entity.Entity.GUID_SUBAREA = chosenWORKPACK.GUID_DSUBAREA;
+                    activeBASELINE_ITEM.Entity.Entity.GUID_DOCTYPE = chosenWORKPACK.GUID_DDOCTYPE;
+                    activeBASELINE_ITEM.Entity.Entity.GUID_DEPARTMENT = chosenWORKPACK.GUID_DDEPARTMENT;
+                    activeBASELINE_ITEM.Entity.Entity.GUID_DISCIPLINE = chosenWORKPACK.GUID_DDISCIPLINE;
+                    activeBASELINE_ITEM.Entity.Entity.GUID_PHASE = chosenWORKPACK.PHASE != null
+                        ? chosenWORKPACK.GUID_DPHASE
+                        : null;
+                    var SelectedAREA = AREACollection.FirstOrDefault(x => x.GUID == chosenWORKPACK.GUID_DAREA);
+                    var SelectedDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == chosenWORKPACK.GUID_DDOCTYPE);
+                    var SelectedDISCIPLINE =
+                        DISCIPLINECollection.FirstOrDefault(x => x.GUID == chosenWORKPACK.GUID_DDISCIPLINE);
+
+                    activeBASELINE_ITEM.Entity.Entity.INTERNAL_NUM = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT, MainViewModel.Entities.Select(x => x.Entity), SelectedAREA, SelectedDISCIPLINE, SelectedDOCTYPE);
+                    activeBASELINE_ITEM.Update();
+                }
+            }
+
+            base.CellValueNewRowChanging(e);
+        }
+
+        /// <summary>
+        /// Refresh all min max units for converter to do estimated hours validation
+        /// </summary>
+        public void CellValueChanged(CellValueChangedEventArgs e)
+        {
+            if (e.Column.FieldName ==
+                                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().ESTIMATED_HOURS))
+                this.RaisePropertiesChanged();
+
+            if (e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE) ||
+                e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA) ||
+                e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DEPARTMENT) ||
+                e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DISCIPLINE))
+            {
+                var activeBASELINE_ITEM = (BASELINE_ITEMProgress)e.Row;
+                activeBASELINE_ITEM.Entity.Entity.INTERNAL_NUM = generateInternalNumber(activeBASELINE_ITEM);
+                MainViewModel.UpdateSelectedEntity();
+            }
+        }
+        #endregion
+
+        #region View Commands
+        public bool IsBASELINELocked
+        {
+            get
+            {
+                if (loadBASELINE == null)
+                    return true;
+                else
+                    return loadBASELINE.BUDGETED_UNITS != null && loadBASELINE.BUDGETED_UNITS > 0;
+            }
+            set
+            {
+                LockUnlockBASELINE(value);
+            }
+        }
+
+        private void LockUnlockBASELINE(bool isLock)
+        {
+            var BASELINECollectionViewModel = (CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<BASELINE>();
+            if (!isLock)
+                loadBASELINE.BUDGETED_UNITS = 0;
             else
-                mainThreadDispatcher.BeginInvoke(
-                    new Action(
-                        () =>
-                            WinformFormHostInitialization(loadPROJECT, loaderCollection.GetCollection<TASK>(),
-                                loaderCollection.GetCollection<PROJWBS>(), entities,
-                                BASELINE_ITEM_ASSIGNMENTSCollectionViewModel,
-                                mappingType == BaselineMappingSelectionType.Modified)));
+            {
+                decimal totalEstimatedHours = MainViewModel.Entities.Sum(x => x.Entity.Entity.ESTIMATED_HOURS);
+                loadBASELINE.BUDGETED_UNITS = totalEstimatedHours;
+            }
+
+            BASELINECollectionViewModel.Save(loadBASELINE);
+            SetBaselineLockUnlock?.Invoke(isLock);
+            this.RaisePropertiesChanged();
+        }
+
+        public bool CanDuplicate()
+        {
+            if (MainViewModel == null || MainViewModel.SelectedEntities.Count == 0)
+                return false;
+
+            return true;
+        }
+
+        public bool CanInsert()
+        {
+            return CanDuplicate();
+        }
+        
+        public void Insert()
+        {
+            if (!_isProcessingMultiple)
+                MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+
+            List<BASELINE_ITEMProgress> newEntities = getNewEntities(1, true);
+            newEntities = concatenateNewEntitiesWithExistingRenameEntities(newEntities);
+            MainViewModel.BulkSave(newEntities);
+            if (!_isProcessingMultiple)
+                MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        /// <summary>
+        /// Concatenate entities to be saved and entities to be renamed.
+        /// </summary>
+        /// <param name="newEntities">Entities to be saved.</param>
+        /// <returns></returns>
+        private List<BASELINE_ITEMProgress> concatenateNewEntitiesWithExistingRenameEntities(List<BASELINE_ITEMProgress> newEntities)
+        {
+            List<BASELINE_ITEMProgress> concatenatedEntities = new List<BASELINE_ITEMProgress>();
+            concatenatedEntities.AddRange(newEntities);
+
+            List<string> processedValueToFillStringOnly = new List<string>();
+            foreach(BASELINE_ITEMProgress entity in newEntities.OrderBy(x => x.Entity.Entity.INTERNAL_NUM))
+            {
+                long lowestUnsavedNumericValue = 0;
+                long highestUnsavedNumericValue = 0;
+
+                int numericFieldLength = 0;
+                long arbitraryNumericValue = 0;
+                string valueToFill = entity.Entity.Entity.INTERNAL_NUM;
+                if (valueToFill == string.Empty)
+                    return concatenatedEntities;
+
+                string valueToFillStringOnly = StringFormatUtils.ParseStringIntoComponents(valueToFill, out numericFieldLength, out arbitraryNumericValue);
+
+                List<BASELINE_ITEMProgress> relatedNewEntities = newEntities.Where(x => x.Entity.Entity.INTERNAL_NUM.Contains(valueToFillStringOnly)).ToList();
+                BASELINE_ITEMProgress smallestNumberEntity = relatedNewEntities.First();
+                BASELINE_ITEMProgress largestNumberEntity = relatedNewEntities.Last();
+
+                string smallestInternalNum = smallestNumberEntity.Entity.Entity.INTERNAL_NUM;
+                string largestInternalNum = largestNumberEntity.Entity.Entity.INTERNAL_NUM;
+
+                valueToFillStringOnly = StringFormatUtils.ParseStringIntoComponents(smallestInternalNum, out numericFieldLength, out lowestUnsavedNumericValue);
+                valueToFillStringOnly = StringFormatUtils.ParseStringIntoComponents(largestInternalNum, out numericFieldLength, out highestUnsavedNumericValue);
+                if(!processedValueToFillStringOnly.Contains(valueToFillStringOnly))
+                {
+                    processedValueToFillStringOnly.Add(valueToFillStringOnly);
+                    List<BASELINE_ITEMProgress> renameEntities = getRenameExistingEntities(valueToFillStringOnly, lowestUnsavedNumericValue, highestUnsavedNumericValue);
+                    concatenatedEntities.AddRange(renameEntities);
+                }
+            }
+
+            return concatenatedEntities;
+        }
+
+        public void Duplicate()
+        {
+            if (!_isProcessingMultiple)
+                MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+
+            List<BASELINE_ITEMProgress> newEntities = getNewEntities(1, false);
+            MainViewModel.BulkSave(newEntities);
+            if (!_isProcessingMultiple)
+                MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        /// <summary>
+        /// Identify entities which internal number require to be named.
+        /// </summary>
+        /// <param name="renameStringOnly">Rename internal number string component only.</param>
+        /// <param name="startNumber">Start of internal number to be named</param>
+        /// <param name="endNumber">End if internal number to be named</param>
+        /// <returns></returns>
+        private List<BASELINE_ITEMProgress> getRenameExistingEntities(string renameStringOnly, long startNumber, long endNumber)
+        {
+            long valueToAdd = (endNumber - startNumber) + 1;
+            List<BASELINE_ITEMProgress> renameEntities = new List<BASELINE_ITEMProgress>();
+            foreach (BASELINE_ITEMProgress entity in MainViewModel.Entities)
+            {
+                string stringValueToFill = entity.Entity.Entity.INTERNAL_NUM;
+                if (stringValueToFill == null)
+                    continue;
+
+                if (!stringValueToFill.Contains(renameStringOnly))
+                    continue;
+
+                int numericFieldLength = 0;
+                long valueToFillNumberOnly = 0;
+                string valueToFillStringOnly = StringFormatUtils.ParseStringIntoComponents(stringValueToFill, out numericFieldLength, out valueToFillNumberOnly);
+
+                if (valueToFillNumberOnly >= startNumber)
+                {
+                    long increasedNumber = valueToFillNumberOnly + valueToAdd;
+                    string oldInternalNum = entity.Entity.Entity.INTERNAL_NUM;
+                    entity.Entity.Entity.INTERNAL_NUM = StringFormatUtils.AppendStringWithEnumerator(valueToFillStringOnly, increasedNumber, numericFieldLength);
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, "Entity.Entity.INTERNAL_NUM", oldInternalNum, entity.Entity.Entity.INTERNAL_NUM, EntityMessageType.Changed);
+                    renameEntities.Add(entity);
+                }
+            }
+
+            return renameEntities;
+        }
+
+        List<BASELINE_ITEMProgress> getNewEntities(int timesToDuplicate, bool isInsert)
+        {
+            List<BASELINE_ITEMProgress> unsavedEntities = new List<BASELINE_ITEMProgress>();
+            for(int i = 0; i < timesToDuplicate; i++)
+            {
+                foreach (var selectedEntity in MainViewModel.SelectedEntities)
+                {
+                    var newProjection = new BASELINE_ITEMProgress();
+                    DataUtils.ShallowCopy(newProjection.Entity.Entity, selectedEntity.Entity.Entity);
+                    newProjection.Entity.EntityKey = Guid.Empty;
+                    newProjection.Entity.Entity.GUID_ORIGINAL = Guid.Empty;
+                    newProjection.Entity.Entity.ESTIMATED_HOURS = IsBASELINELocked ? 0 : selectedEntity.Entity.Entity.ESTIMATED_HOURS;
+                    newProjection.Entity.Entity.DC_HOURS = 0;
+                    var selectedAREA = AREACollection.FirstOrDefault(x => x.GUID == newProjection.Entity.Entity.GUID_AREA);
+                    var selectedDISCIPLINE =
+                        DISCIPLINECollection.FirstOrDefault(x => x.GUID == newProjection.Entity.Entity.GUID_DISCIPLINE);
+                    var selectedDOCTYPE =
+                        DOCTYPECollection.FirstOrDefault(x => x.GUID == newProjection.Entity.Entity.GUID_DOCTYPE);
+
+                    newProjection.Entity.Entity.INTERNAL_NUM = 
+                        BluePrintsDataUtils.GetNewInternalNumber(MainViewModel.Entities.Select(x => x.Entity), unsavedEntities.Select(x => x.Entity), selectedEntity.Entity.Entity.INTERNAL_NUM, MainViewModel.SelectedEntities.Select(x => x.Entity), isInsert);
+
+                    //newProjection.Entity.Entity.INTERNAL_NUM = string.Empty;
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(newProjection, null, null, null, EntityMessageType.Added);
+                    unsavedEntities.Add(newProjection);
+                }
+            }
+
+            return unsavedEntities;
+        }
+
+        public bool CanDuplicateMultiple(BarEditItem barEdit)
+        {
+            if (MainViewModel == null || MainViewModel.SelectedEntities.Count == 0)
+                return false;
+
+            return true;
+        }
+
+        public bool CanInsertMultiple(BarEditItem barEdit)
+        {
+            return CanDuplicateMultiple(barEdit);
+        }
+
+        private bool _isProcessingMultiple;
+
+        public void DuplicateMultiple(BarEditItem barEdit)
+        {
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            _isProcessingMultiple = true;
+            var timesToDuplicate = 0;
+            List<BASELINE_ITEMProgress> newEntities = new List<BASELINE_ITEMProgress>();
+            if (int.TryParse(barEdit.EditValue.ToString(), out timesToDuplicate))
+            {
+                List<BASELINE_ITEMProgress> currentEnumerationSaveEntities = getNewEntities(timesToDuplicate, false);
+                newEntities.AddRange(currentEnumerationSaveEntities);
+            }
+
+            MainViewModel.BulkSave(newEntities);
+            _isProcessingMultiple = false;
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        public void InsertMultiple(BarEditItem barEdit)
+        {
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            _isProcessingMultiple = true;
+            var timesToInsert = 0;
+            List<BASELINE_ITEMProgress> newEntities = new List<BASELINE_ITEMProgress>();
+            if (int.TryParse(barEdit.EditValue.ToString(), out timesToInsert))
+            {
+                List<BASELINE_ITEMProgress> currentEnumerationSaveEntities = getNewEntities(timesToInsert, true);
+                newEntities.AddRange(currentEnumerationSaveEntities);
+            }
+
+            newEntities = concatenateNewEntitiesWithExistingRenameEntities(newEntities);
+
+            MainViewModel.BulkSave(newEntities);
+            _isProcessingMultiple = false;
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        public bool CanAutoPopulate(object button)
+        {
+            if (MainViewModel == null || MainViewModel.SelectedEntities.Count == 0)
+                return false;
+
+            return true;
+        }
+
+        public void AutoPopulate(object button)
+        {
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject) button) as GridMenuInfo;
+            if (info.Column == null)
+                return;
+
+            var departmentFieldName =
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DEPARTMENT);
+            var disciplineFieldName =
+                                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                                    BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DISCIPLINE);
+            var docTypeFieldName =  BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +             BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE);
+            var areaFieldName =     BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                                    BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA);
+            var subAreaFieldName =  BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                                    BindableBase.GetPropertyName(() => new BASELINE_ITEM().SubAreaGuid);
+            var workpackFieldName = BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +             BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_WORKPACK);
+            var internalNumberFieldName =
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." + 
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                BindableBase.GetPropertyName(() => new BASELINE_ITEM().INTERNAL_NUM);
+
+            var entitiesToSave = new List<BASELINE_ITEMProgress>();
+            if (info.Column.FieldName == internalNumberFieldName)
+                foreach (var entity in MainViewModel.SelectedEntities)
+                    entity.Entity.Entity.INTERNAL_NUM = string.Empty;
+
+            foreach (var entity in MainViewModel.SelectedEntities)
+            {
+                var entityWORKPACK =
+                    WORKPACKCollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_WORKPACK);
+                if (info.Column.FieldName == internalNumberFieldName)
+                {
+                    string internalNumber = generateInternalNumber(entity);
+                    SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName, internalNumber);
+                    entitiesToSave.Add(entity);
+                }
+                else if (info.Column.FieldName == departmentFieldName || info.Column.FieldName == disciplineFieldName ||
+                         info.Column.FieldName == docTypeFieldName || info.Column.FieldName == areaFieldName || info.Column.FieldName == subAreaFieldName)
+                {
+                    if (entityWORKPACK == null)
+                        continue;
+
+                    if (info.Column.FieldName == departmentFieldName)
+                        SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName,
+                            entityWORKPACK.GUID_DDEPARTMENT);
+                    else if (info.Column.FieldName == disciplineFieldName)
+                        SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName,
+                            entityWORKPACK.GUID_DDISCIPLINE);
+                    else if (info.Column.FieldName == docTypeFieldName)
+                        SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName, entityWORKPACK.GUID_DDOCTYPE);
+                    else if (info.Column.FieldName == areaFieldName)
+                        SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName, entityWORKPACK.GUID_DAREA);
+                    else if(info.Column.FieldName == subAreaFieldName && IsPhaseVisible)
+                        SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName, entityWORKPACK.GUID_DSUBAREA);
+
+                    entitiesToSave.Add(entity);
+                }
+                else if (info.Column.FieldName == workpackFieldName)
+                {
+                    if (entity.Entity.Entity.GUID_AREA == Guid.Empty || entity.Entity.Entity.GUID_DISCIPLINE == Guid.Empty)
+                        continue;
+
+                    string internalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2(
+                        entity.Entity.Entity.GUID_AREA, entity.Entity.Entity.GUID_SUBAREA, 
+                        loadPROJECT, AREACollection, SUBAREACollection, entity.Entity.Entity.GUID_PHASE, PHASECollection);
+
+                    if (internalName == string.Empty)
+                        return;
+
+                    var findWORKPACK =
+                        WORKPACKCollection.FirstOrDefault(
+                            x =>
+                                x.INTERNAL_NAME1 == internalName);
+
+                    if (findWORKPACK == null)
+                    {
+                        var newWORKPACK = new WORKPACK();
+                        AREA defaultSubArea = SUBAREACollection.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.WorkpackDefaultSubArea);
+
+                        newWORKPACK.GUID_PROJECT = loadPROJECT.GUID;
+                        newWORKPACK.GUID_DAREA = entity.Entity.Entity.GUID_AREA;
+                        newWORKPACK.GUID_DSUBAREA = entity.Entity.Entity.GUID_SUBAREA == null ? defaultSubArea == null ? defaultSubArea.GUID : (Guid?)null : entity.Entity.Entity.GUID_SUBAREA;
+                        newWORKPACK.GUID_DPHASE = entity.Entity.Entity.GUID_PHASE;
+                        if (entity.Entity.Entity.GUID_DISCIPLINE != null)
+                            newWORKPACK.GUID_DDISCIPLINE = (Guid) entity.Entity.Entity.GUID_DISCIPLINE;
+                        if (entity.Entity.Entity.GUID_DEPARTMENT != null)
+                            newWORKPACK.GUID_DDEPARTMENT = (Guid) entity.Entity.Entity.GUID_DEPARTMENT;
+                        if (entity.Entity.Entity.GUID_DOCTYPE != null)
+                            newWORKPACK.GUID_DDOCTYPE = (Guid) entity.Entity.Entity.GUID_DOCTYPE;
+
+                        newWORKPACK.INTERNAL_NAME1 = internalName; 
+                        newWORKPACK.STARTDATE = DateTime.Now;
+                        newWORKPACK.ENDDATE =
+                            BluePrintsDataUtils.WORKPACK_Calculate_EndDate((DateTime) newWORKPACK.STARTDATE, loadPROJECT);
+                        var reviewStartDate = (DateTime) newWORKPACK.STARTDATE;
+                        var reviewEndDate = (DateTime) newWORKPACK.ENDDATE;
+                        BluePrintsDataUtils.WORKPACK_Calculate_ReviewPeriod(ref reviewStartDate, ref reviewEndDate,
+                            loadPROJECT, false);
+                        newWORKPACK.REVIEWSTARTDATE = reviewStartDate;
+                        newWORKPACK.REVIEWENDDATE = reviewEndDate;
+                        newWORKPACK.AUTOGENERATED = true;
+                        newWORKPACK.TYPE = WorkpackType.OffsiteDirect;
+                        ((CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>)
+                            loaderCollection.GetViewModel<WORKPACK>()).Save(newWORKPACK);
+
+                        SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName, newWORKPACK.GUID);
+                    }
+                    else
+                    {
+                        SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName, findWORKPACK.GUID);
+                    }
+
+                    entitiesToSave.Add(entity);
+                }
+            }
+
+            MainViewModel.BulkSave(entitiesToSave);
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+            RefreshView();
+        }
+
+        private string generateInternalNumber(BASELINE_ITEMProgress projectionEntity)
+        {
+            AREA currentItemAREA = AREACollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_AREA));
+            DISCIPLINE currentItemDISCIPLINE = DISCIPLINECollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_DISCIPLINE));
+            DOCTYPE currentItemDOCTYPE = DOCTYPECollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_DOCTYPE));
+            var internalNum = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT,
+                MainViewModel.Entities.Select(x => x.Entity), currentItemAREA, currentItemDISCIPLINE,
+                currentItemDOCTYPE, projectionEntity.EntityKey);
+
+            return internalNum;
         }
         #endregion
 
         #region View Properties
+        public decimal TotalAllowedUnits
+        {
+            get
+            {
+                return (loadBASELINE == null || loadBASELINE.BUDGETED_UNITS == null) ? 1000000000 : (decimal)loadBASELINE.BUDGETED_UNITS;
+            }
+        }
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
         protected override string ViewName
         {
-            get { return "PROJECTBASELINE_ITEMSMappingViewModelWrapper"; }
+            get { return "BASELINE_ITEMSViewModelWrapper"; }
         }
 
-        public IEnumerable<TASK> P6TASKCollection
+        public void ShowWORKPACKColumns()
+        {
+            if (ShowWORKPACKInternalName1 == null || ShowWORKPACKInternalName2 == null)
+                return;
+
+            if (loadPROJECT == null || loadPROJECT.USELEGACYWORKPACK)
+                ShowWORKPACKInternalName1();
+            else
+                ShowWORKPACKInternalName2();
+        }
+
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMCollection
         {
             get
             {
-                var collection = GetEntities<TASK>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.task_name);
-                return collection;
+                return GetEntities<PROGRESS_ITEM>();
+            }
+        }
+
+        public IEnumerable<RATE> RATECollection
+        {
+            get
+            {
+                return GetEntities<RATE>();
             }
         }
 
@@ -267,228 +865,194 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public ICollectionViewModel<BluePrints.P6Data.TASK> P6TASKCollectionViewModel
-        {
-            get { return (ICollectionViewModel<BluePrints.P6Data.TASK>) loaderCollection.GetViewModel<TASK>(); }
-        }
-
-        public void PushToP6()
-        {
-            var IP6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-
-            string ProjectName;
-            if (mappingType == BaselineMappingSelectionType.Modified)
-                ProjectName = loadBASELINE.P6MODBASELINE_NAME;
-            else
-                ProjectName = loadBASELINE.P6BASELINE_NAME;
-
-
-            BluePrints.P6Data.PROJECT P6PROJECT = IP6EntitiesUnitOfWork.PROJECT.FirstOrDefault(x => x.proj_short_name == ProjectName && x.delete_date == null);
-            if (P6PROJECT != null)
-            {
-                IEnumerable<TASK> P6Tasks = P6PROJECT.TASK.ToArray().AsEnumerable();
-                foreach (TASK Task in P6Tasks)
-                {
-                    Task.act_work_qty = 0;
-                    Task.remain_work_qty = 0;
-                    Task.target_work_qty = 0;
-                }
-
-                IEnumerable<TASKRSRC> ExistingTaskResource = P6PROJECT.TASKRSRC.ToArray().AsEnumerable();
-
-                double taskrsrcCount = ExistingTaskResource.Count();
-                foreach (var TaskRsrc in ExistingTaskResource)
-                {
-                    IP6EntitiesUnitOfWork.TASKRSRC.Remove(TaskRsrc);
-                }
-
-                List<P6ActivityAssignment> missingActivities = new List<P6ActivityAssignment>();
-                foreach(BASELINE_ITEMProjection baseline_item in MainViewModel.Entities)
-                {
-                    IEnumerable<P6_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = baseline_item.P6_ASSIGNMENTS;
-
-                    foreach (P6_ASSIGNMENT BASELINE_ITEM_ASSIGNMENT in projectBASELINE_ITEM_ASSIGNMENTS)
-                    {
-                        TASK existingTask = P6Tasks.FirstOrDefault(x => x.task_code == BASELINE_ITEM_ASSIGNMENT.P6_ACTIVITYID);
-                        P6ActivityAssignment P6Assignment = new P6ActivityAssignment(baseline_item, BASELINE_ITEM_ASSIGNMENT);
-
-                        if (existingTask != null && existingTask.delete_date == null)
-                        {
-                            existingTask.target_work_qty += P6Assignment.UNITS;
-                            existingTask.remain_work_qty += P6Assignment.UNITS;
-                        }
-                        else
-                        {
-                            missingActivities.Add(P6Assignment);
-                        }
-                    }
-                }
-
-                ((P6EntitiesUnitOfWork)IP6EntitiesUnitOfWork).Context.SaveChanges();
-                if (missingActivities.Count > 0)
-                {
-                    DialogCollectionViewModel<P6ActivityAssignment> missingActivitiesViewModel = DialogCollectionViewModel<P6ActivityAssignment>.Create(missingActivities);
-                    ActivityDetailDialogService.ShowDialog(MessageButton.OK,
-                    "Missing P6 Activities", "MissingAssignments", missingActivitiesViewModel);
-                }
-                else
-                    MessageBoxService.ShowMessage(BluePrintsResources.P6AssignmentWriteComplete);
-            }
-        }
-
-        public void ReassignP6Ids()
-        {
-            IEnumerable<TASK> validTASKS;
-            List<P6ActivityAssignment> missingActivities = getMissingP6Activities(out validTASKS, true);
-            List<P6ActivityRemap> p6ActivitiesRemap = new List<P6ActivityRemap>();
-
-            if(missingActivities.Count > 0)
-            {
-                foreach(P6ActivityAssignment missingActivity in missingActivities)
-                {
-                    if (!p6ActivitiesRemap.Any(x => x.P6_OLD_ACTIVITY == missingActivity.P6_ACTIVITY))
-                        p6ActivitiesRemap.Add(ViewModelSource.Create(() => new P6ActivityRemap() { P6_OLD_ACTIVITY = missingActivity.P6_ACTIVITY }));
-                }
-
-                P6ActivityAssignmentDialogViewModel<P6ActivityRemap> activitiesRemapViewModel = P6ActivityAssignmentDialogViewModel<P6ActivityRemap>.CreateViewModel(p6ActivitiesRemap, loadPROJECT.NUMBER, validTASKS);
-                if(ActivityDetailDialogService.ShowDialog(MessageButton.OKCancel, "Re-Assign", "MissingAssignmentsRemap", activitiesRemapViewModel) == MessageResult.OK)
-                {
-                    IEnumerable<P6ActivityRemap> userRemappedActivities = p6ActivitiesRemap.Where(x => x.P6_NEW_ACTIVITY != null && x.P6_NEW_ACTIVITY != string.Empty);
-                    List<P6ActivityRemap> validUserRemappedActivities = new List<P6ActivityRemap>();
-
-                    foreach(P6ActivityRemap userRemappedActivity in userRemappedActivities)
-                    {
-                        if (validTASKS.Any(x => x.task_code == userRemappedActivity.P6_NEW_ACTIVITY))
-                        {
-                            validUserRemappedActivities.Add(userRemappedActivity);
-                        }
-                    }
-
-                    List<P6ActivityAssignment> reassignActivities = new List<P6ActivityAssignment>();
-                    if (userRemappedActivities.Count() > 0)
-                    {
-                        List<P6ActivityAssignment> validReassignments = new List<P6ActivityAssignment>();
-                        foreach (P6ActivityAssignment missingActivity in missingActivities)
-                        {
-                            P6ActivityRemap userRemappedActivity = validUserRemappedActivities.FirstOrDefault(x => x.P6_OLD_ACTIVITY == missingActivity.P6_ACTIVITY);
-                            if(userRemappedActivity != null)
-                            {
-                                missingActivity.Reassign(userRemappedActivity.P6_NEW_ACTIVITY);
-                                reassignActivities.Add(missingActivity);
-                            }
-                        }
-                    }
-
-                    if(reassignActivities.Count > 0)
-                    {
-                        BASELINE_ITEM_ASSIGNMENTSCollectionViewModel.BulkSave(reassignActivities.Select(x => x.deliverable_assignment));
-                        RefreshWinformView?.Invoke();
-
-                        MessageBoxService.ShowMessage(reassignActivities.Count + " activities re-assigned");
-                    }
-                }
-            }
-            else
-                MessageBoxService.ShowMessage("All Assignments Valid");
-        }
-
-        public void DeleteAssignments()
-        {
-            IEnumerable<TASK> validTASKS;
-            List<P6ActivityAssignment> missingActivities = getMissingP6Activities(out validTASKS);
-            if (missingActivities.Count > 0)
-            {
-                DialogCollectionViewModel<P6ActivityAssignment> missingActivitiesViewModel = DialogCollectionViewModel<P6ActivityAssignment>.Create(missingActivities);
-                ActivityDetailDialogService.ShowDialog(MessageButton.OK, "Invalid Assignments", "MissingAssignments", missingActivitiesViewModel);
-
-                if (MessageBoxService.ShowMessage("Do you want to continue deleting all invalid assignments?", "Warning", MessageButton.OKCancel) == MessageResult.OK)
-                {
-                    BASELINE_ITEM_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(missingActivities.Select(x => x.deliverable_assignment));
-                    FullRefresh();
-                    RefreshWinformView?.Invoke();
-                }
-            }
-            else
-                MessageBoxService.ShowMessage("All Assignments Valid");
-        }
-
-        private List<P6ActivityAssignment> getMissingP6Activities(out IEnumerable<TASK> validTASKS, bool getAllActivities = false)
-        {
-            var IP6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-
-            string ProjectName;
-            if (mappingType == BaselineMappingSelectionType.Modified)
-                ProjectName = loadBASELINE.P6MODBASELINE_NAME;
-            else
-                ProjectName = loadBASELINE.P6BASELINE_NAME;
-
-            List<P6ActivityAssignment> missingActivities = new List<P6ActivityAssignment>();
-            BluePrints.P6Data.PROJECT P6PROJECT = IP6EntitiesUnitOfWork.PROJECT.FirstOrDefault(x => x.proj_short_name == ProjectName && x.delete_date == null);
-            if (P6PROJECT != null)
-            {
-                validTASKS = P6PROJECT.TASK.ToArray().AsEnumerable();
-                foreach (BASELINE_ITEMProjection baseline_item in MainViewModel.Entities)
-                {
-                    IEnumerable<P6_ASSIGNMENT> projectBASELINE_ITEM_ASSIGNMENTS = baseline_item.P6_ASSIGNMENTS;
-                    foreach (P6_ASSIGNMENT BASELINE_ITEM_ASSIGNMENT in projectBASELINE_ITEM_ASSIGNMENTS)
-                    {
-                        if(getAllActivities)
-                            missingActivities.Add(new P6ActivityAssignment(baseline_item, BASELINE_ITEM_ASSIGNMENT));
-                        else
-                        {
-                            TASK existingTask = validTASKS.FirstOrDefault(x => x.task_code == BASELINE_ITEM_ASSIGNMENT.P6_ACTIVITYID);
-                            if (existingTask == null || existingTask.delete_date != null)
-                            {
-                                missingActivities.Add(new P6ActivityAssignment(baseline_item, BASELINE_ITEM_ASSIGNMENT));
-                            }
-                        }
-                    }
-                }
-            }
-            else
-                validTASKS = null;
-
-            return missingActivities;
-        }
-
-        public void Refresh()
-        {
-            RefreshWinformView?.Invoke();
-        }
-
-        public IEnumerable<P6_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENTCollection
+        public IEnumerable<Data.PHASE> PHASECollection
         {
             get
             {
-                var collection = GetEntities<P6_ASSIGNMENT>();
+                var collection = GetEntities<Data.PHASE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
                 return collection;
             }
         }
 
-        public CollectionViewModel<BASELINE_ITEM, BASELINE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>
-        BASELINE_ITEMSCollectionViewModel
+        public IEnumerable<AREA> AREACollection
         {
             get
             {
-                if (MainViewModel == null)
-                    return null;
-
-                return
-                    (CollectionViewModel<BASELINE_ITEM, BASELINE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>)
-                    loaderCollection.GetViewModel<BASELINE_ITEM>();
+                var collection = GetEntities<AREA>();
+                if (collection != null)
+                    collection = collection.Where(x => x.GUID_PARENT == null).OrderBy(x => x.INTERNAL_NUM);
+                return collection;
             }
         }
 
-        public CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> BASELINE_ITEM_ASSIGNMENTSCollectionViewModel
+        public IEnumerable<AREA> SUBAREACollection
         {
             get
             {
-                if (MainViewModel == null)
+                return GetSUBAREACollection();
+            }
+        }
+
+        public IEnumerable<AREA> GetSUBAREACollection()
+        {
+            var collection = GetEntities<AREA>();
+            if (collection != null)
+                collection = collection.Where(x => x.GUID_PARENT != null).OrderBy(x => x.INTERNAL_NUM);
+            return collection;
+        }
+
+        public IEnumerable<DEPARTMENT> DEPARTMENTCollection
+        {
+            get
+            {
+                var collection = GetEntities<DEPARTMENT>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
+        public IEnumerable<DISCIPLINE> DISCIPLINECollection
+        {
+            get
+            {
+                var collection = GetEntities<DISCIPLINE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
+        public IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection
+        {
+            get
+            {
+                var collection = GetEntities<DELIVERABLES_STATUS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.MAX_PERCENTAGE);
+                return collection;
+            }
+        }
+
+        public IEnumerable<USER> USERCollection
+        {
+            get
+            {
+                var collection = GetEntities<USER>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
+        public IEnumerable<DOCTYPE> DOCTYPECollection
+        {
+            get
+            {
+                var collection = GetEntities<DOCTYPE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.CODE);
+                return collection;
+            }
+        }
+
+        public override IEnumerable<ICanAssignP6> Deliverables_Source => DisplayEntities;
+        #endregion
+
+        #region Reporting
+
+        public bool CanEditReport()
+        {
+            if (MainViewModel == null || MainViewModel.Entities.Count == 0)
+                return false;
+
+            return true;
+        }
+
+        public bool CanViewReport()
+        {
+            if (MainViewModel == null || MainViewModel.Entities.Count == 0)
+                return false;
+
+            return true;
+        }
+
+        public void EditReport()
+        {
+            var reportDesigner = new UserReportDesigner(loadPROJECT,
+                (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
+                loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Baseline_Report);
+            if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                reportDesigner.Dispose();
+            else
+                reportDesigner.Dispose();
+        }
+
+        public Func<IEnumerable<BASELINE_ITEMProgress>> GetGridVisibleRows;
+
+        public void ViewReport()
+        {
+            var baselineReport = new XtraReportBASELINE_ITEMS();
+            var dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
+            if (dbProjectReport != null)
+            {
+                var reportString = dbProjectReport.REPORT.ToString();
+                using (var sw = new StreamWriter(new MemoryStream()))
+                {
+                    sw.Write(reportString);
+                    sw.Flush();
+                    baselineReport.LoadLayout(sw.BaseStream);
+                }
+            }
+
+            //make sure disciplines are all populated
+            PopulateNavigationalProperties();
+            IEnumerable<BASELINE_ITEMProgress> gridVisibleRows = GetGridVisibleRows();
+
+            baselineReport.AssignProperties(loadPROJECT, loadBASELINE, gridVisibleRows.Select(x => x.Entity));
+            var previewWindow = new DocumentPreviewWindow();
+            previewWindow.PreviewControl.DocumentSource = baselineReport;
+            previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            previewWindow.WindowState = WindowState.Maximized;
+            baselineReport.RequestParameters = false;
+            baselineReport.CreateDocument(true);
+            previewWindow.Show();
+        }
+
+
+        private void PopulateNavigationalProperties()
+        {
+            foreach (var projection in MainViewModel.Entities)
+            {
+                if (projection.Entity.Entity.GUID_DISCIPLINE != null && projection.Entity.Entity.DISCIPLINE == null)
+                    projection.Entity.Entity.DISCIPLINE =
+                        DISCIPLINECollection.FirstOrDefault(x => x.GUID == projection.Entity.Entity.GUID_DISCIPLINE);
+
+                if (projection.Entity.Entity.GUID_AREA != null && projection.Entity.Entity.AREA == null)
+                    projection.Entity.Entity.AREA =
+                        AREACollection.FirstOrDefault(x => x.GUID == projection.Entity.Entity.GUID_AREA);
+            }
+        }
+
+        protected override string ExportExcelFilename()
+        {
+            return loadPROJECT.NUMBER + "_Baseline_Rev_" + loadBASELINE.REVISION + ".xlsx";
+        }
+        #endregion
+
+        #region For Variation Usage
+        public CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork> BASELINEViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
                     return null;
 
                 return
-                    (CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>)
-                    loaderCollection.GetViewModel<P6_ASSIGNMENT>();
+                    (CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<BASELINE>();
             }
         }
         #endregion

@@ -27,7 +27,7 @@ namespace BluePrints.Common.ViewModel
         {
             var canvas = (GanttCanvas)dependencyObject;
 
-            var data = (GanttData)canvas.DataContext;
+            var data = (P6_Activity)canvas.DataContext;
             if (data == null) return;
 
             var width = canvas.ActualWidth;
@@ -43,16 +43,16 @@ namespace BluePrints.Common.ViewModel
             var totHours = (end - start).TotalHours - 24d;
             var scale = width / totHours;
 
-            data.Left = (data.Start - start).TotalHours * scale;
+            //data.Left = (data.Start - start).TotalHours * scale;
 
-            var hours = (data.End - data.Start).TotalHours;
-            data.Width = hours * scale;
-            data.DayWidth = 24 * scale;
+            //var hours = (data.End - data.Start).TotalHours;
+            //data.Width = hours * scale;
+            //data.DayWidth = 24 * scale;
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var data = (GanttData)DataContext;
+            var data = (P6_Activity)DataContext;
             if (data == null) return;
 
             var width = e.NewSize.Width;
@@ -66,13 +66,13 @@ namespace BluePrints.Common.ViewModel
             var totHours = (end - start).TotalHours - 24d;
             var scale = width / totHours;
 
-            var hours = (data.End - data.Start).TotalHours;
-            data.Width = hours * scale;
-            data.DayWidth = 24 * scale;
+            //var hours = (data.End - data.Start).TotalHours;
+            //data.Width = hours * scale;
+            //data.DayWidth = 24 * scale;
 
-            data.Left = (data.Start - start).TotalHours * scale;
+            //data.Left = (data.Start - start).TotalHours * scale;
 
-            IHaveCanvasWidth canvasWidthViewModel = ((GanttData)DataContext).ParentViewModel as IHaveCanvasWidth;
+            IHaveCanvasWidth canvasWidthViewModel = ((P6_Activity)DataContext).ParentViewModel as IHaveCanvasWidth;
             if (canvasWidthViewModel != null)
                 canvasWidthViewModel.CanvasWidth = width;
         }

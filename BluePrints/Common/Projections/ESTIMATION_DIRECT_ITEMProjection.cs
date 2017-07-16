@@ -126,7 +126,7 @@ namespace BluePrints.Common.Projections
 
         public string UOM => STOCK_CODE == null ? string.Empty : STOCK_CODE.UOM;
 
-        public bool? Track => Entity.TRACK;
+        public Estimation_DirectProgressType Progress_Type => Entity.PROGRESS_TYPE;
 
         public decimal Supply_Cost => STOCK_CODE == null ? 0 : STOCK_CODE.RATE_SUPPLY * Estimated_Quantity;
 

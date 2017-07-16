@@ -30,7 +30,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single BASELINE object view model.
     /// </summary>
-    public partial class BASELINE_ITEMSCollectionViewModelWrapper :
+    public partial class BASELINE_ITEMCollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
         <BASELINE_ITEM, BASELINE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>
     {
@@ -42,10 +42,10 @@ namespace BluePrints.ViewModels
         /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static BASELINE_ITEMSCollectionViewModelWrapper Create(
+        public static BASELINE_ITEMCollectionViewModelWrapper Create(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new BASELINE_ITEMSCollectionViewModelWrapper(unitOfWorkFactory));
+            return ViewModelSource.Create(() => new BASELINE_ITEMCollectionViewModelWrapper(unitOfWorkFactory));
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the BASELINEViewModel type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected BASELINE_ITEMSCollectionViewModelWrapper(
+        protected BASELINE_ITEMCollectionViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }

@@ -47,7 +47,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS = null, Func<bool> isBuildStatsFunc = null)
+            IEnumerable<VARIATION> VARIATIONS = null, Func<bool> isBuildStatsFunc = null, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null)
         {
             IQueryable<BASELINE_ITEMProjection> baseline_item_projection;
 
@@ -67,7 +67,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             List<BASELINE_ITEMProgress> baseline_item_progresses = baseline_item_projection.Select(x => new BASELINE_ITEMProgress(PROJECT, PROGRESS, projectVariationAdjustments)
             {
                 Entity = x,
-                Live_PROGRESS = PROGRESS
+                Live_PROGRESS = PROGRESS,
+                P6_Assignments = P6_ASSIGNMENTS == null ? null : P6_ASSIGNMENTS.Where(assignment => assignment.GUID_ORIGINAL == x.Entity.GUID_ORIGINAL).ToList()
             }).ToList();
 
             dynamic progress_item_by_originalguid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
@@ -108,7 +109,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 estimation_direct_item_progresses.Add(newEstimation_Direct_itemProgress);
             }
 
-            var estimation_direct_progress_by_commoditycodeguid = estimation_direct_item_progresses.Where(x => !x.Entity.Entity.STANDALONE)
+            var estimation_direct_progress_by_commoditycodeguid = estimation_direct_item_progresses.Where(x => x.Entity.Progress_Type != Estimation_DirectProgressType.Standalone)
                 .GroupBy(x => x.Entity.Entity.GUID_COMMODITY_CODE).Select(group => new { CommodityCodeGuid = group.Key, Estimation_Direct_ItemProgress = group.ToList() });
 
             foreach (COMMODITY_CODE COMMODITY_CODE in COMMODITY_CODES)
@@ -129,7 +130,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 }
             }
 
-            display_items.AddRange(estimation_direct_item_progresses.Where(x => x.Entity.Entity.STANDALONE).Select(x => new ReportablesDisplay() { ProgressItem = new DisplayQuantityReportable(x) }));
+            display_items.AddRange(estimation_direct_item_progresses.Where(x => x.Progress_Type == Estimation_DirectProgressType.Standalone).Select(x => new ReportablesDisplay() { ProgressItem = new DisplayQuantityReportable(x) }));
 
             return display_items.AsQueryable();
         }

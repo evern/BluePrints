@@ -13,7 +13,7 @@ namespace BluePrints.Data
         public ESTIMATION_DIRECT_ITEM()
         {
             DISCIPLINE_NUM = 1;
-            TRACK = true;
+            PROGRESS_TYPE = 0;
         }
 
         [NotMapped]

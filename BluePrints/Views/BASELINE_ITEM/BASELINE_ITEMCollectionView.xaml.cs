@@ -16,9 +16,9 @@ namespace BluePrints.Views
         {
             InitializeComponent();
             InitializeViewControl(GridControl, tableView);
-            ((BASELINE_ITEMSCollectionViewModelWrapper)DataContext).GetGridVisibleRows =
+            ((BASELINE_ITEMCollectionViewModelWrapper)DataContext).GetGridVisibleRows =
                 GetGridVisibleRows;
-            ((BASELINE_ITEMSCollectionViewModelWrapper)DataContext).SetBaselineLockUnlock =
+            ((BASELINE_ITEMCollectionViewModelWrapper)DataContext).SetBaselineLockUnlock =
                 SetBaselineLockUnlock;
         }
 

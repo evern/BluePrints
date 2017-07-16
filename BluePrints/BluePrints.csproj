@@ -346,6 +346,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Common\Base\BluePrintsEntitiesProgressCollectionWrapper.cs" />
     <Compile Include="Common\Base\BluePrintsEntitiesSchedulingCollectionWrapper.cs" />
     <Compile Include="Common\Base\BluePrintsEntitiesCollectionWrapper.cs" />
     <Compile Include="Common\Base\BluePrintsEntitiesAutoNumberCollectionWrapper.cs" />
@@ -423,7 +424,7 @@
     <Compile Include="Common\Reports\ViewModel\Summarizers.cs" />
     <Compile Include="Common\ViewModel\Converters\CollectionConverter.cs" />
     <Compile Include="Common\ViewModel\GanttChart\GanttCanvas.cs" />
-    <Compile Include="Common\ViewModel\GanttChart\GanttData.cs" />
+    <Compile Include="Common\ViewModel\GanttChart\P6_Activity.cs" />
     <Compile Include="Common\ViewModel\Misc\P6ActivityAssignmentDialogViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\XMLSettings.cs" />
     <Compile Include="Common\View\BasicMessageBox.xaml.cs">
@@ -522,7 +523,7 @@
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\IBluePrintsEntitiesUnitOfWork.cs" />
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\BluePrintsEntitiesUnitOfWorkSource.cs" />
     <Compile Include="Common\Misc\BluePrintsEnums.cs" />
-    <Compile Include="ViewModels\P6_AssignmentViewModel.cs" />
+    <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\STOCK_CODE\STOCK_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATION_DIRECT_ITEM\ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper.cs" />
@@ -534,12 +535,11 @@
     <Compile Include="ViewModels\REGISTER\REGISTER_NCCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_LLCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_RISKCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEM_ASSIGNMENTViewModel.cs" />
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\User_OffisteDirectProgressCollectionViewModelWrapper.cs" />
-    <Compile Include="Views\P6_Deliverables_AssignmentView.xaml.cs">
-      <DependentUpon>P6_Deliverables_AssignmentView.xaml</DependentUpon>
+    <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.xaml.cs">
+      <DependentUpon>BASELINE_ITEMSchedulingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml.cs">
       <DependentUpon>STOCK_CODECollectionView.xaml</DependentUpon>
@@ -579,15 +579,6 @@
     </Compile>
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMAssignmentActivityView.xaml.cs">
       <DependentUpon>BASELINE_ITEMAssignmentActivityView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.Designer.cs">
-      <DependentUpon>BASELINE_ITEMSchedulingView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingViewHost.xaml.cs">
-      <DependentUpon>BASELINE_ITEMSchedulingViewHost.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMAssignmentView.xaml.cs">
       <DependentUpon>BASELINE_ITEMAssignmentView.xaml</DependentUpon>
@@ -1135,7 +1126,7 @@
     <Compile Include="EntityFramework\PrimeroEntitiesDataModel\PrimeroEntitiesUnitOfWork.cs" />
     <Compile Include="EntityFramework\PrimeroEntitiesDataModel\PrimeroEntitiesUnitOfWorkSource.cs" />
     <Compile Include="ViewModels\AREA\AREACollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\DELIVERABLES_STATUS\DELIVERABLES_STATUSCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATION\ESTIMATION_DIRECTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
@@ -1298,7 +1289,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\P6_Deliverables_AssignmentView.xaml">
+    <Page Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1353,10 +1344,6 @@
     <Page Include="Views\BASELINE_ITEM\BASELINE_ITEMAssignmentActivityView.xaml">
       <SubType>Designer</SubType>
       <Generator>XamlIntelliSenseFileGenerator</Generator>
-    </Page>
-    <Page Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingViewHost.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\BASELINE_ITEM\BASELINE_ITEMAssignmentView.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -1550,9 +1537,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.resx">
-      <DependentUpon>BASELINE_ITEMSchedulingView.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="App.Debug.config">
       <DependentUpon>App.config</DependentUpon>

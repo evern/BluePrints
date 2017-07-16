@@ -40,5 +40,7 @@ namespace BluePrints.Data
         public string P6_Baseline_Name => P6BASELINE_NAME;
 
         public string P6_Mod_Baseline_Name => P6MODBASELINE_NAME;
+
+        public Guid project_guid => GUID_PROJECT;
     }
 }

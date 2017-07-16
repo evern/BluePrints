@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public class ReportablesDisplay : BindableBase, IGuidEntityKey
+    public class ReportablesDisplay : BindableBase, IGuidEntityKey, IReportable
     {
         public Guid GUID { get => ProgressItem.EntityKey; set => ProgressItem.EntityKey = value; }
         public Guid EntityKey { get => ProgressItem.EntityKey; set => ProgressItem.EntityKey = value; }
@@ -40,6 +40,82 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public SingleObjectSummarizer StatSummarizer => ((IReportable)ProgressItem).StatSummarizer;
+
+        public string Discipline_Code => ((IReportable)ProgressItem).Discipline_Code;
+
+        public string Deliverable_Name => ((IReportable)ProgressItem).Deliverable_Name;
+
+        public Guid? Workpack_Guid => ((IReportable)ProgressItem).Workpack_Guid;
+
+        public Guid OriginalEntityKey => ((IReportable)ProgressItem).OriginalEntityKey;
+
+        public string Commodity_Code => ((IReportable)ProgressItem).Commodity_Code;
+
+        public Guid? Area_Guid => ((IReportable)ProgressItem).Area_Guid;
+
+        public Guid? SubArea_Guid => ((IReportable)ProgressItem).SubArea_Guid;
+
+        public decimal Estimated_Units => ((IReportable)ProgressItem).Estimated_Units;
+
+        public decimal Total_Units => ((IReportable)ProgressItem).Total_Units;
+
+        public decimal Variation_Units => ((IReportable)ProgressItem).Variation_Units;
+
+        public decimal ItemRate => ((IReportable)ProgressItem).ItemRate;
+
+        public decimal Estimated_Costs => ((IReportable)ProgressItem).Estimated_Costs;
+
+        public decimal Variation_Costs => ((IReportable)ProgressItem).Variation_Costs;
+
+        public decimal Total_Costs => ((IReportable)ProgressItem).Total_Costs;
+
+        public ProgressStats Stats { get => ((IReportable)ProgressItem).Stats; set => ((IReportable)ProgressItem).Stats = value; }
+
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_BeforeDataDate => ((IReportable)ProgressItem).PROGRESS_ITEM_BeforeDataDate;
+
+        public PROGRESS_ITEM PROGRESS_ITEM_Current => ((IReportable)ProgressItem).PROGRESS_ITEM_Current;
+
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_UpToCurrentDataDate => ((IReportable)ProgressItem).PROGRESS_ITEM_UpToCurrentDataDate;
+
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_AfterDataDate => ((IReportable)ProgressItem).PROGRESS_ITEM_AfterDataDate;
+
+        public DateTime ReportingDataDate => ((IReportable)ProgressItem).ReportingDataDate;
+
+        public List<PROGRESS_ITEM> PROGRESS_ITEMS => ((IReportable)ProgressItem).PROGRESS_ITEMS;
+
+        public decimal Earned_Units_Total => ((IReportable)ProgressItem).Earned_Units_Total;
+
+        public decimal Earned_Costs_Total => ((IReportable)ProgressItem).Earned_Costs_Total;
+
+        public decimal Earned_Units_BeforeDataDate => ((IReportable)ProgressItem).Earned_Units_BeforeDataDate;
+
+        public decimal Earned_Units_OnDataDate => ((IReportable)ProgressItem).Earned_Units_OnDataDate;
+
+        public decimal Earned_Costs_OnDataDate => ((IReportable)ProgressItem).Earned_Costs_OnDataDate;
+
+        public decimal Earned_Units_ToDate => ((IReportable)ProgressItem).Earned_Units_ToDate;
+
+        public decimal Earned_Costs_ToDate => ((IReportable)ProgressItem).Earned_Costs_ToDate;
+
+        public decimal Earned_Units_AfterDataDate => ((IReportable)ProgressItem).Earned_Units_AfterDataDate;
+
+        public decimal Total_Earned_Percentage { get => ((IReportable)ProgressItem).Total_Earned_Percentage; set => ((IReportable)ProgressItem).Total_Earned_Percentage = value; }
+
+        public decimal Total_Percentage => ((IReportable)ProgressItem).Total_Percentage;
+
+        public decimal Total_Percentage_ToDate => ((IReportable)ProgressItem).Total_Percentage_ToDate;
+
+        public decimal Baseline_Percentage => ((IReportable)ProgressItem).Baseline_Percentage;
+
+        public decimal SchedulePercentage => ((IReportable)ProgressItem).SchedulePercentage;
+
+        public decimal MinPercentage => ((IReportable)ProgressItem).MinPercentage;
+
+        public decimal MaxPercentage => ((IReportable)ProgressItem).MaxPercentage;
+
+        public bool ShouldSaveProgress => ((IReportable)ProgressItem).ShouldSaveProgress;
+
         public void Update()
         {
             ProgressItem.Update();
@@ -57,6 +133,33 @@ namespace BluePrints.Common.ViewModel.Reporting
                 isSetNull = false;
                 RaisePropertyChanged(() => Reportables);
             }
+
+            RaisePropertyChanged(() => ProgressItem);
+        }
+
+        public void SetOriginalEntityKey(Guid newGuid)
+        {
+            ((IReportable)ProgressItem).SetOriginalEntityKey(newGuid);
+        }
+
+        public IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func)
+        {
+            return ((IReportable)ProgressItem).GetExistingOrNewEditedProgresses(repository_find_actual_func);
+        }
+
+        public void SetReportingDataDate(DateTime dataDate)
+        {
+            ((IReportable)ProgressItem).SetReportingDataDate(dataDate);
+        }
+
+        public void SetProgressItems(List<PROGRESS_ITEM> progresses)
+        {
+            ((IReportable)ProgressItem).SetProgressItems(progresses);
+        }
+
+        public void AppendProgressItem(PROGRESS_ITEM currentProgress)
+        {
+            ((IReportable)ProgressItem).AppendProgressItem(currentProgress);
         }
     }
 
@@ -80,7 +183,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public class DisplayQuantityReportable : BindableBase, IReportable_Quantity
     {
-        readonly IReportable_Quantity reportable;
+        public IReportable_Quantity Reportable { get; }
         private SingleObjectSummarizer statsSummarizer;
         public SingleObjectSummarizer StatSummarizer => statsSummarizer;
 
@@ -92,135 +195,135 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public DisplayQuantityReportable(IReportable_Quantity deliverable)
         {
-            this.reportable = deliverable;
+            this.Reportable = deliverable;
         }
 
-        public string Deliverable_Name => reportable.Deliverable_Name;
+        public string Deliverable_Name => Reportable.Deliverable_Name;
 
-        public string Commodity_Code => reportable.Commodity_Code;
+        public string Commodity_Code => Reportable.Commodity_Code;
 
-        public Guid? Workpack_Guid => reportable.Workpack_Guid;
+        public Guid? Workpack_Guid => Reportable.Workpack_Guid;
 
-        public Guid OriginalEntityKey => reportable.OriginalEntityKey;
+        public Guid OriginalEntityKey => Reportable.OriginalEntityKey;
 
         public void SetOriginalEntityKey(Guid newGuid) { }
 
-        public Guid? Area_Guid => reportable.Area_Guid;
+        public Guid? Area_Guid => Reportable.Area_Guid;
 
-        public Guid? SubArea_Guid => reportable.SubArea_Guid;
+        public Guid? SubArea_Guid => Reportable.SubArea_Guid;
 
-        public decimal Estimated_Units => reportable.Estimated_Units;
+        public decimal Estimated_Units => Reportable.Estimated_Units;
 
-        public decimal Total_Units => reportable.Total_Units;
+        public decimal Total_Units => Reportable.Total_Units;
 
-        public decimal ItemRate => reportable.ItemRate;
+        public decimal ItemRate => Reportable.ItemRate;
 
-        public decimal Estimated_Costs => reportable.Estimated_Costs;
+        public decimal Estimated_Costs => Reportable.Estimated_Costs;
 
-        public decimal TotalCosts => reportable.Total_Costs;
+        public decimal TotalCosts => Reportable.Total_Costs;
 
-        public bool? Track => reportable.Track;
+        public Estimation_DirectProgressType Progress_Type => Reportable.Progress_Type;
 
-        public decimal Estimated_Quantity => reportable.Estimated_Quantity;
+        public decimal Estimated_Quantity => Reportable.Estimated_Quantity;
 
-        public decimal Total_Quantity => reportable.Total_Quantity;
+        public decimal Total_Quantity => Reportable.Total_Quantity;
 
-        public string UOM => reportable.UOM;
+        public string UOM => Reportable.UOM;
 
-        public Guid EntityKey { get => reportable.EntityKey; set => reportable.EntityKey = value; }
+        public Guid EntityKey { get => Reportable.EntityKey; set => Reportable.EntityKey = value; }
 
-        public decimal QuantityPerHour => reportable.QuantityPerHour;
+        public decimal QuantityPerHour => Reportable.QuantityPerHour;
 
-        public decimal PastInstalledQuantity => reportable.PastInstalledQuantity;
+        public decimal PastInstalledQuantity => Reportable.PastInstalledQuantity;
 
-        public DateTime ReportingDataDate => reportable.ReportingDataDate;
+        public DateTime ReportingDataDate => Reportable.ReportingDataDate;
 
-        public List<PROGRESS_ITEM> PROGRESS_ITEMS => reportable.PROGRESS_ITEMS;
+        public List<PROGRESS_ITEM> PROGRESS_ITEMS => Reportable.PROGRESS_ITEMS;
 
-        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_BeforeDataDate => reportable.PROGRESS_ITEM_BeforeDataDate;
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_BeforeDataDate => Reportable.PROGRESS_ITEM_BeforeDataDate;
 
-        public PROGRESS_ITEM PROGRESS_ITEM_Current => reportable.PROGRESS_ITEM_Current;
+        public PROGRESS_ITEM PROGRESS_ITEM_Current => Reportable.PROGRESS_ITEM_Current;
 
-        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_UpToCurrentDataDate => reportable.PROGRESS_ITEM_UpToCurrentDataDate;
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_UpToCurrentDataDate => Reportable.PROGRESS_ITEM_UpToCurrentDataDate;
 
-        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_AfterDataDate => reportable.PROGRESS_ITEM_AfterDataDate;
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_AfterDataDate => Reportable.PROGRESS_ITEM_AfterDataDate;
 
-        public ProgressStats Stats { get => reportable.Stats; set => reportable.Stats = value; }
+        public ProgressStats Stats { get => Reportable.Stats; set => Reportable.Stats = value; }
 
-        public decimal Variation_Units => reportable.Variation_Units;
+        public decimal Variation_Units => Reportable.Variation_Units;
 
-        public decimal Total_Percentage => reportable.Total_Percentage;
+        public decimal Total_Percentage => Reportable.Total_Percentage;
 
-        public string Discipline_Code => reportable.Discipline_Code;
+        public string Discipline_Code => Reportable.Discipline_Code;
 
-        public decimal Variation_Costs => reportable.Variation_Costs;
+        public decimal Variation_Costs => Reportable.Variation_Costs;
 
-        public decimal Total_Costs => reportable.Total_Costs;
+        public decimal Total_Costs => Reportable.Total_Costs;
 
-        public decimal Earned_Units_Total => reportable.Earned_Units_Total;
+        public decimal Earned_Units_Total => Reportable.Earned_Units_Total;
 
-        public decimal Earned_Costs_Total => reportable.Earned_Costs_Total;
+        public decimal Earned_Costs_Total => Reportable.Earned_Costs_Total;
 
-        public decimal Earned_Units_BeforeDataDate => reportable.Earned_Units_BeforeDataDate;
+        public decimal Earned_Units_BeforeDataDate => Reportable.Earned_Units_BeforeDataDate;
 
-        public decimal Earned_Units_OnDataDate => reportable.Earned_Units_OnDataDate;
+        public decimal Earned_Units_OnDataDate => Reportable.Earned_Units_OnDataDate;
 
-        public decimal Earned_Units_ToDate => reportable.Earned_Units_ToDate;
+        public decimal Earned_Units_ToDate => Reportable.Earned_Units_ToDate;
 
-        public decimal Earned_Costs_ToDate => reportable.Earned_Costs_ToDate;
+        public decimal Earned_Costs_ToDate => Reportable.Earned_Costs_ToDate;
 
-        public decimal Earned_Costs_OnDataDate => reportable.Earned_Costs_OnDataDate;
+        public decimal Earned_Costs_OnDataDate => Reportable.Earned_Costs_OnDataDate;
 
-        public decimal Earned_Units_AfterDataDate => reportable.Earned_Units_AfterDataDate;
+        public decimal Earned_Units_AfterDataDate => Reportable.Earned_Units_AfterDataDate;
 
-        public decimal Total_Earned_Percentage { get => reportable.Total_Earned_Percentage; set => reportable.Total_Earned_Percentage = value; }
+        public decimal Total_Earned_Percentage { get => Reportable.Total_Earned_Percentage; set => Reportable.Total_Earned_Percentage = value; }
 
-        public decimal Total_Percentage_ToDate => reportable.Total_Percentage_ToDate;
+        public decimal Total_Percentage_ToDate => Reportable.Total_Percentage_ToDate;
 
-        public decimal TotalInstalledQuantity => reportable.TotalInstalledQuantity;
+        public decimal TotalInstalledQuantity => Reportable.TotalInstalledQuantity;
 
-        public decimal Baseline_Percentage => reportable.Baseline_Percentage;
+        public decimal Baseline_Percentage => Reportable.Baseline_Percentage;
 
-        public decimal SchedulePercentage => reportable.SchedulePercentage;
+        public decimal SchedulePercentage => Reportable.SchedulePercentage;
 
-        public decimal MinPercentage => reportable.MinPercentage;
+        public decimal MinPercentage => Reportable.MinPercentage;
 
-        public decimal MaxPercentage => reportable.MaxPercentage;
+        public decimal MaxPercentage => Reportable.MaxPercentage;
 
-        public decimal CurrentPeriodInstalledQuantity { get => reportable.CurrentPeriodInstalledQuantity; set => reportable.CurrentPeriodInstalledQuantity = value; }
+        public decimal CurrentPeriodInstalledQuantity { get => Reportable.CurrentPeriodInstalledQuantity; set => Reportable.CurrentPeriodInstalledQuantity = value; }
 
-        public decimal MaxCurrentQuantity => reportable.MaxCurrentQuantity;
+        public decimal MaxCurrentQuantity => Reportable.MaxCurrentQuantity;
 
-        public bool ShouldSaveProgress => reportable.ShouldSaveProgress;
+        public bool ShouldSaveProgress => Reportable.ShouldSaveProgress;
 
         public void SetReportingDataDate(DateTime dataDate)
         {
-            reportable.SetReportingDataDate(dataDate);
+            Reportable.SetReportingDataDate(dataDate);
         }
 
         public void SetProgressItems(List<PROGRESS_ITEM> progresses)
         {
-            reportable.SetProgressItems(progresses);
+            Reportable.SetProgressItems(progresses);
         }
 
         public void AppendProgressItem(PROGRESS_ITEM currentProgress)
         {
-            reportable.AppendProgressItem(currentProgress);
+            Reportable.AppendProgressItem(currentProgress);
         }
 
         public virtual void Update()
         {
-            reportable.Update();
+            Reportable.Update();
         }
 
         public decimal getCurrentPeriodEarnedUnits(decimal newPercentage)
         {
-            return reportable.getCurrentPeriodEarnedUnits(newPercentage);
+            return Reportable.getCurrentPeriodEarnedUnits(newPercentage);
         }
 
         public IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func)
         {
-            return reportable.GetExistingOrNewEditedProgresses(repository_find_actual_func);
+            return Reportable.GetExistingOrNewEditedProgresses(repository_find_actual_func);
         }
     }
 }

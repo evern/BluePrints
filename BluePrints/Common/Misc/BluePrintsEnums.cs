@@ -197,6 +197,16 @@ namespace BluePrints.Common
         Cancel
     }
 
+    public enum Estimation_DirectProgressType
+    {
+        [Display(Name = "Standalone")]
+        Standalone,
+        [Display(Name = "Trackable")] 
+        Trackable,
+        [Display(Name = "Auto")] 
+        Auto
+    }
+
     public enum CostGroup
     {
         [Display(Name = "Offsite")]
@@ -403,11 +413,11 @@ namespace BluePrints.Common
     }
 
     /// <summary>
-    /// Used for displaying missing assignments
+    /// Used for retrieving units and displaying missing assignments
     /// </summary>
-    public class P6ActivityAssignment
+    public class P6_AssignmentProjection
     {
-        public P6ActivityAssignment(IDeliverable_Rates deliverableProjection, P6_ASSIGNMENT baseline_item_assignment)
+        public P6_AssignmentProjection(IDeliverable_Rates deliverableProjection, P6_ASSIGNMENT baseline_item_assignment)
         {
             this.deliverableProjection = deliverableProjection;
             this.deliverable_assignment = baseline_item_assignment;

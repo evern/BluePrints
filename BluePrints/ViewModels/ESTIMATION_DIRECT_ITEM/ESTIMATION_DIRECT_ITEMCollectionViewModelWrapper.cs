@@ -444,57 +444,6 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-
-        protected override void CellValueAnyRowChanging(CellValueChangedEventArgs e)
-        {
-            ESTIMATION_DIRECT_ITEMProjection activeESTIMATION_DIRECT_ITEM = (ESTIMATION_DIRECT_ITEMProjection)e.Row;
-            if (e.Column.FieldName ==
-                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
-                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().TRACK))
-            {
-                if ((bool)e.Value)
-                {
-                    bool oldValue = activeESTIMATION_DIRECT_ITEM.Entity.STANDALONE;
-                    if (oldValue)
-                    {
-                        bool newValue = false;
-                        string standaloneFieldName = BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
-                        BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().STANDALONE);
-                        activeESTIMATION_DIRECT_ITEM.Entity.STANDALONE = newValue;
-
-                        if(e.RowHandle != GridControl.NewItemRowHandle)
-                        {
-                            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-                            MainViewModel.EntitiesUndoRedoManager.AddUndo(activeESTIMATION_DIRECT_ITEM, standaloneFieldName, oldValue, newValue, EntityMessageType.Changed);
-                        }
-                    }
-                }
-            }
-            else if (e.Column.FieldName ==
-                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
-                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().STANDALONE))
-            {
-                if ((bool)e.Value)
-                {
-                    bool oldValue = activeESTIMATION_DIRECT_ITEM.Entity.TRACK;
-                    if (oldValue)
-                    {
-                        bool newValue = false;
-                        string trackFieldName = BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
-                        BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().TRACK);
-                        activeESTIMATION_DIRECT_ITEM.Entity.TRACK = newValue;
-                        if (e.RowHandle != GridControl.NewItemRowHandle)
-                        {
-                            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-                            MainViewModel.EntitiesUndoRedoManager.AddUndo(activeESTIMATION_DIRECT_ITEM, trackFieldName, oldValue, newValue, EntityMessageType.Changed);
-                        }
-                    }
-                }
-            }
-
-            base.CellValueAnyRowChanging(e);
-        }
-
         /// <summary>
         /// Allow undo-redo behavior to be added for automated cell value changing. This behavior doesn't have to be applied on new row because AddUndo for EntityMessageType.Added is already handling this
         /// </summary>

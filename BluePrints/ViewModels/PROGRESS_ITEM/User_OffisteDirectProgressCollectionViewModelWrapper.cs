@@ -18,7 +18,7 @@ using BluePrints.P6EntitiesDataModel;
 
 namespace BluePrints.ViewModels
 {
-    public class User_OffisteDirectProgressCollectionViewModelWrapper : OffsiteDirectProgressCollectionViewModelWrapper
+    public class User_OffsiteDirectProgressCollectionViewModelWrapper : OffsiteDirectProgressCollectionViewModelWrapper
     {
         private USER _loadUSER;
         IP6EntitiesUnitOfWork p6UOW;

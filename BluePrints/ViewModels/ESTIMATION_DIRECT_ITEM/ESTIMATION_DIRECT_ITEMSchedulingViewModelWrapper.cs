@@ -35,8 +35,7 @@ using System.Windows.Input;
 namespace BluePrints.ViewModels
 {
     public class ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper :
-        BluePrintsEntitiesSchedulingCollectionWrapper
-        <ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>, IHaveCanvasWidth
+        BluePrintsEntitiesSchedulingCollectionWrapper<ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>, IHaveCanvasWidth
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
@@ -47,36 +46,12 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper());
         }
 
-        #region Used as Dependency Delegate
-        public Action<IEnumerable<ESTIMATION_DIRECT_ITEMProjection>> OnMappingViewModelLoaded { get; set; }
-
-        private bool isFromPROGRESS
-        {
-            get { return OnMappingViewModelLoaded != null; }
-        }
-        #endregion
-
         #region Database Operation
-        private P6Data.PROJECT loadP6PROJECT;
-        private PROGRESS loadPROGRESS;
         private ESTIMATION_DIRECT loadESTIMATION_DIRECT;
         private DEPARTMENT defaultConstructionDEPARTMENT;
         private Data.PHASE defaultConstructionPHASE;
 
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        protected override void InitializeParameters(object parameter)
-        {
-            var obj = (object[])parameter;
-
-            if (isFromPROGRESS)
-                loadPROGRESS = (PROGRESS)obj[0];
-            else
-                loadESTIMATION_DIRECT = (ESTIMATION_DIRECT)obj[0];
-
-            mappingType = (BaselineMappingSelectionType)obj[1];
-            base.InitializeParameters(parameter);
-        }
+        protected override ProgressType progress_type => ProgressType.Construct;
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
         {
@@ -95,25 +70,19 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
-
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, x => loadPROGRESS = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.P6_ASSIGNMENTS, P6_ASSIGNMENTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECT_ITEMS, ESTIMATION_DIRECT_ITEMProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
-            loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJECT, P6PROJECTProjectionFunc, x => loadP6PROJECT = x);
-            loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.TASK, P6TASKProjectionFunc);
-            loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJWBS, PROJWBSProjectionFunc);
-            InvokeEntitiesLoaderDescriptionLoading();
+
+            base.InitializeAndLoadEntitiesLoaderDescription();
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
         {
-            return query => query.Where(x => x.GUID == loadESTIMATION_DIRECT.GUID_PROJECT);
+            return query => query.Where(x => x.GUID == p6_baseline_entity.project_guid);
         }
 
         private Func<IRepositoryQuery<ESTIMATION_DIRECT>, IQueryable<ESTIMATION_DIRECT>> ESTIMATION_DIRECTProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == EstimationStatus.Live);
+            return query => query.Where(x => x.GUID == p6_baseline_entity.EntityKey);
         }
 
         private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
@@ -151,49 +120,9 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID));
         }
 
-        private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == ProgressStatus.Live && x.TYPE == ProgressType.Construct);
-        }
-
-        private Func<IRepositoryQuery<P6_ASSIGNMENT>, IQueryable<P6_ASSIGNMENT>> P6_ASSIGNMENTProjectionFunc()
-        {
-            return
-                query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
-        }
-
         private Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ESTIMATION_DIRECT_ITEM>> ESTIMATION_DIRECT_ITEMProjectionFunc()
         {
             return query => query.Where(x => x.GUID_ESTIMATION_DIRECT == loadESTIMATION_DIRECT.GUID);
-        }
-
-        private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID);
-        }
-
-        private Func<IRepositoryQuery<P6Data.PROJECT>, IQueryable<P6Data.PROJECT>> P6PROJECTProjectionFunc
-            ()
-        {
-            string projectName;
-            if (isFromPROGRESS)
-                projectName = loadPROGRESS.P6PROGRESS_NAME;
-            else if (mappingType == BaselineMappingSelectionType.Modified)
-                projectName = loadESTIMATION_DIRECT.P6MODBASELINE_NAME;
-            else
-                projectName = loadESTIMATION_DIRECT.P6BASELINE_NAME;
-
-            return query => query.Where(x => x.proj_short_name == projectName);
-        }
-
-        private Func<IRepositoryQuery<TASK>, IQueryable<TASK>> P6TASKProjectionFunc()
-        {
-            return query => query.Where(x => x.proj_id == loadP6PROJECT.proj_id);
-        }
-
-        private Func<IRepositoryQuery<PROJWBS>, IQueryable<PROJWBS>> PROJWBSProjectionFunc()
-        {
-            return query => query.Where(x => x.proj_id == loadP6PROJECT.proj_id);
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
@@ -217,33 +146,6 @@ namespace BluePrints.ViewModels
         protected override string ViewName
         {
             get { return "ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper"; }
-        }
-
-        private IDialogService P6_Assignment_DialogService
-        {
-            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("P6_Assignment_Dialog"); }
-        }
-
-        protected override IEnumerable<TASK> P6TASKCollection
-        {
-            get
-            {
-                var collection = GetEntities<TASK>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.task_name);
-                return collection;
-            }
-        }
-
-        protected override IEnumerable<PROJWBS> P6PROJWBSCollection
-        {
-            get
-            {
-                var collection = GetEntities<PROJWBS>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.wbs_name);
-                return collection;
-            }
         }
 
         public IEnumerable<Data.PHASE> PHASECollection
@@ -362,39 +264,6 @@ namespace BluePrints.ViewModels
             {
                 var collection = GetEntities<P6_ASSIGNMENT>();
                 return collection;
-            }
-        }
-
-        public ICollectionViewModel<BluePrints.P6Data.TASK> P6TASKCollectionViewModel
-        {
-            get { return (ICollectionViewModel<BluePrints.P6Data.TASK>)loaderCollection.GetViewModel<TASK>(); }
-        }
-
-        public CollectionViewModel<ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> ESTIMATION_DIRECT_ITEMSCollectionViewModel
-        {
-            get
-            {
-                if (MainViewModel == null)
-                    return null;
-
-                return
-                    (CollectionViewModel<ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>)
-                    loaderCollection.GetViewModel<ESTIMATION_DIRECT_ITEM>();
-            }
-        }
-
-        protected override IHaveP6Baselines p6_baseline_entity => loadESTIMATION_DIRECT;
-
-        protected override CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> P6_ASSIGNMENTSCollectionViewModel
-        {
-            get
-            {
-                if (MainViewModel == null)
-                    return null;
-
-                return
-                    (CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>)
-                    loaderCollection.GetViewModel<P6_ASSIGNMENT>();
             }
         }
 

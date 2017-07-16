@@ -14,6 +14,7 @@
     xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
     xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
+    xmlns:common="clr-namespace:BluePrints.Common"
     xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
     xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
     mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
@@ -75,6 +76,10 @@
                                 <dxb:BarItemSeparator />
                                 <dxb:BarStaticItem Content="Data Date" />
                                 <dxb:BarStaticItem Content="{Binding DataContext.DataDate, ElementName=userControl}" />
+                                <dxb:BarButtonItem Content="Progress P6"
+                                                   Command="{Binding DataContext.PushToP6OriginalCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -219,9 +224,9 @@
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Binding="{Binding Track}" Header="TRACK" ReadOnly="True" IsEnabled="False" >
+                                        <dxg:GridColumn Binding="{Binding Progress_Type}" Header="PROGRESS_TYPE">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:CheckEditSettings />
+                                                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Estimation_DirectProgressType}}" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                     </dxg:GridControl.Columns>

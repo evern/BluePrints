@@ -174,7 +174,7 @@ namespace BluePrints.ViewModels
         {
             DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
                 new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original },
-                "BASELINE_ITEMSchedulingViewHost", 
+                "BASELINE_ITEMSchedulingView", 
                 DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
@@ -190,7 +190,7 @@ namespace BluePrints.ViewModels
         {
             DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
                 new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Modified },
-                "WORKPACKSchedulingViewHost",
+                "BASELINE_ITEMSchedulingView",
                 DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6MODBASELINE_NAME + " Mapping");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);

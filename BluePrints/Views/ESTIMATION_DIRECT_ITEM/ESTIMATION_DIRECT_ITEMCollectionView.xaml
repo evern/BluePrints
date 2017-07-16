@@ -203,9 +203,10 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colTRACK" FieldName="Entity.TRACK" Header="TRACK">
+                            <dxg:GridColumn Name="colPROGRESS_TYPE" FieldName="Entity.PROGRESS_TYPE" Header="PROGRESS_TYPE">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:CheckEditSettings />
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                                              ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Estimation_DirectProgressType}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Name="colSTANDALONE" FieldName="Entity.STANDALONE" Header="STANDALONE">
