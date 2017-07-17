@@ -53,6 +53,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.TotalCosts = summaryStats.totalCosts;
             this.firstAlignedDataDate = summaryStats.FirstAlignedDataDate;
             this.reportInterval = summaryStats.ReportingInterval;
+            //Always use weekly
+            //this.reportInterval = new TimeSpan(1, 0, 0, 0);
             this.rawVariationAdjustments = summaryStats.VariationAdjustments;
         }
 
@@ -65,6 +67,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.TotalCosts = totalCosts;
             this.firstAlignedDataDate = firstAlignedDataDate;
             this.reportInterval = reportInterval;
+            //Always use weekly
+            //this.reportInterval = new TimeSpan(1, 0, 0, 0);
             this.rawVariationAdjustments = rawVariationAdjustments;
             this.hideDataPointsBeforeDataDate = hideDataPointsBeforeDataDate;
             this.alwaysBenchmarkAgainstBudgeted = alwaysBenchmarkAgainstBudgeted;

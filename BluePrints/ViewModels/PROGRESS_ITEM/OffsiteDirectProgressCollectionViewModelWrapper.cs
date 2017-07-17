@@ -57,9 +57,9 @@ namespace BluePrints.ViewModels
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, x => loadBASELINE = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, DELIVERABLES_STATUSProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
+            loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
 
             base.InitializeAndLoadEntitiesLoaderDescription();
         }
@@ -75,11 +75,6 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
-        }
-
-        private Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BASELINE_ITEMProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID);
         }
 
         private Func<IRepositoryQuery<DELIVERABLES_STATUS>, IQueryable<DELIVERABLES_STATUS>> DELIVERABLES_STATUSProjectionFunc()
@@ -225,6 +220,17 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<DELIVERABLES_STATUS>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.MAX_PERCENTAGE);
+                return collection;
+            }
+        }
+
+        public IEnumerable<DOCTYPE> DOCTYPECollection
+        {
+            get
+            {
+                var collection = GetEntities<DOCTYPE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.CODE);
                 return collection;
             }
         }

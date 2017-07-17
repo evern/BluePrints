@@ -119,10 +119,7 @@
                                    MDIMergeStyle="Always">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Home">
-                            <dxr:RibbonPageGroup Caption="BASELINE ITEM Tasks">
-                                <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"
-                                                   LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"
-                                                   Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                            <dxr:RibbonPageGroup Caption="Estimate Assignment Tasks">
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
@@ -325,22 +322,6 @@
                                                 Padding="0, 0, 0, 0" Command="{Binding DataContext.Delete_AssignmentsCommand, ElementName=userControl}">
                                                 <StackPanel>
                                                     <Image Source="{dx:DXImageOffice2013 Image=DeleteFooter_32x32.png}" />
-                                                </StackPanel>
-                                            </Button>
-                                        </dxlc:LayoutItem>
-                                        <dxlc:LayoutItem>
-                                            <Button VerticalAlignment="Top" ToolTip="Lookup Assignment Activity"
-                                                Padding="0, 0, 0, 0" Command="{Binding DataContext.LookUpAssignment_ActivityCommand, ElementName=userControl}">
-                                                <StackPanel>
-                                                    <Image Source="{dx:DXImageOffice2013 Image=Find_32x32.png}" />
-                                                </StackPanel>
-                                            </Button>
-                                        </dxlc:LayoutItem>
-                                        <dxlc:LayoutItem>
-                                            <Button VerticalAlignment="Top" ToolTip="Lookup Assignment Deliverable"
-                                                Padding="0, 0, 0, 0" Command="{Binding DataContext.LookUpAssignment_DeliverableCommand, ElementName=userControl}">
-                                                <StackPanel>
-                                                    <Image Source="{dxc:DXImage Image=Logical_32x32.png}" />
                                                 </StackPanel>
                                             </Button>
                                         </dxlc:LayoutItem>

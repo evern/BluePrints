@@ -29,15 +29,15 @@
         [StringLength(300)]
         public string TITLE { get; set; }
 
-        [StringLength(300)]
+        [StringLength(4000)]
         public string DESCRIPTION { get; set; }
 
-        [StringLength(1000)]
+        [StringLength(4000)]
         public string CAUSE { get; set; }
 
         public CorrectiveActionType? CORRECTIVE_ACTION_TYPE { get; set; }
 
-        [StringLength(1500)]
+        [StringLength(4000)]
         public string CORRECTIVE_ACTION { get; set; }
 
         public decimal? ESTIMATED_RECTIFICATION_COST { get; set; }

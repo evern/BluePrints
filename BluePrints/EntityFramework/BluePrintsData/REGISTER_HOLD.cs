@@ -19,16 +19,16 @@ namespace BluePrints.Data
         [StringLength(150)]
         public string NUMBER { get; set; }
 
-        [StringLength(1000)]
+        [StringLength(4000)]
         public string DESCRIPTION { get; set; }
 
-        [StringLength(1000)]
+        [StringLength(4000)]
         public string REFERENCE { get; set; }
 
         [StringLength(300)]
         public string RAISEDBY { get; set; }
 
-        [StringLength(1000)]
+        [StringLength(4000)]
         public string ACTION { get; set; }
 
         public DateTime? DATE_RAISED { get; set; }

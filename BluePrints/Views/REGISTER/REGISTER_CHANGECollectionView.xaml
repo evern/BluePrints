@@ -86,14 +86,18 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="TITLE" Header="Title">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings TextWrapping="Wrap" />
-                                </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                        </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="DESCRIPTION" Header="Issue Description" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings TextWrapping="Wrap" />
-                                </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="SCHEDULE_IMPACT" Header="Schedule Impact" >
                                 <dxg:GridColumn.EditSettings>

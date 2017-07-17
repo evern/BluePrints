@@ -90,16 +90,26 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="TITLE" Header="Title" />
+                            <dxg:GridColumn FieldName="TITLE" Header="Title" >
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="DESCRIPTION" Header="Issue Description" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings TextWrapping="Wrap" />
-                                </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="PROPOSED_SOLUTION" Header="Proposed Solution or Comments" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings TextWrapping="Wrap" />
-                                </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="SCHEDULE_IMPACT" Header="Schedule Impact" >
                                 <dxg:GridColumn.EditSettings>
@@ -120,20 +130,26 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="CLIENT_NOTIFICATION" Header="Client Notification" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings TextWrapping="Wrap" />
-                                </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="NOTIFIED_PERSON" Header="Notified Person" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings TextWrapping="Wrap" />
-                                </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="DATE_RAISED" Header="Date Raised" />
                             <dxg:GridColumn FieldName="FINAL_RESOLUTION" Header="Final Resolution" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings TextWrapping="Wrap" />
-                                </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="WAY_CLOSED" Header="Way Closed" >
                                 <dxg:GridColumn.EditSettings>

@@ -18,6 +18,9 @@
 
         public Guid? GUID_DISCIPLINE { get; set; }
 
+        [StringLength(150)]
+        public string NUMBER { get; set; }
+
         public RegisterRaisedByType? RAISEDBY_TYPE { get; set; }
 
         [StringLength(300)]
@@ -29,15 +32,12 @@
         [StringLength(300)]
         public string TITLE { get; set; }
 
-        [StringLength(150)]
-        public string NUMBER { get; set; }
-
-        [StringLength(300)]
+        [StringLength(4000)]
         public string DESCRIPTION { get; set; }
 
         public bool? PROCESS_ISSUE { get; set; }
 
-        [StringLength(500)]
+        [StringLength(4000)]
         public string FURTHER_ACTION { get; set; }
 
         public DateTime? DATE_IDENTIFIED { get; set; }

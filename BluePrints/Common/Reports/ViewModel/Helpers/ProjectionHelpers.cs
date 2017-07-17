@@ -11,13 +11,13 @@ namespace BluePrints.Common.ViewModel.Reporting
     /// </summary>
     public static class ProjectionHelpers
     {
-        public static void InitializePROGRESS_ITEMStats(IEnumerable<IReportable> reportableItems, IEnumerable<VariationAdjustment> variationAdjustments, PROGRESS livePROGRESS, bool progressHaveStats)
+        public static void InitializePROGRESS_ITEMStats(IEnumerable<IReportable> reportableItems, IEnumerable<VariationAdjustment> variationAdjustments, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, bool progressHaveStats)
         {
             foreach (IReportable reportableItem in reportableItems)
             {
                 List<VariationAdjustment> currentProgressItemAdjustments = variationAdjustments.Where(x => x.DeliverableOriginalGuid == reportableItem.OriginalEntityKey).ToList();
                 if(!progressHaveStats)
-                    reportableItem.Stats = new ProgressStats(livePROGRESS, reportableItem.Estimated_Units, reportableItem.Total_Units, reportableItem.Estimated_Costs, reportableItem.Total_Costs, currentProgressItemAdjustments);
+                    reportableItem.Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, reportableItem.Estimated_Units, reportableItem.Total_Units, reportableItem.Estimated_Costs, reportableItem.Total_Costs, currentProgressItemAdjustments);
             }
         }
 

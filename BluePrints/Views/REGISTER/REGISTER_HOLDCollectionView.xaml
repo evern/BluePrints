@@ -85,25 +85,33 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="DESCRIPTION" Header="Hold Description" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings TextWrapping="Wrap" />
-                                </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="REFERENCE" Header="Reference" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings TextWrapping="Wrap" />
-                                </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="RAISEDBY" Header="Raised By" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings TextWrapping="Wrap" />
-                                </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="DATE_RAISED" Header="Date Raised" />
                             <dxg:GridColumn FieldName="ACTION" Header="Action" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings TextWrapping="Wrap" />
-                                </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="DATE_CLOSED" Header="Date Closed" />
                         </dxg:GridControl.Columns>

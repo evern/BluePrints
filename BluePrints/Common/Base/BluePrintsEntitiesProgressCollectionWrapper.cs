@@ -82,7 +82,6 @@ namespace BluePrints.Common.Base
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, false);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
-            loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc);
@@ -105,12 +104,12 @@ namespace BluePrints.Common.Base
                 return query => query.Where(x => x.GUID == loadPROGRESS.GUID && x.TYPE == progress_type);
         }
 
-        protected Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        protected virtual Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        protected Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
+        protected virtual Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
@@ -194,8 +193,8 @@ namespace BluePrints.Common.Base
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
             List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), ReportableCollection);
-            projectSummary = new ProjectSummaryStats(MainViewModel.Entities, loadPROGRESS, projectVariationAdjustment);
-            FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT, loadPROGRESS, WORKPACKCollection, primeroUnitOfWork);
+            projectSummary = new ProjectSummaryStats(MainViewModel.Entities, loadPROGRESS.DATA_DATE, reportInterval, firstAlignedDataDate, projectVariationAdjustment);
+            FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT, reportInterval, firstAlignedDataDate, WORKPACKCollection, primeroUnitOfWork);
             fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER);
         }
 
@@ -215,8 +214,11 @@ namespace BluePrints.Common.Base
 
         protected virtual void BackgroundWorkerBuildStats()
         {
-            fullSummarizer.BuildBudgetedOnly();
-            fullSummarizer.BuildEarnedAndRemaining();
+            if(fullSummarizer != null)
+            {
+                fullSummarizer.BuildBudgetedOnly();
+                fullSummarizer.BuildEarnedAndRemaining();
+            }
         }
 
         public bool isBusy { get; set; }
@@ -608,8 +610,12 @@ namespace BluePrints.Common.Base
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
             List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), ReportableCollection);
-            ProjectSummaryStats projectSummary = new ProjectSummaryStats(MainViewModel.Entities, loadPROGRESS, projectVariationAdjustment);
-            FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT, loadPROGRESS, WORKPACKCollection);
+
+            DateTime reporting_data_date = loadPROGRESS.DATA_DATE;
+            TimeSpan reporting_interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
+            DateTime first_aligned_data_date = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
+            ProjectSummaryStats projectSummary = new ProjectSummaryStats(MainViewModel.Entities, reporting_data_date, reporting_interval, first_aligned_data_date, projectVariationAdjustment);
+            FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT, reporting_interval, first_aligned_data_date, WORKPACKCollection);
             fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder);
             fullSummarizer.Build();
             return projectSummary;
@@ -767,17 +773,5 @@ namespace BluePrints.Common.Base
                 return collection;
             }
         }
-
-        public IEnumerable<DOCTYPE> DOCTYPECollection
-        {
-            get
-            {
-                var collection = GetEntities<DOCTYPE>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.CODE);
-                return collection;
-            }
-        }
-
     }
 }

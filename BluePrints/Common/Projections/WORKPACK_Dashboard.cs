@@ -173,13 +173,12 @@ namespace BluePrints.Common.Projections
     public static class WORKPACK_DashboardQueries
     {
         public static IQueryable<WORKPACK_Dashboard> Workpack_Dashboard(IQueryable<WORKPACK> WORKPACKS,
-            PROGRESS PROGRESS, BASELINE BASELINE,
-            IEnumerable<BASELINE_ITEM> BASELINE_ITEMS,
+            IEnumerable<PROGRESS> PROGRESSES, BASELINE BASELINE, ESTIMATION_DIRECT ESTIMATION_DIRECT, 
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
             IEnumerable<RATE> RATES,
             IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSES)
         {
-            var projectDashboard = DashboardQueries.Single_Project_DashboardTransformation(BASELINE.PROJECT, BASELINE, PROGRESS, PROGRESS_ITEMS, RATES, null, true);
+            var projectDashboard = DashboardQueries.Single_Project_DashboardTransformation(BASELINE.PROJECT, BASELINE, ESTIMATION_DIRECT, PROGRESSES, PROGRESS_ITEMS, RATES, null, true);
             return Workpack_Dashboard_Summary(WORKPACKS, projectDashboard);
         }
 

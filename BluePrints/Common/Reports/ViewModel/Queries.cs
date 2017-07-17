@@ -92,10 +92,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             List<ReportablesDisplay> display_items = new List<ReportablesDisplay>();
 
             IEnumerable<ESTIMATION_DIRECT_ITEMProgress> estimation_direct_item_progresses =
-                ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATION_DIRECT_ITEMS,
-                                                                                                projectRATES,
+                ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATION_DIRECT_ITEMS, projectRATES, PROGRESS, PROGRESS_ITEMS,
                                                                                                 projectSTOCK_CODES,
-                                                                                                COMMODITY_CODES, PROGRESS, PROGRESS_ITEMS).AsEnumerable();
+                                                                                                COMMODITY_CODES).AsEnumerable();
 
             var estimation_direct_progress_by_commoditycodeguid = estimation_direct_item_progresses.Where(x => x.Entity.Progress_Type != Estimation_DirectProgressType.Standalone)
                 .GroupBy(x => x.Entity.Entity.GUID_COMMODITY_CODE).Select(group => new { CommodityCodeGuid = group.Key, Estimation_Direct_ItemProgress = group.ToList() });

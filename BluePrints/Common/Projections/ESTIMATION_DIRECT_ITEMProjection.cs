@@ -107,7 +107,7 @@ namespace BluePrints.Common.Projections
 
         public decimal Total_Units_IncludingByDuration => Estimated_Units;
 
-        public decimal Estimated_Units => STOCK_CODE == null ? 0 : Entity.ESTIMATED_QUANTITY * STOCK_CODE.HOURS_INSTALL;
+        public decimal Estimated_Units => Entity.STOCK_CODE == null ? STOCK_CODE == null ? 0 : STOCK_CODE.HOURS_INSTALL * Entity.ESTIMATED_QUANTITY : Entity.ESTIMATED_QUANTITY * Entity.STOCK_CODE.HOURS_INSTALL;
 
         public decimal Total_Units => Estimated_Units;
 
@@ -183,7 +183,7 @@ namespace BluePrints.Common.Projections
     {
         public static IQueryable<ESTIMATION_DIRECT_ITEMProgress> IDeliverable_Progress_Transformation(
             IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS,
-            IEnumerable<RATE> RATES, IEnumerable<STOCK_CODE> STOCK_CODES, IEnumerable<COMMODITY_CODE> COMMODITY_CODES, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null)
+            IEnumerable<RATE> RATES, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<STOCK_CODE> STOCK_CODES = null, IEnumerable<COMMODITY_CODE> COMMODITY_CODES = null, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null)
         {
             var PROGRESS_ITEMSByOriginalGuid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
             List<ESTIMATION_DIRECT_ITEMProjection> estimation_direct_item_rates =
@@ -200,7 +200,8 @@ namespace BluePrints.Common.Projections
                 newEstimation_Direct_itemProgress.Live_PROGRESS = PROGRESS;
                 newEstimation_Direct_itemProgress.Entity = estimation_direct_item_rate;
                 ProgressQueries.SetReportablePROGRESS_ITEM(newEstimation_Direct_itemProgress, PROGRESS_ITEMSByOriginalGuid);
-                newEstimation_Direct_itemProgress.SetReportingDataDate(PROGRESS.DATA_DATE);
+                if(PROGRESS != null)
+                    newEstimation_Direct_itemProgress.SetReportingDataDate(PROGRESS.DATA_DATE);
                 estimation_direct_item_progresses.Add(newEstimation_Direct_itemProgress);
             }
 
@@ -209,7 +210,7 @@ namespace BluePrints.Common.Projections
 
         public static IQueryable<ESTIMATION_DIRECT_ITEMProjection> IDeliverable_Rates_Transformation(
             IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, 
-            IEnumerable<RATE> RATES, IEnumerable<STOCK_CODE> STOCK_CODES, IEnumerable<COMMODITY_CODE> COMMODITY_CODES)
+            IEnumerable<RATE> RATES, IEnumerable<STOCK_CODE> STOCK_CODES = null, IEnumerable<COMMODITY_CODE> COMMODITY_CODES = null)
         {
             return
                 ESTIMATION_DIRECT_ITEMS.OrderBy(x => x.CREATED).ToArray()
@@ -218,14 +219,12 @@ namespace BluePrints.Common.Projections
                             new ESTIMATION_DIRECT_ITEMProjection()
                             {
                                 Entity = estimate_direct_item,
-                                STOCK_CODE = STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_direct_item.GUID_STOCK_CODE),
+                                STOCK_CODE = STOCK_CODES == null ? null : STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_direct_item.GUID_STOCK_CODE),
                                 RATE = RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
-                                StockCodeCollection = STOCK_CODES
-                                .Where(stockcode => 
-                                stockcode.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
-                                CommodityCodeCollection = COMMODITY_CODES
-                                .Where(commodity_code =>
-                                commodity_code.GUID_AREA == estimate_direct_item.GUID_AREA 
+                                StockCodeCollection = STOCK_CODES == null ? null : STOCK_CODES
+                                .Where(stockcode => stockcode.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
+                                CommodityCodeCollection = COMMODITY_CODES == null ? null : COMMODITY_CODES
+                                .Where(commodity_code => commodity_code.GUID_AREA == estimate_direct_item.GUID_AREA 
                                 && commodity_code.GUID_SUBAREA == estimate_direct_item.GUID_SUBAREA 
                                 && commodity_code.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE).OrderBy(x => x.CODE)
                             }).AsQueryable();

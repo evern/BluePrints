@@ -99,19 +99,25 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="TITLE" Header="Non-Conformance Title" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings TextWrapping="Wrap" />
-                                </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="DESCRIPTION" Header="Non-Conformance Description" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings TextWrapping="Wrap" />
-                                </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="CAUSE" Header="Cause of Non-Conformance" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings TextWrapping="Wrap" />
-                                </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="CORRECTIVE_ACTION_TYPE" Header="Corrective Action Type" >
                                 <dxg:GridColumn.EditSettings>
@@ -126,9 +132,11 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="RAISEDBY" Header="Raised By" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings TextWrapping="Wrap" />
-                                </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="DATE_IDENTIFIED" Header="Date Identified"/>
                             <dxg:GridColumn FieldName="DATE_CLOSED" Header="Date Closed" />

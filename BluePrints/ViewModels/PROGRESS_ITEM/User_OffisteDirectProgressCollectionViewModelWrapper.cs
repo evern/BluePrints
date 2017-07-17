@@ -37,10 +37,6 @@ namespace BluePrints.ViewModels
             base.CleanUpEntitiesLoader();
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
-            loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
-            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddLoaderDescription<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS);
             loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
@@ -54,12 +50,12 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.STATUS == ProjectStatus.Active);
         }
 
-        private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        protected override Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
         {
             return query => query.Where(x => x.PROJECT.STATUS == ProjectStatus.Active);
         }
 
-        private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
+        protected override Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
         {
             return query => query.Where(x => x.PROJECT.STATUS == ProjectStatus.Active);
         }

@@ -6,6 +6,40 @@ namespace BluePrints.Common.ViewModel.Reporting
 {
     public static class ChronologicalHelpers
     {
+        public static DateTime? GetEarliestFirstAlignedDataDate(IEnumerable<PROGRESS> PROGRESSES)
+        {
+            DateTime? earliest_first_aligned_data_date = null;
+            foreach (PROGRESS PROGRESS in PROGRESSES)
+            {
+                DateTime current_first_aligned_data_date = ChronologicalHelpers.GenerateFirstAlignedDataDate(PROGRESS);
+                if (earliest_first_aligned_data_date == null)
+                    earliest_first_aligned_data_date = current_first_aligned_data_date;
+                else if (earliest_first_aligned_data_date > current_first_aligned_data_date)
+                    earliest_first_aligned_data_date = current_first_aligned_data_date;
+            }
+
+            return earliest_first_aligned_data_date;
+        }
+
+        public static DateTime? GetLastDataDate(IEnumerable<PROGRESS> PROGRESSES)
+        {
+            DateTime? latest_data_date = null;
+            foreach (PROGRESS PROGRESS in PROGRESSES)
+            {
+                if (latest_data_date == null)
+                    latest_data_date = PROGRESS.DATA_DATE;
+                else if (latest_data_date < PROGRESS.DATA_DATE)
+                    latest_data_date = PROGRESS.DATA_DATE;
+            }
+
+            return latest_data_date;
+        }
+
+        public static TimeSpan GetDefaultIntervalTimeSpan()
+        {
+            return new TimeSpan(7, 0, 0, 0);
+        }
+
         /// <summary>
         /// Default exception periods, may be replaced by calendar settings
         /// </summary>

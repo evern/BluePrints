@@ -21,10 +21,10 @@ namespace BluePrints.Data
 
         public Register_HazardGroup? HAZARD_GROUP { get; set; }
 
-        [StringLength(1000)]
+        [StringLength(4000)]
         public string HAZARD_TYPE { get; set; }
 
-        [StringLength(1000)]
+        [StringLength(4000)]
         public string HAZARD_CAUSE { get; set; }
 
         public Register_RiskLikelihood? RISK_LIKELIHOOD { get; set; }
@@ -33,7 +33,7 @@ namespace BluePrints.Data
 
         public Register_RiskRanking? RISK_RANKING { get; set; }
 
-        [StringLength(500)]
+        [StringLength(4000)]
         public string CONTROL_MEASURES { get; set; }
 
         public Register_RiskLikelihood? RESIDUE_RISK_LIKELIHOOD { get; set; }
@@ -42,10 +42,10 @@ namespace BluePrints.Data
 
         public Register_RiskRanking? RESIDUE_RISK_RANKING { get; set; }
 
-        [StringLength(1000)]
+        [StringLength(4000)]
         public string RESIDUE_HAZARD { get; set; }
 
-        [StringLength(1000)]
+        [StringLength(4000)]
         public string FURTHER_ACTION { get; set; }
 
         public DateTime? DATE_IDENTIFIED { get; set; }

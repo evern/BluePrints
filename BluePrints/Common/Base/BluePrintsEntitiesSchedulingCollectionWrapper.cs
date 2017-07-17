@@ -173,7 +173,7 @@ namespace BluePrints.Common.Base
             }
 
             MainViewModel.SetParentViewModel(this);
-            mainThreadDispatcher.BeginInvoke(new Action(() => summarize_units(Activities_Source, entities)));
+            mainThreadDispatcher.BeginInvoke(new Action(() => summarize_activities_units(Activities_Source, entities)));
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
@@ -183,14 +183,56 @@ namespace BluePrints.Common.Base
         }
 
         #region View Refreshing
-        protected void summarize_units(IEnumerable<P6_Activity> activities, IEnumerable<ICanAssignP6> deliverables)
+        private void summarize_activities_dates(IEnumerable<P6_Activity> activities, bool trim = false)
+        {
+            List<P6_Activity> remove_activities = new List<P6_Activity>();
+            foreach (var activity in activities)
+                if (activity.ActivityType == AppointmentActivityType.WBS)
+                {
+                    List<P6_Activity> allChildrenActivities = new List<P6_Activity>();
+                    get_all_childrens(activities, activity, allChildrenActivities);
+                    //return childTASKInfos.Sum(x => x.AssignedUnits);
+                    if (allChildrenActivities.Count() != 0)
+                    {
+                        activity.Start = allChildrenActivities.Min(x => x.Start);
+                        activity.End = allChildrenActivities.Max(x => x.End);
+                    }
+                    else if (trim)
+                        remove_activities.Add(activity);
+                }
+
+            if (trim)
+            {
+                foreach (P6_Activity activity in remove_activities)
+                    activities_source.Remove(activity);
+            }
+        }
+
+        private void get_all_childrens(IEnumerable<P6_Activity> allActivities, P6_Activity parentActivity, List<P6_Activity> childrenCollection)
+        {
+            IEnumerable<P6_Activity> childActivities = allActivities.Where(x => x.ParentId == parentActivity.Id);
+
+            if (childActivities.Count() > 0)
+                parentActivity.WBSLevel += 1;
+
+            foreach (var childActivity in childActivities)
+            {
+                if (childActivity.ActivityType == AppointmentActivityType.Activity)
+                    childrenCollection.Add(childActivity);
+
+                get_all_childrens(allActivities, childActivity, childrenCollection);
+            }
+        }
+
+        protected void summarize_activities_units(IEnumerable<P6_Activity> activities, IEnumerable<ICanAssignP6> deliverables)
         {
             //first we calculate activity level
             foreach (var activity in activities.Where(x => x.ActivityType == AppointmentActivityType.Activity))
             {
                 decimal total_activity_assigned_units = deliverables.Sum(x => x.P6_Assignments.Where(assignment => assignment.P6_ACTIVITYID == activity.P6_ActivityId)
-                                              .Sum(assignment => ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m) * x.Total_Units));
+                                                        .Sum(assignment => ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m) * x.Total_Units));
                 activity.Assigned_Units = total_activity_assigned_units;
+                activity.RaisePropertiesChanged();
             }
 
             summarize_wbs_units(Activities_Source);
@@ -373,10 +415,14 @@ namespace BluePrints.Common.Base
 
         public void Add_Assignments()
         {
+            bool show_already_assigned_message = false;
             foreach (ICanAssignP6 deliverable in Selected_Deliverables)
             {
                 if (deliverable.Assigned_Percentage == Assignment_Value)
+                {
+                    show_already_assigned_message = true;
                     continue;
+                }
 
                 deliverable.P6_Assignments.Add(new P6_ASSIGNMENT()
                 {
@@ -391,8 +437,17 @@ namespace BluePrints.Common.Base
                 });
             }
 
+            if(show_already_assigned_message)
+                MessageBoxService.ShowMessage("Current percentage is already assigned to an activity");
+
             summarize_wbs_parent_unit(Selected_Activity);
-            P6_ASSIGNMENTSCollectionViewModel.BulkSave(Selected_Deliverables.SelectMany(x => x.P6_Assignments.Where(y => y.GUID == Guid.Empty)));
+            IEnumerable<P6_ASSIGNMENT> save_assignments = Selected_Deliverables.SelectMany(x => x.P6_Assignments.Where(y => y.GUID == Guid.Empty));
+            foreach(P6_ASSIGNMENT save_assignment in save_assignments)
+            {
+                P6_ASSIGNMENTSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(save_assignment, null, null, null, EntityMessageType.Added);
+            }
+
+            P6_ASSIGNMENTSCollectionViewModel.BulkSave(save_assignments);
             SetMaxUnits();
             raise_deliverable_assignment_changes();
         }
@@ -543,36 +598,6 @@ namespace BluePrints.Common.Base
             this.RaisePropertyChanged(x => x.Selected_P6_Assignments);
         }
 
-        public bool CanLookUpAssignment_Activity()
-        {
-            return Selected_P6_Assignment != null;
-        }
-
-        public void LookUpAssignment_Activity()
-        {
-            if (Selected_P6_Assignment == null)
-                return;
-
-            P6_Activity activity = Activities_Source.FirstOrDefault(x => x.P6_ActivityId == Selected_P6_Assignment.Entity.P6_ACTIVITYID);
-            if (activity != null)
-                Selected_Activity = activity;
-        }
-
-        public bool CanLookUpAssignment_Deliverable()
-        {
-            return CanLookUpAssignment_Activity();
-        }
-
-        public void LookUpAssignment_Deliverable()
-        {
-            if (Selected_P6_Assignment == null)
-                return;
-
-            ICanAssignP6 deliverable = Deliverables_Source.FirstOrDefault(x => x.OriginalEntityKey == Selected_P6_Assignment.Deliverable_OriginalEntityKey);
-            if (deliverable != null)
-                Selected_Deliverable = deliverable;
-        }
-
         /// <summary>
         /// Don't allow users to choose WBS items
         /// </summary>
@@ -583,6 +608,7 @@ namespace BluePrints.Common.Base
                 var changingValue = (P6_Activity)e.NewValue;
                 if (changingValue.ActivityType != AppointmentActivityType.Activity)
                 {
+                    MessageBoxService.ShowMessage("WBS or Milestones are not permitted for assignment, please choose another activity");
                     e.IsCancel = true;
                     e.Handled = true;
                 }
@@ -656,7 +682,7 @@ namespace BluePrints.Common.Base
                     if(P6PROJWBSCollection.Count() > 0)
                         activities_source.AddRange(P6PROJWBSCollection.OrderBy(x => x.wbs_short_name).Select(x => P6_Activity.Create(x, this)).ToArray().AsEnumerable());
 
-                    summarizeActivities(activities_source, true);
+                    summarize_activities_dates(activities_source, true);
                 }
 
                 return activities_source;
@@ -673,56 +699,7 @@ namespace BluePrints.Common.Base
                     return new List<TASK>();
             }
         }
-
-        private void summarizeActivities(IEnumerable<P6_Activity> activities, bool trim = false)
-        {
-            foreach (var activity in activities)
-            {
-                if (activity.ActivityType == AppointmentActivityType.WBS)
-                {
-                    activity.Assigned_Units = 0;
-                }
-            }
-
-            List<P6_Activity> remove_activities = new List<P6_Activity>();
-            foreach (var activity in activities)
-                if (activity.ActivityType == AppointmentActivityType.WBS)
-                {
-                    List<P6_Activity> allChildrenActivities = new List<P6_Activity>();
-                    getAllChildrens(activities, activity, allChildrenActivities);
-                    //return childTASKInfos.Sum(x => x.AssignedUnits);
-                    if (allChildrenActivities.Count() != 0)
-                    {
-                        activity.Start = allChildrenActivities.Min(x => x.Start);
-                        activity.End = allChildrenActivities.Max(x => x.End);
-                    }
-                    else if(trim)
-                        remove_activities.Add(activity);
-                }
-
-            if(trim)
-            {
-                foreach (P6_Activity activity in remove_activities)
-                    activities_source.Remove(activity);
-            }
-        }
-
-        private void getAllChildrens(IEnumerable<P6_Activity> allActivities, P6_Activity parentActivity, List<P6_Activity> childrenCollection)
-        {
-            IEnumerable<P6_Activity> childActivities = allActivities.Where(x => x.ParentId == parentActivity.Id);
-
-            if (childActivities.Count() > 0)
-                parentActivity.WBSLevel += 1;
-
-            foreach (var childActivity in childActivities)
-            {
-                if(childActivity.ActivityType == AppointmentActivityType.Activity)
-                    childrenCollection.Add(childActivity);
-
-                getAllChildrens(allActivities, childActivity, childrenCollection);
-            }
-        }
-
+        
         public virtual DateTime Beg { get; set; }
         public virtual DateTime End { get; set; }
         public virtual DateTime VisBeg { get; set; }

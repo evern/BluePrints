@@ -25,7 +25,7 @@ namespace BluePrints.Data
         [StringLength(300)]
         public string TITLE { get; set; }
 
-        [StringLength(1000)]
+        [StringLength(4000)]
         public string DESCRIPTION { get; set; }
 
         public ScheduleImpact? SCHEDULE_IMPACT { get; set; }
@@ -36,9 +36,9 @@ namespace BluePrints.Data
 
         public bool INTERDISC_CHECK_COMPLETE { get; set; }
 
-        public DateTime? DATE_RAISED { get; set; }
+        public bool? APPROVED { get; set; }
 
-        public bool APPROVED { get; set; }
+        public DateTime? DATE_RAISED { get; set; }
 
         public DateTime? DATE_CLOSED { get; set; }
 

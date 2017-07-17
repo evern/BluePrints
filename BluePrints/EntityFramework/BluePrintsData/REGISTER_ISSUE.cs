@@ -26,13 +26,13 @@ namespace BluePrints.Data
         [StringLength(300)]
         public string TITLE { get; set; }
 
-        [StringLength(1000)]
+        [StringLength(4000)]
         public string DESCRIPTION { get; set; }
 
-        [StringLength(1000)]
+        [StringLength(4000)]
         public string PROPOSED_SOLUTION { get; set; }
 
-        [StringLength(1000)]
+        [StringLength(4000)]
         public string FINAL_RESOLUTION { get; set; }
 
         [StringLength(300)]
@@ -40,12 +40,6 @@ namespace BluePrints.Data
 
         [StringLength(300)]
         public string NOTIFIED_PERSON { get; set; }
-
-        [StringLength(300)]
-        public string WAY_CLOSED { get; set; }
-
-        [StringLength(300)]
-        public string CLOSED_NOTIFIED_PERSON { get; set; }
 
         public DateTime? DATE_RAISED { get; set; }
 
@@ -56,6 +50,12 @@ namespace BluePrints.Data
         public ScheduleImpact? SCHEDULE_IMPACT { get; set; }
 
         public ScheduleImpact? COST_IMPACT { get; set; }
+
+        [StringLength(300)]
+        public string WAY_CLOSED { get; set; }
+
+        [StringLength(300)]
+        public string CLOSED_NOTIFIED_PERSON { get; set; }
 
         public DateTime CREATED { get; set; }
 

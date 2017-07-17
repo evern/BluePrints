@@ -10,16 +10,20 @@ namespace BluePrints.Common.ViewModel.Reporting
     public class ProjectSummaryStats : SummaryStats
     {
         #region Progress Error Log
-        readonly PROGRESS progress;
+        readonly DateTime reporting_data_date;
+        readonly TimeSpan reporting_interval;
+        readonly DateTime first_aligned_data_date;
         public List<WORKPACK> ExoMissingWORKPACKS { get; private set; }
         #endregion
 
-        public ProjectSummaryStats(IEnumerable<IReportable> progressItem, PROGRESS livePROGRESS, IEnumerable<VariationAdjustment> projectVariationAdjustments)
-            : base(progressItem, livePROGRESS, projectVariationAdjustments)
+        public ProjectSummaryStats(IEnumerable<IReportable> progressItem, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<VariationAdjustment> projectVariationAdjustments)
+            : base(progressItem, reporting_data_date, reporting_interval, first_aligned_data_date, projectVariationAdjustments)
         {
-            progress = livePROGRESS;
+            this.reporting_data_date = reporting_data_date;
+            this.reporting_interval = reporting_interval;
+            this.first_aligned_data_date = first_aligned_data_date;
             ExoMissingWORKPACKS = new List<WORKPACK>();
-            ProjectionHelpers.InitializePROGRESS_ITEMStats(progressItem, projectVariationAdjustments, livePROGRESS, false);
+            ProjectionHelpers.InitializePROGRESS_ITEMStats(progressItem, projectVariationAdjustments, reporting_data_date, reporting_interval, first_aligned_data_date, false);
         }
 
         public SummaryStats GroupStatsByWorkpack(WORKPACK workpack, bool isLegacyProject = true)
@@ -29,7 +33,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             DateTime progressItemReportingDataDate = this.ReportingDataDate;
             List<VariationAdjustment> workpackVariationAdjustments = progressItemStatsByWorkpack.SelectMany(x => x.Stats.VariationAdjustments).ToList();
-            SummaryStats workpackSummaryStats = new SummaryStats(progressItemStatsByWorkpack, progress, workpackVariationAdjustments);
+            SummaryStats workpackSummaryStats = new SummaryStats(progressItemStatsByWorkpack, reporting_data_date, reporting_interval, first_aligned_data_date, workpackVariationAdjustments);
             //Since workpackSummaryStats is already initialized with workpack specific deliverables, summary will aggreagate deliverable stats
             workpackSummaryStats.GenerateSummary();
 
@@ -48,7 +52,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             IEnumerable<IReportable> progressItemStatsByStockCode = progressItemStatsByWorkpack.Reportables.Where(x => x.Discipline_Code == disciplineCode);
             List<VariationAdjustment> disciplineCodeVariationAdjustments = progressItemStatsByStockCode.SelectMany(x => x.Stats.VariationAdjustments).ToList();
-            SummaryStats disciplineCodeSummary = new SummaryStats(progressItemStatsByStockCode, progress, disciplineCodeVariationAdjustments);
+            SummaryStats disciplineCodeSummary = new SummaryStats(progressItemStatsByStockCode, reporting_data_date, reporting_interval, first_aligned_data_date, disciplineCodeVariationAdjustments);
             disciplineCodeSummary.GenerateSummary();
 
             IEnumerable<ExoDataPoint> workpackBurnedDataPoints = progressItemStatsByWorkpack.Burned.GetData().Select(x => (ExoDataPoint)x);
@@ -74,7 +78,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             IEnumerable<IReportable> progressItemStatsByCommodityCode = progressItemStatsByDisciplineCode.Reportables.Where(x => x.Commodity_Code == commodityCode);
             List<VariationAdjustment> commodityCodeVariationAdjustments = progressItemStatsByCommodityCode.SelectMany(x => x.Stats.VariationAdjustments).ToList();
-            SummaryStats commodityCodeSummary = new SummaryStats(progressItemStatsByCommodityCode, progress, commodityCodeVariationAdjustments);
+            SummaryStats commodityCodeSummary = new SummaryStats(progressItemStatsByCommodityCode, reporting_data_date, reporting_interval, first_aligned_data_date, commodityCodeVariationAdjustments);
             commodityCodeSummary.GenerateSummary();
 
             IEnumerable<ExoDataPoint> stockCodeBurnedDataPoints = progressItemStatsByDisciplineCode.Burned.GetData().Select(x => (ExoDataPoint)x);
@@ -121,13 +125,13 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <param name="livePROGRESS">Live progress for reporting data date, generating first aligned data date and interval</param>
         /// <param name="projectVariationAdjustments">Project variation adjustments that will be matched against each deliverable projection</param>
         /// <param name="progressItemHaveStats">Deliverable projection stats area already generated</param>
-        public SummaryStats(IEnumerable<IReportable> progressItem, PROGRESS livePROGRESS, IEnumerable<VariationAdjustment> projectVariationAdjustments)
-            : base(livePROGRESS, progressItem.Sum(x => x.Estimated_Units), progressItem.Sum(x => x.Total_Units), progressItem.Sum(x => x.Estimated_Costs), progressItem.Sum(x => x.Total_Costs), projectVariationAdjustments)
+        public SummaryStats(IEnumerable<IReportable> progressItem, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<VariationAdjustment> projectVariationAdjustments)
+            : base(reporting_data_date, reporting_interval, first_aligned_data_date, progressItem.Sum(x => x.Estimated_Units), progressItem.Sum(x => x.Total_Units), progressItem.Sum(x => x.Estimated_Costs), progressItem.Sum(x => x.Total_Costs), projectVariationAdjustments)
         {
             Reportables = progressItem;
 
             //Since this is only used by workpack to rolldown from project, progress already have stats
-            ProjectionHelpers.InitializePROGRESS_ITEMStats(progressItem, projectVariationAdjustments,livePROGRESS, true);
+            ProjectionHelpers.InitializePROGRESS_ITEMStats(progressItem, projectVariationAdjustments, reporting_data_date, reporting_interval, first_aligned_data_date, true);
             Burned = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             Actual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
         }
@@ -248,11 +252,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             get { return budgetedCosts; }
         }
 
-        public ProgressStats(PROGRESS livePROGRESS, decimal budgetedUnits, decimal totalUnits, decimal budgetedCosts, decimal totalCosts, IEnumerable<VariationAdjustment> variationAdjustments)
+        public ProgressStats(DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, decimal budgetedUnits, decimal totalUnits, decimal budgetedCosts, decimal totalCosts, IEnumerable<VariationAdjustment> variationAdjustments)
         {
-            this.ReportingDataDate = livePROGRESS.DATA_DATE;
-            this.ReportingInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(livePROGRESS);
-            this.FirstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(livePROGRESS);
+            this.ReportingDataDate = reporting_data_date;
+            this.ReportingInterval = reporting_interval;
+            this.FirstAlignedDataDate = first_aligned_data_date;
 
             this.budgetedUnits = budgetedUnits;
             this.totalUnits = totalUnits;

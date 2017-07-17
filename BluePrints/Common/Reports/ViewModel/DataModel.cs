@@ -249,14 +249,17 @@ namespace BluePrints.Common.ViewModel.Reporting
         public BluePrintsProgressableProjectionBase(PROJECT PROJECT, PROGRESS Live_PROGRESS, IEnumerable<VariationAdjustment> variation_adjustments)
         {
             this.Live_PROGRESS = Live_PROGRESS;
-            SetReportingDataDate(Live_PROGRESS.DATA_DATE);
+            DateTime reporting_data_date = Live_PROGRESS.DATA_DATE;
+            TimeSpan reporting_interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(Live_PROGRESS);
+            DateTime first_aligned_data_date = ChronologicalHelpers.GenerateFirstAlignedDataDate(Live_PROGRESS);
+            SetReportingDataDate(reporting_data_date);
             IDeliverable_Rates deliverable = Entity as IDeliverable_Rates;
             if(deliverable != null)
             {
                 List<VariationAdjustment> currentProgressItemAdjustments = variation_adjustments.Where(x => x.DeliverableOriginalGuid == deliverable.OriginalEntityKey).ToList();
 
                 PartialStatsBuilder partialStatsBuilder = new PartialStatsBuilder(PROJECT.CURRENCYCONVERSION);
-                Stats = new ProgressStats(Live_PROGRESS, deliverable.Estimated_Units, deliverable.Total_Units, deliverable.Estimated_Costs, deliverable.Total_Costs, variation_adjustments.Where(x => x.DeliverableOriginalGuid == deliverable.OriginalEntityKey).ToList());
+                Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, deliverable.Estimated_Units, deliverable.Total_Units, deliverable.Estimated_Costs, deliverable.Total_Costs, variation_adjustments.Where(x => x.DeliverableOriginalGuid == deliverable.OriginalEntityKey).ToList());
                 statsSummarizer = new SingleObjectSummarizer(this, partialStatsBuilder);
             }
         }

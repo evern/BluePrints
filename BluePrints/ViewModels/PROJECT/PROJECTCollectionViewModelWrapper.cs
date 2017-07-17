@@ -59,6 +59,7 @@ namespace BluePrints.ViewModels
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
@@ -85,6 +86,14 @@ namespace BluePrints.ViewModels
         /// BASELINE is used for write only so just load a single entry for repository to be initialized
         /// </summary>
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
+        {
+            return query => query.Take(1);
+        }
+
+        /// <summary>
+        /// ESTIMATION_DIRECT is used for write only so just load a single entry for repository to be initialized
+        /// </summary>
+        private Func<IRepositoryQuery<ESTIMATION_DIRECT>, IQueryable<ESTIMATION_DIRECT>> ESTIMATION_DIRECTProjectionFunc()
         {
             return query => query.Take(1);
         }
@@ -162,14 +171,21 @@ namespace BluePrints.ViewModels
             //only way to determine whether current entity is new to avoid creating multiple 
             if (isEntityNew != null && ((bool)isEntityNew))
             {
-                var newBASELINE = new BASELINE();
+                BASELINE newBASELINE = new BASELINE();
                 newBASELINE.GUID_PROJECT = entity.GUID;
                 newBASELINE.NAME = entity.NUMBER + "_001";
                 newBASELINE.REVISION = "A";
                 newBASELINE.STATUS = BaselineStatus.Live;
                 BASELINEViewModel.Save(newBASELINE);
 
-                var newPROGRESS = new PROGRESS();
+                ESTIMATION_DIRECT newESTIMATE_DIRECT = new ESTIMATION_DIRECT();
+                newESTIMATE_DIRECT.GUID_PROJECT = entity.GUID;
+                newESTIMATE_DIRECT.NAME = entity.NUMBER + "_001";
+                newESTIMATE_DIRECT.REVISION = "A";
+                newESTIMATE_DIRECT.STATUS = EstimationStatus.Live;
+                ESTIMATION_DIRECTViewModel.Save(newESTIMATE_DIRECT);
+
+                PROGRESS newPROGRESS = new PROGRESS();
                 newPROGRESS.GUID_PROJECT = entity.GUID;
                 newPROGRESS.NAME = entity.NUMBER + "WEEKLY_001";
                 newPROGRESS.PROGRESS_START = DateTime.Now;
@@ -192,7 +208,7 @@ namespace BluePrints.ViewModels
 
                 if(defaultDepartment != null && defaultDiscipline != null)
                 {
-                    var newWORKPACK = new WORKPACK();
+                    WORKPACK newWORKPACK = new WORKPACK();
                     newWORKPACK.GUID_PROJECT = entity.GUID;
                     newWORKPACK.INTERNAL_NAME1 = entity.NUMBER;
                     newWORKPACK.STARTDATE = CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday);
@@ -205,7 +221,7 @@ namespace BluePrints.ViewModels
                     newWORKPACK.GUID_DDOCTYPE = defaultDocType.GUID;
                     WORKPACKViewModel.Save(newWORKPACK);
 
-                    var newBASELINE_ITEM = new BASELINE_ITEM();
+                    BASELINE_ITEM newBASELINE_ITEM = new BASELINE_ITEM();
                     newBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
                     newBASELINE_ITEM.GUID_WORKPACK = newWORKPACK.GUID;
                     newBASELINE_ITEM.GUID_DEPARTMENT = defaultDepartment.GUID;
@@ -213,6 +229,7 @@ namespace BluePrints.ViewModels
                     newBASELINE_ITEM.GUID_DOCTYPE = defaultDocType.GUID;
                     newBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-000-REP-GE-001";
                     BASELINE_ITEMViewModel.Save(newBASELINE_ITEM);
+
                 }
             }
         }
@@ -363,6 +380,19 @@ namespace BluePrints.ViewModels
                 return
                     (CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<BASELINE>();
+            }
+        }
+
+        public CollectionViewModel<ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork> ESTIMATION_DIRECTViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<ESTIMATION_DIRECT>();
             }
         }
 
