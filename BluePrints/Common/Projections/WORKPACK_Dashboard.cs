@@ -9,133 +9,21 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class DisciplineCode_Dashboard : IHaveStats
-    {
-        public string Discipline_Code { get; set; }
-        public List<CommodityCode_Dashboard> Commodity_Codes { get; set; }
-        public ProgressStats Stats { get; set; }
-    }
-
-    public class CommodityCode_Dashboard : IHaveStats
-    {
-        public string Commodity_Code { get; set; }
-        public ProgressStats Stats { get; set; }
-    }
-
     public class WORKPACK_Dashboard : BluePrintsProjectionBase<WORKPACK>, IHaveStats
     {
         public ProgressStats Stats { get; set; }
         public IEnumerable<AREA> AvailableSubAreas { get; set; }
 
-        public List<DisciplineCode_Dashboard> DisciplineCodes { get; set; }
-
-        public bool HaveDisciplineCodes
-        {
-            get
-            {
-                return DisciplineCodes.Count() > 0;
-            }
-        }
-
-        public void GroupProjectStats(ProjectSummaryStats projectStats, bool isLegacyProject)
-        {
-            Stats = projectStats.GroupStatsByWorkpack(this.Entity);
-            if (!isLegacyProject)
-            {
-                IEnumerable<ExoDataPoint> burnedDataPoints = projectStats.GetBurnedDataPoints();
-                DisciplineCodes = constructAllPossibleDisciplineCodes((SummaryStats)Stats, burnedDataPoints);
-                List<DisciplineCode_Dashboard> removeDisciplineCodes = new List<DisciplineCode_Dashboard>();
-
-                foreach(DisciplineCode_Dashboard disciplineCode in DisciplineCodes)
-                {
-                    disciplineCode.Stats = projectStats.GroupStatsByDisciplineCode((SummaryStats)Stats, disciplineCode.Discipline_Code);
-                    if (disciplineCode.Stats == null)
-                    {
-                        removeDisciplineCodes.Add(disciplineCode);
-                        continue;
-                    }
-
-                    List<CommodityCode_Dashboard> removeCommodityCodes = new List<CommodityCode_Dashboard>();
-                    foreach (CommodityCode_Dashboard commodityCode in disciplineCode.Commodity_Codes)
-                    {
-                        commodityCode.Stats = projectStats.GroupStatsByCommodityCode((SummaryStats)disciplineCode.Stats, commodityCode.Commodity_Code);
-                        if(commodityCode.Stats == null)
-                        {
-                            removeCommodityCodes.Add(commodityCode);
-                        }
-                    }
-
-                    //omit stock codes without any stats
-                    foreach (CommodityCode_Dashboard removeCommodityCode in removeCommodityCodes)
-                    {
-                        disciplineCode.Commodity_Codes.Remove(removeCommodityCode);
-                    }
-                }
-
-                //omit stock codes without any stats
-                foreach(DisciplineCode_Dashboard removeDisciplineCode in removeDisciplineCodes)
-                {
-                    DisciplineCodes.Remove(removeDisciplineCode);
-                }
-            }
-        }
-
-        private List<DisciplineCode_Dashboard> constructAllPossibleDisciplineCodes(SummaryStats workpackSummaryStats, IEnumerable<ExoDataPoint> burnedDataPoints)
-        {
-            List<DisciplineCode_Dashboard> disciplineCodeDashboard = new List<DisciplineCode_Dashboard>();
-            foreach(IReportable reportable in workpackSummaryStats.Reportables)
-            {
-                string discipline_code = reportable.Discipline_Code;
-                if (!disciplineCodeDashboard.Any(x => x.Discipline_Code == discipline_code))
-                {
-                    DisciplineCode_Dashboard newDisciplineCode = new DisciplineCode_Dashboard() { Discipline_Code = discipline_code };
-                    assignAllPossibleCommodityCodes(newDisciplineCode, workpackSummaryStats.Reportables, burnedDataPoints);
-                    disciplineCodeDashboard.Add(newDisciplineCode);
-                }
-            }
-
-            foreach(ExoDataPoint burnedDataPoint in burnedDataPoints)
-            {
-                string disciplineCode = burnedDataPoint.DisciplineCode;
-                if (!disciplineCodeDashboard.Any(x => x.Discipline_Code == disciplineCode))
-                {
-                    DisciplineCode_Dashboard newDisciplineCode = new DisciplineCode_Dashboard() { Discipline_Code = disciplineCode };
-                    assignAllPossibleCommodityCodes(newDisciplineCode, workpackSummaryStats.Reportables, burnedDataPoints);
-                    disciplineCodeDashboard.Add(newDisciplineCode);
-                }
-            }
-
-            return disciplineCodeDashboard;
-        }
-
-        private void assignAllPossibleCommodityCodes(DisciplineCode_Dashboard stockCodeDashboards, IEnumerable<IReportable> workpackReportables, IEnumerable<ExoDataPoint> burnedDataPoints)
-        {
-            List<CommodityCode_Dashboard> commodityCodes = new List<CommodityCode_Dashboard>();
-            foreach (IReportable reportable in workpackReportables)
-            {
-                string commodityCode = reportable.Commodity_Code;
-                if(!commodityCodes.Any(x => x.Commodity_Code == commodityCode))
-                {
-                    commodityCodes.Add(new CommodityCode_Dashboard() { Commodity_Code = commodityCode });
-                }
-            }
-
-            foreach (ExoDataPoint burnedDataPoint in burnedDataPoints)
-            {
-                string commodityCode = burnedDataPoint.CommodityCode;
-                if (!commodityCodes.Any(x => x.Commodity_Code == commodityCode))
-                {
-                    commodityCodes.Add(new CommodityCode_Dashboard() { Commodity_Code = commodityCode });
-                }
-            }
-
-            stockCodeDashboards.Commodity_Codes = commodityCodes;
-        }
 
         public void SetAvailableSubAreas(IEnumerable<AREA> SUBAREACollection)
         {
             AvailableSubAreas = SUBAREACollection.Where(x => x.GUID_PARENT == Entity.GUID_DAREA);
             this.RaisePropertyChanged();
+        }
+
+        public void GroupProjectStats(ProjectSummaryStats project_summary_stats)
+        {
+            Stats = SummaryStatsHelpers.Group_Summary_Stats(project_summary_stats, x => x.Workpack_Guid == Entity.EntityKey, x => x.WorkpackName == Entity.INTERNAL_NAME1);
         }
 
         #region WORKPACK Mapping
@@ -187,8 +75,8 @@ namespace BluePrints.Common.Projections
         {
             IEnumerable<WORKPACK_Dashboard> workpack_dashboards = WORKPACKS.Where(x => x.GUID_PROJECT == projectDashboard.EntityKey).Select(x => new WORKPACK_Dashboard() {EntityKey = x.GUID, Entity = x});
             List<WORKPACK_Dashboard> newWORKPACKDashboards = workpack_dashboards.ToList();
-            newWORKPACKDashboards.ForEach(x => x.GroupProjectStats((ProjectSummaryStats)projectDashboard.Stats, projectDashboard.Entity.USELEGACYWORKPACK));
-            if(subAreaCollection != null)
+            newWORKPACKDashboards.ForEach(x => x.GroupProjectStats((ProjectSummaryStats)projectDashboard.Stats));
+            if (subAreaCollection != null)
                 newWORKPACKDashboards.ForEach(x => x.SetAvailableSubAreas(subAreaCollection));
 
             return newWORKPACKDashboards.AsQueryable();

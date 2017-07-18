@@ -61,110 +61,11 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select objects to add.
+        ///   Looks up a localized string similar to I1.
         /// </summary>
-        internal static string AddRemoveDetailEntities_SelectObjects {
+        internal static string Alternate_Design_Phase {
             get {
-                return ResourceManager.GetString("AddRemoveDetailEntities_SelectObjects", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to p4y57zcvp.
-        /// </summary>
-        internal static string AdminPassword {
-            get {
-                return ResourceManager.GetString("AdminPassword", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to superadmin.
-        /// </summary>
-        internal static string AdminUsername {
-            get {
-                return ResourceManager.GetString("AdminUsername", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to New Commodity.
-        /// </summary>
-        internal static string CommodityCode_NewCommodity {
-            get {
-                return ResourceManager.GetString("CommodityCode_NewCommodity", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Please add departments before adding commodity code.
-        /// </summary>
-        internal static string CommodityCode_NoDepartment {
-            get {
-                return ResourceManager.GetString("CommodityCode_NoDepartment", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Please add disciplines before adding commodity code.
-        /// </summary>
-        internal static string CommodityCode_NoDiscipline {
-            get {
-                return ResourceManager.GetString("CommodityCode_NoDiscipline", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;Commodity_Code&gt;.
-        /// </summary>
-        internal static string CommodityCodeGroup_Generated {
-            get {
-                return ResourceManager.GetString("CommodityCodeGroup_Generated", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to New Item.
-        /// </summary>
-        internal static string CommodityCodeGroup_New {
-            get {
-                return ResourceManager.GetString("CommodityCodeGroup_New", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot add commodity under commodity.
-        /// </summary>
-        internal static string CommodityGroup_CannotAddChild {
-            get {
-                return ResourceManager.GetString("CommodityGroup_CannotAddChild", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot change WBS into commodity.
-        /// </summary>
-        internal static string CommodityGroup_CannotAssignCommodity {
-            get {
-                return ResourceManager.GetString("CommodityGroup_CannotAssignCommodity", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot assign parent commodity code.
-        /// </summary>
-        internal static string CommodityGroup_CannotSelectParent {
-            get {
-                return ResourceManager.GetString("CommodityGroup_CannotSelectParent", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Commodity code is required.
-        /// </summary>
-        internal static string CommodityGroup_MustSelectCommodity {
-            get {
-                return ResourceManager.GetString("CommodityGroup_MustSelectCommodity", resourceCulture);
+                return ResourceManager.GetString("Alternate_Design_Phase", resourceCulture);
             }
         }
         
@@ -223,20 +124,119 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 2.
+        ///   Looks up a localized string similar to p4y57zcvp.
         /// </summary>
-        internal static string DataPointsBuilder_MaxProjectDuration {
+        internal static string Default_AdminPassword {
             get {
-                return ResourceManager.GetString("DataPointsBuilder_MaxProjectDuration", resourceCulture);
+                return ResourceManager.GetString("Default_AdminPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to superadmin.
+        /// </summary>
+        internal static string Default_AdminUsername {
+            get {
+                return ResourceManager.GetString("Default_AdminUsername", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to CONSTRUCTION.
         /// </summary>
-        internal static string DefaultConstructionDepartment {
+        internal static string Default_Construction_Department {
             get {
-                return ResourceManager.GetString("DefaultConstructionDepartment", resourceCulture);
+                return ResourceManager.GetString("Default_Construction_Department", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to C1.
+        /// </summary>
+        internal static string Default_Construction_Phase {
+            get {
+                return ResourceManager.GetString("Default_Construction_Phase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to D1.
+        /// </summary>
+        internal static string Default_Design_Phase {
+            get {
+                return ResourceManager.GetString("Default_Design_Phase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Engineering.
+        /// </summary>
+        internal static string Default_New_Project_Department {
+            get {
+                return ResourceManager.GetString("Default_New_Project_Department", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to General Engineering.
+        /// </summary>
+        internal static string Default_New_Project_Discipline {
+            get {
+                return ResourceManager.GetString("Default_New_Project_Discipline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Report.
+        /// </summary>
+        internal static string Default_New_Project_DocType {
+            get {
+                return ResourceManager.GetString("Default_New_Project_DocType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 3.
+        /// </summary>
+        internal static string Default_Register_Numeric_Length {
+            get {
+                return ResourceManager.GetString("Default_Register_Numeric_Length", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lhpwrma6!.
+        /// </summary>
+        internal static string Default_SecurityKey {
+            get {
+                return ResourceManager.GetString("Default_SecurityKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 00.
+        /// </summary>
+        internal static string Default_Sub_Area {
+            get {
+                return ResourceManager.GetString("Default_Sub_Area", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BluePrints.
+        /// </summary>
+        internal static string Default_XML_Directory {
+            get {
+                return ResourceManager.GetString("Default_XML_Directory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings.config.
+        /// </summary>
+        internal static string Default_XML_Filename {
+            get {
+                return ResourceManager.GetString("Default_XML_Filename", resourceCulture);
             }
         }
         
@@ -268,42 +268,6 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will create custom project commodity code, do you want to continue?.
-        /// </summary>
-        internal static string Estimation_Item_Direct_AddCustomCommodityGroup {
-            get {
-                return ResourceManager.GetString("Estimation_Item_Direct_AddCustomCommodityGroup", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Select yes to edit current project specific commodity code or no to edit others.
-        /// </summary>
-        internal static string Estimation_Item_Direct_EditCurrentOrOther {
-            get {
-                return ResourceManager.GetString("Estimation_Item_Direct_EditCurrentOrOther", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Select yes to edit current project specific commodity code or no to add a new one.
-        /// </summary>
-        internal static string Estimation_Item_Direct_EditOrAddNewCommodityCode {
-            get {
-                return ResourceManager.GetString("Estimation_Item_Direct_EditOrAddNewCommodityCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Project specific commodity code created.
-        /// </summary>
-        internal static string Estimation_Item_Direct_ProjectSpecificCommodityCodeCreated {
-            get {
-                return ResourceManager.GetString("Estimation_Item_Direct_ProjectSpecificCommodityCodeCreated", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to DataService Request Error.
         /// </summary>
         internal static string Exception_DataServiceRequestErrorCaption {
@@ -331,38 +295,47 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Engineering.
+        ///   Looks up a localized string similar to P6 units populated.
         /// </summary>
-        internal static string NewProject_DefaultDepartment {
+        internal static string Notify_P6_Assignment_Write_Complete {
             get {
-                return ResourceManager.GetString("NewProject_DefaultDepartment", resourceCulture);
+                return ResourceManager.GetString("Notify_P6_Assignment_Write_Complete", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to General Engineering.
+        ///   Looks up a localized string similar to View has been refreshed because of changes to.
         /// </summary>
-        internal static string NewProject_DefaultDiscipline {
+        internal static string Notify_Refresh {
             get {
-                return ResourceManager.GetString("NewProject_DefaultDiscipline", resourceCulture);
+                return ResourceManager.GetString("Notify_Refresh", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Report.
+        ///   Looks up a localized string similar to Unable to connect to server: Application closed..
         /// </summary>
-        internal static string NewProject_DefaultDocType {
+        internal static string Notify_SignalR_CloseApplication {
             get {
-                return ResourceManager.GetString("NewProject_DefaultDocType", resourceCulture);
+                return ResourceManager.GetString("Notify_SignalR_CloseApplication", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to connect to server: Start server before connecting clients..
+        /// </summary>
+        internal static string Notify_SignalR_UnableToConnect {
+            get {
+                return ResourceManager.GetString("Notify_SignalR_UnableToConnect", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Please add this record first before adjusting it&apos;s units.
         /// </summary>
-        internal static string Notify_AddBASELINE_ITEMBeforeVARIATION_UNITS {
+        internal static string Notify_VariationNewRowError {
             get {
-                return ResourceManager.GetString("Notify_AddBASELINE_ITEMBeforeVARIATION_UNITS", resourceCulture);
+                return ResourceManager.GetString("Notify_VariationNewRowError", resourceCulture);
             }
         }
         
@@ -385,65 +358,29 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to P6 progress schedule population failed.
+        /// </summary>
+        internal static string P6_Assignment_Progress_Write_Failed {
+            get {
+                return ResourceManager.GetString("P6_Assignment_Progress_Write_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to P6 progress schedule successfully populated.
+        /// </summary>
+        internal static string P6_Assignment_Progress_Write_Success {
+            get {
+                return ResourceManager.GetString("P6_Assignment_Progress_Write_Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to P6 units populated.
         /// </summary>
-        internal static string P6AssignmentWriteComplete {
+        internal static string P6_Assignment_Units_Populated {
             get {
-                return ResourceManager.GetString("P6AssignmentWriteComplete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 8.
-        /// </summary>
-        internal static string ProgressReporting_DefaultHoursADay {
-            get {
-                return ResourceManager.GetString("ProgressReporting_DefaultHoursADay", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to View has been refreshed because of changes to.
-        /// </summary>
-        internal static string Refresh_Notify {
-            get {
-                return ResourceManager.GetString("Refresh_Notify", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 3.
-        /// </summary>
-        internal static string REGISTER_DefaultNumberFieldLength {
-            get {
-                return ResourceManager.GetString("REGISTER_DefaultNumberFieldLength", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Lhpwrma6!.
-        /// </summary>
-        internal static string SecurityKey {
-            get {
-                return ResourceManager.GetString("SecurityKey", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to connect to server: Application closed..
-        /// </summary>
-        internal static string SignalR_CloseApplication {
-            get {
-                return ResourceManager.GetString("SignalR_CloseApplication", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to connect to server: Start server before connecting clients..
-        /// </summary>
-        internal static string SignalR_UnableToConnect {
-            get {
-                return ResourceManager.GetString("SignalR_UnableToConnect", resourceCulture);
+                return ResourceManager.GetString("P6_Assignment_Units_Populated", resourceCulture);
             }
         }
         
@@ -462,96 +399,6 @@ namespace BluePrints.Common.Resources {
         internal static string Warning_Caption {
             get {
                 return ResourceManager.GetString("Warning_Caption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Some fields contain invalid data. Click OK to close the page and lose unsaved changes. Press Cancel to continue editing data..
-        /// </summary>
-        internal static string Warning_SomeFieldsContainInvalidData {
-            get {
-                return ResourceManager.GetString("Warning_SomeFieldsContainInvalidData", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to P6 progress schedule population failed.
-        /// </summary>
-        internal static string WORKPACK_ASSIGNMENT_P6ProgressWriteFailed {
-            get {
-                return ResourceManager.GetString("WORKPACK_ASSIGNMENT_P6ProgressWriteFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to P6 progress schedule successfully populated.
-        /// </summary>
-        internal static string WORKPACK_ASSIGNMENT_P6ProgressWriteSuccess {
-            get {
-                return ResourceManager.GetString("WORKPACK_ASSIGNMENT_P6ProgressWriteSuccess", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to P6 units populated.
-        /// </summary>
-        internal static string WORKPACK_ASSIGNMENT_P6WriteComplete {
-            get {
-                return ResourceManager.GetString("WORKPACK_ASSIGNMENT_P6WriteComplete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Do you wish to change the internal name too?.
-        /// </summary>
-        internal static string WORKPACK_InternalNameChange {
-            get {
-                return ResourceManager.GetString("WORKPACK_InternalNameChange", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to C1.
-        /// </summary>
-        internal static string WorkpackDefaultConstructionPhase {
-            get {
-                return ResourceManager.GetString("WorkpackDefaultConstructionPhase", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to D1.
-        /// </summary>
-        internal static string WorkpackDefaultDesignPhase {
-            get {
-                return ResourceManager.GetString("WorkpackDefaultDesignPhase", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 00.
-        /// </summary>
-        internal static string WorkpackDefaultSubArea {
-            get {
-                return ResourceManager.GetString("WorkpackDefaultSubArea", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to BluePrints.
-        /// </summary>
-        internal static string XMLDefaultDirectory {
-            get {
-                return ResourceManager.GetString("XMLDefaultDirectory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Settings.config.
-        /// </summary>
-        internal static string XMLFilename {
-            get {
-                return ResourceManager.GetString("XMLFilename", resourceCulture);
             }
         }
     }

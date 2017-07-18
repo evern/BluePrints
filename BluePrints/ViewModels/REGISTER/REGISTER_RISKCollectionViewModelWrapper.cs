@@ -170,7 +170,7 @@ namespace BluePrints.ViewModels
 
         protected override int DefaultNumericFieldLength()
         {
-            return Int32.Parse(BluePrintsResources.REGISTER_DefaultNumberFieldLength);
+            return Int32.Parse(BluePrintsResources.Default_Register_Numeric_Length);
         }
         #endregion
 

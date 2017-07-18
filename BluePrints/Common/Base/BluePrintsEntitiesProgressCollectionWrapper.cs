@@ -48,6 +48,7 @@ namespace BluePrints.Common.Base
         protected DispatcherTimer delayedPROGRESSSavingDispatcher;
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
+        protected bool is_single_project_mode = true;
         public BluePrintsEntitiesProgressCollectionWrapper()
         {
             onMainViewModelFirstLoadedTimer = new DispatcherTimer();
@@ -75,17 +76,20 @@ namespace BluePrints.Common.Base
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
         {
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, SetPROGRESStoCurrentDateOnLoaded);
+            if(is_single_project_mode)
+            {
+                loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, SetPROGRESStoCurrentDateOnLoaded);
+                loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
+                loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc);
+                loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, false);
+            }
+
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, false);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc);
-
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -106,17 +110,26 @@ namespace BluePrints.Common.Base
 
         protected virtual Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            if (is_single_project_mode)
+                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            else
+                return query => query.Where(x => x.PROJECT.STATUS == ProjectStatus.Active);
         }
 
         protected virtual Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            if (is_single_project_mode)
+                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            else
+                return query => query.Where(x => x.PROJECT.STATUS == ProjectStatus.Active);
         }
 
         protected Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID);
+            if (is_single_project_mode)
+                return query => query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID);
+            else
+                return query => query.Where(x => x.PROGRESS.STATUS == ProgressStatus.Live && x.PROGRESS.PROJECT.STATUS == ProjectStatus.Active);
         }
 
         protected Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
@@ -139,7 +152,9 @@ namespace BluePrints.Common.Base
             MainViewModel.OnAfterEntitySavedCallBack = OnAfterEntitySavedCallBack;
             MainViewModel.OnMappingAdditionalChangedEntitiesProperties = OnMappingAdditionalChangedEntitiesProperties;
             MainViewModel.OnBeforeAssignRepositoryToExistingProjection = OnBeforeAssignRepositoryToExistingProjection;
+
             PROGRESS_ITEMSCollectionViewModel.SetParentViewModel(this);
+
             MainViewModel.SetParentViewModel(this);
             //mainThreadDispatcher.BeginInvoke(new Action(() => InitializeSummarizer(entities)));
             onMainViewModelFirstLoadedTimer.Start();
@@ -194,7 +209,7 @@ namespace BluePrints.Common.Base
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
             List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), ReportableCollection);
             projectSummary = new ProjectSummaryStats(MainViewModel.Entities, loadPROGRESS.DATA_DATE, reportInterval, firstAlignedDataDate, projectVariationAdjustment);
-            FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT, reportInterval, firstAlignedDataDate, WORKPACKCollection, primeroUnitOfWork);
+            FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT.NUMBER, loadPROJECT.CURRENCYCONVERSION, reportInterval, firstAlignedDataDate, WORKPACKCollection, primeroUnitOfWork);
             fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER);
         }
 
@@ -527,15 +542,14 @@ namespace BluePrints.Common.Base
             scheduling_view_model = null;
 
             if (errorMessage == string.Empty)
-                MessageBoxService.ShowMessage(BluePrintsResources.WORKPACK_ASSIGNMENT_P6ProgressWriteSuccess);
+                MessageBoxService.ShowMessage(BluePrintsResources.P6_Assignment_Progress_Write_Success);
             else
                 MessageBoxService.ShowMessage(errorMessage);
 
             isPushingToP6 = false;
         }
         #endregion
-
-
+        
         #region Custom Summary
         private decimal cumulativePrincipalUnits = 0;
         private decimal cumulativeCurrentUnits = 0;
@@ -553,12 +567,12 @@ namespace BluePrints.Common.Base
                     if (((GridSummaryItem)e.Item).FieldName == "TOTAL_EARNED_PERCENTAGE")
                     {
                         var budgetedUnits =
-                            ((BASELINE_ITEMProgress)e.Row).Total_Units;
+                            ((IReportable)e.Row).Total_Units;
                         var previousUnits =
-                            ((BASELINE_ITEMProgress)e.Row).PROGRESS_ITEM_BeforeDataDate.Sum(x => x.EARNED_UNITS);
+                            ((IReportable)e.Row).PROGRESS_ITEM_BeforeDataDate.Sum(x => x.EARNED_UNITS);
                         var currentUnits = ((BASELINE_ITEMProgress)e.Row).PROGRESS_ITEM_Current == null
                             ? 0
-                            : ((BASELINE_ITEMProgress)e.Row).PROGRESS_ITEM_Current.EARNED_UNITS;
+                            : ((IReportable)e.Row).PROGRESS_ITEM_Current.EARNED_UNITS;
 
                         cumulativePrincipalUnits += budgetedUnits;
                         cumulativeCurrentUnits += currentUnits + previousUnits;
@@ -568,10 +582,10 @@ namespace BluePrints.Common.Base
                     else if (((GridSummaryItem)e.Item).FieldName == "PERIOD_EARNED_PERCENTAGE")
                     {
                         var totalUnits =
-                            ((BASELINE_ITEMProgress)e.Row).Total_Units;
-                        var currentUnits = ((BASELINE_ITEMProgress)e.Row).PROGRESS_ITEM_Current == null
+                            ((IReportable)e.Row).Total_Units;
+                        var currentUnits = ((IReportable)e.Row).PROGRESS_ITEM_Current == null
                             ? 0
-                            : ((BASELINE_ITEMProgress)e.Row).PROGRESS_ITEM_Current.EARNED_UNITS;
+                            : ((IReportable)e.Row).PROGRESS_ITEM_Current.EARNED_UNITS;
 
                         cumulativePrincipalUnits += totalUnits;
                         cumulativeCurrentUnits += currentUnits;
@@ -585,7 +599,6 @@ namespace BluePrints.Common.Base
             }
         }
         #endregion
-
 
         #region Reporting
 
@@ -615,7 +628,7 @@ namespace BluePrints.Common.Base
             TimeSpan reporting_interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime first_aligned_data_date = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
             ProjectSummaryStats projectSummary = new ProjectSummaryStats(MainViewModel.Entities, reporting_data_date, reporting_interval, first_aligned_data_date, projectVariationAdjustment);
-            FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT, reporting_interval, first_aligned_data_date, WORKPACKCollection);
+            FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT.NUMBER, loadPROJECT.CURRENCYCONVERSION, reporting_interval, first_aligned_data_date, WORKPACKCollection);
             fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder);
             fullSummarizer.Build();
             return projectSummary;
@@ -664,6 +677,8 @@ namespace BluePrints.Common.Base
             base.OnClose(e);
         }
         #endregion
+
+        #region Entities Wrapper Properties
         public CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESS_ITEMSCollectionViewModel
         {
             get
@@ -772,6 +787,7 @@ namespace BluePrints.Common.Base
                     collection = collection.OrderBy(x => x.NAME);
                 return collection;
             }
-        }
+        } 
+        #endregion
     }
 }

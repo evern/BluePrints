@@ -62,6 +62,7 @@ namespace BluePrints.ViewModels
         private PROJECT loadPROJECT;
         private BASELINE loadBASELINE;
         private PROGRESS livePROGRESS;
+        private PHASE defaultDesignPHASE;
         private bool isQueryForLiveStatus;
         public bool IsPhaseVisible
         {
@@ -201,8 +202,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             ConstructMainViewModelProjection()
         {
-            return
-                query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
@@ -236,6 +236,17 @@ namespace BluePrints.ViewModels
 
         protected override void OnBeforeApplyProjectionPropertiesToEntity(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity)
         {
+            if(projectionEntity.Entity.Entity.GUID_PHASE == null)
+            {
+                IEnumerable<PHASE> phase_collection = loaderCollection.GetCollection<PHASE>();
+                if(phase_collection != null)
+                {
+                    PHASE default_design_phase = phase_collection.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.Default_Design_Phase);
+                    if (default_design_phase != null)
+                        projectionEntity.Entity.Entity.GUID_PHASE = default_design_phase.GUID;
+                }
+            }
+
             projectionEntity.Entity.Entity.GUID_BASELINE = loadBASELINE.GUID;
             //because TProjection is not IProjection<TMainEntity>, do it manually here
             DataUtils.ShallowCopy(entity, projectionEntity.Entity.Entity);
@@ -252,7 +263,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
-
         private void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
         {
             //estimated hours field is disabled but just in case
@@ -793,7 +803,7 @@ namespace BluePrints.ViewModels
                     if (findWORKPACK == null)
                     {
                         var newWORKPACK = new WORKPACK();
-                        AREA defaultSubArea = SUBAREACollection.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.WorkpackDefaultSubArea);
+                        AREA defaultSubArea = SUBAREACollection.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.Default_Sub_Area);
 
                         newWORKPACK.GUID_PROJECT = loadPROJECT.GUID;
                         newWORKPACK.GUID_DAREA = entity.Entity.Entity.GUID_AREA;

@@ -58,7 +58,7 @@ namespace BluePrints.Common.ViewModel.Utils
             if (subArea == null)
             {
                 if (createDefaultSubArea)
-                    subAreaName = BluePrintsResources.WorkpackDefaultSubArea;
+                    subAreaName = BluePrintsResources.Default_Sub_Area;
                 else
                     return string.Empty;
             }
@@ -353,8 +353,8 @@ namespace BluePrints.Common.ViewModel.Utils
 
             if (area != null)
             {
-                string phaseNumber = phase == null ? BluePrintsResources.WorkpackDefaultDesignPhase : phase.INTERNAL_NUM;
-                string subAreaNumber = subarea == null ? BluePrintsResources.WorkpackDefaultSubArea : subarea.INTERNAL_NUM;
+                string phaseNumber = phase == null ? BluePrintsResources.Default_Design_Phase : phase.INTERNAL_NUM;
+                string subAreaNumber = subarea == null ? BluePrintsResources.Default_Sub_Area : subarea.INTERNAL_NUM;
 
                 var InternalName = PROJECT.NUMBER;
                 InternalName += "-" + area.INTERNAL_NUM;

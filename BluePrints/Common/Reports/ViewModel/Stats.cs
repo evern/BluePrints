@@ -217,6 +217,17 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string CostGroup { get; set; }
         public string CostType { get; set; }
 
+        public string PhaseCode
+        {
+            get
+            {
+                if (WorkpackName == string.Empty)
+                    return string.Empty;
+
+                return WorkpackName.Substring(13, 2);
+            }
+        }
+
         public string DisciplineCode
         {
             get

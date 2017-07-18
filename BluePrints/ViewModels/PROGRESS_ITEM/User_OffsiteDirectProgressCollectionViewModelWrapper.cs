@@ -25,44 +25,16 @@ namespace BluePrints.ViewModels
         List<FullSummarizer> firstLoadProjectStatsSummarizers;
         protected override void InitializeParameters(object parameter)
         {
+            is_single_project_mode = false;
             var USERParameter = (EntitiesParameter<USER>)parameter;
             _loadUSER = USERParameter.GetEntity();
             p6UOW = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             firstLoadProjectStatsSummarizers = new List<FullSummarizer>();
         }
 
-        public override void InitializeAndLoadEntitiesLoaderDescription()
-        {
-            MainViewModel = null;
-            base.CleanUpEntitiesLoader();
-
-            loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
-            loaderCollection.AddLoaderDescription<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS);
-            loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
-            loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
-
-            InvokeEntitiesLoaderDescriptionLoading();
-        }
-
-        private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
-        {
-            return query => query.Where(x => x.STATUS == ProjectStatus.Active);
-        }
-
-        protected override Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
-        {
-            return query => query.Where(x => x.PROJECT.STATUS == ProjectStatus.Active);
-        }
-
-        protected override Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
-        {
-            return query => query.Where(x => x.PROJECT.STATUS == ProjectStatus.Active);
-        }
-
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>> ConstructMainViewModelProjection()
         {
-            return query => ProgressQueries.User_OffsiteDirectProgressItemTransformation(query, _loadUSER);
+            return query => ProgressQueries.User_OffsiteDirectProgressItemTransformation(query, PROGRESS_ITEMCollection, _loadUSER);
         }
 
         protected override void onMainViewModelFirstLoaded(object sender, EventArgs e)

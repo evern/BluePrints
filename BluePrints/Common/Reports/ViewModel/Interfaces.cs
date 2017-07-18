@@ -51,6 +51,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public interface IDeliverable : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCommodity_Code, IHaveHours
     {
+        string Phase_Code { get; }
         string Discipline_Code { get; }
         string Deliverable_Name { get; }
         Guid? Workpack_Guid { get; }
@@ -119,7 +120,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         string UOM { get; }
         string Stock_Code_Type { get; }
         string Stock_Code_Spec { get; }
-        string Stock_Code_Desription { get; }
+        string Stock_Code_Description { get; }
     }
 
     public interface IHaveCommodity_Code

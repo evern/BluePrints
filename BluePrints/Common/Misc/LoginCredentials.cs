@@ -17,7 +17,7 @@ namespace BluePrints.Common
             {
                 currentUser = value;
                 List<ROLE_PERMISSION> user_permission = new List<ROLE_PERMISSION>();
-                if (currentUser.NAME == BluePrintsResources.AdminUsername)
+                if (currentUser.NAME == BluePrintsResources.Default_AdminUsername)
                 {
                     Dictionary<string, string> allPermissions = GetPermissionLookUpInDictionary();
                     foreach(KeyValuePair<string, string> permission in allPermissions)

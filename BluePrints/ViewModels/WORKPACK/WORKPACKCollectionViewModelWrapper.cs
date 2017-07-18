@@ -259,6 +259,8 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
+
+        string message_workpack_internal_name_change = "Do you wish to change workpack internal name too?";
         /// <summary>
         /// Allow cells to commit immediately upon losing focus
         /// </summary>
@@ -276,7 +278,7 @@ namespace BluePrints.ViewModels
                 if (newInternalName == string.Empty)
                     return;
 
-                if (MessageBoxService.ShowMessage(BluePrintsResources.WORKPACK_InternalNameChange,
+                if (MessageBoxService.ShowMessage(message_workpack_internal_name_change,
                     BluePrintsResources.Confirmation_Caption, MessageButton.YesNo) != MessageResult.Yes)
                     return;
 
@@ -289,7 +291,7 @@ namespace BluePrints.ViewModels
                 if (newInternalName == string.Empty)
                     return;
 
-                if (MessageBoxService.ShowMessage(BluePrintsResources.WORKPACK_InternalNameChange,
+                if (MessageBoxService.ShowMessage(message_workpack_internal_name_change,
                     BluePrintsResources.Confirmation_Caption, MessageButton.YesNo) != MessageResult.Yes)
                     return;
                 

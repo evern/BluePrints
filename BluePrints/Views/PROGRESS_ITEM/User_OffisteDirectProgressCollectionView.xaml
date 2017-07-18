@@ -130,7 +130,8 @@
                                         ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.Entity.GUID_DISCIPLINE" Header="DISCIPLINE" ReadOnly="True">
+                                <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.Entity.GUID_DISCIPLINE"
+                                            Header="DISCIPLINE" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
@@ -138,7 +139,8 @@
                                         ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colDEPARTMENT" FieldName="Entity.Entity.GUID_DEPARTMENT" Header="DEPARTMENT" ReadOnly="True">
+                                <dxg:GridColumn Name="colDEPARTMENT" FieldName="Entity.Entity.GUID_DEPARTMENT"
+                                            Header="DEPARTMENT" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}"
@@ -278,7 +280,7 @@
                                                 </Grid.ColumnDefinitions>
                                                 <Image
                                                     Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}"
-                                                    ToolTip="No progress" Grid.Column="0">
+                                                    ToolTip="Minimum Possible Progress" Grid.Column="0">
                                                     <Image.Visibility>
                                                         <MultiBinding
                                                             Converter="{StaticResource NumericCompareToVisibilityConverter}"
@@ -293,7 +295,7 @@
                                                 </Image>
                                                 <Image
                                                     Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}"
-                                                    ToolTip="Max progress" Grid.Column="1">
+                                                    ToolTip="Maximum Possible Progress" Grid.Column="1">
                                                     <Image.Visibility>
                                                         <MultiBinding
                                                             Converter="{StaticResource NumericCompareToVisibilityConverter}"

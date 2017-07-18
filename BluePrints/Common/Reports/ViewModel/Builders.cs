@@ -20,10 +20,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         readonly string ProjectNumber;
         readonly IPrimeroEntitiesUnitOfWork PrimeroUOW;
 
-        public FullStatsBuilder(Data.PROJECT PROJECT, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<WORKPACK> WORKPACKS, IPrimeroEntitiesUnitOfWork primeroUOW = null)
-            : base(PROJECT.CURRENCYCONVERSION)
+        public FullStatsBuilder(string project_number, decimal currency_conversion, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<WORKPACK> WORKPACKS, IPrimeroEntitiesUnitOfWork primeroUOW = null)
+            : base(currency_conversion)
         {
-            ProjectNumber = PROJECT.NUMBER;
+            ProjectNumber = project_number;
             PrimeroUOW = primeroUOW == null ? PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork() : primeroUOW;
             this.ReportingInterval = reporting_interval;
             this.FirstAlignedDataDate = first_aligned_data_date;

@@ -8,6 +8,7 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
@@ -178,6 +179,7 @@ namespace BluePrints.ViewModels
             {
                 project.BuildStats(false);
                 project.RecalculateStats(false);
+                project.Phase_Dashboards = DashboardQueries.Construct_Phase_Dashboards((ProjectSummaryStats)project.Stats);
             }
 
             if (((BackgroundWorker)sender).CancellationPending)
@@ -488,6 +490,8 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
+
+        protected override bool isMasterDetailView => true;
         #endregion
     }
 }

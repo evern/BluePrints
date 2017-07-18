@@ -62,6 +62,7 @@ namespace BluePrints.ViewModels
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
 
             InvokeEntitiesLoaderDescriptionLoading();
@@ -75,6 +76,11 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
         {
             return query => query.Where(x => x.PROJECT.STATUS == ProjectStatus.Active);
+        }
+
+        protected Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
+        {
+            return query => query.Where(x => x.PROGRESS.STATUS == ProgressStatus.Live && x.PROGRESS.PROJECT.STATUS == ProjectStatus.Active);
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
@@ -92,7 +98,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             ConstructMainViewModelProjection()
         {
-            return query => ProgressQueries.User_OffsiteDirectProgressItemTransformation(query, _loadUSER);
+            return query => ProgressQueries.User_OffsiteDirectProgressItemTransformation(query, PROGRESS_ITEMCollection, _loadUSER);
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<BASELINE_ITEMProgress> entities)
@@ -139,6 +145,14 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMCollection
+        {
+            get
+            {
+                return GetEntities<PROGRESS_ITEM>();
+            }
+        }
+
         protected IDocumentManagerService DocumentManagerService
         {
             get { return this.GetService<IDocumentManagerService>(); }
@@ -151,6 +165,8 @@ namespace BluePrints.ViewModels
         {
             get { return "USERDashboardViewModelWrapper"; }
         }
+
+        protected override bool isMasterDetailView => true;
         #endregion
     }
 }

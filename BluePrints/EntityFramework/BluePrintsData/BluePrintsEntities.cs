@@ -13,7 +13,7 @@ namespace BluePrints.Data
         public virtual DbSet<AREA> AREA { get; set; }
         public virtual DbSet<BASELINE> BASELINE { get; set; }
         public virtual DbSet<BASELINE_ITEM> BASELINE_ITEM { get; set; }
-        public virtual DbSet<P6_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENT { get; set; }
+        public virtual DbSet<P6_ASSIGNMENT> P6_ASSIGNMENT { get; set; }
         public virtual DbSet<BASELINE_ITEM_WORK> BASELINE_ITEM_WORK { get; set; }
         public virtual DbSet<COMMODITY_CODE> COMMODITY_CODE { get; set; }
         public virtual DbSet<DataPoint> DataPoint { get; set; }

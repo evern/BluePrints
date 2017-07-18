@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.Common.Resources;
 
 namespace BluePrints.Data
 {
@@ -104,6 +105,8 @@ namespace BluePrints.Data
                 return DISCIPLINE.CODE + DISCIPLINE_NUM;
             }
         }
+
+        public string Phase_Code => BluePrintsResources.Default_Construction_Phase;
 
         public string Commodity_Code => COMMODITY_CODE == null ? string.Empty : COMMODITY_CODE.CODE;
 

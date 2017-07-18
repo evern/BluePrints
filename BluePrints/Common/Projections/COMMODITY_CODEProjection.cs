@@ -56,6 +56,8 @@ namespace BluePrints.Common.Projections
 
         public Estimation_DirectProgressType Progress_Type => Estimation_DirectProgressType.Standalone;
 
+        public string Phase_Code => throw new NotImplementedException();
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
             throw new NotImplementedException();

@@ -62,6 +62,8 @@ namespace BluePrints.Common.Projections
         public bool IsByDuration => Entity.IsByDuration;
 
         public DELIVERABLES_STATUS Deliverable_Status => Entity.DELIVERABLES_STATUS;
+
+        public string Phase_Code => Entity.PHASE == null ? string.Empty : Entity.PHASE.INTERNAL_NUM;
     }
 
     public static class BASELINE_ITEMProjectionQueries

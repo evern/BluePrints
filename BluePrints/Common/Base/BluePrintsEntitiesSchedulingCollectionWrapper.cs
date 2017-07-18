@@ -774,7 +774,7 @@ namespace BluePrints.Common.Base
                 ActivityDetailDialogService.ShowDialog(MessageButton.OK, "Missing P6 Activities", "MissingAssignments", missing_activities_viewmodel);
             }
             else
-                MessageBoxService.ShowMessage(BluePrintsResources.P6AssignmentWriteComplete);
+                MessageBoxService.ShowMessage(BluePrintsResources.Notify_P6_Assignment_Write_Complete);
         }
 
         public void Remap_P6_Ids()
@@ -838,7 +838,7 @@ namespace BluePrints.Common.Base
                 DialogCollectionViewModel<P6_AssignmentProjection> missing_activities_viewmodel = DialogCollectionViewModel<P6_AssignmentProjection>.Create(missing_activities);
                 ActivityDetailDialogService.ShowDialog(MessageButton.OK, "Invalid Assignments", "MissingAssignments", missing_activities_viewmodel);
 
-                if (MessageBoxService.ShowMessage("Do you wish to delete these invalid assignments?", "Warning", MessageButton.OKCancel) == MessageResult.OK)
+                if (MessageBoxService.ShowMessage("Do you wish to delete these invalid assignments?", BluePrintsResources.Warning_Caption, MessageButton.OKCancel) == MessageResult.OK)
                 {
                     P6_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(missing_activities.Select(x => x.deliverable_assignment));
                     FullRefresh();

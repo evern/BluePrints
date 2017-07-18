@@ -93,12 +93,12 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<DEPARTMENT>, IQueryable<DEPARTMENT>> DEPARTMENTProjectionFunc()
         {
-            return query => query.Where(x => x.NAME == BluePrintsResources.DefaultConstructionDepartment);
+            return query => query.Where(x => x.NAME == BluePrintsResources.Default_Construction_Department);
         }
 
         private Func<IRepositoryQuery<Data.PHASE>, IQueryable<Data.PHASE>> PHASEProjectionFunc()
         {
-            return query => query.Where(x => x.INTERNAL_NUM == BluePrintsResources.WorkpackDefaultConstructionPhase);
+            return query => query.Where(x => x.INTERNAL_NUM == BluePrintsResources.Default_Construction_Phase);
         }
 
         private Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()

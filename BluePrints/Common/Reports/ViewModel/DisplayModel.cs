@@ -50,6 +50,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid OriginalEntityKey => ((IReportable)ProgressItem).OriginalEntityKey;
 
+        public string Phase_Code => ((IReportable)ProgressItem).Phase_Code;
+
         public string Commodity_Code => ((IReportable)ProgressItem).Commodity_Code;
 
         public Guid? Area_Guid => ((IReportable)ProgressItem).Area_Guid;
@@ -199,6 +201,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
 
         public string Deliverable_Name => Reportable.Deliverable_Name;
+
+        public string Phase_Code => Reportable.Phase_Code;
 
         public string Commodity_Code => Reportable.Commodity_Code;
 

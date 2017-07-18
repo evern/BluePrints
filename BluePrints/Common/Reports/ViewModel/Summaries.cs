@@ -4,6 +4,7 @@ using DevExpress.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
@@ -26,78 +27,44 @@ namespace BluePrints.Common.ViewModel.Reporting
             ProjectionHelpers.InitializePROGRESS_ITEMStats(progressItem, projectVariationAdjustments, reporting_data_date, reporting_interval, first_aligned_data_date, false);
         }
 
-        public SummaryStats GroupStatsByWorkpack(WORKPACK workpack, bool isLegacyProject = true)
-        {
-            //set budgeted, current and earned
-            IEnumerable<IReportable> progressItemStatsByWorkpack = Reportables.Where(x => x.Workpack_Guid == workpack.GUID);
-
-            DateTime progressItemReportingDataDate = this.ReportingDataDate;
-            List<VariationAdjustment> workpackVariationAdjustments = progressItemStatsByWorkpack.SelectMany(x => x.Stats.VariationAdjustments).ToList();
-            SummaryStats workpackSummaryStats = new SummaryStats(progressItemStatsByWorkpack, reporting_data_date, reporting_interval, first_aligned_data_date, workpackVariationAdjustments);
-            //Since workpackSummaryStats is already initialized with workpack specific deliverables, summary will aggreagate deliverable stats
-            workpackSummaryStats.GenerateSummary();
-
-            IEnumerable<ExoDataPoint> burnedDataPoints = this.Burned.GetData().Select(x => (ExoDataPoint)x);
-            IEnumerable<ExoDataPoint> actualDataPoints = this.Actual.GetData().Select(x => (ExoDataPoint)x);
-            List<ExoDataPoint> burnedRawDataPoints = burnedDataPoints.Where(x => x.WorkpackName == workpack.INTERNAL_NAME1).ToList();
-            workpackSummaryStats.Burned.SetData(burnedRawDataPoints);
-            List<ExoDataPoint> actualRawDataPoints = actualDataPoints.Where(x => x.WorkpackName == workpack.INTERNAL_NAME1).ToList();
-            workpackSummaryStats.Actual.SetData(actualRawDataPoints);
-            workpackSummaryStats.RecalculateStats(false);
-
-            return workpackSummaryStats;
-        }
-
-        public SummaryStats GroupStatsByDisciplineCode(SummaryStats progressItemStatsByWorkpack, string disciplineCode)
-        {
-            IEnumerable<IReportable> progressItemStatsByStockCode = progressItemStatsByWorkpack.Reportables.Where(x => x.Discipline_Code == disciplineCode);
-            List<VariationAdjustment> disciplineCodeVariationAdjustments = progressItemStatsByStockCode.SelectMany(x => x.Stats.VariationAdjustments).ToList();
-            SummaryStats disciplineCodeSummary = new SummaryStats(progressItemStatsByStockCode, reporting_data_date, reporting_interval, first_aligned_data_date, disciplineCodeVariationAdjustments);
-            disciplineCodeSummary.GenerateSummary();
-
-            IEnumerable<ExoDataPoint> workpackBurnedDataPoints = progressItemStatsByWorkpack.Burned.GetData().Select(x => (ExoDataPoint)x);
-            IEnumerable<ExoDataPoint> workpackActualDataPoints = progressItemStatsByWorkpack.Actual.GetData().Select(x => (ExoDataPoint)x);
-            IEnumerable<ExoDataPoint> burnedRawDataPoints = workpackBurnedDataPoints.Where(x => x.DisciplineCode == disciplineCode);
-            disciplineCodeSummary.Burned.SetData(burnedRawDataPoints);
-            IEnumerable<ExoDataPoint> actualRawDataPoints = workpackActualDataPoints.Where(x => x.DisciplineCode == disciplineCode);
-            disciplineCodeSummary.Actual.SetData(actualRawDataPoints);
-            disciplineCodeSummary.RecalculateStats(false);
-
-            if (progressItemStatsByStockCode.Count() == 0 && burnedRawDataPoints.Count() == 0 && actualRawDataPoints.Count() == 0)
-                return null;
-
-            return disciplineCodeSummary;
-        }
-
         public IEnumerable<ExoDataPoint> GetBurnedDataPoints()
         {
             return this.Burned.GetData().Select(x => (ExoDataPoint)x);
         }
 
-        public SummaryStats GroupStatsByCommodityCode(SummaryStats progressItemStatsByDisciplineCode, string commodityCode)
-        {
-            IEnumerable<IReportable> progressItemStatsByCommodityCode = progressItemStatsByDisciplineCode.Reportables.Where(x => x.Commodity_Code == commodityCode);
-            List<VariationAdjustment> commodityCodeVariationAdjustments = progressItemStatsByCommodityCode.SelectMany(x => x.Stats.VariationAdjustments).ToList();
-            SummaryStats commodityCodeSummary = new SummaryStats(progressItemStatsByCommodityCode, reporting_data_date, reporting_interval, first_aligned_data_date, commodityCodeVariationAdjustments);
-            commodityCodeSummary.GenerateSummary();
-
-            IEnumerable<ExoDataPoint> stockCodeBurnedDataPoints = progressItemStatsByDisciplineCode.Burned.GetData().Select(x => (ExoDataPoint)x);
-            IEnumerable<ExoDataPoint> stockCodeActualDataPoints = progressItemStatsByDisciplineCode.Actual.GetData().Select(x => (ExoDataPoint)x);
-            IEnumerable<ExoDataPoint> burnedRawDataPoints = stockCodeBurnedDataPoints.Where(x => x.CommodityCode == commodityCode);
-            commodityCodeSummary.Burned.SetData(burnedRawDataPoints);
-            IEnumerable<ExoDataPoint> actualRawDataPoints = stockCodeActualDataPoints.Where(x => x.CommodityCode == commodityCode);
-            commodityCodeSummary.Actual.SetData(actualRawDataPoints);
-            commodityCodeSummary.RecalculateStats(false);
-
-            if (progressItemStatsByCommodityCode.Count() == 0 && burnedRawDataPoints.Count() == 0 && actualRawDataPoints.Count() == 0)
-                return null;
-
-            return commodityCodeSummary;
-        }
-
         public void AddMissingExoWorkpack(WORKPACK WORKPACK)
         {
             ExoMissingWORKPACKS.Add(WORKPACK);
+        }
+    }
+
+    public static class SummaryStatsHelpers
+    {
+        public static SummaryStats Group_Summary_Stats(SummaryStats summary_stats, Func<IReportable, bool> reportable_predicate, Func<ExoDataPoint, bool> predicate)
+        {
+            //set budgeted, current and earned
+            IEnumerable<IReportable> grouped_reportables = summary_stats.Reportables.Where(reportable_predicate);
+
+            DateTime reporting_data_date = summary_stats.ReportingDataDate;
+            TimeSpan reporting_interval = summary_stats.ReportingInterval;
+            DateTime first_aligned_data_date = summary_stats.FirstAlignedDataDate;
+
+            List<VariationAdjustment> phase_variation_adjustments = grouped_reportables.SelectMany(x => x.Stats.VariationAdjustments).ToList();
+            SummaryStats grouped_summary_stats = new SummaryStats(grouped_reportables, reporting_data_date, reporting_interval, first_aligned_data_date, phase_variation_adjustments);
+            grouped_summary_stats.GenerateSummary();
+
+            IEnumerable<ExoDataPoint> burned_data_points = summary_stats.Burned.GetData().Select(x => (ExoDataPoint)x);
+            IEnumerable<ExoDataPoint> actual_data_points = summary_stats.Actual.GetData().Select(x => (ExoDataPoint)x);
+            List<ExoDataPoint> burnedRawDataPoints = burned_data_points.Where(predicate).ToList();
+            grouped_summary_stats.Burned.SetData(burnedRawDataPoints);
+            List<ExoDataPoint> actualRawDataPoints = actual_data_points.Where(predicate).ToList();
+            grouped_summary_stats.Actual.SetData(actualRawDataPoints);
+            grouped_summary_stats.RecalculateStats(false);
+
+            if (grouped_reportables.Count() == 0 && burnedRawDataPoints.Count() == 0 && actualRawDataPoints.Count() == 0)
+                return null;
+
+            return grouped_summary_stats;
         }
     }
 

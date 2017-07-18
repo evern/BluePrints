@@ -63,7 +63,7 @@ namespace BluePrints.ViewModels
             MainViewModel = null;
             base.CleanUpEntitiesLoader();
 
-            defaultNumericFieldLengthForRegisters = Int32.Parse(BluePrintsResources.REGISTER_DefaultNumberFieldLength);
+            defaultNumericFieldLengthForRegisters = Int32.Parse(BluePrintsResources.Default_Register_Numeric_Length);
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
@@ -152,7 +152,7 @@ namespace BluePrints.ViewModels
 
         protected override int DefaultNumericFieldLength()
         {
-            return Int32.Parse(BluePrintsResources.REGISTER_DefaultNumberFieldLength);
+            return Int32.Parse(BluePrintsResources.Default_Register_Numeric_Length);
         }
         #endregion
 

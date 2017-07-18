@@ -37,7 +37,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected WORKPACKDashboardViewModelWrapper()
         {
-            isMasterDetailView = true;
+
         }
 
         #region Database Operation
@@ -46,30 +46,9 @@ namespace BluePrints.ViewModels
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
         private PROJECT_Dashboard projectDashboard;
-
-        public ObservableCollection<DisciplineCode_Dashboard> SelectedDisciplineCodes { get; set; }
-        public ObservableCollection<CommodityCode_Dashboard> SelectedCommodityCodes { get; set; }
         protected override void InitializeParameters(object parameter)
         {
             projectDashboard = (PROJECT_Dashboard)parameter;
-            SelectedDisciplineCodes = new ObservableCollection<DisciplineCode_Dashboard>();
-            SelectedCommodityCodes = new ObservableCollection<CommodityCode_Dashboard>();
-            SelectedDisciplineCodes.CollectionChanged += SelectedDisciplineCodes_CollectionChanged;
-            SelectedCommodityCodes.CollectionChanged += SelectedCommodityCodes_CollectionChanged;
-        }
-
-        private void SelectedDisciplineCodes_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            IEnumerable<SummaryStats> entitiesSummary = SelectedDisciplineCodes.Select(x => (SummaryStats)x.Stats);
-            SummaryEntity.Stats = new SummaryStats(entitiesSummary);
-            this.RaisePropertyChanged(x => x.SummaryEntity);
-        }
-
-        private void SelectedCommodityCodes_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            IEnumerable<SummaryStats> entitiesSummary = SelectedCommodityCodes.Select(x => (SummaryStats)x.Stats);
-            SummaryEntity.Stats = new SummaryStats(entitiesSummary);
-            this.RaisePropertyChanged(x => x.SummaryEntity);
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
@@ -206,6 +185,8 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
+
+        protected override bool isMasterDetailView => true;
 
         #endregion
     }

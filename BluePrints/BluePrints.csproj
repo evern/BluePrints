@@ -536,7 +536,8 @@
     <Compile Include="ViewModels\REGISTER\REGISTER_LLCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_RISKCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODECollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\PROGRESS_ITEM\User_OffisteDirectProgressCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROGRESS_ITEM\User_OffsiteDirectProgressCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\WORKPACK\WORKPACKDashboardViewModelWrapper.cs" />
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.xaml.cs">
       <DependentUpon>BASELINE_ITEMSchedulingView.xaml</DependentUpon>
     </Compile>
@@ -1126,7 +1127,6 @@
     <Compile Include="ViewModels\PROJECT\PROJECTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\USERDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\USERSelectionViewModel.cs" />
-    <Compile Include="ViewModels\WORKPACK_ASSIGNMENT\WORKPACK_ASSIGNMENTViewModel.cs" />
     <Compile Include="ViewModels\BASELINE\BASELINECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BluePrintsEntitiesViewModel.cs" />
     <Compile Include="ViewModels\DEPARTMENT\DEPARTMENTCollectionViewModelWrapper.cs" />
@@ -1134,7 +1134,6 @@
     <Compile Include="ViewModels\DOCTYPE\DOCTYPECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PHASE\PHASECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS\PROGRESSCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\WORKPACK\WORKPACKDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTViewModelWrapper.cs" />
     <Compile Include="ViewModels\RATE\RATECollectionViewModelWrapper.cs" />
@@ -1174,14 +1173,8 @@
     <Compile Include="Views\USER\USERSelectionView.xaml.cs">
       <DependentUpon>USERSelectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\WORKPACK_ASSIGNMENT\P6ACTIVITYAssignmentView.xaml.cs">
-      <DependentUpon>P6ACTIVITYAssignmentView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\BASELINE\BASELINECollectionView.xaml.cs">
       <DependentUpon>BASELINECollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\WORKPACK\WORKPACKDashboardView.xaml.cs">
-      <DependentUpon>WORKPACKDashboardView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTDashboardView.xaml.cs">
       <DependentUpon>PROJECTDashboardView.xaml</DependentUpon>
@@ -1243,8 +1236,8 @@
     <Compile Include="Views\VARIATION_ITEM\OffsiteDirectVariationCollectionView.xaml.cs">
       <DependentUpon>OffsiteDirectVariationCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\WORKPACK_ASSIGNMENT\WORKPACKAssignmentView.xaml.cs">
-      <DependentUpon>WORKPACKAssignmentView.xaml</DependentUpon>
+    <Compile Include="Views\WORKPACK\WORKPACKDashboardView.xaml.cs">
+      <DependentUpon>WORKPACKDashboardView.xaml</DependentUpon>
     </Compile>
     <Page Include="Common\View\BasicMessageBox.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -1382,15 +1375,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\WORKPACK_ASSIGNMENT\P6ACTIVITYAssignmentView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\BASELINE\BASELINECollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\WORKPACK\WORKPACKDashboardView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1478,9 +1463,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\WORKPACK_ASSIGNMENT\WORKPACKAssignmentView.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Views\WORKPACK\WORKPACKDashboardView.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -4256,7 +4241,10 @@
     <Resource Include="Views\DXSplashScreen\Image.png" />
     <Resource Include="Views\DXSplashScreen\Logo.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="ViewModels\WORKPACK_ASSIGNMENT\" />
+    <Folder Include="Views\WORKPACK_ASSIGNMENT\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\SlowCheetah.2.5.48\build\SlowCheetah.targets" Condition="Exists('..\packages\SlowCheetah.2.5.48\build\SlowCheetah.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

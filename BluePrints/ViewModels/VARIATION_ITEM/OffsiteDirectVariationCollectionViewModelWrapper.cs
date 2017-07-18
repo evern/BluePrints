@@ -593,7 +593,7 @@ namespace BluePrints.ViewModels
 
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().VARIATION_ITEM) + "." + BindableBase.GetPropertyName(() => new VARIATION_ITEM().VARIATION_UNITS))
             {
-                MessageBoxService.ShowMessage(BluePrintsResources.Notify_AddBASELINE_ITEMBeforeVARIATION_UNITS);
+                MessageBoxService.ShowMessage(BluePrintsResources.Notify_VariationNewRowError);
                 e.Handled = true;
                 return;
             }
@@ -782,7 +782,7 @@ namespace BluePrints.ViewModels
                     if (findWORKPACK == null)
                     {
                         var newWORKPACK = new WORKPACK();
-                        AREA defaultSubArea = SUBAREACollection.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.WorkpackDefaultSubArea);
+                        AREA defaultSubArea = SUBAREACollection.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.Default_Sub_Area);
 
                         newWORKPACK.GUID_PROJECT = loadPROJECT.GUID;
                         newWORKPACK.GUID_DAREA = entity.Entity.Entity.Entity.GUID_AREA;

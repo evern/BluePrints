@@ -59,7 +59,7 @@ namespace BluePrints.Common.ViewModel
         }
 
         public virtual TProjection SummaryEntity { get; set; }
-        protected bool isMasterDetailView { get; set; }
+        protected abstract bool isMasterDetailView { get; }
 
         public void OnSelectedEntitiesChanged(IEnumerable<TProjection> entities)
         {

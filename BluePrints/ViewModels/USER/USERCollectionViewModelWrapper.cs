@@ -65,7 +65,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<USER>, IQueryable<USER>> ConstructMainViewModelProjection()
         {
-            if (LoginCredentials.CurrentUser.NAME == BluePrintsResources.AdminUsername)
+            if (LoginCredentials.CurrentUser.NAME == BluePrintsResources.Default_AdminUsername)
                 return query => query.OrderBy(x => x.NAME);
             else if (LoginCredentials.CurrentUser.GUID_ROLE == null)
                 return query => query.Where(x => x.GUID == Guid.Empty);
@@ -120,7 +120,7 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<ROLE>();
                 if (collection != null)
                 {
-                    if (LoginCredentials.CurrentUser.NAME == BluePrintsResources.AdminUsername)
+                    if (LoginCredentials.CurrentUser.NAME == BluePrintsResources.Default_AdminUsername)
                         collection = collection.OrderBy(x => x.NAME);
                     else if (LoginCredentials.CurrentUser.GUID_ROLE == null)
                         collection = collection.Where(x => x.GUID == Guid.Empty);

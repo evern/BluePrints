@@ -285,6 +285,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public PROGRESS Live_PROGRESS { get; set; }
         #endregion
 
+        public string Phase_Code => Entity.Phase_Code;
+
         public string Commodity_Code => Entity.Commodity_Code;
 
         public Guid? Area_Guid => Entity.Area_Guid;
@@ -537,5 +539,6 @@ namespace BluePrints.Common.ViewModel.Reporting
                 return P6_Assignments.Sum(x => (x.HIGH_VALUE - (x.LOW_VALUE - 0.01m)));
             }
         }
+
     }
 }

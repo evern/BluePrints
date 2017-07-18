@@ -22,6 +22,8 @@ namespace BluePrints.Common.Projections
 
         public Guid OriginalEntityKey => Guid.Empty;
 
+        public string Phase_Code => string.Empty;
+
         public string Commodity_Code => string.Empty;
 
         public Guid? Area_Guid => Guid.Empty;

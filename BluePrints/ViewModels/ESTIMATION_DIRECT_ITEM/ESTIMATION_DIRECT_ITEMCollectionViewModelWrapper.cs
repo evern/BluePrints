@@ -123,12 +123,12 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<DEPARTMENT>, IQueryable<DEPARTMENT>> DEPARTMENTProjectionFunc()
         {
-            return query => query.Where(x => x.NAME == BluePrintsResources.DefaultConstructionDepartment);
+            return query => query.Where(x => x.NAME == BluePrintsResources.Default_Construction_Department);
         }
 
         private Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
         {
-            return query => query.Where(x => x.INTERNAL_NUM == BluePrintsResources.WorkpackDefaultConstructionPhase);
+            return query => query.Where(x => x.INTERNAL_NUM == BluePrintsResources.Default_Construction_Phase);
         }
 
         private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
@@ -246,7 +246,7 @@ namespace BluePrints.ViewModels
                     {
                         var newWORKPACK = new WORKPACK();
                         newWORKPACK.GUID_PROJECT = loadPROJECT.GUID;
-                        AREA defaultSubArea = SUBAREACollection.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.WorkpackDefaultSubArea);
+                        AREA defaultSubArea = SUBAREACollection.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.Default_Sub_Area);
 
                         newWORKPACK.GUID_DAREA = entity.Entity.GUID_AREA;
                         newWORKPACK.GUID_DSUBAREA = entity.Entity.GUID_SUBAREA == null ? defaultSubArea == null ? (Guid?)null : defaultSubArea.GUID : entity.Entity.GUID_SUBAREA;

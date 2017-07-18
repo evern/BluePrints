@@ -10,7 +10,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 {
     public static class ProgressQueries
     {
-        public static IQueryable<BASELINE_ITEMProgress> User_OffsiteDirectProgressItemTransformation(IQueryable<BASELINE_ITEM> query, USER user, bool buildStats = true)
+        public static IQueryable<BASELINE_ITEMProgress> User_OffsiteDirectProgressItemTransformation(IQueryable<BASELINE_ITEM> query, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, USER user, bool buildStats = true)
         {
             IQueryable<BASELINE_ITEM> user_baseline_item = query.Where(x => x.GUID_USER == user.GUID && x.BASELINE.STATUS == BaselineStatus.Live && x.BASELINE.PROJECT.STATUS == ProjectStatus.Active);
             List<BASELINE_ITEMProgress> user_baseline_item_progresses = new List<BASELINE_ITEMProgress>();
@@ -20,7 +20,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 PROJECT project = user_baseline_item_by_project.Project;
 
-                PROGRESS live_progress = project.PROGRESS.FirstOrDefault(x => x.STATUS == ProgressStatus.Live);
+                PROGRESS live_progress = project.PROGRESS.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == ProgressType.Design);
                 if (live_progress == null)
                     continue;
 
@@ -28,7 +28,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                 IEnumerable<BASELINE_ITEM> user_project_baseline_item = user_baseline_item_by_project.Deliverables;
                 IEnumerable<WORKPACK> workpacks = project.WORKPACK;
                 IEnumerable<VARIATION> approved_variations = project.VARIATION.Where(x => x.APPROVED != null);
-                IEnumerable<PROGRESS_ITEM> progresses = live_progress.PROGRESS_ITEM;
+
+                //need to use external PROGRESS_ITEMS because live_progress.PROGRESS_ITEM is cached and will not update OnMessage
+                IEnumerable<PROGRESS_ITEM> progresses = PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == live_progress.GUID);
                 IEnumerable<RATE> rates = project.RATE;
 
                 List<BASELINE_ITEMProgress> user_project_baseline_item_progress = OffsiteDirectProgressItemTransformation(user_project_baseline_item.AsQueryable(), project, live_progress, rates, progresses, approved_variations).ToList();

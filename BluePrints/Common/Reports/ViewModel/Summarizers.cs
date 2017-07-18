@@ -27,7 +27,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             if(showLoadingScreen)
                 LoadingScreenManager.ShowLoadingScreen(GetAllMaxProgress());
-            
+
             SetBudgetDataPoints();
             SetCurrentDataPoints();
             SetEarnedDataPoints();

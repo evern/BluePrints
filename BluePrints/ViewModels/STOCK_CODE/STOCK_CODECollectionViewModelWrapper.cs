@@ -76,7 +76,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<DEPARTMENT>, IQueryable<DEPARTMENT>> DEPARTMENTProjectionFunc()
         {
-            return query => query.Where(x => x.NAME == BluePrintsResources.DefaultConstructionDepartment);
+            return query => query.Where(x => x.NAME == BluePrintsResources.Default_Construction_Department);
         }
 
         protected override void OnAllEntitiesCollectionLoaded()

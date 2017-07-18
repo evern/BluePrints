@@ -6,11 +6,13 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
@@ -29,6 +31,10 @@ namespace BluePrints.ViewModels
         //allow background worker to be cancelled
         List<BackgroundWorker> backgroundWorkerCollection = new List<BackgroundWorker>();
 
+        public ObservableCollection<Phase_Dashboard> SelectedPhaseDashboards { get; set; }
+        public ObservableCollection<Discipline_Dashboard> SelectedDisciplineDashboards { get; set; }
+        public ObservableCollection<Commodity_Dashboard> SelectedCommodityDashboards { get; set; }
+
         /// <summary>
         /// Creates a new instance of PROJECT_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
@@ -43,6 +49,27 @@ namespace BluePrints.ViewModels
             PROJECTDashboardViewModelWrapper preloadDashboard = ViewModelSource.Create(() => new PROJECTDashboardViewModelWrapper());
             preloadDashboard.OnParameterChanged(actionObject);
             return preloadDashboard;
+        }
+
+        private void SelectedPhaseDashboard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            IEnumerable<SummaryStats> entitiesSummary = SelectedPhaseDashboards.Select(x => (SummaryStats)x.Stats);
+            SummaryEntity.Stats = new SummaryStats(entitiesSummary);
+            this.RaisePropertyChanged(x => x.SummaryEntity);
+        }
+
+        private void SelectedDisciplineDashboard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            IEnumerable<SummaryStats> entitiesSummary = SelectedDisciplineDashboards.Select(x => (SummaryStats)x.Stats);
+            SummaryEntity.Stats = new SummaryStats(entitiesSummary);
+            this.RaisePropertyChanged(x => x.SummaryEntity);
+        }
+
+        private void SelectedCommodityDashboard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            IEnumerable<SummaryStats> entitiesSummary = SelectedCommodityDashboards.Select(x => (SummaryStats)x.Stats);
+            SummaryEntity.Stats = new SummaryStats(entitiesSummary);
+            this.RaisePropertyChanged(x => x.SummaryEntity);
         }
 
         /// <summary>
@@ -64,6 +91,13 @@ namespace BluePrints.ViewModels
         ActionObject actionObject;
         protected override void InitializeParameters(object parameter)
         {
+            SelectedPhaseDashboards = new ObservableCollection<Phase_Dashboard>();
+            SelectedDisciplineDashboards = new ObservableCollection<Discipline_Dashboard>();
+            SelectedCommodityDashboards = new ObservableCollection<Commodity_Dashboard>();
+            SelectedPhaseDashboards.CollectionChanged += SelectedPhaseDashboard_CollectionChanged;
+            SelectedDisciplineDashboards.CollectionChanged += SelectedDisciplineDashboard_CollectionChanged;
+            SelectedCommodityDashboards.CollectionChanged += SelectedCommodityDashboard_CollectionChanged;
+
             if (parameter != null)
             {
                 actionObject = parameter as ActionObject;
@@ -162,10 +196,13 @@ namespace BluePrints.ViewModels
 
             onMainViewModelFirstLoadedTimer.Stop();
             backgroundWorkerCollection.Clear();
-            foreach (PROJECT_Dashboard entity in MainViewModel.Entities)
-            {
-                BuildProjectsStats(entity);
-            }
+
+            //happens when view is closed before processing happens
+            if(MainViewModel != null)
+                foreach (PROJECT_Dashboard entity in MainViewModel.Entities)
+                {
+                    BuildProjectsStats(entity);
+                }
         }
 
         void BuildProjectsStats(PROJECT_Dashboard entity)
@@ -185,6 +222,8 @@ namespace BluePrints.ViewModels
 
             project.BuildStats(false);
             project.RecalculateStats(false);
+            project.Phase_Dashboards = DashboardQueries.Construct_Phase_Dashboards((ProjectSummaryStats)project.Stats);
+            project.Update();
 
             if (((BackgroundWorker)sender).CancellationPending)
             {
@@ -285,6 +324,8 @@ namespace BluePrints.ViewModels
         {
             get { return "PROJECTDashboardViewModelWrapper"; }
         }
+
+        protected override bool isMasterDetailView => true;
 
         #endregion
 

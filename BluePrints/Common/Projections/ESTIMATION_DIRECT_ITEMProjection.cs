@@ -1,6 +1,7 @@
 ﻿using BaseModel.Attributes;
 using BaseModel.Data.Helpers;
 using BluePrints.Common.Base;
+using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using System;
@@ -97,6 +98,8 @@ namespace BluePrints.Common.Projections
 
         public string Deliverable_Name => STOCK_CODE == null ? string.Empty : STOCK_CODE.CODE;
 
+        public string Phase_Code => BluePrintsResources.Default_Construction_Phase;
+
         public string Commodity_Code => Entity.COMMODITY_CODE == null ? string.Empty : Entity.COMMODITY_CODE.CODE;
 
         public Guid? Workpack_Guid => Entity.GUID_WORKPACK;
@@ -176,7 +179,7 @@ namespace BluePrints.Common.Projections
 
         public string Stock_Code_Spec => STOCK_CODE == null ? string.Empty : STOCK_CODE.SPEC;
 
-        public string Stock_Code_Desription => STOCK_CODE == null ? string.Empty : STOCK_CODE.DESCRIPTION;
+        public string Stock_Code_Description => STOCK_CODE == null ? string.Empty : STOCK_CODE.DESCRIPTION;
     }
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries

@@ -117,41 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddRemoveDetailEntities_SelectObjects" xml:space="preserve">
-    <value>Select objects to add</value>
-  </data>
-  <data name="AdminPassword" xml:space="preserve">
+  <data name="Default_AdminPassword" xml:space="preserve">
     <value>p4y57zcvp</value>
   </data>
-  <data name="AdminUsername" xml:space="preserve">
+  <data name="Default_AdminUsername" xml:space="preserve">
     <value>superadmin</value>
-  </data>
-  <data name="CommodityCodeGroup_Generated" xml:space="preserve">
-    <value>&lt;Commodity_Code&gt;</value>
-  </data>
-  <data name="CommodityCodeGroup_New" xml:space="preserve">
-    <value>New Item</value>
-  </data>
-  <data name="CommodityCode_NewCommodity" xml:space="preserve">
-    <value>New Commodity</value>
-  </data>
-  <data name="CommodityCode_NoDepartment" xml:space="preserve">
-    <value>Please add departments before adding commodity code</value>
-  </data>
-  <data name="CommodityCode_NoDiscipline" xml:space="preserve">
-    <value>Please add disciplines before adding commodity code</value>
-  </data>
-  <data name="CommodityGroup_CannotAddChild" xml:space="preserve">
-    <value>Cannot add commodity under commodity</value>
-  </data>
-  <data name="CommodityGroup_CannotAssignCommodity" xml:space="preserve">
-    <value>Cannot change WBS into commodity</value>
-  </data>
-  <data name="CommodityGroup_CannotSelectParent" xml:space="preserve">
-    <value>Cannot assign parent commodity code</value>
-  </data>
-  <data name="CommodityGroup_MustSelectCommodity" xml:space="preserve">
-    <value>Commodity code is required</value>
   </data>
   <data name="Confirmation_Caption" xml:space="preserve">
     <value>Confirmation</value>
@@ -171,10 +141,7 @@
   <data name="Confirmation_SaveParent" xml:space="preserve">
     <value>You need to save the parent {0} entity before adding a new record. Do you want to save it now?</value>
   </data>
-  <data name="DataPointsBuilder_MaxProjectDuration" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="DefaultConstructionDepartment" xml:space="preserve">
+  <data name="Default_Construction_Department" xml:space="preserve">
     <value>CONSTRUCTION</value>
   </data>
   <data name="Entity_Changed" xml:space="preserve">
@@ -186,18 +153,6 @@
   <data name="Entity_New" xml:space="preserve">
     <value>(New)</value>
   </data>
-  <data name="Estimation_Item_Direct_AddCustomCommodityGroup" xml:space="preserve">
-    <value>This will create custom project commodity code, do you want to continue?</value>
-  </data>
-  <data name="Estimation_Item_Direct_EditCurrentOrOther" xml:space="preserve">
-    <value>Select yes to edit current project specific commodity code or no to edit others</value>
-  </data>
-  <data name="Estimation_Item_Direct_EditOrAddNewCommodityCode" xml:space="preserve">
-    <value>Select yes to edit current project specific commodity code or no to add a new one</value>
-  </data>
-  <data name="Estimation_Item_Direct_ProjectSpecificCommodityCodeCreated" xml:space="preserve">
-    <value>Project specific commodity code created</value>
-  </data>
   <data name="Exception_DataServiceRequestErrorCaption" xml:space="preserve">
     <value>DataService Request Error</value>
   </data>
@@ -207,16 +162,16 @@
   <data name="Exception_ValidationErrorCaption" xml:space="preserve">
     <value>Validation Error</value>
   </data>
-  <data name="NewProject_DefaultDepartment" xml:space="preserve">
+  <data name="Default_New_Project_Department" xml:space="preserve">
     <value>Engineering</value>
   </data>
-  <data name="NewProject_DefaultDiscipline" xml:space="preserve">
+  <data name="Default_New_Project_Discipline" xml:space="preserve">
     <value>General Engineering</value>
   </data>
-  <data name="NewProject_DefaultDocType" xml:space="preserve">
+  <data name="Default_New_Project_DocType" xml:space="preserve">
     <value>Report</value>
   </data>
-  <data name="Notify_AddBASELINE_ITEMBeforeVARIATION_UNITS" xml:space="preserve">
+  <data name="Notify_VariationNewRowError" xml:space="preserve">
     <value>Please add this record first before adjusting it's units</value>
   </data>
   <data name="Notify_View_Removed" xml:space="preserve">
@@ -225,61 +180,55 @@
   <data name="Notify_View_Restored" xml:space="preserve">
     <value>{0} has been restored</value>
   </data>
-  <data name="ProgressReporting_DefaultHoursADay" xml:space="preserve">
-    <value>8</value>
-  </data>
-  <data name="Refresh_Notify" xml:space="preserve">
+  <data name="Notify_Refresh" xml:space="preserve">
     <value>View has been refreshed because of changes to</value>
   </data>
-  <data name="SecurityKey" xml:space="preserve">
+  <data name="Default_SecurityKey" xml:space="preserve">
     <value>Lhpwrma6!</value>
   </data>
-  <data name="SignalR_CloseApplication" xml:space="preserve">
+  <data name="Notify_SignalR_CloseApplication" xml:space="preserve">
     <value>Unable to connect to server: Application closed.</value>
   </data>
-  <data name="SignalR_UnableToConnect" xml:space="preserve">
+  <data name="Notify_SignalR_UnableToConnect" xml:space="preserve">
     <value>Unable to connect to server: Start server before connecting clients.</value>
   </data>
   <data name="Warning_Caption" xml:space="preserve">
     <value>Warning</value>
   </data>
-  <data name="Warning_SomeFieldsContainInvalidData" xml:space="preserve">
-    <value>Some fields contain invalid data. Click OK to close the page and lose unsaved changes. Press Cancel to continue editing data.</value>
-  </data>
-  <data name="WORKPACK_ASSIGNMENT_P6ProgressWriteFailed" xml:space="preserve">
+  <data name="P6_Assignment_Progress_Write_Failed" xml:space="preserve">
     <value>P6 progress schedule population failed</value>
   </data>
-  <data name="WORKPACK_ASSIGNMENT_P6ProgressWriteSuccess" xml:space="preserve">
+  <data name="P6_Assignment_Progress_Write_Success" xml:space="preserve">
     <value>P6 progress schedule successfully populated</value>
   </data>
-  <data name="WORKPACK_ASSIGNMENT_P6WriteComplete" xml:space="preserve">
+  <data name="P6_Assignment_Units_Populated" xml:space="preserve">
     <value>P6 units populated</value>
   </data>
-  <data name="WORKPACK_InternalNameChange" xml:space="preserve">
-    <value>Do you wish to change the internal name too?</value>
-  </data>
-  <data name="XMLDefaultDirectory" xml:space="preserve">
+  <data name="Default_XML_Directory" xml:space="preserve">
     <value>BluePrints</value>
   </data>
-  <data name="XMLFilename" xml:space="preserve">
+  <data name="Default_XML_Filename" xml:space="preserve">
     <value>Settings.config</value>
   </data>
-  <data name="P6AssignmentWriteComplete" xml:space="preserve">
+  <data name="Notify_P6_Assignment_Write_Complete" xml:space="preserve">
     <value>P6 units populated</value>
   </data>
-  <data name="REGISTER_DefaultNumberFieldLength" xml:space="preserve">
+  <data name="Default_Register_Numeric_Length" xml:space="preserve">
     <value>3</value>
   </data>
   <data name="UncategorisedStockCode" xml:space="preserve">
     <value>Uncategorised</value>
   </data>
-  <data name="WorkpackDefaultConstructionPhase" xml:space="preserve">
+  <data name="Default_Construction_Phase" xml:space="preserve">
     <value>C1</value>
   </data>
-  <data name="WorkpackDefaultDesignPhase" xml:space="preserve">
+  <data name="Default_Design_Phase" xml:space="preserve">
     <value>D1</value>
   </data>
-  <data name="WorkpackDefaultSubArea" xml:space="preserve">
+  <data name="Default_Sub_Area" xml:space="preserve">
     <value>00</value>
+  </data>
+  <data name="Alternate_Design_Phase" xml:space="preserve">
+    <value>I1</value>
   </data>
 </root>
