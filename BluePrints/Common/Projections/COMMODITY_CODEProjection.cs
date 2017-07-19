@@ -52,17 +52,17 @@ namespace BluePrints.Common.Projections
 
         public Guid? Workpack_Guid => Guid.Empty;
 
-        public Guid OriginalEntityKey => throw new NotImplementedException();
+        public Guid OriginalEntityKey => Guid.Empty;
 
         public Estimation_DirectProgressType Progress_Type => Estimation_DirectProgressType.Standalone;
 
-        public string Phase_Code => throw new NotImplementedException();
+        public string Phase_Code => string.Empty;
 
         public string Commodity_Display_Code => Entity.Display_Code;
 
         public void SetOriginalEntityKey(Guid newGuid)
         {
-            throw new NotImplementedException();
+            
         }
     }
 
