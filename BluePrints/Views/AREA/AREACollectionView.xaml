@@ -69,7 +69,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <custom:GridControlEx x:Name="GridControl"  Style="{StaticResource DefaultGridControlTemplate}" dx:DXSerializer.SerializationID="GridControlAREA" ColumnsSource="{StaticResource AREAColumns}">
+                    <custom:GridControlEx x:Name="GridControl" Style="{StaticResource DefaultGridControlTemplate}" dx:DXSerializer.SerializationID="GridControlAREA" ColumnsSource="{StaticResource AREAColumns}">
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand
                                 Command="{Binding DataContext.MasterRowExpandedCommand, ElementName=userControl}"
@@ -80,7 +80,7 @@
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.DetailDescriptor>
                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding DetailEntities}">
-                                <dxg:GridControl x:Name="gridControlChild" Style="{StaticResource DefaultDetailGridControlTemplate}" >
+                                <dxg:GridControl x:Name="gridControlChild" Style="{StaticResource DefaultDetailGridControlTemplate}">
                                     <dxg:GridControl.Columns>
                                         <dxg:GridColumn Header="INTERNAL NUM" FieldName="Entity.INTERNAL_NUM" />
                                         <dxg:GridColumn Header="CLIENT_NUM" FieldName="Entity.CLIENT_NUM" />
