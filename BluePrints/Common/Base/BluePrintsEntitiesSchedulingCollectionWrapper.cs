@@ -179,6 +179,7 @@ namespace BluePrints.Common.Base
 
         public override void FullRefresh()
         {
+            activities_source = null;
             InitializeAndLoadEntitiesLoaderDescription();
         }
 
