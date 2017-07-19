@@ -581,11 +581,11 @@ namespace BluePrints.ViewModels
 
         private void updateProjectionCommodityCodeCollection(ESTIMATION_DIRECT_ITEMProjection projection, Guid? areaGuid, Guid? subAreaGuid, Guid? disciplineGuid)
         {
-            if (areaGuid != null && disciplineGuid != null)
+            if (areaGuid != null)
                 projection.CommodityCodeCollection = COMMODITY_CODECollection
-                .Where(x => x.GUID_AREA == areaGuid && x.GUID_SUBAREA == subAreaGuid && x.GUID_DISCIPLINE == (Guid)disciplineGuid).OrderBy(x => x.CODE);
+                .Where(x => x.GUID_AREA == areaGuid && x.GUID_SUBAREA == subAreaGuid).OrderBy(x => x.CODE);
             else
-                projection.StockCodeCollection = new List<STOCK_CODE>();
+                projection.CommodityCodeCollection = new List<COMMODITY_CODE>();
 
             projection.Update();
         }
@@ -644,6 +644,7 @@ namespace BluePrints.ViewModels
                     activeESTIMATION_DIRECT_ITEM.Entity.GUID_AREA = (Guid)e.Value;
                     //Area is required immediately for subarea selection
                     activeESTIMATION_DIRECT_ITEM.Entity.AREA = AREACollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
+
                     activeESTIMATION_DIRECT_ITEM.Update();
                 }
 
@@ -655,12 +656,14 @@ namespace BluePrints.ViewModels
                 }
 
                 updateProjectionCommodityCodeCollection(activeESTIMATION_DIRECT_ITEM, (Guid?)e.Value, activeESTIMATION_DIRECT_ITEM.Entity.SubAreaGuid, activeESTIMATION_DIRECT_ITEM.Entity.GUID_DISCIPLINE);
+                activeESTIMATION_DIRECT_ITEM.Update();
             }
             else if (e.Column.FieldName ==
                  BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
                  BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().SubAreaGuid))
             {
                 updateProjectionCommodityCodeCollection(activeESTIMATION_DIRECT_ITEM, activeESTIMATION_DIRECT_ITEM.Entity.GUID_AREA, (Guid?)e.Value, activeESTIMATION_DIRECT_ITEM.Entity.GUID_DISCIPLINE);
+                activeESTIMATION_DIRECT_ITEM.Update();
             }
             else if (e.Column.FieldName ==
                  BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
@@ -668,10 +671,12 @@ namespace BluePrints.ViewModels
             {
                 updateProjectionCommodityCodeCollection(activeESTIMATION_DIRECT_ITEM, activeESTIMATION_DIRECT_ITEM.Entity.GUID_AREA, activeESTIMATION_DIRECT_ITEM.Entity.GUID_SUBAREA, (Guid?)e.Value);
                 updateProjectionStockCodeCollection(activeESTIMATION_DIRECT_ITEM, (Guid?)e.Value);
+                activeESTIMATION_DIRECT_ITEM.Update();
             }
             else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().StockCodeGuid))
             {
                 setProjectionStockCode(activeESTIMATION_DIRECT_ITEM, (Guid?)e.Value);
+                activeESTIMATION_DIRECT_ITEM.Update();
             }
             else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().CommodityCodeGuid))
             {
