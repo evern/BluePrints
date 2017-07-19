@@ -238,8 +238,7 @@ namespace BluePrints.Common.Projections
                                 //.Where(stockcode => stockcode.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
                                 CommodityCodeCollection = COMMODITY_CODES == null ? null : COMMODITY_CODES
                                 .Where(commodity_code => commodity_code.GUID_AREA == estimate_direct_item.GUID_AREA 
-                                && commodity_code.GUID_SUBAREA == estimate_direct_item.GUID_SUBAREA 
-                                && commodity_code.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE).OrderBy(x => x.CODE)
+                                && commodity_code.GUID_SUBAREA == estimate_direct_item.GUID_SUBAREA).OrderBy(x => x.CODE)
                             }).AsQueryable();
         }
     }
