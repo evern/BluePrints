@@ -135,8 +135,17 @@ namespace BluePrints.Common.Projections
                 PROGRESS live_baseline_progress = PROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == current_project.GUID && x.STATUS == ProgressStatus.Live && x.TYPE == ProgressType.Design);
                 PROGRESS live_estimation_direct_progress = PROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == current_project.GUID && x.STATUS == ProgressStatus.Live && x.TYPE == ProgressType.Construct);
 
-                IEnumerable<PROGRESS_ITEM> live_baseline_progresses = PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == live_baseline_progress.GUID);
-                IEnumerable<PROGRESS_ITEM> live_estimation_direct_progresses = PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == live_estimation_direct_progress.GUID);
+                IEnumerable<PROGRESS_ITEM> live_baseline_progresses;
+                if (live_baseline_progress != null)
+                    live_baseline_progresses = PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == live_baseline_progress.GUID);
+                else
+                    live_baseline_progresses = null;
+
+                IEnumerable<PROGRESS_ITEM> live_estimation_direct_progresses;
+                if (live_estimation_direct_progress != null)
+                    live_estimation_direct_progresses = PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == live_estimation_direct_progress.GUID);
+                else
+                    live_estimation_direct_progresses = null;
 
                 IEnumerable<RATE> project_rates = RATES.Where(x => x.GUID_PROJECT == current_project.GUID);
                 IEnumerable<VARIATION> approved_project_variations = VARIATIONS.Where(x => x.GUID_PROJECT == current_project.GUID);
@@ -156,7 +165,7 @@ namespace BluePrints.Common.Projections
                 {
                     IEnumerable<ESTIMATION_DIRECT_ITEM> live_estimation_direct_items = live_estimation_direct.ESTIMATION_DIRECT_ITEM;
                     IEnumerable<ESTIMATION_DIRECT_ITEMProgress> project_estimation_direct_item_progresses =
-                    ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Progress_Transformation(live_estimation_direct_items.AsQueryable(), project_rates, live_baseline_progress, live_estimation_direct_progresses);
+                    ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Progress_Transformation(live_estimation_direct_items.AsQueryable(), project_rates, live_estimation_direct_progress, live_estimation_direct_progresses);
                     reportables.AddRange(project_estimation_direct_item_progresses);
                     current_project_progresses.Add(live_estimation_direct_progress);
                 }
