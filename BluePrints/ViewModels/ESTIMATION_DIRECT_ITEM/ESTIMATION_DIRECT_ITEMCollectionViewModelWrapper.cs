@@ -395,6 +395,7 @@ namespace BluePrints.ViewModels
                     DataUtils.ShallowCopy(newProjection.Entity, selectedEntity.Entity);
                     newProjection.Entity.EntityKey = Guid.Empty;
                     newProjection.Entity.GUID_ORIGINAL = Guid.Empty;
+                    newProjection.Entity.PROGRESS_TYPE = Estimation_DirectProgressType.Standalone;
                     //newProjection.Entity.ESTIMATED_QUANTITY = IsBASELINELocked ? 0 : selectedEntity.Entity.ESTIMATED_QUANTITY;
 
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(newProjection, null, null, null, EntityMessageType.Added);

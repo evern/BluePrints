@@ -130,6 +130,48 @@
                                                               DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn Header="COMMODITY CODE" FieldName="CommodityCodeGuid">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:ComboBoxEdit 
+                                                  x:Name="PART_Editor"
+                                                  ItemsSource="{Binding RowData.Row.CommodityCodeCollection}"
+                                                  DisplayMember="CODE" 
+                                                  ValueMember="GUID"
+                                                  ValidateOnTextInput="True"
+                                                  ValidateOnEnterKeyPressed="True"
+                                                  IncrementalFiltering="True"
+                                                  NullValueButtonPlacement="Popup"
+                                                  ImmediatePopup="True">
+                                        </dxe:ComboBoxEdit>
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                                <!--For Filtering-->
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
+                                                              ItemsSource="{Binding DataContext.ProjectCOMMODITY_CODECollection, ElementName=userControl}"
+                                                              IsTextEditable="True" AutoComplete="True"
+                                                              DisplayMember="CODE" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.GUID_DISCIPLINE"
+                                            Header="DISCIPLINE">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings
+                                        ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
+                                        ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Name="colDISCIPLINE_NUM" FieldName="Entity.DISCIPLINE_NUM"
+                                            Header="DISC. NUM">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings IsTextEditable="True" IsFloatValue="False"
+                                                                      Increment="1" MinValue="1" MaxValue="99"
+                                                                      MaskType="Numeric" Mask="n0"
+                                                                      MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn Name="colSTOCK_CODE" FieldName="StockCodeGuid" Header="STOCK CODE">
                                 <dxg:GridColumn.EditSettings>
                                     <!--took this out because stock code is no longer filtered by discipline-->
@@ -185,24 +227,6 @@
                                     </dxg:LookUpEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.GUID_DISCIPLINE"
-                                            Header="DISCIPLINE">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings
-                                        ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
-                                        IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
-                                        ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Name="colDISCIPLINE_NUM" FieldName="Entity.DISCIPLINE_NUM"
-                                            Header="DISC. NUM">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings IsTextEditable="True" IsFloatValue="False"
-                                                                      Increment="1" MinValue="1" MaxValue="99"
-                                                                      MaskType="Numeric" Mask="n0"
-                                                                      MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
                             <dxg:GridColumn Name="colPROGRESS_TYPE" FieldName="Entity.PROGRESS_TYPE" Header="PROGRESS_TYPE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
@@ -237,30 +261,6 @@
                             <dxg:GridColumn Header="INSTALL HOURS" FieldName="STOCK_CODE.HOURS_INSTALL">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings MinValue="0" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True" Increment="1" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="COMMODITY CODE" FieldName="CommodityCodeGuid">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:ComboBoxEdit 
-                                                  x:Name="PART_Editor"
-                                                  ItemsSource="{Binding RowData.Row.CommodityCodeCollection}"
-                                                  DisplayMember="CODE" 
-                                                  ValueMember="GUID"
-                                                  ValidateOnTextInput="True"
-                                                  ValidateOnEnterKeyPressed="True"
-                                                  IncrementalFiltering="True"
-                                                  NullValueButtonPlacement="Popup"
-                                                  ImmediatePopup="True">
-                                        </dxe:ComboBoxEdit>
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                                <!--For Filtering-->
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
-                                                              ItemsSource="{Binding DataContext.ProjectCOMMODITY_CODECollection, ElementName=userControl}"
-                                                              IsTextEditable="True" AutoComplete="True"
-                                                              DisplayMember="CODE" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="TOTAL INSTALL HOURS" FieldName="Total_Units" ReadOnly="True">
