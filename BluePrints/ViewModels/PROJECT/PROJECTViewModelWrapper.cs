@@ -211,6 +211,7 @@ namespace BluePrints.ViewModels
                 project.BuildStats(false);
                 project.RecalculateStats(false);
                 project.Phase_Dashboards = DashboardQueries.Construct_Phase_Dashboards((ProjectSummaryStats)project.Stats);
+                project.Update();
             }
 
             if (((BackgroundWorker)sender).CancellationPending)
