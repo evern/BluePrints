@@ -79,14 +79,14 @@
                                     </dxb:BarButtonItem.GlyphTemplate>
                                 </dxb:BarButtonItem>
                                 <dxb:BarItemSeparator />
-                                <dxb:BarButtonItem Content="Edit Report"
+                                <!--<dxb:BarButtonItem Content="Edit Report"
                                                    Command="{Binding DataContext.EditReportCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Edit_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                 <dxb:BarButtonItem Content="View Report"
                                                    Command="{Binding DataContext.ViewReportCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Report_32x32.png}"
-                                                   Glyph="{dx:DXImage Image=Report_16x16.png}" />
+                                                   Glyph="{dx:DXImage Image=Report_16x16.png}" />-->
                                 <dxb:BarButtonItem Content="Export"
                                                    Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}"
