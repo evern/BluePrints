@@ -423,6 +423,7 @@
     <Compile Include="Common\Reports\ViewModel\Helpers\ProjectionHelpers.cs" />
     <Compile Include="Common\Reports\ViewModel\Summarizers.cs" />
     <Compile Include="Common\ViewModel\Converters\CollectionConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\HoursToTextConverter.cs" />
     <Compile Include="Common\ViewModel\GanttChart\GanttCanvas.cs" />
     <Compile Include="Common\ViewModel\GanttChart\P6_Activity.cs" />
     <Compile Include="Common\ViewModel\Misc\P6ActivityAssignmentDialogViewModel.cs" />

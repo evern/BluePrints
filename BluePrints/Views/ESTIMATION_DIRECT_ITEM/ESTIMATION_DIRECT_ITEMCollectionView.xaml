@@ -130,24 +130,6 @@
                                                               DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.GUID_DISCIPLINE"
-                                            Header="DISCIPLINE">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings
-                                        ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
-                                        IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
-                                        ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Name="colDISCIPLINE_NUM" FieldName="Entity.DISCIPLINE_NUM"
-                                            Header="DISC. NUM">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings IsTextEditable="True" IsFloatValue="False"
-                                                                      Increment="1" MinValue="1" MaxValue="99"
-                                                                      MaskType="Numeric" Mask="n0"
-                                                                      MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
                             <dxg:GridColumn Name="colSTOCK_CODE" FieldName="StockCodeGuid" Header="STOCK CODE">
                                 <dxg:GridColumn.EditSettings>
                                     <!--took this out because stock code is no longer filtered by discipline-->
@@ -203,15 +185,28 @@
                                     </dxg:LookUpEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.GUID_DISCIPLINE"
+                                            Header="DISCIPLINE">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings
+                                        ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
+                                        ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Name="colDISCIPLINE_NUM" FieldName="Entity.DISCIPLINE_NUM"
+                                            Header="DISC. NUM">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings IsTextEditable="True" IsFloatValue="False"
+                                                                      Increment="1" MinValue="1" MaxValue="99"
+                                                                      MaskType="Numeric" Mask="n0"
+                                                                      MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn Name="colPROGRESS_TYPE" FieldName="Entity.PROGRESS_TYPE" Header="PROGRESS_TYPE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
                                                               ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Estimation_DirectProgressType}}" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Name="colSTANDALONE" FieldName="Entity.STANDALONE" Header="STANDALONE">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:CheckEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.COMMENTS" Header="COMMENTS" />

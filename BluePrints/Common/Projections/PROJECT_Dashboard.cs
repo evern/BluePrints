@@ -84,6 +84,7 @@ namespace BluePrints.Common.Projections
 
     public class Commodity_Dashboard : IHaveStats
     {
+        public string Display_Code { get; set; }
         public string Code { get; set; }
         public ProgressStats Stats { get; set; }
     }
@@ -234,22 +235,22 @@ namespace BluePrints.Common.Projections
             {
                 string commodityCode = reportable.Commodity_Code;
                 if (!preliminary_commodity_codes.Any(x => x.Code == commodityCode))
-                    preliminary_commodity_codes.Add(create_commodity_dashboard(commodityCode, (SummaryStats)discipline_dashboard.Stats, burned_data_points));
+                    preliminary_commodity_codes.Add(create_commodity_dashboard(commodityCode, commodityCode, (SummaryStats)discipline_dashboard.Stats, burned_data_points));
             }
 
             foreach (ExoDataPoint burnedDataPoint in burned_data_points)
             {
                 string commodityCode = burnedDataPoint.CommodityCode;
                 if (!preliminary_commodity_codes.Any(x => x.Code == commodityCode))
-                    preliminary_commodity_codes.Add(create_commodity_dashboard(commodityCode, (SummaryStats)discipline_dashboard.Stats, burned_data_points));
+                    preliminary_commodity_codes.Add(create_commodity_dashboard(commodityCode, commodityCode, (SummaryStats)discipline_dashboard.Stats, burned_data_points));
             }
 
             return preliminary_commodity_codes.Where(x => x.Stats != null).ToList();
         }
 
-        private static Commodity_Dashboard create_commodity_dashboard(string commodity_code, SummaryStats summary_stats, IEnumerable<ExoDataPoint> burned_data_points)
+        private static Commodity_Dashboard create_commodity_dashboard(string commodity_code, string commodity_display_code, SummaryStats summary_stats, IEnumerable<ExoDataPoint> burned_data_points)
         {
-            Commodity_Dashboard Commodity_dashboard = new Commodity_Dashboard() { Code = commodity_code };
+            Commodity_Dashboard Commodity_dashboard = new Commodity_Dashboard() { Code = commodity_code, Display_Code = commodity_display_code };
             Commodity_dashboard.Stats = SummaryStatsHelpers.Group_Summary_Stats(summary_stats, x => x.Commodity_Code == commodity_code, x => x.CommodityCode == commodity_code);
             return Commodity_dashboard;
         }

@@ -239,6 +239,28 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public string AreaCode
+        {
+            get
+            {
+                if (WorkpackName == string.Empty)
+                    return string.Empty;
+
+                return WorkpackName.Substring(6, 3);
+            }
+        }
+
+        public string SubAreaCode
+        {
+            get
+            {
+                if (WorkpackName == string.Empty)
+                    return string.Empty;
+
+                return WorkpackName.Substring(10, 2);
+            }
+        }
+
         public string CommodityCode
         {
             get

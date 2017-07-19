@@ -62,8 +62,8 @@ namespace BluePrints.ViewModels
         private PROJECT loadPROJECT;
         private BASELINE loadBASELINE;
         private PROGRESS livePROGRESS;
-        private PHASE defaultDesignPHASE;
         private bool isQueryForLiveStatus;
+        public bool Is_Autofill_Internal_Number { get; set; }
         public bool IsPhaseVisible
         {
             get
@@ -87,6 +87,8 @@ namespace BluePrints.ViewModels
 
             if (loadPROJECT != null)
                 isQueryForLiveStatus = true;
+
+            Is_Autofill_Internal_Number = true;
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
@@ -435,7 +437,8 @@ namespace BluePrints.ViewModels
                     var SelectedDISCIPLINE =
                         DISCIPLINECollection.FirstOrDefault(x => x.GUID == chosenWORKPACK.GUID_DDISCIPLINE);
 
-                    activeBASELINE_ITEM.Entity.Entity.INTERNAL_NUM = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT, MainViewModel.Entities.Select(x => x.Entity), SelectedAREA, SelectedDISCIPLINE, SelectedDOCTYPE);
+                    if(Is_Autofill_Internal_Number)
+                        activeBASELINE_ITEM.Entity.Entity.INTERNAL_NUM = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT, MainViewModel.Entities.Select(x => x.Entity), SelectedAREA, SelectedDISCIPLINE, SelectedDOCTYPE);
                     activeBASELINE_ITEM.Update();
                 }
             }
@@ -472,7 +475,9 @@ namespace BluePrints.ViewModels
                  BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DISCIPLINE))
             {
                 var activeBASELINE_ITEM = (BASELINE_ITEMProgress)e.Row;
-                activeBASELINE_ITEM.Entity.Entity.INTERNAL_NUM = generateInternalNumber(activeBASELINE_ITEM);
+
+                if(Is_Autofill_Internal_Number)
+                    activeBASELINE_ITEM.Entity.Entity.INTERNAL_NUM = generateInternalNumber(activeBASELINE_ITEM);
                 MainViewModel.UpdateSelectedEntity();
             }
         }

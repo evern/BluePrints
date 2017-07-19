@@ -670,12 +670,14 @@ namespace BluePrints.Common.Base
         #region Disposing
         protected override void OnClose(CancelEventArgs e)
         {
-            if (loadPROJECT != null)
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(loadPROJECT.NUMBER);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+//            if (loadPROJECT != null)
+//#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+//                BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(loadPROJECT.NUMBER);
+//#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             base.OnClose(e);
         }
+
+
         #endregion
 
         #region Entities Wrapper Properties

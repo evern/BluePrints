@@ -77,21 +77,29 @@ namespace BluePrints.Common.Projections
             {
                 Guid? setValue = (Guid?)value;
                 if (setValue == null)
+                {
                     Entity.GUID_STOCK_CODE = null;
+                    STOCK_CODE = null;
+                }
                 else if (IsStockCodeValid(setValue))
+                {
                     Entity.GUID_STOCK_CODE = setValue;
+                    if(StockCodeCollection != null)
+                        STOCK_CODE = StockCodeCollection.FirstOrDefault(x => x.GUID == setValue);
+                }
             }
         }
 
         public bool IsStockCodeValid(Guid? commodityCodeGuid)
         {
-            if (commodityCodeGuid == null)
-                return false;
+            return true;
+            //if (commodityCodeGuid == null)
+            //    return false;
 
-            if (StockCodeCollection == null)
-                return false;
+            //if (StockCodeCollection == null)
+            //    return false;
 
-            return StockCodeCollection.Any(x => x.GUID == commodityCodeGuid);
+            //return StockCodeCollection.Any(x => x.GUID == commodityCodeGuid);
         }
 
         public RATE RATE { get; set; }
@@ -101,6 +109,8 @@ namespace BluePrints.Common.Projections
         public string Phase_Code => BluePrintsResources.Default_Construction_Phase;
 
         public string Commodity_Code => Entity.COMMODITY_CODE == null ? string.Empty : Entity.COMMODITY_CODE.CODE;
+
+        public string Commodity_Display_Code => Entity.COMMODITY_CODE == null ? string.Empty : Entity.COMMODITY_CODE.Display_Code;
 
         public Guid? Workpack_Guid => Entity.GUID_WORKPACK;
 
@@ -224,8 +234,8 @@ namespace BluePrints.Common.Projections
                                 Entity = estimate_direct_item,
                                 STOCK_CODE = STOCK_CODES == null ? null : STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_direct_item.GUID_STOCK_CODE),
                                 RATE = RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
-                                StockCodeCollection = STOCK_CODES == null ? null : STOCK_CODES
-                                .Where(stockcode => stockcode.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
+                                StockCodeCollection = STOCK_CODES == null ? null : STOCK_CODES,
+                                //.Where(stockcode => stockcode.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
                                 CommodityCodeCollection = COMMODITY_CODES == null ? null : COMMODITY_CODES
                                 .Where(commodity_code => commodity_code.GUID_AREA == estimate_direct_item.GUID_AREA 
                                 && commodity_code.GUID_SUBAREA == estimate_direct_item.GUID_SUBAREA 

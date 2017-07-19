@@ -110,6 +110,8 @@ namespace BluePrints.Data
 
         public string Commodity_Code => COMMODITY_CODE == null ? string.Empty : COMMODITY_CODE.CODE;
 
+        public string Commodity_Display_Code => COMMODITY_CODE == null ? string.Empty : COMMODITY_CODE.Display_Code;
+
         public Guid? Area_Guid => GUID_AREA;
 
         public Guid? SubArea_Guid => GUID_SUBAREA;

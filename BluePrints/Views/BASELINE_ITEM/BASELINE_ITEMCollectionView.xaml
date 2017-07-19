@@ -72,7 +72,10 @@
                                                    Glyph="{dx:DXImage Image=Report_16x16.png}" />
                                 <dxb:BarCheckItem Content="Lock Baseline"
                                                   IsChecked="{Binding DataContext.IsBASELINELocked, ElementName=userControl}"
-                                                  Glyph="{dx:DXImageOffice2013 Image=Product_16x16.png}" />
+                                                  Glyph="{dxc:DXImage Image=ProtectDocument_16x16.png}" LargeGlyph="{dxc:DXImage Image=ProtectDocument_32x32.png}" />
+                                <dxb:BarCheckItem Content="Auto Number"
+                                                  IsChecked="{Binding DataContext.Is_Autofill_Internal_Number, ElementName=userControl}"
+                                                  Glyph="{dxc:DXImage Image=Wizard_16x16.png}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" />
                                 <dxb:BarButtonItem Content="Export"
                                                    Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}"

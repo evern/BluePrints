@@ -147,7 +147,7 @@ namespace BluePrints.ViewModels
                 PROJECT findPROJECT = MainViewModel.Entities.FirstOrDefault(x => x.GUID == (Guid)key);
                 if(findPROJECT != null)
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                    BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(findPROJECT.NUMBER);
+                    BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(findPROJECT.NUMBER);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
 
@@ -159,7 +159,7 @@ namespace BluePrints.ViewModels
             foreach(PROJECT project in deletedPROJECTs)
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(project.NUMBER);
+                BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(project.NUMBER);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
         }
@@ -314,7 +314,7 @@ namespace BluePrints.ViewModels
             {
                 PROJECT activePROJECT = (PROJECT)e.Row;
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(activePROJECT.NUMBER);
+                BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(activePROJECT.NUMBER);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
 

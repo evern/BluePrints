@@ -534,11 +534,11 @@
                                                     </dxg:GridControl.View>
                                                     <dxg:GridControl.DetailDescriptor>
                                                         <dxg:DataControlDetailDescriptor
-                                    ItemsSourceBinding="{Binding Commodity_Dashboards}">
+                                                            ItemsSourceBinding="{Binding Commodity_Dashboards}">
                                                             <dxg:GridControl x:Name="detailCommodityDashboardGridControl" 
-                                                     dx:DXSerializer.SerializationID="GridControlDetailCommodityDashboard"
-                                                     SelectionMode="Row"
-                                                     SelectedItems="{Binding DataContext.SelectedCommodityDashboards, Mode=TwoWay, ElementName=userControl}">
+                                                                 dx:DXSerializer.SerializationID="GridControlDetailCommodityDashboard"
+                                                                 SelectionMode="Row"
+                                                                 SelectedItems="{Binding DataContext.SelectedCommodityDashboards, Mode=TwoWay, ElementName=userControl}">
                                                                 <dxg:GridControl.Bands>
                                                                     <dxg:GridControlBand Header="General">
                                                                         <dxg:GridColumn Header="Commodity Code" FieldName="Code" />

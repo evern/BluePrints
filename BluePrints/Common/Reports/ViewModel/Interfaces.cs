@@ -12,11 +12,15 @@ namespace BluePrints.Common.ViewModel.Reporting
     public interface IReportable_Quantity_Group : IReportable_Quantity
     {
         IEnumerable<IReportable_Quantity> Reportables { get; }
+        decimal Trackable_Total_Quantity { get; }
+        decimal Trackable_Installed_Quantity { get; }
+        decimal Trackable_QuantityPerHour { get; }
+        decimal Trackable_Total_Units { get; }
     }
 
     public interface IReportable_Quantity : IReportable, IHaveQuantity, ICanTrack, ICanProgressByQuantity
     {
-
+        decimal Remaining_Hours_To_Completion { get; }
     }
 
     public interface IReportable_Group : IReportable
@@ -61,6 +65,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     public interface ICanProgressByQuantity : IHaveQuantity
     {
         decimal QuantityPerHour { get; }
+        decimal UnitsPerQuantity { get; }
         decimal PastInstalledQuantity { get; }
         decimal CurrentPeriodInstalledQuantity { get; set; }
         decimal MaxCurrentQuantity { get; }
@@ -126,6 +131,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     public interface IHaveCommodity_Code
     {
         //must use string because commodity code is not actual entity in design
+        string Commodity_Display_Code { get; }
         string Commodity_Code { get; }
         Guid? Area_Guid { get; }
         Guid? SubArea_Guid { get; }

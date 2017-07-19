@@ -137,13 +137,13 @@ namespace BluePrints.ViewModels
                     //if default subarea already exists
                     if (!ProjectCOMMODITY_CODECollection.Any(x => x.GUID_AREA == area.GUID))
                     {
-                        addStockCodes.AddRange(getAreaStockCodes(area));
+                        addStockCodes.AddRange(get_area_commodity_code(area));
                     }
 
                     IEnumerable<AREA> currentSubArea = SUBAREACollection.Where(x => x.GUID_PARENT == area.GUID);
                     foreach (AREA subArea in currentSubArea)
                     {
-                        addStockCodes.AddRange(getAreaStockCodes(area, subArea));
+                        addStockCodes.AddRange(get_area_commodity_code(area, subArea));
                     }
                 }
 
@@ -151,24 +151,24 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private List<COMMODITY_CODE> getAreaStockCodes(AREA area, AREA subArea = null)
+        private List<COMMODITY_CODE> get_area_commodity_code(AREA area, AREA subArea = null)
         {
             List<COMMODITY_CODE> areaStockCodes = new List<COMMODITY_CODE>();
             Guid? subAreaGuid = null;
             if (subArea != null)
                 subAreaGuid = subArea.GUID;
 
-            foreach (COMMODITY_CODE globalStockCode in GlobalCOMMODITY_CODECollection)
+            foreach (COMMODITY_CODE global_commodity_code in GlobalCOMMODITY_CODECollection)
             {
-                if (!ProjectCOMMODITY_CODECollection.Any(x => x.CODE == globalStockCode.CODE && x.GUID_AREA == area.GUID && x.GUID_SUBAREA == subAreaGuid && x.GUID_DISCIPLINE == globalStockCode.GUID_DISCIPLINE))
+                if (!ProjectCOMMODITY_CODECollection.Any(x => x.CODE == global_commodity_code.CODE && x.GUID_AREA == area.GUID && x.GUID_SUBAREA == subAreaGuid && x.GUID_DISCIPLINE == global_commodity_code.GUID_DISCIPLINE))
                     areaStockCodes.Add(new COMMODITY_CODE()
                     {   GUID_AREA = area.GUID,
-                        GUID_DISCIPLINE = globalStockCode.GUID_DISCIPLINE,
+                        GUID_DISCIPLINE = global_commodity_code.GUID_DISCIPLINE,
                         GUID_PROJECT = loadPROJECT.GUID,
                         GUID_SUBAREA = subAreaGuid,
-                        UOM = globalStockCode.UOM,
-                        CODE = globalStockCode.CODE,
-                        DESCRIPTION = globalStockCode.DESCRIPTION
+                        UOM = global_commodity_code.UOM,
+                        CODE = global_commodity_code.CODE,
+                        DESCRIPTION = global_commodity_code.DESCRIPTION
                     });
             }
 

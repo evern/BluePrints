@@ -24,6 +24,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -130,7 +131,17 @@
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ProgressItem.QuantityPerHour" Header="QTY_PER_HOUR" ReadOnly="True" IsEnabled="False" >
+                            <dxg:GridColumn FieldName="ProgressItem.UnitsPerQuantity" Header="TIME PER QTY" ReadOnly="True" IsEnabled="False" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings DisplayTextConverter="{StaticResource HoursToTextConverter}" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="ProgressItem.Remaining_Hours_To_Completion" Header="REMAINING TIME" ReadOnly="True" IsEnabled="False" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings DisplayTextConverter="{StaticResource HoursToTextConverter}" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="ProgressItem.Trackable_Total_Quantity" Header="TOTAL_TRACK_QUANTITY" ReadOnly="True" IsEnabled="False" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
@@ -198,9 +209,14 @@
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Binding="{Binding QuantityPerHour}" Header="QTY_PER_HOUR" ReadOnly="True" IsEnabled="False" >
+                                        <dxg:GridColumn Binding="{Binding UnitsPerQuantity}" Header="REMAINING TIME" ReadOnly="True" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings DisplayTextConverter="{StaticResource HoursToTextConverter}" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn Binding="{Binding Remaining_Hours_To_Completion}" Header="TIME PER QTY" ReadOnly="True" IsEnabled="False" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:TextEditSettings DisplayTextConverter="{StaticResource HoursToTextConverter}" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn Binding="{Binding CurrentPeriodInstalledQuantity}" Header="INSTALLED_QTY" ReadOnly="True" IsEnabled="False" >

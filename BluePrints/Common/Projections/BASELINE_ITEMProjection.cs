@@ -39,6 +39,8 @@ namespace BluePrints.Common.Projections
 
         public string Commodity_Code => Entity.Commodity_Code;
 
+        public string Commodity_Display_Code => Commodity_Code;
+
         public Guid? Workpack_Guid => Entity.Workpack_Guid;
 
         public decimal Estimated_Units => Entity.Estimated_Units;

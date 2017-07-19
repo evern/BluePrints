@@ -26,20 +26,38 @@ namespace BluePrints.Common.ViewModel
     {
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> UnitOfWorkFactory;
         private DispatcherTimer dispatchTimer;
-
+        private DispatcherTimer first_loaded_dispatchTimer;
         public DashboardViewModelWrapper()
         {
             DoNotAutoRefresh = true;
             dispatchTimer = new DispatcherTimer();
             dispatchTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
-        }
 
+            first_loaded_dispatchTimer = new DispatcherTimer();
+            first_loaded_dispatchTimer.Interval = new TimeSpan(0, 0, 0, 1);
+            first_loaded_dispatchTimer.Tick += first_loaded_dispatchTimer_Tick;
+        }
+        
         protected override bool OnMainViewModelLoaded(IEnumerable<TProjection> entities)
         {
             //because dashboards are generally heavy we just want manual refreshes to take place
             MainViewModel.ManualUnregisterMessageHandler();
             OnSelectedEntitiesChangedCallBack = DisplaySelectedEntities_CollectionChanged;
+            mainThreadDispatcher.BeginInvoke(new Action(() => first_loaded_dispatchTimer.Start()));
             return base.OnMainViewModelLoaded(entities);
+        }
+
+        private void first_loaded_dispatchTimer_Tick(object sender, EventArgs e)
+        {
+            if (MainViewModel == null)
+                return;
+
+            first_loaded_dispatchTimer.Stop();
+            if (MainViewModel.Entities.Count > 0)
+            {
+                SummaryEntity = MainViewModel.Entities.First();
+                this.RaisePropertyChanged(x => x.SummaryEntity);
+            }
         }
 
         protected void DisplaySelectedEntities_CollectionChanged()
@@ -60,7 +78,6 @@ namespace BluePrints.Common.ViewModel
 
         public virtual TProjection SummaryEntity { get; set; }
         protected abstract bool isMasterDetailView { get; }
-
         public void OnSelectedEntitiesChanged(IEnumerable<TProjection> entities)
         {
             if (MainViewModel == null)

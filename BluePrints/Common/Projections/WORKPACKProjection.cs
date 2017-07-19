@@ -44,6 +44,8 @@ namespace BluePrints.Common.Projections
 
         public decimal Total_Costs => DeliverableRates.Sum(x => x.Total_Costs);
 
+        public string Commodity_Display_Code => Commodity_Code;
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
             throw new NotImplementedException();

@@ -15,6 +15,7 @@ using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 
@@ -44,7 +45,6 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operation
-
         private PROJECT loadPROJECT;
         public Action<BASELINECollectionViewModelWrapper> AssignBASELINEDelegates;
         public Action<PROGRESSCollectionViewModelWrapper> AssignPROGRESSDelegates;
@@ -53,11 +53,42 @@ namespace BluePrints.ViewModels
         public Action<RATECollectionViewModelWrapper> AssignRATEDelegates;
 
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        public ObservableCollection<Phase_Dashboard> SelectedPhaseDashboards { get; set; }
+        public ObservableCollection<Discipline_Dashboard> SelectedDisciplineDashboards { get; set; }
+        public ObservableCollection<Commodity_Dashboard> SelectedCommodityDashboards { get; set; }
         protected override void InitializeParameters(object parameter)
         {
             var PROJECTParameter =
                 (EntitiesParameter<PROJECT>) parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
+
+            SelectedPhaseDashboards = new ObservableCollection<Phase_Dashboard>();
+            SelectedDisciplineDashboards = new ObservableCollection<Discipline_Dashboard>();
+            SelectedCommodityDashboards = new ObservableCollection<Commodity_Dashboard>();
+            SelectedPhaseDashboards.CollectionChanged += SelectedPhaseDashboard_CollectionChanged;
+            SelectedDisciplineDashboards.CollectionChanged += SelectedDisciplineDashboard_CollectionChanged;
+            SelectedCommodityDashboards.CollectionChanged += SelectedCommodityDashboard_CollectionChanged;
+        }
+
+        private void SelectedPhaseDashboard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            IEnumerable<SummaryStats> entitiesSummary = SelectedPhaseDashboards.Select(x => (SummaryStats)x.Stats);
+            SummaryEntity.Stats = new SummaryStats(entitiesSummary);
+            this.RaisePropertyChanged(x => x.SummaryEntity);
+        }
+
+        private void SelectedDisciplineDashboard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            IEnumerable<SummaryStats> entitiesSummary = SelectedDisciplineDashboards.Select(x => (SummaryStats)x.Stats);
+            SummaryEntity.Stats = new SummaryStats(entitiesSummary);
+            this.RaisePropertyChanged(x => x.SummaryEntity);
+        }
+
+        private void SelectedCommodityDashboard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            IEnumerable<SummaryStats> entitiesSummary = SelectedCommodityDashboards.Select(x => (SummaryStats)x.Stats);
+            SummaryEntity.Stats = new SummaryStats(entitiesSummary);
+            this.RaisePropertyChanged(x => x.SummaryEntity);
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
@@ -202,9 +233,6 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }
 
-        #endregion
-
-        #region View Behavior
         protected IOpenFileDialogService OpenFileDialogService
         {
             get { return this.GetService<IOpenFileDialogService>(); }
@@ -281,11 +309,19 @@ namespace BluePrints.ViewModels
             {
                 PROJECT_Dashboard activePROJECT = (PROJECT_Dashboard)e.Row;
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(activePROJECT.Entity.NUMBER);
+                BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(activePROJECT.Entity.NUMBER);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
 
             base.CellValueAnyRowChanging(e);
+        }
+
+        public async void Refresh_From_P6()
+        {
+            LoadingScreenManager.ShowLoadingScreen(1);
+            await BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(loadPROJECT.NUMBER);
+            LoadingScreenManager.Progress();
+            FullRefresh();
         }
 
         private void AdditionalCellValidation(GridCellValidationEventArgs e)

@@ -163,6 +163,7 @@ namespace BluePrints.ViewModels
             MainViewModel.DisablePasting = true;
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
+            MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -276,55 +277,60 @@ namespace BluePrints.ViewModels
 
         private void onBeforeSavedProjectStockCodeLogging(ESTIMATION_DIRECT_ITEMProjection entity)
         {
-            STOCK_CODE projectStockCode;
-            projectStock_CodeStatus commodityCodeStatus = getProjectStockCodeStatus(entity.STOCK_CODE, out projectStockCode);
-            if (commodityCodeStatus == projectStock_CodeStatus.IsEmpty)
-                return;
-            else if (commodityCodeStatus == projectStock_CodeStatus.DontExists)
-                createAndAssignProjectSpecificSTOCK_CODE(entity);
-            else if (commodityCodeStatus == projectStock_CodeStatus.MetaExistsOnDifferentRecord)
+            if(entity.STOCK_CODE != null)
             {
-                entity.Entity.GUID_STOCK_CODE = projectStockCode.GUID;
-                entity.STOCK_CODE = projectStockCode;
-            }
-            else if (commodityCodeStatus == projectStock_CodeStatus.ExistsWithDifferentRateHours)
-            {
-                UICommand addCommand = new UICommand()
+                STOCK_CODE projectStockCode;
+                projectStock_CodeStatus commodityCodeStatus = getProjectStockCodeStatus(entity.STOCK_CODE, out projectStockCode);
+                if (commodityCodeStatus == projectStock_CodeStatus.IsEmpty)
+                    return;
+                else if (commodityCodeStatus == projectStock_CodeStatus.DontExists)
+                    createAndAssignProjectSpecificSTOCK_CODE(entity);
+                else if (commodityCodeStatus == projectStock_CodeStatus.MetaExistsOnDifferentRecord)
                 {
-                    Id = DialogAction.Add,
-                    Caption = "Add",
-                    IsCancel = true,
-                    IsDefault = false,
-                };
-
-                UICommand editCommand = new UICommand()
-                {
-                    Id = DialogAction.Edit,
-                    Caption = "Update",
-                    IsCancel = true,
-                    IsDefault = false,
-                };
-
-                UICommand cancelCommand = new UICommand()
-                {
-                    Id = DialogAction.Cancel,
-                    Caption = "Cancel",
-                    IsCancel = true,
-                    IsDefault = false,
-                };
-
-                string message = String.Format("Current stock code with\nSupply Rate: {0:#} Install Hours: {1:#}\n" +
-                    "Is changed to\nSupply Rate: {2:#} Install Hours: {3:#}\n" +
-                    "Do you wish to add new or update?", projectStockCode.RATE_SUPPLY, projectStockCode.HOURS_INSTALL, entity.STOCK_CODE.RATE_SUPPLY, entity.STOCK_CODE.HOURS_INSTALL);
-
-                BasicMessageBoxViewModel viewModel = BasicMessageBoxViewModel.Create(message);
-                UICommand result = StockCodeDialogService.ShowDialog(new List<UICommand>() { addCommand, editCommand, cancelCommand }, "Stock Code", "BasicMessageBox", viewModel);
-                if (result == addCommand)
-                {
-                    Guid newStockCodeGuid = createNewSTOCK_CODE(entity.STOCK_CODE);
-                    entity.Entity.GUID_STOCK_CODE = newStockCodeGuid;
+                    entity.Entity.GUID_STOCK_CODE = projectStockCode.GUID;
+                    entity.STOCK_CODE = projectStockCode;
                 }
-                else if (result == editCommand)
+                else if (commodityCodeStatus == projectStock_CodeStatus.ExistsWithDifferentRateHours)
+                {
+                    UICommand addCommand = new UICommand()
+                    {
+                        Id = DialogAction.Add,
+                        Caption = "Add",
+                        IsCancel = true,
+                        IsDefault = false,
+                    };
+
+                    UICommand editCommand = new UICommand()
+                    {
+                        Id = DialogAction.Edit,
+                        Caption = "Update",
+                        IsCancel = true,
+                        IsDefault = false,
+                    };
+
+                    UICommand cancelCommand = new UICommand()
+                    {
+                        Id = DialogAction.Cancel,
+                        Caption = "Cancel",
+                        IsCancel = true,
+                        IsDefault = false,
+                    };
+
+                    string message = String.Format("Current stock code with\nSupply Rate: {0:#} Install Hours: {1:#}\n" +
+                        "Is changed to\nSupply Rate: {2:#} Install Hours: {3:#}\n" +
+                        "Do you wish to add new or update?", projectStockCode.RATE_SUPPLY, projectStockCode.HOURS_INSTALL, entity.STOCK_CODE.RATE_SUPPLY, entity.STOCK_CODE.HOURS_INSTALL);
+
+                    BasicMessageBoxViewModel viewModel = BasicMessageBoxViewModel.Create(message);
+                    UICommand result = StockCodeDialogService.ShowDialog(new List<UICommand>() { addCommand, editCommand, cancelCommand }, "Stock Code", "BasicMessageBox", viewModel);
+                    if (result == addCommand)
+                    {
+                        Guid newStockCodeGuid = createNewSTOCK_CODE(entity.STOCK_CODE);
+                        entity.Entity.GUID_STOCK_CODE = newStockCodeGuid;
+                    }
+                    else if (result == editCommand)
+                        updateCOMMODITY_CODE(entity.STOCK_CODE);
+                }
+                else if (commodityCodeStatus == projectStock_CodeStatus.Exists)
                     updateCOMMODITY_CODE(entity.STOCK_CODE);
             }
         }
@@ -438,13 +444,71 @@ namespace BluePrints.ViewModels
 
                     return true;
                 }
-
-                return false;
             }
 
-            return true;
+            return false;
         }
 
+        private void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
+        {
+            if (e.Column.FieldName ==
+                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
+                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().PROGRESS_TYPE))
+            {
+                ESTIMATION_DIRECT_ITEMProjection validateEntity = (ESTIMATION_DIRECT_ITEMProjection)e.Row;
+                if(validateEntity.Entity.GUID_COMMODITY_CODE != null)
+                {
+                    COMMODITY_CODE entity_commodity_code = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == validateEntity.Entity.GUID_COMMODITY_CODE);
+                    if(entity_commodity_code != null)
+                    {
+                        if ((validateEntity.Entity.STOCK_CODE.UOM != entity_commodity_code.UOM) && ((Estimation_DirectProgressType)e.Value) == Estimation_DirectProgressType.Trackable)
+                        {
+                            e.IsValid = false;
+                            e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                            e.ErrorContent = "Cannot set trackable when UOM is different from commodity code";
+                        }
+                    }
+                }
+            }
+            else if (e.Column.FieldName ==
+                     BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
+                     BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_COMMODITY_CODE))
+            {
+                ESTIMATION_DIRECT_ITEMProjection validateEntity = (ESTIMATION_DIRECT_ITEMProjection)e.Row;
+                if (validateEntity.Entity.PROGRESS_TYPE == Estimation_DirectProgressType.Trackable && e.Value != null)
+                {
+                    COMMODITY_CODE entity_commodity_code = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
+                    if (entity_commodity_code != null)
+                    {
+                        if ((validateEntity.Entity.STOCK_CODE.UOM != entity_commodity_code.UOM))
+                        {
+                            e.IsValid = false;
+                            e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                            e.ErrorContent = "Cannot set a commodity code with different UOM than stock code when deliverable is trackable";
+                        }
+                    }
+                }
+            }
+            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().StockCodeGuid))
+            {
+                ESTIMATION_DIRECT_ITEMProjection validateEntity = (ESTIMATION_DIRECT_ITEMProjection)e.Row;
+                if (validateEntity.Entity.PROGRESS_TYPE == Estimation_DirectProgressType.Trackable && e.Value != null)
+                {
+                    COMMODITY_CODE entity_commodity_code = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == validateEntity.Entity.GUID_COMMODITY_CODE);
+                    STOCK_CODE entity_stock_code = STOCK_CODECollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
+                    if (entity_stock_code != null && entity_commodity_code != null)
+                    {
+                        if ((entity_commodity_code.UOM != entity_stock_code.UOM))
+                        {
+                            e.IsValid = false;
+                            e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                            e.ErrorContent = "Cannot set a stock code with different UOM than commodity code when deliverable is trackable";
+                        }
+                    }
+                }
+            }
+        }
+        
         /// <summary>
         /// Allow undo-redo behavior to be added for automated cell value changing. This behavior doesn't have to be applied on new row because AddUndo for EntityMessageType.Added is already handling this
         /// </summary>
@@ -471,6 +535,23 @@ namespace BluePrints.ViewModels
             {
                 resetProjectionCommodityCode(activeESTIMATION_DIRECT_ITEM);
                 resetProjectionStockCode(activeESTIMATION_DIRECT_ITEM);
+            }
+            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().StockCodeGuid))
+            {
+                if (e.Value != null)
+                {
+                    STOCK_CODE entity_stock_code = STOCK_CODECollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
+                    if (entity_stock_code != null)
+                    {
+                        Guid? oldValue = activeESTIMATION_DIRECT_ITEM.Entity.GUID_DISCIPLINE;
+                        Guid newValue = entity_stock_code.GUID_DISCIPLINE;
+                        string discipline_field_name = BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
+                        BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_DISCIPLINE);
+                        activeESTIMATION_DIRECT_ITEM.Entity.GUID_DISCIPLINE = newValue;
+                        MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(activeESTIMATION_DIRECT_ITEM, discipline_field_name, oldValue, newValue, EntityMessageType.Changed);
+                    }
+                }
             }
 
             base.CellValueExistingRowChanging(e);
@@ -591,8 +672,14 @@ namespace BluePrints.ViewModels
                  BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().StockCodeGuid))
             {
                 setProjectionStockCode(activeESTIMATION_DIRECT_ITEM, (Guid?)e.Value);
+                var chosen_stock_code = STOCK_CODECollection.FirstOrDefault(entity => entity.GUID == (Guid)e.Value);
+                if (chosen_stock_code != null)
+                {
+                    activeESTIMATION_DIRECT_ITEM.Entity.GUID_DISCIPLINE = chosen_stock_code.GUID_DISCIPLINE;
+                    activeESTIMATION_DIRECT_ITEM.Update();
+                }
             }
-            
+
             base.CellValueNewRowChanging(e);
         }
         #endregion

@@ -118,6 +118,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public bool ShouldSaveProgress => ((IReportable)ProgressItem).ShouldSaveProgress;
 
+        public string Commodity_Display_Code => ((IReportable)ProgressItem).Commodity_Display_Code;
+
         public void Update()
         {
             ProgressItem.Update();
@@ -206,6 +208,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public string Commodity_Code => Reportable.Commodity_Code;
 
+        public string Commodity_Display_Code => Reportable.Commodity_Display_Code;
+
         public Guid? Workpack_Guid => Reportable.Workpack_Guid;
 
         public Guid OriginalEntityKey => Reportable.OriginalEntityKey;
@@ -230,13 +234,37 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Estimated_Quantity => Reportable.Estimated_Quantity;
 
+        public decimal Trackable_Total_Quantity
+        {
+            get
+            {
+                IReportable_Quantity_Group reportable_group = Reportable as IReportable_Quantity_Group;
+                if (reportable_group != null)
+                    return reportable_group.Trackable_Total_Quantity;
+                else
+                    return Reportable.Total_Quantity;
+            }
+        }
+
         public decimal Total_Quantity => Reportable.Total_Quantity;
 
         public string UOM => Reportable.UOM;
 
         public Guid EntityKey { get => Reportable.EntityKey; set => Reportable.EntityKey = value; }
 
-        public decimal QuantityPerHour => Reportable.QuantityPerHour;
+        public decimal QuantityPerHour
+        {
+            get
+            {
+                IReportable_Quantity_Group reportable_group = Reportable as IReportable_Quantity_Group;
+                if (reportable_group != null)
+                    return reportable_group.Trackable_QuantityPerHour;
+                else
+                    return Reportable.QuantityPerHour;
+            }
+        }
+
+        public decimal UnitsPerQuantity => Reportable.UnitsPerQuantity;
 
         public decimal PastInstalledQuantity => Reportable.PastInstalledQuantity;
 
@@ -299,6 +327,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal MaxCurrentQuantity => Reportable.MaxCurrentQuantity;
 
         public bool ShouldSaveProgress => Reportable.ShouldSaveProgress;
+
+        public decimal Remaining_Hours_To_Completion => Reportable.Remaining_Hours_To_Completion;
 
         public void SetReportingDataDate(DateTime dataDate)
         {

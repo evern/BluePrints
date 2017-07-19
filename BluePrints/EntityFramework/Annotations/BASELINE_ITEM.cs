@@ -71,6 +71,8 @@ namespace BluePrints.Data
                 return DOCTYPE.CODE;
             }
         }
+        
+        public string Commodity_Display_Code => Commodity_Code;
 
         [NotMapped]
         public DateTime EntityCreatedDate

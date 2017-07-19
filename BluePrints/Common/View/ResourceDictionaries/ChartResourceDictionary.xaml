@@ -46,5 +46,6 @@
         <Setter Property="ValueDataMember" Value="Units" />
         <Setter Property="ValueScaleType" Value="Numerical" />
         <Setter Property="dxc:XYDiagram2D.SeriesAxisY" Value="{Binding ElementName=secondaryAxisY}" />
+        <Setter Property="BarWidth" Value="5" />
     </Style>
 </ResourceDictionary>

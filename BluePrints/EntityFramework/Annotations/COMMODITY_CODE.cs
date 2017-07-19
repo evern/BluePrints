@@ -8,6 +8,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
     using BluePrints.Common.ViewModel.Reporting;
+    using BluePrints.Common.Resources;
 
     [ConstraintAttributes("CODE")]
     public partial class COMMODITY_CODE : IGuidEntityKey, IHaveCreatedDate
@@ -72,6 +73,20 @@ namespace BluePrints.Data
                 return false;
 
             return SubAreaCollection.Any(x => x.GUID == subAreaGuid);
+        }
+
+        [NotMapped]
+        public string Display_Code
+        {
+            get
+            {
+                if (AREA != null && AREA1 != null)
+                    return AREA.INTERNAL_NUM + "-" + AREA1.INTERNAL_NUM + "-" + CODE;
+                else if (AREA != null)
+                    return AREA.INTERNAL_NUM + "-" + BluePrintsResources.Default_Sub_Area + "-" + CODE;
+                else
+                    return CODE;
+            }
         }
     }
 }

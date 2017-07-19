@@ -26,9 +26,9 @@ namespace BluePrints.Common.Projections
 
         public Guid? SubArea_Guid => Entity.GUID_SUBAREA;
 
-        public decimal Estimated_Units => Deliverables.Where(x => x.Progress_Type == Estimation_DirectProgressType.Trackable).Sum(x => x.Estimated_Units);
+        public decimal Estimated_Units => Deliverables.Sum(x => x.Estimated_Units);
 
-        public decimal Total_Units => Deliverables.Where(x => x.Progress_Type == Estimation_DirectProgressType.Trackable).Sum(x => x.Total_Units);
+        public decimal Total_Units => Deliverables.Sum(x => x.Total_Units);
 
         public decimal ItemRate => Deliverables.Sum(x => x.ItemRate);
 
@@ -36,9 +36,9 @@ namespace BluePrints.Common.Projections
 
         public decimal Total_Costs => Deliverables.Sum(x => x.Total_Costs);
 
-        public decimal Estimated_Quantity => Deliverables.Where(x => x.Progress_Type == Estimation_DirectProgressType.Trackable).Sum(x => x.Estimated_Quantity);
+        public decimal Estimated_Quantity => Deliverables.Sum(x => x.Estimated_Quantity);
 
-        public decimal Total_Quantity => Deliverables.Where(x => x.Progress_Type == Estimation_DirectProgressType.Trackable).Sum(x => x.Total_Quantity);
+        public decimal Total_Quantity => Deliverables.Sum(x => x.Total_Quantity);
 
         public string UOM => Entity.UOM;
 
@@ -57,6 +57,8 @@ namespace BluePrints.Common.Projections
         public Estimation_DirectProgressType Progress_Type => Estimation_DirectProgressType.Standalone;
 
         public string Phase_Code => throw new NotImplementedException();
+
+        public string Commodity_Display_Code => Entity.Display_Code;
 
         public void SetOriginalEntityKey(Guid newGuid)
         {

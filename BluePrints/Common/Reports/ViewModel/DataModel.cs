@@ -24,7 +24,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             get
             {
                 PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
-                decimal totalCurrentUnits = Reportables.Where(x => x.Progress_Type == Estimation_DirectProgressType.Trackable).Where(x => x.PROGRESS_ITEM_Current != null).Sum(x => x.PROGRESS_ITEM_Current.EARNED_UNITS);
+                decimal totalCurrentUnits = Reportables.Where(x => x.PROGRESS_ITEM_Current != null).Sum(x => x.PROGRESS_ITEM_Current.EARNED_UNITS);
                 newPROGRESS_ITEM.EARNED_UNITS = totalCurrentUnits;
                 newPROGRESS_ITEM.EARNED_DATE = ReportingDataDate;
                 return newPROGRESS_ITEM;
@@ -35,7 +35,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                return Reportables.Where(x => x.Progress_Type == Estimation_DirectProgressType.Trackable).SelectMany(x => x.PROGRESS_ITEM_BeforeDataDate);
+                return Reportables.SelectMany(x => x.PROGRESS_ITEM_BeforeDataDate);
             }
         }
 
@@ -43,7 +43,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                return Reportables.Where(x => x.Progress_Type == Estimation_DirectProgressType.Trackable).SelectMany(x => x.PROGRESS_ITEM_AfterDataDate);
+                return Reportables.SelectMany(x => x.PROGRESS_ITEM_AfterDataDate);
             }
         }
 
@@ -51,7 +51,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                return Reportables.Where(x => x.Progress_Type == Estimation_DirectProgressType.Trackable).SelectMany(x => x.PROGRESS_ITEM_UpToCurrentDataDate);
+                return Reportables.SelectMany(x => x.PROGRESS_ITEM_UpToCurrentDataDate);
             }
         }
 
@@ -59,7 +59,45 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get { return Reportables.SelectMany(x => x.PROGRESS_ITEMS).ToList(); }
         }
-        
+
+        protected override decimal getNewPercentage()
+        {
+            decimal aggregate_total_quantity = Reportables.Where(x => x.Progress_Type == Estimation_DirectProgressType.Trackable).Sum(x => x.Total_Quantity);
+            if (aggregate_total_quantity == 0)
+                return 0;
+
+            return set_current_period_quantity == null ? 0 : (decimal)set_current_period_quantity / aggregate_total_quantity;
+        }
+
+        private IEnumerable<IReportable_Quantity> trackable_reportables => Reportables.Where(x => x.Progress_Type == Estimation_DirectProgressType.Trackable);
+
+        public decimal Trackable_Total_Units => trackable_reportables.Sum(x => x.Total_Units);
+
+        public decimal Trackable_Total_Quantity => trackable_reportables.Sum(x => x.Total_Quantity);
+
+        public decimal Trackable_Installed_Quantity => trackable_reportables.Sum(x => x.TotalInstalledQuantity);
+
+        public override decimal MaxCurrentQuantity => Trackable_Total_Quantity - Trackable_Installed_Quantity;
+
+        public override decimal Earned_Costs_Total => trackable_reportables.Sum(x => x.Earned_Costs_Total);
+
+        public decimal Trackable_QuantityPerHour
+        {
+            get
+            {
+                if (Trackable_Total_Units == 0)
+                    return 0;
+
+                return Trackable_Total_Quantity / Trackable_Total_Units;
+            }
+        }
+
+        public override decimal get_actual_earned_quantity()
+        {
+            decimal trackable_earned_units_ondatadate = trackable_reportables.Sum(x => x.Earned_Units_OnDataDate);
+            return trackable_earned_units_ondatadate * Trackable_QuantityPerHour;
+        }
+
         public override IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func)
         {
             List<PROGRESS_ITEM> editPROGRESS_ITEMS = new List<PROGRESS_ITEM>();
@@ -155,6 +193,25 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public decimal UnitsPerQuantity
+        {
+            get
+            {
+                if (Total_Quantity == 0)
+                    return 0;
+
+                return Total_Units / Total_Quantity;
+            }
+        }
+
+        public decimal Remaining_Hours_To_Completion
+        {
+            get
+            {
+                return (Total_Quantity - TotalInstalledQuantity) * UnitsPerQuantity;
+            }
+        }
+
         protected decimal? set_current_period_quantity { get; set; }
         public virtual decimal CurrentPeriodInstalledQuantity
         {
@@ -176,7 +233,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public override bool ShouldSaveProgress => get_actual_earned_quantity() != set_current_period_quantity;
         
-        public decimal get_actual_earned_quantity()
+        public virtual decimal get_actual_earned_quantity()
         {
             return Earned_Units_OnDataDate * QuantityPerHour;
         }
@@ -205,7 +262,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public decimal MaxCurrentQuantity => Total_Quantity - TotalInstalledQuantity;
+        public virtual decimal MaxCurrentQuantity => Total_Quantity - TotalInstalledQuantity;
 
         public Estimation_DirectProgressType Progress_Type
         {
@@ -289,13 +346,15 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public string Commodity_Code => Entity.Commodity_Code;
 
+        public string Commodity_Display_Code => Entity.Commodity_Display_Code;
+
         public Guid? Area_Guid => Entity.Area_Guid;
 
         public Guid? SubArea_Guid => Entity.SubArea_Guid;
 
         public decimal Estimated_Units => Entity.Estimated_Units;
 
-        public decimal Total_Units => Entity.Total_Units;
+        public virtual decimal Total_Units => Entity.Total_Units;
 
         public virtual IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_BeforeDataDate => PROGRESS_ITEMS.Where(y => y.EARNED_DATE < ReportingDataDate);
 
@@ -399,7 +458,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Earned_Percentage_OnDataDate => Total_Units == 0 ? 0 : (Earned_Units_OnDataDate / Total_Units);
 
-        public decimal Earned_Units_OnDataDate => PROGRESS_ITEM_Current == null ? 0 : PROGRESS_ITEM_Current.EARNED_UNITS;
+        public virtual decimal Earned_Units_OnDataDate => PROGRESS_ITEM_Current == null ? 0 : PROGRESS_ITEM_Current.EARNED_UNITS;
 
         public decimal Earned_Costs_OnDataDate => Earned_Units_OnDataDate * Entity.ItemRate;
 
@@ -407,7 +466,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Earned_Units_Total => Earned_Units_ToDate + Earned_Units_AfterDataDate;
 
-        public decimal Earned_Costs_Total => Earned_Units_Total * Entity.ItemRate;
+        public virtual decimal Earned_Costs_Total => Earned_Units_Total * Entity.ItemRate;
 
         public decimal Earned_Costs_ToDate => Earned_Units_ToDate * Entity.ItemRate;
         
@@ -539,6 +598,5 @@ namespace BluePrints.Common.ViewModel.Reporting
                 return P6_Assignments.Sum(x => (x.HIGH_VALUE - (x.LOW_VALUE - 0.01m)));
             }
         }
-
     }
 }

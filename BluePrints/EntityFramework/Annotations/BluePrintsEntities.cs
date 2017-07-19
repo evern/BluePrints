@@ -289,10 +289,16 @@ namespace BluePrints.Data
 
     public static class BluePrintsContextHelper
     {
-        public static void RefreshDeliverablesDataPointsByProject(string projectNumber)
+        public static void AsyncRefreshDeliverablesDataPointsByProject(string projectNumber)
         {
             RefreshDeliverablesPlannedDataPointsByProject(projectNumber);
             RefreshDeliverablesRemainingDataPointsByProject(projectNumber);
+        }
+
+        public static async Task RefreshDeliverablesDataPointsByProject(string projectNumber)
+        {
+            await RefreshDeliverablesPlannedDataPointsByProject(projectNumber);
+            await RefreshDeliverablesRemainingDataPointsByProject(projectNumber);
         }
 
         public static async Task RefreshDeliverablesPlannedDataPointsByProject(string projectNumber)
