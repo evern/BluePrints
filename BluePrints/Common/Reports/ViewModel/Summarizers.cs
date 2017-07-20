@@ -181,7 +181,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         readonly FullStatsBuilder FullStatsBuilder;
 
-        public FullSummarizer(ProjectSummaryStats summaryStats, FullStatsBuilder fullStatsBuilder, string projectNumber = "")
+        public FullSummarizer(ProjectSummaryStats summaryStats, FullStatsBuilder fullStatsBuilder, string projectNumber)
             : base(summaryStats, fullStatsBuilder, projectNumber)
         {
             FullStatsBuilder = fullStatsBuilder;

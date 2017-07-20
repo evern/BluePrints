@@ -8,6 +8,23 @@ using System.Linq.Expressions;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
+    /// <summary>
+    /// IReportable wrapper so that baseline_itemProgress properties can be retrieved for reporting purpose
+    /// </summary>
+    public class DeliverableSummaryStats : ProjectSummaryStats
+    {
+        public IEnumerable<BASELINE_ITEMProgress> Deliverables
+        {
+            get { return (IEnumerable<BASELINE_ITEMProgress>)this.Reportables; }
+        }
+
+        public DeliverableSummaryStats(IEnumerable<BASELINE_ITEMProgress> progressItem, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<VariationAdjustment> projectVariationAdjustments)
+            : base(progressItem, reporting_data_date, reporting_interval, first_aligned_data_date, projectVariationAdjustments)
+        {
+            ProjectionHelpers.InitializePROGRESS_ITEMStats(progressItem, projectVariationAdjustments, reporting_data_date, reporting_interval, first_aligned_data_date, false);
+        }
+    }
+
     public class ProjectSummaryStats : SummaryStats
     {
         #region Progress Error Log

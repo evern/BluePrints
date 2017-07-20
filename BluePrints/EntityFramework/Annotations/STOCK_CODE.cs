@@ -6,7 +6,7 @@ namespace BluePrints.Data
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class STOCK_CODE : IGuidEntityKey, IHaveCreatedDate
+    public partial class STOCK_CODE : IGuidEntityKey, IHaveCreatedDate, IOriginalGuidEntityKey
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public STOCK_CODE()
@@ -40,5 +40,9 @@ namespace BluePrints.Data
                 return PROJECT.NUMBER;
             }
         }
+
+        public Guid OriginalEntityKey => GUID_ORIGINAL;
+
+        public void SetOriginalEntityKey(Guid newGuid) { GUID_ORIGINAL = newGuid; }
     }
 }
