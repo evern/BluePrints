@@ -29,6 +29,22 @@ namespace BluePrints.Views
 
             if (DashboardViewType == DashboardViewType.Costs)
             {
+                colCumulativeActual.Visible = true;
+                colPeriodActual.Visible = true;
+                totalSummaryPeriodActual.Visible = true;
+                totalSummaryCumulativeActual.Visible = true;
+                groupSummaryPeriodActual.Visible = true;
+                groupSummaryCumulativeActual.Visible = true;
+                colDisciplinePeriodActual.Visible = true;
+                colDisciplineCumulativeActual.Visible = true;
+                colPhaseCumulativeActual.Visible = true;
+                colPhasePeriodActual.Visible = true;
+                colCommodityCumulativeActual.Visible = true;
+                colCommodityPeriodActual.Visible = true;
+                barSeriesActual.Visible = true;
+                lineSeriesActual.Visible = true;
+
+
                 headerTextVar = "$";
                 maskVar = "c";
                 fieldNameReplaceFrom = "Units";
@@ -37,6 +53,19 @@ namespace BluePrints.Views
             }
             else
             {
+                colCumulativeActual.Visible = false;
+                colPeriodActual.Visible = false;
+                totalSummaryPeriodActual.Visible = false;
+                totalSummaryCumulativeActual.Visible = false;
+                groupSummaryPeriodActual.Visible = false;
+                groupSummaryCumulativeActual.Visible = false;
+                colDisciplinePeriodActual.Visible = false;
+                colDisciplineCumulativeActual.Visible = false;
+                colPhaseCumulativeActual.Visible = false;
+                colPhasePeriodActual.Visible = false;
+                barSeriesActual.Visible = false;
+                lineSeriesActual.Visible = false;
+
                 headerTextVar = "Units";
                 maskVar = "n";
                 fieldNameReplaceFrom = "Costs";

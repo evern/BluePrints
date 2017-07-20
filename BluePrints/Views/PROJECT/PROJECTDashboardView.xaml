@@ -166,7 +166,7 @@
                                                                   Mask="n" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colCumulativeActual" Header="Actual Units"
+                                    <dxg:GridColumn x:Name="colCumulativeActual" Header="Actual Units" Visible="False" 
                                                     FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="120">
                                         <dxg:GridColumn.EditSettings>
@@ -208,7 +208,7 @@
                                                                   Mask="n" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colPeriodActual" Header="Actual Units"
+                                    <dxg:GridColumn x:Name="colPeriodActual" Header="Actual Units" Visible="False"
                                                     FieldName="Stats.Actual.CurrentPeriodDataPoint.Units" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="170">
                                         <dxg:GridColumn.EditSettings>
@@ -302,7 +302,7 @@
                                                                   Mask="n" MaskUseAsDisplayFormat="True" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn x:Name="colPhaseCumulativeActual" Header="Actual Units"
+                                                <dxg:GridColumn x:Name="colPhaseCumulativeActual" Header="Actual Units" Visible="False"
                                                     FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="120">
                                                     <dxg:GridColumn.EditSettings>
@@ -344,7 +344,7 @@
                                                                   Mask="n" MaskUseAsDisplayFormat="True" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn x:Name="colPhasePeriodActual" Header="Actual Units"
+                                                <dxg:GridColumn x:Name="colPhasePeriodActual" Header="Actual Units" Visible="False"
                                                     FieldName="Stats.Actual.CurrentPeriodDataPoint.Units" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="170">
                                                     <dxg:GridColumn.EditSettings>
@@ -440,7 +440,7 @@
                                                                 </dxg:GridColumn.EditSettings>
                                                             </dxg:GridColumn>
                                                             <dxg:GridColumn x:Name="colDisciplineCumulativeActual" Header="Actual Units"
-                                                    FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
+                                                    FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True" Visible="False"
                                                     AllowEditing="False" VisibleIndex="120">
                                                                 <dxg:GridColumn.EditSettings>
                                                                     <dxe:TextEditSettings Name="colDisciplineCumulativeActualText" MaskType="Numeric"
@@ -482,7 +482,7 @@
                                                                 </dxg:GridColumn.EditSettings>
                                                             </dxg:GridColumn>
                                                             <dxg:GridColumn x:Name="colDisciplinePeriodActual" Header="Actual Units"
-                                                    FieldName="Stats.Actual.CurrentPeriodDataPoint.Units" ReadOnly="True"
+                                                    FieldName="Stats.Actual.CurrentPeriodDataPoint.Units" ReadOnly="True" Visible="False"
                                                     AllowEditing="False" VisibleIndex="170">
                                                                 <dxg:GridColumn.EditSettings>
                                                                     <dxe:TextEditSettings Name="colDisciplinePeriodActualText" MaskType="Numeric"
@@ -578,7 +578,7 @@
                                                                             </dxg:GridColumn.EditSettings>
                                                                         </dxg:GridColumn>
                                                                         <dxg:GridColumn x:Name="colCommodityCumulativeActual" Header="Actual Units"
-                                                    FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
+                                                    FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True" Visible="False"
                                                     AllowEditing="False" VisibleIndex="120">
                                                                             <dxg:GridColumn.EditSettings>
                                                                                 <dxe:TextEditSettings Name="colCommodityCumulativeActualText" MaskType="Numeric"
@@ -620,7 +620,7 @@
                                                                             </dxg:GridColumn.EditSettings>
                                                                         </dxg:GridColumn>
                                                                         <dxg:GridColumn x:Name="colCommodityPeriodActual" Header="Actual Units"
-                                                    FieldName="Stats.Actual.CurrentPeriodDataPoint.Units" ReadOnly="True"
+                                                    FieldName="Stats.Actual.CurrentPeriodDataPoint.Units" ReadOnly="True" Visible="False"
                                                     AllowEditing="False" VisibleIndex="170">
                                                                             <dxg:GridColumn.EditSettings>
                                                                                 <dxe:TextEditSettings Name="colCommodityPeriodActualText" MaskType="Numeric"
@@ -710,7 +710,7 @@
                                                      ShowInColumn="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
                                                      FieldName="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryCumulativeActual"
+                                <dxg:GridSummaryItem x:Name="groupSummaryCumulativeActual" Visible="False"
                                                      ShowInColumn="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
@@ -726,7 +726,7 @@
                                                      ShowInColumn="Stats.Burned.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Burned.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryPeriodActual"
+                                <dxg:GridSummaryItem x:Name="groupSummaryPeriodActual" Visible="False"
                                                      ShowInColumn="Stats.Actual.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Actual.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
@@ -761,7 +761,7 @@
                                                      ShowInColumn="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
                                                      FieldName="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryCumulativeActual"
+                                <dxg:GridSummaryItem x:Name="totalSummaryCumulativeActual" Visible="False"
                                                      ShowInColumn="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
@@ -777,7 +777,7 @@
                                                      ShowInColumn="Stats.Burned.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Burned.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryPeriodActual"
+                                <dxg:GridSummaryItem x:Name="totalSummaryPeriodActual" Visible="False"
                                                      ShowInColumn="Stats.Actual.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Actual.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
@@ -901,7 +901,7 @@
                                                                    Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
                                                                    Brush="Red"
                                                                    DataSource="{Binding SummaryEntity.Stats.Burned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
-                                        <dxc:BarSideBySideSeries2D Name="barSeriesActual" DisplayName="Actual Units"
+                                        <dxc:BarSideBySideSeries2D Name="barSeriesActual" DisplayName="Actual Units" Visible="False"
                                                                    Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
                                                                    Brush="#FFFFA200"
                                                                    DataSource="{Binding SummaryEntity.Stats.Actual.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />

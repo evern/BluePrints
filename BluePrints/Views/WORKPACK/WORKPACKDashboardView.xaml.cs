@@ -23,6 +23,16 @@ namespace BluePrints.Views
 
             if (DashboardViewType == DashboardViewType.Costs)
             {
+                colCumulativeActual.Visible = true;
+                colPeriodActual.Visible = true;
+                totalSummaryPeriodActual.Visible = true;
+                totalSummaryCumulativeActual.Visible = true;
+                groupSummaryPeriodActual.Visible = true;
+                groupSummaryCumulativeActual.Visible = true;
+                barSeriesActual.Visible = true;
+                lineSeriesActual.Visible = true;
+
+
                 headerTextVar = "$";
                 maskVar = "c";
                 fieldNameReplaceFrom = "Units";
@@ -31,6 +41,15 @@ namespace BluePrints.Views
             }
             else
             {
+                colCumulativeActual.Visible = false;
+                colPeriodActual.Visible = false;
+                totalSummaryPeriodActual.Visible = false;
+                totalSummaryCumulativeActual.Visible = false;
+                groupSummaryPeriodActual.Visible = false;
+                groupSummaryCumulativeActual.Visible = false;
+                barSeriesActual.Visible = false;
+                lineSeriesActual.Visible = false;
+
                 headerTextVar = "Units";
                 maskVar = "n";
                 fieldNameReplaceFrom = "Costs";
@@ -76,58 +95,38 @@ namespace BluePrints.Views
             colPeriodActual.Header = "Actual " + headerTextVar;
             colPeriodActual.FieldName = colPeriodActual.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             colPeriodActualText.Mask = maskVar;
-
-            colCumulativeBudget.Header = "Budgeted " + headerTextVar;
-            colCumulativeBudget.FieldName = colCumulativeBudget.FieldName.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            colCumulativeBudgetText.Mask = maskVar;
-            colCumulativeEarnedPercentage.FieldName =
-                colCumulativeEarnedPercentage.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-
-            lineSeriesOriginal.DisplayName = lineSeriesPlanned.DisplayName.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            lineSeriesPlanned.DisplayName = lineSeriesPlanned.DisplayName.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
+            
+            lineSeriesOriginal.DisplayName = lineSeriesPlanned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            lineSeriesPlanned.DisplayName = lineSeriesPlanned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             lineSeriesEarned.DisplayName = lineSeriesEarned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             lineSeriesBurned.DisplayName = lineSeriesBurned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             lineSeriesActual.DisplayName = lineSeriesActual.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             lineSeriesRemainingPlanned.DisplayName = lineSeriesRemainingPlanned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            lineSeriesOriginal.ValueDataMember = lineSeriesOriginal.ValueDataMember.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            lineSeriesPlanned.ValueDataMember = lineSeriesPlanned.ValueDataMember.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            lineSeriesEarned.ValueDataMember = lineSeriesEarned.ValueDataMember.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            lineSeriesBurned.ValueDataMember = lineSeriesBurned.ValueDataMember.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            lineSeriesActual.ValueDataMember = lineSeriesActual.ValueDataMember.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
+            lineSeriesOriginal.ValueDataMember = lineSeriesOriginal.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            lineSeriesPlanned.ValueDataMember = lineSeriesPlanned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            lineSeriesEarned.ValueDataMember = lineSeriesEarned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            lineSeriesBurned.ValueDataMember = lineSeriesBurned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            lineSeriesActual.ValueDataMember = lineSeriesActual.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             lineSeriesRemainingPlanned.ValueDataMember = lineSeriesRemainingPlanned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            barSeriesOriginal.DisplayName = barSeriesOriginal.DisplayName.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
+            barSeriesOriginal.DisplayName = barSeriesOriginal.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             barSeriesPlanned.DisplayName = barSeriesPlanned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             barSeriesEarned.DisplayName = barSeriesEarned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             barSeriesBurned.DisplayName = barSeriesBurned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             barSeriesActual.DisplayName = barSeriesActual.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            barSeriesOriginal.ValueDataMember = barSeriesOriginal.ValueDataMember.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            barSeriesPlanned.ValueDataMember = barSeriesPlanned.ValueDataMember.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            barSeriesEarned.ValueDataMember = barSeriesEarned.ValueDataMember.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            barSeriesBurned.ValueDataMember = barSeriesBurned.ValueDataMember.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            barSeriesActual.ValueDataMember = barSeriesActual.ValueDataMember.Replace(fieldNameReplaceFrom,
-                fieldNameReplaceTo);
-            secondaryAxisY.Title.Content = secondaryAxisY.Title.Content.ToString()
-                .Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            primaryAxisY.Title.Content = primaryAxisY.Title.Content.ToString()
-                .Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            barSeriesRemainingPlanned.DisplayName = barSeriesRemainingPlanned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            barSeriesOriginal.ValueDataMember = barSeriesOriginal.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            barSeriesPlanned.ValueDataMember = barSeriesPlanned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            barSeriesEarned.ValueDataMember = barSeriesEarned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            barSeriesBurned.ValueDataMember = barSeriesBurned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            barSeriesActual.ValueDataMember = barSeriesActual.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            barSeriesRemainingPlanned.ValueDataMember = barSeriesRemainingPlanned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            secondaryAxisY.Title.Content = secondaryAxisY.Title.Content.ToString().Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            primaryAxisY.Title.Content = primaryAxisY.Title.Content.ToString().Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
 
             //totalSummaryCumulativeEarnedPercentage.FieldName =
             //    totalSummaryCumulativeEarnedPercentage.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryCumulativePlanned.FieldName =
-                totalSummaryCumulativePlanned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            //totalSummaryCumulativePlanned.FieldName =
+            //    totalSummaryCumulativePlanned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryCumulativeEarned.FieldName = totalSummaryCumulativeEarned.FieldName.Replace(
                 fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryCumulativeBurned.FieldName = totalSummaryCumulativeBurned.FieldName.Replace(
@@ -145,12 +144,12 @@ namespace BluePrints.Views
             totalSummaryPeriodActual.FieldName = totalSummaryPeriodActual.FieldName.Replace(fieldNameReplaceFrom,
                 fieldNameReplaceTo);
 
-            //groupSummaryBudgeted.FieldName = groupSummaryBudgeted.FieldName.Replace(fieldNameReplaceFrom,
-            //    fieldNameReplaceTo);
+            groupSummaryBudgeted.FieldName = groupSummaryBudgeted.FieldName.Replace(fieldNameReplaceFrom,
+                fieldNameReplaceTo);
             //groupSummaryCumulativeEarnedPercentage.FieldName =
             //    groupSummaryCumulativeEarnedPercentage.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            groupSummaryCumulativePlanned.FieldName =
-                groupSummaryCumulativePlanned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            //groupSummaryCumulativePlanned.FieldName =
+            //    groupSummaryCumulativePlanned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             groupSummaryCumulativeEarned.FieldName = groupSummaryCumulativeEarned.FieldName.Replace(
                 fieldNameReplaceFrom, fieldNameReplaceTo);
             groupSummaryCumulativeBurned.FieldName = groupSummaryCumulativeBurned.FieldName.Replace(
@@ -168,12 +167,12 @@ namespace BluePrints.Views
             groupSummaryPeriodActual.FieldName = groupSummaryPeriodActual.FieldName.Replace(fieldNameReplaceFrom,
                 fieldNameReplaceTo);
 
-            //totalSummaryBudgeted.ShowInColumn = totalSummaryBudgeted.ShowInColumn.Replace(fieldNameReplaceFrom,
-            //    fieldNameReplaceTo);
+            totalSummaryBudgeted.ShowInColumn = totalSummaryBudgeted.ShowInColumn.Replace(fieldNameReplaceFrom,
+                fieldNameReplaceTo);
             //totalSummaryCumulativeEarnedPercentage.ShowInColumn =
             //    totalSummaryCumulativeEarnedPercentage.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryCumulativePlanned.ShowInColumn =
-                totalSummaryCumulativePlanned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            //totalSummaryCumulativePlanned.ShowInColumn =
+            //    totalSummaryCumulativePlanned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryCumulativeEarned.ShowInColumn =
                 totalSummaryCumulativeEarned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryCumulativeBurned.ShowInColumn =
@@ -191,12 +190,12 @@ namespace BluePrints.Views
             totalSummaryPeriodActual.ShowInColumn = totalSummaryPeriodActual.ShowInColumn.Replace(fieldNameReplaceFrom,
                 fieldNameReplaceTo);
 
-            //groupSummaryBudgeted.ShowInColumn = groupSummaryBudgeted.ShowInColumn.Replace(fieldNameReplaceFrom,
-            //    fieldNameReplaceTo);
+            groupSummaryBudgeted.ShowInColumn = groupSummaryBudgeted.ShowInColumn.Replace(fieldNameReplaceFrom,
+                fieldNameReplaceTo);
             //groupSummaryCumulativeEarnedPercentage.ShowInColumn =
             //    groupSummaryCumulativeEarnedPercentage.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            groupSummaryCumulativePlanned.ShowInColumn =
-                groupSummaryCumulativePlanned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            //groupSummaryCumulativePlanned.ShowInColumn =
+            //    groupSummaryCumulativePlanned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             groupSummaryCumulativeEarned.ShowInColumn =
                 groupSummaryCumulativeEarned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             groupSummaryCumulativeBurned.ShowInColumn =
@@ -214,8 +213,8 @@ namespace BluePrints.Views
             groupSummaryPeriodActual.ShowInColumn = groupSummaryPeriodActual.ShowInColumn.Replace(fieldNameReplaceFrom,
                 fieldNameReplaceTo);
 
-            //totalSummaryBudgeted.DisplayFormat = displayFormatVar;
-            totalSummaryCumulativePlanned.DisplayFormat = displayFormatVar;
+            totalSummaryBudgeted.DisplayFormat = displayFormatVar;
+            //totalSummaryCumulativePlanned.DisplayFormat = displayFormatVar;
             totalSummaryCumulativeEarned.DisplayFormat = displayFormatVar;
             totalSummaryCumulativeBurned.DisplayFormat = displayFormatVar;
             totalSummaryCumulativeActual.DisplayFormat = displayFormatVar;
@@ -224,8 +223,8 @@ namespace BluePrints.Views
             totalSummaryPeriodBurned.DisplayFormat = displayFormatVar;
             totalSummaryPeriodActual.DisplayFormat = displayFormatVar;
 
-            //groupSummaryBudgeted.DisplayFormat = displayFormatVar;
-            groupSummaryCumulativePlanned.DisplayFormat = displayFormatVar;
+            groupSummaryBudgeted.DisplayFormat = displayFormatVar;
+            //groupSummaryCumulativePlanned.DisplayFormat = displayFormatVar;
             groupSummaryCumulativeEarned.DisplayFormat = displayFormatVar;
             groupSummaryCumulativeBurned.DisplayFormat = displayFormatVar;
             groupSummaryCumulativeActual.DisplayFormat = displayFormatVar;
@@ -243,12 +242,12 @@ namespace BluePrints.Views
                         fieldNameReplaceTo);
                 }
 
-            //groupSummaryBudgeted.FieldName = groupSummaryBudgeted.FieldName.Replace(fieldNameReplaceFrom,
-            //    fieldNameReplaceTo);
-            //groupSummaryBudgeted.DisplayFormat = displayFormatVar;
-            //totalSummaryBudgeted.FieldName = totalSummaryBudgeted.FieldName.Replace(fieldNameReplaceFrom,
-            //    fieldNameReplaceTo);
-            //totalSummaryBudgeted.DisplayFormat = displayFormatVar;
+            groupSummaryBudgeted.FieldName = groupSummaryBudgeted.FieldName.Replace(fieldNameReplaceFrom,
+                fieldNameReplaceTo);
+            groupSummaryBudgeted.DisplayFormat = displayFormatVar;
+            totalSummaryBudgeted.FieldName = totalSummaryBudgeted.FieldName.Replace(fieldNameReplaceFrom,
+                fieldNameReplaceTo);
+            totalSummaryBudgeted.DisplayFormat = displayFormatVar;
         }
     }
 }

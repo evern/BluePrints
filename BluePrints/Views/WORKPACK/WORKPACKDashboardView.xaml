@@ -180,7 +180,7 @@
                                                                   Mask="n" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colCumulativeActual" Header="Actual Units"
+                                    <dxg:GridColumn x:Name="colCumulativeActual" Header="Actual Units" Visible="False" 
                                                     FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="120">
                                         <dxg:GridColumn.EditSettings>
@@ -222,7 +222,7 @@
                                                                   Mask="n" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colPeriodActual" Header="Actual Units"
+                                    <dxg:GridColumn x:Name="colPeriodActual" Header="Actual Units" Visible="False"
                                                     FieldName="Stats.Actual.CurrentPeriodDataPoint.Units" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="170">
                                         <dxg:GridColumn.EditSettings>
@@ -244,6 +244,7 @@
                                     <dxg:GridColumn x:Name="colInvisibleSummary_CumulativeActualCost"
                                                     Header="Actual Cost" FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Costs"
                                                     Visible="False" />
+
                                     <dxg:GridColumn x:Name="colGrossProfit" Header="Gross Profit"
                                                     FieldName="Stats.GrossProfit" ReadOnly="True" AllowEditing="False"
                                                     VisibleIndex="15">
@@ -271,6 +272,10 @@
                                 </dxg:GridControlBand>
                             </dxg:GridControl.Bands>
                             <dxg:GridControl.GroupSummary>
+                                <dxg:GridSummaryItem x:Name="groupSummaryBudgeted"
+                                                     ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
+                                                     FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum"
+                                                     DisplayFormat="{}{0:n}" />
                                 <!--<dxg:GridSummaryItem x:Name="groupSummaryCumulativeEarnedPercentage"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
                                                      FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
@@ -289,10 +294,6 @@
                                 <dxg:GridSummaryItem x:Name="groupSummaryProgressRatio"
                                                      FieldName="ProjectDashboard_ProgressRatio" SummaryType="Custom"
                                                      DisplayFormat="{}{0:p}" />-->
-                                <dxg:GridSummaryItem x:Name="groupSummaryCumulativePlanned"
-                                                     ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
-                                                     FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="groupSummaryCumulativeEarned"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
@@ -301,7 +302,7 @@
                                                      ShowInColumn="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
                                                      FieldName="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryCumulativeActual"
+                                <dxg:GridSummaryItem x:Name="groupSummaryCumulativeActual" Visible="False"
                                                      ShowInColumn="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
@@ -317,17 +318,21 @@
                                                      ShowInColumn="Stats.Burned.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Burned.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryPeriodActual"
+                                <dxg:GridSummaryItem x:Name="groupSummaryPeriodActual" Visible="False"
                                                      ShowInColumn="Stats.Actual.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Actual.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.TotalSummary>
+                                <dxg:GridSummaryItem x:Name="totalSummaryBudgeted"
+                                                     ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
+                                                     FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum"
+                                                     DisplayFormat="{}{0:n}" />
                                 <!--<dxg:GridSummaryItem x:Name="totalSummaryCumulativeEarnedPercentage"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
                                                      FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
-                                                     SummaryType="Custom" DisplayFormat="{}{0:p}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryPeriodEarnedPercentage"
+                                                     SummaryType="Custom" DisplayFormat="{}{0:p}" />-->
+                                <!--<dxg:GridSummaryItem x:Name="totalSummaryPeriodEarnedPercentage"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage"
                                                      FieldName="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage"
                                                      SummaryType="Custom" DisplayFormat="{}{0:p}" />-->
@@ -340,10 +345,6 @@
                                 <dxg:GridSummaryItem x:Name="totalSummaryProgressRatio"
                                                      FieldName="ProjectDashboard_ProgressRatio" SummaryType="Custom"
                                                      DisplayFormat="{}{0:p}" />-->
-                                <dxg:GridSummaryItem x:Name="totalSummaryCumulativePlanned"
-                                                     ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
-                                                     FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem x:Name="totalSummaryCumulativeEarned"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
@@ -352,11 +353,10 @@
                                                      ShowInColumn="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
                                                      FieldName="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryCumulativeActual"
+                                <dxg:GridSummaryItem x:Name="totalSummaryCumulativeActual" Visible="False"
                                                      ShowInColumn="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-
                                 <dxg:GridSummaryItem x:Name="totalSummaryPeriodPlanned"
                                                      ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units"
@@ -369,7 +369,7 @@
                                                      ShowInColumn="Stats.Burned.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Burned.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryPeriodActual"
+                                <dxg:GridSummaryItem x:Name="totalSummaryPeriodActual" Visible="False"
                                                      ShowInColumn="Stats.Actual.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Actual.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
@@ -446,7 +446,7 @@
                                                                    Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
                                                                    Brush="Red"
                                                                    DataSource="{Binding SummaryEntity.Stats.Burned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
-                                        <dxc:BarSideBySideSeries2D Name="barSeriesActual" DisplayName="Actual Units"
+                                        <dxc:BarSideBySideSeries2D Name="barSeriesActual" DisplayName="Actual Units" Visible="False"
                                                                    Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
                                                                    Brush="#FFFFA200"
                                                                    DataSource="{Binding SummaryEntity.Stats.Actual.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
