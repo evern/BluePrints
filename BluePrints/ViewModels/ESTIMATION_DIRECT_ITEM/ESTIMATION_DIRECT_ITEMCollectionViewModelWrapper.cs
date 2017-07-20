@@ -207,6 +207,7 @@ namespace BluePrints.ViewModels
             DataUtils.ShallowCopy(newStockCode, fromStockCode);
             newStockCode.GUID = Guid.Empty;
             newStockCode.GUID_PROJECT = loadPROJECT.GUID;
+            newStockCode.GUID_ORIGINAL = fromStockCode.GUID_ORIGINAL;
             STOCK_CODECollectionViewModel.Save(newStockCode);
             return newStockCode.GUID;
         }
