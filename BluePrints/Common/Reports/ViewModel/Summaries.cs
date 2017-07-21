@@ -59,6 +59,9 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         public static SummaryStats Group_Summary_Stats(SummaryStats summary_stats, Func<IReportable, bool> reportable_predicate, Func<ExoDataPoint, bool> predicate)
         {
+            if (summary_stats == null)
+                return null;
+
             //set budgeted, current and earned
             IEnumerable<IReportable> grouped_reportables = summary_stats.Reportables.Where(reportable_predicate);
 

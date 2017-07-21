@@ -192,7 +192,7 @@
                                         </dxg:TreeListView>
                                     </dxg:GridControl.View>
                                     <dxmvvm:Interaction.Behaviors>
-                                        <common:CustomTreeListDragDropManager AllowDrop="True" AllowDrag="False" >
+                                        <common:CustomTreeViewDragDropManager AllowDrop="True" AllowDrag="False" >
                                             <dxmvvm:Interaction.Behaviors>
                                                 <dxmvvm:EventToCommand EventName="Drop" Command="{Binding DataContext.Scheduler_DropCommand, ElementName=userControl}" PassEventArgsToCommand="True"/>
                                                 <dxmvvm:EventToCommand EventName="Dropped" Command="{Binding DataContext.Scheduler_DroppedCommand, ElementName=userControl}" PassEventArgsToCommand="True"/>
@@ -220,7 +220,7 @@
                                                     </Border>
                                                 </DataTemplate>
                                             </dxg:TreeListDragDropManager.DragElementTemplate>
-                                        </common:CustomTreeListDragDropManager>
+                                        </common:CustomTreeViewDragDropManager>
                                     </dxmvvm:Interaction.Behaviors>
                                 </dxg:GridControl>
                             </dxlc:LayoutGroup>

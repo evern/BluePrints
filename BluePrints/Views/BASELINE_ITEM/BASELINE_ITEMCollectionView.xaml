@@ -26,6 +26,7 @@
              DataContext="{dxmvvm:ViewModelSource viewmodel:BASELINE_ITEMCollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
+            <common:RowNameConverter x:Key="RowNameConverter" />
             <converters:IReportableStatsMaximumUnitsConverter x:Key="IReportableStatsMaximumUnitsConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
@@ -341,6 +342,10 @@
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                                                        Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
+                                    <dxb:BarButtonItem Name="contextFindReplace" Content="Find and Replace"
+                                                       Command="{Binding DataContext.FindReplaceCommand, ElementName=userControl}"
+                                                       CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                                                       Glyph="{dx:DXImageOffice2013 Image=Replace_16x16.png}" />
                                     <dxb:BarButtonItem Name="contextMenuFillUp" Content="Fill Up"
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}"
                                                        Command="{Binding View.DataContext.FillUpCommand}"
@@ -422,6 +427,37 @@
                                 </custom:TableViewEx.FormatConditions>
                             </custom:TableViewEx>
                         </dxg:GridControl.View>
+                        <dxmvvm:Interaction.Behaviors>
+                            <common:CustomTableViewDragDropManager AllowDrag="True" AllowDrop="True" AllowScrolling="True" >
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand EventName="Drop" Command="{Binding DataContext.TableView_DropCommand, ElementName=userControl}" PassEventArgsToCommand="True"/>
+                                    <dxmvvm:EventToCommand EventName="Dropped" Command="{Binding DataContext.TableView_DroppedCommand, ElementName=userControl}" PassEventArgsToCommand="True"/>
+                                </dxmvvm:Interaction.Behaviors>
+                                <common:CustomTableViewDragDropManager.DragElementTemplate>
+                                    <DataTemplate>
+                                        <Border Background="White" CornerRadius="5" BorderThickness="2" BorderBrush="LightGray">
+                                            <StackPanel Orientation="Vertical" Background="White" HorizontalAlignment="Left" Margin="5">
+                                                <StackPanel Margin="5" Orientation="Vertical" Background="White">
+                                                    <TextBlock Padding="3" FontWeight="Bold" Text="{Binding Path=DraggingRows.Count, StringFormat='Dragging {0} row(s)'}" />
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Source: " />
+                                                        <TextBlock Padding="0,3,3,3" Text="{Binding Path=DraggingRows, Converter={StaticResource RowNameConverter}}"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                                <Separator />
+                                                <StackPanel Margin="5" Orientation="Horizontal">
+                                                    <!--<StackPanel.Background>
+                                                        <Binding Path="." Converter="{StaticResource RowColorConverter}" UpdateSourceTrigger="PropertyChanged"/>
+                                                    </StackPanel.Background>-->
+                                                    <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Target: " />
+                                                    <TextBlock Padding="0,3,3,0" Text="{Binding Path=DropTargetRow, Converter={StaticResource RowNameConverter}}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </common:CustomTableViewDragDropManager.DragElementTemplate>
+                            </common:CustomTableViewDragDropManager>
+                        </dxmvvm:Interaction.Behaviors>
                     </custom:GridControlEx>
                 </Grid>
             </DockPanel>

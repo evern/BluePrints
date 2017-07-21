@@ -8,7 +8,17 @@ using System.Windows;
 
 namespace BluePrints.Common
 {
-    public class CustomTreeListDragDropManager : TreeListDragDropManager
+    public class CustomTreeViewDragDropManager : TreeListDragDropManager
+    {
+        protected override TableDragIndicatorPosition GetDragIndicatorPositionForRowElement(FrameworkElement rowElement)
+        {
+            if (rowElement == null)
+                return TableDragIndicatorPosition.None;
+            return TableDragIndicatorPosition.InRow;
+        }
+    }
+
+    public class CustomTableViewDragDropManager : GridDragDropManager
     {
         protected override TableDragIndicatorPosition GetDragIndicatorPositionForRowElement(FrameworkElement rowElement)
         {

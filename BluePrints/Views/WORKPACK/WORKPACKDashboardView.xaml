@@ -473,7 +473,7 @@
                                                           Style="{StaticResource DefaultLineSeries2DTemplate}"
                                                           Brush="Red"
                                                           DataSource="{Binding SummaryEntity.Stats.Burned.CumulativeDataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
-                                        <dxc:LineSeries2D Name="lineSeriesActual" DisplayName="Actual Units %"
+                                        <dxc:LineSeries2D Name="lineSeriesActual" DisplayName="Actual Units %" Visible="False"
                                                           Style="{StaticResource DefaultLineSeries2DTemplate}"
                                                           Brush="Red"
                                                           DataSource="{Binding SummaryEntity.Stats.Actual.CumulativeDataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />

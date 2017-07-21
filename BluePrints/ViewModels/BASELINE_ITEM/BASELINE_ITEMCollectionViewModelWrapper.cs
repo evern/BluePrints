@@ -3,6 +3,7 @@ using BaseModel.DataModel;
 using BaseModel.Helpers;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
@@ -18,6 +19,7 @@ using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Bars;
 using DevExpress.Xpf.Grid;
+using DevExpress.Xpf.Grid.DragDrop;
 using DevExpress.Xpf.Printing;
 using System;
 using System.Collections.Generic;
@@ -862,6 +864,136 @@ namespace BluePrints.ViewModels
                 currentItemDOCTYPE, projectionEntity.EntityKey);
 
             return internalNum;
+        }
+        #endregion
+
+        #region Find and Replace
+        private DevExpress.Mvvm.IDialogService BulkColumnEditDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BulkColumnEditService"); }
+        }
+
+        public bool CanFindReplace(object button)
+        {
+            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
+            if (info == null)
+                return false;
+
+            if (info.Column == null)
+                return false;
+
+            if (info.Column.ReadOnly)
+                return false;
+
+            if (DisplaySelectedEntity == null || DisplaySelectedEntities.Count < 2)
+                return false;
+
+
+            var columnPropertyInfo = DataUtils.GetNestedPropertyInfo(info.Column.FieldName, DisplaySelectedEntity);
+            if (columnPropertyInfo.PropertyType == typeof(string))
+            {
+                var constraintString = DataUtils.GetConstraintPropertyStrings(DisplaySelectedEntity.GetType());
+                if (constraintString == null)
+                    constraintString = DataUtils.GetConstraintPropertyStrings(DisplaySelectedEntity.GetType().BaseType);
+
+                var bulkEditDisabledString =
+                    DataUtils.GetBulkEditDisabledPropertyStrings(DisplaySelectedEntity.GetType());
+                if (bulkEditDisabledString == null)
+                    bulkEditDisabledString =
+                        DataUtils.GetBulkEditDisabledPropertyStrings(DisplaySelectedEntity.GetType().BaseType);
+
+                if (constraintString != null && constraintString.Any(x => x == columnPropertyInfo.Name) ||
+                    bulkEditDisabledString != null && bulkEditDisabledString.Any(x => x == columnPropertyInfo.Name))
+                    return false;
+                else
+                    return true;
+            }
+
+            return false;
+        }
+
+        public void FindReplace(object button)
+        {
+            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
+            BASELINE_ITEMProgress first_selected_entity = DisplaySelectedEntities.First();
+            object find_nested_value = DataUtils.GetNestedValue(info.Column.FieldName, first_selected_entity);
+
+            string find_value;
+            if (find_nested_value == null)
+                find_value = string.Empty;
+            else
+                find_value = find_nested_value.ToString();
+
+            if (find_value == string.Empty)
+            {
+                MessageBoxService.ShowMessage("Cannot find anything to replace");
+                return;
+            }
+
+            var bulkFindAndReplaceViewModel = BulkFindAndReplaceViewModel.Create(find_value);
+
+            List<BASELINE_ITEMProgress> save_entities = new List<BASELINE_ITEMProgress>();
+            if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Type in text for replace", "BulkFindAndReplace", bulkFindAndReplaceViewModel) == MessageResult.OK)
+            {
+                MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                string new_find_value = bulkFindAndReplaceViewModel.FindValue;
+                string replace_value = bulkFindAndReplaceViewModel.ReplaceValue;
+                foreach(BASELINE_ITEMProgress display_selected_entity in DisplaySelectedEntities)
+                {
+                    object nested_value = DataUtils.GetNestedValue(info.Column.FieldName, display_selected_entity);
+                    string old_column_value;
+                    if (nested_value == null)
+                        old_column_value = string.Empty;
+                    else
+                        old_column_value = nested_value.ToString();
+
+                    string new_column_value = old_column_value.Replace(new_find_value, replace_value);
+
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(display_selected_entity, info.Column.FieldName, old_column_value, new_column_value, EntityMessageType.Changed);
+                    DataUtils.SetNestedValue(info.Column.FieldName, display_selected_entity, new_column_value);
+
+                    save_entities.Add(display_selected_entity);
+                }
+
+                MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+                MainViewModel.BulkSave(save_entities);
+            }
+        }
+        #endregion
+
+        #region DragDrop
+        public void TableView_Drop(GridDropEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        public void TableView_Dropped(GridDroppedEventArgs e)
+        {
+            IEnumerable<BASELINE_ITEMProgress> dropped_deliverables = ((IEnumerable<object>)e.DraggedRows).Select(x => (BASELINE_ITEMProgress)x).AsEnumerable();
+            BASELINE_ITEMProgress target_deliverable = (BASELINE_ITEMProgress)e.TargetRow;
+
+            if(dropped_deliverables.Count() > 0 && target_deliverable != null)
+            {
+                BASELINE_ITEMProgress first_dropped_deliverable = dropped_deliverables.First();
+                string old_value = first_dropped_deliverable.Entity.Entity.INTERNAL_NUM;
+                string new_value = target_deliverable.Deliverable_Name;
+                string internal_number_fieldname = BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                                                   BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
+                                                   BindableBase.GetPropertyName(() => new BASELINE_ITEM().INTERNAL_NUM);
+
+                MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                first_dropped_deliverable.Entity.Entity.INTERNAL_NUM = new_value;
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(first_dropped_deliverable, internal_number_fieldname, old_value, new_value, EntityMessageType.Changed);
+
+                target_deliverable.Entity.Entity.INTERNAL_NUM = old_value;
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(target_deliverable, internal_number_fieldname, new_value, old_value, EntityMessageType.Changed);
+
+                MainViewModel.Save(first_dropped_deliverable);
+                MainViewModel.Save(target_deliverable);
+
+                MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+            }
+
         }
         #endregion
 

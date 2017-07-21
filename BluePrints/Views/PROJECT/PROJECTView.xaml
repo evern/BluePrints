@@ -846,7 +846,7 @@
                                         </dxg:DataBarFormatCondition>
                                         <dxg:DataBarFormatCondition FieldName="ProjectDashboard_GrossProfit"
                                                                     MaxValue="1" MinValue="-1">
-                                            <dx:DataBarFormat FillNegative="#FFFF9B98" Fill="#FF9ACCFF" />
+                                            <dx:DataBarFrangeormat FillNegative="#FFFF9B98" Fill="#FF9ACCFF" />
                                         </dxg:DataBarFormatCondition>
                                     </custom:TableViewEx.FormatConditions>-->
                                             </custom:TableViewEx>
@@ -856,13 +856,13 @@
                                 <dxlc:LayoutGroup Name="LayoutGroupChart"  dxlc:LayoutControl.AllowVerticalSizing="True" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" View="Group" Orientation="Vertical">
                                     <dxc:ChartControl Name="chartSCurve" Padding="0" Margin="0" dx:DXSerializer.Enabled="False">
                                         <dxc:ChartControl.Diagram>
-                                            <dxc:XYDiagram2D>
+                                            <dxc:XYDiagram2D Name="diagram">
                                                 <dxc:XYDiagram2D.AxisX>
                                                     <dxc:AxisX2D>
                                                         <dxc:AxisX2D.Label>
                                                             <dxc:AxisLabel>
                                                                 <dxc:Axis2D.ResolveOverlappingOptions>
-                                                                    <dxc:AxisLabelResolveOverlappingOptions />
+                                                                    <dxc:AxisLabelResolveOverlappingOptions AllowRotate="True" AllowStagger="True" />
                                                                 </dxc:Axis2D.ResolveOverlappingOptions>
                                                             </dxc:AxisLabel>
                                                         </dxc:AxisX2D.Label>
@@ -886,7 +886,7 @@
                                                     </dxc:SecondaryAxisY2D>
                                                 </dxc:XYDiagram2D.SecondaryAxesY>
                                                 <dxc:XYDiagram2D.Series>
-                                                    <dxc:BarSideBySideSeries2D Name="barSeriesOriginal"
+                                                    <dxc:BarSideBySideSeries2D Name="barSeriesOriginal" 
                                                                    DisplayName="Baseline Planned Units"
                                                                    Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
                                                                    Brush="Brown"
@@ -936,7 +936,7 @@
                                                           Style="{StaticResource DefaultLineSeries2DTemplate}"
                                                           Brush="Red"
                                                           DataSource="{Binding SummaryEntity.Stats.Burned.CumulativeDataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
-                                                    <dxc:LineSeries2D Name="lineSeriesActual" DisplayName="Actual Units %"
+                                                    <dxc:LineSeries2D Name="lineSeriesActual" DisplayName="Actual Units %" Visible="False"
                                                           Style="{StaticResource DefaultLineSeries2DTemplate}"
                                                           Brush="Red"
                                                           DataSource="{Binding SummaryEntity.Stats.Actual.CumulativeDataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />

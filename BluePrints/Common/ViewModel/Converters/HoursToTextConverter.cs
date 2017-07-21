@@ -12,9 +12,7 @@ namespace BluePrints.Common.ViewModel.Converters
                 return "0 min";
 
             decimal hours = (decimal)value;
-            if (hours > 24)
-                return (hours / 24).ToString("#") + " day(s)";
-            else if (hours > 1)
+            if (hours > 1)
                 return hours.ToString("#") + " hour(s)";
             else if (hours > 0)
                 return (hours * 60).ToString("#") + " min(s)";

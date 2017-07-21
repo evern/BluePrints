@@ -32,6 +32,12 @@ namespace BluePrints.Common
                 return p6Activity.Description;
             }
 
+            if (value is IReportable)
+            {
+                var reportable = value as IReportable;
+                return reportable.Deliverable_Name;
+            }
+
             var listTreeListNodes = new List<Object>((IEnumerable<object>)value);
             if (listTreeListNodes.Count == 1)
             {

@@ -14,6 +14,7 @@ using System.ComponentModel;
 using BaseModel.ViewModel.Base;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Common.Resources;
+using DevExpress.Mvvm;
 
 namespace BluePrints.ViewModels
 {
@@ -177,6 +178,9 @@ namespace BluePrints.ViewModels
                 return (CollectionViewModel<STOCK_CODE, STOCK_CODE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<STOCK_CODE>();
             }
         }
+
+        protected override string expand_key_field_name => BindableBase.GetPropertyName(() => new AREAMasterDetailProjection().Entity) + "." +
+                                                           BindableBase.GetPropertyName(() => new AREA().GUID);
         #endregion
 
         #region View Behavior

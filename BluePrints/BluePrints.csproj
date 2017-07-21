@@ -27,7 +27,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>351</ApplicationRevision>
+    <ApplicationRevision>352</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -355,7 +355,7 @@
     <Compile Include="Common\Base\BluePrintsEntitiesTreeCollectionWrapper.cs" />
     <Compile Include="Common\Base\DashboardCollectionViewModelWrapper.cs" />
     <Compile Include="Common\DragDrop\CustomChildSelector.cs" />
-    <Compile Include="Common\DragDrop\CustomTreeListDragDropManager.cs" />
+    <Compile Include="Common\DragDrop\CustomDragDropManagers.cs" />
     <Compile Include="Common\DragDrop\RowColorConverter.cs" />
     <Compile Include="Common\DragDrop\RowNameConverter.cs" />
     <Compile Include="Common\Misc\ActiveDirectory.cs" />
@@ -431,6 +431,9 @@
     <Compile Include="Common\ViewModel\Misc\XMLSettings.cs" />
     <Compile Include="Common\View\BasicMessageBox.xaml.cs">
       <DependentUpon>BasicMessageBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\View\BulkFindAndReplace.xaml.cs">
+      <DependentUpon>BulkFindAndReplace.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\View\DXSplashScreen\LoadingScreen.cs" />
     <Compile Include="Common\View\DXSplashScreen\LoadingScreen.xaml.cs">
@@ -1244,6 +1247,10 @@
     <Page Include="Common\View\BasicMessageBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\View\BulkFindAndReplace.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Common\View\DXSplashScreen\LoadingScreen.xaml">
       <SubType>Designer</SubType>

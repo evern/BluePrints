@@ -223,7 +223,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 if (WorkpackName == string.Empty)
                     return string.Empty;
-
+                else if (WorkpackName.Length < 15)
+                    return string.Empty;
+                
                 return WorkpackName.Substring(13, 2);
             }
         }
@@ -233,6 +235,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             get
             {
                 if (CostGroup == null || CostGroup == string.Empty || CostGroup.Length < 3)
+                    return string.Empty;
+                else if (CostGroup.Length < 3)
                     return string.Empty;
 
                 return CostGroup.Substring(0, 3);
@@ -245,6 +249,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 if (WorkpackName == string.Empty)
                     return string.Empty;
+                else if (WorkpackName.Length < 9)
+                    return string.Empty;
 
                 return WorkpackName.Substring(6, 3);
             }
@@ -256,6 +262,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 if (WorkpackName == string.Empty)
                     return string.Empty;
+                else if (WorkpackName.Length < 12)
+                    return string.Empty;
 
                 return WorkpackName.Substring(10, 2);
             }
@@ -266,6 +274,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             get
             {
                 if (CostType == null || CostType == string.Empty || CostType.Length < 3)
+                    return string.Empty;
+                else if (CostType.Length < 3)
                     return string.Empty;
 
                 return CostType.Substring(0, 3);
