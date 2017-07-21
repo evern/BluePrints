@@ -20,6 +20,35 @@
              DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTDashboardViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
+            <Style x:Key="BackgroundStyle" TargetType="{x:Type dxg:RowControl}">
+                <Setter Property="Background">
+                    <Setter.Value>
+                        <Binding Path="Row.WBSLevel" >
+                            <Binding.Converter>
+                                <dxmvvm:ObjectToObjectConverter>
+                                    <dxmvvm:MapItem Source="1" Target="PowderBlue"/>
+                                    <dxmvvm:MapItem Source="2" Target="PaleGreen"/>
+                                    <dxmvvm:MapItem Source="3" Target="MistyRose"/>
+                                    <dxmvvm:MapItem Source="4" Target="PaleTurquoise"/>
+                                    <dxmvvm:MapItem Source="5" Target="Tomato"/>
+                                    <dxmvvm:MapItem Source="6" Target="Plum"/>
+                                    <dxmvvm:MapItem Source="7" Target="PeachPuff"/>
+                                </dxmvvm:ObjectToObjectConverter>
+                            </Binding.Converter>
+                        </Binding>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Path=IsSelected}" Value="True">
+                        <Setter Property="Background" Value="Gray" />
+                        <Setter Property="Foreground" Value="White" />
+                    </DataTrigger>
+                    <Trigger Property="dxg:GridViewBase.IsFocusedRow" Value="True">
+                        <Setter Property="Background" Value="Salmon" />
+                        <Setter Property="Foreground" Value="White" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
             <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
@@ -71,8 +100,7 @@
                 </dxr:RibbonControl>
                 <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
                     <dxr:RibbonStatusBarControl.LeftItems>
-                        <dxb:BarStaticItem
-                            Content="{Binding DataContext.DisplayEntities.Count, ElementName=userControl, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                        <dxb:BarStaticItem Content="{Binding DataContext.DisplayEntities.Count, ElementName=userControl, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <dxlc:LayoutControl Orientation="Vertical">
@@ -94,7 +122,7 @@
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.Bands>
                                 <dxg:GridControlBand Name="bandGeneral" Header="General">
-                                    <dxg:GridColumn Header="Number" FieldName="Entity.NUMBER" VisibleIndex="0" />
+                                    <dxg:GridColumn Header="Number" FieldName="Entity.NUMBER" VisibleIndex="0" Width="160" />
                                     <dxg:GridColumn Header="Name" FieldName="Entity.NAME" VisibleIndex="10" />
                                     <dxg:GridColumn Header="Client" FieldName="Entity.CLIENT" VisibleIndex="20" />
                                     <dxg:GridColumn Header="Status" FieldName="Entity.STATUS" VisibleIndex="30">
@@ -266,7 +294,7 @@
                                                      SelectedItems="{Binding DataContext.SelectedPhaseDashboards, Mode=TwoWay, ElementName=userControl}">
                                         <dxg:GridControl.Bands>
                                             <dxg:GridControlBand Header="General">
-                                                <dxg:GridColumn Header="Phase Code" FieldName="Code" />
+                                                <dxg:GridColumn Header="Phase Code" FieldName="Code" Width="143" />
                                                 <dxg:GridColumn Header="Budgeted Units" FieldName="Stats.BudgetedUnits" />
                                             </dxg:GridControlBand>
                                             <dxg:GridControlBand Header="Cumulative">
@@ -393,7 +421,7 @@
                                             </dxg:GridControlBand>
                                         </dxg:GridControl.Bands>
                                         <dxg:GridControl.View>
-                                            <dxg:TableView x:Name="detailPhaseDashboardTableView" AllowEditing="False" ShowGroupPanel="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHaveDiscipline_Dashboards}" />
+                                            <dxg:TableView x:Name="detailPhaseDashboardTableView" RowStyle="{StaticResource BackgroundStyle}" AllowEditing="False" ShowGroupPanel="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHaveDiscipline_Dashboards}" />
                                         </dxg:GridControl.View>
                                         <dxg:GridControl.DetailDescriptor>
                                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Discipline_Dashboards}">
@@ -403,7 +431,7 @@
                                                      SelectedItems="{Binding DataContext.SelectedDisciplineDashboards, Mode=TwoWay, ElementName=userControl}">
                                                     <dxg:GridControl.Bands>
                                                         <dxg:GridControlBand Header="General">
-                                                            <dxg:GridColumn Header="Discipline Code" FieldName="Code" />
+                                                            <dxg:GridColumn Header="Discipline Code" FieldName="Code" Width="127" />
                                                             <dxg:GridColumn Header="Budgeted Units" FieldName="Stats.BudgetedUnits" />
                                                         </dxg:GridControlBand>
                                                         <dxg:GridControlBand Header="Cumulative">
@@ -530,7 +558,7 @@
                                                         </dxg:GridControlBand>
                                                     </dxg:GridControl.Bands>
                                                     <dxg:GridControl.View>
-                                                        <dxg:TableView x:Name="detailDisciplineDashboardTableView" ShowGroupPanel="False" AllowEditing="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHaveCommodity_Dashboards}" />
+                                                        <dxg:TableView x:Name="detailDisciplineDashboardTableView" RowStyle="{StaticResource BackgroundStyle}" ShowColumnHeaders="False" ShowBandsPanel="False" ShowGroupPanel="False" AllowEditing="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHaveCommodity_Dashboards}" />
                                                     </dxg:GridControl.View>
                                                     <dxg:GridControl.DetailDescriptor>
                                                         <dxg:DataControlDetailDescriptor
@@ -541,7 +569,7 @@
                                                                  SelectedItems="{Binding DataContext.SelectedCommodityDashboards, Mode=TwoWay, ElementName=userControl}">
                                                                 <dxg:GridControl.Bands>
                                                                     <dxg:GridControlBand Header="General">
-                                                                        <dxg:GridColumn Header="Commodity Code" FieldName="Code" />
+                                                                        <dxg:GridColumn Header="Commodity Code" FieldName="Code" Width="127" />
                                                                         <dxg:GridColumn Header="Budgeted Units" FieldName="Stats.BudgetedUnits" />
                                                                     </dxg:GridControlBand>
                                                                     <dxg:GridControlBand Header="Cumulative">
@@ -668,7 +696,7 @@
                                                                     </dxg:GridControlBand>
                                                                 </dxg:GridControl.Bands>
                                                                 <dxg:GridControl.View>
-                                                                    <dxg:TableView x:Name="detailCommodityDashboardTableView" ShowGroupPanel="False" AllowEditing="False" NewItemRowPosition="None" />
+                                                                    <dxg:TableView x:Name="detailCommodityDashboardTableView" RowStyle="{StaticResource BackgroundStyle}" ShowColumnHeaders="False" ShowBandsPanel="False" ShowGroupPanel="False" AllowEditing="False" NewItemRowPosition="None" />
                                                                 </dxg:GridControl.View>
                                                             </dxg:GridControl>
                                                         </dxg:DataControlDetailDescriptor>
@@ -836,7 +864,7 @@
                                         </dxg:DataBarFormatCondition>
                                         <dxg:DataBarFormatCondition FieldName="ProjectDashboard_GrossProfit"
                                                                     MaxValue="1" MinValue="-1">
-                                            <dx:DataBarFormat FillNegative="#FFFF9B98" Fill="#FF9ACCFF" />
+                                            <dx:DataBarFrangeormat FillNegative="#FFFF9B98" Fill="#FF9ACCFF" />
                                         </dxg:DataBarFormatCondition>
                                     </custom:TableViewEx.FormatConditions>-->
                                 </custom:TableViewEx>

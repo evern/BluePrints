@@ -21,6 +21,30 @@
     DataContext="{dxmvvm:ViewModelSource viewmodel:SiteDirectProgressCollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
+            <Style x:Key="BackgroundStyle" TargetType="{x:Type dxg:RowControl}">
+                <Setter Property="Background">
+                    <Setter.Value>
+                        <Binding Path="Row.ColorIndex" >
+                            <Binding.Converter>
+                                <dxmvvm:ObjectToObjectConverter>
+                                    <dxmvvm:MapItem Source="1" Target="PaleGreen"/>
+                                    <dxmvvm:MapItem Source="2" Target="PowderBlue"/>
+                                </dxmvvm:ObjectToObjectConverter>
+                            </Binding.Converter>
+                        </Binding>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Path=IsSelected}" Value="True">
+                        <Setter Property="Background" Value="Gray" />
+                        <Setter Property="Foreground" Value="White" />
+                    </DataTrigger>
+                    <Trigger Property="dxg:GridViewBase.IsFocusedRow" Value="True">
+                        <Setter Property="Background" Value="Salmon" />
+                        <Setter Property="Foreground" Value="White" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
@@ -219,6 +243,11 @@
                                                 <dxe:TextEditSettings DisplayTextConverter="{StaticResource HoursToTextConverter}" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
+                                        <dxg:GridColumn Binding="{Binding Trackable_Total_Quantity}" Header="TOTAL_TRACK_QUANTITY" ReadOnly="True" IsEnabled="False" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
                                         <dxg:GridColumn Binding="{Binding CurrentPeriodInstalledQuantity}" Header="INSTALLED_QTY" ReadOnly="True" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
@@ -240,15 +269,14 @@
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Binding="{Binding Progress_Type}" Header="PROGRESS_TYPE">
+                                        <!--<dxg:GridColumn Binding="{Binding Progress_Type}" Header="PROGRESS_TYPE">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Estimation_DirectProgressType}}" />
                                             </dxg:GridColumn.EditSettings>
-                                        </dxg:GridColumn>
+                                        </dxg:GridColumn>-->
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView x:Name="tableView1">
-                                        </dxg:TableView>
+                                        <dxg:TableView x:Name="tableView1" RowStyle="{StaticResource BackgroundStyle}" ShowColumnHeaders="False" />
                                     </dxg:GridControl.View>
                                 </dxg:GridControl>
                             </dxg:DataControlDetailDescriptor>

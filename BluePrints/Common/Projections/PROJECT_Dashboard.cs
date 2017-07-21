@@ -15,6 +15,7 @@ namespace BluePrints.Common.Projections
 {
     public class PROJECT_Dashboard : BluePrintsProjectionBase<PROJECT>, IHaveSummary
     {
+        public int WBSLevel => 0;
         public PROJECT_Dashboard()
         {
         }
@@ -68,6 +69,7 @@ namespace BluePrints.Common.Projections
 
     public class Phase_Dashboard : IHaveStats
     {
+        public int WBSLevel => 1;
         public string Code { get; set; }
         public List<Discipline_Dashboard> Discipline_Dashboards { get; set; }
         public bool IHaveDiscipline_Dashboards { get { return Discipline_Dashboards != null && Discipline_Dashboards.Count() > 0; } }
@@ -76,6 +78,7 @@ namespace BluePrints.Common.Projections
 
     public class Discipline_Dashboard : IHaveStats
     {
+        public int WBSLevel => 2;
         public string Code { get; set; }
         public List<Commodity_Dashboard> Commodity_Dashboards { get; set; }
         public bool IHaveCommodity_Dashboards { get { return Commodity_Dashboards != null && Commodity_Dashboards.Count() > 0; } }
@@ -84,6 +87,7 @@ namespace BluePrints.Common.Projections
 
     public class Commodity_Dashboard : IHaveStats
     {
+        public int WBSLevel => 3;
         public string Display_Code { get; set; }
         public string Code { get; set; }
         public ProgressStats Stats { get; set; }

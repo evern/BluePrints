@@ -119,7 +119,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 }
             }
 
-            display_items.AddRange(estimation_direct_item_progresses.Where(x => x.Progress_Type == Estimation_DirectProgressType.Standalone).Select(x => new ReportablesDisplay() { ProgressItem = new DisplayQuantityReportable(x) }));
+            display_items.AddRange(estimation_direct_item_progresses.Where(x => x.Progress_Type == Estimation_DirectProgressType.Standalone).Select(x => new ReportablesDisplay() { ProgressItem = new DisplayQuantityReportable(x, false) }));
 
             return display_items.AsQueryable();
         }

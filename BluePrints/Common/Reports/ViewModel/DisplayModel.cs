@@ -171,9 +171,9 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         public IEnumerable<DisplayQuantityReportable> ChildReportables;
         public DisplayQuantityReportableGroup(IReportable_Quantity_Group reportableGroup)
-            : base(reportableGroup)
+            : base(reportableGroup, false)
         {
-            this.ChildReportables = reportableGroup.Reportables.Select(x => new DisplayQuantityReportable(x));
+            this.ChildReportables = reportableGroup.Reportables.Select(x => new DisplayQuantityReportable(x, true));
         }
 
         public override void Update()
@@ -190,6 +190,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public IReportable_Quantity Reportable { get; }
         private SingleObjectSummarizer statsSummarizer;
         public SingleObjectSummarizer StatSummarizer => statsSummarizer;
+        public int ColorIndex { get; private set; }
 
         //For bindableBase property name usage only
         public DisplayQuantityReportable()
@@ -197,9 +198,16 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         }
 
-        public DisplayQuantityReportable(IReportable_Quantity deliverable)
+        public DisplayQuantityReportable(IReportable_Quantity deliverable, bool is_nested)
         {
             this.Reportable = deliverable;
+            if(is_nested)
+            {
+                if (deliverable.Progress_Type == Estimation_DirectProgressType.Trackable)
+                    ColorIndex = 1;
+                else
+                    ColorIndex = 2;
+            }
         }
 
         public string Deliverable_Name => Reportable.Deliverable_Name;
