@@ -489,6 +489,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public decimal Current_Productivity => SchedulePercentage == 0 ? 0 : Total_Earned_Percentage / SchedulePercentage;
+
         public decimal Variation_Units => Entity.Variation_Units;
 
         public string Discipline_Code => Entity.Discipline_Code;

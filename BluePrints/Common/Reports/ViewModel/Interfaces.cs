@@ -31,6 +31,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     public interface IReportable : IDeliverable_Rates, IHaveStats, IHaveProgresses, ICanSetProgresses, ICanUpdate
     {
         SingleObjectSummarizer StatSummarizer { get; }
+        decimal Current_Productivity { get; }
     }
 
     public interface IDeliverable_Quantity_Group : IDeliverable_Quantity

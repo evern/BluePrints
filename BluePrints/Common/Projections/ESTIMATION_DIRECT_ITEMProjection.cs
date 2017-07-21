@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IDeliverable_Quantity, ICanAssignP6, IHaveStockCode
+    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IDeliverable_Quantity, IHaveStockCode
     {
         public ESTIMATION_DIRECT_ITEMProjection()
             : base()
@@ -144,40 +144,6 @@ namespace BluePrints.Common.Projections
         public decimal Supply_Cost => STOCK_CODE == null ? 0 : STOCK_CODE.RATE_SUPPLY * Estimated_Quantity;
 
         public decimal Install_Cost => Total_Units * ItemRate;
-
-        public ICollection<P6_ASSIGNMENT> ObservableBASELINE_ITEM_ASSIGNMENT { get; set; }
-
-        private List<P6_ASSIGNMENT> p6_assignments;
-        public List<P6_ASSIGNMENT> P6_Assignments
-        {
-            get
-            {
-                if (p6_assignments == null)
-                    p6_assignments = new List<P6_ASSIGNMENT>();
-
-                return p6_assignments;
-            }
-            set
-            {
-                p6_assignments = value;
-            }
-        }
-
-        public decimal Remaining_Percentage
-        {
-            get
-            {
-                return 1 - Assigned_Percentage;
-            }
-        }
-
-        public decimal Assigned_Percentage
-        {
-            get
-            {
-                return P6_Assignments.Sum(x => (x.HIGH_VALUE - (x.LOW_VALUE - 0.01m)));
-            }
-        }
 
         public string Discipline_Code => Entity.Discipline_Code;
 

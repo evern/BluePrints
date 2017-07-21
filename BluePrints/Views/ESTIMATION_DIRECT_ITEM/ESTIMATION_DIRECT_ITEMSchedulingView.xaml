@@ -488,7 +488,7 @@
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="ASSIGNED %" FieldName="Entity.Assigned_Percentage" ReadOnly="True" AllowEditing="False" >
+                                <dxg:GridColumn Header="ASSIGNED %" FieldName="Assigned_Percentage" ReadOnly="True" AllowEditing="False" >
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>

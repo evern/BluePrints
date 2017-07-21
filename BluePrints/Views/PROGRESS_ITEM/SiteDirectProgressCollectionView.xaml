@@ -195,6 +195,11 @@
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="ProgressItem.Current_Productivity" Header="CURRENT_PRODUCTIVITY" IsEnabled="False" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.DetailDescriptor>
                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Reportables}">
@@ -265,6 +270,11 @@
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn Binding="{Binding Earned_Costs_OnDataDate}" Header="CURRENT_COSTS" IsEnabled="False" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn Binding="{Binding Current_Productivity}" Header="CURRENT_PRODUCTIVITY" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>

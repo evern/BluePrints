@@ -120,6 +120,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public string Commodity_Display_Code => ((IReportable)ProgressItem).Commodity_Display_Code;
 
+        public decimal Current_Productivity => ((IReportable)ProgressItem).Current_Productivity;
+
         public void Update()
         {
             ProgressItem.Update();
@@ -337,6 +339,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public bool ShouldSaveProgress => Reportable.ShouldSaveProgress;
 
         public decimal Remaining_Hours_To_Completion => Reportable.Remaining_Hours_To_Completion;
+
+        public decimal Current_Productivity => Reportable.Current_Productivity;
 
         public void SetReportingDataDate(DateTime dataDate)
         {
