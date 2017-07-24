@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IDeliverable_Quantity, IHaveStockCode
+    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IDeliverable_Quantity, IHaveStockCode, IHaveDBProductivityOverride
     {
         public ESTIMATION_DIRECT_ITEMProjection()
             : base()
@@ -156,13 +156,16 @@ namespace BluePrints.Common.Projections
         public string Stock_Code_Spec => STOCK_CODE == null ? string.Empty : STOCK_CODE.SPEC;
 
         public string Stock_Code_Description => STOCK_CODE == null ? string.Empty : STOCK_CODE.DESCRIPTION;
+
+        public decimal? DB_Productivity_Override { get => Entity.DB_Productivity_Override; set => Entity.DB_Productivity_Override = value; }
     }
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries
     {
         public static IQueryable<ESTIMATION_DIRECT_ITEMProgress> IDeliverable_Progress_Transformation(
-            IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS,
-            IEnumerable<RATE> RATES, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<STOCK_CODE> STOCK_CODES = null, IEnumerable<COMMODITY_CODE> COMMODITY_CODES = null, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null)
+            IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, PROJECT PROJECT, 
+            IEnumerable<RATE> RATES, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<STOCK_CODE> STOCK_CODES = null, IEnumerable<COMMODITY_CODE> COMMODITY_CODES = null, 
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null)
         {
             var PROGRESS_ITEMSByOriginalGuid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
             List<ESTIMATION_DIRECT_ITEMProjection> estimation_direct_item_rates =
@@ -171,16 +174,27 @@ namespace BluePrints.Common.Projections
                                                                                             STOCK_CODES,
                                                                                             COMMODITY_CODES).ToList();
 
+            List<VariationAdjustment> projectVariationAdjustments;
+            //VARIATIONS are only necessary if front-end requires percentages
+            if (VARIATIONS != null)
+                projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONS.AsQueryable(), estimation_direct_item_rates);
+            else
+                projectVariationAdjustments = new List<VariationAdjustment>();
+
             List<ESTIMATION_DIRECT_ITEMProgress> estimation_direct_item_progresses = new List<ESTIMATION_DIRECT_ITEMProgress>();
             foreach (ESTIMATION_DIRECT_ITEMProjection estimation_direct_item_rate in estimation_direct_item_rates)
             {
-                ESTIMATION_DIRECT_ITEMProgress newEstimation_Direct_itemProgress = new ESTIMATION_DIRECT_ITEMProgress();
+                ESTIMATION_DIRECT_ITEMProgress newEstimation_Direct_itemProgress = new ESTIMATION_DIRECT_ITEMProgress(PROJECT, PROGRESS, estimation_direct_item_rate, projectVariationAdjustments);
                 newEstimation_Direct_itemProgress.P6_Assignments = P6_ASSIGNMENTS == null ? null : P6_ASSIGNMENTS.Where(assignment => assignment.GUID_ORIGINAL == estimation_direct_item_rate.OriginalEntityKey).ToList();
                 newEstimation_Direct_itemProgress.Live_PROGRESS = PROGRESS;
                 newEstimation_Direct_itemProgress.Entity = estimation_direct_item_rate;
                 ProgressQueries.SetReportablePROGRESS_ITEM(newEstimation_Direct_itemProgress, PROGRESS_ITEMSByOriginalGuid);
                 if(PROGRESS != null)
                     newEstimation_Direct_itemProgress.SetReportingDataDate(PROGRESS.DATA_DATE);
+
+                if (buildStats)
+                    newEstimation_Direct_itemProgress.BuildStats();
+
                 estimation_direct_item_progresses.Add(newEstimation_Direct_itemProgress);
             }
 

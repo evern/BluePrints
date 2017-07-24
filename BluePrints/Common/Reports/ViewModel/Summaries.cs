@@ -21,7 +21,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public DeliverableSummaryStats(IEnumerable<BASELINE_ITEMProgress> progressItem, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<VariationAdjustment> projectVariationAdjustments)
             : base(progressItem, reporting_data_date, reporting_interval, first_aligned_data_date, projectVariationAdjustments)
         {
-            ProjectionHelpers.InitializePROGRESS_ITEMStats(progressItem, projectVariationAdjustments, reporting_data_date, reporting_interval, first_aligned_data_date, false);
+            ProjectionHelpers.Initialize_Stats(progressItem, projectVariationAdjustments, reporting_data_date, reporting_interval, first_aligned_data_date, false);
         }
     }
 
@@ -41,7 +41,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.reporting_interval = reporting_interval;
             this.first_aligned_data_date = first_aligned_data_date;
             ExoMissingWORKPACKS = new List<WORKPACK>();
-            ProjectionHelpers.InitializePROGRESS_ITEMStats(progressItem, projectVariationAdjustments, reporting_data_date, reporting_interval, first_aligned_data_date, false);
+            ProjectionHelpers.Initialize_Stats(progressItem, projectVariationAdjustments, reporting_data_date, reporting_interval, first_aligned_data_date, false);
         }
 
         public IEnumerable<ExoDataPoint> GetBurnedDataPoints()
@@ -118,7 +118,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             Reportables = progressItem;
 
             //Since this is only used by workpack to rolldown from project, progress already have stats
-            ProjectionHelpers.InitializePROGRESS_ITEMStats(progressItem, projectVariationAdjustments, reporting_data_date, reporting_interval, first_aligned_data_date, true);
+            ProjectionHelpers.Initialize_Stats(progressItem, projectVariationAdjustments, reporting_data_date, reporting_interval, first_aligned_data_date, true);
             Burned = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             Actual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
         }

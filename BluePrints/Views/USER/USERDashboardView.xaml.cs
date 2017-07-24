@@ -70,21 +70,21 @@ namespace BluePrints.Views
             colPeriodEarned.FieldName = colPeriodEarned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             colPeriodEarnedText.Mask = maskVar;
             
-            lineSeriesOriginal.DisplayName = lineSeriesPlanned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            lineSeriesPlanned.DisplayName = lineSeriesPlanned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            lineSeriesOriginal.DisplayName = lineSeriesOriginal.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            //lineSeriesPlanned.DisplayName = lineSeriesPlanned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             lineSeriesEarned.DisplayName = lineSeriesEarned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             lineSeriesRemainingPlanned.DisplayName = lineSeriesRemainingPlanned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             lineSeriesOriginal.ValueDataMember = lineSeriesOriginal.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            lineSeriesPlanned.ValueDataMember = lineSeriesPlanned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            //lineSeriesPlanned.ValueDataMember = lineSeriesPlanned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             lineSeriesEarned.ValueDataMember = lineSeriesEarned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             lineSeriesRemainingPlanned.ValueDataMember = lineSeriesRemainingPlanned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
 
             barSeriesOriginal.DisplayName = barSeriesOriginal.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            barSeriesPlanned.DisplayName = barSeriesPlanned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            //barSeriesPlanned.DisplayName = barSeriesPlanned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             barSeriesEarned.DisplayName = barSeriesEarned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             barSeriesRemainingPlanned.DisplayName = barSeriesRemainingPlanned.DisplayName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             barSeriesOriginal.ValueDataMember = barSeriesOriginal.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            barSeriesPlanned.ValueDataMember = barSeriesPlanned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
+            //barSeriesPlanned.ValueDataMember = barSeriesPlanned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             barSeriesEarned.ValueDataMember = barSeriesEarned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             barSeriesRemainingPlanned.ValueDataMember = barSeriesRemainingPlanned.ValueDataMember.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             secondaryAxisY.Title.Content = secondaryAxisY.Title.Content.ToString().Replace(fieldNameReplaceFrom, fieldNameReplaceTo);

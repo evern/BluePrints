@@ -12,18 +12,6 @@ namespace BluePrints.Views
         public AREACollectionView()
         {
             InitializeComponent();
-            InitializeViewControl(GridControl, tableView);
-            ((AREACollectionViewModelWrapper)DataContext).SetIsRowExpanded = SetIsRowExpanded;
-        }
-
-        public void SetIsRowExpanded(AREAMasterDetailProjection row)
-        {
-            if (row == null)
-                return;
-
-            var rowHandle = GridControl.DataController.FindRowByValue("Entity.GUID", row.Entity.GUID);
-            if (rowHandle >= 0)
-                GridControl.SetMasterRowExpanded(rowHandle, row.IsExpanded);
         }
     }
 }

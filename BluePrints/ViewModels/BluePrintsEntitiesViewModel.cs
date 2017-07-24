@@ -257,11 +257,11 @@ namespace BluePrints.ViewModels
             dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_UOMs", dataCategoryId, "Unit of Measures", "UOMCollectionView"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageStockCode))
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageStock_Direct", dataCategoryId, "Stock Code [Direct]", "STOCK_CODECollectionView", new OptionalEntitiesParameter<PROJECT, StockCodeTypeClass>(null, new StockCodeTypeClass(StockCodeType.Direct))));
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageStock_Direct", dataCategoryId, "Global Stock Codes", "STOCK_CODECollectionView", new OptionalEntitiesParameter<PROJECT, StockCodeTypeClass>(null, new StockCodeTypeClass(StockCodeType.Direct))));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))
             {
-                    dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Code", dataCategoryId, "Commodity Code", "COMMODITY_CODECollectionView"));
+                    dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Code", dataCategoryId, "Global Commodity Codes", "COMMODITY_CODECollectionView"));
 
                 //dataCategoryDescription.ChildModules.Add(commodityCategoryDescription);
                 //commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Design", commodityCodeCategoryId, "Commodity Code [Design]", "COMMODITY_CODECollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Design)), null, "Design"));

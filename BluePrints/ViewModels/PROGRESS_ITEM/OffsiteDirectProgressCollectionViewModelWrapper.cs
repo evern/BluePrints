@@ -260,6 +260,8 @@ namespace BluePrints.ViewModels
         }
 
         protected override ProgressType progress_type => ProgressType.Design;
+
+        protected override bool have_group_entity => false;
         #endregion
 
         #region Reporting

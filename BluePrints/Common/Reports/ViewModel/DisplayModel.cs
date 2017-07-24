@@ -122,6 +122,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Current_Productivity => ((IReportable)ProgressItem).Current_Productivity;
 
+        public decimal Override_Productivity { get => ((IReportable)ProgressItem).Override_Productivity; set => ((IReportable)ProgressItem).Override_Productivity = value; }
+
         public void Update()
         {
             ProgressItem.Update();
@@ -169,7 +171,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class DisplayQuantityReportableGroup : DisplayQuantityReportable
+    public class DisplayQuantityReportableGroup : DisplayQuantityReportable, IReportable_Group
     {
         public IEnumerable<DisplayQuantityReportable> ChildReportables;
         public DisplayQuantityReportableGroup(IReportable_Quantity_Group reportableGroup)
@@ -177,6 +179,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             this.ChildReportables = reportableGroup.Reportables.Select(x => new DisplayQuantityReportable(x, true));
         }
+
+        public IEnumerable<IReportable> Reportables => ChildReportables;
 
         public override void Update()
         {
@@ -341,6 +345,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Remaining_Hours_To_Completion => Reportable.Remaining_Hours_To_Completion;
 
         public decimal Current_Productivity => Reportable.Current_Productivity;
+
+        public decimal Override_Productivity { get => Reportable.Override_Productivity; set => Reportable.Override_Productivity = value; }
 
         public void SetReportingDataDate(DateTime dataDate)
         {

@@ -40,6 +40,8 @@ namespace BluePrints.Data
 
         public Estimation_DirectProgressType PROGRESS_TYPE { get; set; }
 
+        public decimal? PRODUCTIVITY_OVERRIDE { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

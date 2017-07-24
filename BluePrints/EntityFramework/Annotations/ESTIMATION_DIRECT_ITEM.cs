@@ -9,7 +9,7 @@ using BluePrints.Common.Resources;
 
 namespace BluePrints.Data
 {
-    public partial class ESTIMATION_DIRECT_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable
+    public partial class ESTIMATION_DIRECT_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, IHaveDBProductivityOverride
     {
         public ESTIMATION_DIRECT_ITEM()
         {
@@ -123,5 +123,8 @@ namespace BluePrints.Data
         public decimal Total_Units => Estimated_Units;
 
         public decimal Variation_Units => 0;
+
+        [NotMapped]
+        public decimal? DB_Productivity_Override { get => PRODUCTIVITY_OVERRIDE; set => PRODUCTIVITY_OVERRIDE = value; }
     }
 }

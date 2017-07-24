@@ -49,7 +49,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS = null, Func<bool> isBuildStatsFunc = null, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null)
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null)
         {
             IQueryable<BASELINE_ITEMProjection> baseline_item_projection;
 
@@ -66,7 +66,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             else
                 projectVariationAdjustments = new List<VariationAdjustment>();
 
-            List<BASELINE_ITEMProgress> baseline_item_progresses = baseline_item_projection.Select(x => new BASELINE_ITEMProgress(PROJECT, PROGRESS, projectVariationAdjustments)
+            List<BASELINE_ITEMProgress> baseline_item_progresses = baseline_item_projection.Select(x => new BASELINE_ITEMProgress(PROJECT, PROGRESS, x, projectVariationAdjustments)
             {
                 Entity = x,
                 Live_PROGRESS = PROGRESS,
@@ -79,7 +79,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 SetReportablePROGRESS_ITEM(baseline_item_progress, progress_item_by_originalguid);
 
-                if (isBuildStatsFunc != null && isBuildStatsFunc())
+                if (buildStats)
                     baseline_item_progress.BuildStats();
 
             }
@@ -88,13 +88,13 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
 
         public static IQueryable<ReportablesDisplay> SiteDirectProgressItemTransformation(
-            IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<COMMODITY_CODE> COMMODITY_CODES, IEnumerable<STOCK_CODE> projectSTOCK_CODES, IEnumerable<RATE> projectRATES)
+            IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, PROJECT PROJECT, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<COMMODITY_CODE> COMMODITY_CODES, IEnumerable<STOCK_CODE> projectSTOCK_CODES, IEnumerable<RATE> projectRATES)
         {
             IEnumerable<PROGRESS_ITEM> arrPROGRESS_ITEMS = PROGRESS_ITEMS.ToArray();
             List<ReportablesDisplay> display_items = new List<ReportablesDisplay>();
 
             IEnumerable<ESTIMATION_DIRECT_ITEMProgress> estimation_direct_item_progresses =
-                ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATION_DIRECT_ITEMS, projectRATES, PROGRESS, PROGRESS_ITEMS,
+                ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATION_DIRECT_ITEMS, PROJECT, projectRATES, PROGRESS, PROGRESS_ITEMS,
                                                                                                 projectSTOCK_CODES,
                                                                                                 COMMODITY_CODES).AsEnumerable();
 

@@ -115,11 +115,45 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             return editPROGRESS_ITEMS;
         }
+
+        public override decimal Override_Productivity
+        {
+            get
+            {
+                if (set_override_productivity == null)
+                {
+                    //Group won't have DBProductivityOverride because it's value is derived from childrens
+                    //IHaveDBProductivityOverride dbProductivityOverride = Entity as IHaveDBProductivityOverride;
+                    set_override_productivity = Reportables.Count() == 0 ? 0 : Reportables.Max(x => x.Override_Productivity);
+                }
+
+                return (decimal)set_override_productivity;
+            }
+            set
+            {
+                foreach(IReportable_Quantity reportable in Reportables)
+                {
+                    reportable.Override_Productivity = value;
+                    reportable.Update();
+                }
+
+                set_override_productivity = value;
+            }
+        }
     }
 
     public class ESTIMATION_DIRECT_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATION_DIRECT_ITEMProjection>
     {
+        public ESTIMATION_DIRECT_ITEMProgress()
+        {
 
+        }
+
+        public ESTIMATION_DIRECT_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments)
+            : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments)
+        {
+
+        }
     }
 
     public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ICanAssignP6
@@ -129,8 +163,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         }
 
-        public BASELINE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IEnumerable<VariationAdjustment> projectVariationAdjustments)
-            : base(PROJECT, LivePROGRESS, projectVariationAdjustments)
+        public BASELINE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments)
+            : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments)
         {
 
         }
@@ -178,6 +212,17 @@ namespace BluePrints.Common.ViewModel.Reporting
     public abstract class BluePrintsProgressableByQuantityProjectionBase<TEntity> : BluePrintsProgressableProjectionBase<TEntity>, IReportable_Quantity
         where TEntity : class, IDeliverable, IHaveCosts, IHaveQuantity, new()
     {
+        public BluePrintsProgressableByQuantityProjectionBase()
+        {
+
+        }
+
+        public BluePrintsProgressableByQuantityProjectionBase(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments)
+            : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments)
+        {
+
+        }
+
         public decimal Estimated_Quantity => Entity.Estimated_Quantity;
         public decimal Total_Quantity => Entity.Total_Quantity;
         public string UOM => Entity.UOM;
@@ -232,6 +277,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
 
         public override bool ShouldSaveProgress => get_actual_earned_quantity() != set_current_period_quantity;
+
+
         
         public virtual decimal get_actual_earned_quantity()
         {
@@ -303,22 +350,18 @@ namespace BluePrints.Common.ViewModel.Reporting
             //Initialization without stats
         }
 
-        public BluePrintsProgressableProjectionBase(PROJECT PROJECT, PROGRESS Live_PROGRESS, IEnumerable<VariationAdjustment> variation_adjustments)
+        public BluePrintsProgressableProjectionBase(PROJECT PROJECT, PROGRESS Live_PROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> variation_adjustments)
         {
             this.Live_PROGRESS = Live_PROGRESS;
             DateTime reporting_data_date = Live_PROGRESS.DATA_DATE;
             TimeSpan reporting_interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(Live_PROGRESS);
             DateTime first_aligned_data_date = ChronologicalHelpers.GenerateFirstAlignedDataDate(Live_PROGRESS);
             SetReportingDataDate(reporting_data_date);
-            IDeliverable_Rates deliverable = Entity as IDeliverable_Rates;
-            if(deliverable != null)
-            {
-                List<VariationAdjustment> currentProgressItemAdjustments = variation_adjustments.Where(x => x.DeliverableOriginalGuid == deliverable.OriginalEntityKey).ToList();
+            List<VariationAdjustment> currentProgressItemAdjustments = variation_adjustments.Where(x => x.DeliverableOriginalGuid == entity.OriginalEntityKey).ToList();
 
-                PartialStatsBuilder partialStatsBuilder = new PartialStatsBuilder(PROJECT.CURRENCYCONVERSION);
-                Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, deliverable.Estimated_Units, deliverable.Total_Units, deliverable.Estimated_Costs, deliverable.Total_Costs, variation_adjustments.Where(x => x.DeliverableOriginalGuid == deliverable.OriginalEntityKey).ToList());
-                statsSummarizer = new SingleObjectSummarizer(this, partialStatsBuilder);
-            }
+            PartialStatsBuilder partialStatsBuilder = new PartialStatsBuilder(PROJECT.CURRENCYCONVERSION);
+            Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, entity.Estimated_Units, entity.Total_Units, entity.Estimated_Costs, entity.Total_Costs, variation_adjustments.Where(x => x.DeliverableOriginalGuid == entity.OriginalEntityKey).ToList());
+            statsSummarizer = new SingleObjectSummarizer(this, partialStatsBuilder);
         }
 
         public void BuildStats()
@@ -389,6 +432,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public override void Update()
         {
             set_total_earned_percentage = null;
+            set_override_productivity = null;
             base.Update();
         }
 
@@ -490,6 +534,37 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
 
         public decimal Current_Productivity => SchedulePercentage == 0 ? 0 : Total_Earned_Percentage / SchedulePercentage;
+
+        protected decimal? set_override_productivity;
+        public virtual decimal Override_Productivity
+        {
+            get
+            {
+                if (set_override_productivity == null)
+                    set_override_productivity = get_db_or_current_productivity();
+
+                return (decimal)set_override_productivity;
+            }
+            set
+            {
+                IHaveDBProductivityOverride dbProductivityOverride = Entity as IHaveDBProductivityOverride;
+                if (dbProductivityOverride != null)
+                    dbProductivityOverride.DB_Productivity_Override = value;
+
+                set_override_productivity = value;
+            }
+        }
+
+        public virtual bool ShouldSaveProductivity => set_override_productivity != get_db_or_current_productivity();
+
+        protected virtual decimal? get_db_or_current_productivity()
+        {
+            IHaveDBProductivityOverride dbProductivityOverride = Entity as IHaveDBProductivityOverride;
+            if (dbProductivityOverride != null && dbProductivityOverride.DB_Productivity_Override != null)
+                return dbProductivityOverride.DB_Productivity_Override;
+            else
+                return Current_Productivity;
+        }
 
         public decimal Variation_Units => Entity.Variation_Units;
 

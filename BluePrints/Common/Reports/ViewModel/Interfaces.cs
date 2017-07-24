@@ -32,6 +32,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         SingleObjectSummarizer StatSummarizer { get; }
         decimal Current_Productivity { get; }
+        decimal Override_Productivity { get; set; }
     }
 
     public interface IDeliverable_Quantity_Group : IDeliverable_Quantity
@@ -127,6 +128,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         string Stock_Code_Type { get; }
         string Stock_Code_Spec { get; }
         string Stock_Code_Description { get; }
+    }
+
+    public interface IHaveDBProductivityOverride
+    {
+        decimal? DB_Productivity_Override { get; set; }
     }
 
     public interface IHaveCommodity_Code

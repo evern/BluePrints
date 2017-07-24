@@ -17,6 +17,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Threading;
 using System.Collections.ObjectModel;
+using BaseModel.Data.Helpers;
 
 namespace BluePrints.ViewModels
 {
@@ -59,7 +60,6 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc, x => loadESTIMATION_DIRECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
-
             base.InitializeAndLoadEntitiesLoaderDescription();
         }
 
@@ -94,7 +94,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ReportablesDisplay>> ConstructMainViewModelProjection()
         {
-            return query => ProgressQueries.SiteDirectProgressItemTransformation(query.Where(x => x.GUID_ESTIMATION_DIRECT == loadESTIMATION_DIRECT.GUID), loadPROGRESS, PROGRESS_ITEMCollection, COMMODITY_CODECollection, STOCK_CODECollection, RATECollection);
+            return query => ProgressQueries.SiteDirectProgressItemTransformation(query.Where(x => x.GUID_ESTIMATION_DIRECT == loadESTIMATION_DIRECT.GUID), loadPROJECT, loadPROGRESS, PROGRESS_ITEMCollection, COMMODITY_CODECollection, STOCK_CODECollection, RATECollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ReportablesDisplay> entities)
@@ -122,6 +122,24 @@ namespace BluePrints.ViewModels
             }
 
             return false;
+        }
+
+        public override void FullRefresh()
+        {
+            InitializeAndLoadEntitiesLoaderDescription();
+        }
+
+        protected override void RefreshView(bool forceGridRefresh = false)
+        {
+            if (MainViewModel == null)
+                return;
+
+            foreach(ReportablesDisplay reportable in MainViewModel.Entities)
+            {
+                reportable.Update();
+            }
+
+            base.RefreshView(forceGridRefresh);
         }
 
         private ReportablesDisplay getAffectedDisplayEntity(PROGRESS_ITEM newPROGRESS_ITEM)
@@ -172,13 +190,42 @@ namespace BluePrints.ViewModels
         /// </summary>
         public bool OnBeforeEntitySaved(ReportablesDisplay entity)
         {
-            if(entity.ProgressItem.ShouldSaveProgress)
+            bool is_group = save_reportables_display(entity);
+            //save progress is only used for saving standalone or group
+            if (is_group)
+            {
+                save_progress(entity);
+                //update must be here or else installed quantity will be cleared and progress will be saved with 0 units
+                entity.Update();
+            }
+
+            //only DisplayQuantityReportable is allowed to be saved
+            return !is_group;
+        }
+
+        private bool save_reportables_display(ReportablesDisplay entity)
+        {
+            IReportable_Group reportable_Group = entity.ProgressItem as IReportable_Group;
+            if (reportable_Group != null)
+            {
+                foreach(IReportable reportable in reportable_Group.Reportables)
+                {
+                    MainViewModel.Save(new ReportablesDisplay() { ProgressItem = (DisplayQuantityReportable)reportable });
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private void save_progress(ReportablesDisplay entity)
+        {
+            if (entity.ProgressItem.ShouldSaveProgress)
             {
                 IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = entity.ProgressItem.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
                 PROGRESS_ITEMSCollectionViewModel.BulkSave(newPRORESS_ITEMS);
             }
-
-            return false;
         }
 
         private PROGRESS_ITEM createNewPROGRESS_ITEM(Guid originalEntityKey)
@@ -252,6 +299,8 @@ namespace BluePrints.ViewModels
         }
 
         protected override ProgressType progress_type => ProgressType.Construct;
+
+        protected override bool have_group_entity => true;
         #endregion
 
         #region Disposing

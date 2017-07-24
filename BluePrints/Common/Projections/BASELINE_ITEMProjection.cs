@@ -10,7 +10,7 @@ using System.Linq;
 namespace BluePrints.Common.Projections
 {
     [ConstraintAttributes("Entity.GUID_BASELINE, Entity.INTERNAL_NUM")]
-    public class BASELINE_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEM>, IDeliverable_Rates, ISupportByDuration, IHaveDeliverableStatus
+    public class BASELINE_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEM>, IDeliverable_Rates, ISupportByDuration, IHaveDeliverableStatus, IHaveDBProductivityOverride
     {
         public BASELINE_ITEMProjection()
             : base()
@@ -66,6 +66,8 @@ namespace BluePrints.Common.Projections
         public DELIVERABLES_STATUS Deliverable_Status => Entity.DELIVERABLES_STATUS;
 
         public string Phase_Code => Entity.PHASE == null ? string.Empty : Entity.PHASE.INTERNAL_NUM;
+
+        public decimal? DB_Productivity_Override { get => Entity.DB_Productivity_Override; set => Entity.DB_Productivity_Override = value; }
     }
 
     public static class BASELINE_ITEMProjectionQueries

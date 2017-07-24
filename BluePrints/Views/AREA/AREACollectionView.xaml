@@ -16,6 +16,7 @@
     xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
     xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
+    xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel"
     xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
     mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
     DataContext="{dxmvvm:ViewModelSource viewmodel:AREACollectionViewModelWrapper}">
@@ -28,6 +29,9 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <dxmvvm:Interaction.Behaviors>
+            <services:GridControlService GridControl="{Binding ElementName=GridControl}" />
+        </dxmvvm:Interaction.Behaviors>
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False"

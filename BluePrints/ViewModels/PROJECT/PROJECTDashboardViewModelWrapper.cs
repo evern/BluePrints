@@ -181,7 +181,6 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             MainViewModel.SetParentViewModel(this);
             onMainViewModelFirstLoadedTimer.Start();
-            
             return base.OnMainViewModelLoaded(entities);
         }
 
@@ -224,6 +223,7 @@ namespace BluePrints.ViewModels
             project.RecalculateStats(false);
             project.Phase_Dashboards = DashboardQueries.Construct_Phase_Dashboards((ProjectSummaryStats)project.Stats);
             project.Update();
+            
 
             if (((BackgroundWorker)sender).CancellationPending)
             {
@@ -234,7 +234,7 @@ namespace BluePrints.ViewModels
 
         private void summaryBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            RefreshSummary();
+            //RefreshSummary();
         }
 
         private void RefreshSummary()

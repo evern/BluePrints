@@ -245,23 +245,6 @@ namespace BluePrints.Data
         }
 
 
-
-        [ComplexType]
-        public class StoredProcedure_DeliverablesDataPoints
-        {
-            public Guid GUID_PROJECT { get; set; }
-            public Guid GUID_WORKPACK { get; set; }
-            public Guid GUID_ORIGINAL { get; set; }
-            public DateTime UniversalPeriodStartDate { get; set; }
-            public DateTime UniversalPeriodEndDate { get; set; }
-            public double PeriodPlannedUnits { get; set; }
-            public double PeriodEarnedUnits { get; set; }
-            public double PeriodRemainingUnits { get; set; }
-            public double PeriodPlannedPrice { get; set; }
-            public double PeriodEarnedPrice { get; set; }
-            public double PeriodRemainingPrice { get; set; }
-        }
-
         [ComplexType]
         public class StoredProcedure_PlannedDataPoint
         {

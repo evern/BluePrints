@@ -200,6 +200,11 @@
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="ProgressItem.Override_Productivity" Header="OVERRIDE_PRODUCTIVITY" IsEnabled="False" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" Increment="0.1" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.DetailDescriptor>
                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Reportables}">
@@ -277,6 +282,11 @@
                                         <dxg:GridColumn Binding="{Binding Current_Productivity}" Header="CURRENT_PRODUCTIVITY" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn Binding="{Binding Override_Productivity}" Header="OVERRIDE_PRODUCTIVITY" IsEnabled="False" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" Increment="0.1" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <!--<dxg:GridColumn Binding="{Binding Progress_Type}" Header="PROGRESS_TYPE">

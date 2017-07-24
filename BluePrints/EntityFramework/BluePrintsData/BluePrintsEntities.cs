@@ -51,7 +51,6 @@ namespace BluePrints.Data
         {
             Database.SetInitializer<BluePrintsEntities>(null);
             modelBuilder.Conventions.Add(new FunctionConvention<BluePrintsEntities>());
-            modelBuilder.ComplexType<StoredProcedure_DeliverablesDataPoints>();
             modelBuilder.AddComplexTypesFromAssembly(typeof(BluePrintsEntities).Assembly);
 
             modelBuilder.Entity<AREA>()

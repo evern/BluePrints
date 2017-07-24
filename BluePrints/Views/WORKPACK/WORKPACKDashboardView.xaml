@@ -428,11 +428,11 @@
                                                                    Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
                                                                    Brush="Brown"
                                                                    DataSource="{Binding SummaryEntity.Stats.Budgeted.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
-                                        <dxc:BarSideBySideSeries2D Name="barSeriesPlanned"
+                                        <!--<dxc:BarSideBySideSeries2D Name="barSeriesPlanned"
                                                                    DisplayName="Current Planned Units"
                                                                    Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
                                                                    Brush="Blue"
-                                                                   DataSource="{Binding SummaryEntity.Stats.Current.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
+                                                                   DataSource="{Binding SummaryEntity.Stats.Current.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />-->
                                         <dxc:BarSideBySideSeries2D Name="barSeriesEarned" DisplayName="Earned Units"
                                                                    Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
                                                                    Brush="Green"
@@ -455,11 +455,11 @@
                                                           Style="{StaticResource DefaultLineSeries2DTemplate}"
                                                           Brush="Brown"
                                                           DataSource="{Binding SummaryEntity.Stats.Budgeted.CumulativeDataPoints}" />
-                                        <dxc:LineSeries2D Name="lineSeriesPlanned"
+                                        <!--<dxc:LineSeries2D Name="lineSeriesPlanned"
                                                           DisplayName="Current Planned Units %"
                                                           Style="{StaticResource DefaultLineSeries2DTemplate}"
                                                           Brush="Blue"
-                                                          DataSource="{Binding SummaryEntity.Stats.Current.CumulativeDataPoints}" />
+                                                          DataSource="{Binding SummaryEntity.Stats.Current.CumulativeDataPoints}" />-->
                                         <dxc:LineSeries2D Name="lineSeriesRemainingPlanned"
                                                           DisplayName="Remaining Units %"
                                                           Style="{StaticResource DefaultLineSeries2DTemplate}"
