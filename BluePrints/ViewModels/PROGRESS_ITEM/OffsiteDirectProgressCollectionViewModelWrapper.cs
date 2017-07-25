@@ -256,7 +256,11 @@ namespace BluePrints.ViewModels
 
                 return baseline_item_scheduling_view_model;
             }
-            set => baseline_item_scheduling_view_model = (BASELINE_ITEMSchedulingViewModelWrapper)value;
+        }
+
+        protected override void dispose_scheduling_view_model()
+        {
+            baseline_item_scheduling_view_model = null;
         }
 
         protected override ProgressType progress_type => ProgressType.Design;

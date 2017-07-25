@@ -142,7 +142,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class ESTIMATION_DIRECT_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATION_DIRECT_ITEMProjection>
+    public class ESTIMATION_DIRECT_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATION_DIRECT_ITEMProjection>, IHaveDBProductivityOverride
     {
         public ESTIMATION_DIRECT_ITEMProgress()
         {
@@ -154,6 +154,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
 
         }
+
+        public decimal? DB_Productivity_Override { get => Entity.DB_Productivity_Override; set => Entity.DB_Productivity_Override = value; }
     }
 
     public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ICanAssignP6
@@ -560,7 +562,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         protected virtual decimal? get_db_or_current_productivity()
         {
             IHaveDBProductivityOverride dbProductivityOverride = Entity as IHaveDBProductivityOverride;
-            if (dbProductivityOverride != null && dbProductivityOverride.DB_Productivity_Override != null)
+            if (dbProductivityOverride != null && dbProductivityOverride.DB_Productivity_Override != null && dbProductivityOverride.DB_Productivity_Override > 0)
                 return dbProductivityOverride.DB_Productivity_Override;
             else
                 return Current_Productivity;

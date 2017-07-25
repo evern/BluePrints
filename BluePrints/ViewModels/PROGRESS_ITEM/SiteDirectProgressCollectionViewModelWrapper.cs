@@ -192,7 +192,7 @@ namespace BluePrints.ViewModels
         {
             bool is_group = save_reportables_display(entity);
             //save progress is only used for saving standalone or group
-            if (is_group)
+            if (entity.ProgressItem.Progress_Type == Estimation_DirectProgressType.Standalone || is_group)
             {
                 save_progress(entity);
                 //update must be here or else installed quantity will be cleared and progress will be saved with 0 units
@@ -285,17 +285,21 @@ namespace BluePrints.ViewModels
 
         protected override IEnumerable<IReportable> ReportableCollection => MainViewModel == null || MainViewModel.Entities == null ? new ObservableCollection<ESTIMATION_DIRECT_ITEMProgress>() : MainViewModel.Entities.Select(x => x.ProgressItem.Reportable);
 
-        private ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper ESTIMATION_DIRECT_ITEM_scheduling_view_model;
+        private ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper estimation_direct_item_scheduling_view_model;
         protected override IEntitiesSchedulingCollectionWrapper scheduling_view_model
         {
             get
             {
-                if (ESTIMATION_DIRECT_ITEM_scheduling_view_model == null)
-                    ESTIMATION_DIRECT_ITEM_scheduling_view_model = ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper.Create();
+                if (estimation_direct_item_scheduling_view_model == null)
+                    estimation_direct_item_scheduling_view_model = ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper.Create();
 
-                return ESTIMATION_DIRECT_ITEM_scheduling_view_model;
+                return estimation_direct_item_scheduling_view_model;
             }
-            set => ESTIMATION_DIRECT_ITEM_scheduling_view_model = (ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper)value;
+        }
+
+        protected override void dispose_scheduling_view_model()
+        {
+            estimation_direct_item_scheduling_view_model = null;
         }
 
         protected override ProgressType progress_type => ProgressType.Construct;

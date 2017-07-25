@@ -1,6 +1,7 @@
 namespace BluePrints.Data
 {
     using BaseModel.Misc;
+    using BluePrints.Common.ViewModel.Reporting;
     using Common;
     using System;
     using System.Collections.Generic;

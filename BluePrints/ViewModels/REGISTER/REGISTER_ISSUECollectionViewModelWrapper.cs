@@ -154,7 +154,7 @@ namespace BluePrints.ViewModels
                 DateTime? dateClosed = (DateTime?)e.Value;
                 var editingEntity = (REGISTER_ISSUE)e.Row;
                 if (editingEntity.DATE_RAISED != null && dateClosed != null && 
-                    editingEntity.DATE_RAISED > dateClosed)
+                    ((DateTime)editingEntity.DATE_RAISED).Date > ((DateTime)dateClosed).Date)
                 {
                     e.IsValid = false;
                     e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
@@ -167,7 +167,7 @@ namespace BluePrints.ViewModels
                 DateTime? dateRaised = (DateTime?)e.Value;
                 var editingEntity = (REGISTER_ISSUE)e.Row;
                 if (editingEntity.DATE_CLOSED != null && dateRaised != null && 
-                    dateRaised > editingEntity.DATE_CLOSED)
+                    ((DateTime)dateRaised).Date > ((DateTime)editingEntity.DATE_CLOSED).Date)
                 {
                     e.IsValid = false;
                     e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;

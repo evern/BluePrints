@@ -202,7 +202,7 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="ProgressItem.Override_Productivity" Header="OVERRIDE_PRODUCTIVITY" IsEnabled="False" >
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" Increment="0.1" />
+                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" Increment="0.1" NullValueButtonPlacement="EditBox" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>

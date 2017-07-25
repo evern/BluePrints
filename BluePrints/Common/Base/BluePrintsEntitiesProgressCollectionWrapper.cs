@@ -420,7 +420,7 @@ namespace BluePrints.Common.Base
         }
 
         bool isPushingToP6;
-        protected abstract IEntitiesSchedulingCollectionWrapper scheduling_view_model { get; set; }
+        protected abstract IEntitiesSchedulingCollectionWrapper scheduling_view_model { get; }
         private void PushToP6(BaselineMappingSelectionType mappingSelectionType)
         {
             if (loadPROGRESS.P6PROGRESS_NAME == string.Empty)
@@ -430,6 +430,7 @@ namespace BluePrints.Common.Base
             //Stats will be built in SummarizeSinglePROJECTDashboard within SummarizeBASELINE_ITEMDashboard in ConstructMainViewModelProjection
             MainViewModel.Refresh();
             scheduling_view_model.OnViewModelLoaded = onSchedulingViewModelLoaded;
+            scheduling_view_model.OnViewModelLoadFailed = onSchedulingViewModelLoadFailed;
             var ParameterObj = scheduling_view_model as ISupportParameter;
             ParameterObj.Parameter = new object[] { loadPROGRESS, mappingSelectionType };
         }
@@ -438,7 +439,10 @@ namespace BluePrints.Common.Base
         {
             IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;
             if (PROJECTTASK.Count() == 0)
+            {
+                onSchedulingViewModelLoadFailed("No activities found, please check if activity code is marked as " + progress_type);
                 return;
+            }
 
             List<string> processedP6Task = new List<string>();
             TimeSpan intervalTimeSpan = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
@@ -483,16 +487,22 @@ namespace BluePrints.Common.Base
                         //current activity assignment value must be limited to total earned percentage
                         decimal high_percentage_to_use = p6_assignment.HIGH_VALUE > total_percentage_to_date ? total_percentage_to_date : p6_assignment.HIGH_VALUE;
 
+                        //current percentage pro-rate
+                        decimal current_percentage = ((high_percentage_to_use - p6_assignment.LOW_VALUE) + 0.01m);
+
+                        //full assignment percentage used to calculate remaining units
+                        decimal full_assignment_percentage = ((p6_assignment.HIGH_VALUE - p6_assignment.LOW_VALUE) + 0.01m);
+
                         //current activity assignment unit
-                        decimal current_assignment_units = ((high_percentage_to_use - p6_assignment.LOW_VALUE) + 0.01m) * deliverable.Total_Units;
+                        decimal current_assignment_units = current_percentage * deliverable.Total_Units;
+
+                        //current activity full assignment units to calculate remaining units
+                        decimal full_assignment_units = full_assignment_percentage * deliverable.Total_Units;
 
                         //if this is the first time processing the task
                         //another way of doing this is to reset everything to zero and not started, but we do not want to override user changes on the p6 schedule
                         if (!processedP6Task.Any(x => x == P6TASK.task_code))
-                        {
                             P6TASK.act_work_qty = current_assignment_units;
-                            processedP6Task.Add(P6TASK.task_code);
-                        }
                         else
                             P6TASK.act_work_qty += current_assignment_units;
 
@@ -511,8 +521,6 @@ namespace BluePrints.Common.Base
                             break;
                         }
 
-                        P6TASK.remain_drtn_hr_cnt = P6TASK.target_drtn_hr_cnt * (P6TASK.remain_work_qty / P6TASK.target_work_qty);
-
                         if (P6TASK.remain_work_qty == 0)
                         {
                             P6TASK.status_code = P6TASKSTATUS.TK_Complete.ToString();
@@ -522,9 +530,45 @@ namespace BluePrints.Common.Base
                         {
                             P6TASK.status_code = P6TASKSTATUS.TK_Active.ToString();
                             P6TASK.act_end_date = null;
+
+                            //defines how much percentage of units this assignment will take up when it is fully assigned, so that we can estimate the total duration to apply productivity to
+                            decimal current_task_to_activity_percentage = full_assignment_units / (decimal)P6TASK.target_work_qty;
+                            decimal current_full_remaining_duration = (decimal)P6TASK.target_drtn_hr_cnt * current_task_to_activity_percentage;
+
+                            decimal current_assignment_remaining_units = full_assignment_units - current_assignment_units;
+                            decimal current_assignment_remaining_duration = current_full_remaining_duration * (current_assignment_remaining_units / full_assignment_units);
+                            IHaveDBProductivityOverride productivityOverride = deliverable as IHaveDBProductivityOverride;
+                            //productivity override determines whether we should tamper with the remaining duration
+                            if (productivityOverride != null)
+                            {
+                                //need to cast to IReportable to get Override_Productivity properties that determine whether to use db productivity or current productivity
+                                IReportable reportable = deliverable as IReportable;
+                                if (P6TASK.target_drtn_hr_cnt != null && P6TASK.target_work_qty > 0 && P6TASK.remain_work_qty > 0)
+                                {
+
+                                    //in the first progress current productivity will be null and if user doesn't override the productivity, we will have 0 productivity
+                                    decimal override_productivity = reportable.Override_Productivity == 0 ? 1 : reportable.Override_Productivity;
+
+                                    decimal current_assignment_remaining_duration_per_productivity = current_assignment_remaining_duration / override_productivity;
+                                    if (!processedP6Task.Any(x => x == P6TASK.task_code))
+                                        P6TASK.remain_drtn_hr_cnt = current_assignment_remaining_duration_per_productivity;
+                                    else
+                                        P6TASK.remain_drtn_hr_cnt += current_assignment_remaining_duration_per_productivity;
+                                }
+                            }
+                            else
+                            {
+                                if (!processedP6Task.Any(x => x == P6TASK.task_code))
+                                    P6TASK.remain_drtn_hr_cnt = current_assignment_remaining_duration;
+                                else
+                                    P6TASK.remain_drtn_hr_cnt += current_assignment_remaining_duration;
+                            }
                         }
                         else if (P6TASK.status_code == P6TASKSTATUS.TK_NotStart.ToString())
                             P6TASK.status_code = P6TASKSTATUS.TK_Active.ToString();
+
+                        if (!processedP6Task.Any(x => x == P6TASK.task_code))
+                            processedP6Task.Add(P6TASK.task_code);
 
                         scheduling_view_model.Save_Task(P6TASK);
                     }
@@ -537,19 +581,33 @@ namespace BluePrints.Common.Base
             }
 
             LoadingScreenManager.CloseLoadingScreen();
-
-            //Dispose viewmodel
-            IDocumentContent documentContentViewModel = scheduling_view_model as IDocumentContent;
-            documentContentViewModel.OnDestroy();
-            scheduling_view_model = null;
+            destroy_scheduling_view_model();
 
             if (errorMessage == string.Empty)
                 MessageBoxService.ShowMessage(BluePrintsResources.P6_Assignment_Progress_Write_Success);
             else
                 MessageBoxService.ShowMessage(errorMessage);
+        }
+
+        private void onSchedulingViewModelLoadFailed(string error_message)
+        {
+            MessageBoxService.ShowMessage(error_message, "Error", MessageButton.OK, MessageIcon.Exclamation);
+            destroy_scheduling_view_model();
+        }
+
+        private void destroy_scheduling_view_model()
+        {
+            //Dispose viewmodel
+            IDocumentContent documentContentViewModel = scheduling_view_model as IDocumentContent;
+            documentContentViewModel.OnDestroy();
+            dispose_scheduling_view_model();
 
             isPushingToP6 = false;
+            //Need to perform full refresh because MainViewModel repository entity state is messed from scheduling view model, i.e. productivity doesn't update anymore after pushing to P6
+            FullRefresh();
         }
+
+        protected abstract void dispose_scheduling_view_model();
         #endregion
         
         #region Custom Summary

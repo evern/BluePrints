@@ -121,6 +121,11 @@ namespace BluePrints.Common.ViewModel.Reporting
                             reportable_Group.Update();
                             continue;
                         }
+                        else
+                        {
+                            reportablesDisplay.Stats.Budgeted.SetPlannedData(plannedDataPoints.Where(x => x.Deliverable_Guid == reportableObject.OriginalEntityKey));
+                            reportablesDisplay.Update();
+                        }
                     }
                     else
                     {
@@ -194,6 +199,11 @@ namespace BluePrints.Common.ViewModel.Reporting
                             reportable_Group.Stats.Remaining.SetRemainingData(currentGroupDeliverableDataPoints, reportable_Group.Stats.Earned.DataPoints);
                             reportable_Group.Update();
                             continue;
+                        }
+                        else
+                        {
+                            reportablesDisplay.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Deliverable_Guid == reportableObject.EntityKey), reportableObject.Stats.Earned.DataPoints);
+                            reportablesDisplay.Update();
                         }
                     }
                     else

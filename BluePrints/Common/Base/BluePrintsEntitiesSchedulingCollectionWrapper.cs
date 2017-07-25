@@ -29,6 +29,7 @@ namespace BluePrints.Common.Base
     public interface IEntitiesSchedulingCollectionWrapper
     {
         Action<IEnumerable<ICanAssignP6>> OnViewModelLoaded { get; set; }
+        Action<string> OnViewModelLoadFailed { get; set; }
         IEnumerable<TASK> TASK_Source { get; }
         void Save_Task(TASK task);
     }
@@ -66,7 +67,15 @@ namespace BluePrints.Common.Base
         {
             string projectName;
             if (isFromPROGRESS)
-                projectName = live_PROGRESS.P6PROGRESS_NAME;
+            {
+                if (live_PROGRESS.P6PROGRESS_NAME == null)
+                {
+                    OnViewModelLoadFailed?.Invoke("P6 progress not set");
+                    projectName = string.Empty;
+                }
+                else
+                    projectName = live_PROGRESS.P6PROGRESS_NAME;
+            }
             else if (mappingType == BaselineMappingSelectionType.Modified)
                 projectName = p6_baseline_entity.P6_Mod_Baseline_Name;
             else
@@ -112,6 +121,7 @@ namespace BluePrints.Common.Base
         }
         #region Used as Dependency Delegate
         public Action<IEnumerable<ICanAssignP6>> OnViewModelLoaded { get; set; }
+        public Action<string> OnViewModelLoadFailed { get; set; }
 
         protected bool isFromPROGRESS
         {
