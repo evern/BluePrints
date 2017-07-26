@@ -11,6 +11,7 @@ using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
@@ -267,6 +268,49 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
+        protected DevExpress.Mvvm.IDialogService MapDeliverableDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("MapDeliverableDialog"); }
+        }
+
+        public bool CanMapClientNumber()
+        {
+            return MainViewModel != null && MainViewModel.Entities.Count() > 0;
+        }
+
+        public void MapClientNumber()
+        {
+            List<ClientNumberAssignment> internal_number_mapping = new List<ClientNumberAssignment>();
+
+            foreach (BASELINE_ITEMProgress entity in MainViewModel.Entities)
+            {
+                internal_number_mapping.Add(ViewModelSource.Create(() => new ClientNumberAssignment() { INTERNAL_NUM = entity.Entity.Entity.INTERNAL_NUM, CLIENT_NUM = entity.Entity.Entity.CLIENT_NUM }));
+            }
+
+            MapDeliverablesClientNumberDialogViewModel<ClientNumberAssignment> internal_number_remap_view_model = MapDeliverablesClientNumberDialogViewModel<ClientNumberAssignment>.CreateViewModel(internal_number_mapping);
+            if (MapDeliverableDialogService.ShowDialog(MessageButton.OKCancel, "Re-Assign Client Number", "MapDeliverablesClientNumber", internal_number_remap_view_model) == MessageResult.OK)
+            {
+                IEnumerable<ClientNumberAssignment> reassignments = internal_number_mapping.Where(x => x.CLIENT_NUM != null && x.CLIENT_NUM != string.Empty);
+
+                List<BASELINE_ITEMProgress> reassigned_deliverables = new List<BASELINE_ITEMProgress>();
+                foreach (ClientNumberAssignment reassignment in reassignments)
+                {
+                    BASELINE_ITEMProgress user_remapped_deliverable = MainViewModel.Entities.FirstOrDefault(x => x.Entity.Entity.INTERNAL_NUM == reassignment.INTERNAL_NUM);
+                    if (user_remapped_deliverable != null)
+                    {
+                        user_remapped_deliverable.Entity.Entity.CLIENT_NUM = reassignment.CLIENT_NUM;
+                        reassigned_deliverables.Add(user_remapped_deliverable);
+                    }
+                }
+
+                if (reassigned_deliverables.Count > 0)
+                {
+                    MainViewModel.BulkSave(reassigned_deliverables);
+                    MessageBoxService.ShowMessage(reassigned_deliverables.Count + " internal number re-assigned");
+                }
+            }
+        }
+
         private void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
         {
             //estimated hours field is disabled but just in case

@@ -426,7 +426,7 @@
                                         <dxc:BarSideBySideSeries2D Name="barSeriesOriginal"
                                                                    DisplayName="Baseline Planned Units"
                                                                    Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
-                                                                   Brush="Brown"
+                                                                   Brush="SteelBlue"
                                                                    DataSource="{Binding SummaryEntity.Stats.Budgeted.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
                                         <!--<dxc:BarSideBySideSeries2D Name="barSeriesPlanned"
                                                                    DisplayName="Current Planned Units"
@@ -453,7 +453,7 @@
                                         <dxc:LineSeries2D Name="lineSeriesOriginal"
                                                           DisplayName="Baseline Planned Units %"
                                                           Style="{StaticResource DefaultLineSeries2DTemplate}"
-                                                          Brush="Brown"
+                                                          Brush="SteelBlue"
                                                           DataSource="{Binding SummaryEntity.Stats.Budgeted.CumulativeDataPoints}" />
                                         <!--<dxc:LineSeries2D Name="lineSeriesPlanned"
                                                           DisplayName="Current Planned Units %"

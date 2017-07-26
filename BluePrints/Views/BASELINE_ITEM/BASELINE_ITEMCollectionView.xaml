@@ -35,6 +35,17 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <dxmvvm:Interaction.Behaviors>
+            <dx:DialogService x:Name="MapDeliverableDialog">
+                <dx:DialogService.DialogStyle>
+                    <Style TargetType="dx:DXDialogWindow">
+                        <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                        <Setter Property="MinWidth" Value="600" />
+                        <Setter Property="MinHeight" Value="600" />
+                    </Style>
+                </dx:DialogService.DialogStyle>
+            </dx:DialogService>
+        </dxmvvm:Interaction.Behaviors>
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False"
@@ -81,6 +92,10 @@
                                                    Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}"
                                                    Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
+                                <dxb:BarButtonItem Content="Map Client Internal Number"
+                                                   Command="{Binding DataContext.MapClientNumberCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=Wizard_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

@@ -32,11 +32,11 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public bool IsClosed
+        public bool IsActionedOnDrawing
         {
             get
             {
-                return DATE_CLOSED != null;
+                return ACTIONED_ON_DWG != null && ACTIONED_ON_DWG == Common.ActionedOnDrawing.Yes;
             }
         }
 

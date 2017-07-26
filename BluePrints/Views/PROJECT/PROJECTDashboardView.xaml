@@ -880,13 +880,13 @@
                                       View="Group" Orientation="Vertical">
                         <dxc:ChartControl Name="chartSCurve" Padding="0" Margin="0" dx:DXSerializer.Enabled="False">
                             <dxc:ChartControl.Diagram>
-                                <dxc:XYDiagram2D>
+                                <dxc:XYDiagram2D Name="diagram">
                                     <dxc:XYDiagram2D.AxisX>
                                         <dxc:AxisX2D>
                                             <dxc:AxisX2D.Label>
                                                 <dxc:AxisLabel>
                                                     <dxc:Axis2D.ResolveOverlappingOptions>
-                                                        <dxc:AxisLabelResolveOverlappingOptions />
+                                                        <dxc:AxisLabelResolveOverlappingOptions AllowRotate="True" AllowStagger="True" />
                                                     </dxc:Axis2D.ResolveOverlappingOptions>
                                                 </dxc:AxisLabel>
                                             </dxc:AxisX2D.Label>
@@ -910,10 +910,10 @@
                                         </dxc:SecondaryAxisY2D>
                                     </dxc:XYDiagram2D.SecondaryAxesY>
                                     <dxc:XYDiagram2D.Series>
-                                        <dxc:BarSideBySideSeries2D Name="barSeriesOriginal"
+                                        <dxc:BarSideBySideSeries2D Name="barSeriesOriginal" 
                                                                    DisplayName="Baseline Planned Units"
                                                                    Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
-                                                                   Brush="Brown"
+                                                                   Brush="LightBlue"
                                                                    DataSource="{Binding SummaryEntity.Stats.Budgeted.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
                                         <!--<dxc:BarSideBySideSeries2D Name="barSeriesPlanned"
                                                                    DisplayName="Current Planned Units"
@@ -922,16 +922,16 @@
                                                                    DataSource="{Binding SummaryEntity.Stats.Current.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />-->
                                         <dxc:BarSideBySideSeries2D Name="barSeriesEarned" DisplayName="Earned Units"
                                                                    Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
-                                                                   Brush="Green"
+                                                                   Brush="LightGreen"
                                                                    DataSource="{Binding SummaryEntity.Stats.Earned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
                                         <dxc:BarSideBySideSeries2D Name="barSeriesRemainingPlanned"
                                                                    DisplayName="Remaining Units"
                                                                    Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
-                                                                   Brush="Indigo"
+                                                                   Brush="LightGray"
                                                                    DataSource="{Binding SummaryEntity.Stats.Remaining.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
                                         <dxc:BarSideBySideSeries2D Name="barSeriesBurned" DisplayName="Burned Units"
                                                                    Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
-                                                                   Brush="Red"
+                                                                   Brush="LightCoral"
                                                                    DataSource="{Binding SummaryEntity.Stats.Burned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
                                         <dxc:BarSideBySideSeries2D Name="barSeriesActual" DisplayName="Actual Units" Visible="False"
                                                                    Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
@@ -940,7 +940,7 @@
                                         <dxc:LineSeries2D Name="lineSeriesOriginal"
                                                           DisplayName="Baseline Planned Units %"
                                                           Style="{StaticResource DefaultLineSeries2DTemplate}"
-                                                          Brush="Brown"
+                                                          Brush="SteelBlue"
                                                           DataSource="{Binding SummaryEntity.Stats.Budgeted.CumulativeDataPoints}" />
                                         <!--<dxc:LineSeries2D Name="lineSeriesPlanned"
                                                           DisplayName="Current Planned Units %"
@@ -950,7 +950,7 @@
                                         <dxc:LineSeries2D Name="lineSeriesRemainingPlanned"
                                                           DisplayName="Remaining Units %"
                                                           Style="{StaticResource DefaultLineSeries2DTemplate}"
-                                                          Brush="Indigo"
+                                                          Brush="Gray"
                                                           DataSource="{Binding SummaryEntity.Stats.Remaining.CumulativeDataPoints}" />
                                         <dxc:LineSeries2D Name="lineSeriesEarned" DisplayName="Earned Units %"
                                                           Style="{StaticResource DefaultLineSeries2DTemplate}"
@@ -967,6 +967,9 @@
                                     </dxc:XYDiagram2D.Series>
                                 </dxc:XYDiagram2D>
                             </dxc:ChartControl.Diagram>
+                            <dxc:ChartControl.Legend>
+                                <dxc:Legend UseCheckBoxes="True" />
+                            </dxc:ChartControl.Legend>
                         </dxc:ChartControl>
                     </dxlc:LayoutGroup>
                 </dxlc:LayoutControl>

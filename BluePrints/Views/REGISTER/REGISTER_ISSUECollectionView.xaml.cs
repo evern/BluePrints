@@ -1,4 +1,5 @@
 ﻿using BaseModel.Misc;
+using System.Diagnostics;
 
 namespace BluePrints.Views
 {

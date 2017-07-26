@@ -169,7 +169,7 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="RegisterChange.NUMBER" Header="Change Register" ReadOnly="True" />
                             <dxg:GridColumn FieldName="RegisterHold.NUMBER" Header="Hold Register" ReadOnly="True" />
-                            <dxg:GridColumn FieldName="IsClosed" Visible="False" />
+                            <dxg:GridColumn FieldName="IsActionedOnDrawing" Visible="True" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
@@ -180,8 +180,11 @@
                         <dxg:GridControl.View>
                             <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
                                 <custom:TableViewEx.FormatConditions>
-                                    <dxg:FormatCondition ApplyToRow="True" Expression="[IsClosed] = 'True'" FieldName="NUMBER">
-                                        <dx:Format Background="#FF537DB1"/>
+                                    <dxg:FormatCondition ApplyToRow="True" FieldName="DATE_CLOSED" Expression="Not IsActionedOnDrawing And [DATE_CLOSED] Is Not Null" >
+                                        <dx:Format Background="#FFFF9B98"/>
+                                    </dxg:FormatCondition>
+                                    <dxg:FormatCondition ApplyToRow="True" FieldName="DATE_CLOSED" Expression="IsActionedOnDrawing And [DATE_CLOSED] Is Not Null" >
+                                        <dx:Format Background="LightBlue"/>
                                     </dxg:FormatCondition>
                                 </custom:TableViewEx.FormatConditions>
                                 <custom:TableViewEx.RowCellMenuCustomizations>

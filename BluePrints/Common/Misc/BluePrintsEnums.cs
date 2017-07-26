@@ -459,4 +459,10 @@ namespace BluePrints.Common
         public string OLD_ACTIVITY_DESCRIPTION { get; set; }
         public string P6_NEW_ACTIVITY { get; set; }
     }
+
+    public class ClientNumberAssignment
+    {
+        public string INTERNAL_NUM { get; set; }
+        public string CLIENT_NUM { get; set; }
+    }
 }

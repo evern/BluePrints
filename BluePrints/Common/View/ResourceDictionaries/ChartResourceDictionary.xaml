@@ -47,5 +47,6 @@
         <Setter Property="ValueScaleType" Value="Numerical" />
         <Setter Property="dxc:XYDiagram2D.SeriesAxisY" Value="{Binding ElementName=secondaryAxisY}" />
         <Setter Property="BarWidth" Value="5" />
+        <Setter Property="CheckableInLegend" Value="True" />
     </Style>
 </ResourceDictionary>
