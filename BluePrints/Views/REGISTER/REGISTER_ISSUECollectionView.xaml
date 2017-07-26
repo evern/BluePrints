@@ -169,7 +169,7 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="RegisterChange.NUMBER" Header="Change Register" ReadOnly="True" />
                             <dxg:GridColumn FieldName="RegisterHold.NUMBER" Header="Hold Register" ReadOnly="True" />
-                            <dxg:GridColumn FieldName="IsActionedOnDrawing" Visible="True" />
+                            <dxg:GridColumn FieldName="IsActionedOnDrawing" Visible="{Binding DataContext.IsActionedOnDrawingVisibility, ElementName=userControl}" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />

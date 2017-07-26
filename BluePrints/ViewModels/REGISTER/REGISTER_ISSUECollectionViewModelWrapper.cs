@@ -323,6 +323,16 @@ namespace BluePrints.ViewModels
             return StringFormatUtils.AppendStringWithEnumerator(string.Empty, newRowNumber, DefaultNumericFieldLength());
         }
 
+        public bool IsActionedOnDrawingVisibility { get; set; }
+        public override void ExportToExcel()
+        {
+            IsActionedOnDrawingVisibility = true;
+            this.RaisePropertyChanged(x => x.IsActionedOnDrawingVisibility);
+            base.ExportToExcel();
+            IsActionedOnDrawingVisibility = false;
+            this.RaisePropertyChanged(x => x.IsActionedOnDrawingVisibility);
+        }
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>

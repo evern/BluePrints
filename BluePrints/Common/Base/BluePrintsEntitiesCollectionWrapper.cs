@@ -35,5 +35,20 @@ namespace BluePrints.Common.Base
         {
             SignalR.HubSendMessage(entityName, key, messageType, sender, LoginCredentials.CurrentHWID);
         }
+
+        //protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        //{
+        //    if(this.SpellCheckerModule != null && this.SpellCheckerModule.SpellChecker != null)
+        //    {
+        //        this.SpellCheckerModule.SpellChecker.CheckCompleteFormShowing += SpellChecker_CheckCompleteFormShowing;
+        //        mainThreadDispatcher.BeginInvoke(new Action(() => GridControlService.HighlightIncorrectText(this.SpellCheckerModule.SpellChecker)));
+        //    }
+        //}
+
+        //private void SpellChecker_CheckCompleteFormShowing(object sender, DevExpress.XtraSpellChecker.FormShowingEventArgs e)
+        //{
+        //    e.Handled = true;
+        //    //throw new NotImplementedException();
+        //}
     }
 }
