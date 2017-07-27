@@ -243,12 +243,12 @@
                                                 <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Binding="{Binding Remaining_Hours_To_Completion}" Header="TIME PER QTY" ReadOnly="True" IsEnabled="False" >
+                                        <dxg:GridColumn Binding="{Binding UnitsPerQuantity}" Header="REMAINING TIME" ReadOnly="True" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings DisplayTextConverter="{StaticResource HoursToTextConverter}" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Binding="{Binding UnitsPerQuantity}" Header="REMAINING TIME" ReadOnly="True" IsEnabled="False" >
+                                        <dxg:GridColumn Binding="{Binding Remaining_Hours_To_Completion}" Header="TIME PER QTY" ReadOnly="True" IsEnabled="False" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings DisplayTextConverter="{StaticResource HoursToTextConverter}" />
                                             </dxg:GridColumn.EditSettings>

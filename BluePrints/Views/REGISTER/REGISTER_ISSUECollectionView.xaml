@@ -81,8 +81,8 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlREGISTER" Style="{StaticResource DefaultGridControlTemplate}" >
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="NUMBER" ReadOnly="True" Header="Item" />
-                            <dxg:GridColumn FieldName="GUID_AREA" Header="Area" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="NUMBER" ReadOnly="True" Header="Item" />
+                            <dxg:GridColumn AllowMoving="false" FieldName="GUID_AREA" Header="Area" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
@@ -90,28 +90,28 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="TITLE" Header="Title" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="TITLE" Header="Title" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="DESCRIPTION" Header="Issue Description" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="DESCRIPTION" Header="Issue Description" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="PROPOSED_SOLUTION" Header="Proposed Solution or Comments" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="PROPOSED_SOLUTION" Header="Proposed Solution or Comments" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="SCHEDULE_IMPACT" Header="Schedule Impact" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="SCHEDULE_IMPACT" Header="Schedule Impact" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" NullValueButtonPlacement="Popup" AutoComplete="True">
                                         <dxe:ComboBoxEditSettings.ItemsSource>
@@ -120,7 +120,7 @@
                                     </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="COST_IMPACT" Header="Cost Impact" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="COST_IMPACT" Header="Cost Impact" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" NullValueButtonPlacement="Popup" AutoComplete="True">
                                         <dxe:ComboBoxEditSettings.ItemsSource>
@@ -129,36 +129,36 @@
                                     </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="CLIENT_NOTIFICATION" Header="Client Notification" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="CLIENT_NOTIFICATION" Header="Client Notification" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="NOTIFIED_PERSON" Header="Notified Person" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="NOTIFIED_PERSON" Header="Notified Person" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="DATE_RAISED" Header="Date Raised" />
-                            <dxg:GridColumn FieldName="FINAL_RESOLUTION" Header="Final Resolution" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="DATE_RAISED" Header="Date Raised" />
+                            <dxg:GridColumn AllowMoving="false" FieldName="FINAL_RESOLUTION" Header="Final Resolution" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="WAY_CLOSED" Header="Way Closed" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="WAY_CLOSED" Header="Way Closed" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings TextWrapping="Wrap" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="CLOSED_NOTIFIED_PERSON" Header="Closed Notified Person" />
-                            <dxg:GridColumn FieldName="DATE_CLOSED" Header="Date Closed" />
-                            <dxg:GridColumn FieldName="ACTIONED_ON_DWG" Header="Actioned on Drawing" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="CLOSED_NOTIFIED_PERSON" Header="Closed Notified Person" />
+                            <dxg:GridColumn AllowMoving="false" FieldName="DATE_CLOSED" Header="Date Closed" />
+                            <dxg:GridColumn AllowMoving="false" FieldName="ACTIONED_ON_DWG" Header="Actioned on Drawing" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" NullValueButtonPlacement="Popup" AutoComplete="True">
                                         <dxe:ComboBoxEditSettings.ItemsSource>
@@ -167,9 +167,9 @@
                                     </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="RegisterChange.NUMBER" Header="Change Register" ReadOnly="True" />
-                            <dxg:GridColumn FieldName="RegisterHold.NUMBER" Header="Hold Register" ReadOnly="True" />
-                            <dxg:GridColumn FieldName="IsActionedOnDrawing" Visible="{Binding DataContext.IsActionedOnDrawingVisibility, ElementName=userControl}" />
+                            <dxg:GridColumn AllowMoving="false" FieldName="RegisterChange.NUMBER" Header="Change Register" ReadOnly="True" />
+                            <dxg:GridColumn AllowMoving="false" FieldName="RegisterHold.NUMBER" Header="Hold Register" ReadOnly="True" />
+                            <dxg:GridColumn AllowMoving="false" FieldName="IsActionedOnDrawing" Visible="{Binding DataContext.IsActionedOnDrawingVisibility, ElementName=userControl}" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
@@ -180,7 +180,7 @@
                         <dxg:GridControl.View>
                             <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
                                 <custom:TableViewEx.FormatConditions>
-                                    <dxg:FormatCondition ApplyToRow="True" FieldName="DATE_CLOSED" Expression="Not IsActionedOnDrawing And [DATE_CLOSED] Is Not Null" >
+                                    <dxg:FormatCondition FieldName="ACTIONED_ON_DWG" Expression="Not IsActionedOnDrawing And [DATE_CLOSED] Is Not Null" >
                                         <dx:Format Background="#FFFF9B98"/>
                                     </dxg:FormatCondition>
                                     <dxg:FormatCondition ApplyToRow="True" FieldName="DATE_CLOSED" Expression="IsActionedOnDrawing And [DATE_CLOSED] Is Not Null" >

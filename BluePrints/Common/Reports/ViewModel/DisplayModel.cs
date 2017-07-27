@@ -266,15 +266,15 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid EntityKey { get => Reportable.EntityKey; set => Reportable.EntityKey = value; }
 
-        public decimal QuantityPerHour
+        public decimal QuantityPerUnit
         {
             get
             {
                 IReportable_Quantity_Group reportable_group = Reportable as IReportable_Quantity_Group;
                 if (reportable_group != null)
-                    return reportable_group.Trackable_QuantityPerHour;
+                    return reportable_group.Trackable_QuantityPerUnit;
                 else
-                    return Reportable.QuantityPerHour;
+                    return Reportable.QuantityPerUnit;
             }
         }
 

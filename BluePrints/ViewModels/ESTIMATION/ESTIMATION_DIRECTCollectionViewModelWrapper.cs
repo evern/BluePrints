@@ -155,7 +155,7 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
             
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new OptionalEntitiesParameter<Data.PROJECT, ESTIMATION_DIRECT>(null,
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new DualEntitiesParameter<Data.PROJECT, ESTIMATION_DIRECT>(null,
                 DisplaySelectedEntity), "ESTIMATION_DIRECT_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Direct Estimate");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);

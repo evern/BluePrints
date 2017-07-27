@@ -257,7 +257,7 @@ namespace BluePrints.ViewModels
             dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_UOMs", dataCategoryId, "Unit of Measures", "UOMCollectionView"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageStockCode))
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageStock_Direct", dataCategoryId, "Global Stock Codes", "STOCK_CODECollectionView", new OptionalEntitiesParameter<PROJECT, StockCodeTypeClass>(null, new StockCodeTypeClass(StockCodeType.Direct))));
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageStock_Direct", dataCategoryId, "Global Stock Codes", "STOCK_CODECollectionView", new DualEntitiesParameter<PROJECT, StockCodeTypeClass>(null, new StockCodeTypeClass(StockCodeType.Direct))));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))
             {
@@ -328,19 +328,22 @@ namespace BluePrints.ViewModels
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectWorkpacks" + keyString, projectKey, childTitlePrefix + "Workpacks", "WORKPACKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Workpacks"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageBaseline))
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables", "BASELINE_ITEMCollectionView", new OptionalEntitiesParameter<PROJECT, BASELINE>(entity, null), null, "Deliverables"));
+                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables", "BASELINE_ITEMCollectionView", new DualEntitiesParameter<PROJECT, BASELINE>(entity, null), null, "Deliverables"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageEstimation))
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates", "ESTIMATION_DIRECT_ITEMCollectionView", new OptionalEntitiesParameter<PROJECT, ESTIMATION_DIRECT>(entity, null), null, "Estimate"));
+                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates", "ESTIMATION_DIRECT_ITEMCollectionView", new DualEntitiesParameter<PROJECT, ESTIMATION_DIRECT>(entity, null), null, "Estimate"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageProgress))
             {
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectOffsiteProgresses" + keyString, projectKey, childTitlePrefix + "Design Progresses", "OffsiteDirectProgressCollectionView", new OptionalEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progresses"));
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectSiteDirectProgresses" + keyString, projectKey, childTitlePrefix + "Site Direct Progresses", "SiteDirectProgressCollectionView", new OptionalEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progresses"));
+                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectOffsiteProgresses" + keyString, projectKey, childTitlePrefix + "Design Progresses", "OffsiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progresses"));
+                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectSiteDirectProgresses" + keyString, projectKey, childTitlePrefix + "Site Direct Progresses", "SiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progresses"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageVariation))
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectVariations" + keyString, projectKey, childTitlePrefix + "Variations", "VARIATIONCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Variations"));
+            {
+                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDesignVariations" + keyString, projectKey, childTitlePrefix + "Variations", "VARIATIONCollectionView", new DualEntitiesParameter<PROJECT, ProgressTypeClass>(entity, new ProgressTypeClass(ProgressType.Design)), null, "Variations"));
+                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectConstructionVariations" + keyString, projectKey, childTitlePrefix + "Variations", "VARIATIONCollectionView", new DualEntitiesParameter<PROJECT, ProgressTypeClass>(entity, new ProgressTypeClass(ProgressType.Construct)), null, "Variations"));
+            }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageDeliverableStatuses))
                 design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDeliverableStatuses" + keyString, projectKey, childTitlePrefix + "Deliverable Statuses", "DELIVERABLES_STATUSCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Deliverable Statuses"));
@@ -349,7 +352,7 @@ namespace BluePrints.ViewModels
                 construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectCommodity_Codes" + keyString, projectKey, childTitlePrefix + "Commodity Codes", "COMMODITY_CODECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Commodity Codes"));
 
             if(LoginCredentials.hasPermission(PermissionResources.ManageStockCode))
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectStock_Codes" + keyString, projectKey, childTitlePrefix + "Stock Codes", "STOCK_CODECollectionView", new OptionalEntitiesParameter<PROJECT, StockCodeTypeClass>(entity, new StockCodeTypeClass(StockCodeType.Direct)), null, "Stock Codes"));
+                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectStock_Codes" + keyString, projectKey, childTitlePrefix + "Stock Codes", "STOCK_CODECollectionView", new DualEntitiesParameter<PROJECT, StockCodeTypeClass>(entity, new StockCodeTypeClass(StockCodeType.Direct)), null, "Stock Codes"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageRegisters))
             {

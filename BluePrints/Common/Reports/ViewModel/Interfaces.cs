@@ -14,7 +14,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         IEnumerable<IReportable_Quantity> Reportables { get; }
         decimal Trackable_Total_Quantity { get; }
         decimal Trackable_Installed_Quantity { get; }
-        decimal Trackable_QuantityPerHour { get; }
+        decimal Trackable_QuantityPerUnit { get; }
         decimal Trackable_Total_Units { get; }
     }
 
@@ -66,7 +66,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     #region Ability Specification Interfaces
     public interface ICanProgressByQuantity : IHaveQuantity
     {
-        decimal QuantityPerHour { get; }
+        decimal QuantityPerUnit { get; }
         decimal UnitsPerQuantity { get; }
         decimal PastInstalledQuantity { get; }
         decimal CurrentPeriodInstalledQuantity { get; set; }

@@ -29,11 +29,6 @@ namespace BluePrints.ViewModels
         BluePrintsEntitiesCollectionWrapper
         <BASELINE_ITEM, BASELINE_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork>
     {
-        //Used by view to show hidden workpack columns
-        public Action ShowWORKPACKInternalName1;
-        public Action ShowWORKPACKInternalName2;
-
-
         //Used by variation to generate new baseline
         public Func<object> OnEntitiesLoadedParameterCallBack;
         public Action<IEnumerable<BASELINE_ITEMVariation>, object> OnEntitiesLoadedWithParameterCallBack;
@@ -72,7 +67,7 @@ namespace BluePrints.ViewModels
         {
             //both parameters is required because when entity is first added the associating entity (PROJECT) is not loaded
             var receiveParameter =
-                (OptionalEntitiesParameter<PROJECT, VARIATION>) parameter;
+                (DualEntitiesParameter<PROJECT, VARIATION>) parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadVARIATION = receiveParameter.GetSecondEntity();
         }

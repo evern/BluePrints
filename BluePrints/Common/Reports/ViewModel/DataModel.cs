@@ -81,7 +81,13 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public override decimal Earned_Costs_Total => trackable_reportables.Sum(x => x.Earned_Costs_Total);
 
-        public decimal Trackable_QuantityPerHour
+        public override decimal Remaining_Hours_To_Completion => Reportables.Sum(x => x.Remaining_Hours_To_Completion);
+
+        public override decimal QuantityPerUnit => Reportables.Sum(x => x.QuantityPerUnit);
+
+        public override decimal UnitsPerQuantity => Reportables.Sum(x => x.UnitsPerQuantity);
+
+        public decimal Trackable_QuantityPerUnit
         {
             get
             {
@@ -95,7 +101,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public override decimal get_actual_earned_quantity()
         {
             decimal trackable_earned_units_ondatadate = trackable_reportables.Sum(x => x.Earned_Units_OnDataDate);
-            return trackable_earned_units_ondatadate * Trackable_QuantityPerHour;
+            return trackable_earned_units_ondatadate * Trackable_QuantityPerUnit;
         }
 
         public override IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func)
@@ -158,7 +164,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal? DB_Productivity_Override { get => Entity.DB_Productivity_Override; set => Entity.DB_Productivity_Override = value; }
     }
 
-    public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ICanAssignP6
+    public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ISupportByDuration, ICanAssignP6
     {
         public BASELINE_ITEMProgress()
         {
@@ -209,6 +215,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                 return MaxPercentage;
             }
         }
+
+        public bool IsByDuration => Entity.IsByDuration;
     }
 
     public abstract class BluePrintsProgressableByQuantityProjectionBase<TEntity> : BluePrintsProgressableProjectionBase<TEntity>, IReportable_Quantity
@@ -229,7 +237,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Total_Quantity => Entity.Total_Quantity;
         public string UOM => Entity.UOM;
 
-        public decimal QuantityPerHour
+        public virtual decimal QuantityPerUnit
         {
             get
             {
@@ -240,7 +248,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public decimal UnitsPerQuantity
+        public virtual decimal UnitsPerQuantity
         {
             get
             {
@@ -251,11 +259,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public decimal Remaining_Hours_To_Completion
+        public virtual decimal Remaining_Hours_To_Completion
         {
             get
             {
-                return (Total_Quantity - TotalInstalledQuantity) * UnitsPerQuantity;
+                return (Total_Quantity - AbsoluteTotalInstalledQuantity) * UnitsPerQuantity;
             }
         }
 
@@ -280,23 +288,24 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public override bool ShouldSaveProgress => get_actual_earned_quantity() != set_current_period_quantity;
 
-
         
         public virtual decimal get_actual_earned_quantity()
         {
-            return Earned_Units_OnDataDate * QuantityPerHour;
+            return Earned_Units_OnDataDate * QuantityPerUnit;
         }
 
         public decimal PastInstalledQuantity
         {
             get
             {
-                if (PROGRESS_ITEM_BeforeDataDate.Count() == 0 || QuantityPerHour == 0)
+                if (PROGRESS_ITEM_BeforeDataDate.Count() == 0 || QuantityPerUnit == 0)
                     return 0;
 
-                return PROGRESS_ITEM_BeforeDataDate.Sum(x => x.EARNED_UNITS) * QuantityPerHour;
+                return PROGRESS_ITEM_BeforeDataDate.Sum(x => x.EARNED_UNITS) * QuantityPerUnit;
             }
         }
+
+        public decimal AbsoluteTotalInstalledQuantity => PastInstalledQuantity + CurrentPeriodInstalledQuantity + FutureInstalledQuantity;
 
         public decimal TotalInstalledQuantity => PastInstalledQuantity + FutureInstalledQuantity;
 
@@ -304,10 +313,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (PROGRESS_ITEM_AfterDataDate.Count() == 0 || QuantityPerHour == 0)
+                if (PROGRESS_ITEM_AfterDataDate.Count() == 0 || QuantityPerUnit == 0)
                     return 0;
 
-                return PROGRESS_ITEM_AfterDataDate.Sum(x => x.EARNED_UNITS) * QuantityPerHour;
+                return PROGRESS_ITEM_AfterDataDate.Sum(x => x.EARNED_UNITS) * QuantityPerUnit;
             }
         }
 

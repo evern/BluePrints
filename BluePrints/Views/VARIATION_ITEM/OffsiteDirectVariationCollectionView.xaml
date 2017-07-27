@@ -271,14 +271,14 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.BY_DURATION" Header="BY DURATION" >
+                            <dxg:GridColumn FieldName="IsByDuration" Header="BY DURATION" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:CheckEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsEnabled}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Total_Units"
+                            <dxg:GridColumn FieldName="Total_Units"
                                             Header="TOTAL HOURS" ReadOnly="True" IsEnabled="False">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1"

@@ -11,6 +11,7 @@ using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.P6EntitiesDataModel;
@@ -28,7 +29,7 @@ namespace BluePrints.ViewModels
 {
     public class ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
-        <ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>
+        <ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of ESTIMATION_DIRECT_ITEM_ITEMSViewModelWrapper as a POCO view model.
@@ -52,20 +53,21 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
         private PROJECT loadPROJECT;
+        private PROGRESS livePROGRESS;
         private ESTIMATION_DIRECT loadESTIMATION_DIRECT;
         private DEPARTMENT defaultConstructionDEPARTMENT;
         private PHASE defaultConstructionPHASE;
         private bool isQueryForLiveStatus;
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private const string entity_string = "Entity.Entity.";
+        private const string projection_string = "Entity.";
         private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory =
             P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
         protected override void InitializeParameters(object parameter)
         {
             var receiveParameter =
-                (OptionalEntitiesParameter<PROJECT, ESTIMATION_DIRECT>)parameter;
+                (DualEntitiesParameter<PROJECT, ESTIMATION_DIRECT>)parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadESTIMATION_DIRECT = receiveParameter.GetSecondEntity();
 
@@ -83,6 +85,8 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, x => defaultConstructionDEPARTMENT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc, x => defaultConstructionPHASE = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc, x => loadESTIMATION_DIRECT = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, x => livePROGRESS = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
@@ -99,6 +103,19 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID == loadPROJECT.GUID);
             else
                 return query => query.Where(x => x.GUID == loadESTIMATION_DIRECT.GUID_PROJECT);
+        }
+
+        private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == ProgressType.Construct && x.STATUS == ProgressStatus.Live);
+        }
+
+        private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
+        {
+            if (livePROGRESS == null)
+                return query => query.Where(x => x.GUID_PROGRESS == Guid.Empty);
+            else
+                return query => query.Where(x => x.GUID_PROGRESS == livePROGRESS.GUID);
         }
 
         private Func<IRepositoryQuery<ESTIMATION_DIRECT>, IQueryable<ESTIMATION_DIRECT>> ESTIMATION_DIRECTProjectionFunc()
@@ -152,13 +169,13 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ESTIMATION_DIRECT_ITEMProjection>>
+        protected override Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ESTIMATION_DIRECT_ITEMProgress>>
             ConstructMainViewModelProjection()
         {
-            return query => ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Rates_Transformation(query, loaderCollection.GetCollection<RATE>(), STOCK_CODECollection, loaderCollection.GetCollection<COMMODITY_CODE>());
+            return query => ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query, loadPROJECT, loaderCollection.GetCollection<RATE>(), livePROGRESS, PROGRESS_ITEMCollection, STOCK_CODECollection, loaderCollection.GetCollection<COMMODITY_CODE>());
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATION_DIRECT_ITEMProjection> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATION_DIRECT_ITEMProgress> entities)
         {
             MainViewModel.DisablePasting = true;
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
@@ -169,19 +186,19 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-        protected bool ExistingRowAddUndoAndSaveCallBack(ESTIMATION_DIRECT_ITEMProjection projectionEntity, CellValueChangedEventArgs e)
+        protected bool ExistingRowAddUndoAndSaveCallBack(ESTIMATION_DIRECT_ITEMProgress projectionEntity, CellValueChangedEventArgs e)
         {
             return true;
         }
 
-        private void createAndAssignProjectSpecificSTOCK_CODE(ESTIMATION_DIRECT_ITEMProjection projectionEntity)
+        private void createAndAssignProjectSpecificSTOCK_CODE(ESTIMATION_DIRECT_ITEMProgress projectionEntity)
         {
-            if (projectionEntity.Entity.GUID_STOCK_CODE == null)
+            if (projectionEntity.Entity.Entity.GUID_STOCK_CODE == null)
                 return;
 
-            if(!ProjectSTOCK_CODECollection.Any(x => x.GUID == projectionEntity.Entity.GUID_STOCK_CODE))
+            if(!ProjectSTOCK_CODECollection.Any(x => x.GUID == projectionEntity.Entity.Entity.GUID_STOCK_CODE))
             {
-                STOCK_CODE stock_code = STOCK_CODECollection.FirstOrDefault(x => x.GUID == projectionEntity.Entity.GUID_STOCK_CODE);
+                STOCK_CODE stock_code = STOCK_CODECollection.FirstOrDefault(x => x.GUID == projectionEntity.Entity.Entity.GUID_STOCK_CODE);
                 if (stock_code != null)
                 {
                     STOCK_CODE projectSTOCK_CODE = new STOCK_CODE();
@@ -189,10 +206,10 @@ namespace BluePrints.ViewModels
                     projectSTOCK_CODE.GUID = Guid.Empty;
                     projectSTOCK_CODE.GUID_PROJECT = loadPROJECT.GUID;
                     STOCK_CODECollectionViewModel.Save(projectSTOCK_CODE);
-                    projectionEntity.Entity.GUID_STOCK_CODE = projectSTOCK_CODE.GUID;
+                    projectionEntity.Entity.Entity.GUID_STOCK_CODE = projectSTOCK_CODE.GUID;
 
                     //commodity code is by value with shallow copy in setter so that user edited changes can be cross check with existing project commodity code
-                    projectionEntity.STOCK_CODE = projectSTOCK_CODE;
+                    projectionEntity.Entity.STOCK_CODE = projectSTOCK_CODE;
                 }
                 else
                     return;
@@ -223,24 +240,24 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
-        public bool OnBeforeEntitySaved(ESTIMATION_DIRECT_ITEMProjection entity)
+        public bool OnBeforeEntitySaved(ESTIMATION_DIRECT_ITEMProgress entity)
         {
             onBeforeSavedGenerateAndAssignWorkpack(entity);
             onBeforeSavedProjectStockCodeLogging(entity);
-            entity.Entity.GUID_ESTIMATION_DIRECT = loadESTIMATION_DIRECT.GUID;
+            entity.Entity.Entity.GUID_ESTIMATION_DIRECT = loadESTIMATION_DIRECT.GUID;
             return true;
         }
 
-        public void OnEntitiesSavedCallBack(Guid primaryKey, ESTIMATION_DIRECT_ITEMProjection projectionEntity, ESTIMATION_DIRECT_ITEM entity, bool isNewEntity)
+        public void OnEntitiesSavedCallBack(Guid primaryKey, ESTIMATION_DIRECT_ITEMProgress projectionEntity, ESTIMATION_DIRECT_ITEM entity, bool isNewEntity)
         {
-            projectionEntity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
+            projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
         }
 
-        private void onBeforeSavedGenerateAndAssignWorkpack(ESTIMATION_DIRECT_ITEMProjection entity)
+        private void onBeforeSavedGenerateAndAssignWorkpack(ESTIMATION_DIRECT_ITEMProgress entity)
         {
-            if(entity.Entity.GUID_AREA != null && entity.Entity.GUID_DISCIPLINE != null)
+            if(entity.Entity.Entity.GUID_AREA != null && entity.Entity.Entity.GUID_DISCIPLINE != null)
             {
-                string internalNumber = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2(entity.Entity.GUID_AREA, entity.Entity.GUID_SUBAREA, loadPROJECT, AREACollection, SUBAREACollection);
+                string internalNumber = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2(entity.Entity.Entity.GUID_AREA, entity.Entity.Entity.GUID_SUBAREA, loadPROJECT, AREACollection, SUBAREACollection);
                 if(internalNumber != string.Empty)
                 {
                     WORKPACK existingWORKPACK = WORKPACKCollection.FirstOrDefault(x => x.INTERNAL_NAME1 == internalNumber);
@@ -250,11 +267,11 @@ namespace BluePrints.ViewModels
                         newWORKPACK.GUID_PROJECT = loadPROJECT.GUID;
                         AREA defaultSubArea = SUBAREACollection.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.Default_Sub_Area);
 
-                        newWORKPACK.GUID_DAREA = entity.Entity.GUID_AREA;
-                        newWORKPACK.GUID_DSUBAREA = entity.Entity.GUID_SUBAREA == null ? defaultSubArea == null ? (Guid?)null : defaultSubArea.GUID : entity.Entity.GUID_SUBAREA;
+                        newWORKPACK.GUID_DAREA = entity.Entity.Entity.GUID_AREA;
+                        newWORKPACK.GUID_DSUBAREA = entity.Entity.Entity.GUID_SUBAREA == null ? defaultSubArea == null ? (Guid?)null : defaultSubArea.GUID : entity.Entity.Entity.GUID_SUBAREA;
                         newWORKPACK.GUID_DPHASE = defaultConstructionPHASE.GUID;
                         newWORKPACK.GUID_DDEPARTMENT = defaultConstructionDEPARTMENT.GUID;
-                        newWORKPACK.GUID_DDISCIPLINE = (Guid)entity.Entity.GUID_DISCIPLINE;
+                        newWORKPACK.GUID_DDISCIPLINE = (Guid)entity.Entity.Entity.GUID_DISCIPLINE;
                         newWORKPACK.INTERNAL_NAME1 = internalNumber;
                         newWORKPACK.STARTDATE = DateTime.Now;
                         newWORKPACK.ENDDATE =
@@ -268,28 +285,28 @@ namespace BluePrints.ViewModels
                         newWORKPACK.AUTOGENERATED = true;
                         newWORKPACK.TYPE = WorkpackType.SiteDirect;
                         WORKPACKSCollectionViewModel.Save(newWORKPACK);
-                        entity.Entity.GUID_WORKPACK = newWORKPACK.GUID;
+                        entity.Entity.Entity.GUID_WORKPACK = newWORKPACK.GUID;
                     }
                     else
-                        entity.Entity.GUID_WORKPACK = existingWORKPACK.GUID;
+                        entity.Entity.Entity.GUID_WORKPACK = existingWORKPACK.GUID;
                 }
             }
         }
 
-        private void onBeforeSavedProjectStockCodeLogging(ESTIMATION_DIRECT_ITEMProjection entity)
+        private void onBeforeSavedProjectStockCodeLogging(ESTIMATION_DIRECT_ITEMProgress entity)
         {
-            if(entity.STOCK_CODE != null)
+            if(entity.Entity.STOCK_CODE != null)
             {
                 STOCK_CODE projectStockCode;
-                projectStock_CodeStatus commodityCodeStatus = getProjectStockCodeStatus(entity.STOCK_CODE, out projectStockCode);
+                projectStock_CodeStatus commodityCodeStatus = getProjectStockCodeStatus(entity.Entity.STOCK_CODE, out projectStockCode);
                 if (commodityCodeStatus == projectStock_CodeStatus.IsEmpty)
                     return;
                 else if (commodityCodeStatus == projectStock_CodeStatus.DontExists)
                     createAndAssignProjectSpecificSTOCK_CODE(entity);
                 else if (commodityCodeStatus == projectStock_CodeStatus.MetaExistsOnDifferentRecord)
                 {
-                    entity.Entity.GUID_STOCK_CODE = projectStockCode.GUID;
-                    entity.STOCK_CODE = projectStockCode;
+                    entity.Entity.Entity.GUID_STOCK_CODE = projectStockCode.GUID;
+                    entity.Entity.STOCK_CODE = projectStockCode;
                 }
                 else if (commodityCodeStatus == projectStock_CodeStatus.ExistsWithDifferentRateHours)
                 {
@@ -319,20 +336,20 @@ namespace BluePrints.ViewModels
 
                     string message = String.Format("Current stock code with\nSupply Rate: {0:#} Install Hours: {1:#}\n" +
                         "Is changed to\nSupply Rate: {2:#} Install Hours: {3:#}\n" +
-                        "Do you wish to add new or update?", projectStockCode.RATE_SUPPLY, projectStockCode.HOURS_INSTALL, entity.STOCK_CODE.RATE_SUPPLY, entity.STOCK_CODE.HOURS_INSTALL);
+                        "Do you wish to add new or update?", projectStockCode.RATE_SUPPLY, projectStockCode.HOURS_INSTALL, entity.Entity.STOCK_CODE.RATE_SUPPLY, entity.Entity.STOCK_CODE.HOURS_INSTALL);
 
                     BasicMessageBoxViewModel viewModel = BasicMessageBoxViewModel.Create(message);
                     UICommand result = StockCodeDialogService.ShowDialog(new List<UICommand>() { addCommand, editCommand, cancelCommand }, "Stock Code", "BasicMessageBox", viewModel);
                     if (result == addCommand)
                     {
-                        Guid newStockCodeGuid = createNewSTOCK_CODE(entity.STOCK_CODE);
-                        entity.Entity.GUID_STOCK_CODE = newStockCodeGuid;
+                        Guid newStockCodeGuid = createNewSTOCK_CODE(entity.Entity.STOCK_CODE);
+                        entity.Entity.Entity.GUID_STOCK_CODE = newStockCodeGuid;
                     }
                     else if (result == editCommand)
-                        updateCOMMODITY_CODE(entity.STOCK_CODE);
+                        updateCOMMODITY_CODE(entity.Entity.STOCK_CODE);
                 }
                 else if (commodityCodeStatus == projectStock_CodeStatus.Exists)
-                    updateCOMMODITY_CODE(entity.STOCK_CODE);
+                    updateCOMMODITY_CODE(entity.Entity.STOCK_CODE);
             }
         }
         #endregion
@@ -354,10 +371,10 @@ namespace BluePrints.ViewModels
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
             _isProcessingMultiple = true;
             var timesToDuplicate = 0;
-            List<ESTIMATION_DIRECT_ITEMProjection> newEntities = new List<ESTIMATION_DIRECT_ITEMProjection>();
+            List<ESTIMATION_DIRECT_ITEMProgress> newEntities = new List<ESTIMATION_DIRECT_ITEMProgress>();
             if (int.TryParse(barEdit.EditValue.ToString(), out timesToDuplicate))
             {
-                List<ESTIMATION_DIRECT_ITEMProjection> currentEnumerationSaveEntities = getNewEntities(timesToDuplicate, false);
+                List<ESTIMATION_DIRECT_ITEMProgress> currentEnumerationSaveEntities = getNewEntities(timesToDuplicate, false);
                 newEntities.AddRange(currentEnumerationSaveEntities);
             }
 
@@ -379,26 +396,26 @@ namespace BluePrints.ViewModels
             if (!_isProcessingMultiple)
                 MainViewModel.EntitiesUndoRedoManager.PauseActionId();
 
-            List<ESTIMATION_DIRECT_ITEMProjection> newEntities = getNewEntities(1, false);
+            List<ESTIMATION_DIRECT_ITEMProgress> newEntities = getNewEntities(1, false);
             MainViewModel.BulkSave(newEntities);
             if (!_isProcessingMultiple)
                 MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }
 
-        List<ESTIMATION_DIRECT_ITEMProjection> getNewEntities(int timesToDuplicate, bool isInsert)
+        List<ESTIMATION_DIRECT_ITEMProgress> getNewEntities(int timesToDuplicate, bool isInsert)
         {
-            List<ESTIMATION_DIRECT_ITEMProjection> unsavedEntities = new List<ESTIMATION_DIRECT_ITEMProjection>();
+            List<ESTIMATION_DIRECT_ITEMProgress> unsavedEntities = new List<ESTIMATION_DIRECT_ITEMProgress>();
             for (int i = 0; i < timesToDuplicate; i++)
             {
                 foreach (var selectedEntity in MainViewModel.SelectedEntities)
                 {
-                    var newProjection = new ESTIMATION_DIRECT_ITEMProjection();
-                    DataUtils.ShallowCopy(newProjection.Entity, selectedEntity.Entity);
-                    newProjection.Entity.EntityKey = Guid.Empty;
-                    newProjection.Entity.GUID_ORIGINAL = Guid.Empty;
-                    newProjection.Entity.PROGRESS_TYPE = Estimation_DirectProgressType.Standalone;
-                    newProjection.Entity.DB_Productivity_Override = null;
-                    //newProjection.Entity.ESTIMATED_QUANTITY = IsBASELINELocked ? 0 : selectedEntity.Entity.ESTIMATED_QUANTITY;
+                    var newProjection = new ESTIMATION_DIRECT_ITEMProgress();
+                    DataUtils.ShallowCopy(newProjection.Entity.Entity, selectedEntity.Entity.Entity);
+                    newProjection.Entity.Entity.EntityKey = Guid.Empty;
+                    newProjection.Entity.Entity.GUID_ORIGINAL = Guid.Empty;
+                    newProjection.Entity.Entity.PROGRESS_TYPE = Estimation_DirectProgressType.Standalone;
+                    newProjection.Entity.Entity.DB_Productivity_Override = null;
+                    //newProjection.Entity.Entity.ESTIMATED_QUANTITY = IsBASELINELocked ? 0 : selectedEntity.Entity.Entity.ESTIMATED_QUANTITY;
 
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(newProjection, null, null, null, EntityMessageType.Added);
                     unsavedEntities.Add(newProjection);
@@ -419,7 +436,7 @@ namespace BluePrints.ViewModels
                 List<STOCK_CODE> removeStockCodes = new List<STOCK_CODE>();
                 foreach (STOCK_CODE projectStockCode in ProjectSTOCK_CODECollection)
                 {
-                    if (!MainViewModel.Entities.Any(x => x.Entity.GUID_STOCK_CODE == projectStockCode.GUID))
+                    if (!MainViewModel.Entities.Any(x => x.Entity.Entity.GUID_STOCK_CODE == projectStockCode.GUID))
                         removeStockCodes.Add(projectStockCode);
                 }
                 STOCK_CODECollectionViewModel.BaseBulkDelete(removeStockCodes);
@@ -438,9 +455,9 @@ namespace BluePrints.ViewModels
                 {
                     foreach (var entities in MainViewModel.Entities)
                     {
-                        if(entities.Entity.GUID_STOCK_CODE == (Guid)key)
+                        if(entities.Entity.Entity.GUID_STOCK_CODE == (Guid)key)
                         {
-                            entities.STOCK_CODE = changedStock_Code;
+                            entities.Entity.STOCK_CODE = changedStock_Code;
                             entities.Update();
                         }
                     }
@@ -454,17 +471,16 @@ namespace BluePrints.ViewModels
 
         private void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
         {
-            if (e.Column.FieldName ==
-                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
+            if (e.Column.FieldName == entity_string + 
                  BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().PROGRESS_TYPE))
             {
-                ESTIMATION_DIRECT_ITEMProjection validateEntity = (ESTIMATION_DIRECT_ITEMProjection)e.Row;
-                if(validateEntity.Entity.GUID_COMMODITY_CODE != null)
+                ESTIMATION_DIRECT_ITEMProgress validateEntity = (ESTIMATION_DIRECT_ITEMProgress)e.Row;
+                if(validateEntity.Entity.Entity.GUID_COMMODITY_CODE != null)
                 {
-                    COMMODITY_CODE entity_commodity_code = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == validateEntity.Entity.GUID_COMMODITY_CODE);
+                    COMMODITY_CODE entity_commodity_code = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == validateEntity.Entity.Entity.GUID_COMMODITY_CODE);
                     if(entity_commodity_code != null)
                     {
-                        if ((validateEntity.Entity.STOCK_CODE.UOM != entity_commodity_code.UOM) && ((Estimation_DirectProgressType)e.Value) == Estimation_DirectProgressType.Trackable)
+                        if ((validateEntity.Entity.Entity.STOCK_CODE.UOM != entity_commodity_code.UOM) && ((Estimation_DirectProgressType)e.Value) == Estimation_DirectProgressType.Trackable)
                         {
                             e.IsValid = false;
                             e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
@@ -473,17 +489,16 @@ namespace BluePrints.ViewModels
                     }
                 }
             }
-            else if (e.Column.FieldName ==
-                     BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
+            else if (e.Column.FieldName == entity_string +
                      BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_COMMODITY_CODE))
             {
-                ESTIMATION_DIRECT_ITEMProjection validateEntity = (ESTIMATION_DIRECT_ITEMProjection)e.Row;
-                if (validateEntity.Entity.PROGRESS_TYPE == Estimation_DirectProgressType.Trackable && e.Value != null)
+                ESTIMATION_DIRECT_ITEMProgress validateEntity = (ESTIMATION_DIRECT_ITEMProgress)e.Row;
+                if (validateEntity.Entity.Entity.PROGRESS_TYPE == Estimation_DirectProgressType.Trackable && e.Value != null)
                 {
                     COMMODITY_CODE entity_commodity_code = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
                     if (entity_commodity_code != null)
                     {
-                        if ((validateEntity.Entity.STOCK_CODE.UOM != entity_commodity_code.UOM))
+                        if ((validateEntity.Entity.Entity.STOCK_CODE.UOM != entity_commodity_code.UOM))
                         {
                             e.IsValid = false;
                             e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
@@ -492,12 +507,12 @@ namespace BluePrints.ViewModels
                     }
                 }
             }
-            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().StockCodeGuid))
+            else if (e.Column.FieldName == projection_string + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.StockCodeGuid))
             {
-                ESTIMATION_DIRECT_ITEMProjection validateEntity = (ESTIMATION_DIRECT_ITEMProjection)e.Row;
-                if (validateEntity.Entity.PROGRESS_TYPE == Estimation_DirectProgressType.Trackable && e.Value != null)
+                ESTIMATION_DIRECT_ITEMProgress validateEntity = (ESTIMATION_DIRECT_ITEMProgress)e.Row;
+                if (validateEntity.Entity.Entity.PROGRESS_TYPE == Estimation_DirectProgressType.Trackable && e.Value != null)
                 {
-                    COMMODITY_CODE entity_commodity_code = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == validateEntity.Entity.GUID_COMMODITY_CODE);
+                    COMMODITY_CODE entity_commodity_code = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == validateEntity.Entity.Entity.GUID_COMMODITY_CODE);
                     STOCK_CODE entity_stock_code = STOCK_CODECollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
                     if (entity_stock_code != null && entity_commodity_code != null)
                     {
@@ -517,40 +532,40 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override void CellValueExistingRowChanging(CellValueChangedEventArgs e)
         {
-            var activeESTIMATION_DIRECT_ITEM = (ESTIMATION_DIRECT_ITEMProjection)e.Row;
+            var activeESTIMATION_DIRECT_ITEM = (ESTIMATION_DIRECT_ITEMProgress)e.Row;
 
             if (e.Column.FieldName ==
-                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
+                 entity_string + 
                  BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_AREA))
             {
                 resetProjectionSubArea(activeESTIMATION_DIRECT_ITEM);
                 resetProjectionStockCode(activeESTIMATION_DIRECT_ITEM);
             }
             else if (e.Column.FieldName ==
-                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
+                 entity_string +
                  BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_SUBAREA))
             {
                 resetProjectionStockCode(activeESTIMATION_DIRECT_ITEM);
             }
             else if (e.Column.FieldName ==
-                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
+                 entity_string +
                  BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_DISCIPLINE))
             {
                 resetProjectionCommodityCode(activeESTIMATION_DIRECT_ITEM);
                 resetProjectionStockCode(activeESTIMATION_DIRECT_ITEM);
             }
-            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().CommodityCodeGuid))
+            else if (e.Column.FieldName == projection_string + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.CommodityCodeGuid))
             {
                 if (e.Value != null)
                 {
                     COMMODITY_CODE entity_commodity_code = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
                     if (entity_commodity_code != null)
                     {
-                        Guid? oldValue = activeESTIMATION_DIRECT_ITEM.Entity.GUID_DISCIPLINE;
+                        Guid? oldValue = activeESTIMATION_DIRECT_ITEM.Entity.Entity.GUID_DISCIPLINE;
                         Guid newValue = entity_commodity_code.GUID_DISCIPLINE;
-                        string discipline_field_name = BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
+                        string discipline_field_name = BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.Entity) + "." +
                         BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_DISCIPLINE);
-                        activeESTIMATION_DIRECT_ITEM.Entity.GUID_DISCIPLINE = newValue;
+                        activeESTIMATION_DIRECT_ITEM.Entity.Entity.GUID_DISCIPLINE = newValue;
                         MainViewModel.EntitiesUndoRedoManager.PauseActionId();
                         MainViewModel.EntitiesUndoRedoManager.AddUndo(activeESTIMATION_DIRECT_ITEM, discipline_field_name, oldValue, newValue, EntityMessageType.Changed);
                     }
@@ -560,75 +575,72 @@ namespace BluePrints.ViewModels
             base.CellValueExistingRowChanging(e);
         }
 
-        private void setProjectionStockCode(ESTIMATION_DIRECT_ITEMProjection projection, Guid? stockCodeGuid)
+        private void setProjectionStockCode(ESTIMATION_DIRECT_ITEMProgress projection, Guid? stockCodeGuid)
         {
             if (stockCodeGuid != null)
-                projection.STOCK_CODE = STOCK_CODECollection.FirstOrDefault(x => x.GUID == (Guid)stockCodeGuid);
+                projection.Entity.STOCK_CODE = STOCK_CODECollection.FirstOrDefault(x => x.GUID == (Guid)stockCodeGuid);
             else
-                projection.STOCK_CODE = null;
+                projection.Entity.STOCK_CODE = null;
 
             projection.Update();
         }
 
-        private void updateProjectionStockCodeCollection(ESTIMATION_DIRECT_ITEMProjection projection, Guid? disciplineGuid)
+        private void updateProjectionStockCodeCollection(ESTIMATION_DIRECT_ITEMProgress projection, Guid? disciplineGuid)
         {
             if (disciplineGuid != null)
                 //commodity code collection must be updated by discipline filter
-                projection.StockCodeCollection = STOCK_CODECollection.Where(x => x.GUID_DISCIPLINE == disciplineGuid);
+                projection.Entity.StockCodeCollection = STOCK_CODECollection.Where(x => x.GUID_DISCIPLINE == disciplineGuid);
             else
-                projection.StockCodeCollection = new List<STOCK_CODE>();
+                projection.Entity.StockCodeCollection = new List<STOCK_CODE>();
 
             projection.Update();
         }
 
-        private void updateProjectionCommodityCodeCollection(ESTIMATION_DIRECT_ITEMProjection projection, Guid? areaGuid, Guid? subAreaGuid, Guid? disciplineGuid)
+        private void updateProjectionCommodityCodeCollection(ESTIMATION_DIRECT_ITEMProgress projection, Guid? areaGuid, Guid? subAreaGuid, Guid? disciplineGuid)
         {
             if (areaGuid != null)
-                projection.CommodityCodeCollection = COMMODITY_CODECollection
+                projection.Entity.CommodityCodeCollection = COMMODITY_CODECollection
                 .Where(x => x.GUID_AREA == areaGuid && x.GUID_SUBAREA == subAreaGuid).OrderBy(x => x.CODE);
             else
-                projection.CommodityCodeCollection = new List<COMMODITY_CODE>();
+                projection.Entity.CommodityCodeCollection = new List<COMMODITY_CODE>();
 
             projection.Update();
         }
 
-        private void resetProjectionSubArea(ESTIMATION_DIRECT_ITEMProjection projection)
+        private void resetProjectionSubArea(ESTIMATION_DIRECT_ITEMProgress projection)
         {
-            Guid? oldValue = projection.Entity.GUID_SUBAREA;
+            Guid? oldValue = projection.Entity.Entity.GUID_SUBAREA;
             if (oldValue != null)
             {
                 Guid? newValue = (Guid?)null;
-                string subAreaFieldName = BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
-                BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().SubAreaGuid);
-                projection.Entity.GUID_SUBAREA = newValue;
+                string subAreaFieldName = entity_string + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().SubAreaGuid);
+                projection.Entity.Entity.GUID_SUBAREA = newValue;
                 MainViewModel.EntitiesUndoRedoManager.PauseActionId();
                 MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, subAreaFieldName, oldValue, newValue, EntityMessageType.Changed);
             }
         }
 
-        private void resetProjectionCommodityCode(ESTIMATION_DIRECT_ITEMProjection projection)
+        private void resetProjectionCommodityCode(ESTIMATION_DIRECT_ITEMProgress projection)
         {
-            Guid? oldValue = projection.CommodityCodeGuid;
+            Guid? oldValue = projection.Entity.CommodityCodeGuid;
             if (oldValue != null)
             {
                 Guid? newValue = (Guid?)null;
-                string commoditycodeFieldName = BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
-                BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_COMMODITY_CODE);
-                projection.Entity.GUID_COMMODITY_CODE = newValue;
+                string commoditycodeFieldName = entity_string + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_COMMODITY_CODE);
+                projection.Entity.Entity.GUID_COMMODITY_CODE = newValue;
                 MainViewModel.EntitiesUndoRedoManager.PauseActionId();
                 MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, commoditycodeFieldName, oldValue, newValue, EntityMessageType.Changed);
             }
         }
 
-        private void resetProjectionStockCode(ESTIMATION_DIRECT_ITEMProjection projection)
+        private void resetProjectionStockCode(ESTIMATION_DIRECT_ITEMProgress projection)
         {
-            Guid? oldValue = projection.StockCodeGuid;
+            Guid? oldValue = projection.Entity.StockCodeGuid;
             if (oldValue != null)
             {
                 Guid? newValue = (Guid?)null;
-                string stockcodeFieldName = BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
-                BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_STOCK_CODE);
-                projection.Entity.GUID_COMMODITY_CODE = newValue;
+                string stockcodeFieldName = entity_string + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_STOCK_CODE);
+                projection.Entity.Entity.GUID_COMMODITY_CODE = newValue;
                 MainViewModel.EntitiesUndoRedoManager.PauseActionId();
                 MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, stockcodeFieldName, oldValue, newValue, EntityMessageType.Changed);
             }
@@ -636,56 +648,50 @@ namespace BluePrints.ViewModels
 
         protected override void CellValueNewRowChanging(CellValueChangedEventArgs e)
         {
-            var activeESTIMATION_DIRECT_ITEM = (ESTIMATION_DIRECT_ITEMProjection)e.Row;
-            if (e.Column.FieldName ==
-                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
-                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_AREA))
+            var activeESTIMATION_DIRECT_ITEM = (ESTIMATION_DIRECT_ITEMProgress)e.Row;
+            if (e.Column.FieldName == entity_string + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_AREA))
             {
                 if (e.Value != null)
                 {
-                    activeESTIMATION_DIRECT_ITEM.Entity.GUID_AREA = (Guid)e.Value;
+                    activeESTIMATION_DIRECT_ITEM.Entity.Entity.GUID_AREA = (Guid)e.Value;
                     //Area is required immediately for subarea selection
-                    activeESTIMATION_DIRECT_ITEM.Entity.AREA = AREACollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
+                    activeESTIMATION_DIRECT_ITEM.Entity.Entity.AREA = AREACollection.FirstOrDefault(x => x.GUID == (Guid)e.Value);
 
                     activeESTIMATION_DIRECT_ITEM.Update();
                 }
 
                 //SubArea must be removed immediately to nullify subarea selection
-                if (activeESTIMATION_DIRECT_ITEM.Entity.GUID_SUBAREA != null)
+                if (activeESTIMATION_DIRECT_ITEM.Entity.Entity.GUID_SUBAREA != null)
                 {
-                    activeESTIMATION_DIRECT_ITEM.Entity.GUID_SUBAREA = null;
+                    activeESTIMATION_DIRECT_ITEM.Entity.Entity.GUID_SUBAREA = null;
                     activeESTIMATION_DIRECT_ITEM.Update();
                 }
 
-                updateProjectionCommodityCodeCollection(activeESTIMATION_DIRECT_ITEM, (Guid?)e.Value, activeESTIMATION_DIRECT_ITEM.Entity.SubAreaGuid, activeESTIMATION_DIRECT_ITEM.Entity.GUID_DISCIPLINE);
+                updateProjectionCommodityCodeCollection(activeESTIMATION_DIRECT_ITEM, (Guid?)e.Value, activeESTIMATION_DIRECT_ITEM.Entity.Entity.SubAreaGuid, activeESTIMATION_DIRECT_ITEM.Entity.Entity.GUID_DISCIPLINE);
                 activeESTIMATION_DIRECT_ITEM.Update();
             }
-            else if (e.Column.FieldName ==
-                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
-                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().SubAreaGuid))
+            else if (e.Column.FieldName == entity_string + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().SubAreaGuid))
             {
-                updateProjectionCommodityCodeCollection(activeESTIMATION_DIRECT_ITEM, activeESTIMATION_DIRECT_ITEM.Entity.GUID_AREA, (Guid?)e.Value, activeESTIMATION_DIRECT_ITEM.Entity.GUID_DISCIPLINE);
+                updateProjectionCommodityCodeCollection(activeESTIMATION_DIRECT_ITEM, activeESTIMATION_DIRECT_ITEM.Entity.Entity.GUID_AREA, (Guid?)e.Value, activeESTIMATION_DIRECT_ITEM.Entity.Entity.GUID_DISCIPLINE);
                 activeESTIMATION_DIRECT_ITEM.Update();
             }
-            else if (e.Column.FieldName ==
-                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().Entity) + "." +
-                 BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_DISCIPLINE))
+            else if (e.Column.FieldName == entity_string + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_DISCIPLINE))
             {
-                updateProjectionCommodityCodeCollection(activeESTIMATION_DIRECT_ITEM, activeESTIMATION_DIRECT_ITEM.Entity.GUID_AREA, activeESTIMATION_DIRECT_ITEM.Entity.GUID_SUBAREA, (Guid?)e.Value);
+                updateProjectionCommodityCodeCollection(activeESTIMATION_DIRECT_ITEM, activeESTIMATION_DIRECT_ITEM.Entity.Entity.GUID_AREA, activeESTIMATION_DIRECT_ITEM.Entity.Entity.GUID_SUBAREA, (Guid?)e.Value);
                 updateProjectionStockCodeCollection(activeESTIMATION_DIRECT_ITEM, (Guid?)e.Value);
                 activeESTIMATION_DIRECT_ITEM.Update();
             }
-            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().StockCodeGuid))
+            else if (e.Column.FieldName == projection_string + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.StockCodeGuid))
             {
                 setProjectionStockCode(activeESTIMATION_DIRECT_ITEM, (Guid?)e.Value);
                 activeESTIMATION_DIRECT_ITEM.Update();
             }
-            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProjection().CommodityCodeGuid))
+            else if (e.Column.FieldName == projection_string + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.CommodityCodeGuid))
             {
                 var chosen_commodity_code = COMMODITY_CODECollection.FirstOrDefault(entity => entity.GUID == (Guid)e.Value);
                 if (chosen_commodity_code != null)
                 {
-                    activeESTIMATION_DIRECT_ITEM.Entity.GUID_DISCIPLINE = chosen_commodity_code.GUID_DISCIPLINE;
+                    activeESTIMATION_DIRECT_ITEM.Entity.Entity.GUID_DISCIPLINE = chosen_commodity_code.GUID_DISCIPLINE;
                     activeESTIMATION_DIRECT_ITEM.Update();
                 }
             }
@@ -745,6 +751,14 @@ namespace BluePrints.ViewModels
         private DevExpress.Mvvm.IDialogService StockCodeDialogService
         {
             get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("StockCodeDialogService"); }
+        }
+
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMCollection
+        {
+            get
+            {
+                return GetEntities<PROGRESS_ITEM>();
+            }
         }
 
         public IEnumerable<PHASE> PHASECollection

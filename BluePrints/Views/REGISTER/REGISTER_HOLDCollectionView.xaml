@@ -75,8 +75,8 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlREGISTER" Style="{StaticResource DefaultGridControlTemplate}" >
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="NUMBER" ReadOnly="True" Header="Hold Num" />
-                            <dxg:GridColumn Header="Area" FieldName="GUID_AREA" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="NUMBER" ReadOnly="True" Header="Hold Num" />
+                            <dxg:GridColumn AllowMoving="false" Header="Area" FieldName="GUID_AREA" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
@@ -84,36 +84,36 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="DESCRIPTION" Header="Hold Description" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="DESCRIPTION" Header="Hold Description" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="REFERENCE" Header="Reference" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="REFERENCE" Header="Reference" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="RAISEDBY" Header="Raised By" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="RAISEDBY" Header="Raised By" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="DATE_RAISED" Header="Date Raised" />
-                            <dxg:GridColumn FieldName="ACTION" Header="Action" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="DATE_RAISED" Header="Date Raised" />
+                            <dxg:GridColumn AllowMoving="false" FieldName="ACTION" Header="Action" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="DATE_CLOSED" Header="Date Closed" />
+                            <dxg:GridColumn AllowMoving="false" FieldName="DATE_CLOSED" Header="Date Closed" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />

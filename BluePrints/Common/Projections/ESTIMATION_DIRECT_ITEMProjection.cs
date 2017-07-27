@@ -125,6 +125,7 @@ namespace BluePrints.Common.Projections
         public decimal Total_Units => Estimated_Units;
 
         public Guid OriginalEntityKey { get => Entity.GUID_ORIGINAL; }
+
         public void SetOriginalEntityKey(Guid newGuid) { }
 
         public decimal ItemRate => RATE == null || RATE.RATE1 == null ? 0 : (decimal)RATE.RATE1;

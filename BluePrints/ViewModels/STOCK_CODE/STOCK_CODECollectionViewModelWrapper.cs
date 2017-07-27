@@ -55,7 +55,7 @@ namespace BluePrints.ViewModels
         {
             if (parameter != null)
             {
-                var projectCodeTypeParameter = (OptionalEntitiesParameter<PROJECT, StockCodeTypeClass>)parameter;
+                var projectCodeTypeParameter = (DualEntitiesParameter<PROJECT, StockCodeTypeClass>)parameter;
                 loadPROJECT = projectCodeTypeParameter.GetFirstEntity();
                 loadCommodityCodeType = projectCodeTypeParameter.GetSecondEntity().commodityCodeType;
             }

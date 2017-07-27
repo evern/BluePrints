@@ -156,7 +156,7 @@ namespace BluePrints.ViewModels
                 return;
 
             DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
-                new OptionalEntitiesParameter<Data.PROJECT, BASELINE>(null,
+                new DualEntitiesParameter<Data.PROJECT, BASELINE>(null,
                     DisplaySelectedEntity), 
                     "BASELINE_ITEMCollectionView", 
                     "[" + loadPROJECT.NUMBER + "] Baseline");

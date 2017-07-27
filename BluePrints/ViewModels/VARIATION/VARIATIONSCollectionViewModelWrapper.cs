@@ -47,14 +47,15 @@ namespace BluePrints.ViewModels
         #region Database Operation
 
         private PROJECT loadPROJECT;
+        private ProgressType phaseType;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
         protected override void InitializeParameters(object parameter)
         {
-            var PROJECTParameter =
-                (EntitiesParameter<PROJECT>) parameter;
-            loadPROJECT = PROJECTParameter.GetEntity();
+            var project_phasetype_parameter = (DualEntitiesParameter<PROJECT, ProgressTypeClass>) parameter;
+            loadPROJECT = project_phasetype_parameter.GetFirstEntity();
+            phaseType = project_phasetype_parameter.GetSecondEntity().progressType;
         }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
@@ -108,7 +109,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATIONProjection>> ConstructMainViewModelProjection()
         {
-            return query => VARIATIONProjectionQueries.VariationProjection_Transformation(query, loadPROJECT);
+            return query => VARIATIONProjectionQueries.VariationProjection_Transformation(query.Where(x => x.PHASE == ProgressType.Design), loadPROJECT);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATIONProjection> entities)
@@ -201,7 +202,7 @@ namespace BluePrints.ViewModels
                 variation_itemsViewModelWrapper.OnEntitiesLoadedParameterCallBack = () => OnEntitiesLoadedParameter;
                 variation_itemsViewModelWrapper.OnEntitiesLoadedWithParameterCallBack = OnLoadedAction;
                 var baselineSupportParameterObj = variation_itemsViewModelWrapper as ISupportParameter;
-                baselineSupportParameterObj.Parameter = new OptionalEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, loadVARIATION);
+                baselineSupportParameterObj.Parameter = new DualEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, loadVARIATION);
             }
 
             return variation_itemsViewModelWrapper;
@@ -343,7 +344,7 @@ namespace BluePrints.ViewModels
                 return;
 
             DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
-                new OptionalEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, DisplaySelectedEntity.Entity),
+                new DualEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, DisplaySelectedEntity.Entity),
                 "OffsiteDirectVariationCollectionView",
                 "[" + loadPROJECT.NUMBER + "] Variation");
 

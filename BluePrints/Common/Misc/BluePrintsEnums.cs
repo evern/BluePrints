@@ -398,6 +398,14 @@ namespace BluePrints.Common
         }
     }
 
+    public class ProgressTypeClass
+    {
+        public ProgressType progressType { get; set; }
+        public ProgressTypeClass(ProgressType progressType)
+        {
+            this.progressType = progressType;
+        }
+    }
 
     /// <summary>
     /// Used for optional parameter purpose

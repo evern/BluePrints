@@ -262,7 +262,7 @@
                                             </Grid.ColumnDefinitions>
                                             <Image
                                                     Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}"
-                                                    ToolTip="Cannot reduce more than earned units" Grid.Column="0">
+                                                    ToolTip="Cannot reduce anymore because these units has already been earned" Grid.Column="0">
                                                 <Image.Visibility>
                                                     <MultiBinding
                                                             Converter="{StaticResource NumericCompareToVisibilityConverter}"

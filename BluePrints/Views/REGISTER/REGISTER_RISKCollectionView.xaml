@@ -75,8 +75,8 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlREGISTER" Style="{StaticResource DefaultGridControlTemplate}" >
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="NUMBER" ReadOnly="True" Header="Number" />
-                            <dxg:GridColumn Header="Area" FieldName="GUID_AREA" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="NUMBER" ReadOnly="True" Header="Number" />
+                            <dxg:GridColumn AllowMoving="false" Header="Area" FieldName="GUID_AREA" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
@@ -84,8 +84,8 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="DATE_IDENTIFIED" Header="Date Identified" />
-                            <dxg:GridColumn FieldName="HAZARD_GROUP" Header="Hazard Group">
+                            <dxg:GridColumn AllowMoving="false" FieldName="DATE_IDENTIFIED" Header="Date Identified" />
+                            <dxg:GridColumn AllowMoving="false" FieldName="HAZARD_GROUP" Header="Hazard Group">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
                                         <dxe:ComboBoxEditSettings.ItemsSource>
@@ -94,21 +94,21 @@
                                     </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="HAZARD_TYPE" Header="Hazard Type" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="HAZARD_TYPE" Header="Hazard Type" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="HAZARD_CAUSE" Header="Cause of Hazard" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="HAZARD_CAUSE" Header="Cause of Hazard" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="RISK_LIKELIHOOD" Header="Rated Likelihood">
+                            <dxg:GridColumn AllowMoving="false" FieldName="RISK_LIKELIHOOD" Header="Rated Likelihood">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
                                         <dxe:ComboBoxEditSettings.ItemsSource>
@@ -117,7 +117,7 @@
                                     </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="RISK_CONSEQUENCES" Header="Rated Consequence">
+                            <dxg:GridColumn AllowMoving="false" FieldName="RISK_CONSEQUENCES" Header="Rated Consequence">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
                                         <dxe:ComboBoxEditSettings.ItemsSource>
@@ -126,7 +126,7 @@
                                     </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="RISK_RANKING" AllowEditing="False" Header="Rated Ranking" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="RISK_RANKING" AllowEditing="False" Header="Rated Ranking" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
                                         <dxe:ComboBoxEditSettings.ItemsSource>
@@ -135,14 +135,14 @@
                                     </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="CONTROL_MEASURES" Header="Control Measures" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="CONTROL_MEASURES" Header="Control Measures" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="RESIDUE_RISK_LIKELIHOOD" Header="Residual Likelihood">
+                            <dxg:GridColumn AllowMoving="false" FieldName="RESIDUE_RISK_LIKELIHOOD" Header="Residual Likelihood">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
                                         <dxe:ComboBoxEditSettings.ItemsSource>
@@ -151,7 +151,7 @@
                                     </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="RESIDUE_RISK_CONSEQUENCES" Header="Residual Consequence" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="RESIDUE_RISK_CONSEQUENCES" Header="Residual Consequence" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
                                         <dxe:ComboBoxEditSettings.ItemsSource>
@@ -160,7 +160,7 @@
                                     </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="RESIDUE_RISK_RANKING" AllowEditing="False" Header="Residual Ranking">
+                            <dxg:GridColumn AllowMoving="false" FieldName="RESIDUE_RISK_RANKING" AllowEditing="False" Header="Residual Ranking">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True">
                                         <dxe:ComboBoxEditSettings.ItemsSource>
@@ -169,22 +169,22 @@
                                     </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="RESIDUE_HAZARD" Header="Residual Hazards" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="RESIDUE_HAZARD" Header="Residual Hazards" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="FURTHER_ACTION" Header="Further Action By" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="FURTHER_ACTION" Header="Further Action By" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="RiskRankingCategory" Visible="False" />
-                            <dxg:GridColumn FieldName="ResidueRankingCategory" Visible="False" />
+                            <dxg:GridColumn AllowMoving="false" FieldName="RiskRankingCategory" Visible="False" />
+                            <dxg:GridColumn AllowMoving="false" FieldName="ResidueRankingCategory" Visible="False" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />

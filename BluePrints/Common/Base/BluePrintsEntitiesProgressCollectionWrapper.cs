@@ -66,7 +66,7 @@ namespace BluePrints.Common.Base
             delayedPROGRESSSavingDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 10);
             delayedPROGRESSSavingDispatcher.Tick += delayedPROGRESSSavingDispatcher_Tick;
             var receiveParameter =
-                (OptionalEntitiesParameter<Data.PROJECT, PROGRESS>)parameter;
+                (DualEntitiesParameter<Data.PROJECT, PROGRESS>)parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadPROGRESS = receiveParameter.GetSecondEntity();
 

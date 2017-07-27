@@ -367,6 +367,8 @@
     <Compile Include="Common\Base\BluePrintsProjectionMasterDetailBase.cs" />
     <Compile Include="Common\Misc\Messages.cs" />
     <Compile Include="Common\Misc\RiskMatrix.cs" />
+    <Compile Include="Common\Projections\ESTIMATION_DIRECT_ITEMVariation.cs" />
+    <Compile Include="Common\Projections\VariationBase.cs" />
     <Compile Include="Common\Reports\ViewModel\DataModel.cs" />
     <Compile Include="Common\Projections\COMMODITY_CODEProjection.cs" />
     <Compile Include="Common\Projections\ESTIMATION_DIRECT_ITEMProjection.cs" />
@@ -546,6 +548,7 @@
     <Compile Include="ViewModels\REGISTER\REGISTER_RISKCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\User_OffsiteDirectProgressCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\VARIATION_ITEM\OffsiteDirectVariationCollectionViewModelWrapperRevision.cs" />
     <Compile Include="ViewModels\WORKPACK\WORKPACKDashboardViewModelWrapper.cs" />
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.xaml.cs">
       <DependentUpon>BASELINE_ITEMSchedulingView.xaml</DependentUpon>
@@ -1230,6 +1233,9 @@
     <Compile Include="Views\VARIATION\VARIATIONCollectionView.xaml.cs">
       <DependentUpon>VARIATIONCollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\VARIATION_ITEM\SiteDirectVariationCollectionView.xaml.cs">
+      <DependentUpon>SiteDirectVariationCollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\WORKPACK\WORKPACKCollectionView.xaml.cs">
       <DependentUpon>WORKPACKCollectionView.xaml</DependentUpon>
     </Compile>
@@ -1459,6 +1465,10 @@
     <Page Include="Views\VARIATION\VARIATIONCollectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\VARIATION_ITEM\SiteDirectVariationCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\WORKPACK\WORKPACKCollectionView.xaml">
       <SubType>Designer</SubType>
