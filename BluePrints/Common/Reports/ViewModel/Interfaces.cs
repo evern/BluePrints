@@ -109,6 +109,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         void AppendProgressItem(PROGRESS_ITEM currentProgress);
     }
 
+    public interface ISupportVariation
+    {
+        Guid? Baseline_Guid { get; }
+        Guid? Variation_Guid { get; set; }
+    }
+
     public interface ICanTrack
     {
         Estimation_DirectProgressType Progress_Type { get; }

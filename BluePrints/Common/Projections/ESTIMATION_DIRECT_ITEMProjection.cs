@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IDeliverable_Quantity, IHaveStockCode, IHaveDBProductivityOverride
+    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IDeliverable_Quantity, IHaveStockCode, IHaveDBProductivityOverride, ISupportVariation
     {
         public ESTIMATION_DIRECT_ITEMProjection()
             : base()
@@ -159,6 +159,10 @@ namespace BluePrints.Common.Projections
         public string Stock_Code_Description => STOCK_CODE == null ? string.Empty : STOCK_CODE.DESCRIPTION;
 
         public decimal? DB_Productivity_Override { get => Entity.DB_Productivity_Override; set => Entity.DB_Productivity_Override = value; }
+
+        public Guid? Baseline_Guid => Entity.Baseline_Guid;
+
+        public Guid? Variation_Guid { get => Entity.Variation_Guid; set => Entity.Variation_Guid = value; }
     }
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries

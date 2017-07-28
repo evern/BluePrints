@@ -18,7 +18,7 @@
              xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
              xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
              mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
-             DataContext="{dxmvvm:ViewModelSource viewmodel:OffsiteDirectVariationCollectionViewModelWrapper}">
+             DataContext="{dxmvvm:ViewModelSource viewmodel:OffsiteDirectVariationCollectionViewModelWrapperRevision}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -285,7 +285,7 @@
                                                           MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="VARIATION_ITEM.VARIATION_UNITS" Header="ADJUST HOURS">
+                            <dxg:GridColumn FieldName="Variation_Units" Header="ADJUST HOURS">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" Increment="1"
@@ -322,7 +322,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="ACTION" FieldName="VARIATION_ITEM.ACTION" ReadOnly="True"
+                            <dxg:GridColumn Header="ACTION" FieldName="Variation_Action" ReadOnly="True"
                                             IsEnabled="False">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
@@ -336,14 +336,14 @@
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button Height="18"
-                                                Command="{Binding DataContext.CancelBASELINE_ITEMCommand, ElementName=userControl}"
+                                                Command="{Binding DataContext.CancelDeliverableCommand, ElementName=userControl}"
                                                 CommandParameter="{Binding RowData.Row}" IsEnabled="{Binding RowData.Row.IsCancellable}">
                                             <StackPanel Orientation="Horizontal">
                                                 <Image
-                                                    Source="{Binding Path=RowData.Row.VARIATION_ITEM.ACTION, Converter={StaticResource VariationActionToImageConverter}}"
+                                                    Source="{Binding Path=RowData.Row.Variation_Action, Converter={StaticResource VariationActionToImageConverter}}"
                                                     Margin="0, 0, 3, 0" />
                                                 <TextBlock
-                                                    Text="{Binding Path=RowData.Row.VARIATION_ITEM.ACTION, Converter={StaticResource VariationActionToStringConverter}}"
+                                                    Text="{Binding Path=RowData.Row.Variation_Action, Converter={StaticResource VariationActionToStringConverter}}"
                                                     VerticalAlignment="Center" />
                                             </StackPanel>
                                         </Button>

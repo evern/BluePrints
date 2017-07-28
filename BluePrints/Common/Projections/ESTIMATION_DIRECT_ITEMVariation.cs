@@ -10,5 +10,4 @@ namespace BluePrints.Common.Projections
     public class ESTIMATION_DIRECT_ITEMVariation : BluePrintsQuantityVariationBase<ESTIMATION_DIRECT_ITEMProgress>
     {
     }
-
 }

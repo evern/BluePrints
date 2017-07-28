@@ -44,5 +44,29 @@ namespace BluePrints.Common.Projections
                         ApprovedDate = VARIATION.APPROVED
                     }).AsQueryable();
         }
+
+        public static IQueryable<BASELINE_ITEMVariation> OffsiteDirectVariationItemTransformation(
+            IEnumerable<BASELINE_ITEMProgress> BASELINE_ITEMProgress, BASELINE BASELINE, VARIATION VARIATION,
+            IEnumerable<VARIATION_ITEM> VARIATION_ITEMS)
+        {
+            IEnumerable<BASELINE_ITEMProgress> context_progresses;
+
+            if (VARIATION.APPROVED == null)
+                //When variation is not approved, retrieve current live deliverables and variation deliverables
+                context_progresses = BASELINE_ITEMProgress.Where(x => x.Entity.Entity.GUID_BASELINE == BASELINE.GUID || x.Entity.Entity.GUID_VARIATION == VARIATION.GUID && x.Entity.Entity.GUID_BASELINE == null);
+            else
+                //When variation is approved, retrieve deliverables from variation connected baseline
+                context_progresses = BASELINE_ITEMProgress.Where(x => x.Entity.Entity.GUID_VARIATION == VARIATION.GUID && x.Entity.Entity.GUID_BASELINE == VARIATION.GUID_BASELINE);
+
+            return
+                BASELINE_ITEMProgress.OrderBy(x => x.Entity.Entity.CREATED).ToArray()
+                    .Select(x => new BASELINE_ITEMVariation()
+                    {
+                        Entity = x,
+                        VARIATION_ITEM = VARIATION_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.Entity.Entity.GUID_ORIGINAL).FirstOrDefault(),
+                        SubmittedDate = VARIATION.SUBMITTED,
+                        ApprovedDate = VARIATION.APPROVED
+                    }).AsQueryable();
+        }
     }
 }
