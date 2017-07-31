@@ -141,16 +141,6 @@ namespace BluePrints.Data
                 .WithOptional(e => e.BASELINE)
                 .HasForeignKey(e => e.GUID_BASELINE);
 
-            modelBuilder.Entity<BASELINE>()
-                .HasMany(e => e.VARIATION)
-                .WithOptional(e => e.BASELINE)
-                .HasForeignKey(e => e.GUID_BASELINE);
-
-            modelBuilder.Entity<BASELINE>()
-                .HasMany(e => e.VARIATION1)
-                .WithOptional(e => e.BASELINE1)
-                .HasForeignKey(e => e.GUID_ORIBASELINE);
-
             modelBuilder.Entity<BASELINE_ITEM>()
                 .Property(e => e.P6_ASSIGNMENT_STARTUNIT)
                 .HasPrecision(18, 0);
@@ -274,7 +264,7 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<ESTIMATION_DIRECT>()
                 .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
-                .WithRequired(e => e.ESTIMATION_DIRECT)
+                .WithOptional(e => e.ESTIMATION_DIRECT)
                 .HasForeignKey(e => e.GUID_ESTIMATION_DIRECT)
                 .WillCascadeOnDelete(false);
 

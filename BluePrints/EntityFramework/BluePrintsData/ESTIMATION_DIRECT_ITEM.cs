@@ -16,7 +16,7 @@ namespace BluePrints.Data
 
         public Guid? GUID_WORKPACK { get; set; }
 
-        public Guid GUID_ESTIMATION_DIRECT { get; set; }
+        public Guid? GUID_ESTIMATION_DIRECT { get; set; }
 
         public Guid? GUID_VARIATION { get; set; }
 
@@ -37,6 +37,8 @@ namespace BluePrints.Data
         public string COMMENTS { get; set; }
 
         public decimal ESTIMATED_QUANTITY { get; set; }
+
+        public decimal DC_QUANTITY { get; set; }
 
         public Estimation_DirectProgressType PROGRESS_TYPE { get; set; }
 

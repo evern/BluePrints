@@ -163,9 +163,13 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal? DB_Productivity_Override { get => Entity.DB_Productivity_Override; set => Entity.DB_Productivity_Override = value; }
 
-        public Guid? Baseline_Guid => Entity.Baseline_Guid;
+        public Guid? Baseline_Guid { get => Entity.Baseline_Guid; set => Entity.Baseline_Guid = value; }
 
         public Guid? Variation_Guid { get => Entity.Variation_Guid; set => Entity.Variation_Guid = value; }
+
+        public decimal Estimated_Value { get => Entity.Estimated_Value; set => Entity.Estimated_Value = value; }
+
+        public decimal DC_Value { get => Entity.DC_Value; set => Entity.DC_Value = value; }
     }
 
     public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ISupportByDuration, ICanAssignP6, ISupportVariation
@@ -222,9 +226,10 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public bool IsByDuration => Entity.IsByDuration;
 
-        public Guid? Baseline_Guid => Entity.Baseline_Guid;
-
         public Guid? Variation_Guid { get => Entity.Variation_Guid; set => Entity.Variation_Guid = value; }
+        public decimal Estimated_Value { get => Entity.Estimated_Value; set => Entity.Estimated_Value = value; }
+        public decimal DC_Value { get => Entity.DC_Value; set => Entity.DC_Value = value; }
+        public Guid? Baseline_Guid { get => Entity.Baseline_Guid; set => Entity.Baseline_Guid = value; }
     }
 
     public abstract class BluePrintsProgressableByQuantityProjectionBase<TEntity> : BluePrintsProgressableProjectionBase<TEntity>, IReportable_Quantity

@@ -37,7 +37,7 @@ namespace BluePrints.Common.Projections
 
         public DateTime? ApprovedDate { get; set; }
 
-        public bool ShouldSaveVariation => (VARIATION_ITEM == null && Variation_Action != VariationAction.NoAction) || (VARIATION_ITEM.GUID == Guid.Empty || VARIATION_ITEM.ACTION != Variation_Action || VARIATION_ITEM.VARIATION_UNITS != Variation_Units);
+        public bool ShouldSaveVariation => (VARIATION_ITEM == null && Variation_Action != VariationAction.NoAction) || (VARIATION_ITEM != null && (VARIATION_ITEM.GUID == Guid.Empty || VARIATION_ITEM.ACTION != Variation_Action || VARIATION_ITEM.VARIATION_UNITS != Variation_Units));
 
         decimal? variation_units;
         public decimal Variation_Units
@@ -77,7 +77,7 @@ namespace BluePrints.Common.Projections
         {
             if (VARIATION_ITEM == null)
             {
-                if (Entity.Baseline_Guid == null)
+                if (base.Entity.Baseline_Guid == null)
                     return VariationAction.Add;
                 else
                     return VariationAction.NoAction;
@@ -90,7 +90,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                ISupportByDuration support_by_duration_entity = Entity as ISupportByDuration;
+                ISupportByDuration support_by_duration_entity = base.Entity as ISupportByDuration;
                 if (support_by_duration_entity != null)
                 {
                     return support_by_duration_entity.IsByDuration;
@@ -106,11 +106,11 @@ namespace BluePrints.Common.Projections
 
         public bool IsApproved => ApprovedDate != null;
 
-        public decimal Total_Units => Entity.Total_Units;
+        public decimal Total_Units => IsByDuration ? 0 : base.Entity.Total_Units;
 
-        public decimal Total_Cost => (Entity.Total_Units + Variation_Units) * Entity.ItemRate;
+        public decimal Total_Cost => IsByDuration ? 0 : (base.Entity.Total_Units + Variation_Units) * base.Entity.ItemRate;
 
-        public decimal Variation_Cost => Forecast_Units * Entity.ItemRate;
+        public decimal Variation_Cost => IsByDuration ? 0 : Forecast_Units * base.Entity.ItemRate;
 
         //use to show what the units will be after approval
         public decimal Forecast_Units
@@ -172,15 +172,15 @@ namespace BluePrints.Common.Projections
             get
             {
                 //when variation is apporved MINUNITS should not cause a warning
-                if (IsSubmitted)
+                if (IsApproved)
                     return -100000;
 
-                if (Entity.PROGRESS_ITEM_BeforeDataDate == null || Entity.Total_Units == 0)
+                if (base.Entity.PROGRESS_ITEM_BeforeDataDate == null || base.Entity.Total_Units == 0)
                     return 0;
-                if (Entity.PROGRESS_ITEM_Current == null)
-                    return -1 * Entity.Total_Units;
+                if (base.Entity.PROGRESS_ITEM_Current == null)
+                    return -1 * base.Entity.Total_Units;
                 else
-                    return -1 * (Entity.Total_Units - Entity.Earned_Units_ToDate);
+                    return -1 * (base.Entity.Total_Units - base.Entity.Earned_Units_ToDate);
             }
         }
 
@@ -189,9 +189,7 @@ namespace BluePrints.Common.Projections
             get { return !IsSubmitted && Variation_Action != VariationAction.Add; }
         }
 
-        public TEntity ReportableEntity { get => Entity; set => Entity = value; }
-
-        public Guid OriginalEntityKey => Entity.OriginalEntityKey;
+        public Guid OriginalEntityKey => base.Entity.OriginalEntityKey;
 
         /// <summary>
         /// projection will not be saved
@@ -219,7 +217,7 @@ namespace BluePrints.Common.Projections
     public interface IBluePrintsVariationBase<TEntity> : IGuidEntityKey, IOriginalGuidEntityKey, ICanUpdate
         where TEntity : class, IReportable, new()
     {
-        TEntity ReportableEntity { get; set; }
+        TEntity Entity { get; set; }
         VARIATION_ITEM VARIATION_ITEM { get; set; }
         DateTime? SubmittedDate { get; set; }
         DateTime? ApprovedDate { get; set; }

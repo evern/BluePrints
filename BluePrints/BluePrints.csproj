@@ -549,6 +549,7 @@
     <Compile Include="ViewModels\REGISTER\REGISTER_RISKCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\User_OffsiteDirectProgressCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\VARIATION_ITEM\SiteDirectVariationCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\OffsiteDirectVariationCollectionViewModelWrapperRevision.cs" />
     <Compile Include="ViewModels\WORKPACK\WORKPACKDashboardViewModelWrapper.cs" />
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.xaml.cs">

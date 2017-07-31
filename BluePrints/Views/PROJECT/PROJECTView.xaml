@@ -1242,7 +1242,7 @@
                                             <dxg:GridColumn FieldName="STATUS">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
-                                                        ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:EstimationStatus}}" />
+                                                        ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:BaselineStatus}}" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn FieldName="P6BASELINE_NAME" MinWidth="200">

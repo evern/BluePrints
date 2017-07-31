@@ -116,7 +116,7 @@
                         VisibleIndex="70">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
-                    ItemsSource="{Binding DataContext.BASELINECollection, ElementName=userControl}"
+                    ItemsSource="{Binding DataContext.IAmBaselineCollection, ElementName=userControl}"
                     IsTextEditable="True" AutoComplete="True" DisplayMember="REVISION" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
@@ -124,7 +124,7 @@
                         VisibleIndex="80">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
-                    ItemsSource="{Binding DataContext.BASELINECollection, ElementName=userControl}"
+                    ItemsSource="{Binding DataContext.IAmBaselineCollection, ElementName=userControl}"
                     IsTextEditable="True" AutoComplete="True" DisplayMember="REVISION" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>

@@ -27,12 +27,8 @@ namespace BluePrints.ViewModels
     /// </summary>
     public partial class OffsiteDirectVariationCollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
-        <BASELINE_ITEM, BASELINE_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork>
+        <BASELINE_ITEM, BASELINE_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork>, ICollectionViewModelsWrapper<BASELINE_ITEMVariation>
     {
-        //Used by variation to generate new baseline
-        public Func<object> OnEntitiesLoadedParameterCallBack;
-        public Action<IEnumerable<BASELINE_ITEMVariation>, object> OnEntitiesLoadedWithParameterCallBack;
-
         /// <summary>
         /// Creates a new instance of VARIATION_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
@@ -181,16 +177,6 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMVariation> entities)
         {
-            if(OnEntitiesLoadedWithParameterCallBack != null)
-            {
-                object onLoadedParameter = OnEntitiesLoadedParameterCallBack?.Invoke();
-                OnEntitiesLoadedWithParameterCallBack?.Invoke(entities, onLoadedParameter);
-
-                //Self destruct after entities has been returned
-                CleanUpEntitiesLoader();
-                return;
-            }
-
             MainViewModel.CanFillDownCallBack = CanFillDownCallBack;
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             MainViewModel.ValidateBulkEditCallBack = ValidateBulkEditCallBack;
@@ -833,7 +819,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "VARIATION_ITEMSViewModelWrapper"; }
+            get { return "DESIGN_VARIATION_ITEMSViewModelWrapper"; }
         }
 
         public IEnumerable<WORKPACK> WORKPACKCollection

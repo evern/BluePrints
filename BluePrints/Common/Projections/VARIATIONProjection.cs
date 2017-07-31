@@ -1,13 +1,15 @@
-﻿using BluePrints.Common.Base;
+﻿using BaseModel.Misc;
+using BluePrints.Common.Base;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class VARIATIONProjection : BluePrintsProjectionMasterDetailBase<VARIATION, BASELINE_ITEMVariation>
+    public class VARIATIONProjection : BluePrintsProjectionBase<VARIATION>
     {
-        public override ObservableCollection<BASELINE_ITEMVariation> DetailEntities
+        public ObservableCollection<ISupportVariationSummary> DetailEntities
         {
             get { return GetProperty(() => DetailEntities); }
             set { SetProperty(() => DetailEntities, value, OnVARIATION_ITEMSChanged); }

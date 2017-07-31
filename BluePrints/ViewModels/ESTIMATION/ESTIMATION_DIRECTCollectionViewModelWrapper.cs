@@ -5,6 +5,7 @@ using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
@@ -155,7 +156,7 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
             
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new DualEntitiesParameter<Data.PROJECT, ESTIMATION_DIRECT>(null,
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new DualEntitiesParameter<Data.PROJECT, IAmBaseline>(null,
                 DisplaySelectedEntity), "ESTIMATION_DIRECT_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Direct Estimate");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);

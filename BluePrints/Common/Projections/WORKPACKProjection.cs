@@ -30,19 +30,19 @@ namespace BluePrints.Common.Projections
 
         public Guid? SubArea_Guid => Guid.Empty;
 
-        public decimal Estimated_Units => DeliverableRates.Sum(x => x.Estimated_Units);
+        public decimal Estimated_Units => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Estimated_Units);
 
-        public decimal Total_Units => DeliverableRates.Sum(x => x.Total_Units);
+        public decimal Total_Units => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Total_Units);
 
-        public decimal Variation_Units => DeliverableRates.Sum(x => x.Variation_Units);
+        public decimal Variation_Units => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Variation_Units);
 
-        public decimal ItemRate => DeliverableRates.Sum(x => x.ItemRate);
+        public decimal ItemRate => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.ItemRate);
 
-        public decimal Estimated_Costs => DeliverableRates.Sum(x => x.Estimated_Costs);
+        public decimal Estimated_Costs => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Estimated_Costs);
 
-        public decimal Variation_Costs => DeliverableRates.Sum(x => x.Variation_Costs);
+        public decimal Variation_Costs => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Variation_Costs);
 
-        public decimal Total_Costs => DeliverableRates.Sum(x => x.Total_Costs);
+        public decimal Total_Costs => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Total_Costs);
 
         public string Commodity_Display_Code => Commodity_Code;
 

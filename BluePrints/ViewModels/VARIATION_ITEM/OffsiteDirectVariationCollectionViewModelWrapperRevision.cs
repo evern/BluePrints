@@ -38,6 +38,17 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new OffsiteDirectVariationCollectionViewModelWrapperRevision());
         }
 
+        //have to implement this here because LINQ to entity doesn't support translating interface properties
+        protected override IQueryable<BASELINE_ITEM> BaseEntityQueryCallBack(IRepositoryQuery<BASELINE_ITEM> query)
+        {
+            if (loadVARIATION.APPROVED == null)
+                //When variation is not approved, retrieve current live deliverables and variation deliverables
+                return query.Where(x => (x.GUID_BASELINE == load_context_guid) || (x.GUID_VARIATION == variation_guid && x.GUID_BASELINE == null));
+            else
+                //When variation is approved, retrieve deliverables from variation connected baseline
+                return query.Where(x => x.GUID_BASELINE == variation_baseline_guid && x.GUID_VARIATION == variation_guid);
+        }
+
         BASELINE_ITEMCollectionViewModelWrapper baseline_itemCollectionViewModelWrapper;
         protected override IDeliverableCollectionViewModelWrapper<BASELINE_ITEMProgress, BASELINE_ITEM> collectionViewModelWrapper
         {
@@ -50,7 +61,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected override string ViewName => "VARIATION_ITEMSViewModelWrapper";
+        protected override string ViewName => "DESIGN_VARIATION_ITEMSViewModelWrapper";
 
         protected override void StartCreatingMainViewModel()
         {
@@ -60,10 +71,13 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMVariation>> ConstructMainViewModelProjection()
         {
-            var VARIATION = loaderCollection.GetObject<VARIATION>();
-            var VARIATION_ITEMS = loaderCollection.GetCollection<VARIATION_ITEM>();
+            IEnumerable<VARIATION_ITEM> VARIATION_ITEMS = new List<VARIATION_ITEM>();
+            if (loaderCollection != null)
+            {
+                VARIATION_ITEMS = loaderCollection.GetCollection<VARIATION_ITEM>();
+            }
 
-            return query => Baseline_ItemVariationQuery.OffsiteDirectVariationItemTransformation(IReportableEntitiesCollection, collectionViewModelWrapper.loadBASELINE, VARIATION, VARIATION_ITEMS);
+            return query => Baseline_ItemVariationQuery.OffsiteDirectVariationItemTransformation(IReportableEntitiesCollection, loadVARIATION, VARIATION_ITEMS);
         }
 
         protected override void assign_additional_callbacks(CollectionViewModel<BASELINE_ITEM, BASELINE_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork> mainViewModel)
@@ -74,14 +88,14 @@ namespace BluePrints.ViewModels
         private void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
         {
             //estimated hours field is disabled but just in case
-            if (e.Column.FieldName == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Variation_Units))
             {
                 BASELINE_ITEMVariation validateEntity = (BASELINE_ITEMVariation)e.Row;
                 if (validateEntity.Entity.Entity.Entity.BY_DURATION && ((decimal)e.Value) > 0)
                 {
                     e.IsValid = false;
                     e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
-                    e.ErrorContent = "Cannot set estimated hours when deliverable is by duration";
+                    e.ErrorContent = "Cannot set variation hours when deliverable is by duration";
                 }
             }
             //this is not likely to happen, because variation isn't trackable yet but just in case
@@ -95,6 +109,37 @@ namespace BluePrints.ViewModels
                     e.ErrorContent = "Cannot change deliverable tracking type when percentage is already earned";
                 }
             }
+        }
+
+        protected override void CellValueNewRowChanging(CellValueChangedEventArgs e)
+        {
+            if (e.Column.FieldName == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
+            {
+                BASELINE_ITEMVariation current_row_item = (BASELINE_ITEMVariation)e.Row;
+                current_row_item.Variation_Units = 0;
+                current_row_item.Update();
+            }
+
+            base.CellValueNewRowChanging(e);
+        }
+
+        protected override void CellValueExistingRowChanging(CellValueChangedEventArgs e)
+        {
+            BASELINE_ITEMVariation current_row_item = (BASELINE_ITEMVariation)e.Row;
+            if (e.Column.FieldName == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
+            {
+                decimal newValue = 0;
+                decimal oldValue = current_row_item.Variation_Units;
+
+                if (oldValue > 0)
+                {
+                    current_row_item.Variation_Units = 0;
+                    MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(current_row_item, BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Variation_Units), oldValue, newValue, EntityMessageType.Changed);
+                }
+            }
+
+            base.CellValueExistingRowChanging(e);
         }
 
         //when internal number is not unique, do not set internal number property

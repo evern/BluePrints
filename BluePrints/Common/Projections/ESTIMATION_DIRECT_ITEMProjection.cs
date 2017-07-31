@@ -160,9 +160,13 @@ namespace BluePrints.Common.Projections
 
         public decimal? DB_Productivity_Override { get => Entity.DB_Productivity_Override; set => Entity.DB_Productivity_Override = value; }
 
-        public Guid? Baseline_Guid => Entity.Baseline_Guid;
+        public Guid? Baseline_Guid { get => Entity.Baseline_Guid; set => Entity.Baseline_Guid = value; }
 
         public Guid? Variation_Guid { get => Entity.Variation_Guid; set => Entity.Variation_Guid = value; }
+
+        public decimal Estimated_Value { get => Entity.Estimated_Value; set => Entity.Estimated_Value = value; }
+
+        public decimal DC_Value { get => Entity.DC_Value; set => Entity.DC_Value = value; }
     }
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries

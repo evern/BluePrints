@@ -10,12 +10,15 @@ using BluePrints.Data;
 using BluePrints.ViewModels;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Utils;
 using DevExpress.Xpf.Bars;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BluePrints.Common.Base
@@ -23,7 +26,7 @@ namespace BluePrints.Common.Base
     public abstract class BluePrintsEntitiesVariationCollectionWrapper<TMainEntity, TMainReportableEntity, TMainVariationEntity, TMainEntityPrimaryKey,
         TMainEntityUnitOfWork> : BluePrintsEntitiesCollectionWrapper<TMainEntity, TMainVariationEntity, TMainEntityPrimaryKey,
         TMainEntityUnitOfWork>
-        where TMainEntity : class, IDeliverable, new()
+        where TMainEntity : class, IDeliverable, ISupportVariation, new()
         where TMainReportableEntity : class, IReportable, ISupportVariation, new()
         where TMainVariationEntity : class, IBluePrintsVariationBase<TMainReportableEntity>, new()
         where TMainEntityUnitOfWork : IBluePrintsEntitiesUnitOfWork
@@ -42,13 +45,83 @@ namespace BluePrints.Common.Base
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadVARIATION = receiveParameter.GetSecondEntity();
 
-            collectionViewModelWrapper.SelectedEntities = DisplaySelectedEntities.Select(x => x.ReportableEntity);
-            collectionViewModelWrapper.OnEntitiesLoadedCallBack = onViewModelWrapperLoadedCallBack;
-            collectionViewModelWrapper.ApplyViewSpecificPropertiesToEntityCallBack = ApplyViewSpecificPropertiesToEntity;
+            #region CollectionViewModelWrapper CallBacks
+            collectionViewModelWrapper.InterfaceAddUndoRedoCallBack = AddUndo;
+            collectionViewModelWrapper.InterfacePauseUndoRedoCallBack = PauseUndoRedo;
+            collectionViewModelWrapper.InterfaceUnpauseUndoRedoCallBack = UnpauseUndoRedo;
+            collectionViewModelWrapper.BaseEntityQueryCallBack = BaseEntityQueryCallBack;
+            collectionViewModelWrapper.SelectedEntities = DisplaySelectedEntities.Select(x => x.Entity);
+            collectionViewModelWrapper.SelectedEntityCallBack = () => DisplaySelectedEntity.Entity;
+            collectionViewModelWrapper.OnReportablesLoadedCallBack = OnViewModelWrapperLoadedCallBack;
+            collectionViewModelWrapper.ApplyViewSpecificPropertiesToEntityCallBack = ApplyViewSpecificPropertiesToEntityCallBack;
             collectionViewModelWrapper.SetParentViewModel(this);
-            collectionViewModelWrapper.Interface_InitializeParameters(new DualEntitiesParameter<PROJECT, BASELINE>(loadPROJECT, null));
-            collectionViewModelWrapper.InitializeAndLoadEntitiesLoaderDescription();
+            collectionViewModelWrapper.Interface_InitializeParameters(new DualEntitiesParameter<PROJECT, IAmBaseline>(loadPROJECT, null));
+            collectionViewModelWrapper.InitializeAndLoadEntitiesLoaderDescription(); 
+            #endregion
         }
+
+        private void Add_undo_timer_Tick(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void AddUndo(TMainReportableEntity progress_entity, string fieldName, object oldValue, object newValue, EntityMessageType messageType)
+        {
+            BackgroundWorker addUndoDelayedBackgroundWorker = new BackgroundWorker();
+            addUndoDelayedBackgroundWorker.DoWork += addUndoDelayedBackgroundWorker_DoWork;
+            addUndoDelayedBackgroundWorker.RunWorkerCompleted += addUndoDelayedBackgroundWorker_RunWorkerCompleted;
+            addUndoDelayedBackgroundWorker.RunWorkerAsync(new object[] { progress_entity, fieldName, oldValue, newValue, messageType });
+        }
+
+        private void PauseUndoRedo()
+        {
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+        }
+
+        private void UnpauseUndoRedo()
+        {
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        protected void addUndoDelayedBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            if (MainViewModel == null)
+                return;
+
+            //need to wait for entity to be queried before FirstOrDefault
+            Thread.Sleep(10);
+            var argumentObject = (object[])e.Argument;
+            TMainReportableEntity progress_entity = (TMainReportableEntity)argumentObject[0];
+            string fieldName = null;
+            if (argumentObject[1] != null)
+                fieldName = (string)argumentObject[1];
+            object oldValue = argumentObject[2];
+            object newValue = argumentObject[3];
+            EntityMessageType messageType = (EntityMessageType)argumentObject[4];
+
+            TMainVariationEntity variation_entity = MainViewModel.Entities.FirstOrDefault(x => x.Entity.EntityKey == progress_entity.EntityKey);
+            if (variation_entity != null)
+            {
+                if (fieldName != null)
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(variation_entity, "Entity." + fieldName, oldValue, newValue, messageType);
+                else
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(variation_entity, null, null, null, messageType);
+            }
+        }
+
+        private void addUndoDelayedBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (MainViewModel == null)
+                return;
+
+            MainViewModel.RaisePropertiesChanged();
+        }
+
+        protected abstract IQueryable<TMainEntity> BaseEntityQueryCallBack(IRepositoryQuery<TMainEntity> query);
+
+        protected Guid load_context_guid { get { return collectionViewModelWrapper.load_context_guid; } }
+        protected Guid variation_guid { get { return loadVARIATION.GUID; } }
+        protected Guid? variation_baseline_guid { get { return loadVARIATION.GUID_BASELINE; } }
 
         public override void InitializeAndLoadEntitiesLoaderDescription()
         {
@@ -73,7 +146,7 @@ namespace BluePrints.Common.Base
 
         protected IEnumerable<TMainReportableEntity> IReportableEntitiesCollection;
         bool iReportableCollectionLoaded => IReportableEntitiesCollection != null;
-        protected void onViewModelWrapperLoadedCallBack(IEnumerable<TMainReportableEntity> entities)
+        protected void OnViewModelWrapperLoadedCallBack(IEnumerable<TMainReportableEntity> entities)
         {
             IReportableEntitiesCollection = entities;
             OnAllEntitiesCollectionLoaded();
@@ -91,35 +164,24 @@ namespace BluePrints.Common.Base
         protected abstract void StartCreatingMainViewModel();
 
         //Used by variation to generate new baseline
-        public Func<object> OnEntitiesLoadedParameterCallBack;
-        public Action<IEnumerable<TMainVariationEntity>, object> OnEntitiesLoadedWithParameterCallBack;
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<TMainVariationEntity> entities)
         {
-            if (OnEntitiesLoadedWithParameterCallBack != null)
-            {
-                object onLoadedParameter = OnEntitiesLoadedParameterCallBack?.Invoke();
-                OnEntitiesLoadedWithParameterCallBack?.Invoke(entities, onLoadedParameter);
-
-                //Self destruct after entities has been returned
-                CleanUpEntitiesLoader();
-                return;
-            }
-
             MainViewModel.CanFillDownCallBack = CanFillDownCallBack;
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             MainViewModel.CanBulkDeleteCallBack = CanBulkDeleteCallBack;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
-            MainViewModel.OnBeforeEntityDeleteCallBack = OnBeforeEntityDeleted;
+            MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = OnBeforeEntityDeleted;
             MainViewModel.OnMappingAdditionalChangedEntitiesProperties = OnMappingAdditionalChangedEntitiesProperties;
+            collectionViewModelWrapper.EditableAllEntities = DisplayEntities.Where(x => x.Variation_Action == VariationAction.Add).Select(x => x.Entity);
             assign_additional_callbacks(MainViewModel);
             MainViewModel.SetParentViewModel(this);
 
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        private void ApplyViewSpecificPropertiesToEntity(TMainReportableEntity reportableEntity)
+        private void ApplyViewSpecificPropertiesToEntityCallBack(TMainReportableEntity reportableEntity)
         {
-            if(reportableEntity.Baseline_Guid == null)
+            if (reportableEntity.Baseline_Guid == null)
             {
                 reportableEntity.Variation_Guid = loadVARIATION.GUID;
             }
@@ -211,11 +273,10 @@ namespace BluePrints.Common.Base
 
         private bool CanBulkDeleteCallBack(IEnumerable<TMainVariationEntity> selectedEntities)
         {
-            return loadVARIATION.SUBMITTED == null && selectedEntities != null && selectedEntities.All(x => x.VARIATION_ITEM != null && x.Variation_Action == VariationAction.Add);
+            return loadVARIATION.SUBMITTED == null && selectedEntities != null && selectedEntities.All(x => x.Variation_Action == VariationAction.Add);
         }
 
         #region Fundamentals
-
         protected void OnMappingAdditionalChangedEntitiesProperties(TMainVariationEntity existingProjectionEntity, TMainVariationEntity projectionEntity)
         {
             projectionEntity.Variation_Action = existingProjectionEntity.Variation_Action;
@@ -227,10 +288,14 @@ namespace BluePrints.Common.Base
         public bool OnBeforeEntitySaved(TMainVariationEntity entity)
         {
             if (entity.EntityKey == Guid.Empty)
+            {
+                if (!MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, null, null, null, EntityMessageType.Added);
                 entity.VARIATION_ITEM = new VARIATION_ITEM() { ACTION = VariationAction.Add, GUID_VARIATION = loadVARIATION.GUID, VARIATION_UNITS = entity.Variation_Units };
+            }
 
-            if(entity.Variation_Action == VariationAction.Add)
-                collectionViewModelWrapper.Save(entity.ReportableEntity);
+            if (entity.Variation_Action == VariationAction.Add)
+                collectionViewModelWrapper.Save(entity.Entity);
 
             if (entity.ShouldSaveVariation)
                 save_variation(entity);
@@ -242,9 +307,16 @@ namespace BluePrints.Common.Base
         /// Delete variation item before entity is deleted
         /// </summary>
         /// <param name="undoRedoEntity"></param>
-        public void OnBeforeEntityDeleted(TMainVariationEntity undoRedoEntity)
+        public bool OnBeforeEntityDeleted(TMainVariationEntity delete_entity)
         {
-            VARIATION_ITEMSCollectionViewModel.Delete(undoRedoEntity.VARIATION_ITEM);
+            if(!MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(delete_entity, null, null, null, EntityMessageType.Deleted);
+
+            collectionViewModelWrapper.Delete(delete_entity.Entity);
+            if (delete_entity.VARIATION_ITEM != null)
+                VARIATION_ITEMSCollectionViewModel.Delete(delete_entity.VARIATION_ITEM);
+
+            return false;
         }
         #endregion
 
@@ -269,7 +341,7 @@ namespace BluePrints.Common.Base
         {
             get
             {
-                return (CollectionViewModel<VARIATION_ITEM, VARIATION_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>) loaderCollection.GetViewModel<VARIATION_ITEM>();
+                return (CollectionViewModel<VARIATION_ITEM, VARIATION_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<VARIATION_ITEM>();
             }
         }
         #endregion
@@ -327,25 +399,28 @@ namespace BluePrints.Common.Base
             TMainVariationEntity current_row_item = (TMainVariationEntity)e.Row;
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Units))
             {
-                VariationAction old_action = current_row_item.Variation_Action;
+                if (current_row_item.Variation_Action != VariationAction.Add)
+                {
+                    VariationAction old_action = current_row_item.Variation_Action;
 
-                if ((decimal)e.Value == 0)
-                    current_row_item.Variation_Action = VariationAction.NoAction;
-                else
-                    current_row_item.Variation_Action = VariationAction.Append;
+                    if ((decimal)e.Value == 0)
+                        current_row_item.Variation_Action = VariationAction.NoAction;
+                    else
+                        current_row_item.Variation_Action = VariationAction.Append;
 
-                MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-                MainViewModel.EntitiesUndoRedoManager.AddUndo(current_row_item, BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Action), old_action, current_row_item.Variation_Action, EntityMessageType.Changed);
+                    MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(current_row_item, BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Action), old_action, current_row_item.Variation_Action, EntityMessageType.Changed);
+                }
             }
             else
-                collectionViewModelWrapper.Interface_CellValueExistingRowChanging(e.Column.FieldName, e.Value, current_row_item.ReportableEntity);
+                collectionViewModelWrapper.Interface_CellValueExistingRowChanging(e.Column.FieldName, e.Value, current_row_item.Entity);
 
             base.CellValueExistingRowChanging(e);
         }
 
         protected override void CellValueNewRowChanging(CellValueChangedEventArgs e)
         {
-            collectionViewModelWrapper.Interface_CellValueNewRowChanging(e.Column.FieldName, e.Value, ((TMainVariationEntity)e.Row).ReportableEntity);
+            collectionViewModelWrapper.Interface_CellValueNewRowChanging(e.Column.FieldName, e.Value, ((TMainVariationEntity)e.Row).Entity);
             base.CellValueNewRowChanging(e);
         }
 
@@ -354,28 +429,41 @@ namespace BluePrints.Common.Base
         /// </summary>
         public void CellValueChanged(CellValueChangedEventArgs e)
         {
-            collectionViewModelWrapper.Interface_CellValueChanged(e.Column.FieldName, ((TMainVariationEntity)e.Row).ReportableEntity);
+            collectionViewModelWrapper.Interface_CellValueChanged(e.Column.FieldName, ((TMainVariationEntity)e.Row).Entity);
         }
         #endregion
 
         #region View Commands
+        private bool isSelectedVariationAddEntity()
+        {
+            if (!DisplaySelectedEntities.All(x => x.Variation_Action == VariationAction.Add))
+            {
+                MessageBoxService.ShowMessage("Selection contains deliverables that have other statuses than add, please revise your selection");
+                return false;
+            }
+
+            return true;
+        }
+
         public bool CanDuplicateMultiple(BarEditItem barEdit) => collectionViewModelWrapper.CanDuplicateMultiple(barEdit);
         public bool CanInsertMultiple(BarEditItem barEdit) => collectionViewModelWrapper.CanInsertMultiple(barEdit);
         public bool CanDuplicate() => collectionViewModelWrapper.CanDuplicate();
         public bool CanInsert() => collectionViewModelWrapper.CanInsert();
-        public bool CanAutoPopulate(object button)
-        {
-            if (DisplaySelectedEntity == null || DisplaySelectedEntity.Variation_Action != VariationAction.Add)
-                return false;
-
-            return collectionViewModelWrapper.CanAutoPopulate(button);
-        }
+        public bool CanAutoPopulate(object button) => collectionViewModelWrapper.CanAutoPopulate(button);
+        public bool CanFindReplace(object button) => collectionViewModelWrapper.CanFindReplace(button);
 
         public void DuplicateMultiple(BarEditItem barEdit) => collectionViewModelWrapper.DuplicateMultiple(barEdit);
         public void InsertMultiple(BarEditItem barEdit) => collectionViewModelWrapper.InsertMultiple(barEdit);
         public void Duplicate() => collectionViewModelWrapper.Duplicate();
         public void Insert() => collectionViewModelWrapper.Insert();
-        public void AutoPopulate(object button) => collectionViewModelWrapper.AutoPopulate(button);
+        public void AutoPopulate(object button)
+        {
+            if (isSelectedVariationAddEntity()) collectionViewModelWrapper.AutoPopulate(button);
+        }
+        public void FindReplace(object button)
+        {
+            if (isSelectedVariationAddEntity()) collectionViewModelWrapper.FindReplace(button);
+        }
         #endregion
 
         #region View Properties
@@ -397,6 +485,12 @@ namespace BluePrints.Common.Base
             {
                 return GetEntities<VARIATION_ITEM>();
             }
+        }
+
+        public override void CleanUpEntitiesLoader()
+        {
+            collectionViewModelWrapper.CleanUpEntitiesLoader();
+            base.CleanUpEntitiesLoader();
         }
         #endregion
     }

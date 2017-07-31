@@ -298,6 +298,12 @@ namespace BluePrints.Data
         public Guid? Variation_Guid { get => GUID_VARIATION; set => GUID_VARIATION = value; }
 
         [NotMapped]
-        public Guid? Baseline_Guid => GUID_BASELINE;
+        public Guid? Baseline_Guid { get => GUID_BASELINE; set => GUID_BASELINE = value; } 
+
+        [NotMapped]
+        public decimal Estimated_Value { get => ESTIMATED_HOURS; set => ESTIMATED_HOURS = value; }
+
+        [NotMapped]
+        public decimal DC_Value { get => DC_HOURS; set => DC_HOURS = value; }
     }
 }

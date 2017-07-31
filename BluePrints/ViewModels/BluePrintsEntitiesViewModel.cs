@@ -5,6 +5,7 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Charts;
@@ -328,10 +329,10 @@ namespace BluePrints.ViewModels
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectWorkpacks" + keyString, projectKey, childTitlePrefix + "Workpacks", "WORKPACKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Workpacks"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageBaseline))
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables", "BASELINE_ITEMCollectionView", new DualEntitiesParameter<PROJECT, BASELINE>(entity, null), null, "Deliverables"));
+                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables", "BASELINE_ITEMCollectionView", new DualEntitiesParameter<PROJECT, IAmBaseline>(entity, null), null, "Deliverables"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageEstimation))
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates", "ESTIMATION_DIRECT_ITEMCollectionView", new DualEntitiesParameter<PROJECT, ESTIMATION_DIRECT>(entity, null), null, "Estimate"));
+                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates", "ESTIMATION_DIRECT_ITEMCollectionView", new DualEntitiesParameter<PROJECT, IAmBaseline>(entity, null), null, "Estimate"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageProgress))
             {

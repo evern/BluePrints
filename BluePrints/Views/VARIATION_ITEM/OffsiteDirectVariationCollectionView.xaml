@@ -271,7 +271,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="IsByDuration" Header="BY DURATION" >
+                            <dxg:GridColumn FieldName="Entity.Entity.Entity.BY_DURATION" Header="BY DURATION" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:CheckEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsEnabled}" />
@@ -392,11 +392,15 @@
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                                                        Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Fill Up"
+                                    <dxb:BarButtonItem Name="contextFindReplace" Content="Find and Replace"
+                                                       Command="{Binding DataContext.FindReplaceCommand, ElementName=userControl}"
+                                                       CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                                                       Glyph="{dx:DXImageOffice2013 Image=Replace_16x16.png}" />
+                                    <dxb:BarButtonItem Name="contextMenuFillUp" Content="Fill Up"
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}"
                                                        Command="{Binding View.DataContext.FillUpCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Content="Fill Down"
+                                    <dxb:BarButtonItem Name="contextMenuFillDown" Content="Fill Down"
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}"
                                                        Command="{Binding View.DataContext.FillDownCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
@@ -417,12 +421,39 @@
                                                                       MaskType="Numeric" Mask="n0"
                                                                       MaskUseAsDisplayFormat="True">
                                                     <dxe:SpinEditSettings.Buttons>
-                                                        <dxe:ButtonInfo x:Name="contextMenuPasteMultiCountBtn"
+                                                        <dxe:ButtonInfo x:Name="contextMenuDuplicateMultiCountBtn"
                                                                         GlyphKind="Apply">
                                                             <dxmvvm:Interaction.Behaviors>
                                                                 <dxmvvm:EventToCommand
                                                                     Command="{Binding DataContext.DuplicateMultipleCommand, ElementName=userControl}"
                                                                     CommandParameter="{Binding ElementName=contextMenuDuplicateMultiCount}"
+                                                                    EventName="Click" />
+                                                            </dxmvvm:Interaction.Behaviors>
+                                                        </dxe:ButtonInfo>
+                                                    </dxe:SpinEditSettings.Buttons>
+                                                </dxe:SpinEditSettings>
+                                            </dxb:BarEditItem.EditSettings>
+                                        </dxb:BarEditItem>
+                                    </dxb:BarSubItem>
+                                    <dxb:BarButtonItem x:Name="contextMenuInsert" Content="Insert"
+                                                       Command="{Binding DataContext.InsertCommand, ElementName=userControl}"
+                                                       Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" />
+                                    <dxb:BarSubItem x:Name="contextMenuInsertMulti" Content="Insert Multiple"
+                                                    Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}">
+                                        <dxb:BarEditItem x:Name="contextMenuInsertMultiCount" Content="Count"
+                                                         EditValue="2">
+                                            <dxb:BarEditItem.EditSettings>
+                                                <dxe:SpinEditSettings IsTextEditable="True" IsFloatValue="False"
+                                                                      Increment="1" MinValue="2" MaxValue="99"
+                                                                      MaskType="Numeric" Mask="n0"
+                                                                      MaskUseAsDisplayFormat="True">
+                                                    <dxe:SpinEditSettings.Buttons>
+                                                        <dxe:ButtonInfo x:Name="contextMenuInsertMultiCountBtn"
+                                                                        GlyphKind="Apply">
+                                                            <dxmvvm:Interaction.Behaviors>
+                                                                <dxmvvm:EventToCommand
+                                                                    Command="{Binding DataContext.InsertMultipleCommand, ElementName=userControl}"
+                                                                    CommandParameter="{Binding ElementName=contextMenuInsertMultiCount}"
                                                                     EventName="Click" />
                                                             </dxmvvm:Interaction.Behaviors>
                                                         </dxe:ButtonInfo>

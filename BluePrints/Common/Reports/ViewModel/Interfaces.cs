@@ -109,10 +109,18 @@ namespace BluePrints.Common.ViewModel.Reporting
         void AppendProgressItem(PROGRESS_ITEM currentProgress);
     }
 
+    public interface ISupportVariationSummary : ISupportVariation
+    {
+        decimal Forecast_Units { get; }
+        decimal Variation_Cost { get; }
+    }
+
     public interface ISupportVariation
     {
-        Guid? Baseline_Guid { get; }
+        Guid? Baseline_Guid { get; set; }
         Guid? Variation_Guid { get; set; }
+        decimal Estimated_Value { get; set; }
+        decimal DC_Value { get; set; }
     }
 
     public interface ICanTrack
@@ -190,5 +198,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         DateTime ReportingDataDate { get; }
         List<PROGRESS_ITEM> PROGRESS_ITEMS { get; }
     } 
+
+    public interface IAmBaseline : IGuidEntityKey
+    {
+        BaselineStatus Baseline_Status { get; set; }
+        string Revision { get; set; }
+    }
     #endregion
 }

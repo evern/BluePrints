@@ -3,10 +3,11 @@ using BluePrints.Common.ViewModel.Reporting;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using BluePrints.Common;
 
 namespace BluePrints.Data
 {
-    public partial class ESTIMATION_DIRECT : IGuidEntityKey, IHaveCreatedDate, IHaveP6Baselines
+    public partial class ESTIMATION_DIRECT : IGuidEntityKey, IHaveCreatedDate, IHaveP6Baselines, IAmBaseline
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ESTIMATION_DIRECT()
@@ -42,5 +43,11 @@ namespace BluePrints.Data
         public string P6_Mod_Baseline_Name => P6MODBASELINE_NAME;
 
         public Guid project_guid => GUID_PROJECT;
+
+        [NotMapped]
+        public BaselineStatus Baseline_Status { get => STATUS; set => STATUS = value; }
+
+        [NotMapped]
+        public string Revision { get => REVISION; set => REVISION = value; }
     }
 }

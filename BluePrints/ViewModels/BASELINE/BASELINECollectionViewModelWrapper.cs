@@ -5,6 +5,7 @@ using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
@@ -156,7 +157,7 @@ namespace BluePrints.ViewModels
                 return;
 
             DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
-                new DualEntitiesParameter<Data.PROJECT, BASELINE>(null,
+                new DualEntitiesParameter<Data.PROJECT, IAmBaseline>(null,
                     DisplaySelectedEntity), 
                     "BASELINE_ITEMCollectionView", 
                     "[" + loadPROJECT.NUMBER + "] Baseline");

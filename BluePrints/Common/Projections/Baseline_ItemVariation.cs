@@ -7,9 +7,12 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class BASELINE_ITEMVariation : BluePrintsVariationBase<BASELINE_ITEMProgress>
+    public class BASELINE_ITEMVariation : BluePrintsVariationBase<BASELINE_ITEMProgress>, ISupportVariationSummary
     {
-        
+        public Guid? Baseline_Guid { get => Entity.Baseline_Guid; set => Entity.Entity.Baseline_Guid = value; }
+        public Guid? Variation_Guid { get => Entity.Variation_Guid; set => Entity.Entity.Variation_Guid = value; }
+        public decimal Estimated_Value { get => Entity.Estimated_Value; set => Entity.Estimated_Value = value; }
+        public decimal DC_Value { get => Entity.DC_Value; set => Entity.DC_Value = value; }
     }
 
     public static class Baseline_ItemVariationQuery
@@ -46,26 +49,17 @@ namespace BluePrints.Common.Projections
         }
 
         public static IQueryable<BASELINE_ITEMVariation> OffsiteDirectVariationItemTransformation(
-            IEnumerable<BASELINE_ITEMProgress> BASELINE_ITEMProgress, BASELINE BASELINE, VARIATION VARIATION,
+            IEnumerable<BASELINE_ITEMProgress> BASELINE_ITEMProgress, VARIATION VARIATION,
             IEnumerable<VARIATION_ITEM> VARIATION_ITEMS)
         {
-            IEnumerable<BASELINE_ITEMProgress> context_progresses;
-
-            if (VARIATION.APPROVED == null)
-                //When variation is not approved, retrieve current live deliverables and variation deliverables
-                context_progresses = BASELINE_ITEMProgress.Where(x => x.Entity.Entity.GUID_BASELINE == BASELINE.GUID || x.Entity.Entity.GUID_VARIATION == VARIATION.GUID && x.Entity.Entity.GUID_BASELINE == null);
-            else
-                //When variation is approved, retrieve deliverables from variation connected baseline
-                context_progresses = BASELINE_ITEMProgress.Where(x => x.Entity.Entity.GUID_VARIATION == VARIATION.GUID && x.Entity.Entity.GUID_BASELINE == VARIATION.GUID_BASELINE);
-
             return
                 BASELINE_ITEMProgress.OrderBy(x => x.Entity.Entity.CREATED).ToArray()
                     .Select(x => new BASELINE_ITEMVariation()
                     {
                         Entity = x,
                         VARIATION_ITEM = VARIATION_ITEMS.Where(y => y.GUID_ORIBASEITEM == x.Entity.Entity.GUID_ORIGINAL).FirstOrDefault(),
-                        SubmittedDate = VARIATION.SUBMITTED,
-                        ApprovedDate = VARIATION.APPROVED
+                        SubmittedDate = VARIATION == null ? null : VARIATION.SUBMITTED,
+                        ApprovedDate = VARIATION == null ? null : VARIATION.APPROVED
                     }).AsQueryable();
         }
     }
