@@ -124,6 +124,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Override_Productivity { get => ((IReportable)ProgressItem).Override_Productivity; set => ((IReportable)ProgressItem).Override_Productivity = value; }
 
+        public decimal MinEstimateUnits => ((IReportable)ProgressItem).MinEstimateUnits;
+
         public void Update()
         {
             ProgressItem.Update();
@@ -194,8 +196,6 @@ namespace BluePrints.Common.ViewModel.Reporting
     public class DisplayQuantityReportable : BindableBase, IReportable_Quantity
     {
         public IReportable_Quantity Reportable { get; }
-        private SingleObjectSummarizer statsSummarizer;
-        public SingleObjectSummarizer StatSummarizer => statsSummarizer;
         public int ColorIndex { get; private set; }
 
         //For bindableBase property name usage only
@@ -328,6 +328,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal TotalInstalledQuantity => Reportable.TotalInstalledQuantity;
 
+        public decimal AbsoluteTotalInstalledQuantity => Reportable.AbsoluteTotalInstalledQuantity;
+
         public decimal Baseline_Percentage => Reportable.Baseline_Percentage;
 
         public decimal SchedulePercentage => Reportable.SchedulePercentage;
@@ -347,6 +349,26 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Current_Productivity => Reportable.Current_Productivity;
 
         public decimal Override_Productivity { get => Reportable.Override_Productivity; set => Reportable.Override_Productivity = value; }
+
+        public decimal Stock_Code_Supply_Rate => Reportable.Stock_Code_Supply_Rate;
+
+        public decimal Stock_Code_Install_Hours => Reportable.Stock_Code_Install_Hours;
+
+        public decimal Total_Install_Hours => Reportable.Total_Install_Hours;
+
+        public decimal Total_Install_Cost => Reportable.Total_Install_Cost;
+
+        public decimal Total_Supply_Cost => Reportable.Total_Supply_Cost;
+
+        public decimal Total_Cost => Reportable.Total_Cost;
+
+        public SingleObjectSummarizer StatSummarizer => Reportable.StatSummarizer;
+
+        public decimal MinEstimateQuantity => Reportable.MinEstimateQuantity;
+
+        public decimal Variation_Quantity => Reportable.Variation_Quantity;
+
+        public decimal MinEstimateUnits => Reportable.MinEstimateUnits;
 
         public void SetReportingDataDate(DateTime dataDate)
         {

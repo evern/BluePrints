@@ -293,7 +293,7 @@
                                             <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n"
                                                               MaskUseAsDisplayFormat="True" Increment="1"
                                                               IsReadOnly="{Binding RowData.Row.Entity.Entity.BY_DURATION}"
-                                                              MinValue="{Binding RowData.Row.Earned_Units_Total}"
+                                                              MinValue="{Binding RowData.Row.MinEstimateUnits}"
                                                               Grid.Column="2">
                                                 <dxe:SpinEdit.MaxValue>
                                                     <MultiBinding Converter="{StaticResource IReportableStatsMaximumUnitsConverter}">

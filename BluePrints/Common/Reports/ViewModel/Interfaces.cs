@@ -18,9 +18,21 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Trackable_Total_Units { get; }
     }
 
+    public interface IVariation_Quantity
+    {
+        decimal Variation_Install_Cost { get; }
+        decimal Variation_Supply_Cost { get; }
+        decimal Variation_Install_Hours { get; }
+    }
+
     public interface IReportable_Quantity : IReportable, IHaveQuantity, ICanTrack, ICanProgressByQuantity
     {
         decimal Remaining_Hours_To_Completion { get; }
+        decimal MinEstimateQuantity { get; }
+        decimal Total_Install_Hours { get; }
+        decimal Total_Install_Cost { get; }
+        decimal Total_Supply_Cost { get; }
+        decimal Total_Cost { get; }
     }
 
     public interface IReportable_Group : IReportable
@@ -42,7 +54,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public interface IDeliverable_Quantity : IDeliverable_Rates, IHaveQuantity, ICanTrack
     {
-
+        
     }
 
     public interface IDeliverable_Rates_Group : IDeliverable_Rates
@@ -72,6 +84,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal CurrentPeriodInstalledQuantity { get; set; }
         decimal MaxCurrentQuantity { get; }
         decimal TotalInstalledQuantity { get; }
+        decimal AbsoluteTotalInstalledQuantity { get; }
         decimal getCurrentPeriodEarnedUnits(decimal newPercentage);
     }
     #endregion
@@ -102,6 +115,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal MinPercentage { get; }
         decimal MaxPercentage { get; }
         bool ShouldSaveProgress { get; }
+        decimal MinEstimateUnits { get; }
 
         IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func);
         void SetReportingDataDate(DateTime dataDate);
@@ -184,7 +198,10 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public interface IHaveQuantity
     {
+        decimal Stock_Code_Install_Hours { get; }
+        decimal Stock_Code_Supply_Rate { get; }
         decimal Estimated_Quantity { get; }
+        decimal Variation_Quantity { get; }
         decimal Total_Quantity { get; }
         string UOM { get; }
     }

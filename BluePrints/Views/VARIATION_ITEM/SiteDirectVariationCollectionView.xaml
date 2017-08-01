@@ -29,6 +29,15 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <dxmvvm:Interaction.Behaviors>
+            <dx:DialogService x:Name="StockCodeDialogService">
+                <dx:DialogService.DialogStyle>
+                    <Style TargetType="dx:DXDialogWindow">
+                        <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                    </Style>
+                </dx:DialogService.DialogStyle>
+            </dx:DialogService>
+        </dxmvvm:Interaction.Behaviors>
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
@@ -240,119 +249,49 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colESTIMATED_QUANTITY" FieldName="Entity.Entity.Entity.ESTIMATED_QUANTITY"
-                                            Header="ESTIMATED_QUANTITY" ReadOnly="True">
-                                    <dxg:GridColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="15" />
-                                                    <ColumnDefinition Width="15" />
-                                                    <ColumnDefinition Width="*" />
-                                                </Grid.ColumnDefinitions>
-                                                <Image
-                                                    Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}"
-                                                    ToolTip="Cannot reduce anymore because these quantity has already been earned" Grid.Column="0">
-                                                    <Image.Visibility>
-                                                        <MultiBinding
-                                                            Converter="{StaticResource NumericCompareToVisibilityConverter}"
-                                                            FallbackValue="Hidden">
-                                                            <MultiBinding.ConverterParameter>
-                                                                <sys:Boolean>False</sys:Boolean>
-                                                            </MultiBinding.ConverterParameter>
-                                                            <Binding ElementName="PART_Editor" Path="MinValue" />
-                                                            <Binding ElementName="PART_Editor" Path="EditValue" />
-                                                        </MultiBinding>
-                                                    </Image.Visibility>
-                                                </Image>
-                                                <Image
-                                                    Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}"
-                                                    ToolTip="Maximum possible units, please reduce other deliverable units to increase this" Grid.Column="1">
-                                                    <Image.Visibility>
-                                                        <MultiBinding
-                                                            Converter="{StaticResource NumericCompareToVisibilityConverter}"
-                                                            FallbackValue="Hidden">
-                                                            <MultiBinding.ConverterParameter>
-                                                                <sys:Boolean>False</sys:Boolean>
-                                                            </MultiBinding.ConverterParameter>
-                                                            <Binding ElementName="PART_Editor" Path="MaxValue" />
-                                                            <Binding ElementName="PART_Editor" Path="EditValue" />
-                                                        </MultiBinding>
-                                                    </Image.Visibility>
-                                                </Image>
-                                                <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n"
-                                                              MaskUseAsDisplayFormat="True" Increment="1"
-                                                              MinValue="{Binding RowData.Row.Entity.AbsoluteTotalInstalledQuantity}"
-                                                              Grid.Column="2">
-                                                    <!--<dxe:SpinEdit.MaxValue>
-                                                        <MultiBinding Converter="{StaticResource IReportableStatsMaximumUnitsConverter}">
-                                                            <Binding ElementName="userControl" Path="DataContext.TotalAllowedUnits" />
-                                                            <Binding ElementName="userControl" Path="DataContext.DisplayEntities" />
-                                                            <Binding Path="RowData.Row" />
-                                                        </MultiBinding>
-                                                    </dxe:SpinEdit.MaxValue>-->
-                                                </dxe:SpinEdit>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </dxg:GridColumn.CellTemplate>
-                                </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandVariation" Header="Variation">
-                                <dxg:GridColumn FieldName="Total_Units"
-                                            Header="TOTAL QUANTITY" ReadOnly="True" IsEnabled="False">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1"
-                                                          MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Variation_Units" Header="ADJUST QUANTITY">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" Increment="1"
-                                                      MaskUseAsDisplayFormat="True"
-                                                      MinValue="{Binding RowData.Row.MinNegativeUnits}"
-                                                      IsReadOnly="{Binding RowData.Row.AdjustUnitsReadOnly}" />
+                                            <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" Increment="1" MaskUseAsDisplayFormat="True" MinValue="{Binding RowData.Row.MinNegativeUnits}" IsReadOnly="{Binding RowData.Row.AdjustUnitsReadOnly}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Total_Cost" ReadOnly="True" Header="COSTS"
-                                            AllowSearchPanel="False">
+                                <dxg:GridColumn FieldName="Forecast_Units" Header="VAR QUANTITY">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True"
-                                                      MaskType="Numeric" Mask="c" />
+                                            <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" Increment="1" MaskUseAsDisplayFormat="True" IsReadOnly="True" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Forecast_Units" Header="VARIATION QUANTITY">
+                                <dxg:GridColumn FieldName="Variation_Install_Hours" ReadOnly="True" Header="VAR INSTALL HOURS" AllowSearchPanel="False">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" Increment="1"
-                                                      MaskUseAsDisplayFormat="True"
-                                                      IsReadOnly="True" />
+                                            <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True" MaskType="Numeric" Mask="c" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Variation_Cost" ReadOnly="True" Header="VARIATION COSTS"
-                                            AllowSearchPanel="False">
+                                <dxg:GridColumn FieldName="Variation_Install_Cost" ReadOnly="True" Header="VAR INSTALL COSTS" AllowSearchPanel="False">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True"
-                                                      MaskType="Numeric" Mask="c" />
+                                            <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True" MaskType="Numeric" Mask="c" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="ACTION" FieldName="Variation_Action" ReadOnly="True"
-                                            IsEnabled="False">
+                                <dxg:GridColumn FieldName="Variation_Supply_Cost" ReadOnly="True" Header="VAR SUPPLY COSTS" AllowSearchPanel="False">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True" MaskType="Numeric" Mask="c" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="ACTION" FieldName="Variation_Action" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
-                                                              ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationAction}}"
-                                                              AllowDrop="False" />
+                                        <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationAction}}" AllowDrop="False" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="UNBOUND_CANCEL" Header="CANCEL" ReadOnly="True"
-                                            UnboundType="Boolean" AllowEditing="False"
-                                            >
+                                <dxg:GridColumn FieldName="UNBOUND_CANCEL" Header="CANCEL" ReadOnly="True" UnboundType="Boolean" AllowEditing="False">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Height="18"
@@ -371,7 +310,34 @@
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
-                            <dxg:GridControlBand Name="bandCustomization" Header="Stock Code Customization">
+                            <dxg:GridControlBand Name="bandTotals" Header="Totals">
+                                <dxg:GridColumn FieldName="Total_Units" Header="TOTAL QUANTITY" ReadOnly="True" IsEnabled="False">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="INSTALL HOURS" FieldName="Total_Install_Hours" ReadOnly="True">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="INSTALL COST" FieldName="Total_Install_Cost" ReadOnly="True">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="SUPPLY COST" FieldName="Total_Supply_Cost" ReadOnly="True">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="TOTAL COST" FieldName="Total_Cost" ReadOnly="True">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                            </dxg:GridControlBand>
+                            <dxg:GridControlBand Name="bandStock" Header="Stock Code Details">
                                 <dxg:GridColumn Header="SUPPLY RATE" FieldName="Entity.Entity.STOCK_CODE.RATE_SUPPLY">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
@@ -386,23 +352,6 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                            </dxg:GridControlBand>
-                            <dxg:GridControlBand Name="bandStock" Header="Stock Code Details">
-                                <dxg:GridColumn Header="TOTAL INSTALL HOURS" FieldName="Entity.Entity.Total_Units" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Header="SUPPLY COST" FieldName="Entity.Entity.Supply_Cost" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Header="INSTALL COST" FieldName="Entity.Entity.Install_Cost" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
                                 <dxg:GridColumn Header="UOM"  FieldName="Entity.Entity.STOCK_CODE.UOM" ReadOnly="True" />
                                 <dxg:GridColumn Header="NAME" FieldName="Entity.Entity.STOCK_CODE.NAME" ReadOnly="True" />
                                 <dxg:GridColumn Header="TYPE" FieldName="Entity.Entity.STOCK_CODE.TYPE" ReadOnly="True" />
@@ -411,36 +360,30 @@
                             </dxg:GridControlBand>
                         </dxg:GridControl.Bands>
                         <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.Entity.COMMENTS" SummaryType="Count"
-                                                 Alignment="Right" DisplayFormat="Total {0} Records" />
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.Entity.ESTIMATED_QUANTITY" SummaryType="Sum"
-                                                 ShowInColumn="Entity.Entity.Entity.ESTIMATED_QUANTITY"
-                                                 DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="Total_Install_Hours" SummaryType="Sum"
-                                                 ShowInColumn="Total_Install_Hours"
-                                                 DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="Supply_Cost" SummaryType="Sum"
-                                                 ShowInColumn="Supply_Cost"
-                                                 DisplayFormat="Total: {0:c}" />
-                            <dxg:GridSummaryItem FieldName="Install_Cost" SummaryType="Sum"
-                                                 ShowInColumn="Install_Cost"
-                                                 DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem FieldName="Entity.Total_Units" SummaryType="SUM" ShowInColumn="Entity.Total_Units" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Variation_Units" SummaryType="SUM" ShowInColumn="Variation_Units" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Total_Cost" SummaryType="SUM" ShowInColumn="Total_Cost" DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem FieldName="Forecast_Units" SummaryType="SUM" ShowInColumn="Forecast_Units" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Variation_Install_Hours" SummaryType="SUM" ShowInColumn="Variation_Install_Hours" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Variation_Install_Cost" SummaryType="SUM" ShowInColumn="Variation_Install_Cost" DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem FieldName="Variation_Supply_Cost" SummaryType="SUM" ShowInColumn="Variation_Supply_Cost" DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem FieldName="Total_Install_Hours" SummaryType="SUM" ShowInColumn="Total_Install_Hours" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Total_Install_Cost" SummaryType="SUM" ShowInColumn="Total_Install_Cost" DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem FieldName="Total_Supply_Cost" SummaryType="SUM" ShowInColumn="Total_Supply_Cost" DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.Entity.COMMENTS" SummaryType="Count"
-                                                 Alignment="Right" DisplayFormat="Total {0} Records" />
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.Entity.ESTIMATED_QUANTITY" SummaryType="Sum"
-                                                 ShowInColumn="Entity.Entity.Entity.ESTIMATED_QUANTITY"
-                                                 DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="Total_Install_Hours" SummaryType="Sum"
-                                                 ShowInColumn="Total_Install_Hours"
-                                                 DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="Supply_Cost" SummaryType="Sum"
-                                                 ShowInColumn="Supply_Cost"
-                                                 DisplayFormat="Total: {0:c}" />
-                            <dxg:GridSummaryItem FieldName="Install_Cost" SummaryType="Sum"
-                                                 ShowInColumn="Install_Cost"
-                                                 DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem FieldName="Entity.Total_Units" SummaryType="SUM" ShowInColumn="Entity.Total_Units" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Variation_Units" SummaryType="SUM" ShowInColumn="Variation_Units" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Total_Cost" SummaryType="SUM" ShowInColumn="Total_Cost" DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem FieldName="Forecast_Units" SummaryType="SUM" ShowInColumn="Forecast_Units" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Variation_Install_Hours" SummaryType="SUM" ShowInColumn="Variation_Install_Hours" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Variation_Install_Cost" SummaryType="SUM" ShowInColumn="Variation_Install_Cost" DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem FieldName="Variation_Supply_Cost" SummaryType="SUM" ShowInColumn="Variation_Supply_Cost" DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem FieldName="Total_Install_Hours" SummaryType="SUM" ShowInColumn="Total_Install_Hours" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Total_Install_Cost" SummaryType="SUM" ShowInColumn="Total_Install_Cost" DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem FieldName="Total_Supply_Cost" SummaryType="SUM" ShowInColumn="Total_Supply_Cost" DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
                             <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"

@@ -32,6 +32,8 @@ namespace BluePrints.Common.Projections
 
         public decimal ItemRate => Deliverables.Sum(x => x.ItemRate);
 
+        public decimal Stock_Code_Supply_Rate => Deliverables.Sum(x => x.Stock_Code_Supply_Rate);
+
         public decimal Estimated_Costs => Deliverables.Sum(x => x.Estimated_Costs);
 
         public decimal Total_Costs => Deliverables.Sum(x => x.Total_Costs);
@@ -59,6 +61,10 @@ namespace BluePrints.Common.Projections
         public string Phase_Code => string.Empty;
 
         public string Commodity_Display_Code => Entity.Display_Code;
+
+        public decimal Stock_Code_Install_Hours => Deliverables.Sum(x => x.Stock_Code_Install_Hours);
+
+        public decimal Variation_Quantity => Deliverables.Sum(x => x.Variation_Quantity);
 
         public void SetOriginalEntityKey(Guid newGuid)
         {

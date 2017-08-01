@@ -153,8 +153,7 @@
                                                               DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DOCTYPE"
-                                            Header="DOCTYPE">
+                            <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DOCTYPE" Header="DOCTYPE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}"
@@ -171,8 +170,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DISCIPLINE"
-                                            Header="DISCIPLINE">
+                            <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DISCIPLINE" Header="DISCIPLINE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
@@ -189,8 +187,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DEPARTMENT"
-                                            Header="DEPARTMENT">
+                            <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DEPARTMENT" Header="DEPARTMENT">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}"
@@ -207,8 +204,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.INTERNAL_NUM"
-                                            Header="INTERNAL NUM">
+                            <dxg:GridColumn FieldName="Entity.Entity.Entity.INTERNAL_NUM" Header="INTERNAL NUM">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <!-- Use IsEnabled because when textEdit is invoked the 2nd time IsReadOnly didn't get picked up in the binding -->
@@ -216,24 +212,21 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.CLIENT_NUM"
-                                            Header="CLIENT NUM">
+                            <dxg:GridColumn FieldName="Entity.Entity.Entity.CLIENT_NUM" Header="CLIENT NUM">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsEnabled}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.REVISION_NUMBER"
-                                            Header="REVISION NUM">
+                            <dxg:GridColumn FieldName="Entity.Entity.Entity.REVISION_NUMBER" Header="REVISION NUM">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsEnabled}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.DELIVERABLE_TYPE"
-                                            Header="TYPE">
+                            <dxg:GridColumn FieldName="Entity.Entity.Entity.DELIVERABLE_TYPE" Header="TYPE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings Name="PART_Editor"
                                                               ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DeliverableType}}"
@@ -248,16 +241,14 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.PRIMARY_TITLE"
-                                            Header="PRIMARY TITLE">
+                            <dxg:GridColumn FieldName="Entity.Entity.Entity.PRIMARY_TITLE" Header="PRIMARY TITLE">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsEnabled}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.SECONDARY_TITLE"
-                                            Header="SECONDARY TITLE">
+                            <dxg:GridColumn FieldName="Entity.Entity.Entity.SECONDARY_TITLE" Header="SECONDARY TITLE">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsEnabled}" />
@@ -278,11 +269,9 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Total_Units"
-                                            Header="TOTAL HOURS" ReadOnly="True" IsEnabled="False">
+                            <dxg:GridColumn FieldName="Total_Units" Header="TOTAL HOURS" ReadOnly="True" IsEnabled="False">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1"
-                                                          MaskUseAsDisplayFormat="True" />
+                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Variation_Units" Header="ADJUST HOURS">
@@ -356,8 +345,8 @@
                                                  SummaryType="SUM"
                                                  ShowInColumn="Entity.Total_Units"
                                                  DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="VARIATION_ITEM.VARIATION_UNITS" SummaryType="SUM"
-                                                 ShowInColumn="VARIATION_ITEM.VARIATION_UNITS"
+                            <dxg:GridSummaryItem FieldName="Variation_Units" SummaryType="SUM"
+                                                 ShowInColumn="Variation_Units"
                                                  DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="Total_Cost" SummaryType="SUM" ShowInColumn="Total_Cost"
                                                  DisplayFormat="Total: {0:c}" />
@@ -372,8 +361,8 @@
                                                  SummaryType="SUM"
                                                  ShowInColumn="Entity.Total_Units"
                                                  DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="VARIATION_ITEM.VARIATION_UNITS" SummaryType="SUM"
-                                                 ShowInColumn="VARIATION_ITEM.VARIATION_UNITS"
+                            <dxg:GridSummaryItem FieldName="Variation_Units" SummaryType="SUM"
+                                                 ShowInColumn="Variation_Units"
                                                  DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="Total_Cost" SummaryType="SUM" ShowInColumn="Total_Cost"
                                                  DisplayFormat="Total: {0:c}" />

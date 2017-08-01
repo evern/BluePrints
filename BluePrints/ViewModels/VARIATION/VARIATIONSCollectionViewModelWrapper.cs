@@ -168,7 +168,7 @@ namespace BluePrints.ViewModels
         #region CallBacks
         public bool BeforeSaveValidation(VARIATIONProjection entity, bool isNewEntity)
         {
-            if (LiveBASELINE == null)
+            if (LiveBASELINE == null && LiveESTIMATION_DIRECT == null)
                 return false;
 
             return true;
@@ -191,7 +191,12 @@ namespace BluePrints.ViewModels
             entity.Entity.PHASE = phaseType;
 
             if (entity.Entity.APPROVED != null)
-                entity.Entity.GUID_ORIBASELINE = entity.Entity.GUID_ORIBASELINE ?? LiveBASELINE.GUID;
+            {
+                if (phaseType == ProgressType.Design)
+                    entity.Entity.GUID_ORIBASELINE = entity.Entity.GUID_ORIBASELINE ?? LiveBASELINE.GUID;
+                else
+                    entity.Entity.GUID_ORIBASELINE = entity.Entity.GUID_ORIBASELINE ?? LiveESTIMATION_DIRECT.GUID;
+            }
             else
                 entity.Entity.GUID_ORIBASELINE = null;
 
@@ -406,7 +411,7 @@ namespace BluePrints.ViewModels
             DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
                 new DualEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, DisplaySelectedEntity.Entity),
                 view_name,
-                "[" + loadPROJECT.NUMBER + "] " + "[" + DisplaySelectedEntity.Entity.NAME + "]" + tab_title);
+                "[" + loadPROJECT.NUMBER + "] " + "[" + DisplaySelectedEntity.Entity.NAME + "] " + tab_title);
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }
@@ -421,7 +426,7 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return false;
 
-            if (LiveBASELINE == null)
+            if (LiveBASELINE == null && LiveESTIMATION_DIRECT == null)
                 return false;
 
             if (DisplaySelectedEntity.Entity == null)
@@ -473,7 +478,6 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        ICollectionViewModelsWrapper viewModelsWrapper;
         /// <summary>
         /// Approves an entity.
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the ApproveCommand property that can be used as a binding source in views.
@@ -486,10 +490,16 @@ namespace BluePrints.ViewModels
                 errorMessage = "Nothing within variation to approve";
             else if (loadPROJECT == null)
                 errorMessage = "Project doesn't exists";
-            else if (LiveBASELINE == null)
-                errorMessage = "Live baseline doesn't exists";
             else if (LivePROGRESS == null)
                 errorMessage = "Live progress doesn't exists";
+            else
+            {
+                if (phaseType == ProgressType.Design && LiveBASELINE == null)
+                    errorMessage = "Live baseline doesn't exists";
+                else if(phaseType == ProgressType.Construct && LiveESTIMATION_DIRECT == null)
+                    errorMessage = "Live estimate doesn't exists";
+            }
+
 
             if (errorMessage != string.Empty)
             {

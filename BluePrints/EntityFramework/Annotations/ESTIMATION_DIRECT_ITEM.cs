@@ -120,9 +120,9 @@ namespace BluePrints.Data
 
         public decimal Estimated_Units => STOCK_CODE == null ? 0 : ESTIMATED_QUANTITY * STOCK_CODE.HOURS_INSTALL;
 
-        public decimal Total_Units => Estimated_Units;
+        public decimal Total_Units => Estimated_Units + Variation_Units;
 
-        public decimal Variation_Units => 0;
+        public decimal Variation_Units => STOCK_CODE == null ? 0 : DC_QUANTITY * STOCK_CODE.HOURS_INSTALL;
 
         [NotMapped]
         public decimal? DB_Productivity_Override { get => PRODUCTIVITY_OVERRIDE; set => PRODUCTIVITY_OVERRIDE = value; }

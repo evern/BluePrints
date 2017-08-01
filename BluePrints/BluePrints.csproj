@@ -1178,8 +1178,8 @@
     <Compile Include="Views\COMMODITY_CODE\COMMODITY_CODECollectionView.xaml.cs">
       <DependentUpon>COMMODITY_CODECollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PROGRESS_ITEM\User_OffisteDirectProgressCollectionView.xaml.cs">
-      <DependentUpon>User_OffisteDirectProgressCollectionView.xaml</DependentUpon>
+    <Compile Include="Views\PROGRESS_ITEM\User_OffsiteDirectProgressCollectionView.xaml.cs">
+      <DependentUpon>User_OffsiteDirectProgressCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\USER\USERDashboardView.xaml.cs">
       <DependentUpon>USERDashboardView.xaml</DependentUpon>
@@ -1388,7 +1388,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\PROGRESS_ITEM\User_OffisteDirectProgressCollectionView.xaml">
+    <Page Include="Views\PROGRESS_ITEM\User_OffsiteDirectProgressCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

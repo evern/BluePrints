@@ -125,7 +125,13 @@
                                                               ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:CorrectiveActionType}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn AllowMoving="false" FieldName="CORRECTIVE_ACTION" Header="Corrective Action" />
+                            <dxg:GridColumn AllowMoving="false" FieldName="CORRECTIVE_ACTION" Header="Corrective Action" >
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
                             <dxg:GridColumn AllowMoving="false" FieldName="ESTIMATED_RECTIFICATION_COST" Header="Estimated Rectification Cost">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Name="PART_Editor" MaskUseAsDisplayFormat="True" MaskType="Numeric" Mask="c" />

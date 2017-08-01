@@ -477,7 +477,7 @@ namespace BluePrints.ViewModels
 
         public bool CanDuplicate()
         {
-            if (MainViewModel == null || SelectedEntities.Count() == 0)
+            if (MainViewModel == null || SelectedEntities == null || SelectedEntities.Count() == 0)
                 return false;
 
             return true;

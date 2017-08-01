@@ -169,7 +169,7 @@ namespace BluePrints.Common.Projections
                 {
                     IEnumerable<ESTIMATION_DIRECT_ITEM> live_estimation_direct_items = live_estimation_direct.ESTIMATION_DIRECT_ITEM;
                     IEnumerable<ESTIMATION_DIRECT_ITEMProgress> project_estimation_direct_item_progresses =
-                    ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Progress_Transformation(live_estimation_direct_items.AsQueryable(), current_project, project_rates, live_estimation_direct_progress, live_estimation_direct_progresses);
+                    ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Progress_Transformation(live_estimation_direct_items.AsQueryable(), current_project, project_rates, live_estimation_direct_progress, live_estimation_direct_progresses, null, null, approved_project_variations);
                     reportables.AddRange(project_estimation_direct_item_progresses);
                     current_project_progresses.Add(live_estimation_direct_progress);
                 }

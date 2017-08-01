@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    public class BluePrintsQuantityVariationBase<TEntity> : BluePrintsVariationBase<TEntity>, IBluePrintsQuantityVariationBase<TEntity>
+    public class BluePrintsQuantityVariationBase<TEntity> : BluePrintsVariationBase<TEntity>, IBluePrintsQuantityVariationBase<TEntity>, IVariation_Quantity
         where TEntity : class, IReportable_Quantity, ISupportVariation, new()
     {
         public decimal Quantity { get => Variation_Units * Entity.QuantityPerUnit; set => Variation_Units = value * Entity.QuantityPerUnit; }
@@ -22,6 +22,20 @@ namespace BluePrints.Common.Projections
                 return MinNegativeUnits * Entity.QuantityPerUnit;
             }
         }
+
+        public decimal Variation_Install_Cost => Variation_Cost;
+
+        public decimal Variation_Supply_Cost => Variation_Units * Entity.Stock_Code_Supply_Rate;
+
+        public decimal Variation_Install_Hours => Variation_Units * Entity.Stock_Code_Install_Hours;
+
+        public decimal Total_Install_Hours => Total_Units * Entity.Stock_Code_Install_Hours;
+
+        public decimal Total_Install_Cost => Total_Install_Hours * base.Entity.ItemRate;
+
+        public decimal Total_Supply_Cost => Total_Units * Entity.Stock_Code_Supply_Rate;
+
+        public override decimal Total_Cost => Total_Install_Cost + Total_Supply_Cost;
     }
 
     public class BluePrintsVariationBase<TEntity> : BluePrintsProjectionBase<TEntity>, IBluePrintsVariationBase<TEntity>
@@ -106,9 +120,9 @@ namespace BluePrints.Common.Projections
 
         public bool IsApproved => ApprovedDate != null;
 
-        public decimal Total_Units => IsByDuration ? 0 : base.Entity.Total_Units;
+        public decimal Total_Units => IsByDuration ? 0 : (base.Entity.Total_Units + Variation_Units);
 
-        public decimal Total_Cost => IsByDuration ? 0 : (base.Entity.Total_Units + Variation_Units) * base.Entity.ItemRate;
+        public virtual decimal Total_Cost => IsByDuration ? 0 : (base.Entity.Total_Units + Variation_Units) * base.Entity.ItemRate;
 
         public decimal Variation_Cost => IsByDuration ? 0 : Forecast_Units * base.Entity.ItemRate;
 

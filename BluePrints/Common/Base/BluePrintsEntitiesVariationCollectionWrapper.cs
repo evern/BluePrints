@@ -199,7 +199,10 @@ namespace BluePrints.Common.Base
                 {
                     TMainVariationEntity affectedDisplayEntity = getAffectedDisplayEntity(updated_VARIATION_ITEM);
                     if (affectedDisplayEntity != null)
+                    {
+                        GridControlService.RefreshSummary();
                         affectedDisplayEntity.Update();
+                    }
                 }
 
                 return true;
@@ -445,6 +448,17 @@ namespace BluePrints.Common.Base
             return true;
         }
 
+        private bool canEditView()
+        {
+            if (loadVARIATION.SUBMITTED != null || loadVARIATION.APPROVED != null)
+            {
+                MessageBoxService.ShowMessage("Cannot perform current operation when variation is submitted/approved");
+                return false;
+            }
+
+            return true;
+        }
+
         public bool CanDuplicateMultiple(BarEditItem barEdit) => collectionViewModelWrapper.CanDuplicateMultiple(barEdit);
         public bool CanInsertMultiple(BarEditItem barEdit) => collectionViewModelWrapper.CanInsertMultiple(barEdit);
         public bool CanDuplicate() => collectionViewModelWrapper.CanDuplicate();
@@ -452,18 +466,12 @@ namespace BluePrints.Common.Base
         public bool CanAutoPopulate(object button) => collectionViewModelWrapper.CanAutoPopulate(button);
         public bool CanFindReplace(object button) => collectionViewModelWrapper.CanFindReplace(button);
 
-        public void DuplicateMultiple(BarEditItem barEdit) => collectionViewModelWrapper.DuplicateMultiple(barEdit);
-        public void InsertMultiple(BarEditItem barEdit) => collectionViewModelWrapper.InsertMultiple(barEdit);
-        public void Duplicate() => collectionViewModelWrapper.Duplicate();
-        public void Insert() => collectionViewModelWrapper.Insert();
-        public void AutoPopulate(object button)
-        {
-            if (isSelectedVariationAddEntity()) collectionViewModelWrapper.AutoPopulate(button);
-        }
-        public void FindReplace(object button)
-        {
-            if (isSelectedVariationAddEntity()) collectionViewModelWrapper.FindReplace(button);
-        }
+        public void DuplicateMultiple(BarEditItem barEdit) { if (canEditView()) collectionViewModelWrapper.DuplicateMultiple(barEdit); }
+        public void InsertMultiple(BarEditItem barEdit) { if (canEditView()) collectionViewModelWrapper.InsertMultiple(barEdit); }
+        public void Duplicate() { if (canEditView()) collectionViewModelWrapper.Duplicate(); }
+        public void Insert() { if (canEditView()) collectionViewModelWrapper.Insert(); }
+        public void AutoPopulate(object button) { if (isSelectedVariationAddEntity()) collectionViewModelWrapper.AutoPopulate(button); }
+        public void FindReplace(object button) { if (isSelectedVariationAddEntity()) collectionViewModelWrapper.FindReplace(button); }
         #endregion
 
         #region View Properties

@@ -112,9 +112,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                             List<StoredProcedure_PlannedDataPoint> currentGroupDeliverableDataPoints = new List<StoredProcedure_PlannedDataPoint>();
                             foreach (IReportable reportable in reportable_Group.Reportables)
                             {
-                                reportable.Stats.Budgeted.SetPlannedData(plannedDataPoints.Where(x => x.Deliverable_Guid == reportable.OriginalEntityKey));
+                                reportable.Stats.Budgeted.SetPlannedData(plannedDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
                                 reportable.Update();
-                                currentGroupDeliverableDataPoints.AddRange(plannedDataPoints.Where(x => x.Deliverable_Guid == reportable.OriginalEntityKey));
+                                currentGroupDeliverableDataPoints.AddRange(plannedDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
                             }
 
                             reportable_Group.Stats.Budgeted.SetPlannedData(currentGroupDeliverableDataPoints);
@@ -123,13 +123,13 @@ namespace BluePrints.Common.ViewModel.Reporting
                         }
                         else
                         {
-                            reportablesDisplay.Stats.Budgeted.SetPlannedData(plannedDataPoints.Where(x => x.Deliverable_Guid == reportableObject.OriginalEntityKey));
+                            reportablesDisplay.Stats.Budgeted.SetPlannedData(plannedDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey));
                             reportablesDisplay.Update();
                         }
                     }
                     else
                     {
-                        reportableObject.Stats.Budgeted.SetPlannedData(plannedDataPoints.Where(x => x.Deliverable_Guid == reportableObject.OriginalEntityKey));
+                        reportableObject.Stats.Budgeted.SetPlannedData(plannedDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey));
                         reportableObject.Update();
                     }
 

@@ -529,6 +529,7 @@ namespace BluePrints.Common.Base
                         else if (P6TASK.remain_work_qty > 0)
                         {
                             P6TASK.status_code = P6TASKSTATUS.TK_Active.ToString();
+                            P6TASK.act_start_date = first_progress_date;
                             P6TASK.act_end_date = null;
 
                             //defines how much percentage of units this assignment will take up when it is fully assigned, so that we can estimate the total duration to apply productivity to
@@ -566,6 +567,7 @@ namespace BluePrints.Common.Base
                         }
                         else if (P6TASK.status_code == P6TASKSTATUS.TK_NotStart.ToString())
                             P6TASK.status_code = P6TASKSTATUS.TK_Active.ToString();
+
 
                         if (!processedP6Task.Any(x => x == P6TASK.task_code))
                             processedP6Task.Add(P6TASK.task_code);

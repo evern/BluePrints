@@ -320,6 +320,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal AbsoluteTotalInstalledQuantity => PastInstalledQuantity + CurrentPeriodInstalledQuantity + FutureInstalledQuantity;
 
+        public decimal MinEstimateQuantity => (AbsoluteTotalInstalledQuantity - Entity.Variation_Quantity) < 0 ? 0 : AbsoluteTotalInstalledQuantity - Entity.Variation_Quantity;
+
         public decimal TotalInstalledQuantity => PastInstalledQuantity + FutureInstalledQuantity;
 
         public decimal FutureInstalledQuantity
@@ -346,6 +348,20 @@ namespace BluePrints.Common.ViewModel.Reporting
                 return Estimation_DirectProgressType.Standalone;
             }
         }
+
+        public decimal Total_Install_Hours => Total_Units;
+
+        public decimal Total_Install_Cost => Total_Install_Hours * base.Entity.ItemRate;
+
+        public decimal Total_Supply_Cost => Total_Units * Entity.Stock_Code_Supply_Rate;
+
+        public decimal Total_Cost => Total_Install_Cost + Total_Supply_Cost;
+
+        public decimal Stock_Code_Install_Hours => Entity.Stock_Code_Install_Hours;
+
+        public decimal Stock_Code_Supply_Rate => Entity.Stock_Code_Supply_Rate;
+
+        public decimal Variation_Quantity => Entity.Variation_Quantity;
 
         protected override decimal getNewPercentage()
         {
@@ -384,7 +400,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             List<VariationAdjustment> currentProgressItemAdjustments = variation_adjustments.Where(x => x.DeliverableOriginalGuid == entity.OriginalEntityKey).ToList();
 
             PartialStatsBuilder partialStatsBuilder = new PartialStatsBuilder(PROJECT.CURRENCYCONVERSION);
-            Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, entity.Estimated_Units, entity.Total_Units, entity.Estimated_Costs, entity.Total_Costs, variation_adjustments.Where(x => x.DeliverableOriginalGuid == entity.OriginalEntityKey).ToList());
+            Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, entity.Estimated_Units, entity.Total_Units, entity.Estimated_Costs, entity.Total_Costs, currentProgressItemAdjustments);
             statsSummarizer = new SingleObjectSummarizer(this, partialStatsBuilder);
         }
 
@@ -528,7 +544,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public virtual decimal Earned_Units_OnDataDate => PROGRESS_ITEM_Current == null ? 0 : PROGRESS_ITEM_Current.EARNED_UNITS;
 
-        public decimal Earned_Costs_OnDataDate => Earned_Units_OnDataDate * Entity.ItemRate;
+        public decimal Earned_Costs_OnDataDate => (Earned_Units_OnDataDate * Entity.ItemRate);
 
         public virtual decimal Earned_Units_ToDate => Earned_Units_BeforeDataDate + Earned_Units_OnDataDate;
 
@@ -699,5 +715,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 return P6_Assignments.Sum(x => (x.HIGH_VALUE - (x.LOW_VALUE - 0.01m)));
             }
         }
+
+        public decimal MinEstimateUnits => Earned_Units_Total - Variation_Units < 0 ? 0 : Earned_Units_Total - Variation_Units;
     }
 }

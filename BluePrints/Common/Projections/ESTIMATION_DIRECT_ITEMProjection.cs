@@ -122,7 +122,7 @@ namespace BluePrints.Common.Projections
 
         public decimal Estimated_Units => Entity.STOCK_CODE == null ? STOCK_CODE == null ? 0 : STOCK_CODE.HOURS_INSTALL * Entity.ESTIMATED_QUANTITY : Entity.ESTIMATED_QUANTITY * Entity.STOCK_CODE.HOURS_INSTALL;
 
-        public decimal Total_Units => Estimated_Units;
+        public decimal Total_Units => Entity.Total_Units;
 
         public Guid OriginalEntityKey { get => Entity.GUID_ORIGINAL; }
 
@@ -132,17 +132,17 @@ namespace BluePrints.Common.Projections
 
         public decimal Estimated_Costs => Estimated_Units * ItemRate;
 
-        public decimal Total_Costs => Estimated_Costs;
+        public decimal Total_Costs => Estimated_Costs + Variation_Costs;
 
         public decimal Estimated_Quantity => Entity.ESTIMATED_QUANTITY;
 
-        public decimal Total_Quantity => Estimated_Quantity;
+        public decimal Total_Quantity => Entity.ESTIMATED_QUANTITY + Entity.DC_QUANTITY;
 
         public string UOM => STOCK_CODE == null ? string.Empty : STOCK_CODE.UOM;
 
         public Estimation_DirectProgressType Progress_Type => Entity.PROGRESS_TYPE;
 
-        public decimal Supply_Cost => STOCK_CODE == null ? 0 : STOCK_CODE.RATE_SUPPLY * Estimated_Quantity;
+        public decimal Supply_Cost => Stock_Code_Supply_Rate * Estimated_Quantity;
 
         public decimal Install_Cost => Total_Units * ItemRate;
 
@@ -150,7 +150,9 @@ namespace BluePrints.Common.Projections
 
         public decimal Variation_Units => Entity.Variation_Units;
 
-        public decimal Variation_Costs => 0;
+        public decimal Variation_Costs => Variation_Units * ItemRate;
+
+        public decimal Stock_Code_Supply_Rate => STOCK_CODE == null ? 0 : STOCK_CODE.RATE_SUPPLY;
 
         public string Stock_Code_Type => STOCK_CODE == null ? string.Empty : STOCK_CODE.TYPE;
 
@@ -167,6 +169,10 @@ namespace BluePrints.Common.Projections
         public decimal Estimated_Value { get => Entity.Estimated_Value; set => Entity.Estimated_Value = value; }
 
         public decimal DC_Value { get => Entity.DC_Value; set => Entity.DC_Value = value; }
+
+        public decimal Stock_Code_Install_Hours => STOCK_CODE == null ? 0 : STOCK_CODE.HOURS_INSTALL;
+
+        public decimal Variation_Quantity => Entity.DC_QUANTITY;
     }
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries

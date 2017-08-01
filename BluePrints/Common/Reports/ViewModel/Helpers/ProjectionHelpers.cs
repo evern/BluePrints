@@ -54,7 +54,14 @@ namespace BluePrints.Common.ViewModel.Reporting
                     IDeliverable_Rates lookUpDeliverable = deliverables.FirstOrDefault(x => x.OriginalEntityKey == variation_item.GUID_ORIBASEITEM);
                     if (lookUpDeliverable != null)
                     {
-                        variationAdjustments.Add(new VariationAdjustment(variation_item.GUID_ORIBASEITEM) { AdjustmentDate = (DateTime)variation.APPROVED, AdjustmentUnits = variation_item.VARIATION_UNITS, AdjustmentRate = lookUpDeliverable.ItemRate });
+                        ICanProgressByQuantity progressByQuantityDeliverable = lookUpDeliverable as ICanProgressByQuantity;
+                        decimal variation_units;
+                        if (progressByQuantityDeliverable == null)
+                            variation_units = variation_item.VARIATION_UNITS;
+                        else
+                            variation_units = variation_item.VARIATION_UNITS * progressByQuantityDeliverable.UnitsPerQuantity;
+
+                        variationAdjustments.Add(new VariationAdjustment(variation_item.GUID_ORIBASEITEM) { AdjustmentDate = (DateTime)variation.APPROVED, AdjustmentUnits = variation_units, AdjustmentRate = lookUpDeliverable.ItemRate });
                     }
                 }
             }

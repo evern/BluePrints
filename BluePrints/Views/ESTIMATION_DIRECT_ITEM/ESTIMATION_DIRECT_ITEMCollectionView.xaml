@@ -235,8 +235,7 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.Entity.COMMENTS" Header="COMMENTS" />
-                                <dxg:GridColumn Name="colESTIMATED_QUANTITY" FieldName="Entity.Entity.ESTIMATED_QUANTITY"
-                                            Header="ESTIMATED_QUANTITY">
+                                <dxg:GridColumn Name="colESTIMATED_QUANTITY" FieldName="Entity.Entity.ESTIMATED_QUANTITY" Header="QTY">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <Grid>
@@ -277,7 +276,7 @@
                                                 </Image>
                                                 <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n"
                                                               MaskUseAsDisplayFormat="True" Increment="1"
-                                                              MinValue="{Binding RowData.Row.AbsoluteTotalInstalledQuantity}"
+                                                              MinValue="{Binding RowData.Row.MinEstimateQuantity}"
                                                               Grid.Column="2">
                                                     <!--<dxe:SpinEdit.MaxValue>
                                                         <MultiBinding Converter="{StaticResource IReportableStatsMaximumUnitsConverter}">
@@ -290,6 +289,24 @@
                                             </Grid>
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Name="colDC_QUANTITY" FieldName="Entity.Entity.DC_QUANTITY" Header="VAR. QTY" ReadOnly="True" />
+                            </dxg:GridControlBand>
+                            <dxg:GridControlBand Name="bandTotals" Header="Totals">
+                                <dxg:GridColumn Header="INSTALL HOURS" FieldName="Total_Install_Hours" ReadOnly="True">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="SUPPLY COST" FieldName="Entity.Supply_Cost" ReadOnly="True">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="INSTALL COST" FieldName="Entity.Install_Cost" ReadOnly="True">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandCustomization" Header="Stock Code Customization">
@@ -305,21 +322,6 @@
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandStock" Header="Stock Code Details">
-                                <dxg:GridColumn Header="TOTAL INSTALL HOURS" FieldName="Entity.Total_Units" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Header="SUPPLY COST" FieldName="Entity.Supply_Cost" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Header="INSTALL COST" FieldName="Entity.Install_Cost" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
                                 <dxg:GridColumn Header="UOM"  FieldName="Entity.STOCK_CODE.UOM" ReadOnly="True" />
                                 <dxg:GridColumn Header="NAME" FieldName="Entity.STOCK_CODE.NAME" ReadOnly="True" />
                                 <dxg:GridColumn Header="TYPE" FieldName="Entity.STOCK_CODE.TYPE" ReadOnly="True" />
@@ -333,14 +335,17 @@
                             <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_QUANTITY" SummaryType="Sum"
                                                  ShowInColumn="Entity.Entity.ESTIMATED_QUANTITY"
                                                  DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.DC_QUANTITY" SummaryType="Sum"
+                                                 ShowInColumn="Entity.Entity.DC_QUANTITY"
+                                                 DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="Total_Install_Hours" SummaryType="Sum"
                                                  ShowInColumn="Total_Install_Hours"
                                                  DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="Supply_Cost" SummaryType="Sum"
-                                                 ShowInColumn="Supply_Cost"
+                            <dxg:GridSummaryItem FieldName="Entity.Supply_Cost" SummaryType="Sum"
+                                                 ShowInColumn="Entity.Supply_Cost"
                                                  DisplayFormat="Total: {0:c}" />
-                            <dxg:GridSummaryItem FieldName="Install_Cost" SummaryType="Sum"
-                                                 ShowInColumn="Install_Cost"
+                            <dxg:GridSummaryItem FieldName="Entity.Install_Cost" SummaryType="Sum"
+                                                 ShowInColumn="Entity.Install_Cost"
                                                  DisplayFormat="Total: {0:c}" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.TotalSummary>
@@ -349,14 +354,17 @@
                             <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_QUANTITY" SummaryType="Sum"
                                                  ShowInColumn="Entity.Entity.ESTIMATED_QUANTITY"
                                                  DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.DC_QUANTITY" SummaryType="Sum"
+                                                 ShowInColumn="Entity.Entity.DC_QUANTITY"
+                                                 DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem FieldName="Total_Install_Hours" SummaryType="Sum"
                                                  ShowInColumn="Total_Install_Hours"
                                                  DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem FieldName="Supply_Cost" SummaryType="Sum"
-                                                 ShowInColumn="Supply_Cost"
+                            <dxg:GridSummaryItem FieldName="Entity.Supply_Cost" SummaryType="Sum"
+                                                 ShowInColumn="Entity.Supply_Cost"
                                                  DisplayFormat="Total: {0:c}" />
-                            <dxg:GridSummaryItem FieldName="Install_Cost" SummaryType="Sum"
-                                                 ShowInColumn="Install_Cost"
+                            <dxg:GridSummaryItem FieldName="Entity.Install_Cost" SummaryType="Sum"
+                                                 ShowInColumn="Entity.Install_Cost"
                                                  DisplayFormat="Total: {0:c}" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
