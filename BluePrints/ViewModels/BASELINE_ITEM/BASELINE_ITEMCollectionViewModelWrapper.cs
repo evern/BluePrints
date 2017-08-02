@@ -182,7 +182,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, x => livePROGRESS = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, x => assign_progress(x));
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
@@ -191,6 +191,14 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
 
             InvokeEntitiesLoaderDescriptionLoading();
+        }
+
+        private void assign_progress(PROGRESS progress)
+        {
+            if (progress == null)
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live progress not found")));
+
+            livePROGRESS = progress;
         }
 
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
@@ -213,6 +221,9 @@ namespace BluePrints.ViewModels
 
         private void SetBASELINEIsLocked(BASELINE entity)
         {
+            if (entity == null)
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live baseline not found")));
+
             loadBASELINE = entity;
             if (entity.BUDGETED_UNITS != null && entity.BUDGETED_UNITS > 0)
                 SetBaselineLockUnlock?.Invoke(true);
@@ -518,9 +529,7 @@ namespace BluePrints.ViewModels
                     AddUndo(active_progress, subAreaFieldName, oldValue, newValue, EntityMessageType.Changed);
                 }
             }
-            else if (
-                 field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE) ||
-                 field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().DELIVERABLE_TYPE))
+            else if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE) || field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().DELIVERABLE_TYPE))
             {
                 Guid? oldValue = active_progress.Entity.Entity.GUID_STATUS;
                 if (oldValue != null)
@@ -1322,9 +1331,9 @@ namespace BluePrints.ViewModels
 
             //make sure disciplines are all populated
             PopulateNavigationalProperties();
-            IEnumerable<BASELINE_ITEMProgress> gridVisibleRows = GetGridVisibleRows();
+            IEnumerable<object> gridVisibleRows = GridControlService.GetVisibleRowObjects();
 
-            baselineReport.AssignProperties(loadPROJECT, loadBASELINE, gridVisibleRows.Select(x => x.Entity));
+            baselineReport.AssignProperties(loadPROJECT, loadBASELINE, gridVisibleRows.Select(x => ((BASELINE_ITEMProgress)x).Entity));
             var previewWindow = new DocumentPreviewWindow();
             previewWindow.PreviewControl.DocumentSource = baselineReport;
             previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;

@@ -1,4 +1,4 @@
-﻿<custom:ViewStateRestoreUserControl
+﻿<UserControl
     x:Name="userControl"
     x:Class="BluePrints.Views.REGISTER_RISKCollectionView"
     xmlns:view="clr-namespace:BluePrints.Views"
@@ -73,7 +73,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlREGISTER" Style="{StaticResource DefaultGridControlTemplate}" >
+                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlREGISTER" Style="{StaticResource DefaultGridControlTemplate}" >
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn AllowMoving="false" FieldName="NUMBER" ReadOnly="True" Header="Number" />
                             <dxg:GridColumn AllowMoving="false" Header="Area" FieldName="GUID_AREA" >
@@ -187,40 +187,40 @@
                             <dxg:GridColumn AllowMoving="false" FieldName="ResidueRankingCategory" Visible="False" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem SummaryType="Count" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
-                            <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
-                                <custom:TableViewEx.FormatConditions>
+                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                                <dxg:TableView.FormatConditions>
                                     <dxg:FormatCondition Expression="[RiskRankingCategory] = '1'" FieldName="RISK_RANKING">
-                                        <dx:Format Background="LightGreen"/>
+                                        <dx:Format Background="LightGreen" Foreground="Black"/>
                                     </dxg:FormatCondition>
                                     <dxg:FormatCondition Expression="[RiskRankingCategory] = '2'" FieldName="RISK_RANKING">
-                                        <dx:Format Background="Yellow"/>
+                                        <dx:Format Background="Yellow" Foreground="Black"/>
                                     </dxg:FormatCondition>
                                     <dxg:FormatCondition Expression="[RiskRankingCategory] = '3'" FieldName="RISK_RANKING">
-                                        <dx:Format Background="Orange"/>
+                                        <dx:Format Background="Orange" Foreground="Black"/>
                                     </dxg:FormatCondition>
                                     <dxg:FormatCondition Expression="[RiskRankingCategory] = '4'" FieldName="RISK_RANKING">
-                                        <dx:Format Background="Red"/>
+                                        <dx:Format Background="Red" Foreground="Black"/>
                                     </dxg:FormatCondition>
                                     <dxg:FormatCondition Expression="[ResidueRankingCategory] = '1'" FieldName="RESIDUE_RISK_RANKING">
-                                        <dx:Format Background="LightGreen"/>
+                                        <dx:Format Background="LightGreen" Foreground="Black"/>
                                     </dxg:FormatCondition>
                                     <dxg:FormatCondition Expression="[ResidueRankingCategory] = '2'" FieldName="RESIDUE_RISK_RANKING">
-                                        <dx:Format Background="Yellow"/>
+                                        <dx:Format Background="Yellow" Foreground="Black"/>
                                     </dxg:FormatCondition>
                                     <dxg:FormatCondition Expression="[ResidueRankingCategory] = '3'" FieldName="RESIDUE_RISK_RANKING">
-                                        <dx:Format Background="Orange"/>
+                                        <dx:Format Background="Orange" Foreground="Black"/>
                                     </dxg:FormatCondition>
                                     <dxg:FormatCondition Expression="[ResidueRankingCategory] = '4'" FieldName="RESIDUE_RISK_RANKING">
-                                        <dx:Format Background="Red"/>
+                                        <dx:Format Background="Red" Foreground="Black"/>
                                     </dxg:FormatCondition>
-                                </custom:TableViewEx.FormatConditions>
-                                <custom:TableViewEx.RowCellMenuCustomizations>
+                                </dxg:TableView.FormatConditions>
+                                <dxg:TableView.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Bulk Edit"
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
@@ -240,12 +240,12 @@
                                     <dxb:BarButtonItem Content="Refresh"
                                                        Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                </custom:TableViewEx.RowCellMenuCustomizations>
-                            </custom:TableViewEx>
+                                </dxg:TableView.RowCellMenuCustomizations>
+                            </dxg:TableView>
                         </dxg:GridControl.View>
-                    </custom:GridControlEx>
+                    </dxg:GridControl>
                 </Grid>
             </DockPanel>
         </Grid>
     </Grid>
-</custom:ViewStateRestoreUserControl>
+</UserControl>

@@ -1,4 +1,4 @@
-﻿<custom:ViewStateRestoreUserControl
+﻿<UserControl
     x:Name="userControl"
     x:Class="BluePrints.Views.REGISTER_ISSUECollectionView"
     xmlns:view="clr-namespace:BluePrints.Views"
@@ -79,7 +79,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlREGISTER" Style="{StaticResource DefaultGridControlTemplate}" >
+                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlREGISTER" Style="{StaticResource DefaultGridControlTemplate}" >
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn AllowMoving="false" FieldName="NUMBER" ReadOnly="True" Header="Item" />
                             <dxg:GridColumn AllowMoving="false" FieldName="GUID_AREA" Header="Area" >
@@ -172,22 +172,22 @@
                             <dxg:GridColumn AllowMoving="false" FieldName="IsActionedOnDrawing" Visible="{Binding DataContext.IsActionedOnDrawingVisibility, ElementName=userControl}" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem SummaryType="Count" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
-                            <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
-                                <custom:TableViewEx.FormatConditions>
-                                    <dxg:FormatCondition FieldName="ACTIONED_ON_DWG" Expression="Not IsActionedOnDrawing And [DATE_CLOSED] Is Not Null" >
-                                        <dx:Format Background="#FFFF9B98"/>
+                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                                <dxg:TableView.FormatConditions>
+                                    <dxg:FormatCondition FieldName="ACTIONED_ON_DWG" Expression="Not IsActionedOnDrawing" >
+                                        <dx:Format Background="#FFFF9B98" Foreground="Black"/>
                                     </dxg:FormatCondition>
-                                    <dxg:FormatCondition ApplyToRow="True" FieldName="DATE_CLOSED" Expression="IsActionedOnDrawing And [DATE_CLOSED] Is Not Null" >
-                                        <dx:Format Background="LightBlue"/>
+                                    <dxg:FormatCondition ApplyToRow="True" FieldName="DATE_CLOSED" Expression="[DATE_CLOSED] Is Not Null" >
+                                        <dx:Format Background="LightBlue" Foreground="Black"/>
                                     </dxg:FormatCondition>
-                                </custom:TableViewEx.FormatConditions>
-                                <custom:TableViewEx.RowCellMenuCustomizations>
+                                </dxg:TableView.FormatConditions>
+                                <dxg:TableView.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Bulk Edit"
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
@@ -213,12 +213,12 @@
                                     <dxb:BarButtonItem Content="Refresh"
                                                        Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                </custom:TableViewEx.RowCellMenuCustomizations>
-                            </custom:TableViewEx>
+                                </dxg:TableView.RowCellMenuCustomizations>
+                            </dxg:TableView>
                         </dxg:GridControl.View>
-                    </custom:GridControlEx>
+                    </dxg:GridControl>
                 </Grid>
             </DockPanel>
         </Grid>
     </Grid>
-</custom:ViewStateRestoreUserControl>
+</UserControl>

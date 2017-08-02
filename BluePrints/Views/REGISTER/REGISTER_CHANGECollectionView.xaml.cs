@@ -1,16 +1,16 @@
 ﻿using BaseModel.Misc;
+using System.Windows.Controls;
 
 namespace BluePrints.Views
 {
     /// <summary>
     /// Interaction logic for REGISTERCollectionView.xaml
     /// </summary>
-    public partial class REGISTER_CHANGECollectionView : ViewStateRestoreUserControl
+    public partial class REGISTER_CHANGECollectionView : UserControl
     {
         public REGISTER_CHANGECollectionView()
         {
             InitializeComponent();
-            InitializeViewControl(GridControl, tableView);
         }
     }
 }

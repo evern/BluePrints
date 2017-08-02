@@ -1,4 +1,4 @@
-﻿<custom:ViewStateRestoreUserControl
+﻿<UserControl
              x:Name="userControl" 
              x:Class="BluePrints.Views.BASELINE_ITEMCollectionView"
              xmlns:view="clr-namespace:BluePrints.Views"
@@ -107,7 +107,7 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM" 
+                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM" 
                                      Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Name="colPHASE" FieldName="Entity.Entity.GUID_PHASE" 
@@ -323,36 +323,36 @@
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.COMMENTS" SummaryType="Count"
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.COMMENTS" SummaryType="Count"
                                                  Alignment="Right" DisplayFormat="Total {0} Records" />
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS" SummaryType="Sum"
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.ESTIMATED_HOURS" SummaryType="Sum"
                                                  ShowInColumn="Entity.Entity.ESTIMATED_HOURS"
                                                  DisplayFormat="Total: {0}" />
-                            <dxg:GridSummaryItem FieldName="Entity.Total_Costs" SummaryType="Sum" ShowInColumn="Entity.Total_Costs"
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Total_Costs" SummaryType="Sum" ShowInColumn="Entity.Total_Costs"
                                                  DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS" SummaryType="Sum"
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.DC_HOURS" SummaryType="Sum"
                                                  ShowInColumn="Entity.Entity.DC_HOURS" DisplayFormat="Total: {0:n}" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.COMMENTS" SummaryType="Count"
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.COMMENTS" SummaryType="Count"
                                                  Alignment="Right" DisplayFormat="Total {0} Records" />
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS" SummaryType="Sum"
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.ESTIMATED_HOURS" SummaryType="Sum"
                                                  ShowInColumn="Entity.Entity.ESTIMATED_HOURS"
                                                  DisplayFormat="Total: {0}" />
-                            <dxg:GridSummaryItem FieldName="Entity.Total_Costs" SummaryType="Sum" ShowInColumn="Entity.Total_Costs"
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Total_Costs" SummaryType="Sum" ShowInColumn="Entity.Total_Costs"
                                                  DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS" SummaryType="Sum"
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.DC_HOURS" SummaryType="Sum"
                                                  ShowInColumn="Entity.Entity.DC_HOURS" DisplayFormat="Total: {0:n}" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
-                            <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
+                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
                                            ShowGridMenu="tableView_ShowGridMenu" >
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand
                                         Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}"
                                         PassEventArgsToCommand="True" EventName="CellValueChanged" />
                                 </dxmvvm:Interaction.Behaviors>
-                                <custom:TableViewEx.RowCellMenuCustomizations>
+                                <dxg:TableView.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Name="contextMenuBulkEdit" Content="Bulk Edit"
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
@@ -434,13 +434,13 @@
                                     <dxb:BarButtonItem Content="Refresh"
                                                        Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                </custom:TableViewEx.RowCellMenuCustomizations>
-                                <custom:TableViewEx.FormatConditions>
+                                </dxg:TableView.RowCellMenuCustomizations>
+                                <dxg:TableView.FormatConditions>
                                     <dxg:UniqueDuplicateRuleFormatCondition FieldName="Entity.Entity.INTERNAL_NUM">
                                         <dxc:Format Background="Salmon" TextDecorations="{x:Null}"/>
                                     </dxg:UniqueDuplicateRuleFormatCondition>
-                                </custom:TableViewEx.FormatConditions>
-                            </custom:TableViewEx>
+                                </dxg:TableView.FormatConditions>
+                            </dxg:TableView>
                         </dxg:GridControl.View>
                         <dxmvvm:Interaction.Behaviors>
                             <common:CustomTableViewDragDropManager AllowDrag="True" AllowDrop="True" AllowScrolling="True" >
@@ -473,9 +473,9 @@
                                 </common:CustomTableViewDragDropManager.DragElementTemplate>
                             </common:CustomTableViewDragDropManager>
                         </dxmvvm:Interaction.Behaviors>
-                    </custom:GridControlEx>
+                    </dxg:GridControl>
                 </Grid>
             </DockPanel>
         </Grid>
     </Grid>
-</custom:ViewStateRestoreUserControl>
+</UserControl>

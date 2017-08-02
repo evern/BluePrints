@@ -311,7 +311,7 @@
                         ItemsSource="{Binding DataContext.COMMODITY_GROUP_CODECollection, ElementName=userControl}">
                         <dxg:LookUpEditSettings.PopupContentTemplate>
                             <ControlTemplate TargetType="ContentControl">
-                                <custom:GridControlEx x:Name="PART_GridControl" ShowBorder="False" 
+                                <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False" 
                                                                      SelectionMode="Row" ColumnsSource="{StaticResource COMMODITY_CODEColumns}">
                                     <dxg:GridControl.View>
                                         <dxg:TreeListView 
@@ -323,7 +323,7 @@
                                             KeyFieldName="Temp_Id"
                                             ParentFieldName="Temp_Parent_Id" />
                                     </dxg:GridControl.View>
-                                </custom:GridControlEx>
+                                </dxg:GridControl>
                             </ControlTemplate>
                         </dxg:LookUpEditSettings.PopupContentTemplate>
                     </dxg:LookUpEditSettings>
@@ -459,7 +459,7 @@
                         ItemsSource="{Binding DataContext.COMMODITY_GROUP_CODECollection, ElementName=userControl}">
                         <dxg:LookUpEditSettings.PopupContentTemplate>
                             <ControlTemplate TargetType="ContentControl">
-                                <custom:GridControlEx x:Name="PART_GridControlChild" ShowBorder="False" 
+                                <dxg:GridControl x:Name="PART_GridControlChild" ShowBorder="False" 
                                                                      SelectionMode="Row" ColumnsSource="{StaticResource COMMODITY_GROUP_CODEChildColumns}">
                                     <dxg:GridControl.View>
                                         <dxg:TreeListView
@@ -471,7 +471,7 @@
                                             KeyFieldName="Temp_Id"
                                             ParentFieldName="Temp_Parent_Id" />
                                     </dxg:GridControl.View>
-                                </custom:GridControlEx>
+                                </dxg:GridControl>
                             </ControlTemplate>
                         </dxg:LookUpEditSettings.PopupContentTemplate>
                     </dxg:LookUpEditSettings>

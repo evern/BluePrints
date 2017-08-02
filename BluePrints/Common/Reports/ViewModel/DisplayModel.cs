@@ -94,8 +94,6 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Earned_Units_OnDataDate => ((IReportable)ProgressItem).Earned_Units_OnDataDate;
 
-        public decimal Earned_Costs_OnDataDate => ((IReportable)ProgressItem).Earned_Costs_OnDataDate;
-
         public decimal Earned_Units_ToDate => ((IReportable)ProgressItem).Earned_Units_ToDate;
 
         public decimal Earned_Costs_ToDate => ((IReportable)ProgressItem).Earned_Costs_ToDate;
@@ -318,7 +316,11 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Earned_Costs_ToDate => Reportable.Earned_Costs_ToDate;
 
-        public decimal Earned_Costs_OnDataDate => Reportable.Earned_Costs_OnDataDate;
+        public decimal Earned_Install_Costs_OnDataDate => Reportable.Earned_Install_Costs_OnDataDate;
+
+        public decimal Earned_Supply_Costs_OnDataDate => Reportable.Earned_Supply_Costs_OnDataDate;
+
+        public decimal Earned_Total_Costs_OnDataDate => Reportable.Earned_Total_Costs_OnDataDate;
 
         public decimal Earned_Units_AfterDataDate => Reportable.Earned_Units_AfterDataDate;
 

@@ -363,6 +363,12 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Variation_Quantity => Entity.Variation_Quantity;
 
+        public decimal Earned_Install_Costs_OnDataDate => Earned_Units_OnDataDate * ItemRate;
+
+        public decimal Earned_Supply_Costs_OnDataDate => Earned_Units_OnDataDate * Entity.Stock_Code_Supply_Rate;
+
+        public decimal Earned_Total_Costs_OnDataDate => Earned_Install_Costs_OnDataDate + Earned_Supply_Costs_OnDataDate;
+
         protected override decimal getNewPercentage()
         {
             if (Total_Quantity == 0)
@@ -543,8 +549,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Earned_Percentage_OnDataDate => Total_Units == 0 ? 0 : (Earned_Units_OnDataDate / Total_Units);
 
         public virtual decimal Earned_Units_OnDataDate => PROGRESS_ITEM_Current == null ? 0 : PROGRESS_ITEM_Current.EARNED_UNITS;
-
-        public decimal Earned_Costs_OnDataDate => (Earned_Units_OnDataDate * Entity.ItemRate);
 
         public virtual decimal Earned_Units_ToDate => Earned_Units_BeforeDataDate + Earned_Units_OnDataDate;
 

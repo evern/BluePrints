@@ -55,7 +55,10 @@ namespace BluePrints.ViewModels
             get
             {
                 if (baseline_itemCollectionViewModelWrapper == null)
+                {
                     baseline_itemCollectionViewModelWrapper = BASELINE_ITEMCollectionViewModelWrapper.Create();
+                    baseline_itemCollectionViewModelWrapper.SetParentViewModel(this);
+                }
 
                 return baseline_itemCollectionViewModelWrapper;
             }

@@ -58,10 +58,7 @@ namespace BluePrints.ViewModels
 
         public override void OnLoaded()
         {
-            string themeName = Properties.Settings.Default["ThemeName"] as string;
-            if(themeName == "")
-                themeName = "Office2016Colorful";
-            ApplicationThemeHelper.ApplicationThemeName = themeName;
+
         }
 
         public override void OnClosing(CancelEventArgs cancelEventArgs)

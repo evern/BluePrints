@@ -1,4 +1,4 @@
-﻿<custom:ViewStateRestoreUserControl
+﻿<UserControl
     x:Name="userControl"
     x:Class="BluePrints.Views.AREACollectionView"
     xmlns:view="clr-namespace:BluePrints.Views"
@@ -70,7 +70,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <custom:GridControlEx x:Name="GridControl" Style="{StaticResource DefaultGridControlTemplate}" dx:DXSerializer.SerializationID="GridControlAREA" ColumnsSource="{StaticResource AREAColumns}">
+                    <dxg:GridControl x:Name="GridControl" Style="{StaticResource DefaultGridControlTemplate}" dx:DXSerializer.SerializationID="GridControlAREA" ColumnsSource="{StaticResource AREAColumns}">
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand
                                 Command="{Binding DataContext.MasterRowExpandedCommand, ElementName=userControl}"
@@ -95,14 +95,14 @@
                             </dxg:DataControlDetailDescriptor>
                         </dxg:GridControl.DetailDescriptor>
                         <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem SummaryType="Count" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
-                            <custom:TableViewEx x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
-                                <custom:TableViewEx.RowCellMenuCustomizations>
+                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                                <dxg:TableView.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Bulk Edit"
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
@@ -122,12 +122,12 @@
                                     <dxb:BarButtonItem Content="Refresh"
                                                        Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                </custom:TableViewEx.RowCellMenuCustomizations>
-                            </custom:TableViewEx>
+                                </dxg:TableView.RowCellMenuCustomizations>
+                            </dxg:TableView>
                         </dxg:GridControl.View>
-                    </custom:GridControlEx>
+                    </dxg:GridControl>
                 </Grid>
             </DockPanel>
         </Grid>
     </Grid>
-</custom:ViewStateRestoreUserControl>
+</UserControl>

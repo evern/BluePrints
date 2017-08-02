@@ -505,34 +505,34 @@
                                 <dxg:GridColumn Header="DESCRIPTION" FieldName="Entity.STOCK_CODE.DESCRIPTION" ReadOnly="True" AllowEditing="False" />
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.GroupSummary>
-                                <dxg:GridSummaryItem FieldName="Entity.COMMENTS" SummaryType="Count"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.COMMENTS" SummaryType="Count"
                                                  Alignment="Right" DisplayFormat="Total {0} Records" />
-                                <dxg:GridSummaryItem FieldName="Entity.ESTIMATED_QUANTITY" SummaryType="Sum"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.ESTIMATED_QUANTITY" SummaryType="Sum"
                                                  ShowInColumn="Entity.ESTIMATED_QUANTITY"
                                                  DisplayFormat="Total: {0}" />
-                                <dxg:GridSummaryItem FieldName="Total_Install_Hours" SummaryType="Sum"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Total_Install_Hours" SummaryType="Sum"
                                                  ShowInColumn="Total_Install_Hours"
                                                  DisplayFormat="Total: {0}" />
-                                <dxg:GridSummaryItem FieldName="Supply_Cost" SummaryType="Sum"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Supply_Cost" SummaryType="Sum"
                                                  ShowInColumn="Supply_Cost"
                                                  DisplayFormat="Total: {0}" />
-                                <dxg:GridSummaryItem FieldName="Install_Cost" SummaryType="Sum"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Install_Cost" SummaryType="Sum"
                                                  ShowInColumn="Install_Cost"
                                                  DisplayFormat="Total: {0}" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.TotalSummary>
-                                <dxg:GridSummaryItem FieldName="Entity.COMMENTS" SummaryType="Count"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.COMMENTS" SummaryType="Count"
                                                  Alignment="Right" DisplayFormat="Total {0} Records" />
-                                <dxg:GridSummaryItem FieldName="Entity.ESTIMATED_QUANTITY" SummaryType="Sum"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.ESTIMATED_QUANTITY" SummaryType="Sum"
                                                  ShowInColumn="Entity.ESTIMATED_QUANTITY"
                                                  DisplayFormat="Total: {0}" />
-                                <dxg:GridSummaryItem FieldName="Total_Install_Hours" SummaryType="Sum"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Total_Install_Hours" SummaryType="Sum"
                                                  ShowInColumn="Total_Install_Hours"
                                                  DisplayFormat="Total: {0}" />
-                                <dxg:GridSummaryItem FieldName="Supply_Cost" SummaryType="Sum"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Supply_Cost" SummaryType="Sum"
                                                  ShowInColumn="Supply_Cost"
                                                  DisplayFormat="Total: {0}" />
-                                <dxg:GridSummaryItem FieldName="Install_Cost" SummaryType="Sum"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Install_Cost" SummaryType="Sum"
                                                  ShowInColumn="Install_Cost"
                                                  DisplayFormat="Total: {0}" />
                             </dxg:GridControl.TotalSummary>

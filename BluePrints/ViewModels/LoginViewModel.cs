@@ -8,6 +8,7 @@ using BluePrints.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Charts;
+using DevExpress.Xpf.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -41,10 +42,11 @@ namespace BluePrints.ViewModels
         private IEnumerable<USER> USERS { get; set; }
         private DispatcherTimer delayedHideDispatcher;
         bool isUsernameLoadedFromXML;
+        protected virtual BaseModel.ViewModel.Services.IWindowService WindowService { get { return this.GetService<BaseModel.ViewModel.Services.IWindowService>(); } }
+
         public LoginViewModel()
         {
             //preloadMainWindow();
-
             delayedHideDispatcher = new DispatcherTimer();
             delayedHideDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
             delayedHideDispatcher.Tick += delayedHideDispatcher_Tick;
@@ -59,11 +61,18 @@ namespace BluePrints.ViewModels
             Application.Current.Dispatcher.BeginInvoke(new Action(() => EVERNPCLogin()));
         }
 
+        public void OnLoaded()
+        {
+            string themeName = Properties.Settings.Default["ThemeName"] as string;
+            if (themeName == "")
+                themeName = "Office2016Colorful";
+            ApplicationThemeHelper.ApplicationThemeName = themeName;
+        }
+
         private void delayedHideDispatcher_Tick(object sender, EventArgs e)
         {
             delayedHideDispatcher.Stop();
-            if (HideControlCallBack != null)
-                HideControlCallBack();
+            WindowService.Hide();
         }
 
         public void EVERNPCLogin()
@@ -151,8 +160,6 @@ namespace BluePrints.ViewModels
 
                         if (((bool)result))
                         {
-                            ShowError(false, null);
-                            ShowError(true, null);
                             XMLHelpers.UpdateSettingsXML(new XMLSettings() { Username = UserName.Trim() });
                             return UserAuthenticationResult.Authenticated;
                         }
@@ -206,7 +213,8 @@ namespace BluePrints.ViewModels
 
         public void ShowError(bool isPasswordField, string errorMessage)
         {
-            ShowErrorCallBack?.Invoke(isPasswordField, errorMessage);
+            MessageBoxService.ShowMessage(errorMessage);
+            //ShowErrorCallBack?.Invoke(isPasswordField, errorMessage);
         }
 
         private void preloadMainWindow()

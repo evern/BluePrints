@@ -1,4 +1,5 @@
 ﻿using BluePrints.ViewModels;
+using DevExpress.Xpf.Core;
 using DevExpress.Xpf.Editors.Helpers;
 using DevExpress.Xpf.Editors.Validation;
 using DevExpress.XtraEditors.DXErrorProvider;
@@ -9,18 +10,17 @@ namespace BluePrints.Views
     /// <summary>
     /// Interaction logic for Login.xaml
     /// </summary>
-    public partial class LoginWindow : Window
+    public partial class LoginWindow : DXWindow
     {
         public LoginWindow()
         {
             InitializeComponent();
-            LoginViewModel viewModel = LoginViewModel.Create();
-            viewModel.ShowErrorCallBack = ShowErrorCallBack;
-            viewModel.HideControlCallBack = Hide;
-            viewModel.ShowControlCallBack = Show;
-            DataContext = viewModel;
-
-            if (viewModel.UserName == string.Empty)
+            //LoginViewModel viewModel = LoginViewModel.Create();
+            //viewModel.ShowErrorCallBack = ShowErrorCallBack;
+            //viewModel.HideControlCallBack = Hide;
+            //viewModel.ShowControlCallBack = Show;
+            //DataContext = viewModel;
+            if (txtUsername.Text == string.Empty)
                 txtUsername.Focus();
             else
                 txtPassword.Focus();

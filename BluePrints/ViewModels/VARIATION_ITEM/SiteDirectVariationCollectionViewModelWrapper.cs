@@ -55,7 +55,11 @@ namespace BluePrints.ViewModels
             get
             {
                 if (ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper == null)
+                {
                     ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper = ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.Create();
+                    ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.SetParentViewModel(this);
+                }
+
 
                 return ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper;
             }

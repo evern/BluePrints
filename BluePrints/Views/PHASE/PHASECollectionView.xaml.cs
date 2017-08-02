@@ -1,16 +1,16 @@
 ﻿using BaseModel.Misc;
+using System.Windows.Controls;
 
 namespace BluePrints.Views
 {
     /// <summary>
     /// Interaction logic for PHASECollectionView.xaml
     /// </summary>
-    public partial class PHASECollectionView : ViewStateRestoreUserControl
+    public partial class PHASECollectionView : UserControl
     {
         public PHASECollectionView()
         {
             InitializeComponent();
-            InitializeViewControl(GridControl, tableView);
         }
     }
 }

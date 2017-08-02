@@ -13,17 +13,17 @@
         <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
             <dxlc:LayoutGroup Height="230" Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
                 <dxlc:LayoutItem Height="230" >
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlExoAffinity" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
+                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlExoAffinity" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="INTERNAL NUM" MinWidth="230" IsSmart="True" ReadOnly="True" FieldName="INTERNAL_NAME1" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
-                            <custom:TableViewEx x:Name="tableView" ShowGroupedColumns="False" ShowGroupPanel="False"/>
+                            <dxg:TableView x:Name="tableView" ShowGroupedColumns="False" ShowGroupPanel="False"/>
                         </dxg:GridControl.View>
-                    </custom:GridControlEx>
+                    </dxg:GridControl>
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Height="25" HorizontalAlignment="Right" Name="LayoutGroupButtons" View="Group"

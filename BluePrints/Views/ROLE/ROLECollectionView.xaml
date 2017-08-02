@@ -1,4 +1,4 @@
-﻿<customControl:ViewStateRestoreUserControl 
+﻿<UserControl
         x:Name="userControl"
         x:Class="BluePrints.Views.ROLECollectionView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -81,7 +81,12 @@
                         <dxg:TreeListControl Name="treeListControl" dx:DXSerializer.SerializationID="ROLETree" MaxHeight="2000" MouseUp="treeListControl_MouseUp" SelectionMode="Cell"
                                          Style="{StaticResource DefaultTreeListControlTemplate}">
                             <dxmvvm:Interaction.Behaviors>
-                                <dxg:TreeListDragDropManager x:Name="dragDropManager" Dropped="dragDropManager_Dropped" Drop="dragDropManager_Drop" />
+                                <dxg:TreeListDragDropManager x:Name="dragDropManager" >
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand EventName="Drop" Command="{Binding DataContext.DragDropManager_DropCommand, ElementName=userControl}" PassEventArgsToCommand="True"/>
+                                        <dxmvvm:EventToCommand EventName="Dropped" Command="{Binding DataContext.DragDropManager_DroppedCommand, ElementName=userControl}" PassEventArgsToCommand="True"/>
+                                    </dxmvvm:Interaction.Behaviors>
+                                </dxg:TreeListDragDropManager>
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:TreeListControl.Columns>
                                 <dxg:TreeListColumn Header="NAME" FieldName="Entity.NAME" VisibleIndex="10" />
@@ -128,7 +133,7 @@
                         </dxg:TreeListControl>
                     </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}">
-                        <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlROLE_PERMISSION" MaxHeight="2000"
+                        <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlROLE_PERMISSION" MaxHeight="2000"
                                      ItemsSource="{Binding Permissions}" SelectedItem="{Binding SelectedPermission, Mode=TwoWay}">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn FieldName="PermissionKey" AllowEditing="False" MinWidth="300" >
@@ -145,24 +150,24 @@
                                 </dxg:GridColumn>
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.TotalSummary>
-                                <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.GroupSummary>
-                                <dxg:GridSummaryItem SummaryType="Count" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.View>
-                                <custom:TableViewEx x:Name="tableView" >
+                                <dxg:TableView x:Name="tableView" >
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:EventToCommand
                                         Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}"
                                         PassEventArgsToCommand="True" EventName="CellValueChanging" />
                                     </dxmvvm:Interaction.Behaviors>
-                                </custom:TableViewEx>
+                                </dxg:TableView>
                             </dxg:GridControl.View>
-                        </custom:GridControlEx>
+                        </dxg:GridControl>
                     </dxlc:LayoutGroup>
                 </dxlc:LayoutGroup>
             </DockPanel>
         </Grid>
     </Grid>
-</customControl:ViewStateRestoreUserControl>
+</UserControl>

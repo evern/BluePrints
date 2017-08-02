@@ -1,6 +1,5 @@
 ﻿<UserControl x:Name="userControl" 
              x:Class="BluePrints.Views.PROJECTView"
-             xmlns:view="clr-namespace:BluePrints.Views"
              xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -13,11 +12,8 @@
              xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
              xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-             xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
              xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
-             xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
              xmlns:common="clr-namespace:BluePrints.Common"
-             xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters"
              mc:Ignorable="d" d:DesignHeight="900" d:DesignWidth="600"
              DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTViewModelWrapper}">
     <UserControl.Resources>
@@ -120,7 +116,7 @@
                         <dxlc:LayoutControl x:Name="layoutControl" Orientation="Vertical">
                             <dxlc:LayoutGroup Name="LayoutGroupGridChart" View="Group" Orientation="Vertical">
                                 <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Orientation="Vertical" Height="300" dxlc:LayoutControl.AllowVerticalSizing="True">
-                                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDashboardSinglePROJECT" 
+                                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDashboardSinglePROJECT" 
                                          Style="{StaticResource DefaultGridControlTemplate}">
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand PassEventArgsToCommand="True"
@@ -719,113 +715,113 @@
                                             </dxg:DataControlDetailDescriptor>
                                         </dxg:GridControl.DetailDescriptor>
                                         <dxg:GridControl.GroupSummary>
-                                            <dxg:GridSummaryItem x:Name="groupSummaryBudgeted"
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryBudgeted" 
                                                      ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
-                                                     FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum"
-                                                     DisplayFormat="{}{0:n}" />
-                                            <!--<dxg:GridSummaryItem x:Name="groupSummaryCumulativeEarnedPercentage"
+                                                     FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" 
+                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                                            <!--<dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryCumulativeEarnedPercentage"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
                                                      FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
                                                      SummaryType="Custom" DisplayFormat="{}{0:p}" />-->
-                                            <!--<dxg:GridSummaryItem x:Name="groupSummaryPeriodEarnedPercentage"
+                                            <!--<dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryPeriodEarnedPercentage"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage"
                                                      FieldName="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage"
                                                      SummaryType="Custom" DisplayFormat="{}{0:p}" />-->
-                                            <!--<dxg:GridSummaryItem x:Name="groupSummaryGrossProfit"
+                                            <!--<dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryGrossProfit"
                                                      FieldName="ProjectDashboard_GrossProfit" SummaryType="Custom"
                                                      ShowInColumn="ProjectDashboard_GrossProfit"
                                                      DisplayFormat="{}{0:p}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryEfficiencyRatio"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryEfficiencyRatio"
                                                      FieldName="ProjectDashboard_EfficiencyRatio" SummaryType="Custom"
                                                      DisplayFormat="{}{0:p}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryProgressRatio"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryProgressRatio"
                                                      FieldName="ProjectDashboard_ProgressRatio" SummaryType="Custom"
                                                      DisplayFormat="{}{0:p}" />-->
-                                            <dxg:GridSummaryItem x:Name="groupSummaryCumulativeEarned"
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryCumulativeEarned"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                            <dxg:GridSummaryItem x:Name="groupSummaryCumulativeBurned"
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryCumulativeBurned"
                                                      ShowInColumn="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
                                                      FieldName="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                            <dxg:GridSummaryItem x:Name="groupSummaryCumulativeActual" Visible="False"
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryCumulativeActual" Visible="False"
                                                      ShowInColumn="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                            <dxg:GridSummaryItem x:Name="groupSummaryPeriodPlanned"
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryPeriodPlanned"
                                                      ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                            <dxg:GridSummaryItem x:Name="groupSummaryPeriodEarned"
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryPeriodEarned"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Earned.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                            <dxg:GridSummaryItem x:Name="groupSummaryPeriodBurned"
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryPeriodBurned"
                                                      ShowInColumn="Stats.Burned.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Burned.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                            <dxg:GridSummaryItem x:Name="groupSummaryPeriodActual" Visible="False"
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryPeriodActual" Visible="False"
                                                      ShowInColumn="Stats.Actual.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Actual.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                         </dxg:GridControl.GroupSummary>
                                         <dxg:GridControl.TotalSummary>
-                                            <dxg:GridSummaryItem x:Name="totalSummaryBudgeted"
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryBudgeted"
                                                      ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum"
                                                      DisplayFormat="{}{0:n}" />
-                                            <!--<dxg:GridSummaryItem x:Name="totalSummaryCumulativeEarnedPercentage"
+                                            <!--<dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryCumulativeEarnedPercentage"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
                                                      FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
                                                      SummaryType="Custom" DisplayFormat="{}{0:p}" />-->
-                                            <!--<dxg:GridSummaryItem x:Name="totalSummaryPeriodEarnedPercentage"
+                                            <!--<dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodEarnedPercentage"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage"
                                                      FieldName="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage"
                                                      SummaryType="Custom" DisplayFormat="{}{0:p}" />-->
-                                            <!--<dxg:GridSummaryItem x:Name="totalSummaryGrossProfit"
+                                            <!--<dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryGrossProfit"
                                                      FieldName="ProjectDashboard_GrossProfit" SummaryType="Custom"
                                                      DisplayFormat="{}{0:p}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryEfficiencyRatio"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryEfficiencyRatio"
                                                      FieldName="ProjectDashboard_EfficiencyRatio" SummaryType="Custom"
                                                      DisplayFormat="{}{0:p}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryProgressRatio"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryProgressRatio"
                                                      FieldName="ProjectDashboard_ProgressRatio" SummaryType="Custom"
                                                      DisplayFormat="{}{0:p}" />-->
-                                            <dxg:GridSummaryItem x:Name="totalSummaryCumulativeEarned"
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryCumulativeEarned"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                            <dxg:GridSummaryItem x:Name="totalSummaryCumulativeBurned"
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryCumulativeBurned"
                                                      ShowInColumn="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
                                                      FieldName="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                            <dxg:GridSummaryItem x:Name="totalSummaryCumulativeActual" Visible="False"
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryCumulativeActual" Visible="False"
                                                      ShowInColumn="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                            <dxg:GridSummaryItem x:Name="totalSummaryPeriodPlanned"
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodPlanned"
                                                      ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                            <dxg:GridSummaryItem x:Name="totalSummaryPeriodEarned"
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodEarned"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Earned.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                            <dxg:GridSummaryItem x:Name="totalSummaryPeriodBurned"
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodBurned"
                                                      ShowInColumn="Stats.Burned.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Burned.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                            <dxg:GridSummaryItem x:Name="totalSummaryPeriodActual" Visible="False"
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodActual" Visible="False"
                                                      ShowInColumn="Stats.Actual.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Actual.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                         </dxg:GridControl.TotalSummary>
                                         <dxg:GridControl.View>
-                                            <custom:TableViewEx x:Name="tableView" AllowEditing="False" UseLightweightTemplates="{x:Null}"
+                                            <dxg:TableView x:Name="tableView" AllowEditing="False" UseLightweightTemplates="{x:Null}"
                                                Style="{StaticResource DefaultTableViewTemplate}" IsDetailButtonVisibleBinding="{Binding Row.IHavePhase_Dashboards}"
                                                NewItemRowPosition="None" ShowGroupPanel="False">
-                                                <custom:TableViewEx.RowCellMenuCustomizations>
+                                                <dxg:TableView.RowCellMenuCustomizations>
                                                     <dxb:BarButtonItem Content="Workpacks"
                                                            Command="{Binding View.DataContext.EditCommand}"
                                                            CommandParameter="{Binding Row.Row}"
@@ -833,8 +829,8 @@
                                                     <dxb:BarButtonItem Content="Refresh"
                                                            Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                            Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                                </custom:TableViewEx.RowCellMenuCustomizations>
-                                                <!--<custom:TableViewEx.FormatConditions>
+                                                </dxg:TableView.RowCellMenuCustomizations>
+                                                <!--<dxg:TableView.FormatConditions>
                                         <dxg:FormatCondition
                                             Expression="[Stats.Earned.CurrentPeriodCumulativeDataPoint.Units] / [Stats.Planned.CurrentPeriodCumulativeDataPoint.Units] &lt; 0.8"
                                             FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage">
@@ -877,10 +873,10 @@
                                                                     MaxValue="1" MinValue="-1">
                                             <dx:DataBarFrangeormat FillNegative="#FFFF9B98" Fill="#FF9ACCFF" />
                                         </dxg:DataBarFormatCondition>
-                                    </custom:TableViewEx.FormatConditions>-->
-                                            </custom:TableViewEx>
+                                    </dxg:TableView.FormatConditions>-->
+                                            </dxg:TableView>
                                         </dxg:GridControl.View>
-                                    </custom:GridControlEx>
+                                    </dxg:GridControl>
                                 </dxlc:LayoutGroup>
                                 <dxlc:LayoutGroup Name="LayoutGroupChart"  dxlc:LayoutControl.AllowVerticalSizing="True" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" View="Group" Orientation="Vertical">
                                     <dxc:ChartControl Name="chartSCurve" Padding="0" Margin="0" dx:DXSerializer.Enabled="False">
@@ -1002,8 +998,7 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                                     </dxb:ToolBarControl>
-                                    <custom:GridControlEx x:Name="gridControlBASELINE" dx:DXSerializer.SerializationID="GridControlDetailBASELINE"
-                                             Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" >
+                                    <dxg:GridControl x:Name="gridControlBASELINE" dx:DXSerializer.SerializationID="GridControlDetailBASELINE" Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" >
                                         <dxg:GridControl.Columns>
                                             <dxg:GridColumn FieldName="NAME" />
                                             <dxg:GridColumn FieldName="REVISION" />
@@ -1049,21 +1044,17 @@
                                             </dxg:GridColumn>
                                         </dxg:GridControl.Columns>
                                         <dxg:GridControl.TotalSummary>
-                                            <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />
                                         </dxg:GridControl.TotalSummary>
                                         <dxg:GridControl.GroupSummary>
-                                            <dxg:GridSummaryItem SummaryType="Count" />
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                                         </dxg:GridControl.GroupSummary>
                                         <dxg:GridControl.View>
-                                            <custom:TableViewEx x:Name="tableViewBASELINE"
+                                            <dxg:TableView x:Name="tableViewBASELINE"
                                                    Style="{StaticResource NestedTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
-                                                <dxmvvm:Interaction.Behaviors>
-                                                    <dxmvvm:EventToCommand Command="{Binding CellValueChangingCommand}"
-                                                     PassEventArgsToCommand="True" EventName="CellValueChanging" />
-                                                </dxmvvm:Interaction.Behaviors>
-                                                <custom:TableViewEx.RowCellMenuCustomizations>
+                                                <dxg:TableView.RowCellMenuCustomizations>
                                                     <dxb:BarButtonItem Content="Bulk Edit"
                                                                Command="{Binding View.DataContext.MainViewModel.BulkColumnEditCommand}"
                                                                CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
@@ -1083,10 +1074,10 @@
                                                     <dxb:BarButtonItem Content="Refresh"
                                                                Command="{Binding View.DataContext.MainViewModel.RefreshCommand}"
                                                                Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                                </custom:TableViewEx.RowCellMenuCustomizations>
-                                            </custom:TableViewEx>
+                                                </dxg:TableView.RowCellMenuCustomizations>
+                                            </dxg:TableView>
                                         </dxg:GridControl.View>
-                                    </custom:GridControlEx>
+                                    </dxg:GridControl>
                                 </Grid>
                                 <Grid DataContext="{Binding DataContext.PROGRESSViewModel, ElementName=userControl}" dxlc:LayoutControl.TabHeader="PROGRESSES">
                                     <Grid.RowDefinitions>
@@ -1110,7 +1101,7 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                                     </dxb:ToolBarControl>
-                                    <custom:GridControlEx x:Name="gridControlPROGRESS" dx:DXSerializer.SerializationID="GridControlDetailPROGRESS"
+                                    <dxg:GridControl x:Name="gridControlPROGRESS" dx:DXSerializer.SerializationID="GridControlDetailPROGRESS"
                                              Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" >
                                         <dxg:GridControl.Columns>
                                             <dxg:GridColumn FieldName="NAME" />
@@ -1131,20 +1122,17 @@
                                             </dxg:GridColumn>
                                             <dxg:GridColumn FieldName="INTERVAL_COUNT">
                                                 <dxg:GridColumn.EditSettings>
-                                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="n0" MinValue="0" Increment="1" MaxValue="99"
-                                      MaskUseAsDisplayFormat="True" />
+                                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="n0" MinValue="0" Increment="1" MaxValue="99" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn FieldName="INTERVAL_TYPE">
                                                 <dxg:GridColumn.EditSettings>
-                                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
-                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProgressIntervalType}}" />
+                                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProgressIntervalType}}" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn FieldName="STATUS">
                                                 <dxg:GridColumn.EditSettings>
-                                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
-                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProgressStatus}}" />
+                                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProgressStatus}}" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn FieldName="COMMENTS" />
@@ -1164,17 +1152,17 @@
                                             </dxg:GridColumn>
                                         </dxg:GridControl.Columns>
                                         <dxg:GridControl.TotalSummary>
-                                            <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />
                                         </dxg:GridControl.TotalSummary>
                                         <dxg:GridControl.GroupSummary>
-                                            <dxg:GridSummaryItem SummaryType="Count" />
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                                         </dxg:GridControl.GroupSummary>
                                         <dxg:GridControl.View>
-                                            <custom:TableViewEx x:Name="tableViewPROGRESS"
+                                            <dxg:TableView x:Name="tableViewPROGRESS"
                                                    Style="{StaticResource NestedTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
-                                                <custom:TableViewEx.RowCellMenuCustomizations>
+                                                <dxg:TableView.RowCellMenuCustomizations>
                                                     <dxb:BarButtonItem Content="Bulk Edit"
                                                                Command="{Binding View.DataContext.MainViewModel.BulkColumnEditCommand}"
                                                                CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
@@ -1194,10 +1182,10 @@
                                                     <dxb:BarButtonItem Content="Refresh"
                                                                Command="{Binding View.DataContext.MainViewModel.RefreshCommand}"
                                                                Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                                </custom:TableViewEx.RowCellMenuCustomizations>
-                                            </custom:TableViewEx>
+                                                </dxg:TableView.RowCellMenuCustomizations>
+                                            </dxg:TableView>
                                         </dxg:GridControl.View>
-                                    </custom:GridControlEx>
+                                    </dxg:GridControl>
                                 </Grid>
                                 <Grid DataContext="{Binding DataContext.ESTIMATION_DIRECTViewModel, ElementName=userControl}" dxlc:LayoutControl.TabHeader="DIRECT ESTIMATES">
                                     <Grid.RowDefinitions>
@@ -1221,7 +1209,7 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                                     </dxb:ToolBarControl>
-                                    <custom:GridControlEx x:Name="gridControlESTIMATION_DIRECT" dx:DXSerializer.SerializationID="GridControlDetailESTIMATION_DIRECT"
+                                    <dxg:GridControl x:Name="gridControlESTIMATION_DIRECT" dx:DXSerializer.SerializationID="GridControlDetailESTIMATION_DIRECT"
                                              Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" >
                                         <dxg:GridControl.Columns>
                                             <dxg:GridColumn FieldName="NAME" />
@@ -1269,17 +1257,17 @@
                                             </dxg:GridColumn>
                                         </dxg:GridControl.Columns>
                                         <dxg:GridControl.TotalSummary>
-                                            <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />
                                         </dxg:GridControl.TotalSummary>
                                         <dxg:GridControl.GroupSummary>
-                                            <dxg:GridSummaryItem SummaryType="Count" />
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                                         </dxg:GridControl.GroupSummary>
                                         <dxg:GridControl.View>
-                                            <custom:TableViewEx x:Name="tableViewESTIMATION_DIRECT"
+                                            <dxg:TableView x:Name="tableViewESTIMATION_DIRECT"
                                                    Style="{StaticResource NestedTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
-                                                <custom:TableViewEx.RowCellMenuCustomizations>
+                                                <dxg:TableView.RowCellMenuCustomizations>
                                                     <dxb:BarButtonItem Content="Bulk Edit"
                                                                Command="{Binding View.DataContext.MainViewModel.BulkColumnEditCommand}"
                                                                CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
@@ -1299,10 +1287,10 @@
                                                     <dxb:BarButtonItem Content="Refresh"
                                                                Command="{Binding View.DataContext.MainViewModel.RefreshCommand}"
                                                                Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                                </custom:TableViewEx.RowCellMenuCustomizations>
-                                            </custom:TableViewEx>
+                                                </dxg:TableView.RowCellMenuCustomizations>
+                                            </dxg:TableView>
                                         </dxg:GridControl.View>
-                                    </custom:GridControlEx>
+                                    </dxg:GridControl>
                                 </Grid>
                                 <!--<Grid DataContext="{Binding DataContext.AREAViewModel, ElementName=userControl}" dxlc:LayoutControl.TabHeader="AREAS">
                                     <Grid.RowDefinitions>
@@ -1323,7 +1311,7 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                                     </dxb:ToolBarControl>
-                                    <custom:GridControlEx x:Name="gridControlAREA" Style="{StaticResource DefaultGridControlTemplate}" 
+                                    <dxg:GridControl x:Name="gridControlAREA" Style="{StaticResource DefaultGridControlTemplate}" 
                                           dx:DXSerializer.SerializationID="gridControlAREA" Grid.Row="1" ColumnsSource="{StaticResource AREAColumns}">
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand
@@ -1349,14 +1337,14 @@
                                             </dxg:DataControlDetailDescriptor>
                                         </dxg:GridControl.DetailDescriptor>
                                         <dxg:GridControl.TotalSummary>
-                                            <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />
                                         </dxg:GridControl.TotalSummary>
                                         <dxg:GridControl.GroupSummary>
-                                            <dxg:GridSummaryItem SummaryType="Count" />
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                                         </dxg:GridControl.GroupSummary>
                                         <dxg:GridControl.View>
-                                            <custom:TableViewEx x:Name="tableViewAREA" Style="{StaticResource DefaultTableViewTemplate}">
-                                                <custom:TableViewEx.RowCellMenuCustomizations>
+                                            <dxg:TableView x:Name="tableViewAREA" Style="{StaticResource DefaultTableViewTemplate}">
+                                                <dxg:TableView.RowCellMenuCustomizations>
                                                     <dxb:BarButtonItem Content="Bulk Edit"
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
@@ -1376,10 +1364,10 @@
                                                     <dxb:BarButtonItem Content="Refresh"
                                                        Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                        Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                                </custom:TableViewEx.RowCellMenuCustomizations>
-                                            </custom:TableViewEx>
+                                                </dxg:TableView.RowCellMenuCustomizations>
+                                            </dxg:TableView>
                                         </dxg:GridControl.View>
-                                    </custom:GridControlEx>
+                                    </dxg:GridControl>
                                 </Grid>-->
                                 <Grid DataContext="{Binding DataContext.RATEViewModel, ElementName=userControl}" dxlc:LayoutControl.TabHeader="RATES">
                                     <Grid.RowDefinitions>
@@ -1400,7 +1388,7 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                                     </dxb:ToolBarControl>
-                                    <custom:GridControlEx x:Name="gridControlRATE" dx:DXSerializer.SerializationID="GridControlDetailRATE"
+                                    <dxg:GridControl x:Name="gridControlRATE" dx:DXSerializer.SerializationID="GridControlDetailRATE"
                                              Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" MinHeight="300">
                                         <dxg:GridControl.Columns>
                                             <dxg:GridColumn Header="DEPARTMENT" FieldName="GUID_DEPARTMENT">
@@ -1425,17 +1413,17 @@
                                             </dxg:GridColumn>
                                         </dxg:GridControl.Columns>
                                         <dxg:GridControl.TotalSummary>
-                                            <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />
                                         </dxg:GridControl.TotalSummary>
                                         <dxg:GridControl.GroupSummary>
-                                            <dxg:GridSummaryItem SummaryType="Count" />
+                                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                                         </dxg:GridControl.GroupSummary>
                                         <dxg:GridControl.View>
-                                            <custom:TableViewEx x:Name="tableViewRATE"
+                                            <dxg:TableView x:Name="tableViewRATE"
                                                    Style="{StaticResource NestedTableViewTemplate}"
                                                    ShowGroupedColumns="False" ShowSearchPanelMode="Never"
                                                    ShowGroupPanel="False">
-                                                <custom:TableViewEx.RowCellMenuCustomizations>
+                                                <dxg:TableView.RowCellMenuCustomizations>
                                                     <dxb:BarButtonItem Content="Bulk Edit"
                                                                Command="{Binding View.DataContext.MainViewModel.BulkColumnEditCommand}"
                                                                CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
@@ -1455,10 +1443,10 @@
                                                     <dxb:BarButtonItem Content="Refresh"
                                                                Command="{Binding View.DataContext.MainViewModel.RefreshCommand}"
                                                                Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                                </custom:TableViewEx.RowCellMenuCustomizations>
-                                            </custom:TableViewEx>
+                                                </dxg:TableView.RowCellMenuCustomizations>
+                                            </dxg:TableView>
                                         </dxg:GridControl.View>
-                                    </custom:GridControlEx>
+                                    </dxg:GridControl>
                                 </Grid>
                             </dxlc:LayoutGroup>
                         </dxlc:LayoutControl>

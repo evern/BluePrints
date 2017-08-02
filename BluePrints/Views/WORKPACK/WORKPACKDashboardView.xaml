@@ -272,119 +272,119 @@
                                 </dxg:GridControlBand>
                             </dxg:GridControl.Bands>
                             <dxg:GridControl.GroupSummary>
-                                <dxg:GridSummaryItem x:Name="groupSummaryBudgeted"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryBudgeted"
                                                      ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum"
                                                      DisplayFormat="{}{0:n}" />
-                                <!--<dxg:GridSummaryItem x:Name="groupSummaryCumulativeEarnedPercentage"
+                                <!--<dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryCumulativeEarnedPercentage"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
                                                      FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
                                                      SummaryType="Custom" DisplayFormat="{}{0:p}" />-->
-                                <!--<dxg:GridSummaryItem x:Name="groupSummaryPeriodEarnedPercentage"
+                                <!--<dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryPeriodEarnedPercentage"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage"
                                                      FieldName="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage"
                                                      SummaryType="Custom" DisplayFormat="{}{0:p}" />-->
-                                <!--<dxg:GridSummaryItem x:Name="groupSummaryGrossProfit"
+                                <!--<dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryGrossProfit"
                                                      FieldName="ProjectDashboard_GrossProfit" SummaryType="Custom"
                                                      ShowInColumn="ProjectDashboard_GrossProfit"
                                                      DisplayFormat="{}{0:p}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryEfficiencyRatio"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryEfficiencyRatio"
                                                      FieldName="ProjectDashboard_EfficiencyRatio" SummaryType="Custom"
                                                      DisplayFormat="{}{0:p}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryProgressRatio"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryProgressRatio"
                                                      FieldName="ProjectDashboard_ProgressRatio" SummaryType="Custom"
                                                      DisplayFormat="{}{0:p}" />-->
-                                <dxg:GridSummaryItem x:Name="groupSummaryCumulativeEarned"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryCumulativeEarned"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryCumulativeBurned"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryCumulativeBurned"
                                                      ShowInColumn="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
                                                      FieldName="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryCumulativeActual" Visible="False"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryCumulativeActual" Visible="False"
                                                      ShowInColumn="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryPeriodPlanned"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryPeriodPlanned"
                                                      ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryPeriodEarned"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryPeriodEarned"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Earned.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryPeriodBurned"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryPeriodBurned"
                                                      ShowInColumn="Stats.Burned.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Burned.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="groupSummaryPeriodActual" Visible="False"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryPeriodActual" Visible="False"
                                                      ShowInColumn="Stats.Actual.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Actual.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.TotalSummary>
-                                <dxg:GridSummaryItem x:Name="totalSummaryBudgeted"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryBudgeted"
                                                      ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum"
                                                      DisplayFormat="{}{0:n}" />
-                                <!--<dxg:GridSummaryItem x:Name="totalSummaryCumulativeEarnedPercentage"
+                                <!--<dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryCumulativeEarnedPercentage"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
                                                      FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
                                                      SummaryType="Custom" DisplayFormat="{}{0:p}" />-->
-                                <!--<dxg:GridSummaryItem x:Name="totalSummaryPeriodEarnedPercentage"
+                                <!--<dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodEarnedPercentage"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage"
                                                      FieldName="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage"
                                                      SummaryType="Custom" DisplayFormat="{}{0:p}" />-->
-                                <!--<dxg:GridSummaryItem x:Name="totalSummaryGrossProfit"
+                                <!--<dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryGrossProfit"
                                                      FieldName="ProjectDashboard_GrossProfit" SummaryType="Custom"
                                                      DisplayFormat="{}{0:p}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryEfficiencyRatio"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryEfficiencyRatio"
                                                      FieldName="ProjectDashboard_EfficiencyRatio" SummaryType="Custom"
                                                      DisplayFormat="{}{0:p}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryProgressRatio"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryProgressRatio"
                                                      FieldName="ProjectDashboard_ProgressRatio" SummaryType="Custom"
                                                      DisplayFormat="{}{0:p}" />-->
-                                <dxg:GridSummaryItem x:Name="totalSummaryCumulativeEarned"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryCumulativeEarned"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryCumulativeBurned"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryCumulativeBurned"
                                                      ShowInColumn="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
                                                      FieldName="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" 
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryCumulativeActual" Visible="False"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryCumulativeActual" Visible="False"
                                                      ShowInColumn="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryPeriodPlanned"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodPlanned"
                                                      ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryPeriodEarned"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodEarned"
                                                      ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Earned.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryPeriodBurned"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodBurned"
                                                      ShowInColumn="Stats.Burned.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Burned.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem x:Name="totalSummaryPeriodActual" Visible="False"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodActual" Visible="False"
                                                      ShowInColumn="Stats.Actual.CurrentPeriodDataPoint.Units"
                                                      FieldName="Stats.Actual.CurrentPeriodDataPoint.Units"
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>
-                                <custom:TableViewEx x:Name="tableView" AllowEditing="False"
+                                <dxg:TableView x:Name="tableView" AllowEditing="False"
                                                Style="{StaticResource DefaultTableViewTemplate}" UseLightweightTemplates="{x:Null}"
                                                IsDetailButtonVisibleBinding="{Binding Row.HaveDisciplineCodes}"
                                                NewItemRowPosition="None">
-                                    <custom:TableViewEx.RowCellMenuCustomizations>
+                                    <dxg:TableView.RowCellMenuCustomizations>
                                         <dxb:BarButtonItem Content="Refresh"
                                                            Command="{Binding View.DataContext.RefreshCommand}"
                                                            Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                    </custom:TableViewEx.RowCellMenuCustomizations>
-                                </custom:TableViewEx>
+                                    </dxg:TableView.RowCellMenuCustomizations>
+                                </dxg:TableView>
                             </dxg:GridControl.View>
                         </dxg:GridControl>
                     </dxlc:LayoutGroup>

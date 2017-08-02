@@ -5,21 +5,21 @@ using BluePrints.ViewModels;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace BluePrints.Views
 {
-    public partial class BASELINE_ITEMCollectionView : ViewStateRestoreUserControl
+    public partial class BASELINE_ITEMCollectionView : UserControl
     {
         bool isBASELINELocked;
         public BASELINE_ITEMCollectionView()
         {
             InitializeComponent();
-            InitializeViewControl(GridControl, tableView);
-            ((BASELINE_ITEMCollectionViewModelWrapper)DataContext).GetGridVisibleRows =
-                GetGridVisibleRows;
-            ((BASELINE_ITEMCollectionViewModelWrapper)DataContext).SetBaselineLockUnlock =
-                SetBaselineLockUnlock;
+            //InitializeViewControl(GridControl, tableView);
+            //((BASELINE_ITEMCollectionViewModelWrapper)DataContext).GetGridVisibleRows = GetGridVisibleRows;
+            //((BASELINE_ITEMCollectionViewModelWrapper)DataContext).SetBaselineLockUnlock =
+            //    SetBaselineLockUnlock;
         }
 
         public IEnumerable<BASELINE_ITEMProgress> GetGridVisibleRows()

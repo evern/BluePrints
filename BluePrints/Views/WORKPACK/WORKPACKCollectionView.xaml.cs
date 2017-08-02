@@ -1,17 +1,17 @@
 ﻿using BaseModel.Misc;
 using DevExpress.Xpf.Grid;
+using System.Windows.Controls;
 
 namespace BluePrints.Views
 {
     /// <summary>
     /// Interaction logic for WORKPACKCollectionView.xaml
     /// </summary>
-    public partial class WORKPACKCollectionView : ViewStateRestoreUserControl
+    public partial class WORKPACKCollectionView : UserControl
     {
         public WORKPACKCollectionView()
         {
             InitializeComponent();
-            InitializeViewControl(GridControl, tableView);
         }
 
         private void tableView_ShowGridMenu(object sender, DevExpress.Xpf.Grid.GridMenuEventArgs e)

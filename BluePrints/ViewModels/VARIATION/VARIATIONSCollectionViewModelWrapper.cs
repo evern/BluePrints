@@ -218,6 +218,7 @@ namespace BluePrints.ViewModels
                 else
                     variation_itemsViewModelWrapper = (ICollectionViewModelsWrapper<TMainProjectionEntity>)SiteDirectVariationCollectionViewModelWrapper.Create();
 
+                variation_itemsViewModelWrapper.SetParentViewModel(this);
                 variation_itemsViewModelWrapper.OnEntitiesLoadedCallBack = onLoadedAction;
                 variation_itemsViewModelWrapper.OnEntitiesLoadedCallBackRelateParam = getParentIdFunc;
                 variation_itemsViewModelWrapper.SuppressNotification = true;
@@ -571,16 +572,27 @@ namespace BluePrints.ViewModels
                 }
                 else if (variation_item.Variation_Action == VariationAction.Append)
                 {
+                    decimal edit_value;
+                    if (DisplaySelectedEntity.Entity.TYPE == VariationType.Internal)
+                        edit_value = new_deliverable.Estimated_Value;
+                    else
+                        edit_value = new_deliverable.DC_Value;
+
                     if (variation_item.Variation_Units < 0)
                     {
                         decimal maximumReducibleUnits = -1 * variation_item.Entity.Earned_Units_Total;
                         if (variation_item.Variation_Units < maximumReducibleUnits)
-                            new_deliverable.DC_Value += maximumReducibleUnits;
+                            edit_value += maximumReducibleUnits;
                         else
-                            new_deliverable.DC_Value += variation_item.Variation_Units;
+                            edit_value += variation_item.Variation_Units;
                     }
                     else
-                        new_deliverable.DC_Value += variation_item.Variation_Units;
+                        edit_value += variation_item.Variation_Units;
+
+                    if (DisplaySelectedEntity.Entity.TYPE == VariationType.Internal)
+                        new_deliverable.Estimated_Value = edit_value;
+                    else
+                        new_deliverable.DC_Value = edit_value;
                 }
                 else if (variation_item.Variation_Action == VariationAction.Add)
                 {

@@ -33,6 +33,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Total_Install_Cost { get; }
         decimal Total_Supply_Cost { get; }
         decimal Total_Cost { get; }
+        decimal Earned_Install_Costs_OnDataDate { get; }
+        decimal Earned_Supply_Costs_OnDataDate { get; }
+        decimal Earned_Total_Costs_OnDataDate { get; }
     }
 
     public interface IReportable_Group : IReportable
@@ -103,7 +106,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Earned_Costs_Total { get; }
         decimal Earned_Units_BeforeDataDate { get; }
         decimal Earned_Units_OnDataDate { get; }
-        decimal Earned_Costs_OnDataDate { get; }
         decimal Earned_Units_ToDate { get; }
         decimal Earned_Costs_ToDate { get; }
         decimal Earned_Units_AfterDataDate { get; }

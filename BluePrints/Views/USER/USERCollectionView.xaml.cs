@@ -1,13 +1,13 @@
 ﻿using BaseModel.Misc;
+using System.Windows.Controls;
 
 namespace BluePrints.Views
 {
-    public partial class USERCollectionView : ViewStateRestoreUserControl
+    public partial class USERCollectionView : UserControl
     {
         public USERCollectionView()
         {
             InitializeComponent();
-            InitializeViewControl(GridControl, tableView);
         }
     }
 }

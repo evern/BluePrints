@@ -12,19 +12,19 @@
         <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
             <dxlc:LayoutGroup Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
                 <dxlc:LayoutItem Height="500" >
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlMissingAssignments" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
+                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlMissingAssignments" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="INTERNAL NUM" ReadOnly="True" FieldName="INTERNAL_NUM" />
                             <dxg:GridColumn Header="P6 ID" ReadOnly="True" FieldName="P6_ACTIVITY" />
                             <dxg:GridColumn Header="UNITS" ReadOnly="True" FieldName="UNITS" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
-                            <custom:TableViewEx x:Name="tableView" ShowGroupedColumns="False" ShowGroupPanel="False"/>
+                            <dxg:TableView x:Name="tableView" ShowGroupedColumns="False" ShowGroupPanel="False"/>
                         </dxg:GridControl.View>
-                    </custom:GridControlEx>
+                    </dxg:GridControl>
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
         </dxlc:LayoutGroup>

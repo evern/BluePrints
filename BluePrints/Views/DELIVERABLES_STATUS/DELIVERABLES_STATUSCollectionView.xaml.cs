@@ -1,13 +1,13 @@
 ﻿using BaseModel.Misc;
+using System.Windows.Controls;
 
 namespace BluePrints.Views
 {
-    public partial class DELIVERABLES_STATUSCollectionView : ViewStateRestoreUserControl
+    public partial class DELIVERABLES_STATUSCollectionView : UserControl
     {
         public DELIVERABLES_STATUSCollectionView()
         {
             InitializeComponent();
-            InitializeViewControl(GridControl, tableView);
         }
     }
 }
