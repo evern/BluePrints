@@ -114,7 +114,7 @@ namespace BluePrints.ViewModels
 
         protected void assign_baseline(BASELINE entity)
         {
-            if (entity == null)
+            if (entity == null && !SupressCompulsoryEntityNotFoundMessage)
                 mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live baseline not found")));
 
             loadBASELINE = entity;
@@ -132,7 +132,7 @@ namespace BluePrints.ViewModels
 
         protected void assign_progress(PROGRESS entity)
         {
-            if (entity == null)
+            if (entity == null && !SupressCompulsoryEntityNotFoundMessage)
                 mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live progress not found")));
 
             loadPROGRESS = entity;

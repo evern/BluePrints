@@ -6,9 +6,9 @@ namespace BluePrints.Views
     /// <summary>
     /// Interaction logic for AREADetailsCollectionView.xaml
     /// </summary>
-    public partial class COMMODITY_CODECollectionView : UserControl
+    public partial class STOCK_GROUPCollectionView : UserControl
     {
-        public COMMODITY_CODECollectionView()
+        public STOCK_GROUPCollectionView()
         {
             InitializeComponent();
         }

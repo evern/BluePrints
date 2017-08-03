@@ -1175,9 +1175,6 @@
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\COMMODITY_CODE\COMMODITY_CODECollectionView.xaml.cs">
-      <DependentUpon>COMMODITY_CODECollectionView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\PROGRESS_ITEM\User_OffsiteDirectProgressCollectionView.xaml.cs">
       <DependentUpon>User_OffsiteDirectProgressCollectionView.xaml</DependentUpon>
     </Compile>
@@ -1383,10 +1380,6 @@
     <Page Include="Views\MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\COMMODITY_CODE\COMMODITY_CODECollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROGRESS_ITEM\User_OffsiteDirectProgressCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>

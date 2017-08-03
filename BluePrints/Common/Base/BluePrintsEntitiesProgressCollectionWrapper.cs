@@ -251,7 +251,7 @@ namespace BluePrints.Common.Base
         bool isFirstLoaded;
         protected void SetPROGRESStoCurrentDateOnLoaded(PROGRESS entity)
         {
-            if(entity == null)
+            if(entity == null && !SupressCompulsoryEntityNotFoundMessage)
                 mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live progress not found")));
 
             loadPROGRESS = entity;

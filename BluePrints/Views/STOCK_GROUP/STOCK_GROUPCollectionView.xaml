@@ -1,6 +1,6 @@
 ﻿<UserControl
     x:Name="userControl"
-    x:Class="BluePrints.Views.COMMODITY_CODECollectionView"
+    x:Class="BluePrints.Views.STOCK_GROUPCollectionView"
     xmlns:view="clr-namespace:BluePrints.Views"
     xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
