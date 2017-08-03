@@ -111,7 +111,7 @@ namespace BluePrints.ViewModels
 
         private void assign_estimation_direct(ESTIMATION_DIRECT estimation_direct)
         {
-            if (estimation_direct == null)
+            if (estimation_direct == null && !SupressCompulsoryEntityNotFoundMessage)
                 mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live estimate not found")));
 
             loadESTIMATION_DIRECT = estimation_direct;

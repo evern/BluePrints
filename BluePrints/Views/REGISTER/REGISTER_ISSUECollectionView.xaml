@@ -180,7 +180,7 @@
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
                                 <dxg:TableView.FormatConditions>
-                                    <dxg:FormatCondition FieldName="ACTIONED_ON_DWG" Expression="Not IsActionedOnDrawing" >
+                                    <dxg:FormatCondition FieldName="ACTIONED_ON_DWG" Expression="Not IsActionedOnDrawing And [DATE_CLOSED] Is Not Null" >
                                         <dx:Format Background="#FFFF9B98" Foreground="Black"/>
                                     </dxg:FormatCondition>
                                     <dxg:FormatCondition ApplyToRow="True" FieldName="DATE_CLOSED" Expression="[DATE_CLOSED] Is Not Null" >

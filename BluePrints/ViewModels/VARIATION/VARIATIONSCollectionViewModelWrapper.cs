@@ -141,14 +141,14 @@ namespace BluePrints.ViewModels
             {
                 foreach (var entity in entities)
                 {
-                    CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMVariation>(entity.Entity, (projections, parentId) => mainThreadDispatcher.BeginInvoke(new Action(() => AssignVariationSummary(projections, parentId))), () => entity.GUID);
+                    CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMVariation>(entity.Entity, (projections, parentId) => mainThreadDispatcher.BeginInvoke(new Action(() => AssignVariationSummary(projections, parentId))), () => entity.GUID, true);
                 }
             }
             else
             {
                 foreach (var entity in entities)
                 {
-                    CreateVARIATION_ITEMSViewModelWrapper<ESTIMATION_DIRECT_ITEMVariation>(entity.Entity, (projections, parentId) => mainThreadDispatcher.BeginInvoke(new Action(() => AssignVariationSummary(projections, parentId))), () => entity.GUID);
+                    CreateVARIATION_ITEMSViewModelWrapper<ESTIMATION_DIRECT_ITEMVariation>(entity.Entity, (projections, parentId) => mainThreadDispatcher.BeginInvoke(new Action(() => AssignVariationSummary(projections, parentId))), () => entity.GUID, true);
                 }
             }
         }
@@ -207,7 +207,7 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Variation_Item revision
-        public ICollectionViewModelsWrapper<TMainProjectionEntity> CreateVARIATION_ITEMSViewModelWrapper<TMainProjectionEntity>(VARIATION loadVARIATION, Action<IEnumerable<TMainProjectionEntity>, object> onLoadedAction, Func<object> getParentIdFunc)
+        public ICollectionViewModelsWrapper<TMainProjectionEntity> CreateVARIATION_ITEMSViewModelWrapper<TMainProjectionEntity>(VARIATION loadVARIATION, Action<IEnumerable<TMainProjectionEntity>, object> onLoadedAction, Func<object> getParentIdFunc, bool supressCompulsoryEntityNotFoundMessage)
             where TMainProjectionEntity : class, IGuidEntityKey, new()
         {
             if (loadPROJECT != null)
@@ -222,6 +222,7 @@ namespace BluePrints.ViewModels
                 variation_itemsViewModelWrapper.OnEntitiesLoadedCallBack = onLoadedAction;
                 variation_itemsViewModelWrapper.OnEntitiesLoadedCallBackRelateParam = getParentIdFunc;
                 variation_itemsViewModelWrapper.SuppressNotification = true;
+                variation_itemsViewModelWrapper.SupressCompulsoryEntityNotFoundMessage = supressCompulsoryEntityNotFoundMessage;
                 var baselineSupportParameterObj = variation_itemsViewModelWrapper as ISupportParameter;
                 baselineSupportParameterObj.Parameter = new DualEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, loadVARIATION);
 
@@ -490,15 +491,15 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 errorMessage = "Nothing within variation to approve";
             else if (loadPROJECT == null)
-                errorMessage = "Project doesn't exists";
+                errorMessage = "Project not found";
             else if (LivePROGRESS == null)
-                errorMessage = "Live progress doesn't exists";
+                errorMessage = "Live progress not found";
             else
             {
                 if (phaseType == ProgressType.Design && LiveBASELINE == null)
-                    errorMessage = "Live baseline doesn't exists";
+                    errorMessage = "Live baseline not found";
                 else if(phaseType == ProgressType.Construct && LiveESTIMATION_DIRECT == null)
-                    errorMessage = "Live estimate doesn't exists";
+                    errorMessage = "Live estimate not found";
             }
 
 
@@ -509,9 +510,9 @@ namespace BluePrints.ViewModels
             }
 
             if(phaseType == ProgressType.Design)
-                CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMVariation>(DisplaySelectedEntity.Entity, OnVARIATION_ITEMSLoaded, null);
+                CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMVariation>(DisplaySelectedEntity.Entity, OnVARIATION_ITEMSLoaded, null, false);
             else if(phaseType == ProgressType.Construct)
-                CreateVARIATION_ITEMSViewModelWrapper<ESTIMATION_DIRECT_ITEMVariation>(DisplaySelectedEntity.Entity, OnVARIATION_ITEMSLoaded, null);
+                CreateVARIATION_ITEMSViewModelWrapper<ESTIMATION_DIRECT_ITEMVariation>(DisplaySelectedEntity.Entity, OnVARIATION_ITEMSLoaded, null, false);
         }
 
         private void OnVARIATION_ITEMSLoaded(IEnumerable<object> projections, object parentId)
