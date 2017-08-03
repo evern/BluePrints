@@ -116,8 +116,6 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public bool ShouldSaveProgress => ((IReportable)ProgressItem).ShouldSaveProgress;
 
-        public string Commodity_Display_Code => ((IReportable)ProgressItem).Commodity_Display_Code;
-
         public decimal Current_Productivity => ((IReportable)ProgressItem).Current_Productivity;
 
         public decimal Override_Productivity { get => ((IReportable)ProgressItem).Override_Productivity; set => ((IReportable)ProgressItem).Override_Productivity = value; }
@@ -219,8 +217,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string Phase_Code => Reportable.Phase_Code;
 
         public string Commodity_Code => Reportable.Commodity_Code;
-
-        public string Commodity_Display_Code => Reportable.Commodity_Display_Code;
 
         public Guid? Workpack_Guid => Reportable.Workpack_Guid;
 
@@ -371,6 +367,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Variation_Quantity => Reportable.Variation_Quantity;
 
         public decimal MinEstimateUnits => Reportable.MinEstimateUnits;
+
+        public Guid? Stock_Group_Guid => Reportable.Stock_Group_Guid;
 
         public void SetReportingDataDate(DateTime dataDate)
         {

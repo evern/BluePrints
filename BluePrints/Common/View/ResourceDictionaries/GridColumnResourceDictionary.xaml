@@ -59,7 +59,7 @@
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
     </collections:ArrayList>
-    <collections:ArrayList x:Key="COMMODITY_CODEColumns">
+    <collections:ArrayList x:Key="STOCK_GROUPColumns">
         <!--<dxg:GridColumn FieldName="Temp_Id" VisibleIndex="0" />
         <dxg:GridColumn FieldName="Temp_Parent_Id" VisibleIndex="1" />-->
         <dxg:GridColumn FieldName="NAME" Header="NAME" />
@@ -138,7 +138,7 @@
         <dxg:GridColumn FieldName="Entity.FULLCODE" Header="FULLCODE" />
         <dxg:GridColumn FieldName="ProjectionType" ReadOnly="True" >
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:COMMODITY_CODEProjectionType}}" />
+                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:STOCK_GROUPProjectionType}}" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn FieldName="Entity.COMMODITY_GROUP_DIRECT_ID" />
@@ -223,7 +223,7 @@
         <dxg:GridColumn FieldName="Entity.FULLCODE" Header="FULLCODE" />
         <dxg:GridColumn FieldName="ProjectionType" ReadOnly="True" >
             <dxg:GridColumn.EditSettings>
-                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:COMMODITY_CODEProjectionType}}" />
+                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:STOCK_GROUPProjectionType}}" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
         <dxg:GridColumn FieldName="Entity.COMMODITY_GROUP_DIRECT_ID" />
@@ -298,7 +298,7 @@
     <collections:ArrayList x:Key="ESTIMATION_DIRECT_ITEMBands">
         <dxg:GridControlBand Header="General">
             <dxg:GridColumn FieldName="Entity.GUID" Header="GUID" Visible="False"/>
-            <dxg:GridColumn Header="COMMODITY CODE" FieldName="Entity.GUID_COMMODITY_CODE">
+            <dxg:GridColumn Header="COMMODITY CODE" FieldName="Entity.GUID_STOCK_GROUP">
                 <dxg:GridColumn.EditSettings>
                     <dxg:LookUpEditSettings
                         AutoComplete="True"
@@ -312,7 +312,7 @@
                         <dxg:LookUpEditSettings.PopupContentTemplate>
                             <ControlTemplate TargetType="ContentControl">
                                 <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False" 
-                                                                     SelectionMode="Row" ColumnsSource="{StaticResource COMMODITY_CODEColumns}">
+                                                                     SelectionMode="Row" ColumnsSource="{StaticResource STOCK_GROUPColumns}">
                                     <dxg:GridControl.View>
                                         <dxg:TreeListView 
                                             ShowAutoFilterRow="True"
@@ -329,7 +329,7 @@
                     </dxg:LookUpEditSettings>
                 </dxg:GridColumn.EditSettings>
             </dxg:GridColumn>
-            <dxg:GridColumn FieldName="COMMODITY_CODE.FULLCODE" Header="FULLCODE" ReadOnly="True" />
+            <dxg:GridColumn FieldName="STOCK_GROUP.FULLCODE" Header="FULLCODE" ReadOnly="True" />
             <dxg:GridColumn FieldName="Entity.GUID_SUPPLYWORKPACK" Header="SUPPLY WORKPACK" AllowSearchPanel="False">
                 <dxg:GridColumn.EditSettings>
                     <dxe:ComboBoxEditSettings
@@ -375,7 +375,7 @@
             </dxg:GridColumn>
         </dxg:GridControlBand>
         <dxg:GridControlBand Header="Rate">
-            <dxg:GridColumn FieldName="COMMODITY_CODE.RATE_SUPPLY" Header="SUPPLY RATE" AllowSearchPanel="False" >
+            <dxg:GridColumn FieldName="STOCK_GROUP.RATE_SUPPLY" Header="SUPPLY RATE" AllowSearchPanel="False" >
                 <dxg:GridColumn.CellTemplate>
                     <DataTemplate>
                         <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0"
@@ -384,7 +384,7 @@
                     </DataTemplate>
                 </dxg:GridColumn.CellTemplate>
             </dxg:GridColumn>
-            <dxg:GridColumn FieldName="COMMODITY_CODE.RATE_FREIGHT" Header="FREIGHT RATE" AllowSearchPanel="False" >
+            <dxg:GridColumn FieldName="STOCK_GROUP.RATE_FREIGHT" Header="FREIGHT RATE" AllowSearchPanel="False" >
                 <dxg:GridColumn.CellTemplate>
                     <DataTemplate>
                         <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0"
@@ -402,7 +402,7 @@
                     </DataTemplate>
                 </dxg:GridColumn.CellTemplate>
             </dxg:GridColumn>
-            <dxg:GridColumn FieldName="COMMODITY_CODE.HOURS_INSTALL" Header="INSTALL HOURS" AllowSearchPanel="False" >
+            <dxg:GridColumn FieldName="STOCK_GROUP.HOURS_INSTALL" Header="INSTALL HOURS" AllowSearchPanel="False" >
                 <dxg:GridColumn.CellTemplate>
                     <DataTemplate>
                         <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" MinValue="0"
@@ -446,7 +446,7 @@
     <collections:ArrayList x:Key="ESTIMATION_DIRECT_ITEMChildBands">
         <dxg:GridControlBand Header="General">
             <dxg:GridColumn FieldName="Entity.GUID" Header="GUID" Visible="False"/>
-            <dxg:GridColumn Header="COMMODITY CODE" AllowEditing="False" FieldName="Entity.GUID_COMMODITY_CODE">
+            <dxg:GridColumn Header="COMMODITY CODE" AllowEditing="False" FieldName="Entity.GUID_STOCK_GROUP">
                 <dxg:GridColumn.EditSettings>
                     <dxg:LookUpEditSettings
                         AutoComplete="True"
@@ -477,7 +477,7 @@
                     </dxg:LookUpEditSettings>
                 </dxg:GridColumn.EditSettings>
             </dxg:GridColumn>
-            <dxg:GridColumn FieldName="COMMODITY_CODE.FULLCODE" Header="FULLCODE" ReadOnly="True" />
+            <dxg:GridColumn FieldName="STOCK_GROUP.FULLCODE" Header="FULLCODE" ReadOnly="True" />
             <dxg:GridColumn FieldName="Entity.GUID_SUPPLYWORKPACK" Header="SUPPLY WORKPACK" AllowSearchPanel="False">
                 <dxg:GridColumn.EditSettings>
                     <dxe:ComboBoxEditSettings
@@ -523,7 +523,7 @@
             </dxg:GridColumn>
         </dxg:GridControlBand>
         <dxg:GridControlBand Header="Rate">
-            <dxg:GridColumn FieldName="COMMODITY_CODE.RATE_SUPPLY" Header="SUPPLY RATE" AllowSearchPanel="False" >
+            <dxg:GridColumn FieldName="STOCK_GROUP.RATE_SUPPLY" Header="SUPPLY RATE" AllowSearchPanel="False" >
                 <dxg:GridColumn.CellTemplate>
                     <DataTemplate>
                         <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0"
@@ -532,7 +532,7 @@
                     </DataTemplate>
                 </dxg:GridColumn.CellTemplate>
             </dxg:GridColumn>
-            <dxg:GridColumn FieldName="COMMODITY_CODE.RATE_FREIGHT" Header="FREIGHT RATE" AllowSearchPanel="False" >
+            <dxg:GridColumn FieldName="STOCK_GROUP.RATE_FREIGHT" Header="FREIGHT RATE" AllowSearchPanel="False" >
                 <dxg:GridColumn.CellTemplate>
                     <DataTemplate>
                         <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="c" MinValue="0"
@@ -550,7 +550,7 @@
                     </DataTemplate>
                 </dxg:GridColumn.CellTemplate>
             </dxg:GridColumn>
-            <dxg:GridColumn FieldName="COMMODITY_CODE.HOURS_INSTALL" Header="INSTALL HOURS" AllowSearchPanel="False" >
+            <dxg:GridColumn FieldName="STOCK_GROUP.HOURS_INSTALL" Header="INSTALL HOURS" AllowSearchPanel="False" >
                 <dxg:GridColumn.CellTemplate>
                     <DataTemplate>
                         <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" MinValue="0"

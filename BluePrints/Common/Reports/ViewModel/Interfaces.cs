@@ -25,7 +25,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Variation_Install_Hours { get; }
     }
 
-    public interface IReportable_Quantity : IReportable, IHaveQuantity, ICanTrack, ICanProgressByQuantity
+    public interface IReportable_Quantity : IReportable, IHaveQuantity, ICanTrack, IHaveStock_Group, ICanProgressByQuantity
     {
         decimal Remaining_Hours_To_Completion { get; }
         decimal MinEstimateQuantity { get; }
@@ -55,7 +55,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         IEnumerable<IDeliverable_Quantity> Deliverables { get; }
     }
 
-    public interface IDeliverable_Quantity : IDeliverable_Rates, IHaveQuantity, ICanTrack
+    public interface IDeliverable_Quantity : IDeliverable_Rates, IHaveStock_Group, IHaveQuantity, ICanTrack
     {
         
     }
@@ -76,6 +76,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         string Discipline_Code { get; }
         string Deliverable_Name { get; }
         Guid? Workpack_Guid { get; }
+        Guid? Area_Guid { get; }
+        Guid? SubArea_Guid { get; }
     }
 
     #region Ability Specification Interfaces
@@ -165,13 +167,14 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal? DB_Productivity_Override { get; set; }
     }
 
+    public interface IHaveStock_Group
+    {
+        Guid? Stock_Group_Guid { get; }
+    }
+
     public interface IHaveCommodity_Code
     {
-        //must use string because commodity code is not actual entity in design
-        string Commodity_Display_Code { get; }
         string Commodity_Code { get; }
-        Guid? Area_Guid { get; }
-        Guid? SubArea_Guid { get; }
     }
 
     public interface ISupportByDuration

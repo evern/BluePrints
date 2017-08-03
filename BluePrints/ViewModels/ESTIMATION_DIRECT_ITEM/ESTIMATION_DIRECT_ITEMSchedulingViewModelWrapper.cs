@@ -63,7 +63,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, x => defaultConstructionDEPARTMENT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc, x => defaultConstructionPHASE = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc, x => p6_baseline_entity = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS, STOCK_GROUPProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
 
@@ -101,7 +101,7 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.INTERNAL_NUM == BluePrintsResources.Default_Construction_Phase);
         }
 
-        private Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
+        private Func<IRepositoryQuery<STOCK_GROUP>, IQueryable<STOCK_GROUP>> STOCK_GROUPProjectionFunc()
         {
             return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID));
         }
@@ -121,7 +121,7 @@ namespace BluePrints.ViewModels
             ConstructMainViewModelProjection()
         {
             IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = GetEntities<P6_ASSIGNMENT>();
-            return query => ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query.Where(x => x.GUID_ESTIMATION_DIRECT == p6_baseline_entity.EntityKey), loadPROJECT, loaderCollection.GetCollection<RATE>(), live_PROGRESS, PROGRESS_ITEMCollection, STOCK_CODECollection, loaderCollection.GetCollection<COMMODITY_CODE>(), null, true, P6_ASSIGNMENTS);
+            return query => ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query.Where(x => x.GUID_ESTIMATION_DIRECT == p6_baseline_entity.EntityKey), loadPROJECT, loaderCollection.GetCollection<RATE>(), live_PROGRESS, PROGRESS_ITEMCollection, STOCK_CODECollection, loaderCollection.GetCollection<STOCK_GROUP>(), null, true, P6_ASSIGNMENTS);
         }
         #endregion
 
@@ -142,25 +142,25 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection
+        public IEnumerable<STOCK_GROUP> STOCK_GROUPCollection
         {
             get
             {
-                var collection = GetEntities<COMMODITY_CODE>();
+                var collection = GetEntities<STOCK_GROUP>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.CODE);
                 return collection;
             }
         }
 
-        public IEnumerable<COMMODITY_CODE> ProjectCOMMODITY_CODECollection
+        public IEnumerable<STOCK_GROUP> ProjectSTOCK_GROUPCollection
         {
             get
             {
                 if (loadPROJECT == null)
                     return null;
 
-                return COMMODITY_CODECollection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+                return STOCK_GROUPCollection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
             }
         }
 

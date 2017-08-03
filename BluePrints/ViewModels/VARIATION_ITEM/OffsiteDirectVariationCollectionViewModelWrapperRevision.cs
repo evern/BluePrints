@@ -85,10 +85,10 @@ namespace BluePrints.ViewModels
 
         protected override void assign_additional_callbacks(CollectionViewModel<BASELINE_ITEM, BASELINE_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork> mainViewModel)
         {
-            mainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
+
         }
 
-        private void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
+        protected override void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
         {
             //estimated hours field is disabled but just in case
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Variation_Units))
@@ -112,6 +112,8 @@ namespace BluePrints.ViewModels
                     e.ErrorContent = "Cannot change deliverable tracking type when percentage is already earned";
                 }
             }
+
+            base.AdditionalValidateCellCallBack(e);
         }
 
         protected override void CellValueNewRowChanging(CellValueChangedEventArgs e)

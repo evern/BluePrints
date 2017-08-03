@@ -59,7 +59,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc, x => assign_estimation_direct(x));
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS, STOCK_GROUPProjectionFunc);
             base.InitializeAndLoadEntitiesLoaderDescription();
         }
 
@@ -89,9 +89,9 @@ namespace BluePrints.ViewModels
             loadESTIMATION_DIRECT = estimation_direct;
         }
 
-        private Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
+        private Func<IRepositoryQuery<STOCK_GROUP>, IQueryable<STOCK_GROUP>> STOCK_GROUPProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID || x.GUID_PROJECT == null);
         }
 
         protected override void OnAllEntitiesCollectionLoaded()
@@ -102,7 +102,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ReportablesDisplay>> ConstructMainViewModelProjection()
         {
-            return query => ProgressQueries.SiteDirectProgressItemTransformation(query.Where(x => x.GUID_ESTIMATION_DIRECT == loadESTIMATION_DIRECT.GUID), loadPROJECT, loadPROGRESS, PROGRESS_ITEMCollection, COMMODITY_CODECollection, STOCK_CODECollection, RATECollection);
+            return query => ProgressQueries.SiteDirectProgressItemTransformation(query.Where(x => x.GUID_ESTIMATION_DIRECT == loadESTIMATION_DIRECT.GUID), loadPROJECT, loadPROGRESS, PROGRESS_ITEMCollection, STOCK_GROUPCollection, STOCK_CODECollection, RATECollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ReportablesDisplay> entities)
@@ -258,11 +258,11 @@ namespace BluePrints.ViewModels
             get { return "SiteDirectProgressCollectionViewModelWrapper"; }
         }
 
-        public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection
+        public IEnumerable<STOCK_GROUP> STOCK_GROUPCollection
         {
             get
             {
-                var collection = GetEntities<COMMODITY_CODE>();
+                var collection = GetEntities<STOCK_GROUP>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.CODE);
                 return collection;

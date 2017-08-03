@@ -16,7 +16,7 @@ namespace BluePrints.Common.Projections
         public ESTIMATION_DIRECT_ITEMProjection()
             : base()
         {
-            //need to initialize commodity code here so that copy/paste is able to get property info within COMMODITY_CODE
+            //need to initialize commodity code here so that copy/paste is able to get property info within STOCK_GROUP
             stock_code = new STOCK_CODE();
         }
 
@@ -35,36 +35,6 @@ namespace BluePrints.Common.Projections
                     DataUtils.ShallowCopy(stock_code, value);
             }
         }
-
-        //Used for direct property access validation in fill/undo-redo
-        public Guid? CommodityCodeGuid
-        {
-            get
-            {
-                return Entity.GUID_COMMODITY_CODE;
-            }
-            set
-            {
-                Guid? setValue = (Guid?)value;
-                if (setValue == null)
-                    Entity.GUID_COMMODITY_CODE = null;
-                else if (IsCommodityCodeValid(setValue))
-                    Entity.GUID_COMMODITY_CODE = setValue;
-            }
-        }
-
-        public bool IsCommodityCodeValid(Guid? commodityCodeGuid)
-        {
-            if (commodityCodeGuid == null)
-                return false;
-
-            if (CommodityCodeCollection == null)
-                return false;
-
-            return CommodityCodeCollection.Any(x => x.GUID == commodityCodeGuid);
-        }
-
-        public IEnumerable<COMMODITY_CODE> CommodityCodeCollection { get; set; }
 
         //Used for direct property access validation in fill/undo-redo
         public Guid? StockCodeGuid
@@ -108,9 +78,7 @@ namespace BluePrints.Common.Projections
 
         public string Phase_Code => BluePrintsResources.Default_Construction_Phase;
 
-        public string Commodity_Code => Entity.COMMODITY_CODE == null ? string.Empty : Entity.COMMODITY_CODE.CODE;
-
-        public string Commodity_Display_Code => Entity.COMMODITY_CODE == null ? string.Empty : Entity.COMMODITY_CODE.Display_Code;
+        public string Commodity_Code => Entity.STOCK_GROUP == null ? string.Empty : Entity.STOCK_GROUP.CODE;
 
         public Guid? Workpack_Guid => Entity.GUID_WORKPACK;
 
@@ -173,13 +141,15 @@ namespace BluePrints.Common.Projections
         public decimal Stock_Code_Install_Hours => STOCK_CODE == null ? 0 : STOCK_CODE.HOURS_INSTALL;
 
         public decimal Variation_Quantity => Entity.DC_QUANTITY;
+
+        public Guid? Stock_Group_Guid => Entity.STOCK_GROUP == null ? Guid.Empty : Entity.STOCK_GROUP.GUID;
     }
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries
     {
         public static IQueryable<ESTIMATION_DIRECT_ITEMProgress> IDeliverable_Progress_Transformation(
             IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, PROJECT PROJECT, 
-            IEnumerable<RATE> RATES, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<STOCK_CODE> STOCK_CODES = null, IEnumerable<COMMODITY_CODE> COMMODITY_CODES = null, 
+            IEnumerable<RATE> RATES, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<STOCK_CODE> STOCK_CODES = null, IEnumerable<STOCK_GROUP> STOCK_GROUPS = null, 
             IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null)
         {
             var PROGRESS_ITEMSByOriginalGuid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
@@ -187,7 +157,7 @@ namespace BluePrints.Common.Projections
             ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Rates_Transformation(ESTIMATION_DIRECT_ITEMS,
                                                                                             RATES,
                                                                                             STOCK_CODES,
-                                                                                            COMMODITY_CODES).ToList();
+                                                                                            STOCK_GROUPS).ToList();
 
             List<VariationAdjustment> projectVariationAdjustments;
             //VARIATIONS are only necessary if front-end requires percentages
@@ -218,7 +188,7 @@ namespace BluePrints.Common.Projections
 
         public static IQueryable<ESTIMATION_DIRECT_ITEMProjection> IDeliverable_Rates_Transformation(
             IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, 
-            IEnumerable<RATE> RATES, IEnumerable<STOCK_CODE> STOCK_CODES = null, IEnumerable<COMMODITY_CODE> COMMODITY_CODES = null)
+            IEnumerable<RATE> RATES, IEnumerable<STOCK_CODE> STOCK_CODES = null, IEnumerable<STOCK_GROUP> STOCK_GROUPS = null)
         {
             return
                 ESTIMATION_DIRECT_ITEMS.OrderBy(x => x.CREATED).ToArray()
@@ -229,11 +199,7 @@ namespace BluePrints.Common.Projections
                                 Entity = estimate_direct_item,
                                 STOCK_CODE = STOCK_CODES == null ? null : STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_direct_item.GUID_STOCK_CODE),
                                 RATE = RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
-                                StockCodeCollection = STOCK_CODES == null ? null : STOCK_CODES,
-                                //.Where(stockcode => stockcode.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
-                                CommodityCodeCollection = COMMODITY_CODES == null ? null : COMMODITY_CODES
-                                .Where(commodity_code => commodity_code.GUID_AREA == estimate_direct_item.GUID_AREA 
-                                && commodity_code.GUID_SUBAREA == estimate_direct_item.GUID_SUBAREA).OrderBy(x => x.CODE)
+                                StockCodeCollection = STOCK_CODES == null ? null : STOCK_CODES
                             }).AsQueryable();
         }
     }

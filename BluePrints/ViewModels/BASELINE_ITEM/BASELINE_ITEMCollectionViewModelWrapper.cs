@@ -44,7 +44,6 @@ namespace BluePrints.ViewModels
         string DefaultPhaseInternalNumber { get; set; }
         Func<TProgress> SelectedEntityCallBack { get; set; }
         IEnumerable<TProgress> SelectedEntities { get; set; }
-
         //some functionality will edit existing live deliverables, so this has to be used to validate in context
         IEnumerable<TProgress> EditableAllEntities { get; set; }
         void CleanUpEntitiesLoader();
@@ -56,6 +55,7 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Events
+        string Interface_AdditionalValidateCellCallBack(TProgress active_progress, object new_value, string field_name);
         void Interface_CellValueExistingRowChanging(string field_name, object new_value, TProgress active_progress);
         void Interface_CellValueNewRowChanging(string field_name, object new_value, TProgress active_progress);
         void Interface_CellValueChanged(string field_name, TProgress projection);
@@ -435,6 +435,7 @@ namespace BluePrints.ViewModels
             string error_message = Interface_AdditionalValidateCellCallBack((BASELINE_ITEMProgress)e.Row, e.Value, fieldName);
             if(error_message != string.Empty)
             {
+                e.IsValid = false;
                 e.ErrorContent = error_message;
                 e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
             }

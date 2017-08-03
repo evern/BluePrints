@@ -34,6 +34,7 @@
                         </Binding>
                     </Setter.Value>
                 </Setter>
+                <Setter Property="Foreground" Value="Black" />
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding Path=IsSelected}" Value="True">
                         <Setter Property="Background" Value="Gray" />
@@ -139,7 +140,14 @@
                                                               DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="ProgressItem.Commodity_Code" Header="COMMODITY_CODE" ReadOnly="True" IsEnabled="False" />
+                                <dxg:GridColumn FieldName="ProgressItem.Stock_Group_Guid" Header="STOCK_GROUP" ReadOnly="True" IsEnabled="False" >
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
+                                                              ItemsSource="{Binding DataContext.STOCK_GROUPCollection, ElementName=userControl}"
+                                                              IsTextEditable="True" AutoComplete="True"
+                                                              DisplayMember="DESCRIPTION" ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="ProgressItem.Deliverable_Name" Header="STOCK_CODE" ReadOnly="True" IsEnabled="False" />
                                 <dxg:GridColumn FieldName="ProgressItem.Total_Quantity" Header="TOTAL_QUANTITY" ReadOnly="True" IsEnabled="False" >
                                     <dxg:GridColumn.EditSettings>
@@ -184,11 +192,6 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="ProgressItem.Earned_Supply_Costs_OnDataDate" Header="CURRENT_SUPPLY_COSTS" IsEnabled="False" >
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="ProgressItem.Earned_Total_Costs_OnDataDate" Header="CURRENT_SUPPLY_COSTS" IsEnabled="False" >
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
@@ -255,7 +258,14 @@
                                                               DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Binding="{Binding Commodity_Code}" Header="COMMODITY_CODE" ReadOnly="True" IsEnabled="False" />
+                                            <dxg:GridColumn Binding="{Binding Stock_Group_Guid}" Header="STOCK_GROUP" ReadOnly="True" IsEnabled="False" >
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
+                                                              ItemsSource="{Binding DataContext.STOCK_GROUPCollection, ElementName=userControl}"
+                                                              IsTextEditable="True" AutoComplete="True"
+                                                              DisplayMember="DESCRIPTION" ValueMember="GUID" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
                                             <dxg:GridColumn Binding="{Binding Deliverable_Name}" Header="STOCK_CODE" ReadOnly="True" IsEnabled="False" />
                                             <dxg:GridColumn Binding="{Binding Total_Quantity}" Header="TOTAL_QUANTITY" ReadOnly="True" IsEnabled="False" >
                                                 <dxg:GridColumn.EditSettings>
@@ -300,11 +310,6 @@
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn Binding="{Binding Earned_Supply_Costs_OnDataDate}" Header="CURRENT_SUPPLY_COSTS" IsEnabled="False" >
-                                                <dxg:GridColumn.EditSettings>
-                                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
-                                                </dxg:GridColumn.EditSettings>
-                                            </dxg:GridColumn>
-                                            <dxg:GridColumn Binding="{Binding Earned_Total_Costs_OnDataDate}" Header="CURRENT_SUPPLY_COSTS" IsEnabled="False" >
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>

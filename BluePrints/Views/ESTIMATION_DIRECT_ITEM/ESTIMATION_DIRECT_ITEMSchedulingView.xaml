@@ -73,6 +73,7 @@
                         </Binding>
                     </Setter.Value>
                 </Setter>
+                <Setter Property="Foreground" Value="Black" />
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding Path=IsSelected}" Value="True">
                         <Setter Property="Background" Value="Gray" />
@@ -386,7 +387,7 @@
                                             PopupMinWidth="1500"
                                             AutoPopulateColumns="False"
                                             NullValueButtonPlacement="None"
-                                            ItemsSource="{Binding RowData.Row.Entity.CommodityCodeCollection}">
+                                            ItemsSource="{Binding RowData.Row.Entity.StockGroupCollection}">
                                                 <dxg:LookUpEdit.StyleSettings>
                                                     <dxg:SearchLookUpEditStyleSettings/>
                                                 </dxg:LookUpEdit.StyleSettings>

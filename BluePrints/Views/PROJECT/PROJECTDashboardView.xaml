@@ -39,6 +39,7 @@
                         </Binding>
                     </Setter.Value>
                 </Setter>
+                <Setter Property="Foreground" Value="Black" />
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding Path=IsSelected}" Value="True">
                         <Setter Property="Background" Value="Gray" />

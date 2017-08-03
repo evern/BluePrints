@@ -23,8 +23,6 @@ namespace BluePrints.Data
             REGISTER_LL = new HashSet<REGISTER_LL>();
             REGISTER_NC = new HashSet<REGISTER_NC>();
             REGISTER_RISK = new HashSet<REGISTER_RISK>();
-            COMMODITY_CODE = new HashSet<COMMODITY_CODE>();
-            COMMODITY_CODE1 = new HashSet<COMMODITY_CODE>();
             WORKPACK = new HashSet<WORKPACK>();
             WORKPACK1 = new HashSet<WORKPACK>();
         }
@@ -95,12 +93,6 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<REGISTER_RISK> REGISTER_RISK { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<COMMODITY_CODE> COMMODITY_CODE { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<COMMODITY_CODE> COMMODITY_CODE1 { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<WORKPACK> WORKPACK { get; set; }

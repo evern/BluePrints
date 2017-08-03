@@ -1,6 +1,6 @@
 ﻿<UserControl
     x:Name="userControl"
-    x:Class="BluePrints.Views.STOCK_GROUPCollectionView"
+    x:Class="BluePrints.Views.COMMODITY_CODECollectionView"
     xmlns:view="clr-namespace:BluePrints.Views"
     xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -18,7 +18,7 @@
     xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
     xmlns:common="clr-namespace:BluePrints.Common"
     mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
-    DataContext="{dxmvvm:ViewModelSource viewmodel:STOCK_GROUPCollectionViewModelWrapper}">
+    DataContext="{dxmvvm:ViewModelSource viewmodel:COMMODITY_CODECollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -71,7 +71,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSTOCK_GROUP" 
+                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlCOMMODITY_CODE" 
                                      Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Name="colCODE" FieldName="Entity.CODE" Header="CODE" />
@@ -81,6 +81,13 @@
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.UOMCollection, ElementName=userControl}"
                                         IsTextEditable="True" AutoComplete="True" DisplayMember="UOM1" ValueMember="UOM1" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.GUID_DISCIPLINE" Header="DISCIPLINE">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings
+                                        ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>

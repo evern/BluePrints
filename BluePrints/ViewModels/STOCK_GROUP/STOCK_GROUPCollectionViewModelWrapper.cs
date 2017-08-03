@@ -13,27 +13,27 @@ using System.Linq;
 
 namespace BluePrints.ViewModels
 {
-    public class COMMODITY_CODECollectionViewModelWrapper :
+    public class STOCK_GROUPCollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
-        <COMMODITY_CODE, COMMODITY_CODEProjection, Guid, IBluePrintsEntitiesUnitOfWork>
+        <STOCK_GROUP, STOCK_GROUPProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
-        /// Creates a new instance of COMMODITY_CODECollectionViewModelWrapper as a POCO view model.
+        /// Creates a new instance of STOCK_GROUPCollectionViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static COMMODITY_CODECollectionViewModelWrapper Create(
+        public static STOCK_GROUPCollectionViewModelWrapper Create(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new COMMODITY_CODECollectionViewModelWrapper(unitOfWorkFactory));
+            return ViewModelSource.Create(() => new STOCK_GROUPCollectionViewModelWrapper(unitOfWorkFactory));
         }
 
 
         /// <summary>
-        /// Initializes a new instance of the COMMODITY_CODECollectionViewModelWrapper class.
-        /// This constructor is declared protected to avoid undesired instantiation of the COMMODITY_CODECollectionViewModelWrapper type without the POCO proxy factory.
+        /// Initializes a new instance of the STOCK_GROUPCollectionViewModelWrapper class.
+        /// This constructor is declared protected to avoid undesired instantiation of the STOCK_GROUPCollectionViewModelWrapper type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected COMMODITY_CODECollectionViewModelWrapper(
+        protected STOCK_GROUPCollectionViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
@@ -65,10 +65,9 @@ namespace BluePrints.ViewModels
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
-            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.UOMS);
             //need to add another viewmodel so that all stock codes are loaded for stock codes generation
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS, STOCK_GROUPProjectionFunc);
             InvokeEntitiesLoaderDescriptionLoading();
         }
 
@@ -81,7 +80,7 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID_PROJECT == Guid.Empty);
         }
 
-        private Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
+        private Func<IRepositoryQuery<STOCK_GROUP>, IQueryable<STOCK_GROUP>> STOCK_GROUPProjectionFunc()
         {
             if (IsProjectSpecific)
                 return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID));
@@ -91,19 +90,19 @@ namespace BluePrints.ViewModels
 
         protected override void OnAllEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODEProjection>> ConstructMainViewModelProjection()
+        protected override Func<IRepositoryQuery<STOCK_GROUP>, IQueryable<STOCK_GROUPProjection>> ConstructMainViewModelProjection()
         {
             if(IsProjectSpecific)
-                return query => COMMODITY_CODEProjectionQueries.COMMODITY_CODE_Transformation(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID));
+                return query => STOCK_GROUPProjectionQueries.Stock_Group_Transformation(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID));
             else
-                return query => COMMODITY_CODEProjectionQueries.COMMODITY_CODE_Transformation(query.Where(x => x.GUID_PROJECT == null));
+                return query => STOCK_GROUPProjectionQueries.Stock_Group_Transformation(query.Where(x => x.GUID_PROJECT == null));
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<COMMODITY_CODEProjection> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<STOCK_GROUPProjection> entities)
         {
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
@@ -114,7 +113,7 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
-        public bool OnBeforeEntitySaved(COMMODITY_CODEProjection entity)
+        public bool OnBeforeEntitySaved(STOCK_GROUPProjection entity)
         {
             if (IsProjectSpecific)
                 entity.Entity.GUID_PROJECT = loadPROJECT.GUID;
@@ -135,7 +134,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "COMMODITY_CODECollectionViewModelWrapper"; }
+            get { return "STOCK_GROUPCollectionViewModelWrapper"; }
         }
 
         public IEnumerable<AREA> AREACollection
@@ -193,36 +192,36 @@ namespace BluePrints.ViewModels
             }
         }
        
-        public IEnumerable<COMMODITY_CODE> GlobalCOMMODITY_CODECollection
+        public IEnumerable<STOCK_GROUP> GlobalSTOCK_GROUPCollection
         {
             get
             {
-                var collection = GetEntities<COMMODITY_CODE>();
+                var collection = GetEntities<STOCK_GROUP>();
                 if (collection != null)
                     collection = collection.Where(x => x.GUID_PROJECT == null).OrderBy(x => x.CODE);
                 return collection;
             }
         }
 
-        public IEnumerable<COMMODITY_CODE> ProjectCOMMODITY_CODECollection
+        public IEnumerable<STOCK_GROUP> ProjectSTOCK_GROUPCollection
         {
             get
             {
-                var collection = GetEntities<COMMODITY_CODE>();
+                var collection = GetEntities<STOCK_GROUP>();
                 if (collection != null)
                     collection = collection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.CODE);
                 return collection;
             }
         }
 
-        public CollectionViewModel<COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork> COMMODITY_CODECollectionViewModel
+        public CollectionViewModel<STOCK_GROUP, STOCK_GROUP, Guid, IBluePrintsEntitiesUnitOfWork> STOCK_GROUPCollectionViewModel
         {
             get
             {
                 if (MainViewModel == null)
                     return null;
 
-                return (CollectionViewModel<COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<COMMODITY_CODE>();
+                return (CollectionViewModel<STOCK_GROUP, STOCK_GROUP, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<STOCK_GROUP>();
             }
         }
         #endregion

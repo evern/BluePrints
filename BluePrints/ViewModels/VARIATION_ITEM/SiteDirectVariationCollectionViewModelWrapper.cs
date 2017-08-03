@@ -86,11 +86,7 @@ namespace BluePrints.ViewModels
 
         protected override void assign_additional_callbacks(CollectionViewModel<ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork> mainViewModel)
         {
-            mainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
-        }
 
-        private void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
-        {
         }
 
         protected override void CellValueNewRowChanging(CellValueChangedEventArgs e)
@@ -131,9 +127,9 @@ namespace BluePrints.ViewModels
         public IEnumerable<DISCIPLINE> DISCIPLINECollection => ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper == null ? null : ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.DISCIPLINECollection;
         public IEnumerable<DOCTYPE> DOCTYPECollection => null;
 
-        public IEnumerable<COMMODITY_CODE> ProjectCOMMODITY_CODECollection => ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper == null ? null : ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.ProjectCOMMODITY_CODECollection;
+        public IEnumerable<STOCK_GROUP> STOCK_GROUPCollection => ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper == null ? null : ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.STOCK_GROUPCollection;
         public IEnumerable<STOCK_CODE> STOCK_CODECollection => ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper == null ? null : ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.STOCK_CODECollection;
-
+        public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection => ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper == null ? null : ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.COMMODITY_CODECollection;
         #endregion
     }
 }

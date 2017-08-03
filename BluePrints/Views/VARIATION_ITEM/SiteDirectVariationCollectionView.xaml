@@ -188,12 +188,12 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="COMMODITY CODE" FieldName="Entity.Entity.CommodityCodeGuid">
+                                <dxg:GridColumn Header="COMMODITY CODE" FieldName="Entity.Entity.Entity.GUID_COMMODITY_CODE">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:ComboBoxEdit 
                                                   Name="PART_Editor"
-                                                  ItemsSource="{Binding RowData.Row.Entity.Entity.CommodityCodeCollection}"
+                                                  ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}"
                                                   DisplayMember="CODE" 
                                                   ValueMember="GUID"
                                                   ValidateOnTextInput="True"
@@ -205,13 +205,6 @@
                                             </dxe:ComboBoxEdit>
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
-                                    <!--For Filtering-->
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
-                                                              ItemsSource="{Binding DataContext.ProjectCOMMODITY_CODECollection, ElementName=userControl}"
-                                                              IsTextEditable="True" AutoComplete="True"
-                                                              DisplayMember="CODE" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.Entity.Entity.GUID_DISCIPLINE"
                                             Header="DISCIPLINE">
@@ -234,20 +227,37 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colPROGRESS_TYPE" FieldName="Entity.Entity.Entity.PROGRESS_TYPE" Header="PROGRESS_TYPE">
-                                    <dxg:GridColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <dxe:ComboBoxEdit Name="PART_Editor" IsTextEditable="True" AutoComplete="True" IsEnabled="{Binding RowData.Row.IsEnabled}"
-                                                              ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Estimation_DirectProgressType}}" />
-                                        </DataTemplate>
-                                    </dxg:GridColumn.CellTemplate>
-                                </dxg:GridColumn>
                                 <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.Entity.Entity.COMMENTS" Header="COMMENTS">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsEnabled}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                            </dxg:GridControlBand>
+                            <dxg:GridControlBand Name="bandProgressSpecification" Header="Progress Specifications">
+                                <dxg:GridColumn Header="STOCK GROUP" FieldName="Entity.Entity.Entity.GUID_STOCK_GROUP">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:ComboBoxEdit 
+                                                  x:Name="PART_Editor"
+                                                  ItemsSource="{Binding DataContext.STOCK_GROUPCollection, ElementName=userControl}"
+                                                  DisplayMember="CODE" 
+                                                  ValueMember="GUID"
+                                                  ValidateOnTextInput="True"
+                                                  ValidateOnEnterKeyPressed="True"
+                                                  IncrementalFiltering="True"
+                                                  NullValueButtonPlacement="Popup"
+                                                  ImmediatePopup="True">
+                                            </dxe:ComboBoxEdit>
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Name="colPROGRESS_TYPE" FieldName="Entity.Entity.Entity.PROGRESS_TYPE" Header="PROGRESS_TYPE">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                                              ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Estimation_DirectProgressType}}" />
+                                    </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandVariation" Header="Variation">

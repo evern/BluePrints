@@ -30,9 +30,9 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<BASELINE, Guid> BASELINES { get; }
 
         /// <summary>
-        /// The COMMODITY_CODE entities repository.
+        /// The STOCK_GROUP entities repository.
         /// </summary>
-        IRepository<COMMODITY_CODE, Guid> COMMODITY_CODES { get; }
+        IRepository<STOCK_GROUP, Guid> STOCK_GROUPS { get; }
 
         /// <summary>
         /// The DEPARTMENT entities repository.
@@ -153,6 +153,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The STOCK_CODES entities repository.
         /// </summary>
         IRepository<STOCK_CODE, Guid> STOCK_CODES { get; }
+
+        /// <summary>
+        /// The COMMODITY_CODES entities repository.
+        /// </summary>
+        IRepository<COMMODITY_CODE, Guid> COMMODITY_CODES { get; }
 
         /// <summary>
         /// The UOM entities repository.

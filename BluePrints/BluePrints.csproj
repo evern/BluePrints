@@ -369,9 +369,10 @@
     <Compile Include="Common\Misc\Messages.cs" />
     <Compile Include="Common\Misc\RiskMatrix.cs" />
     <Compile Include="Common\Projections\ESTIMATION_DIRECT_ITEMVariation.cs" />
+    <Compile Include="Common\Projections\COMMODITY_CODEProjection.cs" />
     <Compile Include="Common\Projections\VariationBase.cs" />
     <Compile Include="Common\Reports\ViewModel\DataModel.cs" />
-    <Compile Include="Common\Projections\COMMODITY_CODEProjection.cs" />
+    <Compile Include="Common\Projections\STOCK_GROUPProjection.cs" />
     <Compile Include="Common\Projections\ESTIMATION_DIRECT_ITEMProjection.cs" />
     <Compile Include="Common\Projections\BASELINE_ITEM_ASSIGNMENTSProjection.cs" />
     <Compile Include="Common\Projections\AREAMasterDetailProjection.cs" />
@@ -458,6 +459,7 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\COMMODITY_CODE.cs" />
     <Compile Include="EntityFramework\Annotations\STOCK_CODE.cs" />
     <Compile Include="EntityFramework\Annotations\ESTIMATION_DIRECT_ITEM.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_ISSUE.cs" />
@@ -470,13 +472,14 @@
     <Compile Include="EntityFramework\Annotations\BluePrintsEntities.cs" />
     <Compile Include="EntityFramework\Annotations\DELIVERABLES_STATUS.cs" />
     <Compile Include="EntityFramework\Annotations\ESTIMATION_DIRECT.cs" />
-    <Compile Include="EntityFramework\Annotations\COMMODITY_CODE.cs" />
+    <Compile Include="EntityFramework\Annotations\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\BluePrintsData\AREA.cs" />
     <Compile Include="EntityFramework\BluePrintsData\BASELINE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\BASELINE_ITEM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\BASELINE_ITEM_WORK.cs" />
     <Compile Include="EntityFramework\BluePrintsData\BluePrintsEntities.cs" />
     <Compile Include="EntityFramework\BluePrintsData\COMMODITY_CODE.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DataPoint.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DELIVERABLES_STATUS.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DEPARTMENT.cs" />
@@ -548,6 +551,7 @@
     <Compile Include="ViewModels\REGISTER\REGISTER_LLCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_RISKCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\STOCK_GROUP\STOCK_GROUPCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\User_OffsiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\SiteDirectVariationCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\OffsiteDirectVariationCollectionViewModelWrapperRevision.cs" />
@@ -1178,6 +1182,12 @@
     <Compile Include="Views\PROGRESS_ITEM\User_OffsiteDirectProgressCollectionView.xaml.cs">
       <DependentUpon>User_OffsiteDirectProgressCollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\COMMODITY_CODE\COMMODITY_CODECollectionView.xaml.cs">
+      <DependentUpon>COMMODITY_CODECollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\STOCK_GROUP\STOCK_GROUPCollectionView.xaml.cs">
+      <DependentUpon>STOCK_GROUPCollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\USER\USERDashboardView.xaml.cs">
       <DependentUpon>USERDashboardView.xaml</DependentUpon>
     </Compile>
@@ -1382,6 +1392,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PROGRESS_ITEM\User_OffsiteDirectProgressCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\COMMODITY_CODE\COMMODITY_CODECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\STOCK_GROUP\STOCK_GROUPCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -234,7 +234,7 @@ namespace BluePrints.Common
         Construct = 1
     }
 
-    public enum COMMODITY_CODEProjectionType
+    public enum STOCK_GROUPProjectionType
     {
         [Display(Name = "Grouped Project Specific")] ProjectSpecificGrouped,
         [Display(Name = "Not Grouped Project Specific")] ProjectSpecificNotGrouped,

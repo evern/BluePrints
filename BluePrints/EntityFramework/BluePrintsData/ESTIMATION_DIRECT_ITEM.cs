@@ -26,9 +26,11 @@ namespace BluePrints.Data
 
         public Guid? GUID_DISCIPLINE { get; set; }
 
+        public Guid? GUID_COMMODITY_CODE { get; set; }
+
         public Guid? GUID_STOCK_CODE { get; set; }
 
-        public Guid? GUID_COMMODITY_CODE { get; set; }
+        public Guid? GUID_STOCK_GROUP { get; set; }
 
         [Required]
         public int DISCIPLINE_NUM { get; set; }
@@ -64,13 +66,15 @@ namespace BluePrints.Data
 
         public virtual AREA AREA1 { get; set; }
 
-        public virtual COMMODITY_CODE COMMODITY_CODE { get; set; }
-
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 
         public virtual ESTIMATION_DIRECT ESTIMATION_DIRECT { get; set; }
 
+        public virtual COMMODITY_CODE COMMODITY_CODE { get; set; }
+
         public virtual STOCK_CODE STOCK_CODE { get; set; }
+
+        public virtual STOCK_GROUP STOCK_GROUP { get; set; }
 
         public virtual VARIATION VARIATION { get; set; }
 

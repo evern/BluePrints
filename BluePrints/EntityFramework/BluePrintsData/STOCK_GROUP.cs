@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace BluePrints.Data
 {
-    public partial class COMMODITY_CODE
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
+
+    public partial class STOCK_GROUP
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public COMMODITY_CODE()
+        public STOCK_GROUP()
         {
             ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
         }
@@ -19,8 +18,6 @@ namespace BluePrints.Data
         public Guid GUID { get; set; }
 
         public Guid? GUID_PROJECT { get; set; }
-
-        public Guid? GUID_DISCIPLINE { get; set; }
 
         [Required]
         [StringLength(50)]
@@ -44,9 +41,9 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual DISCIPLINE DISCIPLINE { get; set; }
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
+
+        public virtual PROJECT PROJECT { get; set; }
     }
 }

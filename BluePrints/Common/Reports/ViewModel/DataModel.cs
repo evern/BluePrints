@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public class COMMODITY_CODEProgress : BluePrintsProgressableByQuantityProjectionBase<COMMODITY_CODEProjection>, IReportable_Quantity_Group
+    public class STOCK_GROUPProgress : BluePrintsProgressableByQuantityProjectionBase<STOCK_GROUPProjection>, IReportable_Quantity_Group
     {
         public IEnumerable<IReportable_Quantity> Reportables { get; set; }
 
@@ -86,6 +86,14 @@ namespace BluePrints.Common.ViewModel.Reporting
         public override decimal QuantityPerUnit => Reportables.Sum(x => x.QuantityPerUnit);
 
         public override decimal UnitsPerQuantity => Reportables.Sum(x => x.UnitsPerQuantity);
+
+        public override decimal Total_Install_Cost => Reportables.Sum(x => x.Total_Install_Cost);
+
+        public override decimal Total_Supply_Cost => Reportables.Sum(x => x.Total_Supply_Cost);
+
+        public override decimal Earned_Install_Costs_OnDataDate => Reportables.Sum(x => x.Earned_Install_Costs_OnDataDate);
+
+        public override decimal Earned_Supply_Costs_OnDataDate => Reportables.Sum(x => x.Earned_Supply_Costs_OnDataDate);
 
         public decimal Trackable_QuantityPerUnit
         {
@@ -233,7 +241,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     }
 
     public abstract class BluePrintsProgressableByQuantityProjectionBase<TEntity> : BluePrintsProgressableProjectionBase<TEntity>, IReportable_Quantity
-        where TEntity : class, IDeliverable, IHaveCosts, IHaveQuantity, new()
+        where TEntity : class, IDeliverable, IHaveCosts, IHaveStock_Group, IHaveQuantity, new()
     {
         public BluePrintsProgressableByQuantityProjectionBase()
         {
@@ -351,9 +359,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Total_Install_Hours => Total_Units;
 
-        public decimal Total_Install_Cost => Total_Install_Hours * base.Entity.ItemRate;
+        public virtual decimal Total_Install_Cost => Total_Install_Hours * base.Entity.ItemRate;
 
-        public decimal Total_Supply_Cost => Total_Units * Entity.Stock_Code_Supply_Rate;
+        public virtual decimal Total_Supply_Cost => Total_Units * Entity.Stock_Code_Supply_Rate;
 
         public decimal Total_Cost => Total_Install_Cost + Total_Supply_Cost;
 
@@ -363,11 +371,13 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Variation_Quantity => Entity.Variation_Quantity;
 
-        public decimal Earned_Install_Costs_OnDataDate => Earned_Units_OnDataDate * ItemRate;
+        public virtual decimal Earned_Install_Costs_OnDataDate => Earned_Units_OnDataDate * ItemRate;
 
-        public decimal Earned_Supply_Costs_OnDataDate => Earned_Units_OnDataDate * Entity.Stock_Code_Supply_Rate;
+        public virtual decimal Earned_Supply_Costs_OnDataDate => Earned_Units_OnDataDate * Entity.Stock_Code_Supply_Rate;
 
         public decimal Earned_Total_Costs_OnDataDate => Earned_Install_Costs_OnDataDate + Earned_Supply_Costs_OnDataDate;
+
+        public Guid? Stock_Group_Guid => Entity.Stock_Group_Guid;
 
         protected override decimal getNewPercentage()
         {
@@ -434,8 +444,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string Phase_Code => Entity.Phase_Code;
 
         public string Commodity_Code => Entity.Commodity_Code;
-
-        public string Commodity_Display_Code => Entity.Commodity_Display_Code;
 
         public Guid? Area_Guid => Entity.Area_Guid;
 

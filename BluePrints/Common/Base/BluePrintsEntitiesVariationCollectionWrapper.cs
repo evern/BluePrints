@@ -172,6 +172,7 @@ namespace BluePrints.Common.Base
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = OnBeforeEntityDeleted;
             MainViewModel.OnMappingAdditionalChangedEntitiesProperties = OnMappingAdditionalChangedEntitiesProperties;
+            MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
             collectionViewModelWrapper.EditableAllEntities = DisplayEntities.Where(x => x.Variation_Action == VariationAction.Add).Select(x => x.Entity);
             assign_additional_callbacks(MainViewModel);
             MainViewModel.SetParentViewModel(this);
@@ -394,6 +395,19 @@ namespace BluePrints.Common.Base
         #endregion
 
         #region View Events
+        protected virtual void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
+        {
+            TMainVariationEntity current_row_item = (TMainVariationEntity)e.Row;
+            string fieldName = DataUtils.FormatColumnFieldname(e.Column.FieldName);
+            string error_message = collectionViewModelWrapper.Interface_AdditionalValidateCellCallBack(current_row_item.Entity, e.Value, fieldName);
+            if (error_message != string.Empty)
+            {
+                e.IsValid = false;
+                e.ErrorContent = error_message;
+                e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+            }
+        }
+
         /// <summary>
         /// allow undo-redo behavior to be added for automated cell value changing. This behavior doesn't have to be applied on new row because AddUndo for EntityMessageType.Added is already handling this
         /// </summary>

@@ -76,7 +76,7 @@ namespace BluePrints.Data
         public virtual ICollection<P6_ASSIGNMENT> BASELINE_ITEM_ASSIGNMENT { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<COMMODITY_CODE> COMMODITY_CODE { get; set; }
+        public virtual ICollection<STOCK_GROUP> STOCK_GROUP { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DELIVERABLES_STATUS> DELIVERABLES_STATUS { get; set; }
