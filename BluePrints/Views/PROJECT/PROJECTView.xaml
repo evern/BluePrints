@@ -791,7 +791,7 @@
                                         <dxg:GridControl.View>
                                             <dxg:TableView x:Name="tableView" AllowEditing="False" UseLightweightTemplates="{x:Null}" ShowGroupFooters="False" ShowTotalSummary="False"
                                                Style="{StaticResource DefaultTableViewTemplate}" ShowSearchPanelMode="Never" IsDetailButtonVisibleBinding="{Binding Row.IHavePhase_Dashboards}"
-                                               NewItemRowPosition="None" ShowGroupPanel="False" AllowColumnFiltering="False" AllowGrouping="False" AllowColumnMoving="True" AllowFilterEditor="False" AllowSorting="False" ShowFixedTotalSummary="False" ShowAutoFilterRow="False" ShowGroupedColumns="False" ShowCriteriaInAutoFilterRow="False">
+                                               NewItemRowPosition="None" ShowGroupPanel="False" AllowColumnFiltering="False" AllowGrouping="False" AllowColumnMoving="True" AllowFilterEditor="False" AllowSorting="False" ShowAutoFilterRow="False" ShowGroupedColumns="False" ShowCriteriaInAutoFilterRow="False">
                                                 <dxg:TableView.RowCellMenuCustomizations>
                                                     <dxb:BarButtonItem Content="Workpacks"
                                                            Command="{Binding View.DataContext.EditCommand}"

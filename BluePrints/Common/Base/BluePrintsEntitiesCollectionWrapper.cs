@@ -2,6 +2,8 @@
 using BaseModel.Misc;
 using BaseModel.ViewModel.Loader;
 using DevExpress.Mvvm;
+using DevExpress.Mvvm.DataAnnotations;
+using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +25,7 @@ namespace BluePrints.Common.Base
         {
             SpellCheckerModule = new SpellCheckerModule();
             SpellCheckerModule.ApplySpellCheckMode(true);
+            ShowNotification();
             base.OnLoaded();
         }
 
@@ -36,6 +39,15 @@ namespace BluePrints.Common.Base
             SignalR.HubSendMessage(entityName, key, messageType, sender, LoginCredentials.CurrentHWID);
         }
 
+
+        public void ShowNotification()
+        {
+            if (AppNotificationService == null)
+                return;
+
+            INotification notification = AppNotificationService.CreatePredefinedNotification("Update: Search bar is removed, to enable it press CTRL + F. Have a nice day", null, null, null);
+            notification.ShowAsync();
+        }
         //protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         //{
         //    if(this.SpellCheckerModule != null && this.SpellCheckerModule.SpellChecker != null)

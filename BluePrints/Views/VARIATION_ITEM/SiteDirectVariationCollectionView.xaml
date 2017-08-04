@@ -398,7 +398,7 @@
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
                                            NewItemRowPosition="{Binding DataContext.NewItemRowPosition, ElementName=userControl}"
-                                           ShowTotalSummary="True" ShowFixedTotalSummary="True" GroupSummaryDisplayMode="AlignByColumns">
+                                           ShowTotalSummary="True" GroupSummaryDisplayMode="AlignByColumns">
                                 <dxg:TableView.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Bulk Edit"
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"
