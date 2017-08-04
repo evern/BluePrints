@@ -234,12 +234,12 @@ namespace BluePrints.ViewModels
 
         private void summaryBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            //RefreshSummary();
+            RefreshSummary();
         }
 
         private void RefreshSummary()
         {
-            mainThreadDispatcher.BeginInvoke(new Action(() => Redraw?.Invoke()));
+            mainThreadDispatcher.BeginInvoke(new Action(() => GridControlService.RefreshSummary()));
         }
 
         public override void FullRefresh()

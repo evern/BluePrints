@@ -5,6 +5,7 @@
                     xmlns:dxsc="clr-namespace:DevExpress.Xpf.SpellChecker;assembly=DevExpress.Xpf.SpellChecker.v17.1"
                     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
                     xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts"
+                    xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel"
                     xmlns:local="clr-namespace:BluePrints.Views">
     <Style x:Key="DashboardView.RootContainer" TargetType="FrameworkElement">
         <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
@@ -20,6 +21,7 @@
                         </dx:DialogService>
                         <dx:DXMessageBoxService />
                         <dx:WindowedDocumentUIService YieldToParent="True" />
+                        <services:GridControlService GridControl="{Binding ElementName=GridControl}" />
                     </ItemsControl>
                 </DataTemplate>
             </Setter.Value>
