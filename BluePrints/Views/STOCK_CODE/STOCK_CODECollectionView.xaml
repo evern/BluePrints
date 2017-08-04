@@ -55,6 +55,10 @@
                                                    Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}"
                                                    Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
+                                <dxb:BarButtonItem Content="Trim Unused Stock Code"
+                                                   Command="{Binding DataContext.Trim_UnusedCommand, ElementName=userControl}"
+                                                   LargeGlyph="{dx:DXImage Image=Trash_32x32.png}"
+                                                   Glyph="{dx:DXImage Image=Trash_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

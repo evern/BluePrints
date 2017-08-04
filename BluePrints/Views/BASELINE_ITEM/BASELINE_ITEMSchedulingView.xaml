@@ -46,36 +46,6 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
-            <Style x:Key="BackgroundStyle" TargetType="{x:Type dxg:RowControl}">
-                <Setter Property="Background">
-                    <Setter.Value>
-                        <Binding Path="Row.WBSLevel" >
-                            <Binding.Converter>
-                                <dxmvvm:ObjectToObjectConverter>
-                                    <dxmvvm:MapItem Source="1" Target="PowderBlue"/>
-                                    <dxmvvm:MapItem Source="2"  Target="PaleGreen"/>
-                                    <dxmvvm:MapItem Source="3" Target="Tomato"/>
-                                    <dxmvvm:MapItem Source="4" Target="PeachPuff"/>
-                                    <dxmvvm:MapItem Source="5"  Target="PaleTurquoise"/>
-                                    <dxmvvm:MapItem Source="6" Target="MistyRose"/>
-                                    <dxmvvm:MapItem Source="7" Target="Plum"/>
-                                </dxmvvm:ObjectToObjectConverter>
-                            </Binding.Converter>
-                        </Binding>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="Foreground" Value="Black" />
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding Path=IsSelected}" Value="True">
-                        <Setter Property="Background" Value="Gray" />
-                        <Setter Property="Foreground" Value="White" />
-                    </DataTrigger>
-                    <Trigger Property="dxg:GridViewBase.IsFocusedRow" Value="True">
-                        <Setter Property="Background" Value="Salmon" />
-                        <Setter Property="Foreground" Value="White" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
             <DataTemplate x:Key="TimeTemplate">
                 <dxe:DateEdit x:Name="PART_Editor" Mask="dd-MMM-yy" MaskUseAsDisplayFormat="True">
                 </dxe:DateEdit>
@@ -118,6 +88,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -209,7 +180,7 @@
 					                        ParentFieldName="ParentId"
 					                        KeyFieldName="Id"
                                             AutoExpandAllNodes="True"
-                                            RowStyle="{StaticResource BackgroundStyle}"
+                                            RowStyle="{StaticResource WBSBackgroundStyle}"
 					                        TreeDerivationMode="Selfreference">
                                             <dxmvvm:Interaction.Behaviors>
                                                 <dxmvvm:EventToCommand EventName="NodeExpanded" Command="{Binding DataContext.NodeExpandedCommand, ElementName=userControl}"/>

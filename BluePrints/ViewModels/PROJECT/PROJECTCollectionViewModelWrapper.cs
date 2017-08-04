@@ -185,15 +185,27 @@ namespace BluePrints.ViewModels
                 newESTIMATE_DIRECT.STATUS = BaselineStatus.Live;
                 ESTIMATION_DIRECTViewModel.Save(newESTIMATE_DIRECT);
 
-                PROGRESS newPROGRESS = new PROGRESS();
-                newPROGRESS.GUID_PROJECT = entity.GUID;
-                newPROGRESS.NAME = entity.NUMBER + "WEEKLY_001";
-                newPROGRESS.PROGRESS_START = DateTime.Now;
-                newPROGRESS.DATA_DATE = CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday);
-                newPROGRESS.INTERVAL_COUNT = 1;
-                newPROGRESS.INTERVAL_TYPE = ProgressIntervalType.Weekly;
-                newPROGRESS.STATUS = ProgressStatus.Live;
-                PROGRESSViewModel.Save(newPROGRESS);
+                PROGRESS newDesignPROGRESS = new PROGRESS();
+                newDesignPROGRESS.GUID_PROJECT = entity.GUID;
+                newDesignPROGRESS.NAME = entity.NUMBER + "WEEKLY_001";
+                newDesignPROGRESS.PROGRESS_START = DateTime.Now;
+                newDesignPROGRESS.DATA_DATE = CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday);
+                newDesignPROGRESS.INTERVAL_COUNT = 1;
+                newDesignPROGRESS.INTERVAL_TYPE = ProgressIntervalType.Weekly;
+                newDesignPROGRESS.STATUS = ProgressStatus.Live;
+                newDesignPROGRESS.TYPE = ProgressType.Design;
+                PROGRESSViewModel.Save(newDesignPROGRESS);
+
+                PROGRESS newConstructionPROGRESS = new PROGRESS();
+                newConstructionPROGRESS.GUID_PROJECT = entity.GUID;
+                newConstructionPROGRESS.NAME = entity.NUMBER + "DAILY_001";
+                newConstructionPROGRESS.PROGRESS_START = DateTime.Now;
+                newConstructionPROGRESS.DATA_DATE = CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday);
+                newConstructionPROGRESS.INTERVAL_COUNT = 1;
+                newConstructionPROGRESS.INTERVAL_TYPE = ProgressIntervalType.Daily;
+                newConstructionPROGRESS.STATUS = ProgressStatus.Live;
+                newConstructionPROGRESS.TYPE = ProgressType.Construct;
+                PROGRESSViewModel.Save(newConstructionPROGRESS);
 
                 var newAREA = new AREA();
                 newAREA.GUID_PROJECT = entity.GUID;

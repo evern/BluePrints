@@ -21,35 +21,11 @@
     DataContext="{dxmvvm:ViewModelSource viewmodel:SiteDirectProgressCollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
-            <Style x:Key="BackgroundStyle" TargetType="{x:Type dxg:RowControl}">
-                <Setter Property="Background">
-                    <Setter.Value>
-                        <Binding Path="Row.ColorIndex" >
-                            <Binding.Converter>
-                                <dxmvvm:ObjectToObjectConverter>
-                                    <dxmvvm:MapItem Source="1" Target="PaleGreen"/>
-                                    <dxmvvm:MapItem Source="2" Target="PowderBlue"/>
-                                </dxmvvm:ObjectToObjectConverter>
-                            </Binding.Converter>
-                        </Binding>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="Foreground" Value="Black" />
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding Path=IsSelected}" Value="True">
-                        <Setter Property="Background" Value="Gray" />
-                        <Setter Property="Foreground" Value="White" />
-                    </DataTrigger>
-                    <Trigger Property="dxg:GridViewBase.IsFocusedRow" Value="True">
-                        <Setter Property="Background" Value="Salmon" />
-                        <Setter Property="Foreground" Value="White" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -356,7 +332,7 @@
                                         </dxg:GridControlBand>
                                     </dxg:GridControl.Bands>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView x:Name="tableView1" RowStyle="{StaticResource BackgroundStyle}" ShowColumnHeaders="False" />
+                                        <dxg:TableView x:Name="tableView1" RowStyle="{StaticResource WBSBackgroundStyle}" ShowColumnHeaders="False" />
                                     </dxg:GridControl.View>
                                 </dxg:GridControl>
                             </dxg:DataControlDetailDescriptor>

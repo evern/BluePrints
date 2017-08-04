@@ -5,7 +5,9 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
@@ -119,8 +121,44 @@ namespace BluePrints.ViewModels
 
         #endregion
 
-        #region View Properties
+        #region View Commands
+        public void Trim_Unused()
+        {
+            create_estimation_direct_item_view_model_wrapper();
+        }
 
+        private void create_estimation_direct_item_view_model_wrapper()
+        {
+            ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper variation_itemsViewModelWrapper = ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.Create();
+            variation_itemsViewModelWrapper.SetParentViewModel(this);
+            variation_itemsViewModelWrapper.OnEntitiesLoadedCallBack = trim_unused_stock_code;
+            var baselineSupportParameterObj = variation_itemsViewModelWrapper as ISupportParameter;
+            baselineSupportParameterObj.Parameter = new DualEntitiesParameter<PROJECT, IAmBaseline>(loadPROJECT, null);
+        }
+
+        private void trim_unused_stock_code(IEnumerable<ESTIMATION_DIRECT_ITEMProgress> estimation_direct_items, object parentId)
+        {
+            mainThreadDispatcher.BeginInvoke(new Action(() => main_thread_trim_unused_stock_code(estimation_direct_items, parentId)));
+        }
+
+        private void main_thread_trim_unused_stock_code(IEnumerable<ESTIMATION_DIRECT_ITEMProgress> estimation_direct_items, object parentId)
+        {
+            List<STOCK_CODE> removeStockCodes = new List<STOCK_CODE>();
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            foreach (STOCK_CODE projectStockCode in MainViewModel.Entities)
+            {
+                if (!estimation_direct_items.Any(x => x.Entity.Entity.GUID_STOCK_CODE == projectStockCode.GUID))
+                {
+                    removeStockCodes.Add(projectStockCode);
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projectStockCode, null, null, null, EntityMessageType.Deleted);
+                }
+            }
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+            MainViewModel.BaseBulkDelete(removeStockCodes);
+        }
+        #endregion
+
+        #region View Properties
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>

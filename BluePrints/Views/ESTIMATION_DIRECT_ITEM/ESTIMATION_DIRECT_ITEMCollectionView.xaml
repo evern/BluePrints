@@ -31,6 +31,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -178,6 +179,7 @@
                                                             ShowFocusedRectangle="True"
                                                             ShowSearchPanelMode="Always"
                                                             ShowGroupPanel="True"
+                                                            RowStyle="{StaticResource SelectionBackgroundStyle}"
                                                             ShowSearchPanelNavigationButtons="True"/>
                                                         </dxg:GridControl.View>
                                                     </dxg:GridControl>

@@ -14,46 +14,17 @@
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
              xmlns:common="clr-namespace:BluePrints.Common"
-             mc:Ignorable="d" d:DesignHeight="900" d:DesignWidth="600"
+             mc:Ignorable="d" d:DesignHeight="1920" d:DesignWidth="1080"
              DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
-            <Style x:Key="BackgroundStyle" TargetType="{x:Type dxg:RowControl}">
-                <Setter Property="Background">
-                    <Setter.Value>
-                        <Binding Path="Row.WBSLevel" >
-                            <Binding.Converter>
-                                <dxmvvm:ObjectToObjectConverter>
-                                    <dxmvvm:MapItem Source="1" Target="PowderBlue"/>
-                                    <dxmvvm:MapItem Source="2" Target="PaleGreen"/>
-                                    <dxmvvm:MapItem Source="3" Target="MistyRose"/>
-                                    <dxmvvm:MapItem Source="4" Target="PaleTurquoise"/>
-                                    <dxmvvm:MapItem Source="5" Target="Tomato"/>
-                                    <dxmvvm:MapItem Source="6" Target="Plum"/>
-                                    <dxmvvm:MapItem Source="7" Target="PeachPuff"/>
-                                </dxmvvm:ObjectToObjectConverter>
-                            </Binding.Converter>
-                        </Binding>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="Foreground" Value="Black" />
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding Path=IsSelected}" Value="True">
-                        <Setter Property="Background" Value="Gray" />
-                        <Setter Property="Foreground" Value="White" />
-                    </DataTrigger>
-                    <Trigger Property="dxg:GridViewBase.IsFocusedRow" Value="True">
-                        <Setter Property="Background" Value="Salmon" />
-                        <Setter Property="Foreground" Value="White" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/NestedControlResourceDictionary.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ChartResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -116,9 +87,9 @@
                     <Grid>
                         <dxlc:LayoutControl x:Name="layoutControl" Orientation="Vertical">
                             <dxlc:LayoutGroup Name="LayoutGroupGridChart" View="Group" Orientation="Vertical">
-                                <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Orientation="Vertical" Height="300" dxlc:LayoutControl.AllowVerticalSizing="True">
-                                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDashboardSinglePROJECT" 
-                                         Style="{StaticResource DefaultGridControlTemplate}">
+                                <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Orientation="Vertical" Height="100" dxlc:LayoutControl.AllowVerticalSizing="True">
+                                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSingleProjectDashboard" 
+                                         Style="{StaticResource DefaultGridControlTemplate}" IsFilterEnabled="False" >
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand PassEventArgsToCommand="True"
                                                        Command="{Binding DataContext.EditCommand, ElementName=userControl}"
@@ -294,8 +265,7 @@
                                             </dxg:GridControlBand>
                                         </dxg:GridControl.Bands>
                                         <dxg:GridControl.DetailDescriptor>
-                                            <dxg:DataControlDetailDescriptor
-                                    ItemsSourceBinding="{Binding Phase_Dashboards}">
+                                            <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Phase_Dashboards}">
                                                 <dxg:GridControl x:Name="detailPhaseDashboardGridControl" 
                                                      dx:DXSerializer.SerializationID="GridControlDetailPhaseDashboard"
                                                      SelectionMode="Row"
@@ -429,7 +399,7 @@
                                                         </dxg:GridControlBand>
                                                     </dxg:GridControl.Bands>
                                                     <dxg:GridControl.View>
-                                                        <dxg:TableView x:Name="detailPhaseDashboardTableView" RowStyle="{StaticResource BackgroundStyle}" AllowEditing="False" ShowGroupPanel="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHaveDiscipline_Dashboards}" />
+                                                        <dxg:TableView x:Name="detailPhaseDashboardTableView" RowStyle="{StaticResource WBSBackgroundStyle}" AllowEditing="False" ShowGroupPanel="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHaveDiscipline_Dashboards}" />
                                                     </dxg:GridControl.View>
                                                     <dxg:GridControl.DetailDescriptor>
                                                         <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Discipline_Dashboards}">
@@ -566,7 +536,7 @@
                                                                     </dxg:GridControlBand>
                                                                 </dxg:GridControl.Bands>
                                                                 <dxg:GridControl.View>
-                                                                    <dxg:TableView x:Name="detailDisciplineDashboardTableView" RowStyle="{StaticResource BackgroundStyle}" ShowColumnHeaders="False" ShowBandsPanel="False" ShowGroupPanel="False" AllowEditing="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHaveCommodity_Dashboards}" />
+                                                                    <dxg:TableView x:Name="detailDisciplineDashboardTableView" RowStyle="{StaticResource WBSBackgroundStyle}" ShowColumnHeaders="False" ShowBandsPanel="False" ShowGroupPanel="False" AllowEditing="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHaveCommodity_Dashboards}" />
                                                                 </dxg:GridControl.View>
                                                                 <dxg:GridControl.DetailDescriptor>
                                                                     <dxg:DataControlDetailDescriptor
@@ -704,7 +674,7 @@
                                                                                 </dxg:GridControlBand>
                                                                             </dxg:GridControl.Bands>
                                                                             <dxg:GridControl.View>
-                                                                                <dxg:TableView x:Name="detailCommodityDashboardTableView" RowStyle="{StaticResource BackgroundStyle}" ShowColumnHeaders="False" ShowBandsPanel="False" ShowGroupPanel="False" AllowEditing="False" NewItemRowPosition="None" />
+                                                                                <dxg:TableView x:Name="detailCommodityDashboardTableView" RowStyle="{StaticResource WBSBackgroundStyle}" ShowColumnHeaders="False" ShowBandsPanel="False" ShowGroupPanel="False" AllowEditing="False" NewItemRowPosition="None" />
                                                                             </dxg:GridControl.View>
                                                                         </dxg:GridControl>
                                                                     </dxg:DataControlDetailDescriptor>
@@ -819,9 +789,9 @@
                                                      SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                         </dxg:GridControl.TotalSummary>
                                         <dxg:GridControl.View>
-                                            <dxg:TableView x:Name="tableView" AllowEditing="False" UseLightweightTemplates="{x:Null}"
-                                               Style="{StaticResource DefaultTableViewTemplate}" IsDetailButtonVisibleBinding="{Binding Row.IHavePhase_Dashboards}"
-                                               NewItemRowPosition="None" ShowGroupPanel="False">
+                                            <dxg:TableView x:Name="tableView" AllowEditing="False" UseLightweightTemplates="{x:Null}" ShowGroupFooters="False" ShowTotalSummary="False"
+                                               Style="{StaticResource DefaultTableViewTemplate}" ShowSearchPanelMode="Never" IsDetailButtonVisibleBinding="{Binding Row.IHavePhase_Dashboards}"
+                                               NewItemRowPosition="None" ShowGroupPanel="False" AllowColumnFiltering="False" AllowGrouping="False" AllowColumnMoving="True" AllowFilterEditor="False" AllowSorting="False" ShowFixedTotalSummary="False" ShowAutoFilterRow="False" ShowGroupedColumns="False" ShowCriteriaInAutoFilterRow="False">
                                                 <dxg:TableView.RowCellMenuCustomizations>
                                                     <dxb:BarButtonItem Content="Workpacks"
                                                            Command="{Binding View.DataContext.EditCommand}"
@@ -999,7 +969,7 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                                     </dxb:ToolBarControl>
-                                    <dxg:GridControl x:Name="gridControlBASELINE" dx:DXSerializer.SerializationID="GridControlDetailBASELINE" Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" >
+                                    <dxg:GridControl x:Name="gridControlBASELINE" dx:DXSerializer.Enabled="False" Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" >
                                         <dxg:GridControl.Columns>
                                             <dxg:GridColumn FieldName="NAME" />
                                             <dxg:GridColumn FieldName="REVISION" />
@@ -1102,7 +1072,7 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                                     </dxb:ToolBarControl>
-                                    <dxg:GridControl x:Name="gridControlPROGRESS" dx:DXSerializer.SerializationID="GridControlDetailPROGRESS"
+                                    <dxg:GridControl x:Name="gridControlPROGRESS" dx:DXSerializer.Enabled="False"
                                              Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" >
                                         <dxg:GridControl.Columns>
                                             <dxg:GridColumn FieldName="NAME" />
@@ -1210,7 +1180,7 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                                     </dxb:ToolBarControl>
-                                    <dxg:GridControl x:Name="gridControlESTIMATION_DIRECT" dx:DXSerializer.SerializationID="GridControlDetailESTIMATION_DIRECT"
+                                    <dxg:GridControl x:Name="gridControlESTIMATION_DIRECT" dx:DXSerializer.Enabled="False"
                                              Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" >
                                         <dxg:GridControl.Columns>
                                             <dxg:GridColumn FieldName="NAME" />
@@ -1389,7 +1359,7 @@
                                                    Command="{Binding MainViewModel.RedoCommand}"
                                                    Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                                     </dxb:ToolBarControl>
-                                    <dxg:GridControl x:Name="gridControlRATE" dx:DXSerializer.SerializationID="GridControlDetailRATE"
+                                    <dxg:GridControl x:Name="gridControlRATE" dx:DXSerializer.Enabled="False"
                                              Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" MinHeight="300">
                                         <dxg:GridControl.Columns>
                                             <dxg:GridColumn Header="DEPARTMENT" FieldName="GUID_DEPARTMENT">

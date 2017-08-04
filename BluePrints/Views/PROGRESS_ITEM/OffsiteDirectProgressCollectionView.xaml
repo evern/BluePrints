@@ -375,6 +375,13 @@
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandPeriod" Header="Period">
+                                <dxg:GridColumn Name="columnPeriodPlannedPercentage" Header="PLANNED %"
+                                                FieldName="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" 
+                                                ReadOnly="True" IsEnabled="False">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnPeriodEarnedPercentage" Header="EARNED %"
                                                 FieldName="Earned_Percentage_OnDataDate" 
                                                 ReadOnly="True" IsEnabled="False">
@@ -397,6 +404,8 @@
                             </dxg:GridControlBand>
                         </dxg:GridControl.Bands>
                         <dxg:GridControl.GroupSummary>
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Baseline_Percentage" SummaryType="Custom"
+                                                 ShowInColumn="Baseline_Percentage" DisplayFormat="Total: {0:p}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Total_Earned_Percentage" SummaryType="Custom"
                                                  ShowInColumn="Total_Earned_Percentage" DisplayFormat="Total: {0:p}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Earned_Percentage_OnDataDate" SummaryType="Custom"
@@ -405,6 +414,8 @@
                                                  ShowInColumn="Earned_Units_OnDataDate" DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Earned_Units_ToDate" SummaryType="Sum"
                                                  ShowInColumn="Earned_Units_ToDate" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" SummaryType="Custom"
+                                                 ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" DisplayFormat="Total: {0:p}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="DisplayPeriodEarnedCosts" SummaryType="Sum"
                                                  ShowInColumn="DisplayPeriodEarnedCosts" DisplayFormat="Total: {0:c2}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.ESTIMATED_HOURS"
@@ -419,6 +430,8 @@
                                                  Alignment="Right" DisplayFormat="Total {0} Records" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.TotalSummary>
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Baseline_Percentage" SummaryType="Custom"
+                                                 ShowInColumn="Baseline_Percentage" DisplayFormat="Total: {0:p}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Total_Earned_Percentage" SummaryType="Custom"
                                                  ShowInColumn="Total_Earned_Percentage" DisplayFormat="Total: {0:p}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Earned_Percentage_OnDataDate" SummaryType="Custom"
@@ -427,6 +440,8 @@
                                                  ShowInColumn="Earned_Units_OnDataDate" DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Earned_Units_ToDate" SummaryType="Sum"
                                                  ShowInColumn="Earned_Units_ToDate" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" SummaryType="Custom"
+                                                 ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" DisplayFormat="Total: {0:p}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="DisplayPeriodEarnedCosts" SummaryType="Sum"
                                                  ShowInColumn="DisplayPeriodEarnedCosts" DisplayFormat="Total: {0:c2}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.ESTIMATED_HOURS"

@@ -549,24 +549,24 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
-        /// <summary>
-        /// Remove redundant project stock groups when view is closed
-        /// </summary>
-        protected override void OnClose(CancelEventArgs e)
-        {
-            if(STOCK_CODECollectionViewModel != null)
-            {
-                List<STOCK_CODE> removeStockCodes = new List<STOCK_CODE>();
-                foreach (STOCK_CODE projectStockCode in ProjectSTOCK_CODECollection)
-                {
-                    if (!MainViewModel.Entities.Any(x => x.Entity.Entity.GUID_STOCK_CODE == projectStockCode.GUID))
-                        removeStockCodes.Add(projectStockCode);
-                }
-                STOCK_CODECollectionViewModel.BaseBulkDelete(removeStockCodes);
-            }
+        ///// <summary>
+        ///// Remove redundant project stock groups when view is closed
+        ///// </summary>
+        //protected override void OnClose(CancelEventArgs e)
+        //{
+        //    if(STOCK_CODECollectionViewModel != null)
+        //    {
+        //        List<STOCK_CODE> removeStockCodes = new List<STOCK_CODE>();
+        //        foreach (STOCK_CODE projectStockCode in ProjectSTOCK_CODECollection)
+        //        {
+        //            if (!MainViewModel.Entities.Any(x => x.Entity.Entity.GUID_STOCK_CODE == projectStockCode.GUID))
+        //                removeStockCodes.Add(projectStockCode);
+        //        }
+        //        STOCK_CODECollectionViewModel.BaseBulkDelete(removeStockCodes);
+        //    }
 
-            base.OnClose(e);
-        }
+        //    base.OnClose(e);
+        //}
 
         protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
