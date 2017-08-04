@@ -964,7 +964,7 @@ namespace BluePrints.ViewModels
                     if (findWORKPACK == null)
                     {
                         var newWORKPACK = new WORKPACK();
-                        AREA defaultSubArea = SUBAREACollection.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.Default_Sub_Area);
+                        AREA defaultSubArea = SUBAREACollection == null ? null : SUBAREACollection.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.Default_Sub_Area);
 
                         newWORKPACK.GUID_PROJECT = loadPROJECT.GUID;
                         newWORKPACK.GUID_DAREA = entity.Entity.Entity.GUID_AREA;
