@@ -132,7 +132,7 @@
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
                                                 <dxg:GridColumn x:Name="colCumulativeBudget" Header="Total Units"
-                                                    FieldName="Stats.BudgetedUnits" ReadOnly="True"
+                                                    FieldName="Stats.TotalUnits" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="70">
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:TextEditSettings Name="colCumulativeBudgetText" MaskType="Numeric"

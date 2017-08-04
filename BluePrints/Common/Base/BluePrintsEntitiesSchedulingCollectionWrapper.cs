@@ -96,7 +96,7 @@ namespace BluePrints.Common.Base
 
         private Func<IRepositoryQuery<TASK>, IQueryable<TASK>> P6TASKProjectionFunc()
         {
-            return query => query.Where(x => x.proj_id == loadP6PROJECT.proj_id).Where(x => x.TASKACTV.Count > 0).Where(x => x.TASKACTV.Any(taskact => taskact.ACTVCODE != null && taskact.ACTVCODE.actv_code_name.ToUpper() == progress_type.ToString().ToUpper()));
+            return query => query.Where(x => x.proj_id == loadP6PROJECT.proj_id).Where(x => x.TASKACTV.Count > 0).Where(x => x.delete_date == null).Where(x => x.TASKACTV.Any(taskact => taskact.ACTVCODE != null && taskact.ACTVCODE.actv_code_name.ToUpper() == progress_type.ToString().ToUpper()));
         }
 
         private Func<IRepositoryQuery<PROJWBS>, IQueryable<PROJWBS>> PROJWBSProjectionFunc()

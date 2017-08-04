@@ -229,6 +229,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         public readonly List<VariationAdjustment> VariationAdjustments;
         #endregion
 
+        public decimal TotalUnits
+        {
+            get { return totalUnits; }
+        }
+
         public decimal BudgetedUnits
         {
             get { return budgetedUnits; }
