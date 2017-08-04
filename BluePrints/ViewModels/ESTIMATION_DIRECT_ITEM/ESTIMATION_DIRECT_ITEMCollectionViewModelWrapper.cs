@@ -1117,6 +1117,8 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public Func<IEnumerable<ESTIMATION_DIRECT_ITEMProgress>> GetEditableAllEntitiesCallBack { get; set; }
+
         #endregion
     }
 }

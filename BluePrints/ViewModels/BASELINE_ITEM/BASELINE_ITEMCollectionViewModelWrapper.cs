@@ -45,7 +45,7 @@ namespace BluePrints.ViewModels
         Func<TProgress> SelectedEntityCallBack { get; set; }
         IEnumerable<TProgress> SelectedEntities { get; set; }
         //some functionality will edit existing live deliverables, so this has to be used to validate in context
-        IEnumerable<TProgress> EditableAllEntities { get; set; }
+        Func<IEnumerable<TProgress>> GetEditableAllEntitiesCallBack { get; set; }
         void CleanUpEntitiesLoader();
 
         #region Undo-Redo
@@ -97,7 +97,8 @@ namespace BluePrints.ViewModels
         public string DefaultPhaseInternalNumber { get; set; }
         public BASELINE_ITEMProgress SelectedEntity { get => SelectedEntityCallBack != null ? SelectedEntityCallBack.Invoke() : DisplaySelectedEntity; }
         public IEnumerable<BASELINE_ITEMProgress> SelectedEntities { get; set; }
-        public IEnumerable<BASELINE_ITEMProgress> EditableAllEntities { get; set; }
+        public virtual IEnumerable<BASELINE_ITEMProgress> EditableAllEntities => GetEditableAllEntitiesCallBack != null ? GetEditableAllEntitiesCallBack() : MainViewModel.Entities;
+        public Func<IEnumerable<BASELINE_ITEMProgress>> GetEditableAllEntitiesCallBack { get; set; }
 
         /// <summary>
         /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.
@@ -324,7 +325,6 @@ namespace BluePrints.ViewModels
         private void SetViewSpecificProperties()
         {
             SelectedEntities = DisplaySelectedEntities;
-            EditableAllEntities = MainViewModel.Entities;
             DefaultPhaseInternalNumber = BluePrintsResources.Default_Design_Phase;
         }
 
@@ -463,14 +463,9 @@ namespace BluePrints.ViewModels
         public void AddUndo(BASELINE_ITEMProgress changedEntity, string propertyName, object oldValue, object newValue, EntityMessageType messageType)
         {
             if (InterfaceAddUndoRedoCallBack != null)
-                InterfaceAddUndoRedoCallBack(changedEntity, propertyName, oldValue, newValue, messageType);
+                InterfaceAddUndoRedoCallBack(changedEntity, propertyName == null ? null : localizeColumnFieldName(propertyName), oldValue, newValue, messageType);
             else
-            {
-                if (propertyName == null)
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(changedEntity, null, null, null, messageType);
-                else
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(changedEntity, localizeColumnFieldName(propertyName), oldValue, newValue, messageType);
-            }
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(changedEntity, propertyName == null ? null : localizeColumnFieldName(propertyName), oldValue, newValue, messageType);
         }
 
         public Action InterfacePauseUndoRedoCallBack { get; set; }
@@ -699,6 +694,10 @@ namespace BluePrints.ViewModels
             newEntities = concatenateNewEntitiesWithExistingRenameEntities(newEntities, EditableAllEntities);
 
             MainViewModel.BulkSave(newEntities);
+            //Add undo must happen after save so that variation can pick it up
+            foreach (BASELINE_ITEMProgress newEntity in newEntities)
+                AddUndo(newEntity, null, null, null, EntityMessageType.Added);
+
             if (!_isProcessingMultiple)
                 UnpauseUndoRedo();
         }
@@ -753,7 +752,13 @@ namespace BluePrints.ViewModels
                 PauseUndoRedo();
 
             List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(1, false, MainViewModel.Entities, SelectedEntities);
+
             MainViewModel.BulkSave(newEntities);
+
+            //Add undo must happen after save so that variation can pick it up
+            foreach (BASELINE_ITEMProgress newEntity in newEntities)
+                AddUndo(newEntity, null, null, null, EntityMessageType.Added);
+
             if (!_isProcessingMultiple)
                 UnpauseUndoRedo();
         }

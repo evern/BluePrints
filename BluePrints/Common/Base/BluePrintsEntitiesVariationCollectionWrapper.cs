@@ -75,12 +75,12 @@ namespace BluePrints.Common.Base
 
         private void PauseUndoRedo()
         {
-            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.EntitiesUndoRedoManager.PauseActionId()));
         }
 
         private void UnpauseUndoRedo()
         {
-            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+            mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.EntitiesUndoRedoManager.UnpauseActionId()));
         }
 
         protected void addUndoDelayedBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -103,9 +103,9 @@ namespace BluePrints.Common.Base
             if (variation_entity != null)
             {
                 if (fieldName != null)
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(variation_entity, "Entity." + fieldName, oldValue, newValue, messageType);
+                    mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.EntitiesUndoRedoManager.AddUndo(variation_entity, "Entity." + fieldName, oldValue, newValue, messageType)));
                 else
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(variation_entity, null, null, null, messageType);
+                    mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.EntitiesUndoRedoManager.AddUndo(variation_entity, null, null, null, messageType)));
             }
         }
 
@@ -173,11 +173,16 @@ namespace BluePrints.Common.Base
             MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = OnBeforeEntityDeleted;
             MainViewModel.OnMappingAdditionalChangedEntitiesProperties = OnMappingAdditionalChangedEntitiesProperties;
             MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
-            collectionViewModelWrapper.EditableAllEntities = DisplayEntities.Where(x => x.Variation_Action == VariationAction.Add).Select(x => x.Entity);
+            collectionViewModelWrapper.GetEditableAllEntitiesCallBack = getEditableAllEntities;
             assign_additional_callbacks(MainViewModel);
             MainViewModel.SetParentViewModel(this);
 
             base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
+
+        private IEnumerable<TMainReportableEntity> getEditableAllEntities()
+        {
+            return DisplayEntities == null ? new List<TMainReportableEntity>() : DisplayEntities.Where(x => x.Variation_Action == VariationAction.Add).Select(x => x.Entity);
         }
 
         private void ApplyViewSpecificPropertiesToEntityCallBack(TMainReportableEntity reportableEntity)
