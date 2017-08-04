@@ -383,11 +383,10 @@ namespace BluePrints.Common.ViewModel
             : base(id, parentId, title, documentType, documentParameter, image, navigationTitle, treeViewIsExpanded)
         {
             ChildModules = new RangeObservableCollection<BluePrintsEntitiesModuleDescription>();
-
             if (!CanNavigate)
                 Image = new BitmapImage(
-                    new Uri(
-                        "pack://application:,,,/DevExpress.Images.v17.1;component/Images/Data/ManageDataSource_16x16.png"));
+                    new Uri("pack://application:,,,/DevExpress.Images.v17.1;component/Images/Data/ManageDataSource_16x16.png"));
+                    //new Uri(@"/Common/Images/PRIMERO.jpg", UriKind.Relative));
             else
                 Image = new BitmapImage(
                     new Uri("pack://application:,,,/DevExpress.Images.v17.1;component/Images/Actions/Open_16x16.png"));

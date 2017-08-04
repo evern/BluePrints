@@ -15,7 +15,6 @@ namespace BluePrints.Data
         {
             AREA = new HashSet<AREA>();
             BASELINE = new HashSet<BASELINE>();
-            BASELINE_ITEM_ASSIGNMENT = new HashSet<P6_ASSIGNMENT>();
             STOCK_GROUP = new HashSet<STOCK_GROUP>();
             DELIVERABLES_STATUS = new HashSet<DELIVERABLES_STATUS>();
             ESTIMATION_DIRECT = new HashSet<ESTIMATION_DIRECT>();
@@ -32,7 +31,7 @@ namespace BluePrints.Data
             REGISTER_RISK = new HashSet<REGISTER_RISK>();
             VARIATION = new HashSet<VARIATION>();
             WORKPACK = new HashSet<WORKPACK>();
-
+            P6_ASSIGNMENT = new HashSet<P6_ASSIGNMENT>();
             STATUS = ProjectStatus.Active;
             CONTRACTTYPE = ContractType.LumpSum;
             USELEGACYWORKPACK = true;

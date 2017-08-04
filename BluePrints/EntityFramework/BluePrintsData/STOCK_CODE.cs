@@ -18,6 +18,7 @@ namespace BluePrints.Data
 
         public Guid GUID_DEPARTMENT { get; set; }
 
+        [Required]
         public Guid GUID_DISCIPLINE { get; set; }
 
         public StockCodeType STOCK_CODE_TYPE { get; set; }
