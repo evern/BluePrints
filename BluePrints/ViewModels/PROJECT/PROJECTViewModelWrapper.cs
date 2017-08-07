@@ -56,7 +56,7 @@ namespace BluePrints.ViewModels
         public ObservableCollection<Phase_Dashboard> SelectedPhaseDashboards { get; set; }
         public ObservableCollection<Discipline_Dashboard> SelectedDisciplineDashboards { get; set; }
         public ObservableCollection<Commodity_Dashboard> SelectedCommodityDashboards { get; set; }
-        protected override void InitializeParameters(object parameter)
+        protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter =
                 (EntitiesParameter<PROJECT>) parameter;
@@ -91,11 +91,8 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.SummaryEntity);
         }
 
-        public override void InitializeAndLoadEntitiesLoaderDescription()
+        protected override void initializeEntitiesLoadersDescription()
         {
-            MainViewModel = null;
-            base.CleanUpEntitiesLoader();
-
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc);
@@ -105,8 +102,6 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc);
             loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
-
-            InvokeEntitiesLoaderDescriptionLoading();
         }
 
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
@@ -147,14 +142,14 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.RATE1);
         }
 
-        protected override void OnAllEntitiesCollectionLoaded()
+        protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
         protected override Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT_Dashboard>>
-            ConstructMainViewModelProjection()
+            specifyMainViewModelProjection()
         {
             var BASELINE = loaderCollection.GetObject<BASELINE>();
             var ESTIMATION_DIRECT = loaderCollection.GetObject<ESTIMATION_DIRECT>();
@@ -487,8 +482,7 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
-            mainThreadDispatcher.BeginInvoke(new Action(() => StoreViewState()));
-            InitializeAndLoadEntitiesLoaderDescription();
+            ReloadEntitiesCollection();
         }
 
         protected IDocumentManagerService DocumentManagerService

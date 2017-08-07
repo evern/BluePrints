@@ -1,10 +1,11 @@
 namespace BluePrints.Data
 {
     using BaseModel.Misc;
+    using DevExpress.Mvvm;
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class PROJECT_REPORT : IGuidEntityKey, IHaveCreatedDate
+    public partial class PROJECT_REPORT : BindableBase, IGuidEntityKey, IHaveCreatedDate, ICanUpdate
     {
         [NotMapped]
         public Guid EntityKey
@@ -25,6 +26,11 @@ namespace BluePrints.Data
         {
             get { return CREATED; }
             set { CREATED = value; }
+        }
+
+        public void Update()
+        {
+            RaisePropertiesChanged();
         }
     }
 }

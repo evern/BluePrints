@@ -57,7 +57,7 @@
                                     <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
                                                Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Reload From P6" Command="{Binding DataContext.Refresh_From_P6Command, ElementName=userControl}"
+                                    <dxb:BarButtonItem Content="Calculate Stats" Command="{Binding DataContext.Refresh_From_P6Command, ElementName=userControl}"
                                                LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}"
                                                Glyph="{dx:DXImage Image=Reset2_16x16.png}" />
                                     <!--<dxb:BarCheckItem Content="Auto Refresh"

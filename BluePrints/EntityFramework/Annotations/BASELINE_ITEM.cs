@@ -4,13 +4,14 @@ namespace BluePrints.Data
     using BaseModel.Misc;
     using BluePrints.Common;
     using BluePrints.Common.ViewModel.Reporting;
+    using DevExpress.Mvvm;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
 
     [ConstraintAttributes("GUID_BASELINE, INTERNAL_NUM")]
-    public partial class BASELINE_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, ISupportByDuration, IHaveDBProductivityOverride, ISupportVariation
+    public partial class BASELINE_ITEM : BindableBase, IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, ISupportByDuration, IHaveDBProductivityOverride, ISupportVariation, ICanUpdate
     {
         public BASELINE_ITEM()
         {
@@ -305,5 +306,10 @@ namespace BluePrints.Data
 
         [NotMapped]
         public decimal DC_Value { get => DC_HOURS; set => DC_HOURS = value; }
+
+        public void Update()
+        {
+            RaisePropertiesChanged();
+        }
     }
 }

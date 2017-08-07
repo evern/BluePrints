@@ -53,7 +53,7 @@ namespace BluePrints.ViewModels
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
-        protected override void InitializeParameters(object parameter)
+        protected override void resolveParameters(object parameter)
         {
             if (parameter != null)
             {
@@ -63,17 +63,13 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public override void InitializeAndLoadEntitiesLoaderDescription()
+        protected override void initializeEntitiesLoadersDescription()
         {
-            MainViewModel = null;
-            base.CleanUpEntitiesLoader();
-
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, x => defaultDepartment = x);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.UOMS);
-            InvokeEntitiesLoaderDescriptionLoading();
         }
 
         private Func<IRepositoryQuery<DEPARTMENT>, IQueryable<DEPARTMENT>> DEPARTMENTProjectionFunc()
@@ -81,13 +77,13 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.NAME == BluePrintsResources.Default_Construction_Department);
         }
 
-        protected override void OnAllEntitiesCollectionLoaded()
+        protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> ConstructMainViewModelProjection()
+        protected override Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> specifyMainViewModelProjection()
         {
             if (isProjectSpecific)
                 return query => query.Where(x => x.STOCK_CODE_TYPE == loadCommodityCodeType).Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.CODE);

@@ -52,18 +52,15 @@ namespace BluePrints.ViewModels
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
-        protected override void InitializeParameters(object parameter)
+        protected override void resolveParameters(object parameter)
         {
             var project_phasetype_parameter = (DualEntitiesParameter<PROJECT, ProgressTypeClass>) parameter;
             loadPROJECT = project_phasetype_parameter.GetFirstEntity();
             phaseType = project_phasetype_parameter.GetSecondEntity().progressType;
         }
 
-        public override void InitializeAndLoadEntitiesLoaderDescription()
+        protected override void initializeEntitiesLoadersDescription()
         {
-            //MainViewModel = null;
-            base.CleanUpEntitiesLoader();
-
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc);
@@ -72,7 +69,6 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc, null, true);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_ITEMS, VARIATION_ITEMProjectionFunc);
-            InvokeEntitiesLoaderDescriptionLoading();
         }
 
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
@@ -108,13 +104,13 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID_BASELINE == LiveBASELINE.GUID);
         }
 
-        protected override void OnAllEntitiesCollectionLoaded()
+        protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATIONProjection>> ConstructMainViewModelProjection()
+        protected override Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATIONProjection>> specifyMainViewModelProjection()
         {
             return query => VARIATIONProjectionQueries.VariationProjection_Transformation(query.Where(x => x.PHASE == phaseType), loadPROJECT);
         }
@@ -162,7 +158,7 @@ namespace BluePrints.ViewModels
 
             VARIATIONProjection projection = MainViewModel.Entities.First(x => x.EntityKey == (Guid)parent_id);
             projection.DetailEntities = new ObservableCollection<ISupportVariationSummary>(variation_projections);
-            RefreshView(true);
+            BackgroundRefresh(true);
         }
 
         #region CallBacks
@@ -236,8 +232,7 @@ namespace BluePrints.ViewModels
         #region View Properties
         public override void FullRefresh()
         {
-            mainThreadDispatcher.BeginInvoke(new Action(() => StoreViewState()));
-            InitializeAndLoadEntitiesLoaderDescription();
+            ReloadEntitiesCollection();
         }
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent

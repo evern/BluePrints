@@ -47,7 +47,7 @@ namespace BluePrints.ViewModels
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
-        protected override void InitializeParameters(object parameter)
+        protected override void resolveParameters(object parameter)
         {
             if (parameter != null)
             {
@@ -57,25 +57,21 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public override void InitializeAndLoadEntitiesLoaderDescription()
+        protected override void initializeEntitiesLoadersDescription()
         {
-            MainViewModel = null;
-            base.CleanUpEntitiesLoader();
-
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
-            InvokeEntitiesLoaderDescriptionLoading();
         }
 
-        protected override void OnAllEntitiesCollectionLoaded()
+        protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
         protected override Func<IRepositoryQuery<DELIVERABLES_STATUS>, IQueryable<DELIVERABLES_STATUS>>
-            ConstructMainViewModelProjection()
+            specifyMainViewModelProjection()
         {
             if (isProjectSpecific)
                 return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.GUID_DOCTYPE).ThenBy(x => x.MAX_PERCENTAGE);

@@ -43,7 +43,7 @@ namespace BluePrints.Common.Base
     {
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        public override void InitializeAndLoadEntitiesLoaderDescription()
+        protected override void initializeEntitiesLoadersDescription()
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, x => live_PROGRESS = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
@@ -57,8 +57,6 @@ namespace BluePrints.Common.Base
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
-
-            InvokeEntitiesLoaderDescriptionLoading();
         }
 
         protected abstract ProgressType progress_type { get; }
@@ -140,7 +138,7 @@ namespace BluePrints.Common.Base
             get { return this.GetRequiredService<IDialogService>("ActivityIdDialog"); }
         }
 
-        protected override void InitializeParameters(object parameter)
+        protected override void resolveParameters(object parameter)
         {
             var obj = (object[])parameter;
 
@@ -190,7 +188,7 @@ namespace BluePrints.Common.Base
         public override void FullRefresh()
         {
             activities_source = null;
-            InitializeAndLoadEntitiesLoaderDescription();
+            ReloadEntitiesCollection();
         }
 
         #region View Refreshing

@@ -49,7 +49,7 @@ namespace BluePrints.ViewModels
             get { return loadPROJECT != null; }
         }
 
-        protected override void InitializeParameters(object parameter)
+        protected override void resolveParameters(object parameter)
         {
             if (parameter != null)
             {
@@ -58,17 +58,13 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public override void InitializeAndLoadEntitiesLoaderDescription()
+        protected override void initializeEntitiesLoadersDescription()
         {
-            MainViewModel = null;
-            base.CleanUpEntitiesLoader();
-
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
             loaderCollection.AddLoaderDescription<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.UOMS);
             //need to add another viewmodel so that all stock codes are loaded for stock codes generation
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS, STOCK_GROUPProjectionFunc);
-            InvokeEntitiesLoaderDescriptionLoading();
         }
 
         private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
@@ -88,13 +84,13 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID == null);
         }
 
-        protected override void OnAllEntitiesCollectionLoaded()
+        protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<STOCK_GROUP>, IQueryable<STOCK_GROUPProjection>> ConstructMainViewModelProjection()
+        protected override Func<IRepositoryQuery<STOCK_GROUP>, IQueryable<STOCK_GROUPProjection>> specifyMainViewModelProjection()
         {
             if(IsProjectSpecific)
                 return query => STOCK_GROUPProjectionQueries.Stock_Group_Transformation(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID));

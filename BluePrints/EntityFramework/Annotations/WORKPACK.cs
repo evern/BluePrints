@@ -6,9 +6,10 @@ namespace BluePrints.Data
     using System.Linq;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
+    using DevExpress.Mvvm;
 
     [ConstraintAttributes("GUID_PROJECT, INTERNAL_NAME1")]
-    public partial class WORKPACK : IGuidEntityKey, IHaveCreatedDate
+    public partial class WORKPACK : BindableBase, IGuidEntityKey, IHaveCreatedDate, ICanUpdate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public WORKPACK()
@@ -82,6 +83,11 @@ namespace BluePrints.Data
 
                 return AREA.AREA1;
             }
+        }
+
+        public void Update()
+        {
+            RaisePropertiesChanged();
         }
     }
 }

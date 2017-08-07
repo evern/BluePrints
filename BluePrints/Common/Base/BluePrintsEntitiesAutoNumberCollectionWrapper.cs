@@ -13,7 +13,7 @@ namespace BluePrints.Common.Base
         TMainEntityUnitOfWork> : EntitiesAutoNumberCollectionWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
         TMainEntityUnitOfWork>
             where TMainEntity : class, IGuidEntityKey, IEntityNumber, new()
-            where TMainProjectionEntity : class, IGuidEntityKey, IEntityNumber, new()
+            where TMainProjectionEntity : class, IGuidEntityKey, IEntityNumber, ICanUpdate, new()
             where TMainEntityUnitOfWork : IUnitOfWork
     {
         public SpellCheckerModule SpellCheckerModule { get; set; }

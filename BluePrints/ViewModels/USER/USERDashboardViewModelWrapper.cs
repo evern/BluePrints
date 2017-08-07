@@ -45,7 +45,7 @@ namespace BluePrints.ViewModels
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
         ActionObject actionObject;
-        protected override void InitializeParameters(object parameter)
+        protected override void resolveParameters(object parameter)
         {
             actionObject = parameter as ActionObject;
             if(actionObject == null)
@@ -55,17 +55,12 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public override void InitializeAndLoadEntitiesLoaderDescription()
+        protected override void initializeEntitiesLoadersDescription()
         {
-            MainViewModel = null;
-            base.CleanUpEntitiesLoader();
-
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
-
-            InvokeEntitiesLoaderDescriptionLoading();
         }
 
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
@@ -83,7 +78,7 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.PROGRESS.STATUS == ProgressStatus.Live && x.PROGRESS.PROJECT.STATUS == ProjectStatus.Active);
         }
 
-        protected override void OnAllEntitiesCollectionLoaded()
+        protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             if (actionObject != null)
             {
@@ -96,7 +91,7 @@ namespace BluePrints.ViewModels
         }
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
-            ConstructMainViewModelProjection()
+            specifyMainViewModelProjection()
         {
             return query => ProgressQueries.User_OffsiteDirectProgressItemTransformation(query, PROGRESS_ITEMCollection, _loadUSER);
         }
@@ -127,8 +122,7 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
-            mainThreadDispatcher.BeginInvoke(new Action(() => StoreViewState()));
-            InitializeAndLoadEntitiesLoaderDescription();
+            ReloadEntitiesCollection();
         }
 
         #endregion

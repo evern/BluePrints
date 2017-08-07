@@ -23,7 +23,7 @@ namespace BluePrints.ViewModels
         private USER _loadUSER;
         IP6EntitiesUnitOfWork p6UOW;
         List<FullSummarizer> firstLoadProjectStatsSummarizers;
-        protected override void InitializeParameters(object parameter)
+        protected override void resolveParameters(object parameter)
         {
             is_single_project_mode = false;
             var USERParameter = (EntitiesParameter<USER>)parameter;
@@ -32,7 +32,7 @@ namespace BluePrints.ViewModels
             firstLoadProjectStatsSummarizers = new List<FullSummarizer>();
         }
 
-        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>> ConstructMainViewModelProjection()
+        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>> specifyMainViewModelProjection()
         {
             return query => ProgressQueries.User_OffsiteDirectProgressItemTransformation(query, PROGRESS_ITEMCollection, _loadUSER);
         }

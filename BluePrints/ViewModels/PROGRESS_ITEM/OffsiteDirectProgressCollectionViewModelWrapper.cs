@@ -50,10 +50,10 @@ namespace BluePrints.ViewModels
 
         #region Database Operation
         private BASELINE loadBASELINE;
-        public override void InitializeAndLoadEntitiesLoaderDescription()
+        protected override void initializeEntitiesLoadersDescription()
         {
             MainViewModel = null;
-            base.CleanUpEntitiesLoader();
+            base.cleanUpEntitiesLoader();
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
 
@@ -67,7 +67,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, DELIVERABLES_STATUSProjectionFunc);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
 
-            base.InitializeAndLoadEntitiesLoaderDescription();
+            base.initializeEntitiesLoadersDescription();
         }
 
         private void assign_baseline(BASELINE baseline)
@@ -99,7 +99,7 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.PROJECT.STATUS == ProjectStatus.Active);
         }
 
-        protected override void OnAllEntitiesCollectionLoaded()
+        protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
@@ -177,7 +177,7 @@ namespace BluePrints.ViewModels
         }
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
-            ConstructMainViewModelProjection()
+            specifyMainViewModelProjection()
         {
             return query => 
             ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection);
@@ -234,14 +234,7 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
-            mainThreadDispatcher.BeginInvoke(new Action(() => StoreViewState()));
-            InitializeAndLoadEntitiesLoaderDescription();
-        }
-
-        public override void FullRefreshWithoutClearingUndoRedo()
-        {
-            mainThreadDispatcher.BeginInvoke(new Action(() => StoreViewState()));
-            InitializeAndLoadEntitiesLoaderDescription();
+            ReloadEntitiesCollection();
         }
         #endregion
 

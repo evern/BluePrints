@@ -16,7 +16,7 @@ namespace BluePrints.Common.Base
         TMainEntityUnitOfWork> : CollectionViewModelsWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
         TMainEntityUnitOfWork>
         where TMainEntity : class, IGuidEntityKey, new()
-        where TMainProjectionEntity : class, IGuidEntityKey, new()
+        where TMainProjectionEntity : class, IGuidEntityKey, ICanUpdate, new()
         where TMainEntityUnitOfWork : IUnitOfWork
     {
         public SpellCheckerModule SpellCheckerModule { get; set; }
@@ -42,10 +42,11 @@ namespace BluePrints.Common.Base
 
         public void ShowNotification()
         {
-            if (AppNotificationService == null)
+            if (AppNotificationService == null || GlobalVariables.IsNotificationShown)
                 return;
 
             INotification notification = AppNotificationService.CreatePredefinedNotification("Update: Search bar is removed, to enable it press CTRL + F. Have a nice day", null, null, null);
+            GlobalVariables.IsNotificationShown = true;
             notification.ShowAsync();
         }
         //protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()

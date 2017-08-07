@@ -6,10 +6,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.Resources;
+using DevExpress.Mvvm;
 
 namespace BluePrints.Data
 {
-    public partial class ESTIMATION_DIRECT_ITEM : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, IHaveDBProductivityOverride, ISupportVariation
+    public partial class ESTIMATION_DIRECT_ITEM : BindableBase, IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, IHaveDBProductivityOverride, ISupportVariation, ICanUpdate
     {
         public ESTIMATION_DIRECT_ITEM()
         {
@@ -136,5 +137,10 @@ namespace BluePrints.Data
 
         [NotMapped]
         public decimal DC_Value { get => DC_QUANTITY; set => DC_QUANTITY = value; }
+
+        public void Update()
+        {
+            RaisePropertiesChanged();
+        }
     }
 }

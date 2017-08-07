@@ -60,7 +60,7 @@ namespace BluePrints.Common.Base
             calculatePlannedBackgroundWorker.WorkerSupportsCancellation = true;
         }
 
-        protected override void InitializeParameters(object parameter)
+        protected override void resolveParameters(object parameter)
         {
             delayedPROGRESSSavingDispatcher = new DispatcherTimer();
             delayedPROGRESSSavingDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 10);
@@ -74,7 +74,7 @@ namespace BluePrints.Common.Base
                 isQueryForLiveStatus = true;
         }
 
-        public override void InitializeAndLoadEntitiesLoaderDescription()
+        protected override void initializeEntitiesLoadersDescription()
         {
             if (is_single_project_mode)
             {
@@ -90,7 +90,6 @@ namespace BluePrints.Common.Base
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
-            InvokeEntitiesLoaderDescriptionLoading();
         }
 
         protected Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
@@ -242,7 +241,7 @@ namespace BluePrints.Common.Base
         protected void CalculatePlannedBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             isBusy = false;
-            mainThreadDispatcher.BeginInvoke(new Action(() => RefreshView()));
+            mainThreadDispatcher.BeginInvoke(new Action(() => BackgroundRefresh()));
         }
 
         #endregion

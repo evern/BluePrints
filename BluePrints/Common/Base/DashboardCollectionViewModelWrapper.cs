@@ -22,7 +22,7 @@ namespace BluePrints.Common.ViewModel
         <TEntity, TProjection, TPrimaryKey, TUnitOfWork>
         where TEntity : class, IGuidEntityKey, new()
         where TUnitOfWork : IUnitOfWork
-        where TProjection : class, IGuidEntityKey, IHaveStats, new()
+        where TProjection : class, IGuidEntityKey, IHaveStats, ICanUpdate, new()
     {
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> UnitOfWorkFactory;
         private DispatcherTimer dispatchTimer;
@@ -139,7 +139,7 @@ namespace BluePrints.Common.ViewModel
                 IHaveSummary.RecalculateStats(calculationType == DashboardViewType.Costs);
         }
 
-        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
             
         }

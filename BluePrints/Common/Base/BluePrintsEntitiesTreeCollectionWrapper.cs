@@ -13,7 +13,7 @@ namespace BluePrints.Common.Base
         TMainEntityUnitOfWork> : ProjectionTreeCollectionWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
         TMainEntityUnitOfWork>
             where TMainEntity : class, IGuidEntityKey, new()
-            where TMainProjectionEntity : class, IProjection<TMainEntity>, IHaveSortOrder, IHaveExpandState, IGuidParentEntityKey, new()
+            where TMainProjectionEntity : class, IProjection<TMainEntity>, IHaveSortOrder, IHaveExpandState, IGuidParentEntityKey, ICanUpdate, new()
             where TMainEntityUnitOfWork : IUnitOfWork
     {
         public SpellCheckerModule SpellCheckerModule { get; set; }
@@ -30,7 +30,7 @@ namespace BluePrints.Common.Base
     TMainEntityUnitOfWork> : EntitiesTreeCollectionWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
     TMainEntityUnitOfWork>
             where TMainEntity : class, IGuidEntityKey, new()
-            where TMainProjectionEntity : class, IGuidEntityKey, IHaveSortOrder, IHaveExpandState, IGuidParentEntityKey, new()
+            where TMainProjectionEntity : class, IGuidEntityKey, IHaveSortOrder, IHaveExpandState, IGuidParentEntityKey, ICanUpdate, new()
             where TMainEntityUnitOfWork : IUnitOfWork
     {
         public SpellCheckerModule SpellCheckerModule { get; set; }

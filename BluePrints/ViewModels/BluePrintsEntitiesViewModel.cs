@@ -185,7 +185,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        const string projectCategoryId = "View_Projects";
+                const string projectCategoryId = "View_Projects";
         const string dataCategoryId = "Category_Data";
         const string activeCategoryId = "Category_Active";
         const string tenderCategoryId = "Category_Tender";
@@ -273,7 +273,7 @@ namespace BluePrints.ViewModels
 
             return bluePrintsEntitiesModuleDescriptions;
         }
-        
+
         private void CreateProjectTree(PROJECT entity)
         {
             //List<BluePrintsEntitiesModuleDescription> newModules = new List<BluePrintsEntitiesModuleDescription>();
@@ -285,9 +285,9 @@ namespace BluePrints.ViewModels
             object parentId;
             BluePrintsEntitiesModuleDescription projectStatusDescription;
 
-            if((entity.STATUS == ProjectStatus.Active || entity.STATUS == ProjectStatus.Tender) && entity.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid)
+            if ((entity.STATUS == ProjectStatus.Active || entity.STATUS == ProjectStatus.Tender) && entity.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid)
             {
-                if(entity.STATUS == ProjectStatus.Active)
+                if (entity.STATUS == ProjectStatus.Active)
                 {
                     projectStatusDescription = myProjectsCategoryDescription;
                     parentId = myProjectCategoryId;
@@ -360,7 +360,7 @@ namespace BluePrints.ViewModels
             if (LoginCredentials.hasPermission(PermissionResources.ManageRegisters))
             {
                 string registerCategoryId = "View_RegisterCategory" + keyString;
-                
+
                 BluePrintsEntitiesModuleDescription registerCategoryDescription = new BluePrintsEntitiesModuleDescription(registerCategoryId, projectKey, "Registers", null, null, null, null, false);
                 design_category_description.ChildModules.Add(registerCategoryDescription);
                 registerCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_IssueRegister" + keyString, registerCategoryId, childTitlePrefix + "Issue Register", "REGISTER_ISSUECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Issue Register"));
@@ -372,6 +372,7 @@ namespace BluePrints.ViewModels
             }
             //return newModules;
         }
+
     }
 }
 

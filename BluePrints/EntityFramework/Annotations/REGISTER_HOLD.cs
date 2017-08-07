@@ -2,11 +2,12 @@ namespace BluePrints.Data
 {
     using BaseModel.Attributes;
     using BaseModel.Misc;
+    using DevExpress.Mvvm;
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
     [ConstraintAttributes("NUMBER")]
-    public partial class REGISTER_HOLD : IGuidEntityKey, IEntityNumber, IHaveCreatedDate
+    public partial class REGISTER_HOLD : BindableBase, IGuidEntityKey, IEntityNumber, IHaveCreatedDate, ICanUpdate
     {
         [NotMapped]
         public Guid EntityKey
@@ -34,6 +35,11 @@ namespace BluePrints.Data
         {
             get { return CREATED; }
             set { CREATED = value; }
+        }
+
+        public void Update()
+        {
+            RaisePropertiesChanged();
         }
     }
 }

@@ -37,7 +37,7 @@ namespace BluePrints.ViewModels
         where TDeliverable : class, IDeliverable
     {
         Guid load_context_guid { get; }
-        void Interface_InitializeParameters(object parameter);
+        void OnParameterChanged(object parameter);
         Action<IEnumerable<TProgress>> OnReportablesLoadedCallBack { get; set; }
         Action<TProgress> ApplyViewSpecificPropertiesToEntityCallBack { get; set; }
         Func<IRepositoryQuery<TDeliverable>, IQueryable<TDeliverable>> BaseEntityQueryCallBack { get; set; }
@@ -46,7 +46,7 @@ namespace BluePrints.ViewModels
         IEnumerable<TProgress> SelectedEntities { get; set; }
         //some functionality will edit existing live deliverables, so this has to be used to validate in context
         Func<IEnumerable<TProgress>> GetEditableAllEntitiesCallBack { get; set; }
-        void CleanUpEntitiesLoader();
+        void cleanUpEntitiesLoader();
 
         #region Undo-Redo
         Action<TProgress, string, object, object, EntityMessageType> InterfaceAddUndoRedoCallBack { get; set; }
@@ -79,8 +79,6 @@ namespace BluePrints.ViewModels
 
         void Save(TProgress progress_entity);
         void Delete(TProgress progress_entity);
-
-        void InitializeAndLoadEntitiesLoaderDescription();
     }
 
     /// <summary>
@@ -141,7 +139,7 @@ namespace BluePrints.ViewModels
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
-        protected override void InitializeParameters(object parameter)
+        protected override void resolveParameters(object parameter)
         {
             Interface_InitializeParameters(parameter);
         }
@@ -170,14 +168,11 @@ namespace BluePrints.ViewModels
             Is_Autofill_Internal_Number = true;
         }
 
-        public override void InitializeAndLoadEntitiesLoaderDescription()
+        protected override void initializeEntitiesLoadersDescription()
         {
-            MainViewModel = null;
-            base.CleanUpEntitiesLoader();
-
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, SetBASELINEIsLocked);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, assign_baseline);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
@@ -190,8 +185,18 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, DELIVERABLES_STATUSProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
+        }
 
-            InvokeEntitiesLoaderDescriptionLoading();
+        private void assign_baseline(BASELINE entity)
+        {
+            if (entity == null && !SupressCompulsoryEntityNotFoundMessage)
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live baseline not found")));
+
+            loadBASELINE = entity;
+            if (entity.BUDGETED_UNITS != null && entity.BUDGETED_UNITS > 0)
+                SetBaselineLockUnlock?.Invoke(true);
+            else
+                SetBaselineLockUnlock?.Invoke(false);
         }
 
         private void assign_progress(PROGRESS progress)
@@ -220,17 +225,6 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID == loadBASELINE.GUID);
         }
 
-        private void SetBASELINEIsLocked(BASELINE entity)
-        {
-            if (entity == null && !SupressCompulsoryEntityNotFoundMessage)
-                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live baseline not found")));
-
-            loadBASELINE = entity;
-            if (entity.BUDGETED_UNITS != null && entity.BUDGETED_UNITS > 0)
-                SetBaselineLockUnlock?.Invoke(true);
-            else
-                SetBaselineLockUnlock?.Invoke(false);
-        }
 
         private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
         {
@@ -275,14 +269,14 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Baseline_Report.ToString());
         }
 
-        protected override void OnAllEntitiesCollectionLoaded()
+        protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
-            ConstructMainViewModelProjection()
+            specifyMainViewModelProjection()
         {
             return query => ProgressQueries.OffsiteDirectProgressItemTransformation(base_entity_query(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection);
         }
@@ -329,7 +323,7 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-        public override void OnAfterAffectingEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
             if (changedType == typeof(PROGRESS_ITEM))
             {
@@ -337,7 +331,7 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            base.OnAfterAffectingEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
+            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }
 
         public Action<BASELINE_ITEMProgress> ApplyViewSpecificPropertiesToEntityCallBack { get; set; }
@@ -1012,7 +1006,7 @@ namespace BluePrints.ViewModels
 
             MainViewModel.BulkSave(entitiesToSave);
             UnpauseUndoRedo();
-            RefreshView();
+            BackgroundRefresh();
         }
 
         private string generateInternalNumber(BASELINE_ITEMProgress projectionEntity)

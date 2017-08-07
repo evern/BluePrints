@@ -37,7 +37,7 @@ namespace BluePrints.Common.Base
         protected VARIATION loadVARIATION;
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected string baseEntityString = "Entity.Entity.Entity.";
-        protected override void InitializeParameters(object parameter)
+        protected override void resolveParameters(object parameter)
         {
             //both parameters is required because when entity is first added the associating entity (PROJECT) is not loaded
             var receiveParameter =
@@ -55,8 +55,7 @@ namespace BluePrints.Common.Base
             collectionViewModelWrapper.OnReportablesLoadedCallBack = OnViewModelWrapperLoadedCallBack;
             collectionViewModelWrapper.ApplyViewSpecificPropertiesToEntityCallBack = ApplyViewSpecificPropertiesToEntityCallBack;
             collectionViewModelWrapper.SetParentViewModel(this);
-            collectionViewModelWrapper.Interface_InitializeParameters(new DualEntitiesParameter<PROJECT, IAmBaseline>(loadPROJECT, null));
-            collectionViewModelWrapper.InitializeAndLoadEntitiesLoaderDescription(); 
+            collectionViewModelWrapper.OnParameterChanged(new DualEntitiesParameter<PROJECT, IAmBaseline>(loadPROJECT, null));
             #endregion
         }
 
@@ -123,15 +122,11 @@ namespace BluePrints.Common.Base
         protected Guid variation_guid { get { return loadVARIATION.GUID; } }
         protected Guid? variation_baseline_guid { get { return loadVARIATION.GUID_BASELINE; } }
 
-        public override void InitializeAndLoadEntitiesLoaderDescription()
+        protected override void initializeEntitiesLoadersDescription()
         {
-            //MainViewModel = null;
-            base.CleanUpEntitiesLoader();
-
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc, x => loadVARIATION = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_ITEMS, VARIATION_ITEMProjectionFunc);
-            InvokeEntitiesLoaderDescriptionLoading();
         }
 
         private Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
@@ -149,10 +144,10 @@ namespace BluePrints.Common.Base
         protected void OnViewModelWrapperLoadedCallBack(IEnumerable<TMainReportableEntity> entities)
         {
             IReportableEntitiesCollection = entities;
-            OnAllEntitiesCollectionLoaded();
+            onAuxiliaryEntitiesCollectionLoaded();
         }
 
-        protected override void OnAllEntitiesCollectionLoaded()
+        protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             if (!iReportableCollectionLoaded)
                 return;
@@ -514,10 +509,10 @@ namespace BluePrints.Common.Base
             }
         }
 
-        public override void CleanUpEntitiesLoader()
+        public override void cleanUpEntitiesLoader()
         {
-            collectionViewModelWrapper.CleanUpEntitiesLoader();
-            base.CleanUpEntitiesLoader();
+            collectionViewModelWrapper.cleanUpEntitiesLoader();
+            base.cleanUpEntitiesLoader();
         }
         #endregion
     }

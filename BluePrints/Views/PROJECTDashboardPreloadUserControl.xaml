@@ -27,7 +27,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Style="{StaticResource DashboardView.RootContainer}">
+    <Grid>
         <Grid DataContext="{Binding MainViewModel}" >
             <DockPanel>
                 <dxr:RibbonControl RibbonStyle="OfficeSlim" DockPanel.Dock="Top" AllowCustomization="False"

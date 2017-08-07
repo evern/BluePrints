@@ -36,7 +36,7 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
         private ESTIMATION_DIRECT loadESTIMATION_DIRECT;
-        protected override void InitializeParameters(object parameter)
+        protected override void resolveParameters(object parameter)
         {
             delayedPROGRESSSavingDispatcher = new DispatcherTimer();
             delayedPROGRESSSavingDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 10);
@@ -50,17 +50,17 @@ namespace BluePrints.ViewModels
                 isQueryForLiveStatus = true;
         }
 
-        public override void InitializeAndLoadEntitiesLoaderDescription()
+        protected override void initializeEntitiesLoadersDescription()
         {
             MainViewModel = null;
-            base.CleanUpEntitiesLoader();
+            base.cleanUpEntitiesLoader();
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc, x => assign_estimation_direct(x));
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS, STOCK_GROUPProjectionFunc);
-            base.InitializeAndLoadEntitiesLoaderDescription();
+            base.initializeEntitiesLoadersDescription();
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
@@ -94,13 +94,13 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID || x.GUID_PROJECT == null);
         }
 
-        protected override void OnAllEntitiesCollectionLoaded()
+        protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECT_ITEMS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ReportablesDisplay>> ConstructMainViewModelProjection()
+        protected override Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ReportablesDisplay>> specifyMainViewModelProjection()
         {
             return query => ProgressQueries.SiteDirectProgressItemTransformation(query.Where(x => x.GUID_ESTIMATION_DIRECT == loadESTIMATION_DIRECT.GUID), loadPROJECT, loadPROGRESS, PROGRESS_ITEMCollection, STOCK_GROUPCollection, STOCK_CODECollection, RATECollection);
         }
@@ -134,10 +134,10 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
-            InitializeAndLoadEntitiesLoaderDescription();
+            ReloadEntitiesCollection();
         }
 
-        protected override void RefreshView(bool forceGridRefresh = false)
+        protected override void BackgroundRefresh(bool forceGridRefresh = false)
         {
             if (MainViewModel == null)
                 return;
@@ -147,7 +147,7 @@ namespace BluePrints.ViewModels
                 reportable.Update();
             }
 
-            base.RefreshView(forceGridRefresh);
+            base.BackgroundRefresh(forceGridRefresh);
         }
 
         private ReportablesDisplay getAffectedDisplayEntity(PROGRESS_ITEM newPROGRESS_ITEM)
