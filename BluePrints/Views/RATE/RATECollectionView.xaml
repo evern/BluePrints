@@ -72,8 +72,7 @@
                     <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlRATE" 
                                      Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="GROUP" FieldName="COST_GROUP"
-                        DataContext="{Binding DataContext, ElementName=userControl}">
+                            <dxg:GridColumn Header="GROUP" FieldName="COST_GROUP">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
                                           ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:CostGroup}}" />

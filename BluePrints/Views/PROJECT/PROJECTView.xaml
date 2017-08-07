@@ -1362,6 +1362,11 @@
                                     <dxg:GridControl x:Name="gridControlRATE" dx:DXSerializer.Enabled="False"
                                              Style="{StaticResource NestedGridControlTemplate}" Grid.Row="1" >
                                         <dxg:GridControl.Columns>
+                                            <dxg:GridColumn Header="GROUP" FieldName="COST_GROUP">
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:CostGroup}}" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
                                             <dxg:GridColumn Header="DEPARTMENT" FieldName="GUID_DEPARTMENT">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:ComboBoxEditSettings ItemsSource="{Binding DEPARTMENTCollection}"

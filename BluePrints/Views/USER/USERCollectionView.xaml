@@ -91,7 +91,7 @@
                             <dxg:GridColumn FieldName="NAME" />
                             <dxg:GridColumn FieldName="FIRST_NAME" />
                             <dxg:GridColumn FieldName="LAST_NAME" />
-                            <dxg:GridColumn FieldName="GUID_DEPARTMENT">
+                            <dxg:GridColumn Header="DEPARTMENT" FieldName="GUID_DEPARTMENT">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings NullValueButtonPlacement="Popup"
                                         ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}"
@@ -99,7 +99,7 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="GUID_DISCIPLINE">
+                            <dxg:GridColumn Header="DISCIPLINE" FieldName="GUID_DISCIPLINE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings NullValueButtonPlacement="Popup"
                                         ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
