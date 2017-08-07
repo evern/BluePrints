@@ -30,6 +30,8 @@
                 <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSelectionUSER" Style="{StaticResource BasicGridControlTemplate}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn FieldName="NAME" />
+                        <dxg:GridColumn FieldName="FIRST_NAME" />
+                        <dxg:GridColumn FieldName="LAST_NAME" />
                         <dxg:GridColumn FieldName="DEPARTMENT" />
                         <dxg:GridColumn FieldName="TITLE" />
                         <dxg:GridColumn FieldName="DESCRIPTION" />

@@ -182,6 +182,11 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<DEPARTMENT>()
+                .HasMany(e => e.USER)
+                .WithOptional(e => e.DEPARTMENT1)
+                .HasForeignKey(e => e.GUID_DEPARTMENT);
+
+            modelBuilder.Entity<DEPARTMENT>()
                 .HasMany(e => e.WORKPACK)
                 .WithRequired(e => e.DEPARTMENT)
                 .HasForeignKey(e => e.GUID_DDEPARTMENT)
@@ -222,6 +227,11 @@ namespace BluePrints.Data
                 .WithRequired(e => e.DISCIPLINE)
                 .HasForeignKey(e => e.GUID_DISCIPLINE)
                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<DISCIPLINE>()
+                .HasMany(e => e.USER)
+                .WithOptional(e => e.DISCIPLINE)
+                .HasForeignKey(e => e.GUID_DISCIPLINE);
 
             modelBuilder.Entity<DISCIPLINE>()
                 .HasMany(e => e.WORKPACK)

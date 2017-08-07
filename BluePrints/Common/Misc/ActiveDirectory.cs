@@ -98,6 +98,8 @@ namespace BluePrints.Common
                 search.PropertiesToLoad.Add("department"); //first name
                 search.PropertiesToLoad.Add("title");
                 search.PropertiesToLoad.Add("description");
+                search.PropertiesToLoad.Add("givenName");
+                search.PropertiesToLoad.Add("sn");
                 SearchResult result;
                 var resultCol = search.FindAll();
 
@@ -124,7 +126,15 @@ namespace BluePrints.Common
                             DESCRIPTION =
                                 result.Properties.Contains("description")
                                     ? (string) result.Properties["description"][0]
-                                    : string.Empty
+                                    : string.Empty,
+                            FIRST_NAME =
+                                    result.Properties.Contains("givenName")
+                                    ? (string)result.Properties["givenName"][0]
+                                    : string.Empty,
+                            LAST_NAME =
+                                    result.Properties.Contains("sn")
+                                    ? (string)result.Properties["sn"][0]
+                                    : string.Empty,
                         });
                     }
 

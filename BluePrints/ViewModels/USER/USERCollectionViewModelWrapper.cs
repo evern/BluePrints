@@ -51,6 +51,8 @@ namespace BluePrints.ViewModels
         {
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription<ROLE, ROLE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.ROLES);
+            loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
+            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -127,13 +129,58 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
+
+        public IEnumerable<DEPARTMENT> DEPARTMENTCollection
+        {
+            get
+            {
+                var collection = GetEntities<DEPARTMENT>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
+        public IEnumerable<DISCIPLINE> DISCIPLINECollection
+        {
+            get
+            {
+                var collection = GetEntities<DISCIPLINE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
         #endregion
 
         #region View Commands
-
         private IDialogService USERImportDialogService
         {
             get { return this.GetRequiredService<IDialogService>("USERImportDialogService"); }
+        }
+
+        public void Update_User()
+        {
+            IEnumerable<USER> activeDirectoryUSERS = ActiveDirectory.GetUSERS();
+            List<USER> update_users = new List<USER>();
+            foreach(USER user in MainViewModel.Entities)
+            {
+                USER active_directory_user = activeDirectoryUSERS.FirstOrDefault(x => x.NAME == user.NAME);
+                if(active_directory_user != null)
+                {
+                    user.FIRST_NAME = active_directory_user.FIRST_NAME;
+                    user.LAST_NAME = active_directory_user.LAST_NAME;
+                    user.DESCRIPTION = active_directory_user.DESCRIPTION;
+                    user.DEPARTMENT = active_directory_user.DEPARTMENT;
+                    DEPARTMENT department = DEPARTMENTCollection.FirstOrDefault(x => x.NAME.ToUpper() == user.DEPARTMENT.ToUpper());
+                    if (department != null)
+                        user.GUID_DEPARTMENT = department.GUID;
+                    user.TITLE = active_directory_user.TITLE;
+                    update_users.Add(user);
+                }
+            }
+
+            MainViewModel.BulkSave(update_users);
         }
 
         public void Import()
@@ -141,7 +188,27 @@ namespace BluePrints.ViewModels
             var selectEntitiesViewModel = USERSelectionViewModel.Create(MainViewModel.Entities);
             if (USERImportDialogService.ShowDialog(MessageButton.OKCancel, "Select Users to Import", "USERSelectionView",
                     selectEntitiesViewModel) == MessageResult.OK)
-                MainViewModel.BulkSave(selectEntitiesViewModel.SelectedEntities);
+            {
+                List<USER> add_new_users = new List<USER>();
+                foreach(USER selected_entity in selectEntitiesViewModel.SelectedEntities)
+                {
+                    USER new_user = new USER();
+                    new_user.TITLE = selected_entity.TITLE;
+                    new_user.DESCRIPTION = selected_entity.DESCRIPTION;
+                    new_user.FIRST_NAME = selected_entity.FIRST_NAME;
+                    new_user.LAST_NAME = selected_entity.LAST_NAME;
+                    new_user.NAME = selected_entity.NAME;
+                    new_user.CREATED = DateTime.Now;
+                    new_user.DEPARTMENT = selected_entity.DEPARTMENT;
+                    DEPARTMENT department = DEPARTMENTCollection.FirstOrDefault(x => x.NAME.ToUpper() == selected_entity.DEPARTMENT.ToUpper());
+                    if (department != null)
+                        new_user.GUID_DEPARTMENT = department.GUID;
+
+                    add_new_users.Add(new_user);
+                }
+
+                MainViewModel.BulkSave(add_new_users);
+            }
 
             selectEntitiesViewModel = null;
         }

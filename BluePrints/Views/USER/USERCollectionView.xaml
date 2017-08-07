@@ -48,6 +48,10 @@
                                                    Command="{Binding DataContext.ImportCommand, ElementName=userControl}"
                                                    Glyph="{dx:DXImage Image=Download_16x16.png}"
                                                    LargeGlyph="{dx:DXImage Image=Download_32x32.png}" />
+                                <dxb:BarButtonItem Content="Update Users"
+                                                   Command="{Binding DataContext.Update_UserCommand, ElementName=userControl}"
+                                                   Glyph="{dx:DXImage Image=BODetails_16x16.png}"
+                                                   LargeGlyph="{dx:DXImage Image=BODetails_32x32.png}" />
                                 <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"
                                                    LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Delete_16x16.png}" />
@@ -85,7 +89,24 @@
                     <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlUSER" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn FieldName="NAME" />
-                            <dxg:GridColumn FieldName="DEPARTMENT" />
+                            <dxg:GridColumn FieldName="FIRST_NAME" />
+                            <dxg:GridColumn FieldName="LAST_NAME" />
+                            <dxg:GridColumn FieldName="GUID_DEPARTMENT">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings NullValueButtonPlacement="Popup"
+                                        ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
+                                        ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="GUID_DISCIPLINE">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings NullValueButtonPlacement="Popup"
+                                        ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
+                                        ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="TITLE" />
                             <dxg:GridColumn FieldName="DESCRIPTION" />
                             <dxg:GridColumn Header="ROLE" FieldName="GUID_ROLE">

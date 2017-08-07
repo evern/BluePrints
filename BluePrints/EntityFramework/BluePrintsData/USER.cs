@@ -22,6 +22,14 @@ namespace BluePrints.Data
 
         public Guid? GUID_ROLE { get; set; }
 
+        public Guid? GUID_DEPARTMENT { get; set; }
+
+        public Guid? GUID_DISCIPLINE { get; set; }
+        
+        public string FIRST_NAME { get; set; }
+
+        public string LAST_NAME { get; set; }
+
         [Required]
         [StringLength(100)]
         public string NAME { get; set; }
@@ -55,6 +63,10 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PROJECT> PROJECT { get; set; }
+
+        public virtual DEPARTMENT DEPARTMENT1 { get; set; }
+
+        public virtual DISCIPLINE DISCIPLINE { get; set; }
 
         public virtual ROLE ROLE { get; set; }
     }

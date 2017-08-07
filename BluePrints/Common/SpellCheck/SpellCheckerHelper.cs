@@ -63,8 +63,12 @@ namespace BluePrints.Common
 
         public static void RegisterDefaultDictionaries(SpellChecker spellChecker)
         {
+#if DEBUG
+
+#else
             spellChecker.Dictionaries.Add(GetDefaultDictionary());
             spellChecker.Dictionaries.Add(GetCustomDictionary());
+#endif
         }
 
         public static void RegisterHunspellDictionaries(SpellChecker spellChecker)
