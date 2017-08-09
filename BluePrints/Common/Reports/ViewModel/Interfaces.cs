@@ -18,6 +18,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Trackable_Total_Units { get; }
     }
 
+    //This interface is only used in variation to describe adjustment hours and costs
+    //Variation_Install_Hours here is uncommitted hours wherelse Variation_Install_Hours in IHaveQuantity is coming from committed DC_Quantity
     public interface IVariation_Quantity
     {
         decimal Variation_Install_Cost { get; }

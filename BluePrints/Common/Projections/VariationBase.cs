@@ -32,6 +32,9 @@ namespace BluePrints.Common.Projections
 
         public decimal Variation_Install_Hours => Variation_Units * Entity.Stock_Code_Install_Hours;
 
+        //Cannot do this because entity's Variation_Install_Hours are committed hours coming from DC_Quantity where else current Variation_Install_hours are coming from uncommitted variation adjust quantity
+        //public decimal Variation_Install_Hours => Entity.Variation_Install_Hours;
+
         public decimal Total_Install_Hours => Total_Units * Entity.Stock_Code_Install_Hours;
 
         public decimal Total_Install_Cost => Total_Install_Hours * base.Entity.ItemRate;
