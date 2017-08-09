@@ -520,6 +520,17 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public decimal Schedule_Remaining_Units
+        {
+            get
+            {
+                if (Stats == null || Stats.Budgeted == null || Stats.Budgeted.CurrentPeriodCumulativeDataPoint == null)
+                    return 0;
+
+                return Stats.Remaining.CumulativeDataPoints.Last().Units;
+            }
+        }
+
         public decimal MinPercentage => Total_Units == 0 ? 0 : (Earned_Units_BeforeDataDate / Total_Units);
 
         public decimal MaxPercentage => Total_Units == 0 ? 0 : ((Total_Units - Earned_Units_AfterDataDate) / Total_Units);
@@ -586,6 +597,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
 
         public decimal Current_Productivity => SchedulePercentage == 0 ? 0 : Total_Earned_Percentage / SchedulePercentage;
+
+        public decimal Remaining_Productivity => Schedule_Remaining_Units;
 
         protected decimal? set_override_productivity;
         public virtual decimal Override_Productivity

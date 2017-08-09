@@ -32,6 +32,7 @@ namespace BluePrints.Common.Base
         Action<string> OnViewModelLoadFailed { get; set; }
         IEnumerable<TASK> TASK_Source { get; }
         void Save_Task(TASK task);
+        IEnumerable<TASKPRED> TASKPRED_Source { get; }
     }
 
     public abstract class BluePrintsEntitiesSchedulingCollectionWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
@@ -45,11 +46,12 @@ namespace BluePrints.Common.Base
         protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void initializeEntitiesLoadersDescription()
         {
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, x => live_PROGRESS = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, assign_progress);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.P6_ASSIGNMENTS, P6_ASSIGNMENTProjectionFunc);
-            loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJECT, P6PROJECTProjectionFunc, x => loadP6PROJECT = x);
+            loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJECT, P6PROJECTProjectionFunc, assign_p6project);
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.TASK, P6TASKProjectionFunc);
+            loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.TASKPRED, P6TASKPREDProjectionFunc);
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJWBS, PROJWBSProjectionFunc);
 
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
@@ -60,6 +62,22 @@ namespace BluePrints.Common.Base
         }
 
         protected abstract ProgressType progress_type { get; }
+
+        private void assign_progress(PROGRESS progress)
+        {
+            if (progress == null && !SupressCompulsoryEntityNotFoundMessage)
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live progress not found")));
+
+            live_PROGRESS = progress;
+        }
+
+        private void assign_p6project(P6Data.PROJECT project)
+        {
+            if (project == null && !SupressCompulsoryEntityNotFoundMessage)
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("P6 project not found")));
+
+            loadP6PROJECT = project;
+        }
 
         private Func<IRepositoryQuery<P6Data.PROJECT>, IQueryable<P6Data.PROJECT>> P6PROJECTProjectionFunc()
         {
@@ -97,6 +115,11 @@ namespace BluePrints.Common.Base
             return query => query.Where(x => x.proj_id == loadP6PROJECT.proj_id).Where(x => x.TASKACTV.Count > 0).Where(x => x.delete_date == null).Where(x => x.TASKACTV.Any(taskact => taskact.ACTVCODE != null && taskact.ACTVCODE.actv_code_name.ToUpper() == progress_type.ToString().ToUpper()));
         }
 
+        private Func<IRepositoryQuery<TASKPRED>, IQueryable<TASKPRED>> P6TASKPREDProjectionFunc()
+        {
+            return query => query.Where(x => x.proj_id == loadP6PROJECT.proj_id && x.pred_proj_id == loadP6PROJECT.proj_id).Where(x => x.delete_date == null);
+        }
+
         private Func<IRepositoryQuery<PROJWBS>, IQueryable<PROJWBS>> PROJWBSProjectionFunc()
         {
             return query => query.Where(x => x.proj_id == loadP6PROJECT.proj_id);
@@ -117,6 +140,7 @@ namespace BluePrints.Common.Base
             return
                 query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == progress_type);
         }
+
         #region Used as Dependency Delegate
         public Action<IEnumerable<ICanAssignP6>> OnViewModelLoaded { get; set; }
         public Action<string> OnViewModelLoadFailed { get; set; }
@@ -708,6 +732,8 @@ namespace BluePrints.Common.Base
                     return new List<TASK>();
             }
         }
+
+        public IEnumerable<TASKPRED> TASKPRED_Source => GetEntities<TASKPRED>();
         
         public virtual DateTime Beg { get; set; }
         public virtual DateTime End { get; set; }

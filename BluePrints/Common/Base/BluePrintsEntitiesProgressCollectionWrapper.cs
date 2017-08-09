@@ -510,7 +510,7 @@ namespace BluePrints.Common.Base
 
                         if (P6TASK.target_work_qty <= 0)
                         {
-                            errorMessage = "Current P6 activity doesn't have budgeted units, please re-populate budgeted units on baseline";
+                            errorMessage = P6TASK.task_code +  " doesn't have budgeted units, please re-populate budgeted units on baseline";
                             break;
                         }
 
@@ -519,7 +519,7 @@ namespace BluePrints.Common.Base
 
                         if (P6TASK.remain_work_qty < 0)
                         {
-                            errorMessage = "Negative remaining units because budgeted units is less than earned units, please re-populate budgeted units on baseline";
+                            errorMessage = "Negative remaining units on " + P6TASK.task_code + " because budgeted units is less than earned units, please re-populate budgeted units on baseline";
                             break;
                         }
 
@@ -572,7 +572,11 @@ namespace BluePrints.Common.Base
 
 
                         if (!processedP6Task.Any(x => x == P6TASK.task_code))
+                        {
+                            P6TASK.duration_type = P6DURATION_TYPE.DT_FixedQty.ToString();
+                            P6TASK.complete_pct_type = P6COMPLETE_TYPE.CP_Units.ToString();
                             processedP6Task.Add(P6TASK.task_code);
+                        }
 
                         scheduling_view_model.Save_Task(P6TASK);
                     }
@@ -585,12 +589,64 @@ namespace BluePrints.Common.Base
             }
 
             LoadingScreenManager.CloseLoadingScreen();
+
+            if(errorMessage == string.Empty)
+            {
+                IEnumerable<TASK> progressed_milestones = getProgressedMilestones(scheduling_view_model.TASK_Source, scheduling_view_model.TASKPRED_Source);
+                LoadingScreenManager.ShowLoadingScreen(progressed_milestones.Count());
+                foreach (TASK progressed_milestone in progressed_milestones)
+                {
+                    scheduling_view_model.Save_Task(progressed_milestone);
+                    LoadingScreenManager.Progress();
+                }
+
+                LoadingScreenManager.CloseLoadingScreen();
+            }
+
             destroy_scheduling_view_model();
 
             if (errorMessage == string.Empty)
                 MessageBoxService.ShowMessage(BluePrintsResources.P6_Assignment_Progress_Write_Success);
             else
                 MessageBoxService.ShowMessage(errorMessage);
+        }
+
+        /// <summary>
+        /// Progress and return a collection of progressed milestones
+        /// </summary>
+        private IEnumerable<TASK> getProgressedMilestones(IEnumerable<TASK> task_source, IEnumerable<TASKPRED> taskpred_source)
+        {
+            IEnumerable<TASK> milestones = task_source.Where(x => x.task_type == P6TASKTYPE.TT_Mile.ToString() || x.task_type == P6TASKTYPE.TT_FinMile.ToString());
+            List<TASK> progressed_milestones = new List<TASK>();
+            foreach (TASK milestone in milestones)
+            {
+                List<TASK> task_collector = new List<TASK>();
+                recurseGetPredecessorTask(milestone, task_source, taskpred_source, task_collector);
+
+                if (task_collector.All(x => x.status_code == P6TASKSTATUS.TK_Complete.ToString()))
+                {
+                    milestone.status_code = P6TASKSTATUS.TK_Complete.ToString();
+                    milestone.act_start_date = task_collector.Max(x => x.act_end_date);
+                    milestone.act_end_date = task_collector.Max(x => x.act_end_date);
+                    progressed_milestones.Add(milestone);
+                }
+            }
+
+            return progressed_milestones;
+        }
+
+        private void recurseGetPredecessorTask(TASK parent_task, IEnumerable<TASK> task_source, IEnumerable<TASKPRED> taskpred_source, List<TASK> task_collector)
+        {
+            IEnumerable<TASKPRED> predecessor_relationships = taskpred_source.Where(x => x.task_id == parent_task.task_id);
+            if (predecessor_relationships.Count() > 0)
+            {
+                IEnumerable<TASK> predecessor_tasks = task_source.Where(x => predecessor_relationships.Any(y => y.pred_task_id == x.task_id));
+                foreach(TASK predecessor_task in predecessor_tasks)
+                {
+                    task_collector.Add(predecessor_task);
+                    recurseGetPredecessorTask(predecessor_task, task_source, taskpred_source, task_collector);
+                }
+            }
         }
 
         private void onSchedulingViewModelLoadFailed(string error_message)

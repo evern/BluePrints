@@ -60,14 +60,38 @@ namespace BluePrints.ViewModels
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
 
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, x => defaultConstructionDEPARTMENT = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc, x => defaultConstructionPHASE = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc, x => p6_baseline_entity = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, assign_default_construction_department);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc, assign_default_construction_phase);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc, assign_estimation);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS, STOCK_GROUPProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
 
             base.initializeEntitiesLoadersDescription();
+        }
+
+        private void assign_default_construction_department(DEPARTMENT entity)
+        {
+            if (entity == null && !SupressCompulsoryEntityNotFoundMessage)
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Construction department not found, please add " + BluePrintsResources.Default_Construction_Department.ToString() + " in department view")));
+
+            defaultConstructionDEPARTMENT = entity;
+        }
+
+        private void assign_default_construction_phase(BluePrints.Data.PHASE entity)
+        {
+            if (entity == null && !SupressCompulsoryEntityNotFoundMessage)
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Site phase not found, please add " + BluePrintsResources.Default_Construction_Phase.ToString() + " in phase view")));
+
+            defaultConstructionPHASE = entity;
+        }
+
+        private void assign_estimation(ESTIMATION_DIRECT entity)
+        {
+            if (entity == null && !SupressCompulsoryEntityNotFoundMessage)
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live estimation not found")));
+
+            p6_baseline_entity = entity;
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()

@@ -82,7 +82,7 @@ namespace BluePrints.ViewModels
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, SetBASELINEIsLocked);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, assign_baseline);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
@@ -110,8 +110,11 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID == p6_baseline_entity.EntityKey);
         }
 
-        private void SetBASELINEIsLocked(BASELINE entity)
+        private void assign_baseline(BASELINE entity)
         {
+            if (entity == null && !SupressCompulsoryEntityNotFoundMessage)
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live baseline not found")));
+
             p6_baseline_entity = entity;
             loadBASELINE = entity;
             if (entity.BUDGETED_UNITS != null && entity.BUDGETED_UNITS > 0)

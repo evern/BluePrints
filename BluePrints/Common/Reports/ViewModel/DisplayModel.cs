@@ -122,6 +122,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal MinEstimateUnits => ((IReportable)ProgressItem).MinEstimateUnits;
 
+        public decimal Remaining_Productivity => ((IReportable)ProgressItem).Remaining_Productivity;
+
         public void Update()
         {
             ProgressItem.Update();
@@ -369,6 +371,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal MinEstimateUnits => Reportable.MinEstimateUnits;
 
         public Guid? Stock_Group_Guid => Reportable.Stock_Group_Guid;
+
+        public decimal Remaining_Productivity => Reportable.Remaining_Productivity;
 
         public void SetReportingDataDate(DateTime dataDate)
         {

@@ -48,6 +48,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         SingleObjectSummarizer StatSummarizer { get; }
         decimal Current_Productivity { get; }
         decimal Override_Productivity { get; set; }
+        decimal Remaining_Productivity { get; }
     }
 
     public interface IDeliverable_Quantity_Group : IDeliverable_Quantity
@@ -92,9 +93,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal AbsoluteTotalInstalledQuantity { get; }
         decimal getCurrentPeriodEarnedUnits(decimal newPercentage);
     }
-    #endregion
 
-    #region Property Specification Interfaces
     public interface ICanAssignP6 : IDeliverable, ICanUpdate
     {
         List<P6_ASSIGNMENT> P6_Assignments { get; set; }
@@ -126,7 +125,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         void SetProgressItems(List<PROGRESS_ITEM> progresses);
         void AppendProgressItem(PROGRESS_ITEM currentProgress);
     }
+    #endregion
 
+    #region Property Specification Interfaces
     public interface ISupportVariationSummary : ISupportVariation
     {
         decimal Forecast_Units { get; }

@@ -1040,7 +1040,6 @@
                                                                CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                                     <dxb:BarButtonItem Content="Delete"
                                                                Command="{Binding View.DataContext.MainViewModel.BulkDeleteCommand}"
-                                                               CommandParameter="{Binding View.DataContext.MainViewModel.SelectedEntities}"
                                                                Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                                     <dxb:BarButtonItem Content="Refresh"
                                                                Command="{Binding View.DataContext.MainViewModel.RefreshCommand}"
@@ -1148,7 +1147,6 @@
                                                                CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                                     <dxb:BarButtonItem Content="Delete"
                                                                Command="{Binding View.DataContext.MainViewModel.BulkDeleteCommand}"
-                                                               CommandParameter="{Binding View.DataContext.MainViewModel.SelectedEntities}"
                                                                Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                                     <dxb:BarButtonItem Content="Refresh"
                                                                Command="{Binding View.DataContext.MainViewModel.RefreshCommand}"
@@ -1253,7 +1251,6 @@
                                                                CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                                     <dxb:BarButtonItem Content="Delete"
                                                                Command="{Binding View.DataContext.MainViewModel.BulkDeleteCommand}"
-                                                               CommandParameter="{Binding View.DataContext.MainViewModel.SelectedEntities}"
                                                                Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                                     <dxb:BarButtonItem Content="Refresh"
                                                                Command="{Binding View.DataContext.MainViewModel.RefreshCommand}"
@@ -1414,7 +1411,6 @@
                                                                CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                                     <dxb:BarButtonItem Content="Delete"
                                                                Command="{Binding View.DataContext.MainViewModel.BulkDeleteCommand}"
-                                                               CommandParameter="{Binding View.DataContext.MainViewModel.SelectedEntities}"
                                                                Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                                     <dxb:BarButtonItem Content="Refresh"
                                                                Command="{Binding View.DataContext.MainViewModel.RefreshCommand}"

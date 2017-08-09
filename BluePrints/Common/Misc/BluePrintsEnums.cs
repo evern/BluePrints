@@ -146,11 +146,40 @@ namespace BluePrints.Common
         Baseline_Report
     }
 
+    public enum P6TASKTYPE
+    {
+        TT_Task = 0,
+        TT_Mile = 1,
+        TT_FinMile = 2
+    }
+
     public enum P6TASKSTATUS
     {
         TK_NotStart = 0,
         TK_Active = 1,
         TK_Complete = 2
+    }
+
+    public enum P6DURATION_TYPE
+    {
+        [Display(Name = "Fixed Duration and Units/Time")]
+        DT_FixedDrtn = 0,
+        [Display(Name = "Fixed Duration & Units")]
+        DT_FixedDUR2 = 1,
+        [Display(Name = "Fixed Units/Time")]
+        DT_FixedRate = 2,
+        [Display(Name = "Fixed Units")]
+        DT_FixedQty = 3
+    }
+
+    public enum P6COMPLETE_TYPE
+    {
+        [Display(Name = "Duration")]
+        CP_Drtn = 0,
+        [Display(Name = "Physical")]
+        CP_Phys = 1,
+        [Display(Name = "Units")]
+        CP_Units = 2
     }
 
     public enum DateNavigationType
@@ -366,6 +395,26 @@ namespace BluePrints.Common
         Specific_Risks = 12,
         [Display(Name = "Noise Exposure")]
         Noise_Exposure = 13
+    }
+
+    public enum Register_IssueType
+    {
+        [Display(Name = "Internal")]
+        Client = 0,
+        [Display(Name = "Client")]
+        Internal = 1,
+        [Display(Name = "Vendor")]
+        Vendor = 2
+    }
+
+    public enum Register_IssueImportance
+    {
+        [Display(Name = "Low")]
+        Client = 0,
+        [Display(Name = "Medium")]
+        Internal = 1,
+        [Display(Name = "High")]
+        Vendor = 2
     }
 
     public class ReportingEnum

@@ -89,6 +89,26 @@
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.View>
                                         <dxg:TableView x:Name="tableView1" Style="{StaticResource DefaultDetailTableViewTemplate}">
+                                            <dxg:TableView.RowCellMenuCustomizations>
+                                                <dxb:BarButtonItem Content="Bulk Edit"
+                                                       Command="{Binding DataContext.MainViewModel.BulkColumnEditCommand, ElementName=userControl}"
+                                                       CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                                                       Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
+                                                <dxb:BarButtonItem Content="Fill Up"
+                                                       Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}"
+                                                       Command="{Binding DataContext.MainViewModel.FillUpCommand, ElementName=userControl}"
+                                                       CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                                                <dxb:BarButtonItem Content="Fill Down"
+                                                       Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}"
+                                                       Command="{Binding DataContext.MainViewModel.FillDownCommand, ElementName=userControl}"
+                                                       CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                                                <dxb:BarButtonItem Content="Delete"
+                                                       Command="{Binding DataContext.MainViewModel.BulkDeleteCommand, ElementName=userControl}"
+                                                       Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                                <dxb:BarButtonItem Content="Refresh"
+                                                       Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
+                                                       Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                            </dxg:TableView.RowCellMenuCustomizations>
                                         </dxg:TableView>
                                     </dxg:GridControl.View>
                                 </dxg:GridControl>
@@ -117,7 +137,6 @@
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                     <dxb:BarButtonItem Content="Delete"
                                                        Command="{Binding View.DataContext.BulkDeleteCommand}"
-                                                       CommandParameter="{Binding View.DataContext.SelectedEntities}"
                                                        Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                     <dxb:BarButtonItem Content="Refresh"
                                                        Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"

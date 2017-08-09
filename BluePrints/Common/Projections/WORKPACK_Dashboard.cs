@@ -21,7 +21,7 @@ namespace BluePrints.Common.Projections
             this.RaisePropertyChanged();
         }
 
-        public void GroupProjectStats(ProjectSummaryStats project_summary_stats)
+        public void GroupProjectStats(SummaryStats project_summary_stats)
         {
             Stats = SummaryStatsHelpers.Group_Summary_Stats(project_summary_stats, x => x.Workpack_Guid == Entity.EntityKey, x => x.WorkpackName == Entity.INTERNAL_NAME1);
         }
@@ -75,7 +75,7 @@ namespace BluePrints.Common.Projections
         {
             IEnumerable<WORKPACK_Dashboard> workpack_dashboards = WORKPACKS.Where(x => x.GUID_PROJECT == projectDashboard.EntityKey).Select(x => new WORKPACK_Dashboard() {EntityKey = x.GUID, Entity = x});
             List<WORKPACK_Dashboard> newWORKPACKDashboards = workpack_dashboards.ToList();
-            newWORKPACKDashboards.ForEach(x => x.GroupProjectStats((ProjectSummaryStats)projectDashboard.Stats));
+            newWORKPACKDashboards.ForEach(x => x.GroupProjectStats((SummaryStats)projectDashboard.Stats));
             if (subAreaCollection != null)
                 newWORKPACKDashboards.ForEach(x => x.SetAvailableSubAreas(subAreaCollection));
 
