@@ -62,16 +62,6 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
         private BASELINE loadBASELINE;
-        public bool IsPhaseVisible
-        {
-            get
-            {
-                if (loadPROJECT == null)
-                    return false;
-
-                return !loadPROJECT.USELEGACYWORKPACK;
-            }
-        }
 
         protected override ProgressType progress_type => ProgressType.Design;
 
@@ -381,18 +371,7 @@ namespace BluePrints.ViewModels
                     //Area is required immediately for subarea selection
                     activeBASELINE_ITEM.Entity.Entity.AREA = AREACollection.FirstOrDefault(x => x.GUID == chosenWORKPACK.GUID_DAREA);
                     activeBASELINE_ITEM.Entity.Entity.GUID_SUBAREA = chosenWORKPACK.GUID_DSUBAREA;
-                    activeBASELINE_ITEM.Entity.Entity.GUID_DOCTYPE = chosenWORKPACK.GUID_DDOCTYPE;
-                    activeBASELINE_ITEM.Entity.Entity.GUID_DEPARTMENT = chosenWORKPACK.GUID_DDEPARTMENT;
-                    activeBASELINE_ITEM.Entity.Entity.GUID_DISCIPLINE = chosenWORKPACK.GUID_DDISCIPLINE;
-                    activeBASELINE_ITEM.Entity.Entity.GUID_PHASE = chosenWORKPACK.PHASE != null
-                        ? chosenWORKPACK.GUID_DPHASE
-                        : null;
-                    var SelectedAREA = AREACollection.FirstOrDefault(x => x.GUID == chosenWORKPACK.GUID_DAREA);
-                    var SelectedDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == chosenWORKPACK.GUID_DDOCTYPE);
-                    var SelectedDISCIPLINE =
-                        DISCIPLINECollection.FirstOrDefault(x => x.GUID == chosenWORKPACK.GUID_DDISCIPLINE);
-
-                    activeBASELINE_ITEM.Entity.Entity.INTERNAL_NUM = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT, MainViewModel.Entities.Select(x => x.Entity), SelectedAREA, SelectedDISCIPLINE, SelectedDOCTYPE);
+                    activeBASELINE_ITEM.Entity.Entity.GUID_PHASE = chosenWORKPACK.PHASE != null ? chosenWORKPACK.GUID_DPHASE : null;
                     activeBASELINE_ITEM.Update();
                 }
             }
@@ -681,16 +660,6 @@ namespace BluePrints.ViewModels
             if (info.Column == null)
                 return;
 
-            var departmentFieldName =
-                BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
-                BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
-                BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DEPARTMENT);
-            var disciplineFieldName =
-                                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
-                                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
-                                    BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DISCIPLINE);
-            var docTypeFieldName =  BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
-                                    BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +             BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE);
             var areaFieldName =     BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
                                     BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                                     BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA);
@@ -719,23 +688,14 @@ namespace BluePrints.ViewModels
                     SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName, internalNumber);
                     entitiesToSave.Add(entity);
                 }
-                else if (info.Column.FieldName == departmentFieldName || info.Column.FieldName == disciplineFieldName ||
-                         info.Column.FieldName == docTypeFieldName || info.Column.FieldName == areaFieldName || info.Column.FieldName == subAreaFieldName)
+                else if (info.Column.FieldName == areaFieldName || info.Column.FieldName == subAreaFieldName)
                 {
                     if (entityWORKPACK == null)
                         continue;
 
-                    if (info.Column.FieldName == departmentFieldName)
-                        SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName,
-                            entityWORKPACK.GUID_DDEPARTMENT);
-                    else if (info.Column.FieldName == disciplineFieldName)
-                        SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName,
-                            entityWORKPACK.GUID_DDISCIPLINE);
-                    else if (info.Column.FieldName == docTypeFieldName)
-                        SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName, entityWORKPACK.GUID_DDOCTYPE);
-                    else if (info.Column.FieldName == areaFieldName)
+                    if (info.Column.FieldName == areaFieldName)
                         SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName, entityWORKPACK.GUID_DAREA);
-                    else if(info.Column.FieldName == subAreaFieldName && IsPhaseVisible)
+                    else if(info.Column.FieldName == subAreaFieldName)
                         SetMainNestedValueWithUndoAndRefresh(entity, info.Column.FieldName, entityWORKPACK.GUID_DSUBAREA);
 
                     entitiesToSave.Add(entity);
@@ -745,7 +705,7 @@ namespace BluePrints.ViewModels
                     if (entity.Entity.Entity.GUID_AREA == Guid.Empty || entity.Entity.Entity.GUID_DISCIPLINE == Guid.Empty)
                         continue;
 
-                    string internalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2(
+                    string internalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber(
                         entity.Entity.Entity.GUID_AREA, entity.Entity.Entity.GUID_SUBAREA, 
                         loadPROJECT, AREACollection, SUBAREACollection, entity.Entity.Entity.GUID_PHASE, PHASECollection);
 
@@ -766,12 +726,6 @@ namespace BluePrints.ViewModels
                         newWORKPACK.GUID_DAREA = entity.Entity.Entity.GUID_AREA;
                         newWORKPACK.GUID_DSUBAREA = entity.Entity.Entity.GUID_SUBAREA == null ? defaultSubArea == null ? defaultSubArea.GUID : (Guid?)null : entity.Entity.Entity.GUID_SUBAREA;
                         newWORKPACK.GUID_DPHASE = entity.Entity.Entity.GUID_PHASE;
-                        if (entity.Entity.Entity.GUID_DISCIPLINE != null)
-                            newWORKPACK.GUID_DDISCIPLINE = (Guid) entity.Entity.Entity.GUID_DISCIPLINE;
-                        if (entity.Entity.Entity.GUID_DEPARTMENT != null)
-                            newWORKPACK.GUID_DDEPARTMENT = (Guid) entity.Entity.Entity.GUID_DEPARTMENT;
-                        if (entity.Entity.Entity.GUID_DOCTYPE != null)
-                            newWORKPACK.GUID_DDOCTYPE = (Guid) entity.Entity.Entity.GUID_DOCTYPE;
 
                         newWORKPACK.INTERNAL_NAME1 = internalName; 
                         newWORKPACK.STARTDATE = DateTime.Now;
@@ -810,8 +764,7 @@ namespace BluePrints.ViewModels
             DISCIPLINE currentItemDISCIPLINE = DISCIPLINECollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_DISCIPLINE));
             DOCTYPE currentItemDOCTYPE = DOCTYPECollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_DOCTYPE));
             var internalNum = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT,
-                MainViewModel.Entities.Select(x => x.Entity), currentItemAREA, currentItemDISCIPLINE,
-                currentItemDOCTYPE, projectionEntity.EntityKey);
+                MainViewModel.Entities.Select(x => x.Entity.Entity), currentItemAREA, currentItemDISCIPLINE, currentItemDOCTYPE, projectionEntity.EntityKey);
 
             return internalNum;
         }
@@ -832,17 +785,6 @@ namespace BluePrints.ViewModels
         protected override string ViewName
         {
             get { return "BASELINE_ITEMSViewModelWrapper"; }
-        }
-
-        public void ShowWORKPACKColumns()
-        {
-            if (ShowWORKPACKInternalName1 == null || ShowWORKPACKInternalName2 == null)
-                return;
-
-            if (loadPROJECT == null || loadPROJECT.USELEGACYWORKPACK)
-                ShowWORKPACKInternalName1();
-            else
-                ShowWORKPACKInternalName2();
         }
 
         public IEnumerable<RATE> RATECollection

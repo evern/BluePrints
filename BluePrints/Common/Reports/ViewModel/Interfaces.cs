@@ -22,6 +22,8 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         decimal Variation_Install_Cost { get; }
         decimal Variation_Supply_Cost { get; }
+        decimal Variation_Freight_Cost { get; }
+        decimal Variation_Total_Cost { get; }
         decimal Variation_Install_Hours { get; }
     }
 
@@ -29,10 +31,6 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         decimal Remaining_Hours_To_Completion { get; }
         decimal MinEstimateQuantity { get; }
-        decimal Total_Install_Hours { get; }
-        decimal Total_Install_Cost { get; }
-        decimal Total_Supply_Cost { get; }
-        decimal Total_Cost { get; }
         decimal Earned_Install_Costs_OnDataDate { get; }
         decimal Earned_Supply_Costs_OnDataDate { get; }
         decimal Earned_Total_Costs_OnDataDate { get; }
@@ -209,6 +207,20 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Estimated_Quantity { get; }
         decimal Variation_Quantity { get; }
         decimal Total_Quantity { get; }
+        decimal Estimated_Install_Hours { get; }
+        decimal Variation_Install_Hours { get; }
+        decimal Total_Install_Hours { get; }
+        decimal Estimated_Install_Cost { get; }
+        decimal Variation_Install_Cost { get; }
+        decimal FreightRate { get; }
+        decimal Estimated_Freight_Cost { get; }
+        decimal Variation_Freight_Cost { get; }
+        decimal Estimated_Supply_Cost { get; }
+        decimal Variation_Supply_Cost { get; }
+        decimal Total_Install_Cost { get; }
+        decimal Total_Freight_Cost { get; }
+        decimal Total_Supply_Cost { get; }
+        decimal Total_Cost { get; }
         string UOM { get; }
     }
 

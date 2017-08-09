@@ -227,6 +227,16 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn Name="colTRUCK_PERCENTAGE" FieldName="Entity.Entity.Entity.TRUCK_PERCENTAGE" Header="TRUCK % PER QTY">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:SpinEdit Name="PART_Editor" IsTextEditable="True" IsFloatValue="True"
+                                                                      Increment="0.1" MinValue="0" MaxValue="1"
+                                                                      MaskType="Numeric" Mask="p0"
+                                                                      MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.IsEnabled}" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.Entity.Entity.COMMENTS" Header="COMMENTS">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
@@ -282,14 +292,28 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Variation_Install_Cost" ReadOnly="True" Header="VAR INSTALL COSTS" AllowSearchPanel="False">
+                                <dxg:GridColumn FieldName="Variation_Freight_Cost" ReadOnly="True" Header="VAR FREIGHT COST" AllowSearchPanel="False">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True" MaskType="Numeric" Mask="c" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Variation_Supply_Cost" ReadOnly="True" Header="VAR SUPPLY COSTS" AllowSearchPanel="False">
+                                <dxg:GridColumn FieldName="Variation_Install_Cost" ReadOnly="True" Header="VAR INSTALL COST" AllowSearchPanel="False">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True" MaskType="Numeric" Mask="c" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Variation_Supply_Cost" ReadOnly="True" Header="VAR SUPPLY COST" AllowSearchPanel="False">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True" MaskType="Numeric" Mask="c" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Variation_Total_Cost" ReadOnly="True" Header="VAR TOTAL COST" AllowSearchPanel="False">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True" MaskType="Numeric" Mask="c" />
@@ -329,6 +353,11 @@
                                 <dxg:GridColumn Header="INSTALL HOURS" FieldName="Total_Install_Hours" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="FREIGHT COST" FieldName="Total_Freight_Cost" ReadOnly="True">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Header="INSTALL COST" FieldName="Total_Install_Cost" ReadOnly="True">
@@ -377,7 +406,10 @@
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Variation_Install_Hours" SummaryType="SUM" ShowInColumn="Variation_Install_Hours" DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Variation_Install_Cost" SummaryType="SUM" ShowInColumn="Variation_Install_Cost" DisplayFormat="Total: {0:c}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Variation_Supply_Cost" SummaryType="SUM" ShowInColumn="Variation_Supply_Cost" DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Variation_Freight_Cost" SummaryType="SUM" ShowInColumn="Variation_Freight_Cost" DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Variation_Total_Cost" SummaryType="SUM" ShowInColumn="Variation_Total_Cost" DisplayFormat="Total: {0:c}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Total_Install_Hours" SummaryType="SUM" ShowInColumn="Total_Install_Hours" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Total_Freight_Cost" SummaryType="SUM" ShowInColumn="Total_Freight_Cost" DisplayFormat="Total: {0:c}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Total_Install_Cost" SummaryType="SUM" ShowInColumn="Total_Install_Cost" DisplayFormat="Total: {0:c}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Total_Supply_Cost" SummaryType="SUM" ShowInColumn="Total_Supply_Cost" DisplayFormat="Total: {0:c}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />
@@ -390,7 +422,10 @@
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Variation_Install_Hours" SummaryType="SUM" ShowInColumn="Variation_Install_Hours" DisplayFormat="Total: {0:n}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Variation_Install_Cost" SummaryType="SUM" ShowInColumn="Variation_Install_Cost" DisplayFormat="Total: {0:c}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Variation_Supply_Cost" SummaryType="SUM" ShowInColumn="Variation_Supply_Cost" DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Variation_Freight_Cost" SummaryType="SUM" ShowInColumn="Variation_Freight_Cost" DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Variation_Total_Cost" SummaryType="SUM" ShowInColumn="Variation_Total_Cost" DisplayFormat="Total: {0:c}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Total_Install_Hours" SummaryType="SUM" ShowInColumn="Total_Install_Hours" DisplayFormat="Total: {0:n}" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Total_Freight_Cost" SummaryType="SUM" ShowInColumn="Total_Freight_Cost" DisplayFormat="Total: {0:c}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Total_Install_Cost" SummaryType="SUM" ShowInColumn="Total_Install_Cost" DisplayFormat="Total: {0:c}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Total_Supply_Cost" SummaryType="SUM" ShowInColumn="Total_Supply_Cost" DisplayFormat="Total: {0:c}" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />

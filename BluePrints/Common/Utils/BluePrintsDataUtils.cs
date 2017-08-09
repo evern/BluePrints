@@ -206,20 +206,8 @@ namespace BluePrints.Common.ViewModel.Utils
             return string.Empty;
         }
 
-        /// <summary>
-        /// Generate internal number1 when all required fields are populated
-        /// </summary>
-        /// <param name="fromPROJECT">project to generate parts of the internal number</param>
-        /// <param name="BASELINE_ITEMEntities">the context to calculate the ending number</param>
-        /// <param name="selectedAREA">area to generate parts of the internal number</param>
-        /// <param name="selectedDISCIPLINE">discipline to generate parts of the internal number</param>
-        /// <param name="selectedDOCTYPE">doctype to generate parts of the internal number</param>
-        /// <param name="excludeGUID">id to exclude count when generating enumerated parts= of the internal number</param>
-        /// <param name="duplicateInternalNumber">internal number used during duplication to specify where to enumerate onwards for generating enumerated part of the internal number</param>
-        /// <param name="limitCompareIndexForExistingEntities">the numeric context to compare existing entity to, ignoring entity</param>
-        /// <returns></returns>
         public static string BASELINEITEM_Generate_InternalNumber(PROJECT fromPROJECT,
-            IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMEntities, AREA selectedAREA, DISCIPLINE selectedDISCIPLINE,
+            IEnumerable<BASELINE_ITEM> BASELINE_ITEMEntities, AREA selectedAREA, DISCIPLINE selectedDISCIPLINE,
             DOCTYPE selectedDOCTYPE, Guid? excludeGUID = null)
         {
             if (selectedAREA != null && selectedDISCIPLINE != null && selectedDOCTYPE != null)
@@ -236,8 +224,8 @@ namespace BluePrints.Common.ViewModel.Utils
                     BASELINE_ITEMEntities.Where(x => x.EntityKey != excludeGUID)
                         .Count(
                             x =>
-                                x.Entity.INTERNAL_NUM != null &&
-                                x.Entity.INTERNAL_NUM.Contains(InternalNum));
+                                x.INTERNAL_NUM != null &&
+                                x.INTERNAL_NUM.Contains(InternalNum));
                 internalNameCount += 1;
 
                 var countString = string.Empty;
@@ -255,92 +243,10 @@ namespace BluePrints.Common.ViewModel.Utils
                 return string.Empty;
         }
 
-        public static string BASELINEITEM_Generate_InternalNumber(PROJECT fromPROJECT,
-            IEnumerable<BASELINE_ITEM> BASELINE_ITEMEntities, AREA selectedAREA, DISCIPLINE selectedDISCIPLINE,
-            DOCTYPE selectedDOCTYPE, Guid? excludeGUID = null)
-        {
-            if (selectedAREA != null && selectedDISCIPLINE != null && selectedDOCTYPE != null)
-            {
-                var InternalNum = fromPROJECT.NUMBER;
-                if (selectedAREA != null)
-                    InternalNum += "-" + selectedAREA.INTERNAL_NUM;
-                if (selectedDOCTYPE != null)
-                    InternalNum += "-" + selectedDOCTYPE.CODE;
-                if (selectedDISCIPLINE != null)
-                    InternalNum += "-" + selectedDISCIPLINE.CODE;
-
-                var internalNameCount =
-                    BASELINE_ITEMEntities.Where(x => x.GUID != excludeGUID)
-                        .Count(x => x.INTERNAL_NUM != null && x.INTERNAL_NUM.Contains(InternalNum));
-                internalNameCount += 1;
-
-                var countString = string.Empty;
-                if (internalNameCount < 10)
-                    countString = "00" + internalNameCount.ToString();
-                else if (internalNameCount < 100)
-                    countString = "0" + internalNameCount.ToString();
-                else
-                    countString = internalNameCount.ToString();
-
-                InternalNum += countString;
-                return InternalNum;
-            }
-            else
-            {
-                return string.Empty;
-            }
-        }
-
-        /// <summary>
-        /// Generate internal number1 when all required fields are populated
-        /// </summary>
-        public static string WORKPACK_Generate_InternalNumber1(PROJECT fromPROJECT, WORKPACK fromWORKPACK,
-            IEnumerable<WORKPACK> WORKPACKEntities, IEnumerable<AREA> lookUpAREA,
-            IEnumerable<DISCIPLINE> lookUpDISCIPLINE, IEnumerable<DOCTYPE> lookUpDOCTYPE)
-        {
-            AREA findAREA;
-            DISCIPLINE findDISCIPLINE;
-            DOCTYPE findDOCTYPE;
-
-            if (fromWORKPACK.AREA == null || fromWORKPACK.DISCIPLINE == null || fromWORKPACK.DOCTYPE == null)
-            {
-                findAREA = lookUpAREA.FirstOrDefault(area => area.GUID == fromWORKPACK.GUID_DAREA);
-                findDISCIPLINE =
-                    lookUpDISCIPLINE.FirstOrDefault(discipline => discipline.GUID == fromWORKPACK.GUID_DDISCIPLINE);
-                findDOCTYPE = lookUpDOCTYPE.FirstOrDefault(doctype => doctype.GUID == fromWORKPACK.GUID_DDOCTYPE);
-            }
-            else
-            {
-                findAREA = fromWORKPACK.AREA;
-                findDISCIPLINE = fromWORKPACK.DISCIPLINE;
-                findDOCTYPE = fromWORKPACK.DOCTYPE;
-            }
-
-            if (findAREA != null && findDISCIPLINE != null && findDOCTYPE != null)
-            {
-                var InternalName = fromPROJECT.NUMBER;
-                InternalName += "-" + findAREA.INTERNAL_NUM;
-                InternalName += findDOCTYPE.CODE;
-                InternalName += findDISCIPLINE.CODE;
-
-                var InternalNameCount =
-                    WORKPACKEntities.Count(
-                        obj => obj.INTERNAL_NAME1 != null && obj.INTERNAL_NAME1.Contains(InternalName)) + 1;
-
-                InternalName += InternalNameCount.ToString();
-
-                return InternalName;
-            }
-            else
-            {
-                return string.Empty;
-            }
-        }
-
         /// <summary>
         /// Generate internal number2 when all required fields are populated
         /// </summary>
-        public static string WORKPACK_Generate_InternalNumber2(Guid? entityAreaGuid, Guid? entitySubAreaGuid, PROJECT PROJECT, IEnumerable<AREA> AREACollection, IEnumerable<AREA> SUBAREACollection, Guid? entityPhaseGuid = null, IEnumerable<PHASE> PHASECollection = null)
+        public static string WORKPACK_Generate_InternalNumber(Guid? entityAreaGuid, Guid? entitySubAreaGuid, PROJECT PROJECT, IEnumerable<AREA> AREACollection, IEnumerable<AREA> SUBAREACollection, Guid? entityPhaseGuid = null, IEnumerable<PHASE> PHASECollection = null)
         {
             if (entityAreaGuid == Guid.Empty)
                 return string.Empty;
@@ -360,56 +266,6 @@ namespace BluePrints.Common.ViewModel.Utils
                 InternalName += "-" + area.INTERNAL_NUM;
                 InternalName += "-" + subAreaNumber;
                 InternalName += "-" + phaseNumber;
-
-                return InternalName;
-            }
-            else
-            {
-                return string.Empty;
-            }
-        }
-
-        /// <summary>
-        /// Generate internal number2 when all required fields are populated
-        /// </summary>
-        public static string WORKPACK_Generate_InstallSupplyInternalNumber(PROJECT fromPROJECT, WORKPACK fromWORKPACK,
-            IEnumerable<WORKPACK> WORKPACKEntities, IEntitiesViewModel<AREA> lookUpAREA,
-            IEntitiesViewModel<DISCIPLINE> lookUpDISCIPLINE, IEntitiesViewModel<PHASE> lookUpPHASE, bool IsInstall)
-        {
-            AREA findAREA;
-            DISCIPLINE findDISCIPLINE;
-            PHASE findPHASE;
-
-            if (fromWORKPACK.AREA == null || fromWORKPACK.DISCIPLINE == null || fromWORKPACK.AREA == null)
-            {
-                findAREA = lookUpAREA.Entities.FirstOrDefault(area => area.GUID == fromWORKPACK.GUID_DAREA);
-                findPHASE = lookUpPHASE.Entities.FirstOrDefault(phase => phase.GUID == fromWORKPACK.GUID_DPHASE);
-                findDISCIPLINE =
-                    lookUpDISCIPLINE.Entities.FirstOrDefault(
-                        discipline => discipline.GUID == fromWORKPACK.GUID_DDISCIPLINE);
-            }
-            else
-            {
-                findAREA = fromWORKPACK.AREA;
-                findPHASE = fromWORKPACK.PHASE;
-                findDISCIPLINE = fromWORKPACK.DISCIPLINE;
-            }
-
-            if (findAREA != null && findDISCIPLINE != null && findPHASE != null)
-            {
-                var InternalName = fromPROJECT.NUMBER;
-                InternalName += IsInstall == true ? "I" : "S";
-                InternalName += findAREA.INTERNAL_NUM;
-                InternalName += findDISCIPLINE.CODE;
-
-                var InternalNameCount =
-                    WORKPACKEntities.Count(
-                        obj => obj.INTERNAL_NAME1 != null && obj.INTERNAL_NAME1.Contains(InternalName)) + 1;
-
-                if (InternalNameCount < 10)
-                    InternalName += "0";
-
-                InternalName += InternalNameCount.ToString();
 
                 return InternalName;
             }

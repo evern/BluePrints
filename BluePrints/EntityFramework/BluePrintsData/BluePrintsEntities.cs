@@ -145,6 +145,11 @@ namespace BluePrints.Data
                 .WithOptional(e => e.COMMODITY_CODE)
                 .HasForeignKey(e => e.GUID_COMMODITY_CODE);
 
+            modelBuilder.Entity<COMMODITY_CODE>()
+                .HasMany(e => e.STOCK_CODE)
+                .WithOptional(e => e.COMMODITY_CODE)
+                .HasForeignKey(e => e.GUID_COMMODITY_CODE);
+
             modelBuilder.Entity<DELIVERABLES_STATUS>()
                 .Property(e => e.MAX_PERCENTAGE)
                 .HasPrecision(5, 2);
@@ -185,12 +190,6 @@ namespace BluePrints.Data
                 .HasMany(e => e.USER)
                 .WithOptional(e => e.DEPARTMENT1)
                 .HasForeignKey(e => e.GUID_DEPARTMENT);
-
-            modelBuilder.Entity<DEPARTMENT>()
-                .HasMany(e => e.WORKPACK)
-                .WithRequired(e => e.DEPARTMENT)
-                .HasForeignKey(e => e.GUID_DDEPARTMENT)
-                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<DISCIPLINE>()
                 .HasMany(e => e.BASELINE_ITEM)
@@ -233,12 +232,6 @@ namespace BluePrints.Data
                 .WithOptional(e => e.DISCIPLINE)
                 .HasForeignKey(e => e.GUID_DISCIPLINE);
 
-            modelBuilder.Entity<DISCIPLINE>()
-                .HasMany(e => e.WORKPACK)
-                .WithRequired(e => e.DISCIPLINE)
-                .HasForeignKey(e => e.GUID_DDISCIPLINE)
-                .WillCascadeOnDelete(false);
-
             modelBuilder.Entity<DOCTYPE>()
                 .HasMany(e => e.BASELINE_ITEM)
                 .WithOptional(e => e.DOCTYPE)
@@ -248,11 +241,6 @@ namespace BluePrints.Data
                 .HasMany(e => e.DELIVERABLES_STATUS)
                 .WithOptional(e => e.DOCTYPE)
                 .HasForeignKey(e => e.GUID_DOCTYPE);
-
-            modelBuilder.Entity<DOCTYPE>()
-                .HasMany(e => e.WORKPACK)
-                .WithOptional(e => e.DOCTYPE)
-                .HasForeignKey(e => e.GUID_DDOCTYPE);
 
             modelBuilder.Entity<ESTIMATION_DIRECT>()
                 .HasMany(e => e.ESTIMATION_DIRECT_ITEM)

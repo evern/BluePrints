@@ -18,6 +18,8 @@ namespace BluePrints.Data
 
         public Guid GUID_DEPARTMENT { get; set; }
 
+        public Guid? GUID_COMMODITY_CODE { get; set; }
+
         [Required]
         public Guid GUID_DISCIPLINE { get; set; }
 
@@ -69,5 +71,7 @@ namespace BluePrints.Data
         public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
 
         public virtual PROJECT PROJECT { get; set; }
+
+        public virtual COMMODITY_CODE COMMODITY_CODE { get; set; }
     }
 }

@@ -22,8 +22,11 @@ namespace BluePrints.Common.Projections
                 return MinNegativeUnits * Entity.QuantityPerUnit;
             }
         }
+        
+        public override decimal Variation_Cost => Variation_Total_Cost;
 
-        public decimal Variation_Install_Cost => Variation_Cost;
+        //Variation_Units are actually quantity here
+        public decimal Variation_Install_Cost => Variation_Install_Hours * Entity.ItemRate;
 
         public decimal Variation_Supply_Cost => Variation_Units * Entity.Stock_Code_Supply_Rate;
 
@@ -36,6 +39,10 @@ namespace BluePrints.Common.Projections
         public decimal Total_Supply_Cost => Total_Units * Entity.Stock_Code_Supply_Rate;
 
         public override decimal Total_Cost => Total_Install_Cost + Total_Supply_Cost;
+
+        public decimal Variation_Freight_Cost => Variation_Units * Entity.FreightRate;
+
+        public decimal Variation_Total_Cost => Variation_Install_Cost + Variation_Supply_Cost + Variation_Freight_Cost;
     }
 
     public class BluePrintsVariationBase<TEntity> : BluePrintsProjectionBase<TEntity>, IBluePrintsVariationBase<TEntity>
@@ -124,7 +131,7 @@ namespace BluePrints.Common.Projections
 
         public virtual decimal Total_Cost => IsByDuration ? 0 : (base.Entity.Total_Units + Variation_Units) * base.Entity.ItemRate;
 
-        public decimal Variation_Cost => IsByDuration ? 0 : Forecast_Units * base.Entity.ItemRate;
+        public virtual decimal Variation_Cost => IsByDuration ? 0 : Forecast_Units * base.Entity.ItemRate;
 
         //use to show what the units will be after approval
         public decimal Forecast_Units

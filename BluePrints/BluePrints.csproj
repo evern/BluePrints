@@ -555,7 +555,7 @@
     <Compile Include="ViewModels\STOCK_GROUP\STOCK_GROUPCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\User_OffsiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\SiteDirectVariationCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\VARIATION_ITEM\OffsiteDirectVariationCollectionViewModelWrapperRevision.cs" />
+    <Compile Include="ViewModels\VARIATION_ITEM\OffsiteDirectVariationCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\WORKPACK\WORKPACKDashboardViewModelWrapper.cs" />
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.xaml.cs">
       <DependentUpon>BASELINE_ITEMSchedulingView.xaml</DependentUpon>
@@ -1160,7 +1160,6 @@
     <Compile Include="ViewModels\UOM\UOMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\USERCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION\VARIATIONSCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\VARIATION_ITEM\OffsiteDirectVariationCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\WORKPACK\WORKPACKCollectionViewModelWrapper.cs" />
     <Compile Include="Common\View\BulkEditEnums.xaml.cs">
       <DependentUpon>BulkEditEnums.xaml</DependentUpon>

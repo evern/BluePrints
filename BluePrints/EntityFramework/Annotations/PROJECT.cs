@@ -35,7 +35,6 @@ namespace BluePrints.Data
             P6_ASSIGNMENT = new HashSet<P6_ASSIGNMENT>();
             STATUS = ProjectStatus.Active;
             CONTRACTTYPE = ContractType.LumpSum;
-            USELEGACYWORKPACK = true;
             CURRENCYCONVERSION = 1;
             REVIEWPERCENTAGE = 0.7M;
             REVIEWPERIOD = 5;

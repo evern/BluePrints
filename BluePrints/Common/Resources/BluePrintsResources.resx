@@ -231,4 +231,7 @@
   <data name="Alternate_Design_Phase" xml:space="preserve">
     <value>I1</value>
   </data>
+  <data name="Default_Procurement_Department" xml:space="preserve">
+    <value>PROCUREMENT</value>
+  </data>
 </root>

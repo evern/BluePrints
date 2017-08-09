@@ -56,7 +56,6 @@ namespace BluePrints.ViewModels
         private PROGRESS livePROGRESS;
         private ESTIMATION_DIRECT loadESTIMATION_DIRECT;
         public Guid load_context_guid => loadESTIMATION_DIRECT == null ? Guid.Empty : loadESTIMATION_DIRECT.GUID;
-        private DEPARTMENT defaultConstructionDEPARTMENT;
         private PHASE defaultConstructionPHASE;
         private bool isQueryForLiveStatus;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
@@ -91,7 +90,6 @@ namespace BluePrints.ViewModels
         {
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, x => defaultConstructionDEPARTMENT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc, x => defaultConstructionPHASE = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc, x => assign_estimation_direct(x));
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, x => assign_progress(x));
@@ -145,9 +143,7 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<ESTIMATION_DIRECT>, IQueryable<ESTIMATION_DIRECT>> ESTIMATION_DIRECTProjectionFunc()
         {
             if (isQueryForLiveStatus)
-                return
-                    query =>
-                        query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
+                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
             else
                 return query => query.Where(x => x.GUID == loadESTIMATION_DIRECT.GUID);
         }
@@ -162,19 +158,14 @@ namespace BluePrints.ViewModels
             return query => query.Include(x => x.PROJECT);
         }
 
-        private Func<IRepositoryQuery<DEPARTMENT>, IQueryable<DEPARTMENT>> DEPARTMENTProjectionFunc()
-        {
-            return query => query.Where(x => x.NAME == BluePrintsResources.Default_Construction_Department);
-        }
-
         private Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
         {
-            return query => query.Where(x => x.INTERNAL_NUM == BluePrintsResources.Default_Construction_Phase);
+            return query => query.Where(x => x.INTERNAL_NUM.ToUpper() == BluePrintsResources.Default_Construction_Phase);
         }
 
         private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadESTIMATION_DIRECT.PROJECT.GUID && x.GUID_DEPARTMENT == defaultConstructionDEPARTMENT.GUID && x.COST_GROUP == CostGroup.Site);
+            return query => query.Where(x => x.GUID_PROJECT == loadESTIMATION_DIRECT.PROJECT.GUID && x.COST_GROUP == CostGroup.Site);
         }
 
         private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
@@ -366,7 +357,7 @@ namespace BluePrints.ViewModels
         {
             if(entity.Entity.Entity.GUID_AREA != null && entity.Entity.Entity.GUID_DISCIPLINE != null)
             {
-                string internalNumber = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber2(entity.Entity.Entity.GUID_AREA, entity.Entity.Entity.GUID_SUBAREA, loadPROJECT, AREACollection, SUBAREACollection);
+                string internalNumber = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber(entity.Entity.Entity.GUID_AREA, entity.Entity.Entity.GUID_SUBAREA, loadPROJECT, AREACollection, SUBAREACollection);
                 if(internalNumber != string.Empty)
                 {
                     WORKPACK existingWORKPACK = WORKPACKCollection.FirstOrDefault(x => x.INTERNAL_NAME1 == internalNumber);
@@ -379,8 +370,6 @@ namespace BluePrints.ViewModels
                         newWORKPACK.GUID_DAREA = entity.Entity.Entity.GUID_AREA;
                         newWORKPACK.GUID_DSUBAREA = entity.Entity.Entity.GUID_SUBAREA == null ? defaultSubArea == null ? (Guid?)null : defaultSubArea.GUID : entity.Entity.Entity.GUID_SUBAREA;
                         newWORKPACK.GUID_DPHASE = defaultConstructionPHASE.GUID;
-                        newWORKPACK.GUID_DDEPARTMENT = defaultConstructionDEPARTMENT.GUID;
-                        newWORKPACK.GUID_DDISCIPLINE = (Guid)entity.Entity.Entity.GUID_DISCIPLINE;
                         newWORKPACK.INTERNAL_NAME1 = internalNumber;
                         newWORKPACK.STARTDATE = DateTime.Now;
                         newWORKPACK.ENDDATE =
@@ -677,6 +666,22 @@ namespace BluePrints.ViewModels
             {
                 resetProjectionCommodityCode(active_progress);
             }
+            else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.StockCodeGuid))
+            {
+                if(new_value != null)
+                {
+                    STOCK_CODE stock_code = STOCK_CODECollection.FirstOrDefault(x => x.GUID == (Guid)new_value);
+                    if(stock_code != null)
+                    {
+                        Guid? oldValue = active_progress.Entity.Entity.GUID_COMMODITY_CODE;
+                        Guid? newValue = stock_code.GUID_COMMODITY_CODE;
+                        string commodity_code_field_name = Base_Entity_String + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_COMMODITY_CODE);
+                        active_progress.Entity.Entity.GUID_COMMODITY_CODE = newValue;
+                        PauseUndoRedo();
+                        AddUndo(active_progress, commodity_code_field_name, oldValue, newValue, EntityMessageType.Changed);
+                    }
+                }
+            }
             else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.Entity.GUID_COMMODITY_CODE))
             {
                 if (new_value != null)
@@ -804,6 +809,18 @@ namespace BluePrints.ViewModels
                 }
 
                 active_progress.Update();
+            }
+            else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.StockCodeGuid))
+            {
+                if (new_value != null)
+                {
+                    STOCK_CODE stock_code = STOCK_CODECollection.FirstOrDefault(x => x.GUID == (Guid)new_value);
+                    if (stock_code != null)
+                    {
+                        active_progress.Entity.Entity.GUID_COMMODITY_CODE = stock_code.GUID_COMMODITY_CODE;
+                        active_progress.Update();
+                    }
+                }
             }
             else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_DISCIPLINE))
             {
@@ -1007,6 +1024,17 @@ namespace BluePrints.ViewModels
             get
             {
                 var collection = GetEntities<DISCIPLINE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
+        public IEnumerable<DEPARTMENT> DEPARTMENTCollection
+        {
+            get
+            {
+                var collection = GetEntities<DEPARTMENT>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
                 return collection;

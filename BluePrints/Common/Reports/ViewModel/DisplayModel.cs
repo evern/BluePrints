@@ -374,6 +374,26 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Remaining_Productivity => Reportable.Remaining_Productivity;
 
+        public decimal FreightRate => Reportable.FreightRate;
+
+        public decimal Estimated_Install_Cost => Reportable.Estimated_Install_Cost;
+
+        public decimal Variation_Install_Cost => Reportable.Variation_Install_Cost;
+
+        public decimal Estimated_Freight_Cost => Reportable.Estimated_Freight_Cost;
+
+        public decimal Variation_Freight_Cost => Reportable.Variation_Freight_Cost;
+
+        public decimal Total_Freight_Cost => Reportable.Total_Freight_Cost;
+
+        public decimal Estimated_Install_Hours => Reportable.Estimated_Install_Hours;
+
+        public decimal Variation_Install_Hours => Reportable.Variation_Install_Hours;
+
+        public decimal Estimated_Supply_Cost => Reportable.Estimated_Supply_Cost;
+
+        public decimal Variation_Supply_Cost => Reportable.Variation_Supply_Cost;
+
         public void SetReportingDataDate(DateTime dataDate)
         {
             Reportable.SetReportingDataDate(dataDate);

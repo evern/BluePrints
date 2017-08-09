@@ -20,14 +20,6 @@ namespace BluePrints.Data
 
         public Guid? GUID_DSUBAREA { get; set; }
 
-        public Guid? GUID_DDOCTYPE { get; set; }
-
-        [Required]
-        public Guid GUID_DDEPARTMENT { get; set; }
-
-        [Required]
-        public Guid GUID_DDISCIPLINE { get; set; }
-
         [StringLength(200)]
         public string INTERNAL_NAME1 { get; set; }
 
@@ -71,12 +63,6 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
-
-        public virtual DEPARTMENT DEPARTMENT { get; set; }
-
-        public virtual DISCIPLINE DISCIPLINE { get; set; }
-
-        public virtual DOCTYPE DOCTYPE { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }

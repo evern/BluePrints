@@ -359,7 +359,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Total_Install_Hours => Total_Units;
 
-        public virtual decimal Total_Install_Cost => Total_Install_Hours * base.Entity.ItemRate;
+        public virtual decimal Total_Install_Cost => Entity.Total_Install_Cost;
 
         public virtual decimal Total_Supply_Cost => Total_Units * Entity.Stock_Code_Supply_Rate;
 
@@ -378,6 +378,26 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Earned_Total_Costs_OnDataDate => Earned_Install_Costs_OnDataDate + Earned_Supply_Costs_OnDataDate;
 
         public Guid? Stock_Group_Guid => Entity.Stock_Group_Guid;
+
+        public decimal FreightRate => Entity.FreightRate;
+
+        public decimal Estimated_Install_Cost => Entity.Estimated_Install_Cost;
+
+        public decimal Variation_Install_Cost => Entity.Variation_Install_Cost;
+
+        public decimal Estimated_Freight_Cost => Entity.Estimated_Freight_Cost;
+
+        public decimal Variation_Freight_Cost => Entity.Variation_Freight_Cost;
+
+        public decimal Total_Freight_Cost => Entity.Total_Freight_Cost;
+
+        public decimal Estimated_Install_Hours => Entity.Estimated_Install_Hours;
+
+        public decimal Variation_Install_Hours => Entity.Variation_Install_Hours;
+
+        public decimal Estimated_Supply_Cost => Entity.Estimated_Supply_Cost;
+
+        public decimal Variation_Supply_Cost => Entity.Variation_Supply_Cost;
 
         protected override decimal getNewPercentage()
         {

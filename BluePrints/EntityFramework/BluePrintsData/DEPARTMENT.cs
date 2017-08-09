@@ -17,7 +17,6 @@ namespace BluePrints.Data
             DOCTYPE = new HashSet<DOCTYPE>();
             RATE = new HashSet<RATE>();
             USER = new HashSet<USER>();
-            WORKPACK = new HashSet<WORKPACK>();
         }
 
         [Key]
@@ -59,8 +58,5 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<USER> USER { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WORKPACK> WORKPACK { get; set; }
     }
 }

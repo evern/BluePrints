@@ -20,6 +20,10 @@ namespace BluePrints.Common.Projections
             stock_code = new STOCK_CODE();
         }
 
+        public RATE FREIGHT_RATE { get; set; }
+
+        public decimal FreightRate => FREIGHT_RATE == null ? 0 : FREIGHT_RATE.RATE1 == null || Entity.TRUCK_PERCENTAGE == null ? 0 : (decimal)FREIGHT_RATE.RATE1 * (decimal)Entity.TRUCK_PERCENTAGE;
+
         public IEnumerable<STOCK_CODE> StockCodeCollection { get; set; }
         private STOCK_CODE stock_code;
         public STOCK_CODE STOCK_CODE
@@ -100,7 +104,7 @@ namespace BluePrints.Common.Projections
 
         public decimal Estimated_Costs => Estimated_Units * ItemRate;
 
-        public decimal Total_Costs => Estimated_Costs + Variation_Costs;
+        public decimal Total_Costs => Total_Install_Cost + Total_Freight_Cost + Total_Supply_Cost;
 
         public decimal Estimated_Quantity => Entity.ESTIMATED_QUANTITY;
 
@@ -143,6 +147,32 @@ namespace BluePrints.Common.Projections
         public decimal Variation_Quantity => Entity.DC_QUANTITY;
 
         public Guid? Stock_Group_Guid => Entity.STOCK_GROUP == null ? Guid.Empty : Entity.STOCK_GROUP.GUID;
+
+        public decimal Estimated_Install_Cost => Estimated_Units * ItemRate;
+
+        public decimal Variation_Install_Cost => Variation_Units * ItemRate;
+
+        public decimal Total_Install_Cost => Estimated_Install_Cost + Variation_Install_Cost;
+
+        public decimal Estimated_Freight_Cost => Estimated_Quantity * FreightRate;
+
+        public decimal Variation_Freight_Cost => Variation_Quantity * FreightRate;
+
+        public decimal Total_Freight_Cost => Estimated_Freight_Cost + Variation_Freight_Cost;
+
+        public decimal Estimated_Install_Hours => Entity.Estimated_Units;
+
+        public decimal Variation_Install_Hours => Entity.Variation_Units;
+
+        public decimal Total_Install_Hours => Entity.Estimated_Units;
+
+        public decimal Estimated_Supply_Cost => Entity.ESTIMATED_QUANTITY * FreightRate;
+
+        public decimal Variation_Supply_Cost => Entity.DC_QUANTITY * FreightRate;
+
+        public decimal Total_Supply_Cost => Estimated_Supply_Cost + Variation_Supply_Cost;
+
+        public decimal Total_Cost => Total_Install_Cost + Total_Supply_Cost + Total_Freight_Cost;
     }
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries
@@ -190,6 +220,9 @@ namespace BluePrints.Common.Projections
             IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, 
             IEnumerable<RATE> RATES, IEnumerable<STOCK_CODE> STOCK_CODES = null, IEnumerable<STOCK_GROUP> STOCK_GROUPS = null)
         {
+            IEnumerable<RATE> INSTALL_RATES = RATES.Where(x => x.DEPARTMENT.NAME.ToUpper() == BluePrintsResources.Default_Construction_Department);
+            IEnumerable<RATE> FREIGHT_RATES = RATES.Where(x => x.DEPARTMENT.NAME.ToUpper() == BluePrintsResources.Default_Procurement_Department);
+
             return
                 ESTIMATION_DIRECT_ITEMS.OrderBy(x => x.CREATED).ToArray()
                     .Select(
@@ -198,7 +231,8 @@ namespace BluePrints.Common.Projections
                             {
                                 Entity = estimate_direct_item,
                                 STOCK_CODE = STOCK_CODES == null ? null : STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_direct_item.GUID_STOCK_CODE),
-                                RATE = RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
+                                RATE = INSTALL_RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
+                                FREIGHT_RATE = FREIGHT_RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
                                 StockCodeCollection = STOCK_CODES == null ? null : STOCK_CODES
                             }).AsQueryable();
         }

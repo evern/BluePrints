@@ -109,27 +109,6 @@
                                                               DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="DOCTYPE" FieldName="Entity.GUID_DDOCTYPE">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings
-                                    ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}"
-                                    IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="DISCIPLINE" FieldName="Entity.GUID_DDISCIPLINE">
-                                <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings
-                                    ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
-                                    IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="DEPARTMENT" FieldName="Entity.GUID_DDEPARTMENT">
-                                <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings
-                                    ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}"
-                                    IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
                             <dxg:GridColumn x:Name="colINTERNAL_NAME" Header="INTERNAL NAME" FieldName="Entity.INTERNAL_NAME1" />
                             <dxg:GridColumn Header="DESCRIPTION" FieldName="Entity.INTERNAL_NAME2" />
                             <dxg:GridColumn Header="COMMENTS" FieldName="Entity.COMMENTS" />

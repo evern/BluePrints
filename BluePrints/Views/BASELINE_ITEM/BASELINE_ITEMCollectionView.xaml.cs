@@ -57,40 +57,7 @@ namespace BluePrints.Views
                     contextMenuDuplicateMulti.IsEnabled = true;
                 }
 
-                if (menuInfo.Column == colWORKPACKInternalName1)
-                {
-                    contextMenuPopulate.IsVisible = true;
-                    contextMenuPopulate.Content = "Autofill from Area/DocType/Disc/Dept data";
-                }
-                else if (menuInfo.Column == colAREA)
-                {
-                    contextMenuPopulate.IsVisible = true;
-                    contextMenuPopulate.Content = "Autofill From Workpack Data";
-                }
-                else if (menuInfo.Column == colDOCTYPE)
-                {
-                    contextMenuPopulate.IsVisible = true;
-                    contextMenuPopulate.Content = "Autofill From Workpack Data";
-                }
-                else if (menuInfo.Column == colDISCIPLINE)
-                {
-                    contextMenuPopulate.IsVisible = true;
-                    contextMenuPopulate.Content = "Autofill From Workpack Data";
-                }
-                else if (menuInfo.Column == colDEPARTMENT)
-                {
-                    contextMenuPopulate.IsVisible = true;
-                    contextMenuPopulate.Content = "Autofill From Workpack Data";
-                }
-                else if (menuInfo.Column == colPRIMARY_TITLE)
-                {
-                    contextMenuPopulate.IsVisible = false;
-                }
-                else if (menuInfo.Column == colSECONDARY_TITLE)
-                {
-                    contextMenuPopulate.IsVisible = false;
-                }
-                else if (menuInfo.Column == colESTIMATED_HOURS)
+                if (menuInfo.Column == colESTIMATED_HOURS)
                 {
                     contextMenuBulkEdit.IsVisible = !isBASELINELocked;
                     contextMenuFillUp.IsVisible = !isBASELINELocked;
@@ -98,38 +65,25 @@ namespace BluePrints.Views
 
                     contextMenuPopulate.IsVisible = false;
                 }
-                else if (menuInfo.Column == colINTERNAL_NUM)
+                else
                 {
-                    contextMenuPopulate.IsVisible = true;
-                    contextMenuFillUp.IsVisible = false;
-                    contextMenuFillDown.IsVisible = false;
-                    contextMenuPopulate.Content = "Autofill From Area/DocType/Disc/Dept Data";
-                }
-                else if (menuInfo.Column == colCLIENT_NUM)
-                {
-                    contextMenuPopulate.IsVisible = false;
-                }
-                else if (menuInfo.Column == colREVISION_NUMBER)
-                {
-                    contextMenuPopulate.IsVisible = false;
-                }
-                else if (menuInfo.Column == colTOTAL_COSTS)
-                {
-                    contextMenuPopulate.IsVisible = false;
-                    //contextMenuBulkEdit.IsEnabled = false;
-                }
-                else if (menuInfo.Column == colDC_HOURS)
-                {
-                    contextMenuPopulate.IsVisible = false;
-                    //contextMenuBulkEdit.IsEnabled = false;
-                }
-                else if (menuInfo.Column == colCOMMENTS)
-                {
-                    contextMenuPopulate.IsVisible = false;
-                }
-                else if (menuInfo.Column == colDELIVERABLE_TYPE)
-                {
-                    contextMenuPopulate.IsVisible = false;
+                    string[] context_menu_specification = null;
+                    if (menuInfo.Column.Tag != null)
+                        context_menu_specification = menuInfo.Column.Tag.ToString().Split(';');
+
+                    if (context_menu_specification != null)
+                    {
+                        bool isPopulateVisible = bool.Parse(context_menu_specification[0]);
+                        contextMenuPopulate.IsVisible = isPopulateVisible;
+
+                        bool isFillVisible = bool.Parse(context_menu_specification[1]);
+                        contextMenuFillUp.IsVisible = isFillVisible;
+                        contextMenuFillDown.IsVisible = isFillVisible;
+
+                        contextMenuPopulate.Content = context_menu_specification[2];
+                    }
+                    else
+                        contextMenuPopulate.IsVisible = false;
                 }
             }
         }

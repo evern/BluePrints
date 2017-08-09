@@ -111,7 +111,7 @@
                                      Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Name="colPHASE" FieldName="Entity.Entity.GUID_PHASE" 
-                                            Header="PHASE" Visible="{Binding DataContext.IsPhaseVisible, ElementName=userControl}" VisibleIndex="0">
+                                            Header="PHASE" VisibleIndex="0">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings 
                                             ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}"
@@ -120,7 +120,7 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="Entity.Entity.GUID_WORKPACK" 
-                                            Header="WORKPACK" Visible="true" VisibleIndex="1">
+                                            Header="WORKPACK" Visible="true" VisibleIndex="1" Tag="True;True;Autofill from area and sub-area">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1"
                                             ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
@@ -128,7 +128,7 @@
                                             DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA" >
+                            <dxg:GridColumn Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA" Tag="True;True;Autofill workpack">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
@@ -136,7 +136,7 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colSUBAREA" FieldName="Entity.Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText" >
+                            <dxg:GridColumn Name="colSUBAREA" FieldName="Entity.Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText" Tag="True;True;Autofill from workpack">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit 
@@ -195,7 +195,7 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colINTERNAL_NUM" FieldName="Entity.Entity.INTERNAL_NUM"
+                            <dxg:GridColumn Name="colINTERNAL_NUM" FieldName="Entity.Entity.INTERNAL_NUM" Tag="True;False;Autofill from area, department, discipline and doc-type"
                                             Header="INTERNAL_NUM"  />
                             <dxg:GridColumn Name="colCLIENT_NUM" FieldName="Entity.Entity.CLIENT_NUM"
                                             Header="CLIENT_NUM"  />

@@ -14,7 +14,6 @@ namespace BluePrints.Data
         {
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
             DELIVERABLES_STATUS = new HashSet<DELIVERABLES_STATUS>();
-            WORKPACK = new HashSet<WORKPACK>();
         }
 
         [Key]
@@ -49,8 +48,5 @@ namespace BluePrints.Data
         public virtual ICollection<DELIVERABLES_STATUS> DELIVERABLES_STATUS { get; set; }
 
         public virtual DEPARTMENT DEPARTMENT { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WORKPACK> WORKPACK { get; set; }
     }
 }

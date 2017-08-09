@@ -332,7 +332,7 @@
                                      Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn Name="colPHASE" FieldName="Entity.Entity.GUID_PHASE"
-                                            Header="PHASE" Visible="{Binding DataContext.IsPhaseVisible, ElementName=userControl}" ReadOnly="True" VisibleIndex="0">
+                                            Header="PHASE" ReadOnly="True" VisibleIndex="0">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings 
                                             ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}"

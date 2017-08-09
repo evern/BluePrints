@@ -84,6 +84,14 @@
                                         IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn Header="COMMODITY_CODE" FieldName="GUID_COMMODITY_CODE"
+                                DataContext="{Binding DataContext, ElementName=userControl}">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings
+                                        ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}"
+                                        IsTextEditable="True" AutoComplete="True" DisplayMember="CODE" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="CODE" />
                             <dxg:GridColumn FieldName="NAME" />
                             <dxg:GridColumn FieldName="TYPE" />

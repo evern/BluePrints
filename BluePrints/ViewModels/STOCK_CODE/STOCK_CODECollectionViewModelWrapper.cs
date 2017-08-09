@@ -70,11 +70,20 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, x => defaultDepartment = x);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.UOMS);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
         }
 
         private Func<IRepositoryQuery<DEPARTMENT>, IQueryable<DEPARTMENT>> DEPARTMENTProjectionFunc()
         {
             return query => query.Where(x => x.NAME == BluePrintsResources.Default_Construction_Department);
+        }
+
+        private Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
+        {
+            if (isProjectSpecific)
+                return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID || x.GUID_PROJECT == null));
+            else
+                return query => query.Where(x => x.GUID_PROJECT == null);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -181,6 +190,18 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<DISCIPLINE>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
+
+        public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection
+        {
+            get
+            {
+                var collection = GetEntities<COMMODITY_CODE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.CODE);
                 return collection;
             }
         }

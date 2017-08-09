@@ -224,9 +224,6 @@ namespace BluePrints.ViewModels
                     newWORKPACK.REVIEWSTARTDATE = (DateTime)newWORKPACK.STARTDATE; //effectively nullifies review date
                     newWORKPACK.REVIEWENDDATE = (DateTime)newWORKPACK.STARTDATE; //effectively nullifies review date
                     newWORKPACK.GUID_DAREA = newAREA.GUID;
-                    newWORKPACK.GUID_DDEPARTMENT = defaultDepartment.GUID;
-                    newWORKPACK.GUID_DDISCIPLINE = defaultDiscipline.GUID;
-                    newWORKPACK.GUID_DDOCTYPE = defaultDocType.GUID;
                     WORKPACKViewModel.Save(newWORKPACK);
 
                     BASELINE_ITEM newBASELINE_ITEM = new BASELINE_ITEM();

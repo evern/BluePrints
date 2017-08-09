@@ -38,6 +38,8 @@ namespace BluePrints.Data
         [StringLength(1000)]
         public string COMMENTS { get; set; }
 
+        public decimal? TRUCK_PERCENTAGE { get; set; }
+
         public decimal ESTIMATED_QUANTITY { get; set; }
 
         public decimal DC_QUANTITY { get; set; }

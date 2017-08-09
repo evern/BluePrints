@@ -196,6 +196,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to PROCUREMENT.
+        /// </summary>
+        internal static string Default_Procurement_Department {
+            get {
+                return ResourceManager.GetString("Default_Procurement_Department", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 3.
         /// </summary>
         internal static string Default_Register_Numeric_Length {

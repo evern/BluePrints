@@ -68,6 +68,34 @@ namespace BluePrints.Common.Projections
 
         public Guid? Stock_Group_Guid => Entity.GUID;
 
+        public decimal FreightRate => Deliverables == null || Deliverables.Count() == 0 ? 0 : Deliverables.Sum(x => x.FreightRate);
+
+        public decimal Estimated_Install_Cost => Deliverables == null || Deliverables.Count() == 0 ? 0 : Deliverables.Sum(x => x.Estimated_Install_Cost);
+
+        public decimal Variation_Install_Cost => Deliverables == null || Deliverables.Count() == 0 ? 0 : Deliverables.Sum(x => x.Variation_Install_Cost);
+
+        public decimal Total_Install_Cost => Deliverables == null || Deliverables.Count() == 0 ? 0 : Deliverables.Sum(x => x.Total_Install_Cost);
+
+        public decimal Estimated_Freight_Cost => Deliverables == null || Deliverables.Count() == 0 ? 0 : Deliverables.Sum(x => x.Estimated_Freight_Cost);
+
+        public decimal Variation_Freight_Cost => Deliverables == null || Deliverables.Count() == 0 ? 0 : Deliverables.Sum(x => x.Variation_Freight_Cost);
+
+        public decimal Total_Freight_Cost => Deliverables == null || Deliverables.Count() == 0 ? 0 : Deliverables.Sum(x => x.Total_Freight_Cost);
+
+        public decimal Estimated_Supply_Cost => Deliverables == null || Deliverables.Count() == 0 ? 0 : Deliverables.Sum(x => x.Estimated_Supply_Cost);
+
+        public decimal Variation_Supply_Cost => Deliverables == null || Deliverables.Count() == 0 ? 0 : Deliverables.Sum(x => x.Variation_Supply_Cost);
+
+        public decimal Total_Supply_Cost => Deliverables == null || Deliverables.Count() == 0 ? 0 : Deliverables.Sum(x => x.Total_Supply_Cost);
+
+        public decimal Estimated_Install_Hours => Estimated_Units;
+
+        public decimal Variation_Install_Hours => Variation_Units;
+
+        public decimal Total_Install_Hours => Estimated_Install_Hours + Variation_Install_Hours;
+
+        public decimal Total_Cost => throw new NotImplementedException();
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
             

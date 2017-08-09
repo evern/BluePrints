@@ -18,7 +18,7 @@
              xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
              xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
              mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
-             DataContext="{dxmvvm:ViewModelSource viewmodel:OffsiteDirectVariationCollectionViewModelWrapperRevision}">
+             DataContext="{dxmvvm:ViewModelSource viewmodel:OffsiteDirectVariationCollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -75,7 +75,7 @@
                     <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlVARIATION_ITEM"
                                      Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_PHASE" Visible="{Binding DataContext.IsPhaseVisible, ElementName=userControl}" Header="PHASE" VisibleIndex="0">
+                            <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_PHASE" Header="PHASE" VisibleIndex="0">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}"
@@ -93,7 +93,7 @@
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn Name="colWORKPACKInternalName1"
-                                            FieldName="Entity.Entity.Entity.GUID_WORKPACK"
+                                            FieldName="Entity.Entity.Entity.GUID_WORKPACK" Tag="True;True;Autofill from area and sub-area"
                                             Header="WORKPACK" VisibleIndex="1">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
@@ -111,7 +111,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_AREA" Header="AREA">
+                            <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_AREA" Header="AREA" Tag="True;True;Autofill workpack">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
@@ -128,7 +128,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colSUBAREA" FieldName="Entity.Entity.Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText">
+                            <dxg:GridColumn FieldName="Entity.Entity.Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText" Tag="True;True;Autofill from workpack">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit 
@@ -187,6 +187,17 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.Entity.DISCIPLINE_NUM" Header="DISC. NUM" >
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:SpinEdit Name="PART_Editor" IsTextEditable="True" IsFloatValue="False"
+                                                                      Increment="1" MinValue="1" MaxValue="99"
+                                                                      MaskType="Numeric" Mask="n0"
+                                                                      IsEnabled="{Binding RowData.Row.IsEnabled}"
+                                                                      MaskUseAsDisplayFormat="True" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DEPARTMENT" Header="DEPARTMENT">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
@@ -204,7 +215,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.INTERNAL_NUM" Header="INTERNAL NUM">
+                            <dxg:GridColumn FieldName="Entity.Entity.Entity.INTERNAL_NUM" Header="INTERNAL NUM" Tag="True;False;Autofill from area, department, discipline and doc-type">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <!-- Use IsEnabled because when textEdit is invoked the 2nd time IsReadOnly didn't get picked up in the binding -->
@@ -373,11 +384,11 @@
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
-                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
+                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" ShowGridMenu="tableView_ShowGridMenu"
                                            NewItemRowPosition="{Binding DataContext.NewItemRowPosition, ElementName=userControl}"
                                            ShowTotalSummary="True" GroupSummaryDisplayMode="AlignByColumns">
                                 <dxg:TableView.RowCellMenuCustomizations>
-                                    <dxb:BarButtonItem Content="Bulk Edit"
+                                    <dxb:BarButtonItem Name="contextMenuBulkEdit" Content="Bulk Edit"
                                                        Command="{Binding View.DataContext.BulkColumnEditCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                                                        Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
