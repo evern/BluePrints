@@ -74,6 +74,10 @@ namespace BluePrints.Common.Projections
         public Guid? Variation_Guid { get => Entity.Variation_Guid; set => Entity.Variation_Guid = value; }
         public decimal Estimated_Value { get => Entity.Estimated_Value; set => Entity.Estimated_Value = value; }
         public decimal DC_Value { get => Entity.DC_Value; set => Entity.DC_Value = value; }
+
+        public string Workpack_Name => Entity.Workpack_Name;
+
+        public string Department_Code => Entity.Department_Code;
     }
 
     public static class BASELINE_ITEMProjectionQueries

@@ -76,7 +76,7 @@ namespace BluePrints.Common.Projections
         public ProgressStats Stats { get; set; }
     }
 
-    public class Discipline_Dashboard : IHaveStats
+    public class Department_Dashboard : IHaveStats
     {
         public int WBSLevel => 2;
         public string Code { get; set; }
@@ -85,9 +85,18 @@ namespace BluePrints.Common.Projections
         public ProgressStats Stats { get; set; }
     }
 
-    public class Commodity_Dashboard : IHaveStats
+    public class Discipline_Dashboard : IHaveStats
     {
         public int WBSLevel => 3;
+        public string Code { get; set; }
+        public List<Commodity_Dashboard> Commodity_Dashboards { get; set; }
+        public bool IHaveCommodity_Dashboards { get { return Commodity_Dashboards != null && Commodity_Dashboards.Count() > 0; } }
+        public ProgressStats Stats { get; set; }
+    }
+
+    public class Commodity_Dashboard : IHaveStats
+    {
+        public int WBSLevel => 4;
         public string Display_Code { get; set; }
         public string Code { get; set; }
         public ProgressStats Stats { get; set; }
@@ -228,7 +237,7 @@ namespace BluePrints.Common.Projections
 
             foreach (ExoDataPoint burnedDataPoint in burned_data_points)
             {
-                string discipline_code = burnedDataPoint.DisciplineCode;
+                string discipline_code = burnedDataPoint.Discipline_Code;
                 if (!preliminary_discipline_dashboards.Any(x => x.Code == discipline_code))
                     preliminary_discipline_dashboards.Add(create_discipline_dashboard(discipline_code, (SummaryStats)phase_dashboard.Stats, burned_data_points));
             }
@@ -240,7 +249,7 @@ namespace BluePrints.Common.Projections
         {
             Discipline_Dashboard discipline_dashboard = new Discipline_Dashboard() { Code = discipline_code };
             if(summary_stats != null)
-                discipline_dashboard.Stats = SummaryStatsHelpers.Group_Summary_Stats(summary_stats, x => x.Discipline_Code == discipline_code, x => x.DisciplineCode == discipline_code);
+                discipline_dashboard.Stats = SummaryStatsHelpers.Group_Summary_Stats(summary_stats, x => x.Discipline_Code == discipline_code, x => x.Discipline_Code == discipline_code);
             discipline_dashboard.Commodity_Dashboards = construct_commodity_dashboards(discipline_dashboard, burned_data_points);
 
             return discipline_dashboard;
@@ -261,7 +270,7 @@ namespace BluePrints.Common.Projections
 
             foreach (ExoDataPoint burnedDataPoint in burned_data_points)
             {
-                string commodityCode = burnedDataPoint.CommodityCode;
+                string commodityCode = burnedDataPoint.Commodity_Code;
                 if (!preliminary_commodity_codes.Any(x => x.Code == commodityCode))
                     preliminary_commodity_codes.Add(create_commodity_dashboard(commodityCode, commodityCode, (SummaryStats)discipline_dashboard.Stats, burned_data_points));
             }
@@ -273,7 +282,7 @@ namespace BluePrints.Common.Projections
         {
             Commodity_Dashboard Commodity_dashboard = new Commodity_Dashboard() { Code = commodity_code, Display_Code = commodity_display_code };
             if(summary_stats != null)
-                Commodity_dashboard.Stats = SummaryStatsHelpers.Group_Summary_Stats(summary_stats, x => x.Commodity_Code == commodity_code, x => x.CommodityCode == commodity_code);
+                Commodity_dashboard.Stats = SummaryStatsHelpers.Group_Summary_Stats(summary_stats, x => x.Commodity_Code == commodity_code, x => x.Commodity_Code == commodity_code);
             return Commodity_dashboard;
         }
     }

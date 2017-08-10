@@ -23,7 +23,7 @@ namespace BluePrints.Common.Projections
 
         public void GroupProjectStats(SummaryStats project_summary_stats)
         {
-            Stats = SummaryStatsHelpers.Group_Summary_Stats(project_summary_stats, x => x.Workpack_Guid == Entity.EntityKey, x => x.WorkpackName == Entity.INTERNAL_NAME1);
+            Stats = SummaryStatsHelpers.Group_Summary_Stats(project_summary_stats, x => x.Workpack_Guid == Entity.EntityKey, x => x.Workpack_Name == Entity.INTERNAL_NAME1);
         }
 
         #region WORKPACK Mapping

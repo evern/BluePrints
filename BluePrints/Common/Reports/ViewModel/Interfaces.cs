@@ -73,7 +73,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public interface IDeliverable : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCommodity_Code, IHaveHours
     {
+        string Workpack_Name { get; }
         string Phase_Code { get; }
+        string Department_Code { get; }
         string Discipline_Code { get; }
         string Deliverable_Name { get; }
         Guid? Workpack_Guid { get; }

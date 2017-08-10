@@ -75,35 +75,13 @@ namespace BluePrints.Common.ViewModel.Reporting
                 decimal currentPeriodAdjustmentUnits = currentPeriodVariationAdjustments.Sum(adjustment => adjustment.AdjustmentUnits);
                 decimal currentPeriodAdjustmentCosts = currentPeriodVariationAdjustments.Sum(adjustment => adjustment.AdjustmentNativeCosts);
 
-                if (currentPeriodAdjustmentUnits > 0)
-                {
-                    cumulativeAdjustmentUnits += currentPeriodAdjustmentUnits;
-                    cumulativeAdjustmentCosts += currentPeriodAdjustmentCosts;
-
-                    DataPoint lastDataPoint = summaryDataPoints.Last();
-                    if(lastDataPoint != null)
-                    {
-                        //for sharktooth effect, add dip on a day before the adjustment occurs
-                        DataPoint newDataPoint = new DataPoint();
-                        DataUtils.ShallowCopy(newDataPoint, lastDataPoint);
-                        newDataPoint.ProgressDate = scanDate.AddDays(-1);
-                        summaryDataPoints.Add(newDataPoint);
-
-                        summaryDataPoints.Add(new DataPoint()
-                        {
-                            BudgetedUnits = budgetedUnits + cumulativeAdjustmentUnits,
-                            BudgetedCosts = budgetedCosts + cumulativeAdjustmentCosts,
-                            Units = cumulativeUnits,
-                            Costs = cumulativeCosts,
-                            ProgressDate = scanDate
-                        });
-                    }
-                }
-
                 if (currentPeriodUnits > 0)
                 {
                     cumulativeUnits += currentPeriodUnits;
                     cumulativeCosts += currentPeriodCosts;
+
+                    cumulativeAdjustmentUnits += currentPeriodAdjustmentUnits;
+                    cumulativeAdjustmentCosts += currentPeriodAdjustmentCosts;
 
                     summaryDataPoints.Add(new DataPoint()
                     {
@@ -113,6 +91,32 @@ namespace BluePrints.Common.ViewModel.Reporting
                         Costs = cumulativeCosts,
                         ProgressDate = scanDate
                     });
+
+
+                    if (currentPeriodAdjustmentUnits > 0)
+                    {
+                        DataPoint lastDataPoint = summaryDataPoints.Last();
+                        if (lastDataPoint != null)
+                        {
+                            //for sharktooth effect, add dip on a day before the adjustment's week ending occurs
+                            //this means that a day before, the percentage would be higher if it weren't for the variation adjustments
+                            DataPoint newDataPoint = new DataPoint();
+                            DataUtils.ShallowCopy(newDataPoint, lastDataPoint);
+                            newDataPoint.ProgressDate = scanDate.AddDays(-1);
+                            newDataPoint.BudgetedUnits -= currentPeriodAdjustmentUnits;
+                            newDataPoint.BudgetedCosts -= currentPeriodAdjustmentCosts;
+                            summaryDataPoints.Add(newDataPoint);
+
+                            //summaryDataPoints.Add(new DataPoint()
+                            //{
+                            //    BudgetedUnits = budgetedUnits + cumulativeAdjustmentUnits,
+                            //    BudgetedCosts = budgetedCosts + cumulativeAdjustmentCosts,
+                            //    Units = cumulativeUnits,
+                            //    Costs = cumulativeCosts,
+                            //    ProgressDate = scanDate
+                            //});
+                        }
+                    }
                 }
                 
                 scanDate = scanDate.AddDays(progressInterval.Days);

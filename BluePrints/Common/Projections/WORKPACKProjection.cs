@@ -46,6 +46,10 @@ namespace BluePrints.Common.Projections
 
         public string Commodity_Display_Code => Commodity_Code;
 
+        public string Workpack_Name => string.Empty;
+
+        public string Department_Code => string.Empty;
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
             throw new NotImplementedException();

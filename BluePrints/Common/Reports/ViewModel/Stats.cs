@@ -212,8 +212,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public class ExoDataPoint : DataPoint
     {
-        public string WorkpackName { get; set; }
+        public string Workpack_Name { get; set; }
         public string ResourceName { get; set; }
+        public string Role { get; set; }
         public string CostGroup { get; set; }
         public string CostType { get; set; }
 
@@ -221,16 +222,29 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (WorkpackName == string.Empty)
+                if (Workpack_Name == string.Empty)
                     return string.Empty;
-                else if (WorkpackName.Length < 15)
+                else if (Workpack_Name.Length < 15)
                     return string.Empty;
                 
-                return WorkpackName.Substring(13, 2);
+                return Workpack_Name.Substring(13, 2);
             }
         }
 
-        public string DisciplineCode
+        public string Department_Code
+        {
+            get
+            {
+                if (Role == null || Role == string.Empty || Role.Length < 3)
+                    return string.Empty;
+                else if (Role.Length < 3)
+                    return string.Empty;
+
+                return Role.Substring(0, 3);
+            }
+        }
+
+        public string Discipline_Code
         {
             get
             {
@@ -247,12 +261,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (WorkpackName == string.Empty)
+                if (Workpack_Name == string.Empty)
                     return string.Empty;
-                else if (WorkpackName.Length < 9)
+                else if (Workpack_Name.Length < 9)
                     return string.Empty;
 
-                return WorkpackName.Substring(6, 3);
+                return Workpack_Name.Substring(6, 3);
             }
         }
 
@@ -260,16 +274,16 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (WorkpackName == string.Empty)
+                if (Workpack_Name == string.Empty)
                     return string.Empty;
-                else if (WorkpackName.Length < 12)
+                else if (Workpack_Name.Length < 12)
                     return string.Empty;
 
-                return WorkpackName.Substring(10, 2);
+                return Workpack_Name.Substring(10, 2);
             }
         }
 
-        public string CommodityCode
+        public string Commodity_Code
         {
             get
             {

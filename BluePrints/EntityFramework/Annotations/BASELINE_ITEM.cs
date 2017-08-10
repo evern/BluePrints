@@ -59,6 +59,18 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
+        public string Department_Code
+        {
+            get
+            {
+                if (DEPARTMENT == null)
+                    return string.Empty;
+
+                return DEPARTMENT.CODE;
+            }
+        }
+
+        [NotMapped]
         public string Phase_Code => PHASE == null ? string.Empty : PHASE.INTERNAL_NUM;
 
         [NotMapped]

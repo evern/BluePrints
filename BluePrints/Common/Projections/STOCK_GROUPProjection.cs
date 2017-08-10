@@ -94,7 +94,11 @@ namespace BluePrints.Common.Projections
 
         public decimal Total_Install_Hours => Estimated_Install_Hours + Variation_Install_Hours;
 
-        public decimal Total_Cost => throw new NotImplementedException();
+        public decimal Total_Cost => Total_Install_Cost + Total_Supply_Cost + Total_Freight_Cost;
+
+        public string Workpack_Name => string.Empty;
+
+        public string Department_Code => string.Empty;
 
         public void SetOriginalEntityKey(Guid newGuid)
         {

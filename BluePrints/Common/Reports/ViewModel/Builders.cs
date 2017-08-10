@@ -59,8 +59,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                                       on JOBTRANS.COST_GROUP equals JOB_COSTGROUPS.SEQNO
                                       join JOB_COSTTYPES in PrimeroUnitOfWork.JOB_COSTTYPES
                                       on JOBTRANS.COST_TYPE equals JOB_COSTTYPES.SEQNO
+                                      join NARRATIVES in PrimeroUnitOfWork.NARRATIVES
+                                      on JOBTRANS.NARRATIVE_SEQNO equals NARRATIVES.SEQNO
                                       where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X"
-                                      select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC };
+                                      select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC };
 
                 var exoWorkpacks = from JOBCOST_HDR in PrimeroUnitOfWork.JOBCOST_HDR
                                    where JOBCOST_HDR.JOBCODE.Contains(projectNumber)
@@ -91,9 +93,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                         burnedDataPoint.Units = (decimal)jobTransaction.QUANTITY;
                         burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * this.CurrencyConversion;
                         burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
-                        burnedDataPoint.WorkpackName = jobTransaction.JOBCODE;
+                        burnedDataPoint.Workpack_Name = jobTransaction.JOBCODE;
                         burnedDataPoint.ResourceName = jobTransaction.RESOURCENAME;
                         burnedDataPoint.Quantity = (decimal)jobTransaction.QUANTITY;
+                        burnedDataPoint.Role = jobTransaction.TITLE;
                         burnedDataPoint.CostGroup = jobTransaction.COSTDESC;
                         burnedDataPoint.CostType = jobTransaction.COSTDESC3;
 

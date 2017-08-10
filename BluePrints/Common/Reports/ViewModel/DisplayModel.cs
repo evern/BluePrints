@@ -124,6 +124,10 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Remaining_Productivity => ((IReportable)ProgressItem).Remaining_Productivity;
 
+        public string Workpack_Name => ((IReportable)ProgressItem).Workpack_Name;
+
+        public string Department_Code => ((IReportable)ProgressItem).Department_Code;
+
         public void Update()
         {
             ProgressItem.Update();
@@ -393,6 +397,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Estimated_Supply_Cost => Reportable.Estimated_Supply_Cost;
 
         public decimal Variation_Supply_Cost => Reportable.Variation_Supply_Cost;
+
+        public string Workpack_Name => Reportable.Workpack_Name;
+
+        public string Department_Code => Reportable.Department_Code;
 
         public void SetReportingDataDate(DateTime dataDate)
         {

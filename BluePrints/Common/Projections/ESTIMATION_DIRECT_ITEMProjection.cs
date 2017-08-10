@@ -173,6 +173,10 @@ namespace BluePrints.Common.Projections
         public decimal Total_Supply_Cost => Estimated_Supply_Cost + Variation_Supply_Cost;
 
         public decimal Total_Cost => Total_Install_Cost + Total_Supply_Cost + Total_Freight_Cost;
+
+        public string Workpack_Name => Entity.Workpack_Name;
+
+        public string Department_Code => Entity.Department_Code;
     }
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries

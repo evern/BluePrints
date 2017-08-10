@@ -138,6 +138,27 @@ namespace BluePrints.Data
         [NotMapped]
         public decimal DC_Value { get => DC_QUANTITY; set => DC_QUANTITY = value; }
 
+        [NotMapped]
+        public string Workpack_Name
+        {
+            get
+            {
+                if (WORKPACK == null)
+                    return string.Empty;
+
+                return WORKPACK.INTERNAL_NAME1;
+            }
+        }
+
+        [NotMapped]
+        public string Department_Code
+        {
+            get
+            {
+                return "CN";
+            }
+        }
+
         public void Update()
         {
             RaisePropertiesChanged();
