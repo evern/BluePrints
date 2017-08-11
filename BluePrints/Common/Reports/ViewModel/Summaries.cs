@@ -59,7 +59,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         public static SummaryStats Group_Summary_Stats(SummaryStats summary_stats, Func<IReportable, bool> reportable_predicate, Func<ExoDataPoint, bool> predicate)
         {
-            if (summary_stats == null)
+            if (summary_stats == null || summary_stats.Reportables.Count() == 0)
                 return null;
 
             //set budgeted, current and earned
@@ -69,8 +69,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             TimeSpan reporting_interval = summary_stats.ReportingInterval;
             DateTime first_aligned_data_date = summary_stats.FirstAlignedDataDate;
 
-            List<VariationAdjustment> phase_variation_adjustments = grouped_reportables.SelectMany(x => x.Stats.VariationAdjustments).ToList();
-            SummaryStats grouped_summary_stats = new SummaryStats(grouped_reportables, reporting_data_date, reporting_interval, first_aligned_data_date, phase_variation_adjustments);
+            List<VariationAdjustment> grouped_variation_adjustments = grouped_reportables.SelectMany(x => x.Stats.VariationAdjustments).ToList();
+            SummaryStats grouped_summary_stats = new SummaryStats(grouped_reportables, reporting_data_date, reporting_interval, first_aligned_data_date, grouped_variation_adjustments);
             grouped_summary_stats.GenerateSummary();
 
             IEnumerable<ExoDataPoint> burned_data_points = summary_stats.Burned.GetData().Select(x => (ExoDataPoint)x);

@@ -1,11 +1,13 @@
 ﻿using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Base;
+using BluePrints.Common.Misc;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.P6EntitiesDataModel;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
+using DevExpress.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,43 +65,9 @@ namespace BluePrints.Common.Projections
             projectSummarizer.RecalculateStats(isCosts);
         }
 
-        public List<Phase_Dashboard> Phase_Dashboards { get; set; }
-        public bool IHavePhase_Dashboards { get { return Phase_Dashboards != null && Phase_Dashboards.Count() > 0; } }
-    }
-
-    public class Phase_Dashboard : IHaveStats
-    {
-        public int WBSLevel => 1;
-        public string Code { get; set; }
-        public List<Discipline_Dashboard> Discipline_Dashboards { get; set; }
-        public bool IHaveDiscipline_Dashboards { get { return Discipline_Dashboards != null && Discipline_Dashboards.Count() > 0; } }
-        public ProgressStats Stats { get; set; }
-    }
-
-    public class Department_Dashboard : IHaveStats
-    {
-        public int WBSLevel => 2;
-        public string Code { get; set; }
-        public List<Commodity_Dashboard> Commodity_Dashboards { get; set; }
-        public bool IHaveCommodity_Dashboards { get { return Commodity_Dashboards != null && Commodity_Dashboards.Count() > 0; } }
-        public ProgressStats Stats { get; set; }
-    }
-
-    public class Discipline_Dashboard : IHaveStats
-    {
-        public int WBSLevel => 3;
-        public string Code { get; set; }
-        public List<Commodity_Dashboard> Commodity_Dashboards { get; set; }
-        public bool IHaveCommodity_Dashboards { get { return Commodity_Dashboards != null && Commodity_Dashboards.Count() > 0; } }
-        public ProgressStats Stats { get; set; }
-    }
-
-    public class Commodity_Dashboard : IHaveStats
-    {
-        public int WBSLevel => 4;
-        public string Display_Code { get; set; }
-        public string Code { get; set; }
-        public ProgressStats Stats { get; set; }
+        public List<Dashboard> Workpack_Dashboards { get; set; }
+        public List<Dashboard_Export_Data_Point> Export_Data { get; set; }
+        public bool IHaveWorkpack_Dashboards { get { return Workpack_Dashboards != null && Workpack_Dashboards.Count > 0; } }
     }
 
     public static class DashboardQueries
@@ -196,94 +164,6 @@ namespace BluePrints.Common.Projections
             }
 
             return project_dashboard.AsQueryable();
-        }
-
-        public static List<Phase_Dashboard> Construct_Phase_Dashboards(ProjectSummaryStats project_summary_stats)
-        {
-            List<string> phases = new List<string>();
-            phases.Add(BluePrintsResources.Default_Design_Phase);
-            phases.Add(BluePrintsResources.Alternate_Design_Phase);
-            phases.Add(BluePrintsResources.Default_Construction_Phase);
-
-            List<Phase_Dashboard> phase_dashboards = new List<Phase_Dashboard>();
-            foreach (string phase in phases)
-            {
-                Phase_Dashboard new_phase_dashboard = new Phase_Dashboard() { Code = phase };
-                if(project_summary_stats != null)
-                    new_phase_dashboard.Stats = SummaryStatsHelpers.Group_Summary_Stats(project_summary_stats, x => x.Phase_Code == phase, x => x.PhaseCode == phase);
-
-                if (new_phase_dashboard.Stats != null)
-                {
-                    new_phase_dashboard.Discipline_Dashboards = construct_discipline_dashboards(new_phase_dashboard, project_summary_stats.GetBurnedDataPoints());
-                    phase_dashboards.Add(new_phase_dashboard);
-                }
-            }
-
-            return phase_dashboards;
-        }
-
-        private static List<Discipline_Dashboard> construct_discipline_dashboards(Phase_Dashboard phase_dashboard, IEnumerable<ExoDataPoint> burned_data_points)
-        {
-            List<Discipline_Dashboard> preliminary_discipline_dashboards = new List<Discipline_Dashboard>();
-            SummaryStats phase_summary_stats = (SummaryStats)phase_dashboard.Stats;
-
-            if(phase_summary_stats != null && phase_summary_stats.Reportables != null)
-                foreach (IReportable reportable in phase_summary_stats.Reportables)
-                {
-                    string discipline_code = reportable.Discipline_Code;
-                    if (!preliminary_discipline_dashboards.Any(x => x.Code == discipline_code))
-                        preliminary_discipline_dashboards.Add(create_discipline_dashboard(discipline_code, (SummaryStats)phase_dashboard.Stats, burned_data_points));
-                }
-
-            foreach (ExoDataPoint burnedDataPoint in burned_data_points)
-            {
-                string discipline_code = burnedDataPoint.Discipline_Code;
-                if (!preliminary_discipline_dashboards.Any(x => x.Code == discipline_code))
-                    preliminary_discipline_dashboards.Add(create_discipline_dashboard(discipline_code, (SummaryStats)phase_dashboard.Stats, burned_data_points));
-            }
-
-            return preliminary_discipline_dashboards.Where(x => x.Stats != null).ToList();
-        }
-
-        private static Discipline_Dashboard create_discipline_dashboard(string discipline_code, SummaryStats summary_stats, IEnumerable<ExoDataPoint> burned_data_points)
-        {
-            Discipline_Dashboard discipline_dashboard = new Discipline_Dashboard() { Code = discipline_code };
-            if(summary_stats != null)
-                discipline_dashboard.Stats = SummaryStatsHelpers.Group_Summary_Stats(summary_stats, x => x.Discipline_Code == discipline_code, x => x.Discipline_Code == discipline_code);
-            discipline_dashboard.Commodity_Dashboards = construct_commodity_dashboards(discipline_dashboard, burned_data_points);
-
-            return discipline_dashboard;
-        }
-
-        private static List<Commodity_Dashboard> construct_commodity_dashboards(Discipline_Dashboard discipline_dashboard, IEnumerable<ExoDataPoint> burned_data_points)
-        {
-            List<Commodity_Dashboard> preliminary_commodity_codes = new List<Commodity_Dashboard>();
-            SummaryStats phase_summary_stats = (SummaryStats)discipline_dashboard.Stats;
-
-            if(phase_summary_stats != null && phase_summary_stats.Reportables != null)
-                foreach (IReportable reportable in phase_summary_stats.Reportables)
-                {
-                    string commodityCode = reportable.Commodity_Code;
-                    if (!preliminary_commodity_codes.Any(x => x.Code == commodityCode))
-                        preliminary_commodity_codes.Add(create_commodity_dashboard(commodityCode, commodityCode, (SummaryStats)discipline_dashboard.Stats, burned_data_points));
-                }
-
-            foreach (ExoDataPoint burnedDataPoint in burned_data_points)
-            {
-                string commodityCode = burnedDataPoint.Commodity_Code;
-                if (!preliminary_commodity_codes.Any(x => x.Code == commodityCode))
-                    preliminary_commodity_codes.Add(create_commodity_dashboard(commodityCode, commodityCode, (SummaryStats)discipline_dashboard.Stats, burned_data_points));
-            }
-
-            return preliminary_commodity_codes.Where(x => x.Stats != null).ToList();
-        }
-
-        private static Commodity_Dashboard create_commodity_dashboard(string commodity_code, string commodity_display_code, SummaryStats summary_stats, IEnumerable<ExoDataPoint> burned_data_points)
-        {
-            Commodity_Dashboard Commodity_dashboard = new Commodity_Dashboard() { Code = commodity_code, Display_Code = commodity_display_code };
-            if(summary_stats != null)
-                Commodity_dashboard.Stats = SummaryStatsHelpers.Group_Summary_Stats(summary_stats, x => x.Commodity_Code == commodity_code, x => x.Commodity_Code == commodity_code);
-            return Commodity_dashboard;
         }
     }
 }

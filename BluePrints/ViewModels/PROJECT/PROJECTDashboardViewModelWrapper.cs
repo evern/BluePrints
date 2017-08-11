@@ -4,6 +4,7 @@ using BaseModel.ViewModel.Document;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
+using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
@@ -31,10 +32,6 @@ namespace BluePrints.ViewModels
         //allow background worker to be cancelled
         List<BackgroundWorker> backgroundWorkerCollection = new List<BackgroundWorker>();
 
-        public ObservableCollection<Phase_Dashboard> SelectedPhaseDashboards { get; set; }
-        public ObservableCollection<Discipline_Dashboard> SelectedDisciplineDashboards { get; set; }
-        public ObservableCollection<Commodity_Dashboard> SelectedCommodityDashboards { get; set; }
-
         /// <summary>
         /// Creates a new instance of PROJECT_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
@@ -49,27 +46,6 @@ namespace BluePrints.ViewModels
             PROJECTDashboardViewModelWrapper preloadDashboard = ViewModelSource.Create(() => new PROJECTDashboardViewModelWrapper());
             preloadDashboard.OnParameterChanged(actionObject);
             return preloadDashboard;
-        }
-
-        private void SelectedPhaseDashboard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            IEnumerable<SummaryStats> entitiesSummary = SelectedPhaseDashboards.Select(x => (SummaryStats)x.Stats);
-            SummaryEntity.Stats = new SummaryStats(entitiesSummary);
-            this.RaisePropertyChanged(x => x.SummaryEntity);
-        }
-
-        private void SelectedDisciplineDashboard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            IEnumerable<SummaryStats> entitiesSummary = SelectedDisciplineDashboards.Select(x => (SummaryStats)x.Stats);
-            SummaryEntity.Stats = new SummaryStats(entitiesSummary);
-            this.RaisePropertyChanged(x => x.SummaryEntity);
-        }
-
-        private void SelectedCommodityDashboard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            IEnumerable<SummaryStats> entitiesSummary = SelectedCommodityDashboards.Select(x => (SummaryStats)x.Stats);
-            SummaryEntity.Stats = new SummaryStats(entitiesSummary);
-            this.RaisePropertyChanged(x => x.SummaryEntity);
         }
 
         /// <summary>
@@ -89,19 +65,23 @@ namespace BluePrints.ViewModels
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
         ActionObject actionObject;
+        public ObservableCollection<Dashboard> Selected_Dashboard { get; set; }
         protected override void resolveParameters(object parameter)
         {
-            SelectedPhaseDashboards = new ObservableCollection<Phase_Dashboard>();
-            SelectedDisciplineDashboards = new ObservableCollection<Discipline_Dashboard>();
-            SelectedCommodityDashboards = new ObservableCollection<Commodity_Dashboard>();
-            SelectedPhaseDashboards.CollectionChanged += SelectedPhaseDashboard_CollectionChanged;
-            SelectedDisciplineDashboards.CollectionChanged += SelectedDisciplineDashboard_CollectionChanged;
-            SelectedCommodityDashboards.CollectionChanged += SelectedCommodityDashboard_CollectionChanged;
-
             if (parameter != null)
             {
                 actionObject = parameter as ActionObject;
             }
+
+            Selected_Dashboard = new ObservableCollection<Dashboard>();
+            Selected_Dashboard.CollectionChanged += SelectedDashboard_CollectionChanged;
+        }
+
+        private void SelectedDashboard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            IEnumerable<SummaryStats> entitiesSummary = Selected_Dashboard.Select(x => (SummaryStats)x.Stats);
+            SummaryEntity.Stats = new SummaryStats(entitiesSummary);
+            this.RaisePropertyChanged(x => x.SummaryEntity);
         }
 
         protected override void initializeEntitiesLoadersDescription()
@@ -217,9 +197,8 @@ namespace BluePrints.ViewModels
 
             project.BuildStats(false);
             project.RecalculateStats(false);
-            project.Phase_Dashboards = DashboardQueries.Construct_Phase_Dashboards((ProjectSummaryStats)project.Stats);
+            project.Workpack_Dashboards = DashboardHelpers.ProjectDashboardHierarchicalBuilder((ProjectSummaryStats)project.Stats);
             project.Update();
-            
 
             if (((BackgroundWorker)sender).CancellationPending)
             {

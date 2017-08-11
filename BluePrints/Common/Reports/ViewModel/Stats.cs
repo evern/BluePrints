@@ -235,12 +235,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (Role == null || Role == string.Empty || Role.Length < 3)
+                if (Role == null || Role == string.Empty || Role.Length < 2)
                     return string.Empty;
-                else if (Role.Length < 3)
+                else if (Role.Length < 2)
                     return string.Empty;
 
-                return Role.Substring(0, 3);
+                return Role.Substring(0, 2);
             }
         }
 

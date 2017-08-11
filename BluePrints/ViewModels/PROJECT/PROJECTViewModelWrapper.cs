@@ -6,6 +6,7 @@ using BaseModel.ViewModel.Document;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
+using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
@@ -53,40 +54,20 @@ namespace BluePrints.ViewModels
         public Action<RATECollectionViewModelWrapper> AssignRATEDelegates;
 
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        public ObservableCollection<Phase_Dashboard> SelectedPhaseDashboards { get; set; }
-        public ObservableCollection<Discipline_Dashboard> SelectedDisciplineDashboards { get; set; }
-        public ObservableCollection<Commodity_Dashboard> SelectedCommodityDashboards { get; set; }
+        public ObservableCollection<Dashboard> Selected_Dashboard { get; set; }
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter =
                 (EntitiesParameter<PROJECT>) parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
 
-            SelectedPhaseDashboards = new ObservableCollection<Phase_Dashboard>();
-            SelectedDisciplineDashboards = new ObservableCollection<Discipline_Dashboard>();
-            SelectedCommodityDashboards = new ObservableCollection<Commodity_Dashboard>();
-            SelectedPhaseDashboards.CollectionChanged += SelectedPhaseDashboard_CollectionChanged;
-            SelectedDisciplineDashboards.CollectionChanged += SelectedDisciplineDashboard_CollectionChanged;
-            SelectedCommodityDashboards.CollectionChanged += SelectedCommodityDashboard_CollectionChanged;
+            Selected_Dashboard = new ObservableCollection<Dashboard>();
+            Selected_Dashboard.CollectionChanged += SelectedDashboard_CollectionChanged;
         }
 
-        private void SelectedPhaseDashboard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void SelectedDashboard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            IEnumerable<SummaryStats> entitiesSummary = SelectedPhaseDashboards.Select(x => (SummaryStats)x.Stats);
-            SummaryEntity.Stats = new SummaryStats(entitiesSummary);
-            this.RaisePropertyChanged(x => x.SummaryEntity);
-        }
-
-        private void SelectedDisciplineDashboard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            IEnumerable<SummaryStats> entitiesSummary = SelectedDisciplineDashboards.Select(x => (SummaryStats)x.Stats);
-            SummaryEntity.Stats = new SummaryStats(entitiesSummary);
-            this.RaisePropertyChanged(x => x.SummaryEntity);
-        }
-
-        private void SelectedCommodityDashboard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            IEnumerable<SummaryStats> entitiesSummary = SelectedCommodityDashboards.Select(x => (SummaryStats)x.Stats);
+            IEnumerable<SummaryStats> entitiesSummary = Selected_Dashboard.Select(x => (SummaryStats)x.Stats);
             SummaryEntity.Stats = new SummaryStats(entitiesSummary);
             this.RaisePropertyChanged(x => x.SummaryEntity);
         }
@@ -188,6 +169,7 @@ namespace BluePrints.ViewModels
                 this.DisplaySelectedEntity = entities.First();
                 BackgroundWorker summaryBackgroundWorker = new BackgroundWorker();
                 summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
+                summaryBackgroundWorker.RunWorkerCompleted += summaryBackgroundWorker_RunWorkerCompleted;
                 summaryBackgroundWorker.WorkerSupportsCancellation = true;
                 summaryBackgroundWorker.RunWorkerAsync(new object[] { entities.First() });
             }
@@ -205,7 +187,7 @@ namespace BluePrints.ViewModels
             {
                 project.BuildStats(false);
                 project.RecalculateStats(false);
-                project.Phase_Dashboards = DashboardQueries.Construct_Phase_Dashboards((ProjectSummaryStats)project.Stats);
+                project.Workpack_Dashboards = DashboardHelpers.ProjectDashboardHierarchicalBuilder((ProjectSummaryStats)project.Stats);
                 project.Update();
             }
 
@@ -215,6 +197,29 @@ namespace BluePrints.ViewModels
                 return;
             }
         }
+
+        private void summaryBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            //for raising can export to excel
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaiseCanExecuteChanged(x => x.ExportToExcel())));
+        }
+
+        public bool CanExportToExcel()
+        {
+            return DisplayEntities != null && DisplayEntities.Count > 0 && DisplayEntities.First().Workpack_Dashboards != null;
+        }
+
+        public override void ExportToExcel()
+        {
+            LoadingScreenManager.ShowLoadingScreen(1);
+            PROJECT_Dashboard project = DisplayEntities.First();
+            project.Export_Data = DashboardHelpers.BuildExportData(project.Workpack_Dashboards);
+            this.RaisePropertyChanged(x => x.ExcelExportData);
+            LoadingScreenManager.CloseLoadingScreen();
+            base.ExportToExcel();
+        }
+
+        public List<Dashboard_Export_Data_Point> ExcelExportData => DisplayEntities == null ? null : DisplayEntities.Count == 0 ? null : DisplayEntities.First().Export_Data;
         #endregion
 
         #region View Behavior

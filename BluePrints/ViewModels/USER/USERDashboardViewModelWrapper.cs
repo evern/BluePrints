@@ -109,17 +109,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
-
-        public Action Redraw;
-
-        public void RaisePropertyChanged()
-        {
-            if (Redraw != null)
-                mainThreadDispatcher.BeginInvoke(new Action(() => Redraw()));
-
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
-        }
-
         public override void FullRefresh()
         {
             ReloadEntitiesCollection();

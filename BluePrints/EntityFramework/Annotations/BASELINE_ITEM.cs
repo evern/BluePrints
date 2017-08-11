@@ -150,17 +150,6 @@ namespace BluePrints.Data
             }
         }
 
-        public string Department_Name
-        {
-            get
-            {
-                if (DEPARTMENT == null)
-                    return string.Empty;
-
-                return DEPARTMENT.NAME;
-            }
-        }
-
         //Used for direct property access validation in fill/undo-redo
         [NotMapped]
         public Guid? SubAreaGuid

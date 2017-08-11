@@ -22,8 +22,10 @@
         <ResourceDictionary>
             <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
             <ResourceDictionary.MergedDictionaries>
-                                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ChartResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -75,297 +77,103 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical" Height="500"
-                                      dxlc:LayoutControl.AllowVerticalSizing="True">
-                        <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDashboardUSER"
-                                         Style="{StaticResource DefaultGridControlTemplate}" >
+                    <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical" Height="500" dxlc:LayoutControl.AllowVerticalSizing="True">
+                        <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlMultiProjectDashboard" Style="{StaticResource DefaultGridControlTemplate}" IsFilterEnabled="False">
                             <dxg:GridControl.Bands>
-                                <dxg:GridControlBand Name="bandProject" Header="PROJECT">
-                                    <dxg:GridColumn Header="Number" FieldName="Entity.Entity.BASELINE.PROJECT.NUMBER" VisibleIndex="0" />
-                                    <dxg:GridColumn Header="Name" FieldName="Entity.Entity.BASELINE.PROJECT.NAME" VisibleIndex="10" />
-                                    <dxg:GridColumn Header="Client" FieldName="Entity.Entity.BASELINE.PROJECT.CLIENT" VisibleIndex="20" />
-                                    <dxg:GridColumn Header="Contract Type" FieldName="Entity.Entity.BASELINE.PROJECT.CONTRACTTYPE"
-                                                    VisibleIndex="40">
+                                <dxg:GridControlBand Name="bandGeneral" Header="General">
+                                    <dxg:GridColumn Name="columnWorkpack" FieldName="Entity.Entity.WORKPACK.INTERNAL_NAME1" Header="WORKPACK" ReadOnly="True" />
+                                    <dxg:GridColumn Name="colAREA" FieldName="Entity.Entity.AREA.INTERNAL_NUM" Header="AREA" ReadOnly="True" />
+                                    <dxg:GridColumn Name="colSUBAREA" FieldName="Entity.Entity.AREA1.INTERNAL_NUM" Header="SUBAREA" ColumnFilterMode="DisplayText" ReadOnly="True" />
+                                    <dxg:GridColumn Name="colDOCTYPE" FieldName="Entity.Entity.DOCTYPE.NAME" Header="DOCTYPE" ReadOnly="True" />
+                                    <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.Entity.DISCIPLINE.NAME" Header="DISCIPLINE" ReadOnly="True" />
+                                    <dxg:GridColumn Name="colDEPARTMENT" FieldName="Entity.Entity.DEPARTMENT.NAME" Header="DEPARTMENT" ReadOnly="True" />
+                                    <dxg:GridColumn Name="columnInternalNum" FieldName="Entity.Entity.INTERNAL_NUM" Header="INTERNAL NUM" ReadOnly="True" IsEnabled="False" />
+                                    <dxg:GridColumn Name="columnType" FieldName="Entity.Entity.DELIVERABLE_TYPE" Header="TYPE" ReadOnly="True" IsEnabled="False" />
+                                    <dxg:GridColumn Name="columnTitle" FieldName="Entity.Entity.PRIMARY_TITLE" Header="PRIMARY TITLE" ReadOnly="True" IsEnabled="False" />
+                                    <dxg:GridColumn Name="columnTitle2" FieldName="Entity.Entity.SECONDARY_TITLE" Header="SECONDARY TITLE" ReadOnly="True" IsEnabled="False" />
+                                </dxg:GridControlBand>
+                                <dxg:GridControlBand Header="Cumulative">
+                                    <dxg:GridColumn Header="Earned %" FieldName="{Binding DataContext.Cumulative_Earned_Percentage, ElementName=userControl}" ReadOnly="True" AllowEditing="False" VisibleIndex="80">
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
-                                                                      ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ContractType}}" />
+                                            <dxe:TextEditSettings MaskType="Numeric" Mask="p2" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Design Manager" FieldName="Entity.Entity.BASELINE.PROJECT.DESIGNMANAGER"
-                                                    VisibleIndex="60">
+                                    <dxg:GridColumn Header="{Binding DataContext.Header_Budgeted, ElementName=userControl}" FieldName="{Binding DataContext.Cumulative_Planned_Units, ElementName=userControl}" ReadOnly="True" AllowEditing="False" VisibleIndex="90">
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
-                                                                      ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DesignManager}}" />
+                                            <dxe:TextEditSettings MaskType="Numeric" Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="{Binding DataContext.Header_Earned, ElementName=userControl}" FieldName="{Binding DataContext.Cumulative_Earned_Units, ElementName=userControl}" ReadOnly="True" AllowEditing="False" VisibleIndex="100">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings MaskType="Numeric" Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                 </dxg:GridControlBand>
-                                <dxg:GridControlBand Name="bandDeliverable" Header="DELIVERABLE">
-                                    <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="Entity.Entity.WORKPACK_NAME"
-                                            Header="WORKPACK" VisibleIndex="10">
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Number" FieldName="Entity.Entity.INTERNAL_NUM" MinWidth="150" VisibleIndex="20" />
-                                    <dxg:GridColumn Header="Primary Title" FieldName="Entity.Entity.PRIMARY_TITLE" MinWidth="150" VisibleIndex="30" />
-                                    <dxg:GridColumn Header="Secondary Title" FieldName="Entity.Entity.SECONDARY_TITLE" VisibleIndex="40" />
-                                    <dxg:GridColumn Header="Comments" FieldName="Entity.Entity.COMMENTS" VisibleIndex="50" />
-                                    <dxg:GridColumn Header="Status" FieldName="Entity.Entity.GUID_STATUS" VisibleIndex="60" >
+                                <dxg:GridControlBand Header="Period">
+                                    <dxg:GridColumn Header="Earned %" FieldName="{Binding DataContext.Period_Earned_Percentage, ElementName=userControl}" ReadOnly="True" AllowEditing="False" VisibleIndex="130">
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
-                                                              ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}"
-                                                              IsTextEditable="True" AutoComplete="True"
-                                                              DisplayMember="NAME" ValueMember="GUID" />
+                                            <dxe:TextEditSettings MaskType="Numeric" Mask="p2" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colCumulativeBudget" Header="Total Units"
-                                                    FieldName="Entity.Stats.BudgetedUnits" ReadOnly="True"
-                                                    AllowEditing="False" VisibleIndex="70">
+                                    <dxg:GridColumn Header="{Binding DataContext.Header_Budgeted, ElementName=userControl}" FieldName="{Binding DataContext.Period_Planned_Units, ElementName=userControl}" ReadOnly="True" AllowEditing="False" VisibleIndex="140">
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings Name="colCumulativeBudgetText" MaskType="Numeric"
-                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
+                                            <dxe:TextEditSettings MaskType="Numeric" Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                </dxg:GridControlBand>
-                                <dxg:GridControlBand Name="bandCumulative" Header="Cumulative">
-                                    <dxg:GridColumn x:Name="colCumulativePlannedPercentage" Header="Planned %"
-                                                    FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
-                                                    ReadOnly="True" AllowEditing="False" VisibleIndex="10">
+                                    <dxg:GridColumn Header="{Binding DataContext.Header_Earned, ElementName=userControl}" FieldName="{Binding DataContext.Period_Earned_Units, ElementName=userControl}" ReadOnly="True" AllowEditing="False" VisibleIndex="150">
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings MaskType="Numeric" Mask="p2"
-                                                                  MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colCumulativeEarnedPercentage" Header="Earned %"
-                                                    FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
-                                                    ReadOnly="True" AllowEditing="False" VisibleIndex="20">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings MaskType="Numeric" Mask="p2"
-                                                                  MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colCumulativePlanned" Header="Planned Units"
-                                                    FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
-                                                    AllowEditing="False" VisibleIndex="30">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings Name="colCumulativePlannedText" MaskType="Numeric"
-                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colCumulativeEarned" Header="Earned Units"
-                                                    FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
-                                                    AllowEditing="False" VisibleIndex="40">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings Name="colCumulativeEarnedText" MaskType="Numeric"
-                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                </dxg:GridControlBand>
-                                <dxg:GridControlBand Name="bandPeriod" Header="Period">
-                                    <dxg:GridColumn x:Name="colPeriodPlannedPercentage" Header="Planned %"
-                                                    FieldName="Stats.Budget.CurrentPeriodDataPoint.UnitsPercentage" ReadOnly="True"
-                                                    AllowEditing="False" VisibleIndex="10">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings MaskType="Numeric" Mask="p2"
-                                                                  MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colPeriodEarnedPercentage" Header="Earned %"
-                                                    FieldName="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage" ReadOnly="True"
-                                                    AllowEditing="False" VisibleIndex="20">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings MaskType="Numeric" Mask="p2"
-                                                                  MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colPeriodPlanned" Header="Planned Units"
-                                                    FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units" ReadOnly="True"
-                                                    AllowEditing="False" VisibleIndex="30">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings Name="colPeriodPlannedText" MaskType="Numeric"
-                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colPeriodEarned" Header="Earned Units"
-                                                    FieldName="Stats.Earned.CurrentPeriodDataPoint.Units" ReadOnly="True"
-                                                    AllowEditing="False" VisibleIndex="40">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings Name="colPeriodEarnedText" MaskType="Numeric"
-                                                                  Mask="n" MaskUseAsDisplayFormat="True" />
+                                            <dxe:TextEditSettings MaskType="Numeric" Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                 </dxg:GridControlBand>
                             </dxg:GridControl.Bands>
-                            <dxg:GridControl.GroupSummary>
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryBudgeted"
-                                                     ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
-                                                     FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum"
-                                                     DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryCumulativeEarned"
-                                                     ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
-                                                     FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryPeriodPlanned"
-                                                     ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.Units"
-                                                     FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="groupSummaryPeriodEarned"
-                                                     ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.Units"
-                                                     FieldName="Stats.Earned.CurrentPeriodDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            </dxg:GridControl.GroupSummary>
-                            <dxg:GridControl.TotalSummary>
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryBudgeted"
-                                                     ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units"
-                                                     FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum"
-                                                     DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryCumulativeEarned"
-                                                     ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
-                                                     FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodPlanned"
-                                                     ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.Units"
-                                                     FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodEarned"
-                                                     ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.Units"
-                                                     FieldName="Stats.Earned.CurrentPeriodDataPoint.Units"
-                                                     SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                            </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" AllowEditing="False" UseLightweightTemplates="{x:Null}"
-                                               Style="{StaticResource DefaultTableViewTemplate}"
-                                               NewItemRowPosition="None" >
-                                    <dxg:TableView.RowCellMenuCustomizations>
-                                        <dxb:BarButtonItem Content="Refresh"
-                                                           Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
-                                                           Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                    </dxg:TableView.RowCellMenuCustomizations>
-                                    <!--<dxg:TableView.FormatConditions>
-                                        <dxg:FormatCondition
-                                            Expression="[Stats.Earned.CurrentPeriodCumulativeDataPoint.Units] / [Stats.Planned.CurrentPeriodCumulativeDataPoint.Units] &lt; 0.8"
-                                            FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage">
-                                            <dx:Format Background="#FFFF9B98" />
-                                        </dxg:FormatCondition>
-                                        <dxg:FormatCondition
-                                            Expression="[Stats.Earned.CurrentPeriodCumulativeDataPoint.Units] / [Stats.Planned.CurrentPeriodCumulativeDataPoint.Units] &gt;= 0.8 And [Stats.Earned.CurrentPeriodCumulativeDataPoint.Units] / [Stats.Planned.CurrentPeriodCumulativeDataPoint.Units] &lt; 1"
-                                            FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage">
-                                            <dx:Format Background="#FFFFD400" />
-                                        </dxg:FormatCondition>
-                                        <dxg:FormatCondition
-                                            Expression="[Stats.Earned.CurrentPeriodCumulativeDataPoint.Units] / [Stats.Planned.CurrentPeriodCumulativeDataPoint.Units] &gt; 1"
-                                            FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage">
-                                            <dx:Format Background="LightGreen" />
-                                        </dxg:FormatCondition>
-                                        <dxg:FormatCondition
-                                            Expression="[Stats.Earned.CurrentPeriodDataPoint.Units] / [Stats.Budgeted.CurrentPeriodDataPoint.Units] &lt; 0.8"
-                                            FieldName="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage">
-                                            <dx:Format Background="#FFFF9B98" />
-                                        </dxg:FormatCondition>
-                                        <dxg:FormatCondition
-                                            Expression="[Stats.Earned.CurrentPeriodDataPoint.Units] / [Stats.Budgeted.CurrentPeriodDataPoint.Units] &gt;= 0.8 And [Stats.Earned.CurrentPeriodDataPoint.Units] / [Stats.Budgeted.CurrentPeriodDataPoint.Units] &lt; 1"
-                                            FieldName="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage">
-                                            <dx:Format Background="#FFFFD400" />
-                                        </dxg:FormatCondition>
-                                        <dxg:FormatCondition
-                                            Expression="[Stats.Earned.CurrentPeriodDataPoint.Units] / [Stats.Budgeted.CurrentPeriodDataPoint.Units] &gt; 1"
-                                            FieldName="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage">
-                                            <dx:Format Background="LightGreen" />
-                                        </dxg:FormatCondition>
-                                    </dxg:TableView.FormatConditions>-->
-                                </dxg:TableView>
+                                <dxg:TableView x:Name="tableView" AllowEditing="False" UseLightweightTemplates="{x:Null}" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}" IsDetailButtonVisibleBinding="{Binding Row.IHaveWorkpack_Dashboards}" NewItemRowPosition="None" ShowGroupPanel="False" />
                             </dxg:GridControl.View>
+                            <dxg:GridControl.TotalSummary>
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryBudgeted" ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryCumulativeEarned" ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units" FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryCumulativeBurned" ShowInColumn="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" FieldName="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryCumulativeActual" Visible="False" ShowInColumn="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units" FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodPlanned" ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.Units" FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodEarned" ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.Units" FieldName="Stats.Earned.CurrentPeriodDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodBurned" ShowInColumn="Stats.Burned.CurrentPeriodDataPoint.Units" FieldName="Stats.Burned.CurrentPeriodDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodActual" Visible="False" ShowInColumn="Stats.Actual.CurrentPeriodDataPoint.Units" FieldName="Stats.Actual.CurrentPeriodDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                            </dxg:GridControl.TotalSummary>
                         </dxg:GridControl>
                     </dxlc:LayoutGroup>
-                    <dxlc:LayoutGroup Name="LayoutGroupChart"
-                                      DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
-                                      View="Group" Orientation="Vertical">
+                    <dxlc:LayoutGroup Name="LayoutGroupChart" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" View="Group" Orientation="Vertical">
                         <dxc:ChartControl Name="chartSCurve" Padding="0" Margin="0" dx:DXSerializer.Enabled="False">
-                            <dxc:ChartControl.Diagram>
-                                <dxc:XYDiagram2D Name="diagram">
-                                    <dxc:XYDiagram2D.AxisX>
-                                        <dxc:AxisX2D>
-                                            <dxc:AxisX2D.Label>
-                                                <dxc:AxisLabel>
-                                                    <dxc:Axis2D.ResolveOverlappingOptions>
-                                                        <dxc:AxisLabelResolveOverlappingOptions AllowRotate="True" AllowStagger="True" />
-                                                    </dxc:Axis2D.ResolveOverlappingOptions>
-                                                </dxc:AxisLabel>
-                                            </dxc:AxisX2D.Label>
-                                        </dxc:AxisX2D>
-                                    </dxc:XYDiagram2D.AxisX>
-                                    <dxc:XYDiagram2D.AxisY>
-                                        <dxc:AxisY2D x:Name="primaryAxisY">
-                                            <dxc:AxisY2D.Title>
-                                                <dxc:AxisTitle Content="Units % Complete" />
-                                            </dxc:AxisY2D.Title>
-                                            <dxc:AxisY2D.Label>
-                                                <dxc:AxisLabel TextPattern="{}{V:0%}" />
-                                            </dxc:AxisY2D.Label>
-                                        </dxc:AxisY2D>
-                                    </dxc:XYDiagram2D.AxisY>
-                                    <dxc:XYDiagram2D.SecondaryAxesY>
-                                        <dxc:SecondaryAxisY2D x:Name="secondaryAxisY">
-                                            <dxc:SecondaryAxisY2D.Title>
-                                                <dxc:AxisTitle Content="Total Units" />
-                                            </dxc:SecondaryAxisY2D.Title>
-                                        </dxc:SecondaryAxisY2D>
-                                    </dxc:XYDiagram2D.SecondaryAxesY>
-                                    <dxc:XYDiagram2D.Series>
-                                        <dxc:BarSideBySideSeries2D Name="barSeriesOriginal" 
-                                                                   DisplayName="Baseline Planned Units"
-                                                                   Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
-                                                                   Brush="LightBlue"
-                                                                   DataSource="{Binding SummaryEntity.Stats.Budgeted.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
-                                        <!--<dxc:BarSideBySideSeries2D Name="barSeriesPlanned"
-                                                                   DisplayName="Current Planned Units"
-                                                                   Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
-                                                                   Brush="Blue"
-                                                                   DataSource="{Binding SummaryEntity.Stats.Current.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />-->
-                                        <dxc:BarSideBySideSeries2D Name="barSeriesEarned" DisplayName="Earned Units"
-                                                                   Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
-                                                                   Brush="LightGreen"
-                                                                   DataSource="{Binding SummaryEntity.Stats.Earned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
-                                        <dxc:BarSideBySideSeries2D Name="barSeriesRemainingPlanned"
-                                                                   DisplayName="Remaining Units"
-                                                                   Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
-                                                                   Brush="LightGray"
-                                                                   DataSource="{Binding SummaryEntity.Stats.Remaining.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
-                                        <dxc:BarSideBySideSeries2D Name="barSeriesBurned" DisplayName="Burned Units"
-                                                                   Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
-                                                                   Brush="LightCoral"
-                                                                   DataSource="{Binding SummaryEntity.Stats.Burned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
-                                        <dxc:BarSideBySideSeries2D Name="barSeriesActual" DisplayName="Actual Units" Visible="False"
-                                                                   Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}"
-                                                                   Brush="#FFFFA200"
-                                                                   DataSource="{Binding SummaryEntity.Stats.Actual.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
-                                        <dxc:LineSeries2D Name="lineSeriesOriginal"
-                                                          DisplayName="Baseline Planned Units %"
-                                                          Style="{StaticResource DefaultLineSeries2DTemplate}"
-                                                          Brush="SteelBlue"
-                                                          DataSource="{Binding SummaryEntity.Stats.Budgeted.CumulativeDataPoints}" />
-                                        <!--<dxc:LineSeries2D Name="lineSeriesPlanned"
-                                                          DisplayName="Current Planned Units %"
-                                                          Style="{StaticResource DefaultLineSeries2DTemplate}"
-                                                          Brush="Blue"
-                                                          DataSource="{Binding SummaryEntity.Stats.Current.CumulativeDataPoints}" />-->
-                                        <dxc:LineSeries2D Name="lineSeriesRemainingPlanned"
-                                                          DisplayName="Remaining Units %"
-                                                          Style="{StaticResource DefaultLineSeries2DTemplate}"
-                                                          Brush="Gray"
-                                                          DataSource="{Binding SummaryEntity.Stats.Remaining.CumulativeDataPoints}" />
-                                        <dxc:LineSeries2D Name="lineSeriesEarned" DisplayName="Earned Units %"
-                                                          Style="{StaticResource DefaultLineSeries2DTemplate}"
-                                                          Brush="Green"
-                                                          DataSource="{Binding SummaryEntity.Stats.Earned.CumulativeDataPoints}" />
-                                        <dxc:LineSeries2D Name="lineSeriesBurned" DisplayName="Burned Units %"
-                                                          Style="{StaticResource DefaultLineSeries2DTemplate}"
-                                                          Brush="Red"
-                                                          DataSource="{Binding SummaryEntity.Stats.Burned.CumulativeDataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
-                                        <dxc:LineSeries2D Name="lineSeriesActual" DisplayName="Actual Units %" Visible="False"
-                                                          Style="{StaticResource DefaultLineSeries2DTemplate}"
-                                                          Brush="Red"
-                                                          DataSource="{Binding SummaryEntity.Stats.Actual.CumulativeDataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
-                                    </dxc:XYDiagram2D.Series>
-                                </dxc:XYDiagram2D>
-                            </dxc:ChartControl.Diagram>
+                            <dxc:XYDiagram2D SeriesItemsSource="{StaticResource dashboardXYChartSeries}">
+                                <dxc:XYDiagram2D.AxisX>
+                                    <dxc:AxisX2D>
+                                        <dxc:AxisX2D.Label>
+                                            <dxc:AxisLabel>
+                                                <dxc:Axis2D.ResolveOverlappingOptions>
+                                                    <dxc:AxisLabelResolveOverlappingOptions AllowRotate="True" AllowStagger="True" />
+                                                </dxc:Axis2D.ResolveOverlappingOptions>
+                                            </dxc:AxisLabel>
+                                        </dxc:AxisX2D.Label>
+                                    </dxc:AxisX2D>
+                                </dxc:XYDiagram2D.AxisX>
+                                <dxc:XYDiagram2D.AxisY>
+                                    <dxc:AxisY2D x:Name="primaryAxisY">
+                                        <dxc:AxisY2D.Title>
+                                            <dxc:AxisTitle Content="{Binding DataContext.AxisYPrimaryLabel, ElementName=userControl}" />
+                                        </dxc:AxisY2D.Title>
+                                    </dxc:AxisY2D>
+                                </dxc:XYDiagram2D.AxisY>
+                                <dxc:XYDiagram2D.SecondaryAxesY>
+                                    <dxc:SecondaryAxisY2D x:Name="secondaryAxisY">
+                                        <dxc:SecondaryAxisY2D.Title>
+                                            <dxc:AxisTitle Content="{Binding DataContext.AxisYSecondaryLabel, ElementName=userControl}" />
+                                        </dxc:SecondaryAxisY2D.Title>
+                                        <dxc:SecondaryAxisY2D.Label>
+                                            <dxc:AxisLabel TextPattern="{}{V:0%}" />
+                                        </dxc:SecondaryAxisY2D.Label>
+                                    </dxc:SecondaryAxisY2D>
+                                </dxc:XYDiagram2D.SecondaryAxesY>
+                            </dxc:XYDiagram2D>
                             <dxc:ChartControl.Legend>
                                 <dxc:Legend UseCheckBoxes="True" />
                             </dxc:ChartControl.Legend>

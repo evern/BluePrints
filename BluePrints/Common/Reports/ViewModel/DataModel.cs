@@ -763,8 +763,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal MinEstimateUnits => Earned_Units_Total - Variation_Units < 0 ? 0 : Earned_Units_Total - Variation_Units;
 
-        public string Workpack_Name => throw new NotImplementedException();
+        public string Workpack_Name => Entity.Workpack_Name;
 
-        public string Department_Code => throw new NotImplementedException();
+        public string Department_Code => Entity.Department_Code;
     }
 }
