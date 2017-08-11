@@ -57,7 +57,6 @@ namespace BluePrints.Common.ViewModel
             first_loaded_dispatchTimer.Stop();
             if (MainViewModel.Entities.Count > 0)
             {
-                InitializeTotalSummary();
                 this.SwitchBinding(false);
                 SummaryEntity = MainViewModel.Entities.First();
                 this.RaisePropertyChanged(x => x.SummaryEntity);
@@ -247,14 +246,6 @@ namespace BluePrints.Common.ViewModel
         public string AxisYPrimaryLabel { get; set; }
         public string AxisYSecondaryLabel { get; set; }
 
-        public ObservableCollection<Summary> TotalSummary { get; set; }
-
-        public void InitializeTotalSummary()
-        {
-
-            this.RaisePropertyChanged(x => x.TotalSummary);
-        }
-
         public void StatsUpdate()
         {
             this.RaisePropertyChanged(x => x.Field_Mask);
@@ -290,7 +281,6 @@ namespace BluePrints.Common.ViewModel
             this.RaisePropertyChanged(x => x.BarSeriesCrosshairPattern);
             this.RaisePropertyChanged(x => x.AxisYPrimaryLabel);
             this.RaisePropertyChanged(x => x.AxisYSecondaryLabel);
-            this.RaisePropertyChanged(x => x.TotalSummary);
         }
         #endregion
     }
@@ -330,9 +320,7 @@ namespace BluePrints.Common.ViewModel
         string BarSeriesCrosshairPattern { get; set; }
         string AxisYPrimaryLabel { get; set; }
         string AxisYSecondaryLabel { get; set; }
-        ObservableCollection<Summary> TotalSummary { get; set; }
         void StatsUpdate();
-        void InitializeTotalSummary();
     }
 
     public static class ISupportStatsSwitchingExtension
@@ -396,9 +384,6 @@ namespace BluePrints.Common.ViewModel
 
             stats_switch.AxisYPrimaryLabel = is_cost ? "Total Costs" : "Total Units";
             stats_switch.AxisYSecondaryLabel = is_cost ? "Costs % Complete" : "Units % Complete";
-
-            stats_switch.TotalSummary = new ObservableCollection<Summary>();
-            stats_switch.TotalSummary.Add(new Summary() { FieldName = stats_switch.Cumulative_Planned_Units, Type = SummaryItemType.Sum });
 
             stats_switch.StatsUpdate();
         }
