@@ -148,8 +148,6 @@ namespace BluePrints.ViewModels
         {
             get { return "USERDashboardViewModelWrapper"; }
         }
-
-        protected override bool isMasterDetailView => true;
         #endregion
     }
 }

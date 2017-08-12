@@ -65,23 +65,13 @@ namespace BluePrints.ViewModels
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
         ActionObject actionObject;
-        public ObservableCollection<Dashboard> Selected_Dashboard { get; set; }
+
         protected override void resolveParameters(object parameter)
         {
             if (parameter != null)
             {
                 actionObject = parameter as ActionObject;
             }
-
-            Selected_Dashboard = new ObservableCollection<Dashboard>();
-            Selected_Dashboard.CollectionChanged += SelectedDashboard_CollectionChanged;
-        }
-
-        private void SelectedDashboard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            IEnumerable<SummaryStats> entitiesSummary = Selected_Dashboard.Select(x => (SummaryStats)x.Stats);
-            SummaryEntity.Stats = new SummaryStats(entitiesSummary);
-            this.RaisePropertyChanged(x => x.SummaryEntity);
         }
 
         protected override void initializeEntitiesLoadersDescription()
@@ -298,8 +288,6 @@ namespace BluePrints.ViewModels
         {
             get { return "PROJECTDashboardViewModelWrapper"; }
         }
-
-        protected override bool isMasterDetailView => true;
 
         #endregion
 

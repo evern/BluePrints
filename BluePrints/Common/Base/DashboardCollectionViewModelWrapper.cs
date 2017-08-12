@@ -4,6 +4,7 @@ using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Base;
+using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
@@ -32,6 +33,10 @@ namespace BluePrints.Common.ViewModel
         public DashboardViewModelWrapper()
         {
             DoNotAutoRefresh = true;
+
+            Selected_Dashboards = new ObservableCollection<IHaveStats>();
+            Selected_Dashboards.CollectionChanged += SelectedDashboard_CollectionChanged;
+
             dispatchTimer = new DispatcherTimer();
             dispatchTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
 
@@ -44,7 +49,6 @@ namespace BluePrints.Common.ViewModel
         {
             //because dashboards are generally heavy we just want manual refreshes to take place
             MainViewModel.ManualUnregisterMessageHandler();
-            OnSelectedEntitiesChangedCallBack = DisplaySelectedEntities_CollectionChanged;
             mainThreadDispatcher.BeginInvoke(new Action(() => first_loaded_dispatchTimer.Start()));
             return base.OnMainViewModelLoaded(entities);
         }
@@ -63,45 +67,28 @@ namespace BluePrints.Common.ViewModel
             }
         }
 
-        protected void DisplaySelectedEntities_CollectionChanged()
+        private void dispatchTimer_Tick(object sender, EventArgs e)
         {
+            dispatchTimer.Stop();
+            OnSelectedEntitiesChanged(Selected_Dashboards);
+        }
+
+        private void SelectedDashboard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            //multiple selection will call this multiple times. so this is used to remove unecessary calls
             dispatchTimer.Tick -= dispatchTimer_Tick;
             dispatchTimer.Tick += dispatchTimer_Tick;
             dispatchTimer.Start();
         }
 
-        private void dispatchTimer_Tick(object sender, EventArgs e)
-        {
-            dispatchTimer.Stop();
-            if (DisplaySelectedEntities.Count() > 0)
-                DisplaySelectedEntity = DisplaySelectedEntities.First();
-
-            OnSelectedEntitiesChanged(DisplaySelectedEntities);
-        }
-
         public virtual TProjection SummaryEntity { get; set; }
-        protected abstract bool isMasterDetailView { get; }
-        public void OnSelectedEntitiesChanged(IEnumerable<TProjection> entities)
+        public ObservableCollection<IHaveStats> Selected_Dashboards { get; set; }
+        public void OnSelectedEntitiesChanged(IEnumerable<IHaveStats> entities)
         {
             if (MainViewModel == null)
                 return;
-
-            if (!entities.Any())
-            {
-                if(MainViewModel.Entities.Count > 0)
-                {
-                    List<TProjection> firstEntity = new List<TProjection>();
-                    firstEntity.Add(MainViewModel.Entities.First());
-                    entities = firstEntity;
-                }
-            }
-
-            //Cannot use this anymore because during master detail view the stats will be recalculated when detail entities are selected
-            if (entities.Count() == 1 && !isMasterDetailView)
-            {
-                SummaryEntity = entities.First();
-            }
-            else if (entities.Count() > 0)
+            
+            if (entities.Count() > 0)
             {
                 SummaryEntity = ViewModelSource.Create(() => new TProjection());
                 ProgressStats progressStats = entities.First().Stats as ProgressStats;
@@ -327,7 +314,7 @@ namespace BluePrints.Common.ViewModel
     {
         public static void SwitchBinding(this ISupportStatsSwitching stats_switch, bool is_cost)
         {
-            stats_switch.IsActualVisible = false;
+            stats_switch.IsActualVisible = is_cost ? true : false;
             stats_switch.Field_Mask = is_cost ? "c" : "n";
             stats_switch.Summary_Display_Format = is_cost ? "{}{0:c}" : "{}{0:n}";
             string current_period_cumulative_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats) + ".{0}." + BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint) + ".";

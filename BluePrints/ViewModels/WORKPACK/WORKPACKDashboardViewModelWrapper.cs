@@ -182,8 +182,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected override bool isMasterDetailView => true;
-
         #endregion
     }
 }

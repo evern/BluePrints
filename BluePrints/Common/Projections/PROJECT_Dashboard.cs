@@ -15,7 +15,7 @@ using System.Linq.Expressions;
 
 namespace BluePrints.Common.Projections
 {
-    public class PROJECT_Dashboard : BluePrintsProjectionBase<PROJECT>, IHaveSummary
+    public class PROJECT_Dashboard : BluePrintsProjectionBase<PROJECT>, IHaveSummary, IHaveStats
     {
         public int WBSLevel => 0;
         public PROJECT_Dashboard()

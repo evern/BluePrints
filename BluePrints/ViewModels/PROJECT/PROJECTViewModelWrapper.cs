@@ -54,22 +54,11 @@ namespace BluePrints.ViewModels
         public Action<RATECollectionViewModelWrapper> AssignRATEDelegates;
 
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        public ObservableCollection<Dashboard> Selected_Dashboard { get; set; }
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter =
                 (EntitiesParameter<PROJECT>) parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
-
-            Selected_Dashboard = new ObservableCollection<Dashboard>();
-            Selected_Dashboard.CollectionChanged += SelectedDashboard_CollectionChanged;
-        }
-
-        private void SelectedDashboard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            IEnumerable<SummaryStats> entitiesSummary = Selected_Dashboard.Select(x => (SummaryStats)x.Stats);
-            SummaryEntity.Stats = new SummaryStats(entitiesSummary);
-            this.RaisePropertyChanged(x => x.SummaryEntity);
         }
 
         protected override void initializeEntitiesLoadersDescription()
@@ -162,7 +151,7 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             MainViewModel.SetParentViewModel(this);
 
-            DisplaySelectedEntities_CollectionChanged();
+            //DisplaySelectedEntities_CollectionChanged(null, null);
 
             if(entities.Count() > 0)
             {
@@ -526,8 +515,6 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
-
-        protected override bool isMasterDetailView => true;
         #endregion
     }
 }

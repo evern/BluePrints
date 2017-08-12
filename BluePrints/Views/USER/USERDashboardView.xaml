@@ -78,7 +78,7 @@
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical" Height="500" dxlc:LayoutControl.AllowVerticalSizing="True">
-                        <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlMultiProjectDashboard" Style="{StaticResource DefaultGridControlTemplate}" IsFilterEnabled="False">
+                        <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlUserDashboard" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}" Style="{StaticResource DefaultGridControlTemplate}" IsFilterEnabled="False">
                             <dxg:GridControl.Bands>
                                 <dxg:GridControlBand Name="bandGeneral" Header="General">
                                     <dxg:GridColumn Name="columnWorkpack" FieldName="Entity.Entity.WORKPACK.INTERNAL_NAME1" Header="WORKPACK" ReadOnly="True" />
@@ -133,18 +133,14 @@
                             <dxg:GridControl.TotalSummary>
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryBudgeted" ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryCumulativeEarned" ShowInColumn="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units" FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryCumulativeBurned" ShowInColumn="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" FieldName="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryCumulativeActual" Visible="False" ShowInColumn="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units" FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodPlanned" ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.Units" FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodEarned" ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.Units" FieldName="Stats.Earned.CurrentPeriodDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodBurned" ShowInColumn="Stats.Burned.CurrentPeriodDataPoint.Units" FieldName="Stats.Burned.CurrentPeriodDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodActual" Visible="False" ShowInColumn="Stats.Actual.CurrentPeriodDataPoint.Units" FieldName="Stats.Actual.CurrentPeriodDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
                             </dxg:GridControl.TotalSummary>
                         </dxg:GridControl>
                     </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup Name="LayoutGroupChart" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" View="Group" Orientation="Vertical">
                         <dxc:ChartControl Name="chartSCurve" Padding="0" Margin="0" dx:DXSerializer.Enabled="False">
-                            <dxc:XYDiagram2D SeriesItemsSource="{StaticResource dashboardXYChartSeries}">
+                            <dxc:XYDiagram2D SeriesItemsSource="{StaticResource userDashboardXYChartSeries}">
                                 <dxc:XYDiagram2D.AxisX>
                                     <dxc:AxisX2D>
                                         <dxc:AxisX2D.Label>

@@ -35,28 +35,16 @@ namespace BluePrints.Views
             primaryAxisY.Title.Content = primaryAxisY.Title.Content.ToString().Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
 
             totalSummaryCumulativeEarned.FieldName = totalSummaryCumulativeEarned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryCumulativeBurned.FieldName = totalSummaryCumulativeBurned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryCumulativeActual.FieldName = totalSummaryCumulativeActual.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryPeriodPlanned.FieldName = totalSummaryPeriodPlanned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryPeriodEarned.FieldName = totalSummaryPeriodEarned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryPeriodBurned.FieldName = totalSummaryPeriodBurned.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryPeriodActual.FieldName = totalSummaryPeriodActual.FieldName.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryBudgeted.ShowInColumn = totalSummaryBudgeted.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryCumulativeEarned.ShowInColumn = totalSummaryCumulativeEarned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryCumulativeBurned.ShowInColumn = totalSummaryCumulativeBurned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryCumulativeActual.ShowInColumn = totalSummaryCumulativeActual.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryPeriodPlanned.ShowInColumn = totalSummaryPeriodPlanned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryPeriodEarned.ShowInColumn = totalSummaryPeriodEarned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryPeriodBurned.ShowInColumn = totalSummaryPeriodBurned.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
-            totalSummaryPeriodActual.ShowInColumn = totalSummaryPeriodActual.ShowInColumn.Replace(fieldNameReplaceFrom, fieldNameReplaceTo);
             totalSummaryBudgeted.DisplayFormat = displayFormatVar;
             totalSummaryCumulativeEarned.DisplayFormat = displayFormatVar;
-            totalSummaryCumulativeBurned.DisplayFormat = displayFormatVar;
-            totalSummaryCumulativeActual.DisplayFormat = displayFormatVar;
             totalSummaryPeriodPlanned.DisplayFormat = displayFormatVar;
             totalSummaryPeriodEarned.DisplayFormat = displayFormatVar;
-            totalSummaryPeriodBurned.DisplayFormat = displayFormatVar;
-            totalSummaryPeriodActual.DisplayFormat = displayFormatVar;
 
             foreach (var formatCondition in tableView.FormatConditions)
                 if (formatCondition.Expression != null)
