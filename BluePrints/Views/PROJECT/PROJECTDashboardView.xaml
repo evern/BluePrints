@@ -127,7 +127,7 @@
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodPlanned" ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.Units" FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodEarned" ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.Units" FieldName="Stats.Earned.CurrentPeriodDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodBurned" ShowInColumn="Stats.Burned.CurrentPeriodDataPoint.Units" FieldName="Stats.Burned.CurrentPeriodDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodActual" Visible="False" ShowInColumn="Stats.Actual.CurrentPeriodDataPoint.Units" FieldName="Stats.Actual.CurrentPeriodDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodActual" Visible="{Binding DataContext.IsActualVisible, ElementName=userControl}" ShowInColumn="Stats.Actual.CurrentPeriodDataPoint.Units" FieldName="Stats.Actual.CurrentPeriodDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
                             </dxg:GridControl.TotalSummary>
                         </dxg:GridControl>
                     </dxlc:LayoutGroup>
