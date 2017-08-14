@@ -621,7 +621,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Current_Productivity => SchedulePercentage == 0 ? 0 : Total_Earned_Percentage / SchedulePercentage;
 
         decimal? remaining_productivity { get; set; }
-        public decimal Remaining_Productivity
+        public decimal? Remaining_Productivity
         {
             get
             {
@@ -629,9 +629,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                     return 0;
 
                 if(remaining_productivity == null)
-                    remaining_productivity = Stats.RemainingProductivity <= 0 || Stats.BaselineProductivity <= 0 ? 100 : Stats.RemainingProductivity / Stats.BaselineProductivity;
+                    remaining_productivity = Stats.RemainingProductivity <= 0 || Stats.BaselineProductivity <= 0 ? (decimal?)null : Stats.RemainingProductivity / Stats.BaselineProductivity;
 
-                return (decimal)remaining_productivity;
+                return remaining_productivity;
             }
         }
 

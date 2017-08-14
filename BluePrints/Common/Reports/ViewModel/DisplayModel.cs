@@ -122,7 +122,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal MinEstimateUnits => ((IReportable)ProgressItem).MinEstimateUnits;
 
-        public decimal Remaining_Productivity => ((IReportable)ProgressItem).Remaining_Productivity;
+        public decimal? Remaining_Productivity => ((IReportable)ProgressItem).Remaining_Productivity;
 
         public string Workpack_Name => ((IReportable)ProgressItem).Workpack_Name;
 
@@ -376,7 +376,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid? Stock_Group_Guid => Reportable.Stock_Group_Guid;
 
-        public decimal Remaining_Productivity => Reportable.Remaining_Productivity;
+        public decimal? Remaining_Productivity => Reportable.Remaining_Productivity;
 
         public decimal FreightRate => Reportable.FreightRate;
 

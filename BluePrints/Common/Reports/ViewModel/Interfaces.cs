@@ -48,7 +48,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         SingleObjectSummarizer StatSummarizer { get; }
         decimal Current_Productivity { get; }
         decimal? Override_Productivity { get; set; }
-        decimal Remaining_Productivity { get; }
+        decimal? Remaining_Productivity { get; }
     }
 
     public interface IDeliverable_Quantity_Group : IDeliverable_Quantity
