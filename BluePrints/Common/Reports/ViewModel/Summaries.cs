@@ -244,6 +244,38 @@ namespace BluePrints.Common.ViewModel.Reporting
             get { return budgetedCosts; }
         }
 
+        public decimal BaselineProductivity
+        {
+            get
+            {
+                if (Budgeted == null || Budgeted.DataPoints == null || Budgeted.DataPoints.Count == 0)
+                    return 0;
+
+                decimal budgeted_units = Budgeted.DataPoints.Sum(x => x.Units);
+                decimal budgeted_duration = Budgeted.GetRemainingDuration();
+                if (budgeted_duration == 0)
+                    return 0;
+
+                return budgeted_units / budgeted_duration;
+            }
+        }
+
+        public decimal RemainingProductivity
+        {
+            get
+            {
+                if (Remaining == null || Remaining.DataPoints == null || Remaining.DataPoints.Count == 0)
+                    return 0;
+
+                decimal remaining_units = Remaining.DataPoints.Sum(x => x.Units);
+                decimal remaining_duration = Remaining.GetRemainingDuration();
+                if (remaining_duration == 0)
+                    return 0;
+
+                return remaining_units / remaining_duration;
+            }
+        }
+
         public ProgressStats(DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, decimal budgetedUnits, decimal totalUnits, decimal budgetedCosts, decimal totalCosts, IEnumerable<VariationAdjustment> variationAdjustments)
         {
             this.ReportingDataDate = reporting_data_date;

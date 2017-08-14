@@ -79,6 +79,14 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.rawDataPoints = rawDataPoints;
         }
 
+        public decimal GetRemainingDuration()
+        {
+            if (this.rawDataPoints == null || this.rawDataPoints.Count() == 0)
+                return 0;
+
+            return this.rawDataPoints.Where(x => x.RemainingDuration != null).Sum(x => (decimal)x.RemainingDuration);
+        }
+
         public void SetPlannedData(IEnumerable<StoredProcedure_PlannedDataPoint> rawStoredProcedureDataPoints)
         {
             List<DataPoint> convertedDataPoints = DataPointsHelpers.ConvertStoredProcedurePlannedDataPointToDataPoints(rawStoredProcedureDataPoints).ToList();
@@ -306,7 +314,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Actuals { get; set; }
         public decimal BudgetedUnits { get; set; }
         public decimal BudgetedCosts { get; set; }
-
+        public decimal? RemainingDuration { get; set; }
         public decimal Quantity { get; set; }
 
         public Guid DeliverableGuid { get; set; }

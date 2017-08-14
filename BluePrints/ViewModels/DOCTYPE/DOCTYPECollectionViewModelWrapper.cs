@@ -25,7 +25,6 @@ namespace BluePrints.ViewModels
         }
 
 
-        /// <summary>
         /// Initializes a new instance of the DOCTYPECollectionViewModelWrapper class.
         /// This constructor is declared protected to avoid undesired instantiation of the DOCTYPECollectionViewModelWrapper type without the POCO proxy factory.
         /// </summary>

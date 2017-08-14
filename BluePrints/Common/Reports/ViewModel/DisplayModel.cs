@@ -118,7 +118,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Current_Productivity => ((IReportable)ProgressItem).Current_Productivity;
 
-        public decimal Override_Productivity { get => ((IReportable)ProgressItem).Override_Productivity; set => ((IReportable)ProgressItem).Override_Productivity = value; }
+        public decimal? Override_Productivity { get => ((IReportable)ProgressItem).Override_Productivity; set => ((IReportable)ProgressItem).Override_Productivity = value; }
 
         public decimal MinEstimateUnits => ((IReportable)ProgressItem).MinEstimateUnits;
 
@@ -352,7 +352,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Current_Productivity => Reportable.Current_Productivity;
 
-        public decimal Override_Productivity { get => Reportable.Override_Productivity; set => Reportable.Override_Productivity = value; }
+        public decimal? Override_Productivity { get => Reportable.Override_Productivity; set => Reportable.Override_Productivity = value; }
 
         public decimal Stock_Code_Supply_Rate => Reportable.Stock_Code_Supply_Rate;
 

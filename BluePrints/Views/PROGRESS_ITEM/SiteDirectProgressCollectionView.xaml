@@ -206,7 +206,12 @@
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="ProgressItem.Override_Productivity" Header="OVERRIDE_PRODUCTIVITY" IsEnabled="False" >
+                                <dxg:GridColumn FieldName="ProgressItem.Override_Productivity" Header="OVERRIDE_PRODUCTIVITY" >
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" Increment="0.1" NullValueButtonPlacement="EditBox" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="ProgressItem.Remaining_Productivity" Header="REMAINING_PRODUCTIVITY" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" Increment="0.1" NullValueButtonPlacement="EditBox" />
                                     </dxg:GridColumn.EditSettings>
@@ -324,7 +329,7 @@
                                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Binding="{Binding Override_Productivity}" Header="OVERRIDE_PRODUCTIVITY" IsEnabled="False" >
+                                            <dxg:GridColumn Binding="{Binding Override_Productivity}" Header="OVERRIDE_PRODUCTIVITY" >
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" Increment="0.1" NullValueButtonPlacement="EditBox" />
                                                 </dxg:GridColumn.EditSettings>

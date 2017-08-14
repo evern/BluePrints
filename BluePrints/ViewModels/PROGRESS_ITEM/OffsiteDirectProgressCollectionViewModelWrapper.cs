@@ -196,20 +196,23 @@ namespace BluePrints.ViewModels
             {
                 BASELINE_ITEMProgress deliverable = (BASELINE_ITEMProgress)e.Row;
 
-                Guid current_deliverable_status_guid = (Guid)e.Value;
-                DELIVERABLES_STATUS current_deliverable_status = deliverable.Entity.Entity.DeliverableStatusCollection.FirstOrDefault(x => x.GUID == current_deliverable_status_guid);
-                if (current_deliverable_status != null && current_deliverable_status.AUTO_PERCENTAGE != null)
+                if(e.Value != null)
                 {
-                    decimal auto_percentage = (decimal)current_deliverable_status.AUTO_PERCENTAGE;
-                    if (current_deliverable_status.AUTO_PERCENTAGE > deliverable.Total_Earned_Percentage)
+                    Guid current_deliverable_status_guid = (Guid)e.Value;
+                    DELIVERABLES_STATUS current_deliverable_status = deliverable.Entity.Entity.DeliverableStatusCollection.FirstOrDefault(x => x.GUID == current_deliverable_status_guid);
+                    if (current_deliverable_status != null && current_deliverable_status.AUTO_PERCENTAGE != null)
                     {
-                        decimal oldValue = deliverable.Total_Earned_Percentage;
-                        deliverable.Total_Earned_Percentage = auto_percentage;
+                        decimal auto_percentage = (decimal)current_deliverable_status.AUTO_PERCENTAGE;
+                        if (current_deliverable_status.AUTO_PERCENTAGE > deliverable.Total_Earned_Percentage)
+                        {
+                            decimal oldValue = deliverable.Total_Earned_Percentage;
+                            deliverable.Total_Earned_Percentage = auto_percentage;
 
-                        string undo_redo_fieldname = BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage);
+                            string undo_redo_fieldname = BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage);
 
-                        MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(deliverable, undo_redo_fieldname, oldValue, auto_percentage, EntityMessageType.Changed);
+                            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                            MainViewModel.EntitiesUndoRedoManager.AddUndo(deliverable, undo_redo_fieldname, oldValue, auto_percentage, EntityMessageType.Changed);
+                        }
                     }
                 }
             }

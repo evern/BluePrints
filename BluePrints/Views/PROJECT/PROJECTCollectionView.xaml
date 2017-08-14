@@ -118,11 +118,6 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Legacy Workpack" FieldName="USELEGACYWORKPACK">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:CheckEditSettings />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
                             <dxg:GridColumn Header="Currency Conversion" FieldName="CURRENCYCONVERSION">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings MinValue="0.1" x:Name="PART_Editor" MaskType="Numeric" Mask="n2"

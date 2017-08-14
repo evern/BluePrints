@@ -375,7 +375,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                     Costs = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedPrice),
                     Units = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedUnits),
                     ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate, 
-                    IsFromP6 = deliverablesDataPoint.IsFromP6
+                    IsFromP6 = deliverablesDataPoint.IsFromP6, 
+                    RemainingDuration = deliverablesDataPoint.RemainingDuration == null ? (decimal?)null : Convert.ToDecimal(deliverablesDataPoint.RemainingDuration)
                 });
             }
 
@@ -395,7 +396,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                     Costs = Convert.ToDecimal(deliverablesDataPoint.PeriodRemainingPrice),
                     Units = Convert.ToDecimal(deliverablesDataPoint.PeriodRemainingUnits),
                     ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate,
-                    IsFromP6 = deliverablesDataPoint.IsFromP6
+                    IsFromP6 = deliverablesDataPoint.IsFromP6,
+                    RemainingDuration = deliverablesDataPoint.RemainingDuration == null ? (decimal?)null : Convert.ToDecimal(deliverablesDataPoint.RemainingDuration)
                 });
             }
 

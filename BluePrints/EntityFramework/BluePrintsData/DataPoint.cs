@@ -31,5 +31,7 @@ namespace BluePrints.Data
         public double PeriodPrice { get; set; }
 
         public bool IsFromP6 { get; set; }
+
+        public double? RemainingDuration { get; set; }
     }
 }

@@ -446,11 +446,39 @@ namespace BluePrints.Common.Base
                 return;
             }
 
+            IEnumerable<ICanAssignP6> deliverables = entities.Where(x => x.Total_Units > 0);
+            #region reset budgeted on progress
+            IEnumerable<TASK> task_source = scheduling_view_model.TASK_Source;
+
+            //reset all tasks target to 0
+            foreach(TASK task in task_source)
+            {
+                task.act_work_qty = 0;
+                task.target_work_qty = 0;
+                task.remain_work_qty = 0;
+                task.duration_type = P6DURATION_TYPE.DT_FixedQty.ToString();
+                task.complete_pct_type = P6COMPLETE_TYPE.CP_Units.ToString();
+            }
+
+            foreach (ICanAssignP6 deliverable in deliverables)
+            {
+                IEnumerable<P6_ASSIGNMENT> deliverable_assignments = deliverable.P6_Assignments;
+                foreach (P6_ASSIGNMENT deliverable_assignment in deliverable_assignments)
+                {
+                    TASK actual_context_task = task_source.FirstOrDefault(x => x.task_code == deliverable_assignment.P6_ACTIVITYID);
+                    P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection((IDeliverable_Rates)deliverable, deliverable_assignment);
+
+                    if (actual_context_task != null && actual_context_task.delete_date == null)
+                    {
+                        actual_context_task.target_work_qty += p6_assignment.UNITS;
+                        actual_context_task.remain_work_qty += p6_assignment.UNITS;
+                    }
+                }
+            }
+            #endregion
+
             List<string> processedP6Task = new List<string>();
             TimeSpan intervalTimeSpan = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
-
-            //IEnumerable<BASELINE_ITEMProjection> baseline_itemProjection = entities.Where(x => x.TOTAL_UNITS > 0);
-            IEnumerable<ICanAssignP6> deliverables = entities.Where(x => x.Total_Units > 0);
             LoadingScreenManager.ShowLoadingScreen(deliverables.Count());
             string errorMessage = string.Empty;
 
@@ -550,7 +578,13 @@ namespace BluePrints.Common.Base
                                 {
 
                                     //in the first progress current productivity will be null and if user doesn't override the productivity, we will have 0 productivity
-                                    decimal override_productivity = reportable.Override_Productivity == 0 ? 1 : reportable.Override_Productivity;
+                                    decimal override_productivity;
+                                    if (reportable.Current_Productivity == 0 && reportable.Override_Productivity == 0)
+                                        override_productivity = 1;
+                                    else if (reportable.Override_Productivity != null)
+                                        override_productivity = (decimal)reportable.Override_Productivity;
+                                    else
+                                        override_productivity = reportable.Current_Productivity;
 
                                     decimal current_assignment_remaining_duration_per_productivity = current_assignment_remaining_duration / override_productivity;
                                     if (!processedP6Task.Any(x => x == P6TASK.task_code))
@@ -572,11 +606,7 @@ namespace BluePrints.Common.Base
 
 
                         if (!processedP6Task.Any(x => x == P6TASK.task_code))
-                        {
-                            P6TASK.duration_type = P6DURATION_TYPE.DT_FixedQty.ToString();
-                            P6TASK.complete_pct_type = P6COMPLETE_TYPE.CP_Units.ToString();
                             processedP6Task.Add(P6TASK.task_code);
-                        }
 
                         scheduling_view_model.Save_Task(P6TASK);
                     }

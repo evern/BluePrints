@@ -130,7 +130,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return editPROGRESS_ITEMS;
         }
 
-        public override decimal Override_Productivity
+        public override decimal? Override_Productivity
         {
             get
             {
@@ -141,7 +141,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     set_override_productivity = Reportables.Count() == 0 ? 0 : Reportables.Max(x => x.Override_Productivity);
                 }
 
-                return (decimal)set_override_productivity;
+                return set_override_productivity;
             }
             set
             {
@@ -180,7 +180,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal DC_Value { get => Entity.DC_Value; set => Entity.DC_Value = value; }
     }
 
-    public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ISupportByDuration, ICanAssignP6, ISupportVariation
+    public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ISupportByDuration, ICanAssignP6, ISupportVariation, IHaveDBProductivityOverride
     {
         public BASELINE_ITEMProgress()
         {
@@ -238,6 +238,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Estimated_Value { get => Entity.Estimated_Value; set => Entity.Estimated_Value = value; }
         public decimal DC_Value { get => Entity.DC_Value; set => Entity.DC_Value = value; }
         public Guid? Baseline_Guid { get => Entity.Baseline_Guid; set => Entity.Baseline_Guid = value; }
+        public decimal? DB_Productivity_Override { get => Entity.DB_Productivity_Override; set => Entity.DB_Productivity_Override = value; }
     }
 
     public abstract class BluePrintsProgressableByQuantityProjectionBase<TEntity> : BluePrintsProgressableProjectionBase<TEntity>, IReportable_Quantity
@@ -507,6 +508,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             set_total_earned_percentage = null;
             set_override_productivity = null;
+            remaining_productivity = null;
             base.Update();
         }
 
@@ -618,17 +620,30 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Current_Productivity => SchedulePercentage == 0 ? 0 : Total_Earned_Percentage / SchedulePercentage;
 
-        public decimal Remaining_Productivity => Schedule_Remaining_Units;
+        decimal? remaining_productivity { get; set; }
+        public decimal Remaining_Productivity
+        {
+            get
+            {
+                if (Stats == null)
+                    return 0;
+
+                if(remaining_productivity == null)
+                    remaining_productivity = Stats.RemainingProductivity <= 0 || Stats.BaselineProductivity <= 0 ? 100 : Stats.RemainingProductivity / Stats.BaselineProductivity;
+
+                return (decimal)remaining_productivity;
+            }
+        }
 
         protected decimal? set_override_productivity;
-        public virtual decimal Override_Productivity
+        public virtual decimal? Override_Productivity
         {
             get
             {
                 if (set_override_productivity == null)
                     set_override_productivity = get_db_or_current_productivity();
 
-                return (decimal)set_override_productivity;
+                return set_override_productivity;
             }
             set
             {
