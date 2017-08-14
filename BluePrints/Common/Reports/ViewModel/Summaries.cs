@@ -251,8 +251,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (Budgeted == null || Budgeted.DataPoints == null || Budgeted.DataPoints.Count == 0)
                     return 0;
 
-                decimal budgeted_units = Budgeted.DataPoints.Sum(x => x.Units);
-                decimal budgeted_duration = Budgeted.GetRemainingDuration();
+
+                decimal budgeted_units = Budgeted.GetApplicableRemainingProductivityCalculationBudgetedUnits();
+                decimal budgeted_duration = Budgeted.GetApplicableProductivityCalculationBudgetedDuration();
                 if (budgeted_duration == 0)
                     return 0;
 
@@ -267,8 +268,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (Remaining == null || Remaining.DataPoints == null || Remaining.DataPoints.Count == 0)
                     return 0;
 
-                decimal remaining_units = Remaining.DataPoints.Sum(x => x.Units);
-                decimal remaining_duration = Remaining.GetRemainingDuration();
+                decimal remaining_units = Remaining.GetApplicableRemainingProductivityCalculationRemainingUnits();
+                decimal remaining_duration = Remaining.GetApplicableProductivityCalculationRemainingDuration();
                 if (remaining_duration == 0)
                     return 0;
 

@@ -79,12 +79,36 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.rawDataPoints = rawDataPoints;
         }
 
-        public decimal GetRemainingDuration()
+        public decimal GetApplicableProductivityCalculationBudgetedDuration()
         {
             if (this.rawDataPoints == null || this.rawDataPoints.Count() == 0)
                 return 0;
 
-            return this.rawDataPoints.Where(x => x.RemainingDuration != null).Sum(x => (decimal)x.RemainingDuration);
+            return this.rawDataPoints.Where(x => x.ProgressDate <= reportingDataDate).Where(x => x.RemainingDuration != null).Sum(x => (decimal)x.RemainingDuration);
+        }
+
+        public decimal GetApplicableProductivityCalculationRemainingDuration()
+        {
+            if (this.rawDataPoints == null || this.rawDataPoints.Count() == 0)
+                return 0;
+
+            return this.rawDataPoints.Where(x => x.RemainingDuration != null && x.RemainingDuration > 0).Sum(x => (decimal)x.RemainingDuration);
+        }
+
+        public decimal GetApplicableRemainingProductivityCalculationBudgetedUnits()
+        {
+            if (this.rawDataPoints == null || this.rawDataPoints.Count() == 0)
+                return 0;
+
+            return this.rawDataPoints.Where(x => x.ProgressDate <= reportingDataDate).Where(x => x.RemainingDuration != null).Sum(x => (decimal)x.Units);
+        }
+
+        public decimal GetApplicableRemainingProductivityCalculationRemainingUnits()
+        {
+            if (this.rawDataPoints == null || this.rawDataPoints.Count() == 0)
+                return 0;
+
+            return this.rawDataPoints.Where(x => x.RemainingDuration != null && x.RemainingDuration > 0).Sum(x => (decimal)x.Units);
         }
 
         public void SetPlannedData(IEnumerable<StoredProcedure_PlannedDataPoint> rawStoredProcedureDataPoints)
