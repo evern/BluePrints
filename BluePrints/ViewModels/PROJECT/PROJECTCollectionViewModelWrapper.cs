@@ -9,6 +9,7 @@ using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Helpers;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
@@ -50,6 +51,21 @@ namespace BluePrints.ViewModels
 
         protected override void resolveParameters(object parameter)
         {
+        }
+
+        public override void OnLoaded()
+        {
+            if (AppNotificationService == null || GlobalVariables.IsProjectCollectionViewNotificationShown)
+            {
+                base.OnLoaded();
+                return;
+            }
+
+            INotification notification = AppNotificationService.CreatePredefinedNotification("Update: go to rate, baseline, progress and estimate from right clicking or top menu", null, null, null);
+            GlobalVariables.IsProjectViewNotificationShown = true;
+            notification.ShowAsync();
+
+            base.OnLoaded();
         }
 
         protected override void initializeEntitiesLoadersDescription()
@@ -502,6 +518,70 @@ namespace BluePrints.ViewModels
             get { return "PROJECTCollectionViewModelWrapper"; }
         }
 
+        public void EditArea()
+        {
+            if (DisplaySelectedEntity == null)
+                return;
+
+            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectAreas" + DisplaySelectedEntity.GUID.ToString(),
+                new EntitiesParameter<PROJECT>(DisplaySelectedEntity),
+                    "AREACollectionView",
+                    "[" + DisplaySelectedEntity.NUMBER + "] Areas");
+
+            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+        }
+
+        public void EditRate()
+        {
+            if (DisplaySelectedEntity == null)
+                return;
+
+            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectRates" + DisplaySelectedEntity.GUID.ToString(),
+                new EntitiesParameter<PROJECT>(DisplaySelectedEntity),
+                    "RATECollectionView",
+                    "[" + DisplaySelectedEntity.NUMBER + "] Rates");
+
+            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+        }
+
+        public void EditBaseline()
+        {
+            if (DisplaySelectedEntity == null)
+                return;
+
+            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectBaselines" + DisplaySelectedEntity.GUID.ToString(),
+                new EntitiesParameter<PROJECT>(DisplaySelectedEntity),
+                    "BASELINECollectionView",
+                    "[" + DisplaySelectedEntity.NUMBER + "] Baselines");
+
+            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+        }
+
+        public void EditEstimate()
+        {
+            if (DisplaySelectedEntity == null)
+                return;
+
+            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectEstimates" + DisplaySelectedEntity.GUID.ToString(),
+                new DualEntitiesParameter<PROJECT, IAmBaseline>(DisplaySelectedEntity, null),
+                    "ESTIMATION_DIRECT_ITEMCollectionView",
+                    "[" + DisplaySelectedEntity.NUMBER + "] Estimates");
+
+            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+        }
+
+        public void EditProgress()
+        {
+            if (DisplaySelectedEntity == null)
+                return;
+
+            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectEstimates" + DisplaySelectedEntity.GUID.ToString(),
+                new EntitiesParameter<PROJECT>(DisplaySelectedEntity),
+                    "PROGRESSCollectionView",
+                    "[" + DisplaySelectedEntity.NUMBER + "] Progresses");
+
+            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+        }
         #endregion
 
         #region ISupportCustomDocumentTypeAndParameter

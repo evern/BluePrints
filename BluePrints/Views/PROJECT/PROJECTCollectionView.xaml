@@ -63,6 +63,12 @@
                                                    Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}"
                                                    Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
+                                <dxb:BarItemSeparator />
+                                <dxb:BarButtonItem Content="Area" Command="{Binding DataContext.EditAreaCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Web_32x32.png}" Glyph="{dx:DXImage Image=Web_16x16.png}" />
+                                <dxb:BarButtonItem Content="Rate" Command="{Binding DataContext.EditRateCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Financial_32x32.png}" Glyph="{dx:DXImage Image=Financial_16x16.png}" />
+                                <dxb:BarButtonItem Content="Baselines" Command="{Binding DataContext.EditBaselineCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Information_32x32.png}" Glyph="{dx:DXImage Image=Information_16x16.png}" />
+                                <dxb:BarButtonItem Content="Estimates" Command="{Binding DataContext.EditEstimateCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Cube_32x32.png}" Glyph="{dx:DXImage Image=Cube_16x16.png}" />
+                                <dxb:BarButtonItem Content="Progresses" Command="{Binding DataContext.EditProgressCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Date&amp;Time_32x32.png}" Glyph="{dx:DXImage Image=Date&amp;Time_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -187,24 +193,17 @@
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
                                 <dxg:TableView.RowCellMenuCustomizations>
-                                    <dxb:BarButtonItem Content="Bulk Edit"
-                                                       Command="{Binding View.DataContext.BulkColumnEditCommand}"
-                                                       CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
-                                                       Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Fill Up"
-                                                       Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}"
-                                                       Command="{Binding View.DataContext.FillUpCommand}"
-                                                       CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Content="Fill Down"
-                                                       Glyph="{dx:DXImageOffice2013 Image=Download_16x16.png}"
-                                                       Command="{Binding View.DataContext.FillDownCommand}"
-                                                       CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Content="Delete"
-                                                       Command="{Binding View.DataContext.BulkDeleteCommand}"
-                                                       Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Refresh"
-                                                       Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
-                                                       Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Bulk Edit" Command="{Binding View.DataContext.BulkColumnEditCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" Command="{Binding View.DataContext.FillUpCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                                    <dxb:BarButtonItem Content="Fill Down" Glyph="{dx:DXImageOffice2013 Image=Download_16x16.png}" Command="{Binding View.DataContext.FillDownCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                                    <dxb:BarButtonItem Content="Delete" Command="{Binding View.DataContext.BulkDeleteCommand}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                    <dxb:BarItemSeparator />
+                                    <dxb:BarButtonItem Content="Area" Command="{Binding DataContext.EditAreaCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Web_32x32.png}" Glyph="{dx:DXImage Image=Web_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Rate" Command="{Binding DataContext.EditRateCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Financial_32x32.png}" Glyph="{dx:DXImage Image=Financial_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Baselines" Command="{Binding DataContext.EditBaselineCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Information_32x32.png}" Glyph="{dx:DXImage Image=Information_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Estimates" Command="{Binding DataContext.EditEstimateCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Cube_32x32.png}" Glyph="{dx:DXImage Image=Cube_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Progresses" Command="{Binding DataContext.EditProgressCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Date&amp;Time_32x32.png}" Glyph="{dx:DXImage Image=Date&amp;Time_16x16.png}" />
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>

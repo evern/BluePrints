@@ -9,5 +9,7 @@ namespace BluePrints.Common
     public static class GlobalVariables
     {
         public static bool IsNotificationShown { get; set; }
+        public static bool IsProjectViewNotificationShown { get; set; }
+        public static bool IsProjectCollectionViewNotificationShown { get; set; }
     }
 }

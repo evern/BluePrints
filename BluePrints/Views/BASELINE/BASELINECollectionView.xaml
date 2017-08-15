@@ -41,6 +41,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/NestedControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -86,12 +87,11 @@
                             Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
-                <Grid>
+                <Grid DataContext="{Binding DataContext, ElementName=userControl}">
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlBASELINE"
-                                     Style="{StaticResource DefaultGridControlTemplate}">
+                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlBASELINE" Style="{StaticResource NestedGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn FieldName="NAME" />
                             <dxg:GridColumn FieldName="REVISION" />
@@ -119,47 +119,20 @@
                                                               ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:BaselineStatus}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="P6BASELINE_NAME">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
-                                                              ItemsSource="{Binding DataContext.P6PROJECTSCollection, ElementName=userControl}"
-                                                              DisplayMember="wbs_short_name"
-                                                              ValueMember="wbs_short_name" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <!--<dxg:GridColumn FieldName="UNBOUND_ORIGINALBASELINE" Header="ORIGINAL BASELINE" UnboundType="Boolean" AllowEditing="False" DisplayTemplate="{StaticResource Button_BASELINE_ASSIGN}" EditTemplate="{StaticResource Button_BASELINE_ASSIGN}"/>-->
-                            <dxg:GridColumn FieldName="P6MODBASELINE_NAME">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
-                                                              ItemsSource="{Binding DataContext.P6PROJECTSCollection, ElementName=userControl}"
-                                                              DisplayMember="wbs_short_name"
-                                                              ValueMember="wbs_short_name" />
-                                </dxg:GridColumn.EditSettings>
-                                <!--<dxg:GridColumn.EditSettings>
-                                <dxg:LookUpEditSettings
-                                        Name="LookUpModBASELINE"
-                                        DisplayMember="wbs_short_name"
-                                        ValueMember="wbs_short_name"
-                                        IsTextEditable="true"
-                                        PopupMinWidth="600"
-                                        AutoPopulateColumns="False"
-                                        NullValueButtonPlacement="Popup"
-                                    >
-                                    <dxg:LookUpEditSettings.PopupContentTemplate>
-                                        <ControlTemplate TargetType="ContentControl" >
-                                            <dxg:GridControl x:Name="PART_GridControl" ItemsSource="{Binding DataContext.P6PROJECTSCollection, ElementName=userControl}" ShowBorder="False" SelectionMode="Row">
-                                                <dxg:GridControl.Columns>
-                                                    <dxg:GridColumn IsSmart="True" Header="Code" FieldName="wbs_short_name" AllowEditing="False" />
-                                                    <dxg:GridColumn IsSmart="True" Header="Name" Width="500" FieldName="wbs_name" AllowEditing="False" />
-                                                </dxg:GridControl.Columns>
-                                                <dxg:GridControl.View>
-                                                    <dxg:TreeListView Name="treeListView1" TreeDerivationMode="Selfreference" KeyFieldName="wbs_id" ParentFieldName="parent_wbs_id"/>
-                                                </dxg:GridControl.View>
-                                            </dxg:GridControl>
-                                        </ControlTemplate>
-                                    </dxg:LookUpEditSettings.PopupContentTemplate>
-                                </dxg:LookUpEditSettings>
-                            </dxg:GridColumn.EditSettings>-->
+                            <dxg:GridColumn FieldName="P6BASELINE_NAME" MinWidth="200">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxlc:LayoutGroup Orientation="Horizontal" >
+                                            <dxe:ComboBoxEdit x:Name="PART_Editor" IsTextEditable="True" NullValueButtonPlacement="Popup" AutoComplete="True" ItemsSource="{Binding View.DataContext.P6PROJECTSCollection}" DisplayMember="wbs_short_name" ValueMember="wbs_short_name" />
+                                            <Button Width="50" Command="{Binding View.DataContext.P6BASELINE_ASSIGNCommand}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Image Source="{dx:DXImageOffice2013 Image=Edit_16x16.png}" Width="16" Margin="0, 0, 3, 0" />
+                                                    <TextBlock VerticalAlignment="Center" />
+                                                </StackPanel>
+                                            </Button>
+                                        </dxlc:LayoutGroup>
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
@@ -184,14 +157,6 @@
                                                        Glyph="{dx:DXImageOffice2013 Image=Download_16x16.png}"
                                                        Command="{Binding View.DataContext.FillDownCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Content="Push Original Baseline to P6"
-                                                       Command="{Binding DataContext.PushToP6_OriginalCommand, ElementName=userControl}"
-                                                       LargeGlyph="{dx:DXImage Image=Export_32x32.png}"
-                                                       Glyph="{dx:DXImage Image=Export_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Push Modified Baseline to P6"
-                                                       Command="{Binding DataContext.PushToP6_ModifiedCommand, ElementName=userControl}"
-                                                       LargeGlyph="{dx:DXImage Image=Export_32x32.png}"
-                                                       Glyph="{dx:DXImage Image=Export_16x16.png}" />
                                     <dxb:BarButtonItem Content="Delete"
                                                        Command="{Binding View.DataContext.BulkDeleteCommand}"
                                                        Glyph="{dx:DXImage Image=Delete_16x16.png}" />

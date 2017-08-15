@@ -23,6 +23,7 @@
                         <dx:DXMessageBoxService />
                         <dx:WindowedDocumentUIService YieldToParent="True" />
                         <services:GridControlService GridControl="{Binding ElementName=GridControl}" />
+                        <dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />
                     </ItemsControl>
                 </DataTemplate>
             </Setter.Value>

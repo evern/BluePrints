@@ -39,7 +39,6 @@ namespace BluePrints.Common.Base
             SignalR.HubSendMessage(entityName, key, messageType, sender, LoginCredentials.CurrentHWID);
         }
 
-
         public void ShowNotification()
         {
             if (AppNotificationService == null || GlobalVariables.IsNotificationShown)

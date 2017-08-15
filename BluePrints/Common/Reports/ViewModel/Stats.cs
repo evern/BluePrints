@@ -280,12 +280,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (CostGroup == null || CostGroup == string.Empty || CostGroup.Length < 3)
+                if (CostGroup == null || CostGroup == string.Empty || CostGroup.Length < 4)
                     return string.Empty;
-                else if (CostGroup.Length < 3)
+                else if (CostGroup.Length < 4)
                     return string.Empty;
 
-                return CostGroup.Substring(0, 3);
+                return CostGroup.Substring(0, 4);
             }
         }
 

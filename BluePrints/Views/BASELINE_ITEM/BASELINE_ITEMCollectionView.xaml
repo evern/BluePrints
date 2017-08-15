@@ -107,8 +107,7 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM" 
-                                     Style="{StaticResource DefaultGridControlTemplate}">
+                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Name="colPHASE" FieldName="Entity.Entity.GUID_PHASE" 
                                             Header="PHASE" VisibleIndex="0">

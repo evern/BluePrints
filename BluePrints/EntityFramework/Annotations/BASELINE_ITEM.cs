@@ -54,7 +54,10 @@ namespace BluePrints.Data
                 if (DISCIPLINE == null)
                     return string.Empty;
 
-                return DISCIPLINE.CODE + DISCIPLINE_NUM;
+                if (DISCIPLINE_NUM < 10)
+                    return DISCIPLINE.CODE + "0" + DISCIPLINE_NUM.ToString();
+                else
+                    return DISCIPLINE.CODE + DISCIPLINE_NUM.ToString();
             }
         }
 

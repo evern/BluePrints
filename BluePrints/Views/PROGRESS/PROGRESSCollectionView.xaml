@@ -68,9 +68,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl x:Name="GridControl"
-                                     dx:DXSerializer.SerializationID="GridControlPROGRESS" 
-                                     Style="{StaticResource DefaultGridControlTemplate}">
+                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPROGRESS" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn FieldName="NAME" />
                             <dxg:GridColumn FieldName="TYPE">
