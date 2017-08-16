@@ -522,65 +522,65 @@ namespace BluePrints.ViewModels
 
         public void EditArea()
         {
-            if (DisplaySelectedEntity == null)
+            if (loadPROJECT == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectAreas" + DisplaySelectedEntity.GUID.ToString(),
-                new EntitiesParameter<PROJECT>(DisplaySelectedEntity.Entity),
+            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectAreas" + loadPROJECT.GUID.ToString(),
+                new EntitiesParameter<PROJECT>(loadPROJECT),
                     "AREACollectionView",
-                    "[" + DisplaySelectedEntity.Entity.NUMBER + "] Areas");
+                    "[" + loadPROJECT.NUMBER + "] Areas");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }
 
         public void EditRate()
         {
-            if (DisplaySelectedEntity == null)
+            if (loadPROJECT == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectRates" + DisplaySelectedEntity.GUID.ToString(),
-                new EntitiesParameter<PROJECT>(DisplaySelectedEntity.Entity),
+            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectRates" + loadPROJECT.GUID.ToString(),
+                new EntitiesParameter<PROJECT>(loadPROJECT),
                     "RATECollectionView",
-                    "[" + DisplaySelectedEntity.Entity.NUMBER + "] Rates");
+                    "[" + loadPROJECT.NUMBER + "] Rates");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }
 
         public void EditBaseline()
         {
-            if (DisplaySelectedEntity == null)
+            if (loadPROJECT == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectBaselines" + DisplaySelectedEntity.GUID.ToString() ,
-                new EntitiesParameter<PROJECT>(DisplaySelectedEntity.Entity),
+            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectBaselines" + loadPROJECT.GUID.ToString() ,
+                new EntitiesParameter<PROJECT>(loadPROJECT),
                     "BASELINECollectionView",
-                    "[" + DisplaySelectedEntity.Entity.NUMBER + "] Baselines");
+                    "[" + loadPROJECT.NUMBER + "] Baselines");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }
 
         public void EditEstimate()
         {
-            if (DisplaySelectedEntity == null)
+            if (loadPROJECT == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectEstimates" + DisplaySelectedEntity.GUID.ToString(),
-                new DualEntitiesParameter<PROJECT, IAmBaseline>(DisplaySelectedEntity.Entity, null),
+            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectEstimates" + loadPROJECT.GUID.ToString(),
+                new DualEntitiesParameter<PROJECT, IAmBaseline>(loadPROJECT, null),
                     "ESTIMATION_DIRECT_ITEMCollectionView",
-                    "[" + DisplaySelectedEntity.Entity.NUMBER + "] Estimates");
+                    "[" + loadPROJECT.NUMBER + "] Estimates");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }
 
         public void EditProgress()
         {
-            if (DisplaySelectedEntity == null)
+            if (loadPROJECT == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectEstimates" + DisplaySelectedEntity.GUID.ToString(),
-                new EntitiesParameter<PROJECT>(DisplaySelectedEntity.Entity),
+            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectEstimates" + loadPROJECT.GUID.ToString(),
+                new EntitiesParameter<PROJECT>(loadPROJECT),
                     "PROGRESSCollectionView",
-                    "[" + DisplaySelectedEntity.Entity.NUMBER + "] Progresses");
+                    "[" + loadPROJECT.NUMBER + "] Progresses");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }

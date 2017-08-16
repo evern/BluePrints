@@ -620,18 +620,18 @@ namespace BluePrints.Common.Base
 
             LoadingScreenManager.CloseLoadingScreen();
 
-            if(errorMessage == string.Empty)
-            {
-                IEnumerable<TASK> progressed_milestones = getProgressedMilestones(scheduling_view_model.TASK_Source, scheduling_view_model.TASKPRED_Source);
-                LoadingScreenManager.ShowLoadingScreen(progressed_milestones.Count());
-                foreach (TASK progressed_milestone in progressed_milestones)
-                {
-                    scheduling_view_model.Save_Task(progressed_milestone);
-                    LoadingScreenManager.Progress();
-                }
+            //if(errorMessage == string.Empty)
+            //{
+            //    IEnumerable<TASK> progressed_milestones = getProgressedMilestones(scheduling_view_model.TASK_Source, scheduling_view_model.TASKPRED_Source);
+            //    LoadingScreenManager.ShowLoadingScreen(progressed_milestones.Count());
+            //    foreach (TASK progressed_milestone in progressed_milestones)
+            //    {
+            //        scheduling_view_model.Save_Task(progressed_milestone);
+            //        LoadingScreenManager.Progress();
+            //    }
 
-                LoadingScreenManager.CloseLoadingScreen();
-            }
+            //    LoadingScreenManager.CloseLoadingScreen();
+            //}
 
             destroy_scheduling_view_model();
 
