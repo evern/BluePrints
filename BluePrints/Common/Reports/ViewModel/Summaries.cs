@@ -244,6 +244,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             get { return budgetedCosts; }
         }
 
+        public decimal TotalCosts
+        {
+            get { return totalCosts; }
+        }
+
         public decimal BaselineProductivity
         {
             get

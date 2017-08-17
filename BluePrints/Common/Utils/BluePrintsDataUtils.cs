@@ -253,9 +253,12 @@ namespace BluePrints.Common.ViewModel.Utils
 
             AREA area = AREACollection.FirstOrDefault(x => x.GUID == entityAreaGuid);
             AREA subarea = SUBAREACollection.FirstOrDefault(x => x.GUID == entitySubAreaGuid);
-            PHASE phase = null;
-            if(entityPhaseGuid != null)
-                PHASECollection.FirstOrDefault(x => x.GUID == entityPhaseGuid);
+
+            PHASE phase;
+            if (PHASECollection == null || entityPhaseGuid == null)
+                phase = null;
+            else
+                phase = PHASECollection.FirstOrDefault(x => x.GUID == entityPhaseGuid);
 
             if (area != null)
             {

@@ -399,9 +399,9 @@ namespace BluePrints.Common
 
     public enum Register_IssueType
     {
-        [Display(Name = "Internal")]
-        Client = 0,
         [Display(Name = "Client")]
+        Client = 0,
+        [Display(Name = "Internal")]
         Internal = 1,
         [Display(Name = "Vendor")]
         Vendor = 2
@@ -410,11 +410,21 @@ namespace BluePrints.Common
     public enum Register_IssueImportance
     {
         [Display(Name = "Low")]
-        Client = 0,
+        Low = 0,
         [Display(Name = "Medium")]
-        Internal = 1,
+        Medium = 1,
         [Display(Name = "High")]
-        Vendor = 2
+        High = 2
+    }
+
+    public enum P6_BluePrints_Override
+    {
+        [Display(Name = "Start")]
+        START = 0,
+        [Display(Name = "Finish")]
+        FINISH = 1,
+        [Display(Name = "None")]
+        NONE = 2
     }
 
     public class ReportingEnum

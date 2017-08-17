@@ -509,10 +509,10 @@ namespace BluePrints.Common.Base
                     TASK P6TASK = PROJECTTASK.FirstOrDefault(P6Task => P6Task.task_code == p6_assignment.P6_ACTIVITYID);
                     if (P6TASK != null && P6TASK.delete_date == null)
                     {
-                        //set activity start date
-                        DateTime first_earned_week_start_date = first_progress_date.AddDays(-1 * intervalTimeSpan.Days).AddSeconds(1);
-                        if (P6TASK.act_start_date == null || P6TASK.act_start_date > first_earned_week_start_date)
-                            P6TASK.act_start_date = first_earned_week_start_date;
+                        ////set activity start date
+                        //DateTime first_earned_week_start_date = first_progress_date.AddDays(-1 * intervalTimeSpan.Days).AddSeconds(1);
+                        //if (P6TASK.act_start_date == null || P6TASK.act_start_date > first_earned_week_start_date)
+                        //    P6TASK.act_start_date = first_earned_week_start_date;
 
                         //current activity assignment value must be limited to total earned percentage
                         decimal high_percentage_to_use = p6_assignment.HIGH_VALUE > total_percentage_to_date ? total_percentage_to_date : p6_assignment.HIGH_VALUE;
@@ -554,12 +554,19 @@ namespace BluePrints.Common.Base
                         if (P6TASK.remain_work_qty == 0)
                         {
                             P6TASK.status_code = P6TASKSTATUS.TK_Complete.ToString();
-                            P6TASK.act_end_date = last_progress_date;
+                            //when user select none or user select start only, don't update finish
+                            bool any_write_exclusions = P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.NONE.ToString()) || P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.START.ToString());
+                            if(P6TASK.act_end_date == null || !any_write_exclusions)
+                                P6TASK.act_end_date = last_progress_date.Date.AddHours(18);
                         }
                         else if (P6TASK.remain_work_qty > 0)
                         {
                             P6TASK.status_code = P6TASKSTATUS.TK_Active.ToString();
-                            P6TASK.act_start_date = first_progress_date;
+                            //when user select none or user select finish only, don't update start
+                            bool any_write_exclusions = P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.NONE.ToString()) || P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.FINISH.ToString());
+                            if(P6TASK.act_start_date == null || !any_write_exclusions)
+                                P6TASK.act_start_date = first_progress_date.Date.AddHours(6);
+
                             P6TASK.act_end_date = null;
 
                             //defines how much percentage of units this assignment will take up when it is fully assigned, so that we can estimate the total duration to apply productivity to
@@ -603,7 +610,6 @@ namespace BluePrints.Common.Base
                         }
                         else if (P6TASK.status_code == P6TASKSTATUS.TK_NotStart.ToString())
                             P6TASK.status_code = P6TASKSTATUS.TK_Active.ToString();
-
 
                         if (!processedP6Task.Any(x => x == P6TASK.task_code))
                             processedP6Task.Add(P6TASK.task_code);

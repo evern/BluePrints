@@ -113,7 +113,7 @@
                                             <dxg:TableView Name="tableView" />
                                         </dxg:GridControl.View>
                                     </dxg:GridControl>
-                        <dxg:GridControl x:Name="gridControl" Grid.Row="1" dx:DXSerializer.SerializationID="GridControlSingleProjectDashboard" BandsSource="{StaticResource DashboardBands}" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}" Style="{StaticResource DefaultGridControlTemplate}" IsFilterEnabled="False">
+                                    <dxg:GridControl x:Name="gridControl" Grid.Row="1" dx:DXSerializer.SerializationID="GridControlSingleProjectDashboard" BandsSource="{StaticResource DashboardBands}" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}" Style="{StaticResource DefaultGridControlTemplate}" IsFilterEnabled="False">
                                         <dxg:GridControl.DetailDescriptor>
                                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Workpack_Dashboards}">
                                                 <dxg:GridControl x:Name="detailWorkpackDashboardGridControl" dx:DXSerializer.SerializationID="GridControlDetailWorkpackDashboard" BandsSource="{StaticResource DashboardChildBands}" SelectionMode="Row" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}">

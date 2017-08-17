@@ -57,6 +57,10 @@ namespace BluePrints.Data
         [StringLength(300)]
         public string CLOSED_NOTIFIED_PERSON { get; set; }
 
+        public Register_IssueType ISSUE_TYPE { get; set; }
+
+        public Register_IssueImportance IMPORTANCE { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

@@ -9,7 +9,6 @@ using System.Linq;
 namespace BluePrints.Common.Projections
 {
     [ConstraintAttributes("Entity.GUID_PROJECT, Entity.INTERNAL_NAME1")]
-    [RequiredAttributes("Entity.GUID_DDEPARTMENT, Entity.GUID_DDISCIPLINE")]
     public class WORKPACKProjection : BluePrintsProjectionBase<WORKPACK>, IDeliverable_Rates_Group
     {
         public IEnumerable<IDeliverable_Rates> DeliverableRates { get; set; }

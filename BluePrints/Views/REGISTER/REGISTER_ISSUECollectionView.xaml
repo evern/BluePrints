@@ -111,11 +111,29 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn AllowMoving="false" FieldName="SCHEDULE_IMPACT" Header="Schedule Impact" >
+                            <dxg:GridColumn AllowMoving="false" FieldName="SCHEDULE_IMPACT" Header="Schedule Impact">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" NullValueButtonPlacement="Popup" AutoComplete="True">
                                         <dxe:ComboBoxEditSettings.ItemsSource>
                                             <dxe:EnumItemsSource EnumType="{x:Type common:ScheduleImpact}" />
+                                        </dxe:ComboBoxEditSettings.ItemsSource>
+                                    </dxe:ComboBoxEditSettings>
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn AllowMoving="false" FieldName="ISSUE_TYPE" Header="Issue Type">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" NullValueButtonPlacement="Popup" AutoComplete="True">
+                                        <dxe:ComboBoxEditSettings.ItemsSource>
+                                            <dxe:EnumItemsSource EnumType="{x:Type common:Register_IssueType}" />
+                                        </dxe:ComboBoxEditSettings.ItemsSource>
+                                    </dxe:ComboBoxEditSettings>
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn AllowMoving="false" FieldName="IMPORTANCE" Header="Importance" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings IsTextEditable="True" NullValueButtonPlacement="Popup" AutoComplete="True">
+                                        <dxe:ComboBoxEditSettings.ItemsSource>
+                                            <dxe:EnumItemsSource EnumType="{x:Type common:Register_IssueImportance}" />
                                         </dxe:ComboBoxEditSettings.ItemsSource>
                                     </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>

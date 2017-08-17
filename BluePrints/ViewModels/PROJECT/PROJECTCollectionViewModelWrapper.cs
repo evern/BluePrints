@@ -563,8 +563,8 @@ namespace BluePrints.ViewModels
                 return;
 
             DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectEstimates" + DisplaySelectedEntity.GUID.ToString(),
-                new DualEntitiesParameter<PROJECT, IAmBaseline>(DisplaySelectedEntity, null),
-                    "ESTIMATION_DIRECT_ITEMCollectionView",
+                new EntitiesParameter<PROJECT>(DisplaySelectedEntity),
+                    "ESTIMATION_DIRECTCollectionView",
                     "[" + DisplaySelectedEntity.NUMBER + "] Estimates");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);

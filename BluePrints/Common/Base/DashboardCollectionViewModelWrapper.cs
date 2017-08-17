@@ -339,7 +339,7 @@ namespace BluePrints.Common.ViewModel
 
 
             string total_budgeted_convention = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats) + ".{0}";
-            stats_switch.Total_Budgeted = is_cost ? String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.BudgetedCosts)) : String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.BudgetedUnits));
+            stats_switch.Total_Budgeted = is_cost ? String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.TotalCosts)) : String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.TotalUnits));
 
             stats_switch.Cumulative_Earned_Percentage = String.Format(current_period_cumulative_string, earned_string) + field_percentage_selection_string;
             stats_switch.Cumulative_Planned_Units = String.Format(current_period_cumulative_string, budgeted_string) + field_selection_string;
@@ -358,7 +358,7 @@ namespace BluePrints.Common.ViewModel
             string cost_display_string = "$";
             string display_selection_string = is_cost ? cost_display_string : units_display_string;
 
-            stats_switch.Header_Total_Budgeted = String.Format(header_convention, budgeted_string, display_selection_string);
+            stats_switch.Header_Total_Budgeted = String.Format(header_convention, "Total", display_selection_string);
             stats_switch.Header_Budgeted = String.Format(header_convention, planned_string, display_selection_string);
             stats_switch.Header_Earned = String.Format(header_convention, earned_string, display_selection_string);
             stats_switch.Header_Burned = String.Format(header_convention, burned_string, display_selection_string);
