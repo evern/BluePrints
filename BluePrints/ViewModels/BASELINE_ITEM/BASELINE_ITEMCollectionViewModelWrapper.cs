@@ -1299,7 +1299,6 @@ namespace BluePrints.ViewModels
             //make sure disciplines are all populated
             PopulateNavigationalProperties();
             IEnumerable<object> gridVisibleRows = GridControlService.GetVisibleRowObjects();
-
             baselineReport.AssignProperties(loadPROJECT, loadBASELINE, gridVisibleRows.Select(x => ((BASELINE_ITEMProgress)x).Entity));
             var previewWindow = new DocumentPreviewWindow();
             previewWindow.PreviewControl.DocumentSource = baselineReport;
