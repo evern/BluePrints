@@ -133,7 +133,7 @@
                         </dxg:TreeListControl>
                     </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}">
-                        <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlROLE_PERMISSION" MaxHeight="2000"
+                        <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlROLE_PERMISSION" dx:DXSerializer.StoreLayoutMode="All" MaxHeight="2000"
                                      ItemsSource="{Binding Permissions}" SelectedItem="{Binding SelectedPermission, Mode=TwoWay}">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn FieldName="PermissionKey" AllowEditing="False" MinWidth="300" >
@@ -164,7 +164,7 @@
                                     </dxmvvm:Interaction.Behaviors>
                                 </dxg:TableView>
                             </dxg:GridControl.View>
-                        </dxg:GridControl>
+                        </custom:GridControlEx>
                     </dxlc:LayoutGroup>
                 </dxlc:LayoutGroup>
             </DockPanel>

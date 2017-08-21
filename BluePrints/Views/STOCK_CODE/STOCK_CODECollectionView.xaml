@@ -73,8 +73,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSTOCK_CODECollectionView" 
-                                     Style="{StaticResource DefaultGridControlTemplate}">
+                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSTOCK_CODECollectionView" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="DISCIPLINE" FieldName="GUID_DISCIPLINE"
                                 DataContext="{Binding DataContext, ElementName=userControl}">
@@ -147,7 +146,7 @@
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>
-                    </dxg:GridControl>
+                    </custom:GridControlEx>
                 </Grid>
             </DockPanel>
         </Grid>

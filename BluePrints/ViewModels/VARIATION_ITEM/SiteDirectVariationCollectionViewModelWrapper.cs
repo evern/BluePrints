@@ -65,7 +65,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected override string ViewName => "CONSTRUCTION_VARIATION_ITEMSViewModelWrapper";
+        protected override string ViewName => "CONSTRUCTION_VARIATION_ITEMSViewModelWrapper" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString();
 
         protected override void StartCreatingMainViewModel()
         {

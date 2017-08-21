@@ -72,7 +72,7 @@
                     </dxmvvm:Interaction.Behaviors>
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical" Height="500"
                                       dxlc:LayoutControl.AllowVerticalSizing="True">
-                        <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDashboardWORKPACK" Style="{StaticResource DefaultGridControlTemplate}">
+                        <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDashboardWORKPACK" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Bands>
                                 <dxg:GridControlBand Name="bandGeneral" Header="General">
                                     <dxg:GridColumn FieldName="Entity.GUID_DPHASE" Header="PHASE">
@@ -365,7 +365,7 @@
                                     </dxg:TableView.RowCellMenuCustomizations>
                                 </dxg:TableView>
                             </dxg:GridControl.View>
-                        </dxg:GridControl>
+                        </custom:GridControlEx>
                     </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup Name="LayoutGroupChart"
                                       DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"

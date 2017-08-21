@@ -79,7 +79,7 @@
                     </dxmvvm:Interaction.Behaviors>
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical" Height="500"
                                       dxlc:LayoutControl.AllowVerticalSizing="True">
-                        <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlMultiProjectDashboard" BandsSource="{StaticResource DashboardBands}" Style="{StaticResource DefaultGridControlTemplate}" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}" IsFilterEnabled="False">
+                        <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlMultiProjectDashboard" dx:DXSerializer.StoreLayoutMode="All" BandsSource="{StaticResource DashboardBands}" Style="{StaticResource DefaultGridControlTemplate}" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}" IsFilterEnabled="False">
                             <dxg:GridControl.DetailDescriptor>
                                 <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Workpack_Dashboards}">
                                     <dxg:GridControl x:Name="detailWorkpackDashboardGridControl" dx:DXSerializer.SerializationID="GridControlDetailWorkpackDashboard" BandsSource="{StaticResource DashboardChildBands}" SelectionMode="Row" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}">
@@ -129,7 +129,7 @@
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodBurned" ShowInColumn="Stats.Burned.CurrentPeriodDataPoint.Units" FieldName="Stats.Burned.CurrentPeriodDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryPeriodActual" Visible="{Binding DataContext.IsActualVisible, ElementName=userControl}" ShowInColumn="Stats.Actual.CurrentPeriodDataPoint.Units" FieldName="Stats.Actual.CurrentPeriodDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />
                             </dxg:GridControl.TotalSummary>
-                        </dxg:GridControl>
+                        </custom:GridControlEx>
                     </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup Name="LayoutGroupChart"
                                       DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"

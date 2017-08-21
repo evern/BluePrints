@@ -116,7 +116,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "BASELINECollectionViewModelWrapper"; }
+            get { return "BASELINECollectionViewModelWrapper" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString(); }
         }
 
         public IEnumerable<PROJWBS> P6PROJECTSCollection

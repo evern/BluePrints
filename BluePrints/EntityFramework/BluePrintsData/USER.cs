@@ -43,6 +43,8 @@ namespace BluePrints.Data
         [StringLength(500)]
         public string DESCRIPTION { get; set; }
 
+        public decimal? UTILIZATION { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

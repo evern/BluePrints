@@ -13,7 +13,7 @@
         <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
             <dxlc:LayoutGroup Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
                 <dxlc:LayoutItem Height="600">
-                    <dxg:GridControl x:Name="GridControl" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
+                    <custom:GridControlEx x:Name="GridControl" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn FieldName="INTERNAL_NUM" ReadOnly="True" />
                             <dxg:GridColumn FieldName="CLIENT_NUM" />
@@ -30,7 +30,7 @@
                                 </dxmvvm:Interaction.Behaviors>
                             </dxg:TableView>
                         </dxg:GridControl.View>
-                    </dxg:GridControl>
+                    </custom:GridControlEx>
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
         </dxlc:LayoutGroup>

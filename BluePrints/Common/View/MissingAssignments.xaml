@@ -12,7 +12,7 @@
         <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
             <dxlc:LayoutGroup Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
                 <dxlc:LayoutItem Height="500" >
-                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlMissingAssignments" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
+                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlMissingAssignments" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="INTERNAL NUM" ReadOnly="True" FieldName="INTERNAL_NUM" />
                             <dxg:GridColumn Header="P6 ID" ReadOnly="True" FieldName="P6_ACTIVITY" />
@@ -24,7 +24,7 @@
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" ShowGroupedColumns="False" ShowGroupPanel="False"/>
                         </dxg:GridControl.View>
-                    </dxg:GridControl>
+                    </custom:GridControlEx>
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
         </dxlc:LayoutGroup>

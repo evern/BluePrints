@@ -167,7 +167,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "WORKPACKCollectionViewModelWrapper"; }
+            get { return "WORKPACKCollectionViewModelWrapper" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString(); }
         }
 
         public IEnumerable<PHASE> PHASECollection

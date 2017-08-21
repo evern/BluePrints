@@ -13,7 +13,7 @@
         <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
             <dxlc:LayoutGroup Height="230" Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
                 <dxlc:LayoutItem Height="230" >
-                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPrimaveraAffinity" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
+                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPrimaveraAffinity" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="INTERNAL NUM" MinWidth="200" IsSmart="True" ReadOnly="True" FieldName="Deliverable.Deliverable_Name" />
                             <dxg:GridColumn Header="PLANNED FROM P6" IsSmart="True" ReadOnly="True" FieldName="Stats.Budgeted.FromP6" />
@@ -26,7 +26,7 @@
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" ShowGroupedColumns="False" ShowGroupPanel="False"/>
                         </dxg:GridControl.View>
-                    </dxg:GridControl>
+                    </custom:GridControlEx>
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Height="25" HorizontalAlignment="Right" Name="LayoutGroupButtons" View="Group"

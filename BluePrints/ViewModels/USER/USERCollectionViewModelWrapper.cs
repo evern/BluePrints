@@ -212,7 +212,6 @@ namespace BluePrints.ViewModels
 
             selectEntitiesViewModel = null;
         }
-
         #endregion
     }
 }

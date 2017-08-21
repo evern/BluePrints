@@ -303,7 +303,7 @@
                         </dxlc:LayoutGroup>
                     </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup Name="LayoutGroupTreeGrid" View="Group">
-                        <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDeliverables" CurrentItem="{Binding DataContext.Selected_Deliverable, ElementName=userControl, Mode=TwoWay}" SelectedItems="{Binding DataContext.Selected_Deliverables, ElementName=userControl, Mode=TwoWay}"
+                        <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDeliverables" dx:DXSerializer.StoreLayoutMode="All" CurrentItem="{Binding DataContext.Selected_Deliverable, ElementName=userControl, Mode=TwoWay}" SelectedItems="{Binding DataContext.Selected_Deliverables, ElementName=userControl, Mode=TwoWay}"
                                      Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA" ReadOnly="True" AllowEditing="False" >
@@ -579,7 +579,7 @@
                                     </dxg:GridDragDropManager.DragElementTemplate>
                                 </dxg:GridDragDropManager>
                             </dxmvvm:Interaction.Behaviors>
-                        </dxg:GridControl>
+                        </custom:GridControlEx>
                     </dxlc:LayoutGroup>
                 </dxlc:LayoutControl>
             </DockPanel>

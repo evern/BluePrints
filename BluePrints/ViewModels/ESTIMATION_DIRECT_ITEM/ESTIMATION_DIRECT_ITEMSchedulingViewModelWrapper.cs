@@ -155,7 +155,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper"; }
+            get { return "ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString(); }
         }
 
         public IEnumerable<RATE> RATECollection

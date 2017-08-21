@@ -255,7 +255,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "SiteDirectProgressCollectionViewModelWrapper"; }
+            get { return "SiteDirectProgressCollectionViewModelWrapper" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString(); }
         }
 
         public IEnumerable<STOCK_GROUP> STOCK_GROUPCollection

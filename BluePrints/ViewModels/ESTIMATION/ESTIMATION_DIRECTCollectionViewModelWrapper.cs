@@ -115,7 +115,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "ESTIMATION_DIRECTCollectionViewModelWrapper"; }
+            get { return "ESTIMATION_DIRECTCollectionViewModelWrapper" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString(); }
         }
 
 

@@ -27,7 +27,7 @@
         </dxmvvm:Interaction.Behaviors>
         <dxlc:LayoutControl Name="LayoutControlRoot" Orientation="Vertical">
             <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group">
-                <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSelectionUSER" Style="{StaticResource BasicGridControlTemplate}">
+                <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSelectionUSER" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource BasicGridControlTemplate}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn FieldName="NAME" />
                         <dxg:GridColumn FieldName="FIRST_NAME" />
@@ -47,7 +47,7 @@
                         <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
                                        AllowEditing="False" NewItemRowPosition="None" />
                     </dxg:GridControl.View>
-                </dxg:GridControl>
+                </custom:GridControlEx>
             </dxlc:LayoutGroup>
         </dxlc:LayoutControl>
     </Grid>

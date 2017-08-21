@@ -334,7 +334,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "REGISTER_ISSUECollectionViewModelWrapper"; }
+            get { return "REGISTER_ISSUECollectionViewModelWrapper" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString(); }
         }
 
         protected override string ExportExcelFilename()

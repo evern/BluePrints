@@ -12,8 +12,9 @@
              xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
              xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" 
              xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel"
-             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-             xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" 
+             xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" 
+             xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" 
              xmlns:common="clr-namespace:BluePrints.Common" 
              mc:Ignorable="d" d:DesignHeight="1920" d:DesignWidth="1080"
              DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTViewModelWrapper}">
@@ -97,7 +98,7 @@
                             <RowDefinition Height="1*" />
                             <RowDefinition Height="3*" />
                         </Grid.RowDefinitions>
-                        <dxg:GridControl x:Name="GridControl" Grid.Row="0" dx:DXSerializer.Enabled="False" Visibility="Collapsed" ItemsSource="{Binding DataContext.ExcelExportData, ElementName=userControl}">
+                        <custom:GridControlEx x:Name="GridControlExcelExport" Grid.Row="0" dx:DXSerializer.Enabled="False" Visibility="Collapsed" ItemsSource="{Binding DataContext.ExcelExportData, ElementName=userControl}">
                                         <dxg:GridControl.Columns>
                                             <dxg:GridColumn FieldName="Type" ReadOnly="True" />
                                             <dxg:GridColumn FieldName="Workpack_Name" ReadOnly="True" />
@@ -112,8 +113,8 @@
                                             <!--need to set tableView name here for export to work-->
                                             <dxg:TableView Name="tableView" />
                                         </dxg:GridControl.View>
-                                    </dxg:GridControl>
-                                    <dxg:GridControl x:Name="gridControl" Grid.Row="1" dx:DXSerializer.SerializationID="GridControlSingleProjectDashboard" BandsSource="{StaticResource DashboardBands}" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}" Style="{StaticResource DefaultGridControlTemplate}" IsFilterEnabled="False">
+                                    </custom:GridControlEx>
+                                    <custom:GridControlEx x:Name="GridControl" Grid.Row="1" dx:DXSerializer.SerializationID="GridControlSingleProjectDashboard" BandsSource="{StaticResource DashboardBands}" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}" Style="{StaticResource DefaultGridControlTemplate}" IsFilterEnabled="False">
                                         <dxg:GridControl.DetailDescriptor>
                                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Workpack_Dashboards}">
                                                 <dxg:GridControl x:Name="detailWorkpackDashboardGridControl" dx:DXSerializer.SerializationID="GridControlDetailWorkpackDashboard" BandsSource="{StaticResource DashboardChildBands}" SelectionMode="Row" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}">
@@ -153,7 +154,7 @@
                                         <dxg:GridControl.View>
                                             <dxg:TableView AllowEditing="False" UseLightweightTemplates="{x:Null}" ShowGroupFooters="False" ShowTotalSummary="False" Style="{StaticResource DefaultTableViewTemplate}" ShowSearchPanelMode="Never" IsDetailButtonVisibleBinding="{Binding Row.IHaveWorkpack_Dashboards}" NewItemRowPosition="None" ShowGroupPanel="False" AllowColumnFiltering="False" AllowGrouping="False" AllowColumnMoving="True" AllowFilterEditor="False" AllowSorting="False" ShowAutoFilterRow="False" ShowGroupedColumns="False" ShowCriteriaInAutoFilterRow="False" />
                                         </dxg:GridControl.View>
-                                    </dxg:GridControl>
+                                    </custom:GridControlEx>
                         <dxc:ChartControl x:Name="chartSCurve" Grid.Row="2" Padding="0" Margin="0" dx:DXSerializer.Enabled="False" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}">
                             <dxc:XYDiagram2D SeriesItemsSource="{StaticResource dashboardXYChartSeries}">
                                 <dxc:XYDiagram2D.AxisX>

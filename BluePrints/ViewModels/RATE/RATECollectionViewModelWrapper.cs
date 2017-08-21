@@ -102,7 +102,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "RATECollectionViewModelWrapper"; }
+            get { return "RATECollectionViewModelWrapper" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString(); }
         }
 
         public IEnumerable<DEPARTMENT> DEPARTMENTCollection

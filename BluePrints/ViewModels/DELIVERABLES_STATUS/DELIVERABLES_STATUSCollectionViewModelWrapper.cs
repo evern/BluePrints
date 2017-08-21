@@ -114,7 +114,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "DELIVERABLES_STATUSCollectionViewModelWrapper"; }
+            get { return "DELIVERABLES_STATUSCollectionViewModelWrapper" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString(); }
         }
 
         public IEnumerable<DOCTYPE> DOCTYPECollection

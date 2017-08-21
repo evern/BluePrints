@@ -114,8 +114,7 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlOffsiteDirectProgress"
-                                     Style="{StaticResource DefaultGridControlTemplate}" >
+                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlOffsiteDirectProgress" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}" >
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand
                                 Command="{Binding DataContext.CustomSummaryCommand, ElementName=userControl}"
@@ -284,7 +283,7 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="columnTotalPercentage" Header="TOTAL %"
-                                                FieldName="Total_Percentage" ReadOnly="True" IsEnabled="False" Visible="False">
+                                                FieldName="Total_Percentage_ToDate" ReadOnly="True" IsEnabled="False" Visible="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
@@ -489,7 +488,7 @@
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>
-                    </dxg:GridControl>
+                    </custom:GridControlEx>
                 </Grid>
             </DockPanel>
         </Grid>

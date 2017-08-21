@@ -56,7 +56,7 @@
                                                    Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}"
                                                    Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
-                                <!--<dxb:BarCheckItem Content="Paste Cell Level" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" Glyph="{dxc:DXImage Image=SplitTableCells_16x16.png}" LargeGlyph="{dxc:DXImage Image=SplitTableCells_32x32.png}" />-->
+                                <!--<dxb:BarCheckItem Content="Cell Selection" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" Glyph="{dxc:DXImage Image=SplitTableCells_16x16.png}" LargeGlyph="{dxc:DXImage Image=SplitTableCells_32x32.png}" />-->
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -71,7 +71,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl x:Name="GridControl" Style="{StaticResource DefaultGridControlTemplate}" dx:DXSerializer.SerializationID="GridControlAREA" ColumnsSource="{StaticResource AREAColumns}">
+                    <custom:GridControlEx x:Name="GridControl" Style="{StaticResource DefaultGridControlTemplate}" dx:DXSerializer.SerializationID="GridControlAREA" ColumnsSource="{StaticResource AREAColumns}">
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand
                                 Command="{Binding DataContext.MasterRowExpandedCommand, ElementName=userControl}"
@@ -145,7 +145,7 @@
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>
-                    </dxg:GridControl>
+                    </custom:GridControlEx>
                 </Grid>
             </DockPanel>
         </Grid>

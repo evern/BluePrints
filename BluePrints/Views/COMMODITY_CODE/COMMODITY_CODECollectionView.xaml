@@ -66,7 +66,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlCOMMODITY_CODE" 
+                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlCOMMODITY_CODE" dx:DXSerializer.StoreLayoutMode="All" 
                                      Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Name="colCODE" FieldName="Entity.CODE" Header="CODE" />
@@ -116,7 +116,7 @@
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>
-                    </dxg:GridControl>
+                    </custom:GridControlEx>
                 </Grid>
             </DockPanel>
         </Grid>

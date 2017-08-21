@@ -1126,7 +1126,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "BASELINE_ITEMSViewModelWrapper"; }
+            get { return "BASELINE_ITEMSViewModelWrapper" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString(); }
         }
 
         public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMCollection

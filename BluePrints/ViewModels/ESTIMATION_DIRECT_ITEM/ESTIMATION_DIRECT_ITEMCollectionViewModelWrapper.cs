@@ -959,7 +959,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper"; }
+            get { return "ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString(); }
         }
 
         private DevExpress.Mvvm.IDialogService StockCodeDialogService

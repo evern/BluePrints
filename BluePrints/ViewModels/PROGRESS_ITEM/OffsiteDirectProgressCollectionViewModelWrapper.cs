@@ -249,7 +249,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "OffsiteDirectProgressViewModelWrapper"; }
+            get { return "OffsiteDirectProgressViewModelWrapper" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString(); }
         }
         
         public IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection
