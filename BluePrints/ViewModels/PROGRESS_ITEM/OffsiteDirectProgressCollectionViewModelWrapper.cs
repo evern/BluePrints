@@ -179,12 +179,12 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => 
-            ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
         {
+            MainViewModel.SkipOnMessage = true;
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -216,6 +216,7 @@ namespace BluePrints.ViewModels
                     }
                 }
             }
+
             base.CellValueExistingRowChanging(e);
         }
 
