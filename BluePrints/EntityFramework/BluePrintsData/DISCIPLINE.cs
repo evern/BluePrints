@@ -19,6 +19,7 @@ namespace BluePrints.Data
             RATE = new HashSet<RATE>();
             REGISTER_LL = new HashSet<REGISTER_LL>();
             REGISTER_NC = new HashSet<REGISTER_NC>();
+            REGISTER_ISSUE = new HashSet<REGISTER_ISSUE>();
             USER = new HashSet<USER>();
         }
 
@@ -59,6 +60,9 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RATE> RATE { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<REGISTER_ISSUE> REGISTER_ISSUE { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<REGISTER_LL> REGISTER_LL { get; set; }

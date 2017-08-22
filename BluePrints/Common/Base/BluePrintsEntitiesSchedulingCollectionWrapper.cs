@@ -667,6 +667,9 @@ namespace BluePrints.Common.Base
 
         public void P6_Assignment_MouseDown(MouseButtonEventArgs e)
         {
+            if (Selected_P6_Assignment == null || Selected_P6_Assignment.Deliverable_OriginalEntityKey == null || Deliverables_Source == null || Deliverables_Source.Count() == 0 || Activities_Source == null || Activities_Source.Count == 0)
+                return;
+
             Selected_Deliverable = Deliverables_Source.FirstOrDefault(x => x.OriginalEntityKey == Selected_P6_Assignment.Deliverable_OriginalEntityKey);
             Selected_Activity = Activities_Source.FirstOrDefault(x => x.P6_ActivityId == Selected_P6_Assignment.Entity.P6_ACTIVITYID);
         }

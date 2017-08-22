@@ -15,6 +15,7 @@ namespace BluePrints.Data
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
             BASELINE_ITEM_WORK = new HashSet<BASELINE_ITEM_WORK>();
             PROJECT = new HashSet<PROJECT>();
+            REGISTER_ISSUE = new HashSet<REGISTER_ISSUE>();
         }
 
         [Key]
@@ -65,6 +66,9 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PROJECT> PROJECT { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<REGISTER_ISSUE> REGISTER_ISSUE { get; set; }
 
         public virtual DEPARTMENT DEPARTMENT1 { get; set; }
 

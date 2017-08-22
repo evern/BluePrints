@@ -91,6 +91,11 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn AllowMoving="false" FieldName="GUID_DISCIPLINE" Header="Discipline">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn AllowMoving="false" FieldName="TITLE" Header="Title" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
@@ -163,6 +168,11 @@
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn AllowMoving="false" FieldName="DATE_RAISED" Header="Date Raised" />
+                            <dxg:GridColumn AllowMoving="false" FieldName="GUID_RESPONSIBLE_PERSON" Header="Responsible Person">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn AllowMoving="false" FieldName="FINAL_RESOLUTION" Header="Final Resolution" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>

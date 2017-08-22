@@ -212,6 +212,11 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_DISCIPLINE);
 
             modelBuilder.Entity<DISCIPLINE>()
+                .HasMany(e => e.REGISTER_ISSUE)
+                .WithOptional(e => e.DISCIPLINE)
+                .HasForeignKey(e => e.GUID_DISCIPLINE);
+
+            modelBuilder.Entity<DISCIPLINE>()
                 .HasMany(e => e.REGISTER_LL)
                 .WithOptional(e => e.DISCIPLINE)
                 .HasForeignKey(e => e.GUID_DISCIPLINE);
@@ -396,10 +401,6 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<RATE>()
-                .Property(e => e.RATE1)
-                .HasPrecision(5, 2);
-
             modelBuilder.Entity<REGISTER>()
                 .Property(e => e.UNIQUE_H_NUM)
                 .IsFixedLength();
@@ -448,6 +449,11 @@ namespace BluePrints.Data
                 .HasMany(e => e.PROJECT)
                 .WithOptional(e => e.USER)
                 .HasForeignKey(e => e.GUID_MANAGEUSER);
+
+            modelBuilder.Entity<USER>()
+                .HasMany(e => e.REGISTER_ISSUE)
+                .WithOptional(e => e.USER)
+                .HasForeignKey(e => e.GUID_RESPONSIBLE_PERSON);
 
             modelBuilder.Entity<VARIATION>()
                 .HasMany(e => e.BASELINE_ITEM)

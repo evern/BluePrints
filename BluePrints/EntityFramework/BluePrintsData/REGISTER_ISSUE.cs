@@ -20,6 +20,10 @@ namespace BluePrints.Data
 
         public Guid? GUID_HOLD { get; set; }
 
+        public Guid? GUID_DISCIPLINE { get; set; }
+
+        public Guid? GUID_RESPONSIBLE_PERSON { get; set; }
+
         [StringLength(150)]
         public string NUMBER { get; set; }
 
@@ -75,6 +79,10 @@ namespace BluePrints.Data
 
         public virtual AREA AREA { get; set; }
 
+        public virtual DISCIPLINE DISCIPLINE { get; set; }
+
         public virtual PROJECT PROJECT { get; set; }
+
+        public virtual USER USER { get; set; }
     }
 }
