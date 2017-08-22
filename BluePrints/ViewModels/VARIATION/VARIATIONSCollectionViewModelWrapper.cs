@@ -239,7 +239,17 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "VARIATIONSViewModelWrapper" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString(); }
+            get { return "VARIATIONSViewModelWrapper" + view_project_specific_affix; }
+        }
+
+        private string view_project_specific_affix
+        {
+            get
+            {
+                if (loadPROJECT == null)
+                    return string.Empty;
+                return loadPROJECT.GUID.ToString();
+            }
         }
 
         public CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork> BASELINEViewModel

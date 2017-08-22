@@ -180,7 +180,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal DC_Value { get => Entity.DC_Value; set => Entity.DC_Value = value; }
     }
 
-    public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ISupportByDuration, ICanAssignP6, ISupportVariation, IHaveDBProductivityOverride
+    public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ISupportByDuration, ICanAssignP6, ISupportVariation, IHaveDBProductivityOverride, IEntityNumber
     {
         public BASELINE_ITEMProgress()
         {
@@ -239,6 +239,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal DC_Value { get => Entity.DC_Value; set => Entity.DC_Value = value; }
         public Guid? Baseline_Guid { get => Entity.Baseline_Guid; set => Entity.Baseline_Guid = value; }
         public decimal? DB_Productivity_Override { get => Entity.DB_Productivity_Override; set => Entity.DB_Productivity_Override = value; }
+        public string EntityNumber { get => Entity.Entity.INTERNAL_NUM; set => Entity.Entity.INTERNAL_NUM = value; }
     }
 
     public abstract class BluePrintsProgressableByQuantityProjectionBase<TEntity> : BluePrintsProgressableProjectionBase<TEntity>, IReportable_Quantity

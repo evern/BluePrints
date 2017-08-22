@@ -1,4 +1,5 @@
 ﻿using BaseModel.Helpers;
+using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
@@ -87,7 +88,7 @@ namespace BluePrints.Common.ViewModel.Utils
             EndDate = ReviewEndDate.Date;
         }
 
-        public static string GetNewInternalNumber(IEnumerable<BASELINE_ITEMProjection> originalEntities, IEnumerable<BASELINE_ITEMProjection> unsavedEntities, string duplicateInternalNumber, IEnumerable<BASELINE_ITEMProjection> insertSelectedEntities, bool isInsert)
+        public static string GetNewInternalNumber(IEnumerable<IEntityNumber> originalEntities, IEnumerable<IEntityNumber> unsavedEntities, string duplicateInternalNumber, IEnumerable<IEntityNumber> insertSelectedEntities, bool isInsert)
         {
             if (duplicateInternalNumber != string.Empty && duplicateInternalNumber != null)
             {
@@ -96,19 +97,19 @@ namespace BluePrints.Common.ViewModel.Utils
                 long valueToFillNumberOnly = 0;
                 string valueToFillStringOnly = StringFormatUtils.ParseStringIntoComponents(duplicateInternalNumber, out numericFieldLength, out valueToFillNumberOnly);
 
-                List<BASELINE_ITEMProjection> allEntities = new List<BASELINE_ITEMProjection>(originalEntities);
+                List<IEntityNumber> allEntities = new List<IEntityNumber>(originalEntities);
                 allEntities.AddRange(unsavedEntities);
 
                 List<string> originalEntitiesSimilarNames =
-                originalEntities.Where(x => x.Entity.INTERNAL_NUM != null && x.Entity.INTERNAL_NUM.Contains(valueToFillStringOnly)).Select(x => x.Entity.INTERNAL_NUM).ToList();
+                originalEntities.Where(x => x.EntityNumber != null && x.EntityNumber.Contains(valueToFillStringOnly)).Select(x => x.EntityNumber).ToList();
 
                 List<string> allEntitiesSimilarNames =
-                allEntities.Where(x => x.Entity.INTERNAL_NUM != null && x.Entity.INTERNAL_NUM.Contains(valueToFillStringOnly)).Select(x => x.Entity.INTERNAL_NUM).ToList();
+                allEntities.Where(x => x.EntityNumber != null && x.EntityNumber.Contains(valueToFillStringOnly)).Select(x => x.EntityNumber).ToList();
 
                 List<string> unsavedEntitiesSimilarNames =
-                unsavedEntities.Where(x => x.Entity.INTERNAL_NUM != null && x.Entity.INTERNAL_NUM.Contains(valueToFillStringOnly)).Select(x => x.Entity.INTERNAL_NUM).ToList();
+                unsavedEntities.Where(x => x.EntityNumber != null && x.EntityNumber.Contains(valueToFillStringOnly)).Select(x => x.EntityNumber).ToList();
 
-                List<string> insertSelectedEntitiesSimilarNames = insertSelectedEntities.Where(x => x.Entity.INTERNAL_NUM.Contains(valueToFillStringOnly)).Select(x => x.Entity.INTERNAL_NUM).ToList();
+                List<string> insertSelectedEntitiesSimilarNames = insertSelectedEntities.Where(x => x.EntityNumber.Contains(valueToFillStringOnly)).Select(x => x.EntityNumber).ToList();
 
                 do
                 {

@@ -131,7 +131,17 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "COMMODITY_CODECollectionViewModelWrapper" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString(); }
+            get { return "COMMODITY_CODECollectionViewModelWrapper" + view_project_specific_affix; }
+        }
+
+        private string view_project_specific_affix
+        {
+            get
+            {
+                if (loadPROJECT == null)
+                    return string.Empty;
+                return loadPROJECT.GUID.ToString();
+            }
         }
 
         public IEnumerable<AREA> AREACollection

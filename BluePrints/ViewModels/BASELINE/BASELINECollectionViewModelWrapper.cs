@@ -71,8 +71,7 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<PROJWBS>, IQueryable<PROJWBS>> P6PROJECTProjectionFunc
-            ()
+        private Func<IRepositoryQuery<PROJWBS>, IQueryable<PROJWBS>> P6PROJECTProjectionFunc()
         {
             return query => query.Where(x => x.proj_node_flag == "Y" && x.wbs_short_name.Contains(loadPROJECT.NUMBER)).OrderBy(proj => proj.wbs_short_name);
         }
@@ -116,7 +115,17 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "BASELINECollectionViewModelWrapper" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString(); }
+            get { return "BASELINECollectionViewModelWrapper" + view_project_specific_affix; }
+        }
+
+        private string view_project_specific_affix
+        {
+            get
+            {
+                if (loadPROJECT == null)
+                    return string.Empty;
+                return loadPROJECT.GUID.ToString();
+            }
         }
 
         public IEnumerable<PROJWBS> P6PROJECTSCollection

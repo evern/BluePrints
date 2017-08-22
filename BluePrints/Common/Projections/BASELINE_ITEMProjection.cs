@@ -1,4 +1,5 @@
 ﻿using BaseModel.Attributes;
+using BaseModel.Misc;
 using BluePrints.Common.Base;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
@@ -10,7 +11,7 @@ using System.Linq;
 namespace BluePrints.Common.Projections
 {
     [ConstraintAttributes("Entity.GUID_BASELINE, Entity.INTERNAL_NUM")]
-    public class BASELINE_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEM>, IDeliverable_Rates, ISupportByDuration, IHaveDeliverableStatus, IHaveDBProductivityOverride, ISupportVariation
+    public class BASELINE_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEM>, IDeliverable_Rates, ISupportByDuration, IHaveDeliverableStatus, IHaveDBProductivityOverride, ISupportVariation, IEntityNumber
     {
         public BASELINE_ITEMProjection()
             : base()
@@ -78,6 +79,8 @@ namespace BluePrints.Common.Projections
         public string Workpack_Name => Entity.Workpack_Name;
 
         public string Department_Code => Entity.Department_Code;
+
+        public string EntityNumber { get => Entity.EntityNumber; set => Entity.EntityNumber = value; }
     }
 
     public static class BASELINE_ITEMProjectionQueries

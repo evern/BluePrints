@@ -11,7 +11,7 @@ namespace BluePrints.Data
     using System.Linq;
 
     [ConstraintAttributes("GUID_BASELINE, INTERNAL_NUM")]
-    public partial class BASELINE_ITEM : BindableBase, IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, ISupportByDuration, IHaveDBProductivityOverride, ISupportVariation, ICanUpdate
+    public partial class BASELINE_ITEM : BindableBase, IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, ISupportByDuration, IHaveDBProductivityOverride, ISupportVariation, ICanUpdate, IEntityNumber
     {
         public BASELINE_ITEM()
         {
@@ -310,6 +310,9 @@ namespace BluePrints.Data
 
         [NotMapped]
         public decimal DC_Value { get => DC_HOURS; set => DC_HOURS = value; }
+
+        [NotMapped]
+        public string EntityNumber { get => INTERNAL_NUM; set => INTERNAL_NUM = value; }
 
         public void Update()
         {

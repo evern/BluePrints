@@ -24,5 +24,6 @@ namespace BluePrints.Common.Base
             SpellCheckerModule.ApplySpellCheckMode(true);
             base.OnLoaded();
         }
+
     }
 }

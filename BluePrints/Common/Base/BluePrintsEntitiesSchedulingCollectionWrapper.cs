@@ -359,6 +359,9 @@ namespace BluePrints.Common.Base
                     IEnumerable<ICanAssignP6> process_deliverables = (Selected_Deliverables == null || Selected_Deliverables.Count == 0) ? Deliverables_Source : Selected_Deliverables;
                     foreach (ICanAssignP6 process_deliverable in process_deliverables)
                     {
+                        if (process_deliverable.P6_Assignments == null || process_deliverable.P6_Assignments.Count == 0)
+                            continue;
+
                         foreach (P6_ASSIGNMENT p6_assignments in process_deliverable.P6_Assignments)
                         {
                             if (Selected_Activity == null || p6_assignments.P6_ACTIVITYID == Selected_Activity.P6_ActivityId)
@@ -684,6 +687,9 @@ namespace BluePrints.Common.Base
 
         public void Scheduler_Dropped(TreeListDroppedEventArgs e)
         {
+            if (e.TargetNode == null || e.TargetNode.Content == null)
+                return;
+
             IEnumerable<ICanAssignP6> dropped_deliverables = ((IEnumerable<object>)e.DraggedRows).Select(x => (ICanAssignP6)x).AsEnumerable();
             P6_Activity target_activity = (P6_Activity)e.TargetNode.Content;
 
@@ -710,10 +716,19 @@ namespace BluePrints.Common.Base
                 {
                     activities_source = new List<P6_Activity>();
                     if(P6TASKCollection.Count() > 0)
-                        activities_source.AddRange(P6TASKCollection.OrderBy(x => x.target_start_date).Select(x => P6_Activity.Create(x, this)).ToArray().AsEnumerable());
+                    {
+                        var p6_task_collection_by_start_date = P6TASKCollection.OrderBy(x => x.target_start_date).Select(x => P6_Activity.Create(x, this));
+                        if(p6_task_collection_by_start_date != null)
+                            activities_source.AddRange(p6_task_collection_by_start_date);
+                    }
 
                     if(P6PROJWBSCollection.Count() > 0)
-                        activities_source.AddRange(P6PROJWBSCollection.OrderBy(x => x.wbs_short_name).Select(x => P6_Activity.Create(x, this)).ToArray().AsEnumerable());
+                    {
+                        var p6_task_collection_by_wbs_short_name = P6PROJWBSCollection.OrderBy(x => x.wbs_short_name).Select(x => P6_Activity.Create(x, this));
+                        if(p6_task_collection_by_wbs_short_name != null)
+                            activities_source.AddRange(p6_task_collection_by_wbs_short_name);
+                    }
+
 
                     summarize_activities_dates(activities_source, true);
                 }
