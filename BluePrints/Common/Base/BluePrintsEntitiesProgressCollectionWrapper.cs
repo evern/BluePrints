@@ -151,7 +151,7 @@ namespace BluePrints.Common.Base
             MainViewModel.OnAfterEntitySavedCallBack = OnAfterEntitySavedCallBack;
             MainViewModel.OnMappingAdditionalChangedEntitiesProperties = OnMappingAdditionalChangedEntitiesProperties;
             MainViewModel.OnBeforeAssignRepositoryToExistingProjection = OnBeforeAssignRepositoryToExistingProjection;
-            MainViewModel.ValidateSetValueIsContinueCallBack = OnBeforeBulkEditCallBack;
+            MainViewModel.ValidateSetValueIsContinueCallBack = validateSetValueCallBack;
             PROGRESS_ITEMSCollectionViewModel.SetParentViewModel(this);
 
             MainViewModel.SetParentViewModel(this);
@@ -187,7 +187,7 @@ namespace BluePrints.Common.Base
             repositoryProjection.Stats = existingProjection.Stats;
         }
 
-        public bool OnBeforeBulkEditCallBack(TMainProjectionEntity entity, string column_name, object newValue)
+        public bool validateSetValueCallBack(TMainProjectionEntity entity, string column_name, object newValue)
         {
             if (column_name == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage))
             {

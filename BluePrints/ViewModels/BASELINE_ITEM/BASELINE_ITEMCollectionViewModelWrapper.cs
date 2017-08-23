@@ -296,6 +296,7 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
             MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
+            MainViewModel.ValidateSetValueIsContinueCallBack = validateSetValueCallBack;
             MainViewModel.SetParentViewModel(this);
 
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -422,6 +423,26 @@ namespace BluePrints.ViewModels
                     MessageBoxService.ShowMessage(reassigned_deliverables.Count + " internal number re-assigned");
                 }
             }
+        }
+
+        public bool validateSetValueCallBack(BASELINE_ITEMProgress entity, string column_name, object newValue)
+        {
+            string fieldName = DataUtils.FormatColumnFieldname(column_name);
+            //estimated hours field is disabled but just in case
+            if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().ESTIMATED_HOURS))
+            {
+                if (entity.Entity.Entity.BY_DURATION && ((decimal)newValue) > 0)
+                    return false;
+                else if ((decimal)newValue < entity.MinEstimateUnits)
+                    return false;
+            }
+            else if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
+            {
+                if (entity.Earned_Units_Total > 0)
+                    return false;
+            }
+
+            return true;
         }
 
         public void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)

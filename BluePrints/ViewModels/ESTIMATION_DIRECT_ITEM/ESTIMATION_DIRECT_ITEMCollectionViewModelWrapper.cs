@@ -244,10 +244,11 @@ namespace BluePrints.ViewModels
         public Action<IEnumerable<ESTIMATION_DIRECT_ITEMProgress>> OnReportablesLoadedCallBack { get; set; }
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATION_DIRECT_ITEMProgress> entities)
         {
-            MainViewModel.DisablePasting = true;
+            //MainViewModel.DisablePasting = true;
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
+            MainViewModel.ValidateSetValueIsContinueCallBack = validateSetValueCallBack;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
 
@@ -574,6 +575,19 @@ namespace BluePrints.ViewModels
             }
 
             return false;
+        }
+
+        public bool validateSetValueCallBack(ESTIMATION_DIRECT_ITEMProgress entity, string column_name, object newValue)
+        {
+            string fieldName = DataUtils.FormatColumnFieldname(column_name);
+            //estimated hours field is disabled but just in case
+            if (fieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().ESTIMATED_QUANTITY))
+            {
+                if ((decimal)newValue < entity.MinEstimateQuantity)
+                    return false;
+            }
+
+            return true;
         }
 
         private void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
