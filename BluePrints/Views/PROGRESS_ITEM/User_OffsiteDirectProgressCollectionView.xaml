@@ -309,8 +309,7 @@
                                                     </Image.Visibility>
                                                 </Image>
                                                 <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="p0"
-                                                              MaskUseAsDisplayFormat="True" Increment="0.01"
-                                                              MaxValue="{Binding RowData.Row.DeliverableStatusMaxPercentage}"
+                                                              MaskUseAsDisplayFormat="True" Increment="0.01" MaxValue="{Binding RowData.Row.MaxPercentage}"
                                                               MinValue="{Binding RowData.Row.MinPercentage}"
                                                               Grid.Column="2" />
                                             </Grid>

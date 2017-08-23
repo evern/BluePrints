@@ -215,20 +215,25 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public decimal DeliverableStatusMaxPercentage
+        public override decimal MaxPercentage
         {
             get
             {
+                if (Total_Units == 0)
+                    return 0;
+
+                decimal default_max_percentage = ((Total_Units - Earned_Units_AfterDataDate) / Total_Units);
+
                 IHaveDeliverableStatus deliverableStatusProjection = Entity as IHaveDeliverableStatus;
                 if (deliverableStatusProjection != null && deliverableStatusProjection.Deliverable_Status != null)
                 {
-                    if (MaxPercentage < deliverableStatusProjection.Deliverable_Status.MAX_PERCENTAGE)
-                        return MaxPercentage;
+                    if (default_max_percentage < deliverableStatusProjection.Deliverable_Status.MAX_PERCENTAGE)
+                        return default_max_percentage;
 
                     return deliverableStatusProjection.Deliverable_Status.MAX_PERCENTAGE;
                 }
 
-                return MaxPercentage;
+                return default_max_percentage;
             }
         }
 
@@ -556,7 +561,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal MinPercentage => Total_Units == 0 ? 0 : (Earned_Units_BeforeDataDate / Total_Units);
 
-        public decimal MaxPercentage => Total_Units == 0 ? 0 : ((Total_Units - Earned_Units_AfterDataDate) / Total_Units);
+        public virtual decimal MaxPercentage => Total_Units == 0 ? 0 : ((Total_Units - Earned_Units_AfterDataDate) / Total_Units);
 
         private decimal? earned_units_beforedatadate;
         public decimal Earned_Units_BeforeDataDate
