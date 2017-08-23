@@ -36,7 +36,7 @@
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Home">
                             <dxr:RibbonPageGroup Caption="AREA Tasks">
-                                <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"
+                                <dxb:BarButtonItem Content="Delete Row" Command="{Binding BulkDeleteCommand}"
                                                    LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
@@ -103,7 +103,7 @@
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}"
                                                        Command="{Binding DataContext.MainViewModel.FillDownCommand, ElementName=userControl}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                                <dxb:BarButtonItem Content="Delete"
+                                                <dxb:BarButtonItem Content="Delete Row"
                                                        Command="{Binding DataContext.MainViewModel.BulkDeleteCommand, ElementName=userControl}"
                                                        Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                                 <dxb:BarButtonItem Content="Refresh"
@@ -136,7 +136,7 @@
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}"
                                                        Command="{Binding View.DataContext.FillDownCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Content="Delete"
+                                    <dxb:BarButtonItem Content="Delete Row"
                                                        Command="{Binding View.DataContext.BulkDeleteCommand}"
                                                        Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                     <dxb:BarButtonItem Content="Refresh"

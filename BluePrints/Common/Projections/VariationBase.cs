@@ -61,7 +61,7 @@ namespace BluePrints.Common.Projections
 
         public DateTime? ApprovedDate { get; set; }
 
-        public bool ShouldSaveVariation => (VARIATION_ITEM == null && Variation_Action != VariationAction.NoAction) || (VARIATION_ITEM != null && (VARIATION_ITEM.GUID == Guid.Empty || VARIATION_ITEM.ACTION != Variation_Action || VARIATION_ITEM.VARIATION_UNITS != Variation_Units));
+        public bool ShouldSaveVariation => (VARIATION_ITEM == null && Variation_Action != VariationAction.NoAction) || (VARIATION_ITEM != null && (VARIATION_ITEM.GUID == Guid.Empty || VARIATION_ITEM.ACTION != Variation_Action || VARIATION_ITEM.VARIATION_UNITS != variation_units));
 
         decimal? variation_units;
         public decimal Variation_Units
@@ -225,8 +225,8 @@ namespace BluePrints.Common.Projections
 
         public override void Update()
         {
-            variation_units = null;
-            variation_action = null;
+            //variation_units = null;
+            //variation_action = null;
             base.Update();
         }
     }

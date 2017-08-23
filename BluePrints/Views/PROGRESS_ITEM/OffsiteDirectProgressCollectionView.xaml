@@ -403,17 +403,17 @@
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandProductivity" Header="Productivity">
-                                <dxg:GridColumn FieldName="Current_Productivity" Header="CURRENT_PRODUCTIVITY" IsEnabled="False">
+                                <dxg:GridColumn FieldName="Current_Productivity" Header="CURRENT_PRODUCTIVITY" IsEnabled="False" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Override_Productivity" Header="OVERRIDE_PRODUCTIVITY">
+                                <dxg:GridColumn FieldName="Override_Productivity" Header="OVERRIDE_PRODUCTIVITY" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" Increment="0.1" NullValueButtonPlacement="EditBox" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Remaining_Productivity" Header="REMAINING_PRODUCTIVITY" IsEnabled="False">
+                                <dxg:GridColumn FieldName="Remaining_Productivity" Header="REMAINING_PRODUCTIVITY" IsEnabled="False" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" Increment="0.1" NullValueButtonPlacement="EditBox" />
                                     </dxg:GridColumn.EditSettings>
@@ -475,6 +475,7 @@
                                            ShowTotalSummary="True" 
                                            GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None">
                                 <dxg:TableView.RowCellMenuCustomizations>
+                                    <dxb:BarButtonItem Content="Bulk Edit" Command="{Binding View.DataContext.BulkColumnEditCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
                                     <dxb:BarButtonItem Content="Fill Up"
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}"
                                                        Command="{Binding View.DataContext.FillUpCommand}"

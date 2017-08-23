@@ -46,7 +46,7 @@
                                                    Command="{Binding DataContext.AddRowAfterCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}"
                                                    Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" />
-                                <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"
+                                <dxb:BarButtonItem Content="Delete Row" Command="{Binding BulkDeleteCommand}"
                                                     LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"
                                                     Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
@@ -125,7 +125,7 @@
                                         <dxb:BarButtonItem Content="Insert After"
                                                        Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}"
                                                        Command="{Binding DataContext.AddRowAfterCommand, ElementName=userControl}" />
-                                        <dxb:BarButtonItem Content="Delete"
+                                        <dxb:BarButtonItem Content="Delete Row"
                                                        Command="{Binding View.DataContext.BulkDeleteCommand}"
                                                        Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                     </dxg:TreeListView.RowCellMenuCustomizations>

@@ -47,7 +47,7 @@
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"
+                                <dxb:BarButtonItem Content="Delete Row" Command="{Binding BulkDeleteCommand}"
                                                    LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                 <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}"
@@ -478,7 +478,7 @@
                                             </dxb:BarEditItem.EditSettings>
                                         </dxb:BarEditItem>
                                     </dxb:BarSubItem>
-                                    <dxb:BarButtonItem Content="Delete"
+                                    <dxb:BarButtonItem Content="Delete Row"
                                                        Command="{Binding View.DataContext.BulkDeleteCommand}"
                                                        Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                     <dxb:BarButtonItem Content="Refresh"

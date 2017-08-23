@@ -168,6 +168,7 @@ namespace BluePrints.Common.Base
             MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = OnBeforeEntityDeleted;
             MainViewModel.OnMappingAdditionalChangedEntitiesProperties = OnMappingAdditionalChangedEntitiesProperties;
             MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
+            MainViewModel.ValidateSetValueIsContinueCallBack = ValidateSetValueCallBack;
             collectionViewModelWrapper.GetEditableAllEntitiesCallBack = getEditableAllEntities;
             assign_additional_callbacks(MainViewModel);
             MainViewModel.SetParentViewModel(this);
@@ -201,6 +202,7 @@ namespace BluePrints.Common.Base
                     TMainVariationEntity affectedDisplayEntity = getAffectedDisplayEntity(updated_VARIATION_ITEM);
                     if (affectedDisplayEntity != null)
                     {
+                        affectedDisplayEntity.Variation_Units = updated_VARIATION_ITEM.VARIATION_UNITS;
                         GridControlService.RefreshSummary();
                         affectedDisplayEntity.Update();
                     }
@@ -231,7 +233,9 @@ namespace BluePrints.Common.Base
         /// </summary>
         public bool CanFillDownCallBack(IEnumerable<TMainVariationEntity> selectedEntities, GridMenuInfo info)
         {
-            if (loadVARIATION.SUBMITTED != null || !selectedEntities.Any(x => x.Variation_Action == VariationAction.Add))
+            //if (loadVARIATION.SUBMITTED != null || !selectedEntities.Any(x => x.Variation_Action == VariationAction.Add))
+
+            if (loadVARIATION == null || loadVARIATION.SUBMITTED != null)
                 return false;
 
             return true;
@@ -242,8 +246,8 @@ namespace BluePrints.Common.Base
         /// </summary>
         private bool ValidateFillDownCallBack(TMainVariationEntity fillDownEntity, string fieldName, object fillValue)
         {
-            if (fillDownEntity.Variation_Action != VariationAction.Add)
-                return false;
+            //if (fillDownEntity.Variation_Action != VariationAction.Add)
+            //    return false;
 
             return affixOtherFillDownAllowance(fillDownEntity, fieldName, fillValue);
         }
@@ -284,6 +288,35 @@ namespace BluePrints.Common.Base
         protected void OnMappingAdditionalChangedEntitiesProperties(TMainVariationEntity existingProjectionEntity, TMainVariationEntity projectionEntity)
         {
             projectionEntity.Variation_Action = existingProjectionEntity.Variation_Action;
+        }
+
+        public bool ValidateSetValueCallBack(TMainVariationEntity entity, string column_name, object newValue)
+        {
+            if (column_name == BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Units))
+            {
+                decimal variation_units = (decimal)newValue;
+                if (variation_units < entity.MinNegativeUnits)
+                    return false;
+                else if (entity.Variation_Action != VariationAction.Add)
+                {
+                    VariationAction old_action = entity.Variation_Action;
+
+                    if (variation_units == 0)
+                        entity.Variation_Action = VariationAction.NoAction;
+                    else
+                        entity.Variation_Action = VariationAction.Append;
+
+                    MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Action), old_action, entity.Variation_Action, EntityMessageType.Changed);
+                }
+            }
+            else
+            {
+                if (entity.Variation_Action != VariationAction.Add)
+                    return false;
+            }
+
+            return true;
         }
 
         /// <summary>

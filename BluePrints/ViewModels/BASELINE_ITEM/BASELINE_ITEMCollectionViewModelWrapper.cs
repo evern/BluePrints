@@ -125,6 +125,16 @@ namespace BluePrints.ViewModels
         public PROGRESS livePROGRESS { get; set; }
         private bool isQueryForLiveStatus;
         public bool Is_Autofill_Internal_Number { get; set; }
+        private bool allow_drag_drop { get; set; }
+        public bool Allow_Drag_Drop
+        {
+            get => allow_drag_drop;
+            set
+            {
+                allow_drag_drop = value;
+                this.RaisePropertyChanged(x => x.Allow_Drag_Drop);
+            }
+        }
 
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
@@ -155,6 +165,7 @@ namespace BluePrints.ViewModels
             if (loadPROJECT != null)
                 isQueryForLiveStatus = true;
 
+            Allow_Drag_Drop = false;
             Is_Autofill_Internal_Number = true;
         }
 
@@ -283,7 +294,6 @@ namespace BluePrints.ViewModels
         public Action<IEnumerable<BASELINE_ITEMProgress>> OnReportablesLoadedCallBack { get; set; }
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
         {
-            MainViewModel.SkipOnMessage = true;
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
             MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
             MainViewModel.SetParentViewModel(this);
@@ -794,7 +804,7 @@ namespace BluePrints.ViewModels
                     newProjection.Entity.Entity.GUID_VARIATION = null;
 
                     //when duplicated by variation this should be 0
-                    if(OnEntitiesLoadedCallBack != null)
+                    if(BaseEntityQueryCallBack != null)
                         newProjection.Entity.Entity.ESTIMATED_HOURS = 0;
                     else
                         newProjection.Entity.Entity.ESTIMATED_HOURS = IsBASELINELocked ? 0 : selectedEntity.Entity.Entity.ESTIMATED_HOURS;
@@ -1006,7 +1016,7 @@ namespace BluePrints.ViewModels
             if (info.Column.ReadOnly)
                 return false;
 
-            if (SelectedEntity == null || SelectedEntities.Count() < 2)
+            if (SelectedEntity == null || SelectedEntities.Count() < 2 || info.Column.ReadOnly == true)
                 return false;
 
             var columnPropertyInfo = DataUtils.GetNestedPropertyInfo(localizeColumnFieldName(info.Column.FieldName), SelectedEntity);

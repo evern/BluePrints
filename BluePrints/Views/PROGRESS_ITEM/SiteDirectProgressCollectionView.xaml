@@ -383,7 +383,7 @@
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}"
                                                        Command="{Binding View.DataContext.FillDownCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Content="Delete"
+                                    <dxb:BarButtonItem Content="Delete Row"
                                                        Command="{Binding View.DataContext.BulkDeleteCommand}"
                                                        Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                     <dxb:BarButtonItem Content="Refresh"

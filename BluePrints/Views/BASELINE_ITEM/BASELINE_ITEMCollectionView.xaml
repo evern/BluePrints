@@ -53,7 +53,7 @@
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Home">
                             <dxr:RibbonPageGroup Caption="BASELINE ITEM Tasks">
-                                <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"
+                                <dxb:BarButtonItem Content="Delete Row" Command="{Binding BulkDeleteCommand}"
                                                    LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
@@ -74,6 +74,7 @@
                                                    LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}"
                                                    Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
                                 <dxb:BarCheckItem Content="Cell Selection" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" Glyph="{dx:DXImage Image=SplitTableCells_16x16.png}" LargeGlyph="{dx:DXImage Image=SplitTableCells_32x32.png}" />
+                                <!--<dxb:BarCheckItem Content="Allow Drag Drop" IsChecked="{Binding DataContext.Allow_Drag_Drop, ElementName=userControl, Mode=TwoWay}" Glyph="{dx:DXImage Image=Inbox_16x16.png}" LargeGlyph="{dx:DXImage Image=Inbox_32x32.png}" />-->
                                 <dxb:BarItemSeparator />
                                 <dxb:BarButtonItem Content="Edit Report"
                                                    Command="{Binding DataContext.EditReportCommand, ElementName=userControl}"
@@ -425,7 +426,7 @@
                                             </dxb:BarEditItem.EditSettings>
                                         </dxb:BarEditItem>
                                     </dxb:BarSubItem>
-                                    <dxb:BarButtonItem Content="Delete"
+                                    <dxb:BarButtonItem Content="Delete Row"
                                                        Command="{Binding View.DataContext.BulkDeleteCommand}"
                                                        Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                     <dxb:BarButtonItem Content="Refresh"
@@ -440,7 +441,7 @@
                             </dxg:TableView>
                         </dxg:GridControl.View>
                         <dxmvvm:Interaction.Behaviors>
-                            <common:CustomTableViewDragDropManager AllowDrag="True" AllowDrop="True" AllowScrolling="True" >
+                            <!--<common:CustomTableViewDragDropManager AllowDrag="{Binding DataContext.Allow_Drag_Drop, ElementName=userControl}" AllowDrop="{Binding DataContext.Allow_Drag_Drop, ElementName=userControl}" >
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand EventName="Drop" Command="{Binding DataContext.TableView_DropCommand, ElementName=userControl}" PassEventArgsToCommand="True"/>
                                     <dxmvvm:EventToCommand EventName="Dropped" Command="{Binding DataContext.TableView_DroppedCommand, ElementName=userControl}" PassEventArgsToCommand="True"/>
@@ -458,9 +459,9 @@
                                                 </StackPanel>
                                                 <Separator />
                                                 <StackPanel Margin="5" Orientation="Horizontal">
-                                                    <!--<StackPanel.Background>
+                                                    --><!--<StackPanel.Background>
                                                         <Binding Path="." Converter="{StaticResource RowColorConverter}" UpdateSourceTrigger="PropertyChanged"/>
-                                                    </StackPanel.Background>-->
+                                                    </StackPanel.Background>--><!--
                                                     <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Target: " />
                                                     <TextBlock Padding="0,3,3,0" Text="{Binding Path=DropTargetRow, Converter={StaticResource RowNameConverter}}"/>
                                                 </StackPanel>
@@ -468,7 +469,7 @@
                                         </Border>
                                     </DataTemplate>
                                 </common:CustomTableViewDragDropManager.DragElementTemplate>
-                            </common:CustomTableViewDragDropManager>
+                            </common:CustomTableViewDragDropManager>-->
                         </dxmvvm:Interaction.Behaviors>
                     </custom:GridControlEx>
                 </Grid>

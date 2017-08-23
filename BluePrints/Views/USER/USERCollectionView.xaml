@@ -52,7 +52,7 @@
                                                    Command="{Binding DataContext.Update_UserCommand, ElementName=userControl}"
                                                    Glyph="{dx:DXImage Image=BODetails_16x16.png}"
                                                    LargeGlyph="{dx:DXImage Image=BODetails_32x32.png}" />
-                                <dxb:BarButtonItem Content="Delete" Command="{Binding BulkDeleteCommand}"
+                                <dxb:BarButtonItem Content="Delete Row" Command="{Binding BulkDeleteCommand}"
                                                    LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
@@ -139,7 +139,7 @@
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}"
                                                        Command="{Binding View.DataContext.FillDownCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Content="Delete"
+                                    <dxb:BarButtonItem Content="Delete Row"
                                                        Command="{Binding View.DataContext.BulkDeleteCommand}"
                                                        Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                     <dxb:BarButtonItem Content="Refresh"

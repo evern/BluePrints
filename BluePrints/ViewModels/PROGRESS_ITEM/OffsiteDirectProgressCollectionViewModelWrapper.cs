@@ -184,8 +184,6 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
         {
-            PROGRESS_ITEMSCollectionViewModel.SkipOnMessage = true;
-            MainViewModel.SkipOnMessage = true;
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
