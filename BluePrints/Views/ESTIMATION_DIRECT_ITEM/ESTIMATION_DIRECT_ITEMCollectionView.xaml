@@ -189,21 +189,9 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Header="COMMODITY CODE" FieldName="Entity.Entity.GUID_COMMODITY_CODE">
-                                    <dxg:GridColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <dxe:ComboBoxEdit 
-                                                  x:Name="PART_Editor"
-                                                  ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}"
-                                                  DisplayMember="CODE" 
-                                                  ValueMember="GUID"
-                                                  ValidateOnTextInput="True"
-                                                  ValidateOnEnterKeyPressed="True"
-                                                  IncrementalFiltering="True"
-                                                  NullValueButtonPlacement="Popup"
-                                                  ImmediatePopup="True">
-                                            </dxe:ComboBoxEdit>
-                                        </DataTemplate>
-                                    </dxg:GridColumn.CellTemplate>
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" DisplayMember="CODE" ValueMember="GUID" ValidateOnTextInput="True" ValidateOnEnterKeyPressed="True" IncrementalFiltering="True" NullValueButtonPlacement="Popup" ImmediatePopup="True"></dxe:ComboBoxEditSettings>
+                                    </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.Entity.GUID_DISCIPLINE"
                                             Header="DISCIPLINE">

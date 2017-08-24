@@ -356,7 +356,7 @@ namespace BluePrints.ViewModels
 
         private void onBeforeSavedGenerateAndAssignWorkpack(ESTIMATION_DIRECT_ITEMProgress entity)
         {
-            if(entity.Entity.Entity.GUID_AREA != null && entity.Entity.Entity.GUID_DISCIPLINE != null)
+            if(entity.Entity.Entity.GUID_AREA != null)
             {
                 string internalNumber = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber(entity.Entity.Entity.GUID_AREA, entity.Entity.Entity.GUID_SUBAREA, loadPROJECT, AREACollection, SUBAREACollection);
                 if(internalNumber != string.Empty)
@@ -586,6 +586,22 @@ namespace BluePrints.ViewModels
                 if ((decimal)newValue < entity.MinEstimateQuantity)
                     return false;
             }
+            else if (fieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.Entity.GUID_COMMODITY_CODE))
+            {
+                if (newValue != null)
+                {
+                    COMMODITY_CODE entity_commodity_code = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == (Guid)newValue);
+                    if (entity_commodity_code != null)
+                    {
+                        Guid? oldDisciplineValue = entity.Entity.Entity.GUID_DISCIPLINE;
+                        Guid? newDisciplineValue = entity_commodity_code.GUID_DISCIPLINE;
+                        string discipline_field_name = Base_Entity_String + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_DISCIPLINE);
+                        entity.Entity.Entity.GUID_DISCIPLINE = newDisciplineValue;
+                        PauseUndoRedo();
+                        AddUndo(entity, discipline_field_name, oldDisciplineValue, newDisciplineValue, EntityMessageType.Changed);
+                    }
+                }
+            }
 
             return true;
         }
@@ -676,11 +692,11 @@ namespace BluePrints.ViewModels
         public void Interface_CellValueExistingRowChanging(string field_name, object new_value, ESTIMATION_DIRECT_ITEMProgress active_progress)
         {
             field_name = DataUtils.FormatColumnFieldname(field_name);
-            if (field_name == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_DISCIPLINE))
-            {
-                resetProjectionCommodityCode(active_progress);
-            }
-            else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.StockCodeGuid))
+            //if (field_name == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().GUID_DISCIPLINE))
+            //{
+            //    resetProjectionCommodityCode(active_progress);
+            //}
+            if (field_name == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.StockCodeGuid))
             {
                 if(new_value != null)
                 {
