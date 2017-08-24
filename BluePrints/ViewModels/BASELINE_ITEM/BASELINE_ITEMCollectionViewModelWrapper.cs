@@ -136,6 +136,17 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private bool internalNumberAlwaysEditable { get; set; }
+        public bool InternalNumberAlwaysEditable
+        {
+            get => internalNumberAlwaysEditable;
+            set
+            {
+                internalNumberAlwaysEditable = value;
+                FullRefresh();
+            }
+        }
+
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
@@ -279,7 +290,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(base_entity_query(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(base_entity_query(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, null, false, null, internalNumberAlwaysEditable);
         }
 
         public Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BaseEntityQueryCallBack { get; set; }
@@ -440,6 +451,10 @@ namespace BluePrints.ViewModels
             {
                 if (entity.Earned_Units_Total > 0)
                     return false;
+            }
+            else if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().INTERNAL_NUM))
+            {
+                return entity.IsInternalNumberEditable;
             }
 
             return true;
@@ -639,7 +654,7 @@ namespace BluePrints.ViewModels
                 field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DEPARTMENT) ||
                 field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DISCIPLINE))
             {
-                if (Is_Autofill_Internal_Number)
+                if (Is_Autofill_Internal_Number && projection.IsInternalNumberEditable)
                     projection.Entity.Entity.INTERNAL_NUM = generateInternalNumber(projection);
 
                 projection.Update();

@@ -98,6 +98,8 @@
                                                    Command="{Binding DataContext.MapClientNumberCommand, ElementName=userControl}"
                                                    LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Wizard_16x16.png}" />
+                                <dxb:BarItemSeparator />
+                                <dxb:BarCheckItem Content="Internal Number Always Editable" IsChecked="{Binding DataContext.InternalNumberAlwaysEditable, ElementName=userControl, Mode=TwoWay}" Glyph="{dxc:DXImage Image=EditName_16x16.png}" LargeGlyph="{dx:DXImage Image=EditName_32x32.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -196,8 +198,14 @@
                                         ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colINTERNAL_NUM" FieldName="Entity.Entity.INTERNAL_NUM" Tag="True;False;Autofill from area, department, discipline and doc-type"
-                                            Header="INTERNAL_NUM"  />
+                            <dxg:GridColumn Name="colINTERNAL_NUM" FieldName="Entity.Entity.INTERNAL_NUM" Tag="True;False;Autofill from area, department, discipline and doc-type" Header="INTERNAL_NUM">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <!-- Use IsEnabled because when textEdit is invoked the 2nd time IsReadOnly didn't get picked up in the binding -->
+                                        <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsInternalNumberEditable}" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
                             <dxg:GridColumn Name="colCLIENT_NUM" FieldName="Entity.Entity.CLIENT_NUM"
                                             Header="CLIENT_NUM"  />
                             <dxg:GridColumn Name="colREVISION_NUMBER" FieldName="Entity.Entity.REVISION_NUMBER"

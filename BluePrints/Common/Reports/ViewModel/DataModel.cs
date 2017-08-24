@@ -237,6 +237,10 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public bool IsInternalNumberEditable => IsInternalNumberAlwaysEditable ? true : Earned_Units_ToDate == 0;
+
+        public bool IsInternalNumberAlwaysEditable { get; set; }
+
         public bool IsByDuration => Entity.IsByDuration;
 
         public Guid? Variation_Guid { get => Entity.Variation_Guid; set => Entity.Variation_Guid = value; }
