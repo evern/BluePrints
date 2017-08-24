@@ -54,6 +54,7 @@ namespace BluePrints.Common.Misc
         public StatsType Type { get; set; }
         public decimal Units { get; set; }
         public decimal Costs { get; set; }
+        public decimal Actual_Costs { get; set; }
     }
 
     public enum StatsType
@@ -83,10 +84,10 @@ namespace BluePrints.Common.Misc
                         export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Earned, summary.Earned.DataPoints));
 
                     if (summary.Burned != null)
-                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Burned, summary.Burned.DataPoints));
+                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Burned, summary.Burned.DataPoints, summary.Actual.DataPoints));
 
-                    if (summary.Actual != null)
-                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Actual, summary.Actual.DataPoints));
+                    //if (summary.Actual != null)
+                    //    export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Actual, summary.Actual.DataPoints));
 
                     if (summary.Remaining != null)
                         export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Remaining, summary.Remaining.DataPoints));
@@ -96,7 +97,7 @@ namespace BluePrints.Common.Misc
             return export_data;
         }
 
-        private static List<Dashboard_Export_Data_Point> buildExportDataByType(Dashboard commodity_code_dashboard, StatsType stats_type, IEnumerable<DataPoint> data_points)
+        private static List<Dashboard_Export_Data_Point> buildExportDataByType(Dashboard commodity_code_dashboard, StatsType stats_type, IEnumerable<DataPoint> data_points, IEnumerable<DataPoint> actual_data_points = null)
         {
             List<Dashboard_Export_Data_Point> export_data_by_type = new List<Dashboard_Export_Data_Point>();
             if (data_points == null)
@@ -113,6 +114,14 @@ namespace BluePrints.Common.Misc
                 new_export_data.Discipline_Name = commodity_code_dashboard.Parent_Dashboard.Code;
                 new_export_data.Department_Name = commodity_code_dashboard.Parent_Dashboard.Parent_Dashboard.Code;
                 new_export_data.Workpack_Name = commodity_code_dashboard.Parent_Dashboard.Parent_Dashboard.Parent_Dashboard.Code;
+
+                if(actual_data_points != null)
+                {
+                    DataPoint current_period_actual = actual_data_points.FirstOrDefault(x => x.ProgressDate == data_point.ProgressDate);
+                    if (current_period_actual != null)
+                        new_export_data.Actual_Costs = current_period_actual.Costs;
+                }
+
                 export_data_by_type.Add(new_export_data);
             }
 

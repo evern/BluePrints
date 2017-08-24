@@ -99,63 +99,64 @@
                             <RowDefinition Height="1*" />
                             <RowDefinition Height="3*" />
                         </Grid.RowDefinitions>
-                        <custom:GridControlEx x:Name="GridControlExcelExport" Grid.Row="0" dx:DXSerializer.Enabled="False" Visibility="Collapsed" ItemsSource="{Binding DataContext.ExcelExportData, ElementName=userControl}">
-                                        <dxg:GridControl.Columns>
-                                            <dxg:GridColumn FieldName="Type" ReadOnly="True" />
-                                            <dxg:GridColumn FieldName="Workpack_Name" ReadOnly="True" />
-                                            <dxg:GridColumn FieldName="Department_Name" ReadOnly="True" />
-                                            <dxg:GridColumn FieldName="Discipline_Name" ReadOnly="True" />
-                                            <dxg:GridColumn FieldName="Commodity_Code" ReadOnly="True" />
-                                            <dxg:GridColumn FieldName="Data_Date" ReadOnly="True" />
-                                            <dxg:GridColumn FieldName="Units" ReadOnly="True" />
-                                            <dxg:GridColumn FieldName="Costs" ReadOnly="True" />
-                                        </dxg:GridControl.Columns>
-                                        <dxg:GridControl.View>
-                                            <!--need to set tableView name here for export to work-->
-                                            <dxg:TableView Name="tableView" />
-                                        </dxg:GridControl.View>
-                                    </custom:GridControlEx>
-                                    <custom:GridControlEx x:Name="GridControl" Grid.Row="1" dx:DXSerializer.SerializationID="GridControlSingleProjectDashboard" BandsSource="{StaticResource DashboardBands}" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}" Style="{StaticResource DefaultGridControlTemplate}" IsFilterEnabled="False">
-                                        <dxg:GridControl.DetailDescriptor>
-                                            <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Workpack_Dashboards}">
-                                                <dxg:GridControl x:Name="detailWorkpackDashboardGridControl" dx:DXSerializer.SerializationID="GridControlDetailWorkpackDashboard" BandsSource="{StaticResource DashboardChildBands}" SelectionMode="Row" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}">
-                                                    <dxg:GridControl.View>
-                                                        <dxg:TableView x:Name="detailWorkpackDashboardTableView" RowStyle="{StaticResource WBSBackgroundStyle}" AllowEditing="False" ShowGroupPanel="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHave_ChildDashboard}" />
-                                                    </dxg:GridControl.View>
-                                                    <dxg:GridControl.DetailDescriptor>
-                                                        <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Child_Dashboards}">
-                                                            <dxg:GridControl x:Name="detailDepartmentDashboardGridControl" dx:DXSerializer.SerializationID="GridControlDetailDepartmentDashboard" BandsSource="{StaticResource DashboardChildBands}" SelectionMode="Row" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}">
-                                                                <dxg:GridControl.View>
-                                                                    <dxg:TableView x:Name="detailDepartmentDashboardTableView" RowStyle="{StaticResource WBSBackgroundStyle}" ShowColumnHeaders="False" ShowBandsPanel="False" ShowGroupPanel="False" AllowEditing="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHave_ChildDashboard}" />
-                                                                </dxg:GridControl.View>
-                                                                <dxg:GridControl.DetailDescriptor>
-                                                                    <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Child_Dashboards}">
-                                                                        <dxg:GridControl x:Name="detailDisciplineDashboardGridControl" dx:DXSerializer.SerializationID="GridControlDetailDisciplineDashboard" BandsSource="{StaticResource DashboardChildBands}" SelectionMode="Row" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}">
-                                                                            <dxg:GridControl.View>
-                                                                                <dxg:TableView x:Name="detailDisciplineDashboardTableView" RowStyle="{StaticResource WBSBackgroundStyle}" ShowColumnHeaders="False" ShowBandsPanel="False" ShowGroupPanel="False" AllowEditing="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHave_ChildDashboard}" />
-                                                                            </dxg:GridControl.View>
-                                                                            <dxg:GridControl.DetailDescriptor>
-                                                                                <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Child_Dashboards}">
-                                                                                    <dxg:GridControl x:Name="detailCommodityDashboardGridControl" dx:DXSerializer.SerializationID="GridControlDetailCommodityDashboard" BandsSource="{StaticResource DashboardChildBands}" SelectionMode="Row" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}">
-                                                                                        <dxg:GridControl.View>
-                                                                                            <dxg:TableView x:Name="detailCommodityDashboardTableView" RowStyle="{StaticResource WBSBackgroundStyle}" ShowColumnHeaders="False" ShowBandsPanel="False" ShowGroupPanel="False" AllowEditing="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHave_ChildDashboard}" />
-                                                                                        </dxg:GridControl.View>
-                                                                                    </dxg:GridControl>
-                                                                                </dxg:DataControlDetailDescriptor>
-                                                                            </dxg:GridControl.DetailDescriptor>
-                                                                        </dxg:GridControl>
-                                                                    </dxg:DataControlDetailDescriptor>
-                                                                </dxg:GridControl.DetailDescriptor>
-                                                            </dxg:GridControl>
-                                                        </dxg:DataControlDetailDescriptor>
-                                                    </dxg:GridControl.DetailDescriptor>
-                                                </dxg:GridControl>
-                                            </dxg:DataControlDetailDescriptor>
-                                        </dxg:GridControl.DetailDescriptor>
-                                        <dxg:GridControl.View>
-                                            <dxg:TableView AllowEditing="False" UseLightweightTemplates="{x:Null}" ShowGroupFooters="False" ShowTotalSummary="False" Style="{StaticResource DefaultTableViewTemplate}" ShowSearchPanelMode="Never" IsDetailButtonVisibleBinding="{Binding Row.IHaveWorkpack_Dashboards}" NewItemRowPosition="None" ShowGroupPanel="False" AllowColumnFiltering="False" AllowGrouping="False" AllowColumnMoving="True" AllowFilterEditor="False" AllowSorting="False" ShowAutoFilterRow="False" ShowGroupedColumns="False" ShowCriteriaInAutoFilterRow="False" />
-                                        </dxg:GridControl.View>
-                                    </custom:GridControlEx>
+                            <custom:GridControlEx x:Name="GridControlExcelExport" Grid.Row="0" dx:DXSerializer.Enabled="False" Visibility="Collapsed" ItemsSource="{Binding DataContext.ExcelExportData, ElementName=userControl}">
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn FieldName="Type" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Workpack_Name" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Department_Name" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Discipline_Name" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Commodity_Code" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Data_Date" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Units" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Costs" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Actual_Costs" ReadOnly="True" />
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.View>
+                                    <!--need to set tableView name here for export to work-->
+                                    <dxg:TableView Name="tableView" />
+                                </dxg:GridControl.View>
+                            </custom:GridControlEx>
+                            <custom:GridControlEx x:Name="GridControl" Grid.Row="1" dx:DXSerializer.SerializationID="GridControlSingleProjectDashboard" BandsSource="{StaticResource DashboardBands}" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}" Style="{StaticResource DefaultGridControlTemplate}" IsFilterEnabled="False">
+                                <dxg:GridControl.DetailDescriptor>
+                                    <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Workpack_Dashboards}">
+                                        <dxg:GridControl x:Name="detailWorkpackDashboardGridControl" dx:DXSerializer.SerializationID="GridControlDetailWorkpackDashboard" BandsSource="{StaticResource DashboardChildBands}" SelectionMode="Row" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}">
+                                            <dxg:GridControl.View>
+                                                <dxg:TableView x:Name="detailWorkpackDashboardTableView" RowStyle="{StaticResource WBSBackgroundStyle}" AllowEditing="False" ShowGroupPanel="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHave_ChildDashboard}" />
+                                            </dxg:GridControl.View>
+                                            <dxg:GridControl.DetailDescriptor>
+                                                <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Child_Dashboards}">
+                                                    <dxg:GridControl x:Name="detailDepartmentDashboardGridControl" dx:DXSerializer.SerializationID="GridControlDetailDepartmentDashboard" BandsSource="{StaticResource DashboardChildBands}" SelectionMode="Row" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}">
+                                                        <dxg:GridControl.View>
+                                                            <dxg:TableView x:Name="detailDepartmentDashboardTableView" RowStyle="{StaticResource WBSBackgroundStyle}" ShowColumnHeaders="False" ShowBandsPanel="False" ShowGroupPanel="False" AllowEditing="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHave_ChildDashboard}" />
+                                                        </dxg:GridControl.View>
+                                                        <dxg:GridControl.DetailDescriptor>
+                                                            <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Child_Dashboards}">
+                                                                <dxg:GridControl x:Name="detailDisciplineDashboardGridControl" dx:DXSerializer.SerializationID="GridControlDetailDisciplineDashboard" BandsSource="{StaticResource DashboardChildBands}" SelectionMode="Row" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}">
+                                                                    <dxg:GridControl.View>
+                                                                        <dxg:TableView x:Name="detailDisciplineDashboardTableView" RowStyle="{StaticResource WBSBackgroundStyle}" ShowColumnHeaders="False" ShowBandsPanel="False" ShowGroupPanel="False" AllowEditing="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHave_ChildDashboard}" />
+                                                                    </dxg:GridControl.View>
+                                                                    <dxg:GridControl.DetailDescriptor>
+                                                                        <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Child_Dashboards}">
+                                                                            <dxg:GridControl x:Name="detailCommodityDashboardGridControl" dx:DXSerializer.SerializationID="GridControlDetailCommodityDashboard" BandsSource="{StaticResource DashboardChildBands}" SelectionMode="Row" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}">
+                                                                                <dxg:GridControl.View>
+                                                                                    <dxg:TableView x:Name="detailCommodityDashboardTableView" RowStyle="{StaticResource WBSBackgroundStyle}" ShowColumnHeaders="False" ShowBandsPanel="False" ShowGroupPanel="False" AllowEditing="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHave_ChildDashboard}" />
+                                                                                </dxg:GridControl.View>
+                                                                            </dxg:GridControl>
+                                                                        </dxg:DataControlDetailDescriptor>
+                                                                    </dxg:GridControl.DetailDescriptor>
+                                                                </dxg:GridControl>
+                                                            </dxg:DataControlDetailDescriptor>
+                                                        </dxg:GridControl.DetailDescriptor>
+                                                    </dxg:GridControl>
+                                                </dxg:DataControlDetailDescriptor>
+                                            </dxg:GridControl.DetailDescriptor>
+                                        </dxg:GridControl>
+                                    </dxg:DataControlDetailDescriptor>
+                                </dxg:GridControl.DetailDescriptor>
+                                <dxg:GridControl.View>
+                                    <dxg:TableView AllowEditing="False" UseLightweightTemplates="{x:Null}" ShowGroupFooters="False" ShowTotalSummary="False" Style="{StaticResource DefaultTableViewTemplate}" ShowSearchPanelMode="Never" IsDetailButtonVisibleBinding="{Binding Row.IHaveWorkpack_Dashboards}" NewItemRowPosition="None" ShowGroupPanel="False" AllowColumnFiltering="False" AllowGrouping="False" AllowColumnMoving="True" AllowFilterEditor="False" AllowSorting="False" ShowAutoFilterRow="False" ShowGroupedColumns="False" ShowCriteriaInAutoFilterRow="False" />
+                                </dxg:GridControl.View>
+                            </custom:GridControlEx>
                         <dxc:ChartControl x:Name="chartSCurve" Grid.Row="2" Padding="0" Margin="0" dx:DXSerializer.Enabled="False" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}">
                             <dxc:XYDiagram2D SeriesItemsSource="{StaticResource dashboardXYChartSeries}">
                                 <dxc:XYDiagram2D.AxisX>
