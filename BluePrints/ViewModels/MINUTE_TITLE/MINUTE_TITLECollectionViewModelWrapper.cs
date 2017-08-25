@@ -1,0 +1,130 @@
+﻿using System;
+using System.Linq;
+using DevExpress.Mvvm.POCO;
+using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Data;
+using BaseModel.ViewModel.Base;
+using BaseModel.DataModel;
+using BaseModel.ViewModel.Loader;
+using System.Collections.Generic;
+using System.Windows.Threading;
+using System.ComponentModel;
+using BaseModel.Misc;
+using DevExpress.Xpf.Grid.TreeList;
+using DevExpress.Mvvm;
+using DevExpress.Xpf.Grid;
+using System.Threading;
+using BaseModel.ViewModel.Document;
+using BluePrints.Common.Resources;
+using System.Globalization;
+using BluePrints.Common.Projections;
+using BaseModel.Data.Helpers;
+using BluePrints.Common;
+using BluePrints.Common.Base;
+
+namespace BluePrints.ViewModels
+{
+    /// <summary>
+    /// Represents the MINUTE_TITLE collection view model.
+    /// </summary>
+    public partial class MINUTE_TITLECollectionViewModelWrapper :
+        BluePrintsEntitiesTreeCollectionWrapper
+        <MINUTE_TITLE, MINUTE_TITLE, Guid, IBluePrintsEntitiesUnitOfWork>
+    {
+        /// <summary>
+        /// Creates a new instance of MINUTE_TITLECollectionViewModel as a POCO view model.
+        /// </summary>
+        /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
+        public static MINUTE_TITLECollectionViewModelWrapper Create(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        {
+            return ViewModelSource.Create(() => new MINUTE_TITLECollectionViewModelWrapper(unitOfWorkFactory));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the MINUTE_TITLECollectionViewModel class.
+        /// This constructor is declared protected to avoid undesired instantiation of the MINUTE_TITLECollectionViewModel type without the POCO proxy factory.
+        /// </summary>
+        /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
+        protected MINUTE_TITLECollectionViewModelWrapper(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        {
+        }
+
+        #region Database Operations
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> BluePrintsUnitOfWorkFactory =
+            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
+        protected override void resolveParameters(object parameter)
+        {
+        }
+
+        protected override void initializeEntitiesLoadersDescription()
+        {
+            loaderCollection = new EntitiesLoaderDescriptionCollection(this);
+        }
+
+        protected override void onAuxiliaryEntitiesCollectionLoaded()
+        {
+            CreateMainViewModel(BluePrintsUnitOfWorkFactory, x => x.MINUTE_TITLES);
+            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
+        }
+
+        protected override Func<IRepositoryQuery<MINUTE_TITLE>, IQueryable<MINUTE_TITLE>>
+            specifyMainViewModelProjection()
+        {
+            return query => query;
+        }
+
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<MINUTE_TITLE> entities)
+        {
+            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = onBeforeEntitySaved;
+            base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
+        #endregion
+
+        #region View Behavior
+        private bool onBeforeEntitySaved(MINUTE_TITLE newEntity)
+        {
+            newEntity.NUMBER = ((newEntity.SortOrder * 1.0) / 10).ToString();
+            return true;
+        }
+
+        /// <summary>
+        /// Save expanded state before closing
+        /// </summary>
+        protected override void OnClose(CancelEventArgs e)
+        {
+            MainViewModel.BulkSave(MainViewModel.Entities);
+            base.OnClose(e);
+        }
+        #endregion
+
+        protected override void PopulateNewProjection(MINUTE_TITLE projection)
+        {
+            projection.NAME = "(new)";
+        }
+
+        protected override string GetParentEntityKeyFieldName()
+        {
+            return BindableBase.GetPropertyName(() => new MINUTE_TITLE().GUID_PARENT);
+        }
+
+        protected override string GetSortOrderFieldName()
+        {
+            return BindableBase.GetPropertyName(() => new MINUTE_TITLE().SORTORDER);
+        }
+
+        #region View Properties
+
+        /// <summary>
+        /// The view name to be used when saving layout for IDocumentContent
+        /// </summary>
+        protected override string ViewName
+        {
+            get { return "MINUTE_TITLEViewModelWrapper"; }
+        }
+
+        #endregion
+    }
+}

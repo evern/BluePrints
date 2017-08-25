@@ -193,5 +193,35 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The WORKPACK entities repository.
         /// </summary>
         IRepository<WORKPACK, Guid> WORKPACKS { get; }
+
+        /// <summary>
+        /// The CLIENT entities repository.
+        /// </summary>
+        IRepository<CLIENT, Guid> CLIENTS { get; }
+
+        /// <summary>
+        /// The MEETINGS entities repository.
+        /// </summary>
+        IRepository<MEETING, Guid> MEETINGS { get; }
+
+        /// <summary>
+        /// The MEETING_COMMENTS entities repository.
+        /// </summary>
+        IRepository<MEETING_COMMENT, Guid> MEETING_COMMENTS { get; }
+
+        /// <summary>
+        /// The MEETING_USERS entities repository.
+        /// </summary>
+        IRepository<MEETING_USER, Guid> MEETING_USERS { get; }
+
+        /// <summary>
+        /// The MINUTE_AGENDAS entities repository.
+        /// </summary>
+        IRepository<MINUTE_AGENDA, Guid> MINUTE_AGENDAS { get; }
+
+        /// <summary>
+        /// MINUTE_TITLES entities repository.
+        /// </summary>
+        IRepository<MINUTE_TITLE, Guid> MINUTE_TITLES { get; }
     }
 }

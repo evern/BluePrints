@@ -462,6 +462,12 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\MEETING_USER.cs" />
+    <Compile Include="EntityFramework\Annotations\MINUTE_TITLE.cs" />
+    <Compile Include="EntityFramework\Annotations\MEETING_COMMENT.cs" />
+    <Compile Include="EntityFramework\Annotations\MINUTE_AGENDA.cs" />
+    <Compile Include="EntityFramework\Annotations\MEETING.cs" />
+    <Compile Include="EntityFramework\Annotations\CLIENT.cs" />
     <Compile Include="EntityFramework\Annotations\COMMODITY_CODE.cs" />
     <Compile Include="EntityFramework\Annotations\STOCK_CODE.cs" />
     <Compile Include="EntityFramework\Annotations\ESTIMATION_DIRECT_ITEM.cs" />
@@ -476,6 +482,12 @@
     <Compile Include="EntityFramework\Annotations\DELIVERABLES_STATUS.cs" />
     <Compile Include="EntityFramework\Annotations\ESTIMATION_DIRECT.cs" />
     <Compile Include="EntityFramework\Annotations\STOCK_GROUP.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\MINUTE_TITLE.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\MINUTE_AGENDA.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\MEETING_USER.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\MEETING_COMMENT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\MEETING.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\CLIENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\AREA.cs" />
     <Compile Include="EntityFramework\BluePrintsData\BASELINE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\BASELINE_ITEM.cs" />
@@ -542,6 +554,7 @@
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\BluePrintsEntitiesUnitOfWorkSource.cs" />
     <Compile Include="Common\Misc\BluePrintsEnums.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
+    <Compile Include="ViewModels\MINUTE_TITLE\MINUTE_TITLECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\STOCK_CODE\STOCK_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATION_DIRECT_ITEM\ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper.cs" />
@@ -561,6 +574,9 @@
     <Compile Include="ViewModels\WORKPACK\WORKPACKDashboardViewModelWrapper.cs" />
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.xaml.cs">
       <DependentUpon>BASELINE_ITEMSchedulingView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MINUTE_TITLE\MINUTE_TITLECollectionView.xaml.cs">
+      <DependentUpon>MINUTE_TITLECollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml.cs">
       <DependentUpon>STOCK_CODECollectionView.xaml</DependentUpon>
@@ -1310,6 +1326,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\MINUTE_TITLE\MINUTE_TITLECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

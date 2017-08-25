@@ -201,5 +201,36 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         {
             get { return GetRepository((WORKPACK x) => x.GUID); }
         }
+
+        IRepository<CLIENT, Guid> IBluePrintsEntitiesUnitOfWork.CLIENTS
+        {
+            get { return GetRepository((CLIENT x) => x.GUID); }
+        }
+
+        IRepository<MEETING, Guid> IBluePrintsEntitiesUnitOfWork.MEETINGS
+        {
+            get { return GetRepository((MEETING x) => x.GUID); }
+        }
+
+        IRepository<MEETING_COMMENT, Guid> IBluePrintsEntitiesUnitOfWork.MEETING_COMMENTS
+        {
+            get { return GetRepository((MEETING_COMMENT x) => x.GUID); }
+        }
+
+
+        IRepository<MEETING_USER, Guid> IBluePrintsEntitiesUnitOfWork.MEETING_USERS
+        {
+            get { return GetRepository((MEETING_USER x) => x.GUID); }
+        }
+
+        IRepository<MINUTE_AGENDA, Guid> IBluePrintsEntitiesUnitOfWork.MINUTE_AGENDAS
+        {
+            get { return GetRepository((MINUTE_AGENDA x) => x.GUID); }
+        }
+
+        IRepository<MINUTE_TITLE, Guid> IBluePrintsEntitiesUnitOfWork.MINUTE_TITLES
+        {
+            get { return GetRepository((MINUTE_TITLE x) => x.GUID); }
+        }
     }
 }

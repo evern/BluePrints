@@ -199,5 +199,36 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         {
             get { return GetRepository(x => x.Set<WORKPACK>(), (WORKPACK x) => x.GUID); }
         }
+
+        IRepository<CLIENT, Guid> IBluePrintsEntitiesUnitOfWork.CLIENTS
+        {
+            get { return GetRepository(x => x.Set<CLIENT>(), (CLIENT x) => x.GUID); }
+        }
+
+        IRepository<MEETING, Guid> IBluePrintsEntitiesUnitOfWork.MEETINGS
+        {
+            get { return GetRepository(x => x.Set<MEETING>(), (MEETING x) => x.GUID); }
+        }
+
+        IRepository<MEETING_COMMENT, Guid> IBluePrintsEntitiesUnitOfWork.MEETING_COMMENTS
+        {
+            get { return GetRepository(x => x.Set<MEETING_COMMENT>(), (MEETING_COMMENT x) => x.GUID); }
+        }
+
+
+        IRepository<MEETING_USER, Guid> IBluePrintsEntitiesUnitOfWork.MEETING_USERS
+        {
+            get { return GetRepository(x => x.Set<MEETING_USER>(), (MEETING_USER x) => x.GUID); }
+        }
+
+        IRepository<MINUTE_AGENDA, Guid> IBluePrintsEntitiesUnitOfWork.MINUTE_AGENDAS
+        {
+            get { return GetRepository(x => x.Set<MINUTE_AGENDA>(), (MINUTE_AGENDA x) => x.GUID); }
+        }
+
+        IRepository<MINUTE_TITLE, Guid> IBluePrintsEntitiesUnitOfWork.MINUTE_TITLES
+        {
+            get { return GetRepository(x => x.Set<MINUTE_TITLE>(), (MINUTE_TITLE x) => x.GUID); }
+        }
     }
 }

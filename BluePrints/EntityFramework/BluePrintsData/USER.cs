@@ -74,6 +74,12 @@ namespace BluePrints.Data
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<MEETING_USER> MEETING_USER { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<MINUTE_AGENDA> MINUTE_AGENDA { get; set; }
+
         public virtual ROLE ROLE { get; set; }
     }
 }

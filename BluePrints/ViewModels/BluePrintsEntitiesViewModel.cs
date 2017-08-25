@@ -271,6 +271,8 @@ namespace BluePrints.ViewModels
                 //commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Overhead", commodityCodeCategoryId, "Commodity Code [Overhead]", "STOCK_GROUPCollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Overhead)), null, "Overhead"));
             }
 
+            dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageMinuteTitle", dataCategoryId, "Minutes Title", "MINUTE_TITLECollectionView"));
+
             return bluePrintsEntitiesModuleDescriptions;
         }
 

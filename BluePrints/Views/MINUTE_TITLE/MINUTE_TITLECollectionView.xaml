@@ -1,6 +1,6 @@
 ﻿<UserControl
         x:Name="userControl"
-        x:Class="BluePrints.Views.ROLECollectionView"
+        x:Class="BluePrints.Views.MINUTE_TITLECollectionView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
@@ -17,7 +17,7 @@
         xmlns:customControl="clr-namespace:BaseModel.Misc;assembly=BaseModel"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:ROLECollectionViewModelWrapper}">
+        mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:MINUTE_TITLECollectionViewModelWrapper}">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -34,10 +34,6 @@
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Home">
                             <dxr:RibbonPageGroup Caption="WBS Tasks">
-                                <dxb:BarButtonItem Content="Commodity"
-                                                    Command="{Binding DataContext.EditCommand, ElementName=userControl}"
-                                                    LargeGlyph="{dx:DXImage Image=Edit_32x32.png}"
-                                                    Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                 <dxb:BarButtonItem Content="Insert Before"
                                                    Command="{Binding DataContext.AddRowBeforeCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}"
@@ -90,25 +86,17 @@
                                 </dxg:TreeListDragDropManager>
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:TreeListControl.Columns>
-                                <dxg:TreeListColumn Header="NAME" FieldName="Entity.NAME" VisibleIndex="10" />
-                                <dxg:TreeListColumn Header="IS MANAGER" FieldName="Entity.ISMANAGER" VisibleIndex="20" >
-                                    <dxg:TreeListColumn.EditSettings>
-                                        <dxe:CheckEditSettings />
-                                    </dxg:TreeListColumn.EditSettings>
-                                </dxg:TreeListColumn>
-                                <dxg:TreeListColumn FieldName="Entity.SORTORDER" ReadOnly="True" VisibleIndex="30" Visible="False" />
+                                <dxg:TreeListColumn FieldName="NUMBER" Header="NUMBER" VisibleIndex="10" />
+                                <dxg:TreeListColumn FieldName="NAME" Header="NAME" VisibleIndex="20" />
+                                <dxg:TreeListColumn FieldName="SORTORDER" Header="SORTORDER" VisibleIndex="30" />
                             </dxg:TreeListControl.Columns>
                             <dxg:TreeListControl.View>
                                 <dxg:TreeListView x:Name="treeListView" AllowSorting="True" 
-                                              ParentFieldName="ParentEntityKey" ExpandStateFieldName="IsExpanded" 
-                                              KeyFieldName="EntityKey" >
+                                              ParentFieldName="ParentEntityKey" ExpandStateFieldName="IsExpanded" KeyFieldName="EntityKey" >
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:EventToCommand PassEventArgsToCommand="True"
                                                            Command="{Binding TreelistExistingRowAddUndoAndSaveCommand}"
                                                            EventName="CellValueChanged" />
-                                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
-                                                           Command="{Binding DataContext.TreeListImmediateSaveCommand, ElementName=userControl}"
-                                                           EventName="CellValueChanging" />
                                         <dxmvvm:EventToCommand PassEventArgsToCommand="True"
                                                            Command="{Binding ValidateCellCommand}"
                                                            EventName="ValidateCell" />
@@ -132,40 +120,6 @@
                                 </dxg:TreeListView>
                             </dxg:TreeListControl.View>
                         </dxg:TreeListControl>
-                    </dxlc:LayoutGroup>
-                    <dxlc:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}">
-                        <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlROLE_PERMISSION" dx:DXSerializer.StoreLayoutMode="All" MaxHeight="2000"
-                                     ItemsSource="{Binding Permissions}" SelectedItem="{Binding SelectedPermission, Mode=TwoWay}">
-                            <dxg:GridControl.Columns>
-                                <dxg:GridColumn FieldName="PermissionKey" AllowEditing="False" MinWidth="300" >
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings
-                                                ItemsSource="{Binding DataContext.PermissionLookUp, ElementName=userControl}"
-                                                IsTextEditable="False" DisplayMember="Value" ValueMember="Key" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="IsAssigned" >
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:CheckEditSettings />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                            </dxg:GridControl.Columns>
-                            <dxg:GridControl.TotalSummary>
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />
-                            </dxg:GridControl.TotalSummary>
-                            <dxg:GridControl.GroupSummary>
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
-                            </dxg:GridControl.GroupSummary>
-                            <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" >
-                                    <dxmvvm:Interaction.Behaviors>
-                                        <dxmvvm:EventToCommand
-                                        Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}"
-                                        PassEventArgsToCommand="True" EventName="CellValueChanging" />
-                                    </dxmvvm:Interaction.Behaviors>
-                                </dxg:TableView>
-                            </dxg:GridControl.View>
-                        </custom:GridControlEx>
                     </dxlc:LayoutGroup>
                 </dxlc:LayoutGroup>
             </DockPanel>

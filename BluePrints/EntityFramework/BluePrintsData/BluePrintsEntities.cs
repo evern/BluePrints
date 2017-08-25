@@ -13,17 +13,22 @@ namespace BluePrints.Data
         public virtual DbSet<AREA> AREA { get; set; }
         public virtual DbSet<BASELINE> BASELINE { get; set; }
         public virtual DbSet<BASELINE_ITEM> BASELINE_ITEM { get; set; }
-        public virtual DbSet<P6_ASSIGNMENT> P6_ASSIGNMENT { get; set; }
         public virtual DbSet<BASELINE_ITEM_WORK> BASELINE_ITEM_WORK { get; set; }
-        public virtual DbSet<STOCK_GROUP> STOCK_GROUP { get; set; }
-        public virtual DbSet<DataPoint> DataPoint { get; set; }
+        public virtual DbSet<CLIENT> CLIENT { get; set; }
         public virtual DbSet<COMMODITY_CODE> COMMODITY_CODE { get; set; }
+        public virtual DbSet<DataPoint> DataPoint { get; set; }
         public virtual DbSet<DELIVERABLES_STATUS> DELIVERABLES_STATUS { get; set; }
         public virtual DbSet<DEPARTMENT> DEPARTMENT { get; set; }
         public virtual DbSet<DISCIPLINE> DISCIPLINE { get; set; }
         public virtual DbSet<DOCTYPE> DOCTYPE { get; set; }
         public virtual DbSet<ESTIMATION_DIRECT> ESTIMATION_DIRECT { get; set; }
         public virtual DbSet<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
+        public virtual DbSet<MEETING> MEETING { get; set; }
+        public virtual DbSet<MEETING_COMMENT> MEETING_COMMENT { get; set; }
+        public virtual DbSet<MEETING_USER> MEETING_USER { get; set; }
+        public virtual DbSet<MINUTE_AGENDA> MINUTE_AGENDA { get; set; }
+        public virtual DbSet<MINUTE_TITLE> MINUTE_TITLE { get; set; }
+        public virtual DbSet<P6_ASSIGNMENT> P6_ASSIGNMENT { get; set; }
         public virtual DbSet<PHASE> PHASE { get; set; }
         public virtual DbSet<PROGRESS> PROGRESS { get; set; }
         public virtual DbSet<PROGRESS_ITEM> PROGRESS_ITEM { get; set; }
@@ -41,6 +46,7 @@ namespace BluePrints.Data
         public virtual DbSet<ROLE_PERMISSION> ROLE_PERMISSION { get; set; }
         public virtual DbSet<SETTINGS_GLOBAL> SETTINGS_GLOBAL { get; set; }
         public virtual DbSet<STOCK_CODE> STOCK_CODE { get; set; }
+        public virtual DbSet<STOCK_GROUP> STOCK_GROUP { get; set; }
         public virtual DbSet<UOM> UOM { get; set; }
         public virtual DbSet<USER> USER { get; set; }
         public virtual DbSet<VARIATION> VARIATION { get; set; }
@@ -55,9 +61,9 @@ namespace BluePrints.Data
             modelBuilder.AddComplexTypesFromAssembly(typeof(BluePrintsEntities).Assembly);
 
             modelBuilder.Entity<AREA>()
-                .HasMany(e => e.AREA1)
-                .WithOptional(e => e.AREA2)
-                .HasForeignKey(e => e.GUID_PARENT);
+                 .HasMany(e => e.AREA1)
+                 .WithOptional(e => e.AREA2)
+                 .HasForeignKey(e => e.GUID_PARENT);
 
             modelBuilder.Entity<AREA>()
                 .HasMany(e => e.BASELINE_ITEM)
@@ -139,6 +145,17 @@ namespace BluePrints.Data
             modelBuilder.Entity<BASELINE_ITEM_WORK>()
                 .Property(e => e.WEIGHTING)
                 .HasPrecision(5, 2);
+
+            modelBuilder.Entity<CLIENT>()
+                .HasMany(e => e.MEETING_USER)
+                .WithRequired(e => e.CLIENT)
+                .HasForeignKey(e => e.USER_GUID)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<CLIENT>()
+                .HasMany(e => e.MINUTE_AGENDA)
+                .WithOptional(e => e.CLIENT)
+                .HasForeignKey(e => e.GUID_ACTION_BY_CLIENT);
 
             modelBuilder.Entity<COMMODITY_CODE>()
                 .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
@@ -252,6 +269,29 @@ namespace BluePrints.Data
                 .WithOptional(e => e.ESTIMATION_DIRECT)
                 .HasForeignKey(e => e.GUID_ESTIMATION_DIRECT);
 
+            modelBuilder.Entity<MEETING>()
+                .HasMany(e => e.MINUTE_AGENDA)
+                .WithRequired(e => e.MEETING)
+                .HasForeignKey(e => e.GUID_MEETING)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<MINUTE_AGENDA>()
+                .HasMany(e => e.MEETING_COMMENT)
+                .WithRequired(e => e.MINUTE_AGENDA)
+                .HasForeignKey(e => e.GUID_AGENDA)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<MINUTE_TITLE>()
+                .HasMany(e => e.MINUTE_AGENDA)
+                .WithRequired(e => e.MINUTE_TITLE)
+                .HasForeignKey(e => e.GUID_MINUTE_TITLE)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<MINUTE_TITLE>()
+                .HasMany(e => e.MINUTE_TITLE1)
+                .WithOptional(e => e.MINUTE_TITLE2)
+                .HasForeignKey(e => e.GUID_PARENT);
+
             modelBuilder.Entity<P6_ASSIGNMENT>()
                 .Property(e => e.LOW_VALUE)
                 .HasPrecision(10, 2);
@@ -311,6 +351,12 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.ESTIMATION_DIRECT)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.MEETING)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
@@ -444,6 +490,17 @@ namespace BluePrints.Data
                 .WithRequired(e => e.USER)
                 .HasForeignKey(e => e.GUID_USER)
                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<USER>()
+                .HasMany(e => e.MEETING_USER)
+                .WithRequired(e => e.USER)
+                .HasForeignKey(e => e.USER_GUID)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<USER>()
+                .HasMany(e => e.MINUTE_AGENDA)
+                .WithOptional(e => e.USER)
+                .HasForeignKey(e => e.GUID_ACTION_BY_USER);
 
             modelBuilder.Entity<USER>()
                 .HasMany(e => e.PROJECT)

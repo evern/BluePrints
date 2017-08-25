@@ -19,6 +19,7 @@ namespace BluePrints.Data
             STOCK_GROUP = new HashSet<STOCK_GROUP>();
             DELIVERABLES_STATUS = new HashSet<DELIVERABLES_STATUS>();
             ESTIMATION_DIRECT = new HashSet<ESTIMATION_DIRECT>();
+            MEETING = new HashSet<MEETING>();
             PROGRESS = new HashSet<PROGRESS>();
             STOCK_CODE = new HashSet<STOCK_CODE>();
             REGISTER = new HashSet<REGISTER>();
