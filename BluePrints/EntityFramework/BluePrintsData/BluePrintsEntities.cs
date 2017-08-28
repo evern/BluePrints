@@ -24,7 +24,7 @@ namespace BluePrints.Data
         public virtual DbSet<ESTIMATION_DIRECT> ESTIMATION_DIRECT { get; set; }
         public virtual DbSet<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
         public virtual DbSet<MEETING> MEETING { get; set; }
-        public virtual DbSet<MEETING_COMMENT> MEETING_COMMENT { get; set; }
+        public virtual DbSet<MINUTE_COMMENT> MINUTE_COMMENT { get; set; }
         public virtual DbSet<MEETING_USER> MEETING_USER { get; set; }
         public virtual DbSet<MINUTE_AGENDA> MINUTE_AGENDA { get; set; }
         public virtual DbSet<MINUTE_TITLE> MINUTE_TITLE { get; set; }
@@ -61,9 +61,9 @@ namespace BluePrints.Data
             modelBuilder.AddComplexTypesFromAssembly(typeof(BluePrintsEntities).Assembly);
 
             modelBuilder.Entity<AREA>()
-                 .HasMany(e => e.AREA1)
-                 .WithOptional(e => e.AREA2)
-                 .HasForeignKey(e => e.GUID_PARENT);
+                .HasMany(e => e.AREA1)
+                .WithOptional(e => e.AREA2)
+                .HasForeignKey(e => e.GUID_PARENT);
 
             modelBuilder.Entity<AREA>()
                 .HasMany(e => e.BASELINE_ITEM)
@@ -147,15 +147,10 @@ namespace BluePrints.Data
                 .HasPrecision(5, 2);
 
             modelBuilder.Entity<CLIENT>()
-                .HasMany(e => e.MEETING_USER)
+                .HasMany(e => e.CLIENT_PROJECT)
                 .WithRequired(e => e.CLIENT)
-                .HasForeignKey(e => e.USER_GUID)
+                .HasForeignKey(e => e.GUID_CLIENT)
                 .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<CLIENT>()
-                .HasMany(e => e.MINUTE_AGENDA)
-                .WithOptional(e => e.CLIENT)
-                .HasForeignKey(e => e.GUID_ACTION_BY_CLIENT);
 
             modelBuilder.Entity<COMMODITY_CODE>()
                 .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
@@ -270,13 +265,19 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_ESTIMATION_DIRECT);
 
             modelBuilder.Entity<MEETING>()
+                .HasMany(e => e.MEETING_USER)
+                .WithRequired(e => e.MEETING)
+                .HasForeignKey(e => e.GUID_MEETING)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<MEETING>()
                 .HasMany(e => e.MINUTE_AGENDA)
                 .WithRequired(e => e.MEETING)
                 .HasForeignKey(e => e.GUID_MEETING)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<MINUTE_AGENDA>()
-                .HasMany(e => e.MEETING_COMMENT)
+                .HasMany(e => e.MINUTE_COMMENT)
                 .WithRequired(e => e.MINUTE_AGENDA)
                 .HasForeignKey(e => e.GUID_AGENDA)
                 .WillCascadeOnDelete(false);
@@ -340,6 +341,12 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.BASELINE)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.CLIENT_PROJECT)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
@@ -490,17 +497,6 @@ namespace BluePrints.Data
                 .WithRequired(e => e.USER)
                 .HasForeignKey(e => e.GUID_USER)
                 .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<USER>()
-                .HasMany(e => e.MEETING_USER)
-                .WithRequired(e => e.USER)
-                .HasForeignKey(e => e.USER_GUID)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<USER>()
-                .HasMany(e => e.MINUTE_AGENDA)
-                .WithOptional(e => e.USER)
-                .HasForeignKey(e => e.GUID_ACTION_BY_USER);
 
             modelBuilder.Entity<USER>()
                 .HasMany(e => e.PROJECT)

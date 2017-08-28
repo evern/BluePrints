@@ -25,4 +25,22 @@ namespace BluePrints.Common.Base
             base.OnLoaded();
         }
     }
+
+    public abstract class BluePrintsEntitiesMasterOtherDetailCollectionsWrapper<TMainEntity, TChildEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
+    TMainEntityUnitOfWork> : ProjectionMasterOtherDetailCollectionsWrapper<TMainEntity, TChildEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
+    TMainEntityUnitOfWork>
+        where TMainEntity : class, IGuidEntityKey, new()
+        where TChildEntity : class, IGuidEntityKey, IGuidParentEntityKey, new()
+        where TMainProjectionEntity : class, IProjectionMasterOtherDetail<TMainEntity, TChildEntity>, ICanUpdate, new()
+        where TMainEntityUnitOfWork : IUnitOfWork
+    {
+        public SpellCheckerModule SpellCheckerModule { get; set; }
+
+        public override void OnLoaded()
+        {
+            SpellCheckerModule = new SpellCheckerModule();
+            SpellCheckerModule.ApplySpellCheckMode(true);
+            base.OnLoaded();
+        }
+    }
 }

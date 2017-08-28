@@ -12,8 +12,7 @@ namespace BluePrints.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public CLIENT()
         {
-            MEETING_USER = new HashSet<MEETING_USER>();
-            MINUTE_AGENDA = new HashSet<MINUTE_AGENDA>();
+            CLIENT_PROJECT = new HashSet<CLIENT_PROJECT>();
         }
 
         [Key]
@@ -48,9 +47,6 @@ namespace BluePrints.Data
         public Guid? DELETEDBY { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<MEETING_USER> MEETING_USER { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<MINUTE_AGENDA> MINUTE_AGENDA { get; set; }
+        public virtual ICollection<CLIENT_PROJECT> CLIENT_PROJECT { get; set; }
     }
 }

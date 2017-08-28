@@ -210,9 +210,9 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<MEETING>(), (MEETING x) => x.GUID); }
         }
 
-        IRepository<MEETING_COMMENT, Guid> IBluePrintsEntitiesUnitOfWork.MEETING_COMMENTS
+        IRepository<MINUTE_COMMENT, Guid> IBluePrintsEntitiesUnitOfWork.MINUTE_COMMENTS
         {
-            get { return GetRepository(x => x.Set<MEETING_COMMENT>(), (MEETING_COMMENT x) => x.GUID); }
+            get { return GetRepository(x => x.Set<MINUTE_COMMENT>(), (MINUTE_COMMENT x) => x.GUID); }
         }
 
 
@@ -229,6 +229,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<MINUTE_TITLE, Guid> IBluePrintsEntitiesUnitOfWork.MINUTE_TITLES
         {
             get { return GetRepository(x => x.Set<MINUTE_TITLE>(), (MINUTE_TITLE x) => x.GUID); }
+        }
+
+        IRepository<CLIENT_PROJECT, Guid> IBluePrintsEntitiesUnitOfWork.CLIENT_PROJECTS
+        {
+            get { return GetRepository(x => x.Set<CLIENT_PROJECT>(), (CLIENT_PROJECT x) => x.GUID); }
         }
     }
 }

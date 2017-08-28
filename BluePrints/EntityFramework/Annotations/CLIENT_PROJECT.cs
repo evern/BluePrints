@@ -5,8 +5,8 @@ namespace BluePrints.Data
     using DevExpress.Mvvm;
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
-    
-    public partial class MEETING_COMMENT : BindableBase, IGuidEntityKey, IHaveCreatedDate, ICanUpdate
+
+    public partial class CLIENT_PROJECT : BindableBase, IGuidEntityKey, IHaveCreatedDate, ICanUpdate
     {
         [NotMapped]
         public Guid EntityKey

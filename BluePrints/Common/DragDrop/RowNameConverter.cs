@@ -1,6 +1,7 @@
 ﻿using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.Data;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,18 @@ namespace BluePrints.Common
                 return deliverable.Deliverable_Name;
             }
 
+            if (value is ROLEProjection)
+            {
+                var role = value as ROLEProjection;
+                return role.Entity.NAME;
+            }
+
+            if(value is MINUTE_TITLE)
+            {
+                var minute_title = value as MINUTE_TITLE;
+                return minute_title.NAME;
+            }
+
             if (value is P6_Activity)
             {
                 var p6Activity = value as P6_Activity;
@@ -46,6 +59,22 @@ namespace BluePrints.Common
                 {
                     return deliverable.Deliverable_Name;
                 }
+
+                var role = listTreeListNodes.FirstOrDefault() as ROLEProjection;
+                if (role != null)
+                    return role.Entity.NAME;
+
+                var minute_title = listTreeListNodes.FirstOrDefault() as MINUTE_TITLE;
+                if (minute_title != null)
+                    return minute_title.NAME;
+
+                var p6_activity = listTreeListNodes.FirstOrDefault() as P6_Activity;
+                if (p6_activity != null)
+                    return p6_activity.Description;
+
+                var ireportable = listTreeListNodes.FirstOrDefault() as IReportable;
+                if (ireportable != null)
+                    return ireportable.Deliverable_Name;
             }
             else
             {

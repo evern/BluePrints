@@ -205,9 +205,9 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<MEETING, Guid> MEETINGS { get; }
 
         /// <summary>
-        /// The MEETING_COMMENTS entities repository.
+        /// The MINUTE_COMMENTS entities repository.
         /// </summary>
-        IRepository<MEETING_COMMENT, Guid> MEETING_COMMENTS { get; }
+        IRepository<MINUTE_COMMENT, Guid> MINUTE_COMMENTS { get; }
 
         /// <summary>
         /// The MEETING_USERS entities repository.
@@ -223,5 +223,10 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// MINUTE_TITLES entities repository.
         /// </summary>
         IRepository<MINUTE_TITLE, Guid> MINUTE_TITLES { get; }
+
+        /// <summary>
+        /// CLIENT_PROJECT entities repository.
+        /// </summary>
+        IRepository<CLIENT_PROJECT, Guid> CLIENT_PROJECTS { get; }
     }
 }

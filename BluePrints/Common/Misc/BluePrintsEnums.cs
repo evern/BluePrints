@@ -309,6 +309,16 @@ namespace BluePrints.Common
         Catastrophic = 4
     }
 
+    public enum Minute_Status
+    {
+        [Display(Name = "Open")]
+        Open = 0,
+        [Display(Name = "Close")]
+        Close = 1,
+        [Display(Name = "Note")]
+        Note = 2
+    }
+
     public enum Register_RiskRanking
     {
         [Display(Name = "1 Low")]
@@ -425,6 +435,26 @@ namespace BluePrints.Common
         FINISH = 1,
         [Display(Name = "None")]
         NONE = 2
+    }
+
+    public enum MeetingUserSection
+    {
+        [Display(Name = "Attendees")]
+        Attendees = 0,
+        [Display(Name = "Apologies")]
+        Apologies = 1,
+        [Display(Name = "Distribution")]
+        Distribution = 2,
+        [Display(Name = "SignOff")]
+        SignOff = 3
+    }
+
+    public enum MeetingUserType
+    {
+        [Display(Name = "Internal")]
+        Internal = 0,
+        [Display(Name = "Client")]
+        Client = 1,
     }
 
     public class ReportingEnum

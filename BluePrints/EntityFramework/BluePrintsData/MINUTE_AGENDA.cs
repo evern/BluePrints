@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -11,7 +12,7 @@ namespace BluePrints.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public MINUTE_AGENDA()
         {
-            MEETING_COMMENT = new HashSet<MEETING_COMMENT>();
+            MINUTE_COMMENT = new HashSet<MINUTE_COMMENT>();
         }
 
         [Key]
@@ -25,11 +26,9 @@ namespace BluePrints.Data
         [StringLength(4000)]
         public string NAME { get; set; }
 
-        public int STATUS { get; set; }
+        public Minute_Status STATUS { get; set; }
 
-        public Guid? GUID_ACTION_BY_USER { get; set; }
-
-        public Guid? GUID_ACTION_BY_CLIENT { get; set; }
+        public Guid? GUID_ACTION_USER { get; set; }
 
         public DateTime? DUE_DATE { get; set; }
 
@@ -45,15 +44,11 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual CLIENT CLIENT { get; set; }
-
         public virtual MEETING MEETING { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<MEETING_COMMENT> MEETING_COMMENT { get; set; }
+        public virtual ICollection<MINUTE_COMMENT> MINUTE_COMMENT { get; set; }
 
         public virtual MINUTE_TITLE MINUTE_TITLE { get; set; }
-
-        public virtual USER USER { get; set; }
     }
 }

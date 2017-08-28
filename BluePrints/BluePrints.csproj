@@ -371,6 +371,7 @@
     <Compile Include="Common\Base\BluePrintsProjectionMasterDetailBase.cs" />
     <Compile Include="Common\Misc\Messages.cs" />
     <Compile Include="Common\Misc\RiskMatrix.cs" />
+    <Compile Include="Common\Projections\MINUTE_AGENDAMasterDetailProjection.cs" />
     <Compile Include="Common\Projections\ESTIMATION_DIRECT_ITEMVariation.cs" />
     <Compile Include="Common\Projections\COMMODITY_CODEProjection.cs" />
     <Compile Include="Common\Projections\VariationBase.cs" />
@@ -462,9 +463,10 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\CLIENT_PROJECT.cs" />
     <Compile Include="EntityFramework\Annotations\MEETING_USER.cs" />
     <Compile Include="EntityFramework\Annotations\MINUTE_TITLE.cs" />
-    <Compile Include="EntityFramework\Annotations\MEETING_COMMENT.cs" />
+    <Compile Include="EntityFramework\Annotations\MINUTE_COMMENT.cs" />
     <Compile Include="EntityFramework\Annotations\MINUTE_AGENDA.cs" />
     <Compile Include="EntityFramework\Annotations\MEETING.cs" />
     <Compile Include="EntityFramework\Annotations\CLIENT.cs" />
@@ -482,10 +484,11 @@
     <Compile Include="EntityFramework\Annotations\DELIVERABLES_STATUS.cs" />
     <Compile Include="EntityFramework\Annotations\ESTIMATION_DIRECT.cs" />
     <Compile Include="EntityFramework\Annotations\STOCK_GROUP.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\CLIENT_PROJECT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\MINUTE_TITLE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\MINUTE_AGENDA.cs" />
     <Compile Include="EntityFramework\BluePrintsData\MEETING_USER.cs" />
-    <Compile Include="EntityFramework\BluePrintsData\MEETING_COMMENT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\MINUTE_COMMENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\MEETING.cs" />
     <Compile Include="EntityFramework\BluePrintsData\CLIENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\AREA.cs" />
@@ -554,6 +557,9 @@
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\BluePrintsEntitiesUnitOfWorkSource.cs" />
     <Compile Include="Common\Misc\BluePrintsEnums.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
+    <Compile Include="ViewModels\CLIENT\CLIENTCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\MEETING\MEETINGCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\MINUTE_AGENDA\MINUTE_AGENDACollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MINUTE_TITLE\MINUTE_TITLECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\STOCK_CODE\STOCK_CODECollectionViewModelWrapper.cs" />
@@ -574,6 +580,15 @@
     <Compile Include="ViewModels\WORKPACK\WORKPACKDashboardViewModelWrapper.cs" />
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.xaml.cs">
       <DependentUpon>BASELINE_ITEMSchedulingView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CLIENT\CLIENTCollectionView.xaml.cs">
+      <DependentUpon>CLIENTCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MEETING\MEETINGCollectionView.xaml.cs">
+      <DependentUpon>MEETINGCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MINUTE_AGENDA\MINUTE_AGENDACollectionView.xaml.cs">
+      <DependentUpon>MINUTE_AGENDACollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MINUTE_TITLE\MINUTE_TITLECollectionView.xaml.cs">
       <DependentUpon>MINUTE_TITLECollectionView.xaml</DependentUpon>
@@ -1326,6 +1341,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\CLIENT\CLIENTCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\MEETING\MEETINGCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\MINUTE_AGENDA\MINUTE_AGENDACollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

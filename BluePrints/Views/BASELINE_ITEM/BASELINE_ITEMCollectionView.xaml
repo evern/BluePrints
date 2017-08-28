@@ -467,9 +467,9 @@
                                                 </StackPanel>
                                                 <Separator />
                                                 <StackPanel Margin="5" Orientation="Horizontal">
-                                                    --><!--<StackPanel.Background>
+                                                    <StackPanel.Background>
                                                         <Binding Path="." Converter="{StaticResource RowColorConverter}" UpdateSourceTrigger="PropertyChanged"/>
-                                                    </StackPanel.Background>--><!--
+                                                    </StackPanel.Background>
                                                     <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Target: " />
                                                     <TextBlock Padding="0,3,3,0" Text="{Binding Path=DropTargetRow, Converter={StaticResource RowNameConverter}}"/>
                                                 </StackPanel>

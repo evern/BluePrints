@@ -24,12 +24,7 @@ namespace BluePrints.Views
         private void sortTimer_Tick(object sender, EventArgs e)
         {
             sortTimer.Stop();
-            treeListControl.Columns["Entity.SORTORDER"].SortOrder = DevExpress.Data.ColumnSortOrder.Ascending;
-        }
-
-        private void NativeTreeListRefresh()
-        {
-            treeListControl.RefreshData();
+            GridControl.Columns["Entity.SORTORDER"].SortOrder = DevExpress.Data.ColumnSortOrder.Ascending;
         }
 
         /// <summary>

@@ -6,20 +6,15 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class MEETING_COMMENT
+    [Table("CLIENT_PROJECT")]
+    public partial class CLIENT_PROJECT
     {
         [Key]
         public Guid GUID { get; set; }
 
-        public Guid GUID_AGENDA { get; set; }
+        public Guid GUID_PROJECT { get; set; }
 
-        [Required]
-        [StringLength(2000)]
-        public string COMMENTS { get; set; }
-
-        public Guid? COMMENTS_BY { get; set; }
-
-        public DateTime DATE_RAISED { get; set; }
+        public Guid GUID_CLIENT { get; set; }
 
         public DateTime CREATED { get; set; }
 
@@ -33,6 +28,8 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual MINUTE_AGENDA MINUTE_AGENDA { get; set; }
+        public virtual CLIENT CLIENT { get; set; }
+
+        public virtual PROJECT PROJECT { get; set; }
     }
 }

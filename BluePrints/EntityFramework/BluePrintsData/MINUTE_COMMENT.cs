@@ -1,24 +1,25 @@
 namespace BluePrints.Data
 {
-    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class MEETING_USER
+    public partial class MINUTE_COMMENT
     {
         [Key]
         public Guid GUID { get; set; }
 
-        public MeetingUserSection TYPE { get; set; }
+        public Guid? GUID_AGENDA { get; set; }
 
-        public MeetingUserType USER_TYPE { get; set; }
+        [Required]
+        [StringLength(2000)]
+        public string COMMENTS { get; set; }
 
-        public Guid GUID_USER { get; set; }
+        public Guid? COMMENTS_BY { get; set; }
 
-        public Guid GUID_MEETING { get; set; }
+        public DateTime DATE_RAISED { get; set; }
 
         public DateTime CREATED { get; set; }
 
@@ -32,6 +33,6 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual MEETING MEETING { get; set; }
+        public virtual MINUTE_AGENDA MINUTE_AGENDA { get; set; }
     }
 }

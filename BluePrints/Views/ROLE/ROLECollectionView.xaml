@@ -2,7 +2,8 @@
         x:Name="userControl"
         x:Class="BluePrints.Views.ROLECollectionView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        xmlns:common="clr-namespace:BluePrints.Common" 
         xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
         xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
         xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
@@ -18,26 +19,22 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:ROLECollectionViewModelWrapper}">
-
     <UserControl.Resources>
         <ResourceDictionary>
+            <common:RowNameConverter x:Key="RowNameConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Style="{StaticResource CollectionView.RootContainer}">
+    <Grid Style="{StaticResource CollectionView.TreeListRootContainer}">
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False"
                                     MDIMergeStyle="Always">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Home">
-                            <dxr:RibbonPageGroup Caption="WBS Tasks">
-                                <dxb:BarButtonItem Content="Commodity"
-                                                    Command="{Binding DataContext.EditCommand, ElementName=userControl}"
-                                                    LargeGlyph="{dx:DXImage Image=Edit_32x32.png}"
-                                                    Glyph="{dx:DXImage Image=Edit_16x16.png}" />
+                            <dxr:RibbonPageGroup Caption="ROLE Tasks">
                                 <dxb:BarButtonItem Content="Insert Before"
                                                    Command="{Binding DataContext.AddRowBeforeCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}"
@@ -66,7 +63,7 @@
                                                     Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}"
                                                     LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}"
                                                     Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
-                                <dxb:BarCheckItem Content="Cell Selection" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" Glyph="{dx:DXImage Image=SplitTableCells_16x16.png}" LargeGlyph="{dx:DXImage Image=SplitTableCells_32x32.png}" />
+                                <!--<dxb:BarCheckItem Content="Cell Selection" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" Glyph="{dx:DXImage Image=SplitTableCells_16x16.png}" LargeGlyph="{dx:DXImage Image=SplitTableCells_32x32.png}" />-->
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -79,45 +76,47 @@
                 </dxr:RibbonStatusBarControl>
                 <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Orientation="Horizontal">
                     <dxlc:LayoutGroup>
-                        <dxg:TreeListControl Name="treeListControl" dx:DXSerializer.SerializationID="ROLETree" MaxHeight="2000" MouseUp="treeListControl_MouseUp" SelectionMode="Cell"
-                                         Style="{StaticResource DefaultTreeListControlTemplate}">
+                        <dxg:GridControl Name="GridControl" dx:DXSerializer.SerializationID="ROLETree" MaxHeight="2000" MouseUp="treeListControl_MouseUp" 
+                                         Style="{StaticResource DefaultGridControlTemplate}">
                             <dxmvvm:Interaction.Behaviors>
-                                <dxg:TreeListDragDropManager x:Name="dragDropManager" >
+                                <dxg:TreeListDragDropManager x:Name="dragDropManager">
                                     <dxmvvm:Interaction.Behaviors>
-                                        <dxmvvm:EventToCommand EventName="Drop" Command="{Binding DataContext.DragDropManager_DropCommand, ElementName=userControl}" PassEventArgsToCommand="True"/>
-                                        <dxmvvm:EventToCommand EventName="Dropped" Command="{Binding DataContext.DragDropManager_DroppedCommand, ElementName=userControl}" PassEventArgsToCommand="True"/>
+                                        <dxmvvm:EventToCommand EventName="Drop" Command="{Binding DataContext.DragDropManager_DropCommand, ElementName=userControl}" PassEventArgsToCommand="True" />
+                                        <dxmvvm:EventToCommand EventName="Dropped" Command="{Binding DataContext.DragDropManager_DroppedCommand, ElementName=userControl}" PassEventArgsToCommand="True" />
                                     </dxmvvm:Interaction.Behaviors>
+                                    <dxg:TreeListDragDropManager.DragElementTemplate>
+                                        <DataTemplate>
+                                            <Border Background="White" CornerRadius="5" BorderThickness="2" BorderBrush="LightGray">
+                                                <StackPanel Orientation="Vertical" Background="White" HorizontalAlignment="Left" Margin="5">
+                                                    <StackPanel Margin="5" Orientation="Vertical" Background="White">
+                                                        <TextBlock Padding="3" FontWeight="Bold" Text="{Binding Path=DraggingRows.Count, StringFormat='Dragging {0} row(s)'}" />
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Source: " />
+                                                            <TextBlock Padding="0,3,3,3" Text="{Binding Path=DraggingRows, Converter={StaticResource RowNameConverter}}" />
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                    <Separator />
+                                                    <StackPanel Margin="5" Orientation="Horizontal">
+                                                        <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Target: " />
+                                                        <TextBlock Padding="0,3,3,0" Text="{Binding Path=DropTargetRow, Converter={StaticResource RowNameConverter}}" />
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </dxg:TreeListDragDropManager.DragElementTemplate>
                                 </dxg:TreeListDragDropManager>
                             </dxmvvm:Interaction.Behaviors>
-                            <dxg:TreeListControl.Columns>
-                                <dxg:TreeListColumn Header="NAME" FieldName="Entity.NAME" VisibleIndex="10" />
-                                <dxg:TreeListColumn Header="IS MANAGER" FieldName="Entity.ISMANAGER" VisibleIndex="20" >
-                                    <dxg:TreeListColumn.EditSettings>
+                            <dxg:GridControl.Columns>
+                                <dxg:GridColumn Header="NAME" FieldName="Entity.NAME" VisibleIndex="10" />
+                                <dxg:GridColumn Header="IS MANAGER" FieldName="Entity.ISMANAGER" VisibleIndex="20" >
+                                    <dxg:GridColumn.EditSettings>
                                         <dxe:CheckEditSettings />
-                                    </dxg:TreeListColumn.EditSettings>
-                                </dxg:TreeListColumn>
-                                <dxg:TreeListColumn FieldName="Entity.SORTORDER" ReadOnly="True" VisibleIndex="30" Visible="False" />
-                            </dxg:TreeListControl.Columns>
-                            <dxg:TreeListControl.View>
-                                <dxg:TreeListView x:Name="treeListView" AllowSorting="True" 
-                                              ParentFieldName="ParentEntityKey" ExpandStateFieldName="IsExpanded" 
-                                              KeyFieldName="EntityKey" >
-                                    <dxmvvm:Interaction.Behaviors>
-                                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
-                                                           Command="{Binding TreelistExistingRowAddUndoAndSaveCommand}"
-                                                           EventName="CellValueChanged" />
-                                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
-                                                           Command="{Binding DataContext.TreeListImmediateSaveCommand, ElementName=userControl}"
-                                                           EventName="CellValueChanging" />
-                                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
-                                                           Command="{Binding ValidateCellCommand}"
-                                                           EventName="ValidateCell" />
-                                        <dxmvvm:EventToCommand PassEventArgsToCommand="True"
-                                                           Command="{Binding ValidateRowCommand}"
-                                                           EventName="ValidateRow" />
-                                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Z" Command="{Binding UndoCommand}" />
-                                        <dxmvvm:KeyToCommand KeyGesture="CTRL+Y" Command="{Binding RedoCommand}" />
-                                    </dxmvvm:Interaction.Behaviors>
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Entity.SORTORDER" ReadOnly="True" VisibleIndex="30" Visible="False" />
+                            </dxg:GridControl.Columns>
+                            <dxg:GridControl.View>
+                                <dxg:TreeListView x:Name="treeListView" Style="{StaticResource DefaultTreeListViewTemplate}">
                                     <dxg:TreeListView.RowCellMenuCustomizations>
                                         <dxb:BarButtonItem Content="Insert Before"
                                                        Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}"
@@ -130,11 +129,11 @@
                                                        Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                     </dxg:TreeListView.RowCellMenuCustomizations>
                                 </dxg:TreeListView>
-                            </dxg:TreeListControl.View>
-                        </dxg:TreeListControl>
+                            </dxg:GridControl.View>
+                        </dxg:GridControl>
                     </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}">
-                        <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlROLE_PERMISSION" dx:DXSerializer.StoreLayoutMode="All" MaxHeight="2000"
+                        <custom:GridControlEx x:Name="GridControlPermission" dx:DXSerializer.SerializationID="GridControlROLE_PERMISSION" dx:DXSerializer.StoreLayoutMode="All" MaxHeight="2000"
                                      ItemsSource="{Binding Permissions}" SelectedItem="{Binding SelectedPermission, Mode=TwoWay}">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn FieldName="PermissionKey" AllowEditing="False" MinWidth="300" >
