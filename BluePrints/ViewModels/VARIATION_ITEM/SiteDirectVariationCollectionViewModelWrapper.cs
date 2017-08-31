@@ -117,7 +117,6 @@ namespace BluePrints.ViewModels
             return false;
         }
 
-
         #region View Properties
         public IEnumerable<WORKPACK> WORKPACKCollection => ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper == null ? null : ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.WORKPACKCollection;
         public IEnumerable<PHASE> PHASECollection => ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper == null ? null : ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.PHASECollection;

@@ -112,6 +112,16 @@ namespace BluePrints.Common
         Potential = 2
     }
 
+    public enum AgendaPriority
+    {
+        [Display(Name = "Low")]
+        Low = 0,
+        [Display(Name = "Medium")]
+        Medium = 1,
+        [Display(Name = "High")]
+        High = 2
+    }
+
     public enum ActionedOnDrawing
     {
         [Display(Name = "N/A")]

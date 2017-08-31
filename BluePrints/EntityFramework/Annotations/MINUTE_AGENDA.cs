@@ -29,7 +29,7 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public Guid? ParentEntityKey { get => GUID_MINUTE_TITLE; set => GUID_MINUTE_TITLE = value; }
+        public Guid? ParentEntityKey { get => GUID_PARENT; set => GUID_PARENT = value; }
 
         [NotMapped]
         public ObservableCollection<MINUTE_COMMENT> DetailEntities { get; set; }

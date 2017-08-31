@@ -20,7 +20,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
-                                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -74,10 +74,18 @@
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn FieldName="NUMBER" />
+                            <dxg:GridColumn FieldName="TITLE" />
+                            <dxg:GridColumn FieldName="DOC_NUMBER" />
                             <dxg:GridColumn Header="MEETING_TYPE" FieldName="GUID_MEETING_TYPE">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.MEETING_TYPECollection, ElementName=userControl}" DisplayMember="NAME" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:ComboBoxEdit Name="PART_Editor" DisplayMember="NAME" ValueMember="GUID" ValidateOnTextInput="False" AllowNullInput="True" ItemsSource="{Binding DataContext.MEETING_TYPECollection, ElementName=userControl}">
+                                            <dxmvvm:Interaction.Behaviors>
+                                                <dxmvvm:EventToCommand Command="{Binding DataContext.ProcessNewValueCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="ProcessNewValue" />
+                                            </dxmvvm:Interaction.Behaviors>
+                                        </dxe:ComboBoxEdit>
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="MEETING_DATE" />
                             <dxg:GridColumn FieldName="MEETING_START">
