@@ -365,11 +365,18 @@ namespace BluePrints.ViewModels
                     if (existingWORKPACK == null)
                     {
                         var newWORKPACK = new WORKPACK();
-                        newWORKPACK.GUID_PROJECT = loadPROJECT.GUID;
-                        AREA defaultSubArea = SUBAREACollection.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.Default_Sub_Area);
 
+                        List<AREA> sub_area_collection = new List<AREA>();
+                        AREA defaultSubArea = null;
+                        if (sub_area_collection.Count > 0)
+                        {
+                            defaultSubArea = sub_area_collection.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.Default_Sub_Area);
+                        }
+
+
+                        newWORKPACK.GUID_PROJECT = loadPROJECT.GUID;
                         newWORKPACK.GUID_DAREA = entity.Entity.Entity.GUID_AREA;
-                        newWORKPACK.GUID_DSUBAREA = entity.Entity.Entity.GUID_SUBAREA == null ? defaultSubArea == null ? (Guid?)null : defaultSubArea.GUID : entity.Entity.Entity.GUID_SUBAREA;
+                        newWORKPACK.GUID_DSUBAREA = entity.Entity.Entity.GUID_SUBAREA == null ? defaultSubArea != null ? defaultSubArea.GUID : (Guid?)null : entity.Entity.Entity.GUID_SUBAREA;
                         newWORKPACK.GUID_DPHASE = defaultConstructionPHASE.GUID;
                         newWORKPACK.INTERNAL_NAME1 = internalNumber;
                         newWORKPACK.STARTDATE = DateTime.Now;

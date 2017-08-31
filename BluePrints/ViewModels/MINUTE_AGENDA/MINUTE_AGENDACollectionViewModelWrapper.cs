@@ -15,10 +15,16 @@ using BaseModel.ViewModel.Base;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Common.Resources;
 using DevExpress.Mvvm;
+using BluePrints.Common.Reports;
+using BluePrints.Common;
+using BluePrints.Reports;
+using System.IO;
+using DevExpress.Xpf.Printing;
+using System.Windows;
 
 namespace BluePrints.ViewModels
 {
-    public class MINUTE_AGENDACollectionViewModelWrapper : BluePrintsEntitiesMasterOtherDetailCollectionsWrapper<MINUTE_AGENDA, MINUTE_COMMENT, MINUTE_AGENDAMasterDetailProjection, Guid, IBluePrintsEntitiesUnitOfWork>
+    public class MINUTE_AGENDACollectionViewModelWrapper : BluePrintsEntitiesStaticMasterOtherDetailCollectionsWrapper<MINUTE_TITLE, MINUTE_AGENDA, MINUTE_COMMENT, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of MINUTE_AGENDACollectionViewModelWrapper as a POCO view model.
@@ -29,7 +35,6 @@ namespace BluePrints.ViewModels
         {
             return ViewModelSource.Create(() => new MINUTE_AGENDACollectionViewModelWrapper(unitOfWorkFactory));
         }
-
 
         /// <summary>
         /// Initializes a new instance of the MINUTE_AGENDACollectionViewModelWrapper class.
@@ -42,17 +47,17 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operations
-
+        private PROJECT loadPROJECT;
         private MEETING loadMEETING;
         public List<MeetingUser> MeetingUserCollection { get; set; }
-
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
         protected override void resolveParameters(object parameter)
         {
-            var meetingParameter = (EntitiesParameter<MEETING>) parameter;
-            loadMEETING = meetingParameter.GetEntity();
+            var meetingParameter = (DualEntitiesParameter<PROJECT, MEETING>) parameter;
+            loadPROJECT = meetingParameter.GetFirstEntity();
+            loadMEETING = meetingParameter.GetSecondEntity();
+
             List<MeetingUser> AllMeetingUsers = new List<MeetingUser>();
 
             if (loadMEETING.Meeting_Attendees != null)
@@ -65,7 +70,7 @@ namespace BluePrints.ViewModels
                 AllMeetingUsers.AddRange(loadMEETING.Meeting_Signoff);
 
             MeetingUserCollection = new List<MeetingUser>();
-            foreach(MeetingUser meetingUser in AllMeetingUsers)
+            foreach(MeetingUser meetingUser in AllMeetingUsers.OrderBy(x => x.Full_Name))
             {
                 if (!MeetingUserCollection.Any(x => x.Guid == meetingUser.Guid))
                     MeetingUserCollection.Add(meetingUser);
@@ -75,40 +80,43 @@ namespace BluePrints.ViewModels
         protected override void initializeEntitiesLoadersDescription()
         {
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddLoaderDescription<MINUTE_COMMENT, MINUTE_COMMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.MINUTE_COMMENTS);
-            loaderCollection.AddLoaderDescription<MINUTE_TITLE, MINUTE_TITLE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.MINUTE_TITLES);
+
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.MINUTE_AGENDAS, MINUTE_AGENDAProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.MINUTE_COMMENTS, MINUTE_COMMENTProjectionFunc);
+        }
+
+        private Func<IRepositoryQuery<MINUTE_AGENDA>, IQueryable<MINUTE_AGENDA>> MINUTE_AGENDAProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<MINUTE_COMMENT>, IQueryable<MINUTE_COMMENT>> MINUTE_COMMENTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID == loadPROJECT.GUID);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.MINUTE_AGENDAS);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.MINUTE_TITLES);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<MINUTE_AGENDA>, IQueryable<MINUTE_AGENDAMasterDetailProjection>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<MINUTE_TITLE>, IQueryable<MINUTE_TITLE>> specifyMainViewModelProjection()
         {
-            return query => MINUTE_AGENDAMasterDetailProjectionQueries.MINUTE_AGENDA_Master_Detail_Transformation(query, loadMEETING.GUID);
+            return query => query.Where(x => x.GUID_MEETING_TYPE == loadMEETING.MEETING_TYPE.GUID);
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<MINUTE_AGENDAMasterDetailProjection> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<MINUTE_TITLE> entities)
         {
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        #region Collection Call Backs
-
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public bool OnBeforeEntitySaved(MINUTE_AGENDAMasterDetailProjection entity)
+        protected override bool onMainBeforeSavedIsContinue(MINUTE_AGENDA mainEntity)
         {
-            entity.Entity.GUID_MEETING = loadMEETING.GUID;
-            return true;
+            mainEntity.GUID_PROJECT = loadPROJECT.GUID;
+            return base.onMainBeforeSavedIsContinue(mainEntity);
         }
-        #endregion
-
         #endregion
 
         #region View Properties
@@ -120,9 +128,11 @@ namespace BluePrints.ViewModels
             get { return "MINUTE_AGENDACollectionViewModelWrapper"; }
         }
 
-        protected override string expand_key_field_name => BindableBase.GetPropertyName(() => new MINUTE_AGENDAMasterDetailProjection().Entity) + "." + BindableBase.GetPropertyName(() => new MINUTE_AGENDA().GUID);
+        protected override string expand_key_field_name => BindableBase.GetPropertyName(() => new MINUTE_AGENDA().GUID);
         protected override IEnumerable<MINUTE_COMMENT> child_entities => MINUTE_COMMENTCollection;
         public override CollectionViewModel<MINUTE_COMMENT, MINUTE_COMMENT, Guid, IBluePrintsEntitiesUnitOfWork> ChildEntitiesViewModel => MINUTE_COMMENTCollectionViewModel;
+        protected override IEnumerable<MINUTE_AGENDA> main_entities => MINUTE_AGENDACollection;
+        public override CollectionViewModel<MINUTE_AGENDA, MINUTE_AGENDA, Guid, IBluePrintsEntitiesUnitOfWork> MainEntitiesViewModel => MINUTE_AGENDACollectionViewModel;
 
         public IEnumerable<MINUTE_TITLE> MINUTE_TITLECollection
         {
@@ -132,7 +142,7 @@ namespace BluePrints.ViewModels
                 if (collection == null)
                     return new List<MINUTE_TITLE>();
 
-                return collection;
+                return collection.OrderBy(x => x.Full_Name);
             }
         }
 
@@ -149,6 +159,19 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<MINUTE_AGENDA> MINUTE_AGENDACollection
+        {
+            get
+            {
+                var collection = GetEntities<MINUTE_AGENDA>();
+                if (collection == null)
+                    return new List<MINUTE_AGENDA>();
+
+                //need to call ToList for tokenComboBoxEditSettings to work
+                return collection;
+            }
+        }
+
         public CollectionViewModel<MINUTE_COMMENT, MINUTE_COMMENT, Guid, IBluePrintsEntitiesUnitOfWork> MINUTE_COMMENTCollectionViewModel
         {
             get
@@ -159,6 +182,19 @@ namespace BluePrints.ViewModels
                 return (CollectionViewModel<MINUTE_COMMENT, MINUTE_COMMENT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<MINUTE_COMMENT>();
             }
         }
+
+
+        public CollectionViewModel<MINUTE_AGENDA, MINUTE_AGENDA, Guid, IBluePrintsEntitiesUnitOfWork> MINUTE_AGENDACollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<MINUTE_AGENDA, MINUTE_AGENDA, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<MINUTE_AGENDA>();
+            }
+        }
+
         #endregion
     }
 }

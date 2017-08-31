@@ -46,16 +46,13 @@ namespace BluePrints.ViewModels
 
         private Data.PROJECT loadPROJECT;
 
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
-        private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory =
-            P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
         protected override void resolveParameters(object parameter)
         {
-            var PROJECTParameter =
-                (EntitiesParameter<Data.PROJECT>) parameter;
+            var PROJECTParameter = (EntitiesParameter<Data.PROJECT>) parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
         }
 
@@ -162,11 +159,7 @@ namespace BluePrints.ViewModels
                 return;
 
             DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
-                new DualEntitiesParameter<Data.PROJECT, IAmBaseline>(null,
-                    DisplaySelectedEntity), 
-                    "BASELINE_ITEMCollectionView", 
-                    "[" + loadPROJECT.NUMBER + "] Baseline");
-
+                new DualEntitiesParameter<Data.PROJECT, IAmBaseline>(null, DisplaySelectedEntity), "BASELINE_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Baseline");
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
         }
 
@@ -178,8 +171,7 @@ namespace BluePrints.ViewModels
 
         public void P6BASELINE_ASSIGN()
         {
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
-                new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original },
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original },
                 "BASELINE_ITEMSchedulingView", 
                 DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping");
 

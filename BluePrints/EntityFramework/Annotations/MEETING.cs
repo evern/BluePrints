@@ -15,7 +15,6 @@ namespace BluePrints.Data
         public MEETING()
         {
             MEETING_USER = new HashSet<MEETING_USER>();
-            MINUTE_AGENDA = new HashSet<MINUTE_AGENDA>();
             MEETING_DATE = DateTime.Now;
             MEETING_START = DateTime.Now;
             MEETING_END = DateTime.Now + TimeSpan.FromHours(1);
@@ -160,6 +159,9 @@ namespace BluePrints.Data
                 return signoff.Select(x => (MeetingUser)x);
             }
         }
+
+        [NotMapped]
+        public string EntityGroup => GUID_MEETING_TYPE.ToString();
 
         public void Update()
         {

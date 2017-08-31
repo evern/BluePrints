@@ -7,14 +7,19 @@ using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
+using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
 using BluePrints.Data;
+using BluePrints.Reports;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
+using DevExpress.Xpf.Printing;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Windows;
 
 namespace BluePrints.ViewModels
 {
@@ -31,7 +36,6 @@ namespace BluePrints.ViewModels
         {
             return ViewModelSource.Create(() => new MEETINGCollectionViewModelWrapper(unitOfWorkFactory));
         }
-
 
         /// <summary>
         /// Initializes a new instance of the MEETINGCollectionViewModelWrapper class.
@@ -60,6 +64,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.CLIENTS, clientQueryProjection);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
             loaderCollection.AddLoaderDescription<MEETING_USER, MEETING_USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.MEETING_USERS);
+            loaderCollection.AddLoaderDescription<MEETING_TYPE, MEETING_TYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.MEETING_TYPES);
         }
 
         bool user_client_loaded;
@@ -94,7 +99,6 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<MEETING> entities)
         {
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = onBeforeEntitySavedIsContinueCallBack;
             MainViewModel.OnAfterEntitySavedCallBack = onAfterEntitySaved;
             MainViewModel.AdditionalValidateCellCallBack = validateCellCallBack;
             MainViewModel.ValidateSetValueIsContinueCallBack = validateSetValueCallBack;
@@ -102,12 +106,13 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        private bool onBeforeEntitySavedIsContinueCallBack(MEETING entity)
+        protected override bool onBeforeEntitySavedIsContinue(MEETING projection)
         {
-            if (entity.CREATED.Year == 1)
-                entity.CREATED = DateTime.Now;
-            entity.GUID_PROJECT = loadPROJECT.GUID;
-            return true;
+            if (projection.CREATED.Year == 1)
+                projection.CREATED = DateTime.Now;
+            projection.GUID_PROJECT = loadPROJECT.GUID;
+
+            return base.onBeforeEntitySavedIsContinue(projection);
         }
 
         private void validateCellCallBack(GridCellValidationEventArgs e)
@@ -208,6 +213,15 @@ namespace BluePrints.ViewModels
 
                     MEETING_USERCollectionViewModel.BulkSave(add_attendees);
                 }
+                else
+                {
+                    foreach (MEETING_USER assignment in MEETING_USERCollection.Where(x => x.GUID_MEETING == entity.GUID && x.TYPE == section))
+                    {
+                        remove_meeting_users.Add(assignment);
+                    }
+
+                    MEETING_USERCollectionViewModel.BaseBulkDelete(remove_meeting_users);
+                }
             }
         }
         #endregion
@@ -231,11 +245,16 @@ namespace BluePrints.ViewModels
                 if(allusercollection == null && user_client_loaded)
                 {
                     allusercollection = new List<MeetingUser>();
+                    List<MeetingUser> unsorted_meeting_users = new List<MeetingUser>();
                     List<MeetingUser> meeting_local_user = USERCollection.Select(x => new MeetingUser() { Guid = x.GUID, Full_Name = x.Full_Name, User_Type = Common.MeetingUserType.Internal }).ToList();
                     List<MeetingUser> meeting_client = CLIENTCollection.Select(x => new MeetingUser() { Guid = x.GUID, Full_Name = x.Full_Name, User_Type = Common.MeetingUserType.Client }).ToList();
 
-                    allusercollection.AddRange(meeting_local_user);
-                    allusercollection.AddRange(meeting_client);
+                    unsorted_meeting_users.AddRange(meeting_local_user);
+                    unsorted_meeting_users.AddRange(meeting_client);
+                    foreach (MeetingUser unsorted_meeting_user in unsorted_meeting_users.OrderBy(x => x.Full_Name))
+                    {
+                        allusercollection.Add(unsorted_meeting_user);
+                    }
                 }
 
                 return allusercollection;
@@ -280,6 +299,18 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<MEETING_TYPE> MEETING_TYPECollection
+        {
+            get
+            {
+                var collection = GetEntities<MEETING_TYPE>();
+                if (collection == null)
+                    return new List<MEETING_TYPE>();
+
+                return collection;
+            }
+        }
+
         public CollectionViewModel<MEETING_USER, MEETING_USER, Guid, IBluePrintsEntitiesUnitOfWork> MEETING_USERCollectionViewModel
         {
             get
@@ -312,13 +343,79 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
+            if (DisplaySelectedEntity.MEETING_TYPE == null && DisplaySelectedEntity.GUID_MEETING_TYPE != null)
+                DisplaySelectedEntity.MEETING_TYPE = MEETING_TYPECollection.FirstOrDefault(x => x.GUID == DisplaySelectedEntity.GUID_MEETING_TYPE);
+
+
+            if(DisplaySelectedEntity.MEETING_TYPE == null)
+            {
+                MessageBoxService.ShowMessage("Please assign a meeting type for current meeting before continuing");
+                return;
+            }
+
             DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
-                new EntitiesParameter<MEETING>(
-                    DisplaySelectedEntity),
+                new DualEntitiesParameter<PROJECT, MEETING>(loadPROJECT, DisplaySelectedEntity),
                     "MINUTE_AGENDACollectionView",
                     "[" + DisplaySelectedEntity.EntityNumber + "] Agenda");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+        }
+        #endregion
+
+
+
+        #region Reporting
+        public bool CanEditReport()
+        {
+            if (MainViewModel == null || MainViewModel.Entities.Count == 0)
+                return false;
+
+            return true;
+        }
+
+        public bool CanViewReport()
+        {
+            if (MainViewModel == null || MainViewModel.Entities.Count == 0)
+                return false;
+
+            return true;
+        }
+
+        public void EditReport()
+        {
+            var reportDesigner = new UserReportDesigner(loadPROJECT,
+                (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
+                loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Meeting_Minute);
+            if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                reportDesigner.Dispose();
+            else
+                reportDesigner.Dispose();
+        }
+
+        public void ViewReport()
+        {
+            var baselineReport = new XtraReportBASELINE_ITEMS();
+            var dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
+            if (dbProjectReport != null)
+            {
+                var reportString = dbProjectReport.REPORT.ToString();
+                using (var sw = new StreamWriter(new MemoryStream()))
+                {
+                    sw.Write(reportString);
+                    sw.Flush();
+                    baselineReport.LoadLayout(sw.BaseStream);
+                }
+            }
+
+            IEnumerable<object> gridVisibleRows = GridControlService.GetVisibleRowObjects();
+            //baselineReport.AssignProperties(loadPROJECT, loadBASELINE, gridVisibleRows.Select(x => ((BASELINE_ITEMProgress)x).Entity));
+            var previewWindow = new DocumentPreviewWindow();
+            previewWindow.PreviewControl.DocumentSource = baselineReport;
+            previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            previewWindow.WindowState = WindowState.Maximized;
+            baselineReport.RequestParameters = false;
+            baselineReport.CreateDocument(true);
+            previewWindow.Show();
         }
         #endregion
     }

@@ -106,7 +106,7 @@
                                 </dxg:TreeListDragDropManager>
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn FieldName="NUMBER" Header="NUMBER" VisibleIndex="10" />
+                                <dxg:GridColumn FieldName="DisplayNumber" Header="NUMBER" VisibleIndex="10" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="NAME" Header="NAME" VisibleIndex="20" />
                                 <dxg:GridColumn FieldName="SORTORDER" Header="SORTORDER" Visible="False" VisibleIndex="30" />
                             </dxg:GridControl.Columns>

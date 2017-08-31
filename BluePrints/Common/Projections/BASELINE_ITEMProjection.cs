@@ -81,6 +81,8 @@ namespace BluePrints.Common.Projections
         public string Department_Code => Entity.Department_Code;
 
         public string EntityNumber { get => Entity.EntityNumber; set => Entity.EntityNumber = value; }
+
+        public string EntityGroup => Entity.EntityGroup;
     }
 
     public static class BASELINE_ITEMProjectionQueries

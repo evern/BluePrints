@@ -108,6 +108,16 @@ namespace BluePrints.ViewModels
 
                 CLIENT_PROJECTCollectionViewModel.BulkSave(add_projects);
             }
+            else
+            {
+                List<CLIENT_PROJECT> remove_projects = new List<CLIENT_PROJECT>();
+                foreach (CLIENT_PROJECT assignment in CLIENT_PROJECTCollection.Where(x => x.GUID_CLIENT == entity.GUID))
+                {
+                    remove_projects.Add(assignment);
+                }
+
+                CLIENT_PROJECTCollectionViewModel.BaseBulkDelete(remove_projects);
+            }
         }
         #endregion
 

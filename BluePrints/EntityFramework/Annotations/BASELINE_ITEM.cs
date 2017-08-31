@@ -314,6 +314,9 @@ namespace BluePrints.Data
         [NotMapped]
         public string EntityNumber { get => INTERNAL_NUM; set => INTERNAL_NUM = value; }
 
+        [NotMapped]
+        public string EntityGroup => string.Empty;
+
         public void Update()
         {
             RaisePropertiesChanged();

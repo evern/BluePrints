@@ -1,5 +1,5 @@
 ﻿<UserControl
-    x:Name="userControl" x:Class="BluePrints.Views.MEETINGCollectionView"
+    x:Name="userControl" x:Class="BluePrints.Views.MEETING_TYPECollectionView"
     xmlns:view="clr-namespace:BluePrints.Views"
     xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -15,7 +15,7 @@
     xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
     xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
     xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
-    mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:MEETINGCollectionViewModelWrapper}">
+    mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:MEETING_TYPECollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -31,7 +31,7 @@
                                    MDIMergeStyle="Always">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Home">
-                            <dxr:RibbonPageGroup Caption="MEETING Tasks">
+                            <dxr:RibbonPageGroup Caption="MEETING_TYPECollectionView Tasks">
                                 <dxb:BarButtonItem Content="Edit" Command="{Binding DataContext.EditCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                 <dxb:BarButtonItem Content="Delete Row" Command="{Binding BulkDeleteCommand}"
                                                    LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"
@@ -68,69 +68,12 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlMEETING" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlMEETING_TYPECollectionView" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding DataContext.EditCommand, ElementName=userControl}" EventName="MouseDoubleClick" MarkRoutedEventsAsHandled="True" />
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="NUMBER" />
-                            <dxg:GridColumn Header="MEETING_TYPE" FieldName="GUID_MEETING_TYPE">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.MEETING_TYPECollection, ElementName=userControl}" DisplayMember="NAME" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="MEETING_DATE" />
-                            <dxg:GridColumn FieldName="MEETING_START">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings Mask="HH:mm" MaskUseAsDisplayFormat="True" AllowDrop="False" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="MEETING_END">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings Mask="HH:mm" MaskUseAsDisplayFormat="True" AllowDrop="False" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="CHAIRED_BY">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.AllUserCollection, ElementName=userControl}" DisplayMember="Full_Name" ValueMember="Guid" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Attendees" Header="ATTENDEES">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.AllUserCollection, ElementName=userControl}" DisplayMember="Full_Name" ValidateOnTextInput="True" ValidateOnEnterKeyPressed="True" IncrementalFiltering="True">
-                                        <dxe:ComboBoxEditSettings.StyleSettings>
-                                            <dxe:CheckedComboBoxStyleSettings />
-                                        </dxe:ComboBoxEditSettings.StyleSettings>
-                                    </dxe:ComboBoxEditSettings>
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Apologies" Header="APOLOGIES">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.AllUserCollection, ElementName=userControl}" DisplayMember="Full_Name" ValidateOnTextInput="True" ValidateOnEnterKeyPressed="True" IncrementalFiltering="True">
-                                        <dxe:ComboBoxEditSettings.StyleSettings>
-                                            <dxe:CheckedComboBoxStyleSettings />
-                                        </dxe:ComboBoxEditSettings.StyleSettings>
-                                    </dxe:ComboBoxEditSettings>
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Distribution" Header="DISTRIBUTION">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.AllUserCollection, ElementName=userControl}" DisplayMember="Full_Name" ValidateOnTextInput="True" ValidateOnEnterKeyPressed="True" IncrementalFiltering="True">
-                                        <dxe:ComboBoxEditSettings.StyleSettings>
-                                            <dxe:CheckedComboBoxStyleSettings />
-                                        </dxe:ComboBoxEditSettings.StyleSettings>
-                                    </dxe:ComboBoxEditSettings>
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Signoff" Header="SIGNOFF">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.AllUserCollection, ElementName=userControl}" DisplayMember="Full_Name" ValidateOnTextInput="True" ValidateOnEnterKeyPressed="True" IncrementalFiltering="True">
-                                        <dxe:ComboBoxEditSettings.StyleSettings>
-                                            <dxe:CheckedComboBoxStyleSettings />
-                                        </dxe:ComboBoxEditSettings.StyleSettings>
-                                    </dxe:ComboBoxEditSettings>
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="NAME" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />
@@ -153,8 +96,6 @@
                                                        Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}"
                                                        Command="{Binding View.DataContext.FillDownCommand}"
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem x:Name="contextMenuDuplicate" Content="Duplicate" Command="{Binding DataContext.DuplicateCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" />
-                                    <dxb:BarButtonItem x:Name="contextMenuInsert" Content="Insert" Command="{Binding DataContext.InsertCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" />
                                     <dxb:BarButtonItem Content="Delete Row"
                                                        Command="{Binding View.DataContext.BulkDeleteCommand}"
                                                        Glyph="{dx:DXImage Image=Delete_16x16.png}" />

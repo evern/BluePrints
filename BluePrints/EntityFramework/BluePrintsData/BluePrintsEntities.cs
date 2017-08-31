@@ -270,23 +270,41 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_MEETING)
                 .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<MEETING>()
+            modelBuilder.Entity<MEETING_ACTION>()
                 .HasMany(e => e.MINUTE_AGENDA)
-                .WithRequired(e => e.MEETING)
-                .HasForeignKey(e => e.GUID_MEETING)
+                .WithOptional(e => e.MEETING_ACTION)
+                .HasForeignKey(e => e.GUID_ACTION);
+
+            modelBuilder.Entity<MEETING_TYPE>()
+                .HasMany(e => e.MEETING)
+                .WithRequired(e => e.MEETING_TYPE)
+                .HasForeignKey(e => e.GUID_MEETING_TYPE)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<MEETING_TYPE>()
+                .HasMany(e => e.MINUTE_TITLE)
+                .WithRequired(e => e.MEETING_TYPE)
+                .HasForeignKey(e => e.GUID_MEETING_TYPE)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<MINUTE_AGENDA>()
                 .HasMany(e => e.MINUTE_COMMENT)
-                .WithRequired(e => e.MINUTE_AGENDA)
-                .HasForeignKey(e => e.GUID_AGENDA)
-                .WillCascadeOnDelete(false);
+                .WithOptional(e => e.MINUTE_AGENDA)
+                .HasForeignKey(e => e.GUID_AGENDA);
+
+            modelBuilder.Entity<MINUTE_AGENDA>()
+                .HasMany(e => e.MINUTE_AGENDA1)
+                .WithOptional(e => e.MINUTE_AGENDA2)
+                .HasForeignKey(e => e.GUID_PARENT);
+
+            modelBuilder.Entity<MINUTE_AGENDA>()
+                .HasOptional(e => e.MINUTE_AGENDA11)
+                .WithRequired(e => e.MINUTE_AGENDA3);
 
             modelBuilder.Entity<MINUTE_TITLE>()
                 .HasMany(e => e.MINUTE_AGENDA)
-                .WithRequired(e => e.MINUTE_TITLE)
-                .HasForeignKey(e => e.GUID_MINUTE_TITLE)
-                .WillCascadeOnDelete(false);
+                .WithOptional(e => e.MINUTE_TITLE)
+                .HasForeignKey(e => e.GUID_MINUTE_TITLE);
 
             modelBuilder.Entity<MINUTE_TITLE>()
                 .HasMany(e => e.MINUTE_TITLE1)
@@ -364,6 +382,18 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.MEETING)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.MEETING_TYPE)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.MINUTE_AGENDA)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);

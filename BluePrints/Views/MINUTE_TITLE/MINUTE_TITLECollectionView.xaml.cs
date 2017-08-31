@@ -16,7 +16,7 @@ namespace BluePrints.Views
         {
             InitializeComponent();
             sortTimer = new DispatcherTimer();
-            sortTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
+            sortTimer.Interval = new TimeSpan(0, 0, 1);
             sortTimer.Tick += sortTimer_Tick;
             sortTimer.Start();
         }
@@ -24,7 +24,7 @@ namespace BluePrints.Views
         private void sortTimer_Tick(object sender, EventArgs e)
         {
             sortTimer.Stop();
-            GridControl.Columns["SORTORDER"].SortOrder = DevExpress.Data.ColumnSortOrder.Ascending;
+            GridControl.Columns["DisplayNumber"].SortOrder = DevExpress.Data.ColumnSortOrder.Ascending;
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using BaseModel.Misc;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BluePrints.Common.Base
 {
@@ -31,6 +32,7 @@ namespace BluePrints.Common.Base
         where TChild : class, IGuidEntityKey, IGuidParentEntityKey, new()
         where TProjection : class, IGuidEntityKey, new()
     {
+        [NotMapped]
         public Guid GUID
         {
             get { return base.EntityKey; }

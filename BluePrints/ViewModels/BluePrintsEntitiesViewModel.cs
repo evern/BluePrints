@@ -271,7 +271,6 @@ namespace BluePrints.ViewModels
                 //commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Overhead", commodityCodeCategoryId, "Commodity Code [Overhead]", "STOCK_GROUPCollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Overhead)), null, "Overhead"));
             }
 
-            dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageMinuteTitle", dataCategoryId, "Minutes Title", "MINUTE_TITLECollectionView"));
             dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageClient", dataCategoryId, "Clients", "CLIENTCollectionView"));
 
             return bluePrintsEntitiesModuleDescriptions;
@@ -374,6 +373,7 @@ namespace BluePrints.ViewModels
                 registerCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_NCRegister" + keyString, registerCategoryId, childTitlePrefix + "Non-Conformance Register", "REGISTER_NCCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Non-Conformance Register"));
             }
 
+            projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectMeetingTypes" + keyString, projectKey, childTitlePrefix + "Meeting Types", "MEETING_TYPECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Meeting Types"));
             projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectMeetings" + keyString, projectKey, childTitlePrefix + "Meetings", "MEETINGCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Meetings"));
             //return newModules;
         }

@@ -80,6 +80,8 @@ namespace BluePrints.Data
             set { CREATED = value; }
         }
 
+        public string EntityGroup => string.Empty;
+
         public void Update()
         {
             RaisePropertiesChanged();

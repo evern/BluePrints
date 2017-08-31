@@ -74,6 +74,10 @@ namespace BluePrints.Common.Projections
                 Entity.ISEXPANDED = value;
             }
         }
+
+        public string DisplayNumber => string.Empty;
+
+        public bool IsLast => true;
     }
 
     public static class ROLEProjectionQueries

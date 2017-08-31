@@ -54,9 +54,11 @@ namespace BluePrints.ViewModels
         #region Database Operations
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> BluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
+        public MEETING_TYPE loadMEETING_TYPE { get; set; }
         protected override void resolveParameters(object parameter)
         {
+            var MEETING_TYPEParameter = (EntitiesParameter<MEETING_TYPE>)parameter;
+            loadMEETING_TYPE = MEETING_TYPEParameter.GetEntity();
         }
 
         protected override void initializeEntitiesLoadersDescription()
@@ -73,7 +75,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<MINUTE_TITLE>, IQueryable<MINUTE_TITLE>>
             specifyMainViewModelProjection()
         {
-            return query => query;
+            return query => query.Where(x => x.GUID_MEETING_TYPE == loadMEETING_TYPE.GUID);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<MINUTE_TITLE> entities)
@@ -86,6 +88,7 @@ namespace BluePrints.ViewModels
         #region View Behavior
         private bool onBeforeEntitySaved(MINUTE_TITLE newEntity)
         {
+            newEntity.GUID_MEETING_TYPE = loadMEETING_TYPE.GUID;
             newEntity.NUMBER = ((newEntity.SortOrder * 1.0) / 10).ToString();
             return true;
         }

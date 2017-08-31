@@ -464,6 +464,7 @@
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
     <Compile Include="EntityFramework\Annotations\CLIENT_PROJECT.cs" />
+    <Compile Include="EntityFramework\Annotations\MEETING_TYPE.cs" />
     <Compile Include="EntityFramework\Annotations\MEETING_USER.cs" />
     <Compile Include="EntityFramework\Annotations\MINUTE_TITLE.cs" />
     <Compile Include="EntityFramework\Annotations\MINUTE_COMMENT.cs" />
@@ -485,6 +486,8 @@
     <Compile Include="EntityFramework\Annotations\ESTIMATION_DIRECT.cs" />
     <Compile Include="EntityFramework\Annotations\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\BluePrintsData\CLIENT_PROJECT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\MEETING_ACTION.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\MEETING_TYPE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\MINUTE_TITLE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\MINUTE_AGENDA.cs" />
     <Compile Include="EntityFramework\BluePrintsData\MEETING_USER.cs" />
@@ -559,6 +562,7 @@
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\CLIENT\CLIENTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MEETING\MEETINGCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\MEETING_TYPE\MEETING_TYPECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MINUTE_AGENDA\MINUTE_AGENDACollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MINUTE_TITLE\MINUTE_TITLECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
@@ -586,6 +590,9 @@
     </Compile>
     <Compile Include="Views\MEETING\MEETINGCollectionView.xaml.cs">
       <DependentUpon>MEETINGCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MEETING_TYPE\MEETING_TYPECollectionView.xaml.cs">
+      <DependentUpon>MEETING_TYPECollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MINUTE_AGENDA\MINUTE_AGENDACollectionView.xaml.cs">
       <DependentUpon>MINUTE_AGENDACollectionView.xaml</DependentUpon>
@@ -1349,6 +1356,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\MEETING\MEETINGCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\MEETING_TYPE\MEETING_TYPECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

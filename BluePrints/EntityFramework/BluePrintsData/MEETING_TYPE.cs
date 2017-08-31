@@ -6,26 +6,24 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class MINUTE_TITLE
+    [Table("MEETING_TYPE")]
+    public partial class MEETING_TYPE
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public MEETING_TYPE()
+        {
+            MEETING = new HashSet<MEETING>();
+            MINUTE_TITLE = new HashSet<MINUTE_TITLE>();
+        }
+
         [Key]
         public Guid GUID { get; set; }
 
-        public Guid GUID_MEETING_TYPE { get; set; }
-
-        public Guid? GUID_PARENT { get; set; }
-
-        [Required]
-        [StringLength(50)]
-        public string NUMBER { get; set; }
+        public Guid GUID_PROJECT { get; set; }
 
         [Required]
         [StringLength(1000)]
         public string NAME { get; set; }
-
-        public int SORTORDER { get; set; }
-
-        public bool ISEXPANDED { get; set; }
 
         public DateTime CREATED { get; set; }
 
@@ -39,14 +37,12 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual MEETING_TYPE MEETING_TYPE { get; set; }
+        public virtual PROJECT PROJECT { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<MINUTE_AGENDA> MINUTE_AGENDA { get; set; }
+        public virtual ICollection<MEETING> MEETING { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<MINUTE_TITLE> MINUTE_TITLE1 { get; set; }
-
-        public virtual MINUTE_TITLE MINUTE_TITLE2 { get; set; }
+        public virtual ICollection<MINUTE_TITLE> MINUTE_TITLE { get; set; }
     }
 }

@@ -14,8 +14,12 @@ namespace BluePrints.Data
 
         public Guid GUID_PROJECT { get; set; }
 
+        public Guid GUID_MEETING_TYPE { get; set; }
+
         [StringLength(50)]
         public string NUMBER { get; set; }
+
+        public string VENUE { get; set; }
 
         public DateTime MEETING_DATE { get; set; }
 
@@ -39,11 +43,9 @@ namespace BluePrints.Data
 
         public virtual PROJECT PROJECT { get; set; }
 
+        public virtual MEETING_TYPE MEETING_TYPE { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MEETING_USER> MEETING_USER { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<MINUTE_AGENDA> MINUTE_AGENDA { get; set; }
     }
 }

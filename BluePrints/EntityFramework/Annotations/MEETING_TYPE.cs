@@ -2,12 +2,15 @@ namespace BluePrints.Data
 {
     using BaseModel.Attributes;
     using BaseModel.Misc;
+    using BluePrints.Common;
     using DevExpress.Mvvm;
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Linq;
 
-    [ConstraintAttributes("NUMBER")]
-    public partial class REGISTER_CHANGE : BindableBase, IGuidEntityKey, IEntityNumber, IHaveCreatedDate, ICanUpdate
+    [ConstraintAttributes("NAME")]
+    public partial class MEETING_TYPE : BindableBase, IGuidEntityKey, IHaveCreatedDate, ICanUpdate
     {
         [NotMapped]
         public Guid EntityKey
@@ -24,20 +27,11 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public string EntityNumber
-        {
-            get { return NUMBER; }
-            set { NUMBER = value; }
-        }
-
-        [NotMapped]
         public DateTime EntityCreatedDate
         {
             get { return CREATED; }
             set { CREATED = value; }
         }
-
-        public string EntityGroup => string.Empty;
 
         public void Update()
         {
