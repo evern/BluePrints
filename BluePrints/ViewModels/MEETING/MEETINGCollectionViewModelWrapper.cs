@@ -13,6 +13,7 @@ using BluePrints.Data;
 using BluePrints.Reports;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Editors;
 using DevExpress.Xpf.Grid;
 using DevExpress.Xpf.Printing;
 using System;
@@ -56,6 +57,8 @@ namespace BluePrints.ViewModels
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
+
+            disable_immediate_post = true;
         }
 
         protected override void initializeEntitiesLoadersDescription()
@@ -226,6 +229,33 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
+        #region Meeting Type 
+        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        {
+            if (changedType == typeof(MEETING_TYPE))
+                this.RaisePropertyChanged(x => x.MEETING_TYPECollection);
+
+            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
+        }
+
+        public void ProcessNewValue(ProcessNewValueEventArgs e)
+        {
+            if (!e.Handled)
+            {
+                MEETING_TYPE meeting_type = MEETING_TYPECollection.FirstOrDefault(x => x.NAME == e.DisplayText);
+                if (meeting_type == null)
+                {
+                    MEETING_TYPE new_meeting_type = new MEETING_TYPE();
+                    new_meeting_type.NAME = e.DisplayText;
+                    new_meeting_type.GUID_PROJECT = loadPROJECT.GUID;
+                    new_meeting_type.CREATED = DateTime.Now;
+                    new_meeting_type.CREATEDBY = LoginCredentials.CurrentUserGuid;
+                    MEETING_TYPEViewModel.Save(new_meeting_type);
+                }
+            }
+        }
+        #endregion
+
         #region View Properties
 
         /// <summary>
@@ -319,6 +349,19 @@ namespace BluePrints.ViewModels
                     return null;
 
                 return (CollectionViewModel<MEETING_USER, MEETING_USER, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<MEETING_USER>();
+            }
+        }
+
+        public CollectionViewModel<MEETING_TYPE, MEETING_TYPE, Guid, IBluePrintsEntitiesUnitOfWork> MEETING_TYPEViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<MEETING_TYPE, MEETING_TYPE, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<MEETING_TYPE>();
             }
         }
         #endregion

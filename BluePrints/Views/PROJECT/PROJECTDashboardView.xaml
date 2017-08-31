@@ -77,8 +77,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical" Height="500"
-                                      dxlc:LayoutControl.AllowVerticalSizing="True">
+                    <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical" Height="500" dxlc:LayoutControl.AllowVerticalSizing="True">
                         <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlMultiProjectDashboard" dx:DXSerializer.StoreLayoutMode="All" BandsSource="{StaticResource DashboardBands}" Style="{StaticResource DefaultGridControlTemplate}" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}" IsFilterEnabled="False">
                             <dxg:GridControl.DetailDescriptor>
                                 <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Workpack_Dashboards}">

@@ -272,6 +272,7 @@ namespace BluePrints.ViewModels
             }
 
             dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageClient", dataCategoryId, "Clients", "CLIENTCollectionView"));
+            dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_MeetingAction", dataCategoryId, "Meeting Actions", "MEETING_ACTIONCollectionView"));
 
             return bluePrintsEntitiesModuleDescriptions;
         }

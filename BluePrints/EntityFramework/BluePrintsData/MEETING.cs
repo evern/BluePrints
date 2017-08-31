@@ -14,11 +14,20 @@ namespace BluePrints.Data
 
         public Guid GUID_PROJECT { get; set; }
 
+        [Required]
         public Guid GUID_MEETING_TYPE { get; set; }
+
+        [Required]
+        [StringLength(1000)]
+        public string TITLE { get; set; }
+
+        [StringLength(100)]
+        public string DOC_NUMBER { get; set; }
 
         [StringLength(50)]
         public string NUMBER { get; set; }
 
+        [StringLength(2000)]
         public string VENUE { get; set; }
 
         public DateTime MEETING_DATE { get; set; }
@@ -41,9 +50,9 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual PROJECT PROJECT { get; set; }
-
         public virtual MEETING_TYPE MEETING_TYPE { get; set; }
+
+        public virtual PROJECT PROJECT { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MEETING_USER> MEETING_USER { get; set; }

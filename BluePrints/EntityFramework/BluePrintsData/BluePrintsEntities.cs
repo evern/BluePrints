@@ -297,10 +297,6 @@ namespace BluePrints.Data
                 .WithOptional(e => e.MINUTE_AGENDA2)
                 .HasForeignKey(e => e.GUID_PARENT);
 
-            modelBuilder.Entity<MINUTE_AGENDA>()
-                .HasOptional(e => e.MINUTE_AGENDA11)
-                .WithRequired(e => e.MINUTE_AGENDA3);
-
             modelBuilder.Entity<MINUTE_TITLE>()
                 .HasMany(e => e.MINUTE_AGENDA)
                 .WithOptional(e => e.MINUTE_TITLE)

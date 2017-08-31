@@ -24,7 +24,7 @@ namespace BluePrints.Data
         [StringLength(4000)]
         public string NAME { get; set; }
 
-        public int PRIORITY { get; set; }
+        public AgendaPriority PRIORITY { get; set; }
 
         public Guid? GUID_RAISE_USER { get; set; }
 
@@ -55,10 +55,6 @@ namespace BluePrints.Data
         public virtual ICollection<MINUTE_AGENDA> MINUTE_AGENDA1 { get; set; }
 
         public virtual MINUTE_AGENDA MINUTE_AGENDA2 { get; set; }
-
-        public virtual MINUTE_AGENDA MINUTE_AGENDA11 { get; set; }
-
-        public virtual MINUTE_AGENDA MINUTE_AGENDA3 { get; set; }
 
         public virtual MINUTE_TITLE MINUTE_TITLE { get; set; }
 

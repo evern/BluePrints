@@ -84,22 +84,17 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_NC> entities)
         {
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.AdditionalValidateCellCallBack = AdditionalCellValidation;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         #region Collection Call Backs
-
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public bool OnBeforeEntitySaved(REGISTER_NC entity)
+        protected override bool onBeforeEntitySavedIsContinue(REGISTER_NC projection)
         {
-            entity.GUID_PROJECT = loadPROJECT.GUID;
-            if(entity.GUID == Guid.Empty && entity.DATE_IDENTIFIED == null)
-                entity.DATE_IDENTIFIED = DateTime.Now.Date;
-            return true;
+            projection.GUID_PROJECT = loadPROJECT.GUID;
+            if (projection.GUID == Guid.Empty && projection.DATE_IDENTIFIED == null)
+                projection.DATE_IDENTIFIED = DateTime.Now.Date;
+            return base.onBeforeEntitySavedIsContinue(projection);
         }
 
         private void AdditionalCellValidation(GridCellValidationEventArgs e)
