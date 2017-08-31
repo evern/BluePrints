@@ -88,6 +88,7 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+
         #region Collection Call Backs
         protected override bool onBeforeEntitySavedIsContinue(REGISTER_NC projection)
         {

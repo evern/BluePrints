@@ -90,6 +90,7 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        #region Collection Call Backs
         protected override bool onBeforeEntitySavedIsContinue(REGISTER_RISK projection)
         {
             projection.GUID_PROJECT = loadPROJECT.GUID;
@@ -97,8 +98,6 @@ namespace BluePrints.ViewModels
                 projection.DATE_IDENTIFIED = DateTime.Now.Date;
             return base.onBeforeEntitySavedIsContinue(projection);
         }
-
-        #region Collection Call Backs
 
         private bool IsContinueNewRowFromView(RowEventArgs e, REGISTER_RISK projection)
         {

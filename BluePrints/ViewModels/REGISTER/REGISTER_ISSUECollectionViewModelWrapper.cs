@@ -129,6 +129,7 @@ namespace BluePrints.ViewModels
 
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }
+
         #region Collection Call Backs
         protected override bool onBeforeEntitySavedIsContinue(REGISTER_ISSUE projection)
         {
