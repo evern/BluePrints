@@ -338,8 +338,8 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageProgress))
             {
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectOffsiteProgresses" + keyString, projectKey, childTitlePrefix + "Design Progresses", "OffsiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progresses"));
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectSiteDirectProgresses" + keyString, projectKey, childTitlePrefix + "Site Direct Progresses", "SiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progresses"));
+                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectOffsiteProgress" + keyString, projectKey, childTitlePrefix + "Design Progress", "OffsiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress"));
+                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectSiteDirectProgress" + keyString, projectKey, childTitlePrefix + "Site Direct Progress", "SiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageVariation))
@@ -374,9 +374,8 @@ namespace BluePrints.ViewModels
                 registerCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_NCRegister" + keyString, registerCategoryId, childTitlePrefix + "Non-Conformance Register", "REGISTER_NCCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Non-Conformance Register"));
             }
 
-            projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectMeetingTypes" + keyString, projectKey, childTitlePrefix + "Meeting Types", "MEETING_TYPECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Meeting Types"));
             projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectMeetings" + keyString, projectKey, childTitlePrefix + "Meetings", "MEETINGCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Meetings"));
-            //return newModules;
+            projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectMeetingTypes" + keyString, projectKey, childTitlePrefix + "Meeting Types", "MEETING_TYPECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Meeting Types"));
         }
 
     }
