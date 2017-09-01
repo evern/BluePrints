@@ -173,7 +173,10 @@ namespace BluePrints.ViewModels
         public bool OnBeforeEntitySaved(MINUTE_AGENDAMasterDetailProjection entity)
         {
             if(entity.Entity.GUID == Guid.Empty && entity.Entity.GUID_MINUTE_TITLE == null)
+            {
                 entity.Entity.GUID_MINUTE_TITLE = MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity.GUID;
+                entity.Entity.NUMBER = MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity.NUMBER;
+            }
 
             entity.Entity.RAISE_DATE = loadMEETING.MEETING_DATE;
             entity.Entity.GUID_PROJECT = loadPROJECT.GUID;
