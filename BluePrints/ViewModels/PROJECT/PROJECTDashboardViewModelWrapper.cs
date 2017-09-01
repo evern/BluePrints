@@ -204,7 +204,7 @@ namespace BluePrints.ViewModels
 
         private void RefreshSummary()
         {
-            mainThreadDispatcher.BeginInvoke(new Action(() => GridControlService.RefreshSummary()));
+            mainThreadDispatcher.BeginInvoke(new Action(() => GridControlService?.RefreshSummary()));
         }
 
         public override void FullRefresh()
