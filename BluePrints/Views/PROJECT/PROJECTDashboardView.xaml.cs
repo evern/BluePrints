@@ -1,6 +1,7 @@
 ﻿using BluePrints.Common;
 using BluePrints.ViewModels;
 using System.Windows.Controls;
+using System.Windows.Interop;
 
 namespace BluePrints.Views
 {
@@ -9,6 +10,12 @@ namespace BluePrints.Views
         public PROJECTDashboardView()
         {
             InitializeComponent();
+
+            HwndSource source = (HwndSource)HwndSource.FromVisual(this);
+            HwndTarget target = source?.CompositionTarget;
+            if (target != null)
+                target.RenderMode = RenderMode.SoftwareOnly;
+
             ((PROJECTDashboardViewModelWrapper)DataContext).ChangeViewMemberFieldNames = ChangeViewMemberFieldNames;
         }
 
