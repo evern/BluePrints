@@ -114,7 +114,7 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="UTILIZATION">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
+                                    <dxe:SpinEditSettings MaskType="Numeric" Mask="p" MaxValue="1" Increment="0.01" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
