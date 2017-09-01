@@ -166,9 +166,9 @@ namespace BluePrints.Common.Projections
 
         public decimal Total_Install_Hours => Entity.Estimated_Units;
 
-        public decimal Estimated_Supply_Cost => Entity.ESTIMATED_QUANTITY * FreightRate;
+        public decimal Estimated_Supply_Cost => Estimated_Quantity * Stock_Code_Supply_Rate;
 
-        public decimal Variation_Supply_Cost => Entity.DC_QUANTITY * FreightRate;
+        public decimal Variation_Supply_Cost => Variation_Quantity * Stock_Code_Supply_Rate;
 
         public decimal Total_Supply_Cost => Estimated_Supply_Cost + Variation_Supply_Cost;
 

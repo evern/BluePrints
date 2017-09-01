@@ -137,6 +137,7 @@ namespace BluePrints.ViewModels
 
         protected override bool OnBeforeParentAssigned(MINUTE_AGENDAMasterDetailProjection masterEntity, MINUTE_AGENDAMasterDetailProjection childEntity)
         {
+            childEntity.Entity.NUMBER = string.Empty;
             childEntity.Entity.GUID_MINUTE_TITLE = masterEntity.Entity.GUID_MINUTE_TITLE;
             childEntity.Entity.GUID_ACTION_USER = masterEntity.Entity.GUID_ACTION_USER;
             childEntity.Entity.GUID_RAISE_USER = masterEntity.Entity.GUID_RAISE_USER;

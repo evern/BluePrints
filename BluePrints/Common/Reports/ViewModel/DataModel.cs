@@ -374,7 +374,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public virtual decimal Total_Install_Cost => Entity.Total_Install_Cost;
 
-        public virtual decimal Total_Supply_Cost => Total_Units * Entity.Stock_Code_Supply_Rate;
+        public virtual decimal Total_Supply_Cost => Entity.Total_Supply_Cost;
 
         public decimal Total_Cost => Total_Install_Cost + Total_Supply_Cost;
 

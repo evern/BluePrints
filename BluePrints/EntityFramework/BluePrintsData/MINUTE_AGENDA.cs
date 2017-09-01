@@ -20,7 +20,6 @@ namespace BluePrints.Data
 
         public Guid? GUID_ACTION { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string NUMBER { get; set; }
 
