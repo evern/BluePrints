@@ -6,6 +6,7 @@ using DevExpress.Xpf.Grid;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Interop;
 
 namespace BluePrints.Views
 {
@@ -14,6 +15,11 @@ namespace BluePrints.Views
         public PROJECTView()
         {
             InitializeComponent();
+
+            HwndSource source = (HwndSource)HwndSource.FromVisual(this);
+            HwndTarget target = source?.CompositionTarget;
+            if (target != null)
+                target.RenderMode = RenderMode.SoftwareOnly;
         }
     }
 }

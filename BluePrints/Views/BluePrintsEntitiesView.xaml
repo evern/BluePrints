@@ -148,7 +148,7 @@
                                 </dxa:AccordionControl.ItemContainerStyle>
                             </dxa:AccordionControl>
                         </dxdo:LayoutPanel>
-                        <dxdo:DocumentGroup x:Name="documentGroup" BorderThickness="0" Margin="0" Padding="0" TabContentCacheMode="CacheAllTabs" >
+                        <dxdo:DocumentGroup x:Name="documentGroup" BorderThickness="0" Margin="0" Padding="0" TabContentCacheMode="None" >
                             <dxmvvm:Interaction.Behaviors>
                                 <dxdo:TabbedDocumentUIService />
                             </dxmvvm:Interaction.Behaviors>
