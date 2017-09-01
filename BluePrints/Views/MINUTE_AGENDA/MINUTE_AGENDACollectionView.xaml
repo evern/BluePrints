@@ -154,7 +154,7 @@
                                             <dxe:ComboBoxEditSettings ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:AgendaPriority}}" IsTextEditable="True" AutoComplete="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="NUMBER" />
+                                    <dxg:GridColumn Header="NUMBER" FieldName="Entity.NUMBER" />
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.DetailDescriptor>
                                     <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding DetailEntities}">
@@ -203,7 +203,7 @@
                                                         <dxe:ComboBoxEditSettings ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:AgendaPriority}}" IsTextEditable="True" AutoComplete="True" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="NUMBER" />
+                                                <dxg:GridColumn Header="NUMBER" FieldName="Entity.NUMBER" />
                                             </dxg:GridControl.Columns>
                                             <dxg:GridControl.View>
                                                 <dxg:TableView x:Name="tableView1" ShowColumnHeaders="False" Style="{StaticResource DefaultDetailTableViewTemplate}">

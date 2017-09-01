@@ -15,7 +15,8 @@
         xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
         xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
         xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
-        xmlns:customControl="clr-namespace:BaseModel.Misc;assembly=BaseModel"
+        xmlns:customControl="clr-namespace:BaseModel.Misc;assembly=BaseModel" 
+        xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:ROLECollectionViewModelWrapper}">
@@ -27,7 +28,10 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Style="{StaticResource CollectionView.TreeListRootContainer}">
+    <Grid Style="{StaticResource CollectionView.BaseRootContainer}">
+        <dxmvvm:Interaction.Behaviors>
+            <services:GridControlService Name="TreeGridControlService" GridControl="{Binding ElementName=GridControlTree}" />
+        </dxmvvm:Interaction.Behaviors>
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False"
@@ -76,7 +80,7 @@
                 </dxr:RibbonStatusBarControl>
                 <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Orientation="Horizontal">
                     <dxlc:LayoutGroup>
-                        <dxg:GridControl Name="GridControl" dx:DXSerializer.SerializationID="ROLETree" MaxHeight="2000" MouseUp="treeListControl_MouseUp" 
+                        <dxg:GridControl Name="GridControlTree" dx:DXSerializer.SerializationID="ROLETree" MaxHeight="2000" MouseUp="treeListControl_MouseUp" 
                                          Style="{StaticResource DefaultGridControlTemplate}">
                             <dxmvvm:Interaction.Behaviors>
                                 <dxg:TreeListDragDropManager x:Name="dragDropManager">

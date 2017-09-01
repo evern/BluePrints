@@ -173,10 +173,19 @@ namespace BluePrints.ViewModels
         /// </summary>
         public bool OnBeforeEntitySaved(MINUTE_AGENDAMasterDetailProjection entity)
         {
+            if (MINUTE_TITLECollectionViewModelWrapper == null || MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity == null)
+            {
+                MessageBoxService.ShowMessage("Please select a title before adding an agenda");
+                return false;
+            }
+
             if(entity.Entity.GUID == Guid.Empty && entity.Entity.GUID_MINUTE_TITLE == null)
             {
                 entity.Entity.GUID_MINUTE_TITLE = MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity.GUID;
-                entity.Entity.NUMBER = MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity.NUMBER;
+                IEnumerable<MINUTE_AGENDAMasterDetailProjection> agenda_collection = MainViewModel.Entities.Where(x => x.Entity.GUID_MINUTE_TITLE == MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity.GUID);
+                int count_attached_agenda = agenda_collection.Count() + 1;
+
+                entity.Entity.NUMBER = MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity.DisplayNumber + "." + count_attached_agenda.ToString();
             }
 
             entity.Entity.RAISE_DATE = loadMEETING.MEETING_DATE;

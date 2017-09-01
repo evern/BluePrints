@@ -24,7 +24,7 @@ namespace BluePrints.Views
         private void sortTimer_Tick(object sender, EventArgs e)
         {
             sortTimer.Stop();
-            GridControl.Columns["Entity.SORTORDER"].SortOrder = DevExpress.Data.ColumnSortOrder.Ascending;
+            GridControlTree.Columns["Entity.SORTORDER"].SortOrder = DevExpress.Data.ColumnSortOrder.Ascending;
         }
 
         /// <summary>
