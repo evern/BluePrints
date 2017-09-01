@@ -403,6 +403,7 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn Name="colNAME" FieldName="Entity.Entity.NAME" Header="NAME" ReadOnly="True" AllowEditing="False" />
                                 <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.Entity.COMMENTS" Header="COMMENTS" ReadOnly="True" AllowEditing="False" />
                                 <dxg:GridColumn Name="colESTIMATED_QUANTITY" FieldName="Entity.Total_Quantity" Header="TOTAL QUANTITY" ReadOnly="True" AllowEditing="False" >
                                     <dxg:GridColumn.CellTemplate>

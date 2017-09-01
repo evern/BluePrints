@@ -211,6 +211,7 @@
                                                                       MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn Name="colNAME" FieldName="Entity.Entity.NAME" Header="NAME" />
                                 <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.Entity.COMMENTS" Header="COMMENTS" />
                                 <dxg:GridColumn Name="colESTIMATED_QUANTITY" FieldName="Entity.Entity.ESTIMATED_QUANTITY" Header="QTY">
                                     <dxg:GridColumn.CellTemplate>
