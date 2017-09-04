@@ -9,7 +9,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Collections.ObjectModel;
 
-    public partial class MINUTE_TITLE : BindableBase, IHaveDetail<MINUTE_AGENDA>, IGuidEntityKey, IGuidParentEntityKey, IHaveCreatedDate, ICanUpdate, IHaveSortOrder, IHaveExpandState
+    public partial class MINUTE_TITLE : BluePrintsEntityBase, IHaveDetail<MINUTE_AGENDA>, IGuidEntityKey, IGuidParentEntityKey, IHaveCreatedDate, IHaveSortOrder, IHaveExpandState
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public MINUTE_TITLE()
@@ -98,11 +98,6 @@ namespace BluePrints.Data
                 minute_title_collector.Add(parent_minute_title.NUMBER);
                 minute_number_constructor(parent_minute_title.MINUTE_TITLE2, minute_title_collector);
             }
-        }
-
-        public void Update()
-        {
-            RaisePropertiesChanged();
         }
     }
 }

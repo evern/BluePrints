@@ -1,4 +1,5 @@
 ﻿using BaseModel.Misc;
+using BluePrints.Common.Base;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using System;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public class ReportablesDisplay : BindableBase, IGuidEntityKey, IReportable
+    public class ReportablesDisplay : BluePrintsEntityBase, IGuidEntityKey, IReportable
     {
         public Guid GUID { get => ProgressItem.EntityKey; set => ProgressItem.EntityKey = value; }
         public Guid EntityKey { get => ProgressItem.EntityKey; set => ProgressItem.EntityKey = value; }
@@ -195,7 +196,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class DisplayQuantityReportable : BindableBase, IReportable_Quantity
+    public class DisplayQuantityReportable : BluePrintsEntityBase, IReportable_Quantity
     {
         public IReportable_Quantity Reportable { get; }
         public int ColorIndex { get; private set; }

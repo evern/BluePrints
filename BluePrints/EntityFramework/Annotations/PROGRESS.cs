@@ -1,6 +1,7 @@
 namespace BluePrints.Data
 {
     using BaseModel.Misc;
+    using BluePrints.Common.Base;
     using BluePrints.Common.ViewModel.Reporting;
     using Common;
     using DevExpress.Mvvm;
@@ -8,7 +9,7 @@ namespace BluePrints.Data
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class PROGRESS : BindableBase, IGuidEntityKey, IHaveCreatedDate, ICanUpdate
+    public partial class PROGRESS : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PROGRESS()
@@ -39,11 +40,6 @@ namespace BluePrints.Data
         {
             get { return CREATED; }
             set { CREATED = value; }
-        }
-
-        public void Update()
-        {
-            RaisePropertiesChanged();
         }
     }
 }

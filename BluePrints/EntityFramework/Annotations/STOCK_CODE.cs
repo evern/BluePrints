@@ -2,12 +2,13 @@ namespace BluePrints.Data
 {
     using BaseModel.Attributes;
     using BaseModel.Misc;
+    using BluePrints.Common.Base;
     using DevExpress.Mvvm;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class STOCK_CODE : BindableBase, IGuidEntityKey, IHaveCreatedDate, IOriginalGuidEntityKey, ICanUpdate
+    public partial class STOCK_CODE : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate, IOriginalGuidEntityKey
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public STOCK_CODE()
@@ -40,11 +41,6 @@ namespace BluePrints.Data
 
                 return PROJECT.NUMBER;
             }
-        }
-
-        public virtual void Update()
-        {
-            RaisePropertiesChanged();
         }
 
         public Guid OriginalEntityKey => GUID_ORIGINAL;

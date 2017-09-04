@@ -7,10 +7,11 @@ using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.Resources;
 using DevExpress.Mvvm;
+using BluePrints.Common.Base;
 
 namespace BluePrints.Data
 {
-    public partial class ESTIMATION_DIRECT_ITEM : BindableBase, IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, IHaveDBProductivityOverride, ISupportVariation, ICanUpdate
+    public partial class ESTIMATION_DIRECT_ITEM : BluePrintsEntityBase, IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, IHaveDBProductivityOverride, ISupportVariation
     {
         public ESTIMATION_DIRECT_ITEM()
         {
@@ -157,11 +158,6 @@ namespace BluePrints.Data
             {
                 return "CN";
             }
-        }
-
-        public void Update()
-        {
-            RaisePropertiesChanged();
         }
     }
 }

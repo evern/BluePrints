@@ -2,12 +2,13 @@ namespace BluePrints.Data
 {
     using BaseModel.Attributes;
     using BaseModel.Misc;
+    using BluePrints.Common.Base;
     using DevExpress.Mvvm;
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
     [ConstraintAttributes("UOM1")]
-    public partial class UOM : BindableBase, IGuidEntityKey, IHaveCreatedDate, ICanUpdate
+    public partial class UOM : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey
@@ -28,11 +29,6 @@ namespace BluePrints.Data
         {
             get { return CREATED; }
             set { CREATED = value; }
-        }
-
-        public void Update()
-        {
-            RaisePropertiesChanged();
         }
     }
 }

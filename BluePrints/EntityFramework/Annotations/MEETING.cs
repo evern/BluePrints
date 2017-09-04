@@ -3,13 +3,14 @@ namespace BluePrints.Data
     using BaseModel.Attributes;
     using BaseModel.Misc;
     using BluePrints.Common;
+    using BluePrints.Common.Base;
     using DevExpress.Mvvm;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
 
-    public partial class MEETING : BindableBase, IGuidEntityKey, IEntityNumber, IHaveCreatedDate, ICanUpdate
+    public partial class MEETING : BluePrintsEntityBase, IGuidEntityKey, IEntityNumber, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public MEETING()
@@ -162,11 +163,6 @@ namespace BluePrints.Data
 
         [NotMapped]
         public string EntityGroup => GUID_MEETING_TYPE.ToString();
-
-        public void Update()
-        {
-            RaisePropertiesChanged();
-        }
     }
 
     public class MeetingUser

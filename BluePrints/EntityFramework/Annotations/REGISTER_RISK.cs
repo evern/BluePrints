@@ -3,12 +3,13 @@ namespace BluePrints.Data
     using BaseModel.Attributes;
     using BaseModel.Misc;
     using BluePrints.Common;
+    using BluePrints.Common.Base;
     using DevExpress.Mvvm;
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
     [ConstraintAttributes("NUMBER")]
-    public partial class REGISTER_RISK : BindableBase, IGuidEntityKey, IEntityNumber, IHaveCreatedDate, ICanUpdate
+    public partial class REGISTER_RISK : BluePrintsEntityBase, IGuidEntityKey, IEntityNumber, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey
@@ -81,10 +82,5 @@ namespace BluePrints.Data
         }
 
         public string EntityGroup => string.Empty;
-
-        public void Update()
-        {
-            RaisePropertiesChanged();
-        }
     }
 }

@@ -3,6 +3,7 @@ namespace BluePrints.Data
     using BaseModel.Attributes;
     using BaseModel.Misc;
     using BluePrints.Common;
+    using BluePrints.Common.Base;
     using BluePrints.Common.ViewModel.Reporting;
     using DevExpress.Mvvm;
     using System;
@@ -11,7 +12,7 @@ namespace BluePrints.Data
     using System.Linq;
 
     [ConstraintAttributes("GUID_BASELINE, INTERNAL_NUM")]
-    public partial class BASELINE_ITEM : BindableBase, IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, ISupportByDuration, IHaveDBProductivityOverride, ISupportVariation, ICanUpdate, IEntityNumber
+    public partial class BASELINE_ITEM : BluePrintsEntityBase, IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, ISupportByDuration, IHaveDBProductivityOverride, ISupportVariation, IEntityNumber
     {
         public BASELINE_ITEM()
         {
@@ -316,10 +317,5 @@ namespace BluePrints.Data
 
         [NotMapped]
         public string EntityGroup => string.Empty;
-
-        public void Update()
-        {
-            RaisePropertiesChanged();
-        }
     }
 }

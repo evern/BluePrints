@@ -9,7 +9,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Collections.ObjectModel;
 
-    public partial class MINUTE_AGENDA : BindableBase, IHaveDetail<MINUTE_COMMENT>, IGuidEntityKey, IGuidParentEntityKey, IHaveCreatedDate, ICanUpdate
+    public partial class MINUTE_AGENDA : BluePrintsEntityBase, IHaveDetail<MINUTE_COMMENT>, IGuidEntityKey, IGuidParentEntityKey, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public MINUTE_AGENDA()
@@ -39,10 +39,5 @@ namespace BluePrints.Data
 
         [NotMapped]
         public bool IsExpanded { get; set; }
-
-        public void Update()
-        {
-            RaisePropertiesChanged();
-        }
     }
 }

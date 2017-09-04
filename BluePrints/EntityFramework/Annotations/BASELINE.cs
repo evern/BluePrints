@@ -7,10 +7,11 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using BluePrints.Common;
     using DevExpress.Mvvm;
+    using BluePrints.Common.Base;
 
     [ConstraintAttributes("REVISION")]
     [BulkEditDisabledAttributes("P6BASELINE_NAME, P6MODBASELINE_NAME")]
-    public partial class BASELINE : BindableBase, IGuidEntityKey, IHaveCreatedDate, IHaveP6Baselines, IAmBaseline, ICanUpdate
+    public partial class BASELINE : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate, IHaveP6Baselines, IAmBaseline
     {
         [NotMapped]
         public Guid EntityKey
@@ -44,10 +45,5 @@ namespace BluePrints.Data
 
         [NotMapped]
         public string Revision { get => REVISION; set => REVISION = value; }
-        
-        public void Update()
-        {
-            RaisePropertiesChanged();
-        }
     }
 }

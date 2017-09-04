@@ -7,8 +7,9 @@ namespace BluePrints.Data
     using System.Linq;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
-    
-    public partial class CLIENT : BindableBase, IGuidEntityKey, IHaveCreatedDate, ICanUpdate
+    using BluePrints.Common.Base;
+
+    public partial class CLIENT : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey
@@ -72,11 +73,6 @@ namespace BluePrints.Data
 
                 return FIRST_NAME + " " + LAST_NAME;
             }
-        }
-
-        public void Update()
-        {
-            RaisePropertiesChanged();
         }
     }
 }

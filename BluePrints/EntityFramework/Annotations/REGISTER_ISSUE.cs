@@ -2,6 +2,7 @@ namespace BluePrints.Data
 {
     using BaseModel.Attributes;
     using BaseModel.Misc;
+    using BluePrints.Common.Base;
     using DevExpress.Mvvm;
     using System;
     using System.Collections.Generic;
@@ -9,7 +10,7 @@ namespace BluePrints.Data
     using System.Linq;
 
     [ConstraintAttributes("NUMBER")]
-    public partial class REGISTER_ISSUE : BindableBase, IGuidEntityKey, IEntityNumber, IHaveCreatedDate, ICanUpdate
+    public partial class REGISTER_ISSUE : BluePrintsEntityBase, IGuidEntityKey, IEntityNumber, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey
@@ -65,10 +66,5 @@ namespace BluePrints.Data
         }
 
         public string EntityGroup => string.Empty;
-
-        public void Update()
-        {
-            RaisePropertiesChanged();
-        }
     }
 }

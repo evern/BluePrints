@@ -2,6 +2,7 @@ namespace BluePrints.Data
 {
     using BaseModel.Attributes;
     using BaseModel.Misc;
+    using BluePrints.Common.Base;
     using Common;
     using DevExpress.Mvvm;
     using System;
@@ -9,7 +10,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
 
     [ConstraintAttributes("NUMBER")]
-    public partial class PROJECT : BindableBase, IGuidEntityKey, IHaveCreatedDate, ICanUpdate
+    public partial class PROJECT : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PROJECT()
@@ -69,11 +70,6 @@ namespace BluePrints.Data
             {
                 CREATED = value;
             }
-        }
-
-        public void Update()
-        {
-            RaisePropertiesChanged();
         }
     }
 }

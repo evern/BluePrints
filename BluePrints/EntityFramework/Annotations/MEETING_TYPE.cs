@@ -3,6 +3,7 @@ namespace BluePrints.Data
     using BaseModel.Attributes;
     using BaseModel.Misc;
     using BluePrints.Common;
+    using BluePrints.Common.Base;
     using DevExpress.Mvvm;
     using System;
     using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace BluePrints.Data
     using System.Linq;
 
     [ConstraintAttributes("NAME")]
-    public partial class MEETING_TYPE : BindableBase, IGuidEntityKey, IHaveCreatedDate, ICanUpdate
+    public partial class MEETING_TYPE : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey
@@ -31,11 +32,6 @@ namespace BluePrints.Data
         {
             get { return CREATED; }
             set { CREATED = value; }
-        }
-
-        public void Update()
-        {
-            RaisePropertiesChanged();
         }
     }
 }

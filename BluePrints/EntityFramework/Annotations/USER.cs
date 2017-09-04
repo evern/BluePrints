@@ -1,11 +1,12 @@
 namespace BluePrints.Data
 {
     using BaseModel.Misc;
+    using BluePrints.Common.Base;
     using DevExpress.Mvvm;
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class USER : BindableBase, IGuidEntityKey, IHaveCreatedDate, ICanUpdate
+    public partial class USER : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey
@@ -41,11 +42,6 @@ namespace BluePrints.Data
 
                 return FIRST_NAME + " " + LAST_NAME;
             }
-        }
-
-        public void Update()
-        {
-            RaisePropertiesChanged();
         }
     }
 }

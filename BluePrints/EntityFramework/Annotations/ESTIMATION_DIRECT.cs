@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using BluePrints.Common;
 using DevExpress.Mvvm;
+using BluePrints.Common.Base;
 
 namespace BluePrints.Data
 {
-    public partial class ESTIMATION_DIRECT : BindableBase, IGuidEntityKey, IHaveCreatedDate, IHaveP6Baselines, IAmBaseline, ICanUpdate
+    public partial class ESTIMATION_DIRECT : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate, IHaveP6Baselines, IAmBaseline
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ESTIMATION_DIRECT()
@@ -50,10 +51,5 @@ namespace BluePrints.Data
 
         [NotMapped]
         public string Revision { get => REVISION; set => REVISION = value; }
-
-        public void Update()
-        {
-            RaisePropertiesChanged();
-        }
     }
 }

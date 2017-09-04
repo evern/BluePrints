@@ -10,9 +10,10 @@ namespace BluePrints.Data
     using BluePrints.Common.ViewModel.Reporting;
     using BluePrints.Common.Resources;
     using DevExpress.Mvvm;
+    using BluePrints.Common.Base;
 
     [ConstraintAttributes("CODE")]
-    public partial class STOCK_GROUP : BindableBase, IGuidEntityKey, IHaveCreatedDate, ICanUpdate
+    public partial class STOCK_GROUP : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey
@@ -33,11 +34,6 @@ namespace BluePrints.Data
         {
             get { return CREATED; }
             set { CREATED = value; }
-        }
-
-        public void Update()
-        {
-            RaisePropertiesChanged();
         }
     }
 }

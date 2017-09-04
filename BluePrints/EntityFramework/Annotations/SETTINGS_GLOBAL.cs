@@ -1,11 +1,12 @@
 namespace BluePrints.Data
 {
     using BaseModel.Misc;
+    using BluePrints.Common.Base;
     using DevExpress.Mvvm;
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class SETTINGS_GLOBAL : BindableBase, IGuidEntityKey, IHaveCreatedDate, ICanUpdate
+    public partial class SETTINGS_GLOBAL : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey
@@ -26,11 +27,6 @@ namespace BluePrints.Data
         {
             get { return CREATED; }
             set { CREATED = value; }
-        }
-
-        public void Update()
-        {
-            RaisePropertiesChanged();
         }
     }
 }
