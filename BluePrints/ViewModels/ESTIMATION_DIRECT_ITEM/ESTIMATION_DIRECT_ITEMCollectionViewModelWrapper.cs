@@ -358,7 +358,7 @@ namespace BluePrints.ViewModels
         {
             if(entity.Entity.Entity.GUID_AREA != null)
             {
-                string internalNumber = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber(entity.Entity.Entity.GUID_AREA, entity.Entity.Entity.GUID_SUBAREA, loadPROJECT, AREACollection, SUBAREACollection);
+                string internalNumber = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber(entity.Entity.Entity.GUID_AREA, entity.Entity.Entity.GUID_SUBAREA, loadPROJECT, AREACollection, SUBAREACollection, defaultConstructionPHASE.GUID, PHASECollection);
                 if(internalNumber != string.Empty)
                 {
                     WORKPACK existingWORKPACK = WORKPACKCollection.FirstOrDefault(x => x.INTERNAL_NAME1 == internalNumber);
