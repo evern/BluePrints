@@ -504,18 +504,20 @@ namespace BluePrints.Common.Base
                 if (current_progress_deliverable == null)
                     continue;
 
+                bool isNullProgress = false;
+                //comment this off because duration needs to be calculated even if deliverable is not progressed
                 if (current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate == null || current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Count() == 0)
-                    continue;
+                    isNullProgress = true;
 
-                DateTime first_progress_date = current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Min(x => x.EARNED_DATE);
-                DateTime last_progress_date = current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Max(x => x.EARNED_DATE);
+                DateTime? first_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Min(x => x.EARNED_DATE);
+                DateTime? last_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Max(x => x.EARNED_DATE);
 
                 decimal total_percentage_to_date = current_progress_deliverable.Total_Percentage_ToDate;
                 if (deliverable.P6_Assignments.Count == 0)
                     continue;
 
                 //only process applicable assignments
-                List<P6_ASSIGNMENT> p6_assignments = deliverable.P6_Assignments.Where(assignment => assignment.LOW_VALUE <= total_percentage_to_date).OrderBy(assignment => assignment.LOW_VALUE).ToList();
+                List<P6_ASSIGNMENT> p6_assignments = deliverable.P6_Assignments.Where(assignment => assignment.LOW_VALUE <= (total_percentage_to_date + 0.01m)).OrderBy(assignment => assignment.LOW_VALUE).ToList();
 
                 for (int i = 0; i < p6_assignments.Count; i++)
                 {
@@ -524,11 +526,12 @@ namespace BluePrints.Common.Base
                     if (P6TASK != null && P6TASK.delete_date == null)
                     {
                         //set activity start date
-                        DateTime first_earned_week_start_date = first_progress_date.AddDays(-1 * intervalTimeSpan.Days).AddSeconds(1);
+                        DateTime? first_earned_week_start_date = isNullProgress ? (DateTime?)null : ((DateTime)first_progress_date).AddDays(-1 * intervalTimeSpan.Days).AddSeconds(1);
                         bool any_write_exclusions = P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.NONE.ToString()) || P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.FINISH.ToString());
 
-                        if (P6TASK.act_start_date == null || !any_write_exclusions)
-                            P6TASK.act_start_date = first_earned_week_start_date.Date.AddHours(6);
+                        if ((P6TASK.act_start_date == null || !any_write_exclusions))
+                            if(!isNullProgress)
+                                P6TASK.act_start_date = ((DateTime)first_earned_week_start_date).Date.AddHours(6);
 
                         //current activity assignment value must be limited to total earned percentage
                         decimal high_percentage_to_use = p6_assignment.HIGH_VALUE > total_percentage_to_date ? total_percentage_to_date : p6_assignment.HIGH_VALUE;
@@ -573,7 +576,8 @@ namespace BluePrints.Common.Base
                             //when user select none or user select start only, don't update finish
                             any_write_exclusions = P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.NONE.ToString()) || P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.START.ToString());
                             if(P6TASK.act_end_date == null || !any_write_exclusions)
-                                P6TASK.act_end_date = last_progress_date.Date.AddHours(18);
+                                if(!isNullProgress)
+                                P6TASK.act_end_date = ((DateTime)last_progress_date).Date.AddHours(18);
                         }
                         else if (P6TASK.remain_work_qty > 0)
                         {
@@ -581,7 +585,8 @@ namespace BluePrints.Common.Base
                             //when user select none or user select finish only, don't update start
                             any_write_exclusions = P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.NONE.ToString()) || P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.FINISH.ToString());
                             if(P6TASK.act_start_date == null || !any_write_exclusions)
-                                P6TASK.act_start_date = first_progress_date.Date.AddHours(6);
+                                if (!isNullProgress)
+                                    P6TASK.act_start_date = ((DateTime)first_progress_date).Date.AddHours(6);
 
                             P6TASK.act_end_date = null;
 
@@ -592,6 +597,7 @@ namespace BluePrints.Common.Base
                             decimal current_assignment_remaining_units = full_assignment_units - current_assignment_units;
                             decimal current_assignment_remaining_duration = current_full_remaining_duration * (current_assignment_remaining_units / full_assignment_units);
                             IHaveDBProductivityOverride productivityOverride = deliverable as IHaveDBProductivityOverride;
+
                             //productivity override determines whether we should tamper with the remaining duration
                             if (productivityOverride != null)
                             {
