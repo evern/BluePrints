@@ -62,6 +62,11 @@ namespace BluePrints.Common.Reports
                 currentREPORT = new XtraReportBASELINE_ITEMS();
                 reportDesigner1.OpenReport(currentREPORT);
             }
+            else if (currentReportType == ReportType.Meeting_Minute)
+            {
+                currentREPORT = new XtraReportMeeting_Minute();
+                reportDesigner1.OpenReport(currentREPORT);
+            }
         }
 
         private void SaveReport()

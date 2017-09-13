@@ -169,6 +169,10 @@ namespace BluePrints.Data
     {
         public Guid Guid { get; set; }
         public string Full_Name { get; set; }
+        public string Company_Name { get; set; }
+        public string Phone_Number { get; set; }
+        public string Email { get; set; }
+
         public MeetingUserType User_Type { get; set; }
 
         public override string ToString()

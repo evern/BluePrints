@@ -129,7 +129,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public string Department_Code => ((IReportable)ProgressItem).Department_Code;
 
-        public void Update()
+        public override void Update()
         {
             ProgressItem.Update();
             RefreshChild();
@@ -418,7 +418,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             Reportable.AppendProgressItem(currentProgress);
         }
 
-        public virtual void Update()
+        public override void Update()
         {
             Reportable.Update();
         }

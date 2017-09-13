@@ -8,15 +8,16 @@ namespace BluePrints.Data
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Collections.ObjectModel;
+    using BluePrints.Common.Projections;
+    using System.Linq;
 
-    public partial class MINUTE_TITLE : BluePrintsEntityBase, IHaveDetail<MINUTE_AGENDA>, IGuidEntityKey, IGuidParentEntityKey, IHaveCreatedDate, IHaveSortOrder, IHaveExpandState
+    public partial class MINUTE_TITLE : BluePrintsEntityBase, IGuidEntityKey, IGuidParentEntityKey, IHaveCreatedDate, IHaveSortOrder, IHaveExpandState
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public MINUTE_TITLE()
         {
             MINUTE_AGENDA = new HashSet<MINUTE_AGENDA>();
             MINUTE_TITLE1 = new HashSet<MINUTE_TITLE>();
-            DetailEntities = new ObservableCollection<MINUTE_AGENDA>();
         }
 
         [NotMapped]
@@ -86,7 +87,35 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public ObservableCollection<MINUTE_AGENDA> DetailEntities { get; set; }
+        public int Report_Title_Level
+        {
+            get
+            {
+                int i = 0;
+                count_parent(i, MINUTE_TITLE2);
+                return i;
+            }
+        }
+
+        [NotMapped]
+        public IEnumerable<MINUTE_AGENDAMasterDetailProjection> Report_Minute_Agendas => report_minute_agendas;
+
+        [NotMapped]
+        private IEnumerable<MINUTE_AGENDAMasterDetailProjection> report_minute_agendas;
+
+        public void Set_Minute_Agendas(IEnumerable<MINUTE_AGENDAMasterDetailProjection> minute_agendas)
+        {
+            report_minute_agendas = minute_agendas.Where(x => x.Entity.GUID_MINUTE_TITLE == GUID).ToList();
+        }
+
+        private void count_parent(int i, MINUTE_TITLE minute_title)
+        {
+            if (minute_title != null)
+            {
+                i += 1;
+                count_parent(i, minute_title.MINUTE_TITLE2);
+            }
+        }
 
         [NotMapped]
         public Guid EntityKey { get => GUID; set => GUID = value; }

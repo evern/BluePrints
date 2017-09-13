@@ -276,8 +276,8 @@ namespace BluePrints.ViewModels
                 {
                     allusercollection = new List<MeetingUser>();
                     List<MeetingUser> unsorted_meeting_users = new List<MeetingUser>();
-                    List<MeetingUser> meeting_local_user = USERCollection.Select(x => new MeetingUser() { Guid = x.GUID, Full_Name = x.Full_Name, User_Type = Common.MeetingUserType.Internal }).ToList();
-                    List<MeetingUser> meeting_client = CLIENTCollection.Select(x => new MeetingUser() { Guid = x.GUID, Full_Name = x.Full_Name, User_Type = Common.MeetingUserType.Client }).ToList();
+                    List<MeetingUser> meeting_local_user = USERCollection.Select(x => new MeetingUser() { Guid = x.GUID, Full_Name = x.Full_Name, Company_Name = "Primero", User_Type = Common.MeetingUserType.Internal }).ToList();
+                    List<MeetingUser> meeting_client = CLIENTCollection.Select(x => new MeetingUser() { Guid = x.GUID, Full_Name = x.Full_Name, Company_Name = loadPROJECT.CLIENT, Email = x.EMAIL, Phone_Number = x.PHONE, User_Type = Common.MeetingUserType.Client }).ToList();
 
                     unsorted_meeting_users.AddRange(meeting_local_user);
                     unsorted_meeting_users.AddRange(meeting_client);

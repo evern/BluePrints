@@ -20,7 +20,7 @@ namespace BluePrints.Common.Base
         [NotMapped]
         public bool NewEntityFromView { get; set; }
 
-        public void Update()
+        public virtual void Update()
         {
             RaisePropertiesChanged();
         }

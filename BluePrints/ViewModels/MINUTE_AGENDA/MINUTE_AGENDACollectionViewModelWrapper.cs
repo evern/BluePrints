@@ -17,6 +17,12 @@ using BluePrints.Common.Resources;
 using DevExpress.Mvvm;
 using DevExpress.Xpf.Editors;
 using BluePrints.Common;
+using BluePrints.Common.Reports;
+using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.Reports;
+using System.IO;
+using DevExpress.Xpf.Printing;
+using System.Windows;
 
 namespace BluePrints.ViewModels
 {
@@ -99,7 +105,7 @@ namespace BluePrints.ViewModels
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription<MEETING_ACTION, MEETING_ACTION, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.MEETING_ACTIONS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.MINUTE_TITLES, MINUTE_TITLEProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
         }
 
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
@@ -112,6 +118,11 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_MEETING_TYPE == loadMEETING.GUID_MEETING_TYPE);
         }
 
+        private Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Meeting_Minute.ToString());
+        }
+
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.MINUTE_AGENDAS);
@@ -120,7 +131,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<MINUTE_AGENDA>, IQueryable<MINUTE_AGENDAMasterDetailProjection>> specifyMainViewModelProjection()
         {
-            return query => MINUTE_AGENDAMasterDetailProjectionQueries.MINUTE_AGENDA_Master_Detail_Transformation(query, loadPROJECT.GUID, minute_title_guid);
+            return query => MINUTE_AGENDAMasterDetailProjectionQueries.MINUTE_AGENDA_Master_Detail_Transformation(query, loadPROJECT.GUID, minute_title_guid, load_all_for_reporting);
         }
 
         private Guid minute_title_guid
@@ -164,7 +175,18 @@ namespace BluePrints.ViewModels
 
         private void onMINUTE_TITLEChanged(MINUTE_TITLE minute_title_entity)
         {
-            MainViewModel.OnEntitiesLoadedCallBack = mainViewModelRefreshed;
+            reloadMainViewModel(false);
+        }
+
+        private bool load_all_for_reporting = false;
+        private void reloadMainViewModel(bool load_for_reporting)
+        {
+            load_all_for_reporting = load_for_reporting;
+            if(load_for_reporting)
+                MainViewModel.OnEntitiesLoadedCallBack = mainViewModelRefreshedForReporting;
+            else
+                MainViewModel.OnEntitiesLoadedCallBack = mainViewModelRefreshed;
+
             MainViewModel.Refresh();
         }
 
@@ -223,6 +245,77 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
+
+        #region Reporting
+        public bool CanEditReport()
+        {
+            if (MINUTE_TITLECollectionViewModelWrapper == null || MINUTE_TITLECollectionViewModelWrapper.DisplayEntities == null)
+                return false;
+
+            return true;
+        }
+
+        public bool CanViewReport()
+        {
+            if (MINUTE_TITLECollectionViewModelWrapper == null || MINUTE_TITLECollectionViewModelWrapper.DisplayEntities == null)
+                return false;
+
+            return true;
+        }
+
+        public void EditReport()
+        {
+            var reportDesigner = new UserReportDesigner(loadPROJECT,
+                (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
+                loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Meeting_Minute);
+            if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                reportDesigner.Dispose();
+            else
+                reportDesigner.Dispose();
+        }
+
+        XtraReportMeeting_Minute meeting_minute;
+        public void ViewReport()
+        {
+            meeting_minute = new XtraReportMeeting_Minute();
+            PROJECT_REPORT dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
+            if (dbProjectReport != null)
+            {
+                var reportString = dbProjectReport.REPORT.ToString();
+                using (var sw = new StreamWriter(new MemoryStream()))
+                {
+                    sw.Write(reportString);
+                    sw.Flush();
+                    meeting_minute.LoadLayout(sw.BaseStream);
+                }
+            }
+
+            reloadMainViewModel(true);
+        }
+
+        private void mainViewModelRefreshedForReporting(IEnumerable<MINUTE_AGENDAMasterDetailProjection> entities)
+        {
+            if (meeting_minute == null)
+                return;
+
+            MainViewModel.OnEntitiesLoadedCallBack = null;
+            load_all_for_reporting = false;
+            mainThreadDispatcher.BeginInvoke(new Action(() => ShowReport()));
+        }
+
+        private void ShowReport()
+        {
+            meeting_minute.AssignProperties(loadMEETING, MINUTE_TITLECollectionViewModelWrapper.DisplayEntities.ToList(), MeetingUserCollection, DisplayEntities.ToList());
+            DocumentPreviewWindow previewWindow = new DocumentPreviewWindow();
+            previewWindow.PreviewControl.DocumentSource = meeting_minute;
+            previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            previewWindow.WindowState = WindowState.Maximized;
+            meeting_minute.RequestParameters = false;
+            meeting_minute.CreateDocument(true);
+            previewWindow.Show();
+        }
+        #endregion
+
         #region View Properties
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
@@ -278,6 +371,15 @@ namespace BluePrints.ViewModels
         }
 
         protected override string expand_key_field_name => BindableBase.GetPropertyName(() => new MINUTE_AGENDAMasterDetailProjection().Entity) + "." + BindableBase.GetPropertyName(() => new MINUTE_AGENDA().GUID);
+        protected override bool childEntitiesFilter(MINUTE_AGENDAMasterDetailProjection x)
+        {
+            if (x.Entity.RAISE_DATE == null)
+                return true;
+            else if (((DateTime)x.Entity.RAISE_DATE).Date <= loadMEETING.MEETING_DATE.Date)
+                return true;
+            else
+                return false;
+        }
         #endregion
     }
 }

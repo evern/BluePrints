@@ -84,6 +84,7 @@
                                                    Command="{Binding DataContext.ViewReportCommand, ElementName=userControl}"
                                                    LargeGlyph="{dx:DXImage Image=Report_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Report_16x16.png}" />
+                                <dxb:BarItemSeparator />
                                 <dxb:BarCheckItem Content="Lock Baseline"
                                                   IsChecked="{Binding DataContext.IsBASELINELocked, ElementName=userControl}"
                                                   Glyph="{dxc:DXImage Image=ProtectDocument_16x16.png}" LargeGlyph="{dxc:DXImage Image=ProtectDocument_32x32.png}" />
