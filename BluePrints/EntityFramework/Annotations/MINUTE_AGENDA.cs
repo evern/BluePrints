@@ -39,20 +39,5 @@ namespace BluePrints.Data
 
         [NotMapped]
         public bool IsExpanded { get; set; }
-
-        [NotMapped]
-        public string Report_Agenda_Title_Description => NAME;
-
-        [NotMapped]
-        public string Report_Agenda_Comment_Description
-        {
-            get
-            {
-                if (RAISE_DATE == null)
-                    return "[] " + NAME;
-
-                return "[" + ((DateTime)RAISE_DATE).ToShortDateString() + "] " + NAME;
-            }
-        }
     }
 }

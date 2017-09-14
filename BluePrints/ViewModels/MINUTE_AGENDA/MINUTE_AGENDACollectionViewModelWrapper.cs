@@ -89,6 +89,7 @@ namespace BluePrints.ViewModels
             if (loadMEETING.Meeting_Signoff != null)
                 AllMeetingUsers.AddRange(loadMEETING.Meeting_Signoff);
 
+            AllMeetingUsers.Add(loadMEETING.Meeting_ChairUser);
             MeetingUserCollection = new List<MeetingUser>();
             foreach (MeetingUser meetingUser in AllMeetingUsers.OrderBy(x => x.Full_Name))
             {
@@ -305,7 +306,8 @@ namespace BluePrints.ViewModels
 
         private void ShowReport()
         {
-            meeting_minute.AssignProperties(loadMEETING, MINUTE_TITLECollectionViewModelWrapper.DisplayEntities.ToList(), MeetingUserCollection, DisplayEntities.ToList());
+            RefreshDisplayEntities();
+            meeting_minute.AssignProperties(loadMEETING, MINUTE_TITLECollectionViewModelWrapper.DisplayEntities.ToList(), MeetingUserCollection, DisplayEntities.ToList(), MEETING_ACTIONCollection);
             DocumentPreviewWindow previewWindow = new DocumentPreviewWindow();
             previewWindow.PreviewControl.DocumentSource = meeting_minute;
             previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;

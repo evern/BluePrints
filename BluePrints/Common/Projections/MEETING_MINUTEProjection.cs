@@ -13,22 +13,40 @@ namespace BluePrints.Common.Projections
     {
         readonly MEETING MEETING;
         readonly IEnumerable<MINUTE_TITLE> MINUTE_TITLES;
+        readonly IEnumerable<MINUTE_AGENDAMasterDetailProjection> Minute_Agendas;
         readonly IEnumerable<MeetingUser> Meeting_Users;
+        readonly IEnumerable<MEETING_ACTION> Meeting_Actions;
 
         public MEETING_MINUTEProjection()
         {
 
         }
 
-        public MEETING_MINUTEProjection(MEETING meeting, List<MINUTE_TITLE> minute_titles, IEnumerable<MeetingUser> meeting_users, IEnumerable<MINUTE_AGENDAMasterDetailProjection> minute_agendas)
+        public MEETING_MINUTEProjection(MEETING meeting, List<MINUTE_TITLE> minute_titles, IEnumerable<MeetingUser> meeting_users, IEnumerable<MINUTE_AGENDAMasterDetailProjection> minute_agendas, IEnumerable<MEETING_ACTION> meetingActions)
         {
-            minute_titles.ForEach(x => x.Set_Minute_Agendas(minute_agendas));
             MEETING = meeting;
             MINUTE_TITLES = minute_titles;
+            Minute_Agendas = minute_agendas;
             Meeting_Users = meeting_users;
+            Meeting_Actions = meetingActions;
         }
 
-        public string Report_Project_Number
+        public IEnumerable<MINUTE_TITLEReportingProjection> Minute_Titles
+        {
+            get
+            {
+                List<MINUTE_TITLEReportingProjection> reporting_projection = new List<MINUTE_TITLEReportingProjection>();
+                foreach(MINUTE_TITLE minute_title in MINUTE_TITLES)
+                {
+                    MINUTE_TITLEReportingProjection minute_titleProjection = new MINUTE_TITLEReportingProjection(minute_title, Minute_Agendas, Meeting_Users, Meeting_Actions, Meeting_Date);
+                    reporting_projection.Add(minute_titleProjection);
+                }
+
+                return reporting_projection;
+            }
+        }
+
+        public string Project_Number
         {
             get
             {
@@ -39,7 +57,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public string Report_Meeting_Name
+        public string Meeting_Name
         {
             get
             {
@@ -50,9 +68,9 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public string Report_Meeting_Venue => MEETING.VENUE;
+        public string Meeting_Venue => MEETING.VENUE;
 
-        public DateTime Report_Meeting_Date
+        public DateTime Meeting_Date
         {
             get
             {
@@ -60,7 +78,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public DateTime? Report_Meeting_StartTime
+        public DateTime? Meeting_StartTime
         {
             get
             {
@@ -68,7 +86,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public DateTime? Report_Meeting_EndTime
+        public DateTime? Meeting_EndTime
         {
             get
             {
@@ -76,7 +94,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public string Report_Meeting_Chaired
+        public string Meeting_Chaired
         {
             get
             {
@@ -89,14 +107,14 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public IEnumerable<string> Report_Meeting_Attendees
+        public IEnumerable<MeetingUser> Meeting_Attendees
         {
             get
             {
                 if (MEETING.Meeting_Attendees == null)
-                    return new List<string>();
+                    return get_empty_meeting_users();
 
-                return MEETING.Meeting_Attendees.Select(x => x.Full_Name);
+                return MEETING.Meeting_Attendees;
             }
         }
 
@@ -108,7 +126,7 @@ namespace BluePrints.Common.Projections
             return meeting_users;
         }
 
-        public IEnumerable<MeetingUser> Report_Meeting_Apologies
+        public IEnumerable<MeetingUser> Meeting_Apologies
         {
             get
             {
@@ -119,7 +137,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public IEnumerable<MeetingUser> Report_Meeting_Distribution
+        public IEnumerable<MeetingUser> Meeting_Distribution
         {
             get
             {
@@ -130,7 +148,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public IEnumerable<MeetingUser> Report_Meeting_Signoff
+        public IEnumerable<MeetingUser> Meeting_Signoff
         {
             get
             {

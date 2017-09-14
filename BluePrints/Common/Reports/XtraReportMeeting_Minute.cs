@@ -6,6 +6,8 @@ using DevExpress.XtraReports.UI;
 using System.Collections.Generic;
 using BluePrints.Data;
 using BluePrints.Common.Projections;
+using System.Data;
+using System.Linq;
 
 namespace BluePrints.Common.Reports
 {
@@ -16,9 +18,9 @@ namespace BluePrints.Common.Reports
             InitializeComponent();
         }
 
-        public void AssignProperties(MEETING meeting, List<MINUTE_TITLE> minute_titles, IEnumerable<MeetingUser> meeting_users, IEnumerable<MINUTE_AGENDAMasterDetailProjection> minute_agendas)
+        public void AssignProperties(MEETING meeting, List<MINUTE_TITLE> minute_titles, IEnumerable<MeetingUser> meeting_users, IEnumerable<MINUTE_AGENDAMasterDetailProjection> minute_agendas, IEnumerable<MEETING_ACTION> meeting_actions)
         {
-            MEETING_MINUTEProjection meeting_minuteProjection = new MEETING_MINUTEProjection(meeting, minute_titles, meeting_users, minute_agendas);
+            MEETING_MINUTEProjection meeting_minuteProjection = new MEETING_MINUTEProjection(meeting, minute_titles, meeting_users, minute_agendas, meeting_actions);
             objectDataSource1.DataSource = meeting_minuteProjection;
         }
     }

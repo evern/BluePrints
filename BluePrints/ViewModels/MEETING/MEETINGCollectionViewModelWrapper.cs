@@ -96,6 +96,7 @@ namespace BluePrints.ViewModels
             meetings.ForEach(x => x.Apologies = AllUserCollection.Where(user => MEETING_USERCollection.Any(meeting_user => meeting_user.GUID_MEETING == x.GUID && meeting_user.GUID_USER == user.Guid && meeting_user.TYPE == Common.MeetingUserSection.Apologies)).ToList());
             meetings.ForEach(x => x.Distribution = AllUserCollection.Where(user => MEETING_USERCollection.Any(meeting_user => meeting_user.GUID_MEETING == x.GUID && meeting_user.GUID_USER == user.Guid && meeting_user.TYPE == Common.MeetingUserSection.Distribution)).ToList());
             meetings.ForEach(x => x.Signoff = AllUserCollection.Where(user => MEETING_USERCollection.Any(meeting_user => meeting_user.GUID_MEETING == x.GUID && meeting_user.GUID_USER == user.Guid && meeting_user.TYPE == Common.MeetingUserSection.SignOff)).ToList());
+            meetings.ForEach(x => x.Meeting_ChairUser = AllUserCollection.FirstOrDefault(user => user.Guid == x.CHAIRED_BY));
 
             return meetings.AsQueryable();
         }
@@ -367,7 +368,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region ISupportCustomDocumentTypeAndParameter
-
         public bool CanEdit()
         {
             if (DisplaySelectedEntity == null)
@@ -402,63 +402,6 @@ namespace BluePrints.ViewModels
                     "[" + DisplaySelectedEntity.EntityNumber + "] Agenda");
 
             DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
-        }
-        #endregion
-
-
-
-        #region Reporting
-        public bool CanEditReport()
-        {
-            if (MainViewModel == null || MainViewModel.Entities.Count == 0)
-                return false;
-
-            return true;
-        }
-
-        public bool CanViewReport()
-        {
-            if (MainViewModel == null || MainViewModel.Entities.Count == 0)
-                return false;
-
-            return true;
-        }
-
-        public void EditReport()
-        {
-            var reportDesigner = new UserReportDesigner(loadPROJECT,
-                (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
-                loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Meeting_Minute);
-            if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                reportDesigner.Dispose();
-            else
-                reportDesigner.Dispose();
-        }
-
-        public void ViewReport()
-        {
-            var baselineReport = new XtraReportBASELINE_ITEMS();
-            var dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
-            if (dbProjectReport != null)
-            {
-                var reportString = dbProjectReport.REPORT.ToString();
-                using (var sw = new StreamWriter(new MemoryStream()))
-                {
-                    sw.Write(reportString);
-                    sw.Flush();
-                    baselineReport.LoadLayout(sw.BaseStream);
-                }
-            }
-
-            IEnumerable<object> gridVisibleRows = GridControlService.GetVisibleRowObjects();
-            //baselineReport.AssignProperties(loadPROJECT, loadBASELINE, gridVisibleRows.Select(x => ((BASELINE_ITEMProgress)x).Entity));
-            var previewWindow = new DocumentPreviewWindow();
-            previewWindow.PreviewControl.DocumentSource = baselineReport;
-            previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            previewWindow.WindowState = WindowState.Maximized;
-            baselineReport.RequestParameters = false;
-            baselineReport.CreateDocument(true);
-            previewWindow.Show();
         }
         #endregion
     }

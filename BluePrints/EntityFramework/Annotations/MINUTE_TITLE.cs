@@ -87,37 +87,6 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public int Report_Title_Level
-        {
-            get
-            {
-                int i = 0;
-                count_parent(i, MINUTE_TITLE2);
-                return i;
-            }
-        }
-
-        [NotMapped]
-        public IEnumerable<MINUTE_AGENDAMasterDetailProjection> Report_Minute_Agendas => report_minute_agendas;
-
-        [NotMapped]
-        private IEnumerable<MINUTE_AGENDAMasterDetailProjection> report_minute_agendas;
-
-        public void Set_Minute_Agendas(IEnumerable<MINUTE_AGENDAMasterDetailProjection> minute_agendas)
-        {
-            report_minute_agendas = minute_agendas.Where(x => x.Entity.GUID_MINUTE_TITLE == GUID).ToList();
-        }
-
-        private void count_parent(int i, MINUTE_TITLE minute_title)
-        {
-            if (minute_title != null)
-            {
-                i += 1;
-                count_parent(i, minute_title.MINUTE_TITLE2);
-            }
-        }
-
-        [NotMapped]
         public Guid EntityKey { get => GUID; set => GUID = value; }
 
         private void minute_number_constructor(MINUTE_TITLE parent_minute_title, List<string> minute_title_collector)

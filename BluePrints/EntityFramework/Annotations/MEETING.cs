@@ -162,6 +162,9 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
+        public MeetingUser Meeting_ChairUser { get; set; }
+
+        [NotMapped]
         public string EntityGroup => GUID_MEETING_TYPE.ToString();
     }
 

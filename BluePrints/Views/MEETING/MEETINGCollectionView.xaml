@@ -76,6 +76,7 @@
                             <dxg:GridColumn FieldName="NUMBER" />
                             <dxg:GridColumn FieldName="TITLE" />
                             <dxg:GridColumn FieldName="DOC_NUMBER" />
+                            <dxg:GridColumn FieldName="VENUE" />
                             <dxg:GridColumn Header="MEETING_TYPE" FieldName="GUID_MEETING_TYPE">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
