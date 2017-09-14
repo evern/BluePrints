@@ -31,8 +31,9 @@ namespace BluePrints.Common.Projections
             List<MINUTE_AGENDAReportingProjection> remove_minute_agendas = new List<MINUTE_AGENDAReportingProjection>();
             foreach(MINUTE_AGENDAReportingProjection minute_agenda in minute_agendas)
             {
-                if (minute_agenda.Comments.Any(x => x.Action.IS_HIDE))
-                    remove_minute_agendas.Add(minute_agenda);
+                if(minute_agenda.Comments.Count > 0)
+                    if (minute_agenda.Comments.Any(x => x.Action != null && x.Action.IS_HIDE))
+                        remove_minute_agendas.Add(minute_agenda);
             }
 
             //remove elements which action with is hide is true

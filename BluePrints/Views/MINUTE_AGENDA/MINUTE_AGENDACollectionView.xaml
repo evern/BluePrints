@@ -99,9 +99,9 @@
                                 <dxg:GridControl.View>
                                     <dxg:TreeListView x:Name="treeListView" Style="{StaticResource DualTreeListViewTemplate}">
                                         <dxg:TreeListView.RowCellMenuCustomizations>
-                                            <dxb:BarButtonItem Content="Insert Before" Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Command="{Binding AddRowBeforeCommand}" />
-                                            <dxb:BarButtonItem Content="Insert After" Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Command="{Binding AddRowAfterCommand}" />
-                                            <dxb:BarButtonItem Content="Delete Row" Command="{Binding View.DataContext.BulkDeleteCommand}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                            <dxb:BarButtonItem Content="Insert Before" Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.AddRowBeforeCommand, ElementName=userControl}" />
+                                            <dxb:BarButtonItem Content="Insert After" Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.AddRowAfterCommand, ElementName=userControl}" />
+                                            <dxb:BarButtonItem Content="Delete Row" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.MainViewModel.BulkDeleteCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                         </dxg:TreeListView.RowCellMenuCustomizations>
                                     </dxg:TreeListView>
                                 </dxg:GridControl.View>
@@ -118,7 +118,7 @@
                                     <dxg:GridColumn Header="AGENDA" FieldName="Entity.NAME">
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
-                                                <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                                <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="False" VerticalScrollBarVisibility="Auto" />
                                             </DataTemplate>
                                         </dxg:GridColumn.CellTemplate>
                                     </dxg:GridColumn>
@@ -167,7 +167,7 @@
                                                 <dxg:GridColumn Header="AGENDA" FieldName="Entity.NAME">
                                                     <dxg:GridColumn.CellTemplate>
                                                         <DataTemplate>
-                                                            <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                                                            <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="False" VerticalScrollBarVisibility="Auto" />
                                                         </DataTemplate>
                                                     </dxg:GridColumn.CellTemplate>
                                                 </dxg:GridColumn>
