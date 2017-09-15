@@ -357,6 +357,15 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public void ShowAllAgendas()
+        {
+            if (MINUTE_TITLECollectionViewModelWrapper == null)
+                return;
+
+            MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity = null;
+            reloadMainViewModel(false);
+        }
+
         public IEnumerable<MINUTE_TITLE> MINUTE_TITLECollection
         {
             get
