@@ -109,7 +109,7 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
                                         <dxg:RowIndicatorControl Width="{Binding Path=View.ActualIndicatorWidth}" Template="{DynamicResource {dxgt:RowIndicatorThemeKey ResourceKey=ItemTemplate}}" />
-                                        <TextBlock Name="MyFadingText" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Converter={StaticResource NewRowItemDescConverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type dxg:TableView}}}" FontWeight="Bold" Grid.Column="2">
+                                        <TextBlock Name="MyFadingText" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Click here to add new comment and press enter when complete" FontWeight="Bold" Grid.Column="2">
                                             <TextBlock.Triggers>
                                                 <EventTrigger RoutedEvent="TextBlock.Loaded">
                                                     <EventTrigger.Actions>
@@ -191,57 +191,59 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxlc:LayoutGroup>
-                        <Grid DataContext="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper, ElementName=userControl}">
-                            <dxg:GridControl Name="GridControlTree" dx:DXSerializer.SerializationID="MINUTE_TITLETree" MaxHeight="2000" Style="{StaticResource DualGridControlTemplate}">
-                                <dxmvvm:Interaction.Behaviors>
-                                    <dxg:TreeListDragDropManager x:Name="dragDropManager">
-                                        <dxmvvm:Interaction.Behaviors>
-                                            <dxmvvm:EventToCommand EventName="Drop" Command="{Binding DragDropManager_DropCommand}" PassEventArgsToCommand="True" />
-                                            <dxmvvm:EventToCommand EventName="Dropped" Command="{Binding DragDropManager_DroppedCommand}" PassEventArgsToCommand="True" />
-                                        </dxmvvm:Interaction.Behaviors>
-                                        <dxg:TreeListDragDropManager.DragElementTemplate>
-                                            <DataTemplate>
-                                                <Border Background="White" CornerRadius="5" BorderThickness="2" BorderBrush="LightGray">
-                                                    <StackPanel Orientation="Vertical" Background="White" HorizontalAlignment="Left" Margin="5">
-                                                        <StackPanel Margin="5" Orientation="Vertical" Background="White">
-                                                            <TextBlock Padding="3" FontWeight="Bold" Text="{Binding Path=DraggingRows.Count, StringFormat='Dragging {0} row(s)'}" />
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Source: " />
-                                                                <TextBlock Padding="0,3,3,3" Text="{Binding Path=DraggingRows, Converter={StaticResource RowNameConverter}}" />
+                    <dxlc:LayoutControl Orientation="Horizontal">
+                        <dxlc:LayoutGroup Name="LayoutGroupTree" View="Group" Header="Edit Value" Orientation="Vertical" Width="600" dxlc:LayoutControl.AllowHorizontalSizing="True">
+                            <Grid DataContext="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper, ElementName=userControl}">
+                                <dxg:GridControl Name="GridControlTree" dx:DXSerializer.SerializationID="MINUTE_TITLETree" MaxHeight="2000" Style="{StaticResource DualGridControlTemplate}">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxg:TreeListDragDropManager x:Name="dragDropManager">
+                                            <dxmvvm:Interaction.Behaviors>
+                                                <dxmvvm:EventToCommand EventName="Drop" Command="{Binding DragDropManager_DropCommand}" PassEventArgsToCommand="True" />
+                                                <dxmvvm:EventToCommand EventName="Dropped" Command="{Binding DragDropManager_DroppedCommand}" PassEventArgsToCommand="True" />
+                                            </dxmvvm:Interaction.Behaviors>
+                                            <dxg:TreeListDragDropManager.DragElementTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="White" CornerRadius="5" BorderThickness="2" BorderBrush="LightGray">
+                                                        <StackPanel Orientation="Vertical" Background="White" HorizontalAlignment="Left" Margin="5">
+                                                            <StackPanel Margin="5" Orientation="Vertical" Background="White">
+                                                                <TextBlock Padding="3" FontWeight="Bold" Text="{Binding Path=DraggingRows.Count, StringFormat='Dragging {0} row(s)'}" />
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Source: " />
+                                                                    <TextBlock Padding="0,3,3,3" Text="{Binding Path=DraggingRows, Converter={StaticResource RowNameConverter}}" />
+                                                                </StackPanel>
+                                                            </StackPanel>
+                                                            <Separator />
+                                                            <StackPanel Margin="5" Orientation="Horizontal">
+                                                                <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Target: " />
+                                                                <TextBlock Padding="0,3,3,0" Text="{Binding Path=DropTargetRow, Converter={StaticResource RowNameConverter}}" />
                                                             </StackPanel>
                                                         </StackPanel>
-                                                        <Separator />
-                                                        <StackPanel Margin="5" Orientation="Horizontal">
-                                                            <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Target: " />
-                                                            <TextBlock Padding="0,3,3,0" Text="{Binding Path=DropTargetRow, Converter={StaticResource RowNameConverter}}" />
-                                                        </StackPanel>
-                                                    </StackPanel>
-                                                </Border>
-                                            </DataTemplate>
-                                        </dxg:TreeListDragDropManager.DragElementTemplate>
-                                    </dxg:TreeListDragDropManager>
-                                </dxmvvm:Interaction.Behaviors>
-                                <dxg:GridControl.Columns>
-                                    <dxg:GridColumn FieldName="DisplayNumber" Header="NUMBER" VisibleIndex="10" ReadOnly="True" />
-                                    <dxg:GridColumn FieldName="NAME" Header="NAME" VisibleIndex="20" />
-                                    <dxg:GridColumn FieldName="SORTORDER" Header="SORTORDER" Visible="False" VisibleIndex="30" />
-                                </dxg:GridControl.Columns>
-                                <dxg:GridControl.View>
-                                    <dxg:TreeListView x:Name="treeListView" Style="{StaticResource DualTreeListViewTemplate}">
-                                        <dxg:TreeListView.RowCellMenuCustomizations>
-                                            <dxb:BarButtonItem Content="Insert Before" Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.AddRowBeforeCommand, ElementName=userControl}" />
-                                            <dxb:BarButtonItem Content="Insert After" Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.AddRowAfterCommand, ElementName=userControl}" />
-                                            <dxb:BarButtonItem Content="Delete Row" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.MainViewModel.BulkDeleteCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                            <dxb:BarItemSeparator />
-                                            <dxb:BarButtonItem Content="Undo" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.MainViewModel.UndoCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
-                                            <dxb:BarButtonItem Content="Redo" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.MainViewModel.RedoCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
-                                        </dxg:TreeListView.RowCellMenuCustomizations>
-                                    </dxg:TreeListView>
-                                </dxg:GridControl.View>
-                            </dxg:GridControl>
-                        </Grid>
-                        <Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </dxg:TreeListDragDropManager.DragElementTemplate>
+                                        </dxg:TreeListDragDropManager>
+                                    </dxmvvm:Interaction.Behaviors>
+                                    <dxg:GridControl.Columns>
+                                        <dxg:GridColumn FieldName="DisplayNumber" Header="NUMBER" VisibleIndex="10" ReadOnly="True" />
+                                        <dxg:GridColumn FieldName="NAME" Header="NAME" VisibleIndex="20" />
+                                        <dxg:GridColumn FieldName="SORTORDER" Header="SORTORDER" Visible="False" VisibleIndex="30" />
+                                    </dxg:GridControl.Columns>
+                                    <dxg:GridControl.View>
+                                        <dxg:TreeListView x:Name="treeListView" Style="{StaticResource DualTreeListViewTemplate}">
+                                            <dxg:TreeListView.RowCellMenuCustomizations>
+                                                <dxb:BarButtonItem Content="Insert Before" Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.AddRowBeforeCommand, ElementName=userControl}" />
+                                                <dxb:BarButtonItem Content="Insert After" Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.AddRowAfterCommand, ElementName=userControl}" />
+                                                <dxb:BarButtonItem Content="Delete Row" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.MainViewModel.BulkDeleteCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                                <dxb:BarItemSeparator />
+                                                <dxb:BarButtonItem Content="Undo" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.MainViewModel.UndoCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
+                                                <dxb:BarButtonItem Content="Redo" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.MainViewModel.RedoCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
+                                            </dxg:TreeListView.RowCellMenuCustomizations>
+                                        </dxg:TreeListView>
+                                    </dxg:GridControl.View>
+                                </dxg:GridControl>
+                            </Grid>
+                        </dxlc:LayoutGroup>
+                        <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical" >
                             <custom:GridControlEx x:Name="GridControl" Style="{StaticResource DefaultGridControlTemplate}" CurrentItem="{Binding DataContext.DisplaySelectedEntity, Mode=TwoWay, ElementName=userControl}" dx:DXSerializer.SerializationID="GridControlMINUTE_AGENDA">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand Command="{Binding DataContext.MasterRowExpandedCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="MasterRowExpanded" />
@@ -314,16 +316,16 @@
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
                                                 <dxg:GridColumn Header="ACTION" FieldName="Entity.GUID_ACTION">
-                                                <dxg:GridColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <dxe:ComboBoxEdit Name="PART_Editor" DisplayMember="NAME" ValueMember="GUID" ValidateOnTextInput="False" AllowNullInput="True" ItemsSource="{Binding DataContext.MEETING_ACTIONCollection, ElementName=userControl}">
-                                                            <dxmvvm:Interaction.Behaviors>
-                                                                <dxmvvm:EventToCommand Command="{Binding DataContext.ProcessNewValueCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="ProcessNewValue" />
-                                                            </dxmvvm:Interaction.Behaviors>
-                                                        </dxe:ComboBoxEdit>
-                                                    </DataTemplate>
-                                                </dxg:GridColumn.CellTemplate>
-                                            </dxg:GridColumn>
+                                                    <dxg:GridColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <dxe:ComboBoxEdit Name="PART_Editor" DisplayMember="NAME" ValueMember="GUID" ValidateOnTextInput="False" AllowNullInput="True" ItemsSource="{Binding DataContext.MEETING_ACTIONCollection, ElementName=userControl}">
+                                                                <dxmvvm:Interaction.Behaviors>
+                                                                    <dxmvvm:EventToCommand Command="{Binding DataContext.ProcessNewValueCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="ProcessNewValue" />
+                                                                </dxmvvm:Interaction.Behaviors>
+                                                            </dxe:ComboBoxEdit>
+                                                        </DataTemplate>
+                                                    </dxg:GridColumn.CellTemplate>
+                                                </dxg:GridColumn>
                                                 <dxg:GridColumn Header="ACTION_BY" FieldName="Entity.GUID_ACTION_USER">
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.MeetingUserCollection, ElementName=userControl}" DisplayMember="Full_Name" ValueMember="Guid" ValidateOnTextInput="True" ValidateOnEnterKeyPressed="True" IncrementalFiltering="True" />
@@ -384,8 +386,8 @@
                                     </dxg:TableView>
                                 </dxg:GridControl.View>
                             </custom:GridControlEx>
-                        </Grid>
-                    </dxlc:LayoutGroup>
+                        </dxlc:LayoutGroup>
+                    </dxlc:LayoutControl>
                 </Grid>
             </DockPanel>
         </Grid>

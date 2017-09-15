@@ -344,7 +344,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "MINUTE_AGENDACollectionViewModelWrapper1" + view_project_specific_affix; }
+            get { return "MINUTE_AGENDACollectionViewModelWrapper_V2" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix
@@ -408,7 +408,7 @@ namespace BluePrints.ViewModels
                 if (MINUTE_TITLECollectionViewModelWrapper == null || MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity == null)
                     return "Please select a title to display minute agenda";
 
-                return "Click here and type to add new agenda, push enter when completed";
+                return "Click here and type to add new agenda, push enter when complete";
             }
         }
 
