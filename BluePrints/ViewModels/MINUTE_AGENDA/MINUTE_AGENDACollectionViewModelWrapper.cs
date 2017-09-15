@@ -406,7 +406,7 @@ namespace BluePrints.ViewModels
             get
             {
                 if (MINUTE_TITLECollectionViewModelWrapper == null || MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity == null)
-                    return "Please select a title to display minute agenda";
+                    return "<-- Please select a title before entering new agenda";
 
                 return "Click here and type to add new agenda, push enter when complete";
             }
