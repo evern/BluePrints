@@ -345,7 +345,7 @@
                                                 <dxg:GridColumn Header="NUMBER" FieldName="Entity.NUMBER" />
                                             </dxg:GridControl.Columns>
                                             <dxg:GridControl.View>
-                                                <dxg:TableView x:Name="tableView1" ShowColumnHeaders="False" Style="{StaticResource DefaultDetailTableViewTemplate}" NewItemRowPosition="Bottom" RowStyle="{StaticResource CommentNewItemRowStyle}">
+                                                <dxg:TableView x:Name="tableView1" ShowColumnHeaders="False" Style="{StaticResource DefaultDetailTableViewTemplate}" ShowGroupPanel="False" NewItemRowPosition="Bottom" RowStyle="{StaticResource CommentNewItemRowStyle}">
                                                     <dxg:TableView.RowCellMenuCustomizations>
                                                         <!--<dxb:BarButtonItem Content="Bulk Edit" Command="{Binding DataContext.MainViewModel.BulkColumnEditCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
                                                         <dxb:BarButtonItem Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" Command="{Binding DataContext.MainViewModel.FillUpCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
@@ -368,7 +368,7 @@
                                     <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" NewItemRowPosition="Bottom" ExpandDetailButtonWidth="50" RowStyle="{StaticResource AgendaNewItemRowStyle}" Tag="{Binding DataContext.NewAgendaInstruction, ElementName=userControl}">
+                                    <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" NewItemRowPosition="Bottom" ShowGroupPanel="False" ExpandDetailButtonWidth="50" RowStyle="{StaticResource AgendaNewItemRowStyle}" Tag="{Binding DataContext.NewAgendaInstruction, ElementName=userControl}">
                                         <dxg:TableView.RowCellMenuCustomizations>
                                             <!--<dxb:BarButtonItem Content="Bulk Edit" Command="{Binding View.DataContext.BulkColumnEditCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
                                             <dxb:BarButtonItem Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" Command="{Binding View.DataContext.FillUpCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
