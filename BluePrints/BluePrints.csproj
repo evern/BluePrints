@@ -328,6 +328,7 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -434,6 +435,7 @@
     <Compile Include="Common\SpellCheck\SpellCheckerHelper.cs" />
     <Compile Include="Common\SpellCheck\SpellCheckerModule.cs" />
     <Compile Include="Common\Utils\BluePrintsStringFormatUtils.cs" />
+    <Compile Include="Common\ViewModel\Converters\MeetingMasterDetailNewRowTextConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\IReportableStatsMaximumUnitsConverter.cs" />
     <Compile Include="Common\ViewModel\BluePrintsInterfaces.cs" />
     <Compile Include="Common\Reports\ViewModel\Builders.cs" />

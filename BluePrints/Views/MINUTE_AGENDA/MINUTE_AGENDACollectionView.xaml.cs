@@ -1,7 +1,4 @@
-﻿using BaseModel.Misc;
-using BluePrints.Common.Projections;
-using BluePrints.ViewModels;
-using System;
+﻿using System;
 using System.Windows.Controls;
 using System.Windows.Threading;
 

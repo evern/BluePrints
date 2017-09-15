@@ -12,7 +12,7 @@ namespace BluePrints.Common.Base
     public abstract class BluePrintsEntitiesMasterDetailCollectionsWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
         TMainEntityUnitOfWork> : ProjectionMasterDetailCollectionsWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
         TMainEntityUnitOfWork>
-        where TMainEntity : class, IGuidEntityKey, IGuidParentEntityKey, new()
+        where TMainEntity : class, IGuidEntityKey, IHaveCreatedDate, IGuidParentEntityKey, new()
         where TMainProjectionEntity : class, IProjectionMasterDetail<TMainEntity, TMainProjectionEntity>, ICanUpdate, new()
         where TMainEntityUnitOfWork : IUnitOfWork
     {

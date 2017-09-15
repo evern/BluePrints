@@ -151,10 +151,24 @@ namespace BluePrints.ViewModels
         {
             childEntity.Entity.NUMBER = string.Empty;
             childEntity.Entity.GUID_MINUTE_TITLE = masterEntity.Entity.GUID_MINUTE_TITLE;
-            childEntity.Entity.GUID_ACTION_USER = masterEntity.Entity.GUID_ACTION_USER;
-            childEntity.Entity.GUID_RAISE_USER = masterEntity.Entity.GUID_RAISE_USER;
             childEntity.Entity.RAISE_DATE = loadMEETING.MEETING_DATE;
-            childEntity.Entity.DUE_DATE = masterEntity.Entity.DUE_DATE;
+
+            if(masterEntity.DetailEntities != null && masterEntity.DetailEntities.Count > 0)
+            {
+                DateTime lastEntity = masterEntity.DetailEntities.Max(x => x.Entity.EntityCreatedDate);
+                MINUTE_AGENDAMasterDetailProjection latestChildEntity = masterEntity.DetailEntities.First(x => x.Entity.EntityCreatedDate == lastEntity);
+                childEntity.Entity.GUID_ACTION = latestChildEntity.Entity.GUID_ACTION;
+                childEntity.Entity.GUID_ACTION_USER = latestChildEntity.Entity.GUID_ACTION_USER;
+                childEntity.Entity.GUID_RAISE_USER = latestChildEntity.Entity.GUID_RAISE_USER;
+                childEntity.Entity.DUE_DATE = latestChildEntity.Entity.DUE_DATE;
+            }
+            else
+            {
+                childEntity.Entity.GUID_ACTION = masterEntity.Entity.GUID_ACTION;
+                childEntity.Entity.GUID_ACTION_USER = masterEntity.Entity.GUID_ACTION_USER;
+                childEntity.Entity.GUID_RAISE_USER = masterEntity.Entity.GUID_RAISE_USER;
+                childEntity.Entity.DUE_DATE = masterEntity.Entity.DUE_DATE;
+            }
 
             return base.OnBeforeParentAssigned(masterEntity, childEntity);
         }
@@ -172,6 +186,12 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.OnEntitiesLoadedCallBack = null;
             mainThreadDispatcher.BeginInvoke(new Action(() => RefreshDisplayEntities()));
+            mainThreadDispatcher.BeginInvoke(new Action(() => refreshAgendaInstruction()));
+        }
+
+        private void refreshAgendaInstruction()
+        {
+            this.RaisePropertyChanged(x => x.NewAgendaInstruction);
         }
 
         private void onMINUTE_TITLEChanged(MINUTE_TITLE minute_title_entity)
@@ -324,7 +344,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "MINUTE_AGENDACollectionViewModelWrapper" + view_project_specific_affix; }
+            get { return "MINUTE_AGENDACollectionViewModelWrapper1" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix
@@ -372,8 +392,29 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public string NewAgendaInstruction
+        {
+            get
+            {
+                if (MINUTE_TITLECollectionViewModelWrapper == null || MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity == null)
+                    return "Please select a title to display minute agenda";
+
+                return "Click here and type to add new agenda, push enter when completed";
+            }
+        }
+
         protected override string expand_key_field_name => BindableBase.GetPropertyName(() => new MINUTE_AGENDAMasterDetailProjection().Entity) + "." + BindableBase.GetPropertyName(() => new MINUTE_AGENDA().GUID);
+        protected override bool parentEntitiesFilter(MINUTE_AGENDAMasterDetailProjection x)
+        {
+            return filterEntities(x);
+        }
+
         protected override bool childEntitiesFilter(MINUTE_AGENDAMasterDetailProjection x)
+        {
+            return filterEntities(x);
+        }
+
+        private bool filterEntities(MINUTE_AGENDAMasterDetailProjection x)
         {
             if (x.Entity.RAISE_DATE == null)
                 return true;
@@ -381,6 +422,16 @@ namespace BluePrints.ViewModels
                 return true;
             else
                 return false;
+        }
+
+        protected override object parentEntitiesOrder(MINUTE_AGENDAMasterDetailProjection x)
+        {
+            return x.Entity.NUMBER;
+        }
+
+        protected override object childEntitiesOrder(MINUTE_AGENDAMasterDetailProjection x)
+        {
+            return x.Entity.RAISE_DATE;
         }
         #endregion
     }
