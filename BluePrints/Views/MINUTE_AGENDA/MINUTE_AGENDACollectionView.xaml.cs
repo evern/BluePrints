@@ -24,10 +24,5 @@ namespace BluePrints.Views
             sortTimer.Stop();
             GridControlTree.Columns["DisplayNumber"].SortOrder = DevExpress.Data.ColumnSortOrder.Ascending;
         }
-
-        private void PART_Editor_ProcessNewValue(System.Windows.DependencyObject sender, DevExpress.Xpf.Editors.ProcessNewValueEventArgs e)
-        {
-
-        }
     }
 }

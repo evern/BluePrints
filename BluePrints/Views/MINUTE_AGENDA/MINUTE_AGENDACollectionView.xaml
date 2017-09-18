@@ -43,25 +43,59 @@
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="50" />
+                                            <ColumnDefinition Width="85" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
                                         <dxg:RowIndicatorControl Width="{Binding Path=View.ActualIndicatorWidth}" Template="{DynamicResource {dxgt:RowIndicatorThemeKey ResourceKey=ItemTemplate}}" />
-                                        <TextBlock Name="MyChangingColorText" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding View.Tag}" FontWeight="Bold" Grid.Column="2">
+                                        <Image Source="{dx:DXImageOffice2013 Image=Backward_16x16.png}" Visibility="{Binding DataContext.IsArrowVisible, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" Width="16" Height="16" Grid.Column="1">
+                                            <Image.RenderTransform>
+                                                <TranslateTransform x:Name="transTransform" X="0" Y="0" />
+                                            </Image.RenderTransform>
+                                            <Image.Triggers>
+                                                <EventTrigger RoutedEvent="Image.Loaded">
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation From="35" To="0" Duration="00:00:01" Storyboard.TargetName="transTransform" Storyboard.TargetProperty="X" AutoReverse="True" RepeatBehavior="Forever">
+                                                                <DoubleAnimation.EasingFunction>
+                                                                    <BounceEase Bounces="1" EasingMode="EaseOut" Bounciness="3" />
+                                                                </DoubleAnimation.EasingFunction>
+                                                            </DoubleAnimation>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                            </Image.Triggers>
+                                        </Image>
+                                        <TextBlock Name="MyChangingColorText" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding DataContext.NewAgendaInstruction, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" FontWeight="Bold" Grid.Column="2">
                                             <TextBlock.Foreground>
-                                                <SolidColorBrush x:Name="MySolidColorBrush" Color="Maroon" />
+                                                <SolidColorBrush x:Name="MySolidColorBrush" Color="DarkBlue" />
                                             </TextBlock.Foreground>
                                             <TextBlock.Triggers>
                                                 <EventTrigger RoutedEvent="TextBlock.Loaded">
                                                     <EventTrigger.Actions>
                                                         <BeginStoryboard>
                                                             <Storyboard>
-                                                                <ColorAnimation Storyboard.TargetName="MySolidColorBrush" Storyboard.TargetProperty="Color" From="DarkOrange" To="SteelBlue" Duration="0:0:2" AutoReverse="True" RepeatBehavior="Forever" />
+                                                                <ColorAnimation Storyboard.TargetName="MySolidColorBrush" Storyboard.TargetProperty="Color" From="DarkBlue" To="SteelBlue" Duration="0:0:2" AutoReverse="True" RepeatBehavior="Forever" />
                                                             </Storyboard>
                                                         </BeginStoryboard>
                                                     </EventTrigger.Actions>
                                                 </EventTrigger>
                                             </TextBlock.Triggers>
+                                            <!--<TextBlock.RenderTransform>
+                                                <TranslateTransform x:Name="transTransform1" X="0" Y="0" />
+                                            </TextBlock.RenderTransform>
+                                            <TextBlock.Triggers>
+                                                <EventTrigger RoutedEvent="TextBlock.Loaded">
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation From="35" To="0" Duration="00:00:01" Storyboard.TargetName="transTransform1" Storyboard.TargetProperty="X" AutoReverse="True" RepeatBehavior="Forever">
+                                                                <DoubleAnimation.EasingFunction>
+                                                                    <BounceEase Bounces="1" EasingMode="EaseOut" Bounciness="3" />
+                                                                </DoubleAnimation.EasingFunction>
+                                                            </DoubleAnimation>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                            </TextBlock.Triggers>-->
                                         </TextBlock>
                                     </Grid>
                                 </Border>
@@ -105,17 +139,17 @@
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="75" />
+                                            <ColumnDefinition Width="110" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
                                         <dxg:RowIndicatorControl Width="{Binding Path=View.ActualIndicatorWidth}" Template="{DynamicResource {dxgt:RowIndicatorThemeKey ResourceKey=ItemTemplate}}" />
-                                        <TextBlock Name="MyFadingText" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Click here to add new comment and press enter when complete" FontWeight="Bold" Grid.Column="2">
+                                        <TextBlock Name="MyFadingText" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Type here to add new comment and press enter when complete" FontWeight="Bold" Grid.Column="2">
                                             <TextBlock.Triggers>
                                                 <EventTrigger RoutedEvent="TextBlock.Loaded">
                                                     <EventTrigger.Actions>
                                                         <BeginStoryboard>
                                                             <Storyboard>
-                                                                <DoubleAnimation Storyboard.TargetName="MyFadingText" Storyboard.TargetProperty="(TextBlock.Opacity)" From="1.0" To="0.3" Duration="0:0:2" AutoReverse="True" RepeatBehavior="Forever" />
+                                                                <DoubleAnimation Storyboard.TargetName="MyFadingText" Storyboard.TargetProperty="(TextBlock.Opacity)" From="1.0" To="0.3" Duration="0:0:1" AutoReverse="True" RepeatBehavior="Forever" />
                                                             </Storyboard>
                                                         </BeginStoryboard>
                                                     </EventTrigger.Actions>
@@ -224,9 +258,12 @@
                                         </dxg:TreeListDragDropManager>
                                     </dxmvvm:Interaction.Behaviors>
                                     <dxg:GridControl.Columns>
-                                        <dxg:GridColumn FieldName="DisplayNumber" Header="NUMBER" VisibleIndex="10" ReadOnly="True" />
+                                        <dxg:GridColumn FieldName="DisplayNumber" Width="75" Header="NUMBER" VisibleIndex="10" ReadOnly="True" />
                                         <dxg:GridColumn FieldName="NAME" Header="NAME" VisibleIndex="20" />
-                                        <dxg:GridColumn FieldName="SORTORDER" Header="SORTORDER" Visible="False" VisibleIndex="30" />
+                                        <dxg:GridColumn Header="Total" Width="75" FieldName="Summary_Total_Agendas" VisibleIndex="30" />
+                                        <dxg:GridColumn Header="Due" Width="75" FieldName="Summary_Due_Agendas" VisibleIndex="40" />
+                                        <dxg:GridColumn Header="Closed" Width="75" FieldName="Summary_Closed_Agendas" VisibleIndex="50" />
+                                        <dxg:GridColumn FieldName="SORTORDER" Header="SORTORDER" Visible="False" VisibleIndex="60" />
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.View>
                                         <dxg:TreeListView x:Name="treeListView" Style="{StaticResource DualTreeListViewTemplate}">
@@ -240,6 +277,18 @@
                                             </dxg:TreeListView.RowCellMenuCustomizations>
                                         </dxg:TreeListView>
                                     </dxg:GridControl.View>
+                                    <dxg:GridControl.GroupSummary>
+                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="NAME" SummaryType="Count" ShowInColumn="NAME" DisplayFormat="Total {0} Record(s)" />
+                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Summary_Total_Agendas" SummaryType="Sum" ShowInColumn="Summary_Total_Agendas" DisplayFormat="Total: {0:n0}" />
+                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Summary_Due_Agendas" SummaryType="Sum" ShowInColumn="Summary_Due_Agendas" DisplayFormat="Due: {0:n0}" />
+                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Summary_Closed_Agendas" SummaryType="Sum" ShowInColumn="Summary_Closed_Agendas" DisplayFormat="Closed: {0:n0}" />
+                                    </dxg:GridControl.GroupSummary>
+                                    <dxg:GridControl.TotalSummary>
+                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="NAME" SummaryType="Count" ShowInColumn="NAME" DisplayFormat="Total {0} Record(s)" />
+                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Summary_Total_Agendas" SummaryType="Sum" ShowInColumn="Summary_Total_Agendas" DisplayFormat="Total: {0:n0}" />
+                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Summary_Due_Agendas" SummaryType="Sum" ShowInColumn="Summary_Due_Agendas" DisplayFormat="Due: {0:n0}" />
+                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Summary_Closed_Agendas" SummaryType="Sum" ShowInColumn="Summary_Closed_Agendas" DisplayFormat="Closed: {0:n0}" />
+                                    </dxg:GridControl.TotalSummary>
                                 </dxg:GridControl>
                             </Grid>
                         </dxlc:LayoutGroup>
@@ -295,10 +344,11 @@
                                     </dxg:GridColumn>
                                     <dxg:GridColumn Header="NUMBER" FieldName="Entity.NUMBER" />
                                     <dxg:GridColumn Header="KEY" FieldName="Entity.GUID" Visible="False" />
+                                    <dxg:GridColumn Header="PARENTKEY" FieldName="Entity.GUID_MINUTE_TITLE" Visible="False" />
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.DetailDescriptor>
                                     <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding DetailEntities}">
-                                        <dxg:GridControl x:Name="gridControlMain" Style="{StaticResource DefaultDetailGridControlTemplate}">
+                                        <dxg:GridControl x:Name="gridControl" Style="{StaticResource DefaultDetailGridControlTemplate}">
                                             <i:Interaction.Behaviors>
                                                 <behavior:DetailSyncBehavior />
                                             </i:Interaction.Behaviors>
@@ -349,7 +399,10 @@
                                                 <dxg:GridColumn Header="NUMBER" FieldName="Entity.NUMBER" />
                                             </dxg:GridControl.Columns>
                                             <dxg:GridControl.View>
-                                                <dxg:TableView x:Name="tableView1" ShowColumnHeaders="False" AllowColumnMoving="False" Style="{StaticResource DefaultDetailTableViewTemplate}" ShowGroupPanel="False" NewItemRowPosition="Bottom" RowStyle="{StaticResource CommentNewItemRowStyle}">
+                                                <dxg:TableView x:Name="tableView1" ShowColumnHeaders="False"  AllowColumnMoving="False" Style="{StaticResource DefaultDetailTableViewTemplate}" ShowGroupPanel="False" NewItemRowPosition="Bottom" RowStyle="{StaticResource CommentNewItemRowStyle}">
+                                                    <dxmvvm:Interaction.Behaviors>
+                                                        <dxmvvm:EventToCommand Command="{Binding DataContext.InitNewRow_DetailCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="InitNewRow" />
+                                                    </dxmvvm:Interaction.Behaviors>
                                                     <dxg:TableView.RowCellMenuCustomizations>
                                                         <!--<dxb:BarButtonItem Content="Bulk Edit" Command="{Binding DataContext.MainViewModel.BulkColumnEditCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
                                                         <dxb:BarButtonItem Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" Command="{Binding DataContext.MainViewModel.FillUpCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
@@ -373,6 +426,9 @@
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
                                     <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" AllowColumnMoving="False" NewItemRowPosition="Bottom" ShowGroupPanel="False" ExpandDetailButtonWidth="50" RowStyle="{StaticResource AgendaNewItemRowStyle}" Tag="{Binding DataContext.NewAgendaInstruction, ElementName=userControl}">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.InitNewRow_MasterCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="InitNewRow" />
+                                        </dxmvvm:Interaction.Behaviors>
                                         <dxg:TableView.RowCellMenuCustomizations>
                                             <!--<dxb:BarButtonItem Content="Bulk Edit" Command="{Binding View.DataContext.BulkColumnEditCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
                                             <dxb:BarButtonItem Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" Command="{Binding View.DataContext.FillUpCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
@@ -382,6 +438,10 @@
                                             <dxb:BarItemSeparator />
                                             <dxb:BarButtonItem Content="Undo" Command="{Binding View.DataContext.UndoCommand}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
                                             <dxb:BarButtonItem Content="Redo" Command="{Binding View.DataContext.RedoCommand}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
+                                            <dxb:BarItemSeparator />
+                                            <dxb:BarButtonItem Content="Expand All" Command="{Binding DataContext.ExpandAllCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=AutoExpand_16x16.png}" />
+                                            <dxb:BarButtonItem Content="Collapse All But This" Command="{Binding DataContext.CollapseAllButThisCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=CollapseFieldPivotTable_16x16.png}" />
+                                            <dxb:BarButtonItem Content="Collapse All" Command="{Binding DataContext.CollapseAllCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=CollapseFieldPivotTable_16x16.png}" />
                                         </dxg:TableView.RowCellMenuCustomizations>
                                     </dxg:TableView>
                                 </dxg:GridControl.View>

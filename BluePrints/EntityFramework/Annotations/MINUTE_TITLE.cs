@@ -97,5 +97,14 @@ namespace BluePrints.Data
                 minute_number_constructor(parent_minute_title.MINUTE_TITLE2, minute_title_collector);
             }
         }
+
+        [NotMapped]
+        public int Summary_Total_Agendas { get; set; }
+        
+        [NotMapped]
+        public int Summary_Due_Agendas { get; set; }
+
+        [NotMapped]
+        public int Summary_Closed_Agendas { get; set; }
     }
 }
