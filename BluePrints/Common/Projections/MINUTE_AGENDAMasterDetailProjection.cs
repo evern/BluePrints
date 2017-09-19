@@ -17,9 +17,9 @@ namespace BluePrints.Common.Projections
     public static class MINUTE_AGENDAMasterDetailProjectionQueries
     {
         public static IQueryable<MINUTE_AGENDAMasterDetailProjection> MINUTE_AGENDA_Master_Detail_Transformation(
-            IQueryable<MINUTE_AGENDA> MINUTE_AGENDAS, Guid projectGuid, Guid minute_title_guid)
+            IQueryable<MINUTE_AGENDA> MINUTE_AGENDAS, Guid projectGuid, Guid minute_title_guid, MEETING_TYPE meeting_type)
         {
-            return MINUTE_AGENDAS.Where(x => x.GUID_PROJECT == projectGuid).ToArray().Where(x => x.MINUTE_TITLE != null).Select(x => new MINUTE_AGENDAMasterDetailProjection() { Entity = x }).AsQueryable();
+            return MINUTE_AGENDAS.Where(x => x.GUID_PROJECT == projectGuid).ToArray().Where(x => x.MINUTE_TITLE != null && x.MINUTE_TITLE.MEETING_TYPE == meeting_type).Select(x => new MINUTE_AGENDAMasterDetailProjection() { Entity = x }).AsQueryable();
         }
     }
 }

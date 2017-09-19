@@ -89,7 +89,9 @@ namespace BluePrints.ViewModels
             if (loadMEETING.Meeting_Signoff != null)
                 AllMeetingUsers.AddRange(loadMEETING.Meeting_Signoff);
 
-            AllMeetingUsers.Add(loadMEETING.Meeting_ChairUser);
+            if(loadMEETING.Meeting_ChairUser != null)
+                AllMeetingUsers.Add(loadMEETING.Meeting_ChairUser);
+
             MeetingUserCollection = new List<MeetingUser>();
             foreach (MeetingUser meetingUser in AllMeetingUsers.OrderBy(x => x.Full_Name))
             {
@@ -132,7 +134,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<MINUTE_AGENDA>, IQueryable<MINUTE_AGENDAMasterDetailProjection>> specifyMainViewModelProjection()
         {
-            return query => MINUTE_AGENDAMasterDetailProjectionQueries.MINUTE_AGENDA_Master_Detail_Transformation(query, loadPROJECT.GUID, minute_title_guid);
+            return query => MINUTE_AGENDAMasterDetailProjectionQueries.MINUTE_AGENDA_Master_Detail_Transformation(query, loadPROJECT.GUID, minute_title_guid, loadMEETING.MEETING_TYPE);
         }
 
         private Guid minute_title_guid
