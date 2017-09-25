@@ -239,9 +239,7 @@
                                                               MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnStatus"
-                                                FieldName="Entity.Entity.DeliverableStatusGuid"
-                                                Header="STATUS" ColumnFilterMode="DisplayText">
+                                <dxg:GridColumn Name="columnStatus" FieldName="DeliverableStatusProgressGuid" Header="STATUS" ColumnFilterMode="DisplayText">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:ComboBoxEdit 

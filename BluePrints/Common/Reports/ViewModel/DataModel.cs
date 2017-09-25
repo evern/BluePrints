@@ -1,4 +1,5 @@
-﻿using BaseModel.Misc;
+﻿using BaseModel.Attributes;
+using BaseModel.Misc;
 using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel;
@@ -180,6 +181,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal DC_Value { get => Entity.DC_Value; set => Entity.DC_Value = value; }
     }
 
+    [BulkEditDisabledAttributes("DeliverableStatusProgressGuid, DeliverableStatusGuid")]
     public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ISupportByDuration, ICanAssignP6, ISupportVariation, IHaveDBProductivityOverride, IEntityNumber
     {
         public BASELINE_ITEMProgress()
@@ -251,6 +253,36 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string EntityNumber { get => Entity.Entity.INTERNAL_NUM; set => Entity.Entity.INTERNAL_NUM = value; }
 
         public string EntityGroup => Entity.EntityGroup;
+
+        public Guid? DeliverableStatusProgressGuid
+        {
+            get
+            {
+                return Entity.Entity.DeliverableStatusGuid;
+            }
+            set
+            {
+                Guid? setValue = (Guid?)value;
+                if (setValue == null)
+                    Entity.Entity.GUID_STATUS = null;
+                else if (Entity.Entity.IsDeliverableStatusValid(setValue))
+                {
+                    Entity.Entity.GUID_STATUS = setValue;
+
+                    if(setValue != null)
+                    {
+                        Guid current_deliverable_status_guid = (Guid)setValue;
+                        DELIVERABLES_STATUS current_deliverable_status = Entity.Entity.DeliverableStatusCollection.FirstOrDefault(x => x.GUID == current_deliverable_status_guid);
+                        if (current_deliverable_status != null && current_deliverable_status.AUTO_PERCENTAGE != null)
+                        {
+                            decimal auto_percentage = (decimal)current_deliverable_status.AUTO_PERCENTAGE;
+                            if (current_deliverable_status.AUTO_PERCENTAGE > Total_Earned_Percentage)
+                                Total_Earned_Percentage = auto_percentage;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public abstract class BluePrintsProgressableByQuantityProjectionBase<TEntity> : BluePrintsProgressableProjectionBase<TEntity>, IReportable_Quantity
