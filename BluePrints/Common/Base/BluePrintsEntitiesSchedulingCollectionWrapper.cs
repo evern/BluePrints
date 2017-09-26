@@ -791,14 +791,7 @@ namespace BluePrints.Common.Base
                 Task.target_work_qty = 0;
             }
 
-            IEnumerable<TASKRSRC> ExistingTaskResource = P6_PROJECT.TASKRSRC.ToArray().AsEnumerable();
-
-            double taskrsrcCount = ExistingTaskResource.Count();
-            foreach (var TaskRsrc in ExistingTaskResource)
-            {
-                IP6EntitiesUnitOfWork.TASKRSRC.Remove(TaskRsrc);
-            }
-
+            List<TASKRSRC> ExistingTaskResource = new List<TASKRSRC>();
             List<P6_AssignmentProjection> missing_activities = new List<P6_AssignmentProjection>();
             foreach (ICanAssignP6 deliverable in Deliverables_Source)
             {
@@ -812,12 +805,21 @@ namespace BluePrints.Common.Base
                     {
                         actual_context_task.target_work_qty += p6_assignment.UNITS;
                         actual_context_task.remain_work_qty += p6_assignment.UNITS;
+                        foreach(TASKRSRC task_resource in actual_context_task.TASKRSRC)
+                        {
+                            ExistingTaskResource.Add(task_resource);
+                        }
                     }
                     else
                     {
                         missing_activities.Add(p6_assignment);
                     }
                 }
+            }
+
+            foreach (var TaskRsrc in ExistingTaskResource)
+            {
+                IP6EntitiesUnitOfWork.TASKRSRC.Remove(TaskRsrc);
             }
 
             ((P6EntitiesUnitOfWork)IP6EntitiesUnitOfWork).Context.SaveChanges();
