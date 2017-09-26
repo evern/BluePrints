@@ -14,6 +14,7 @@ namespace BluePrints.Data
         public PHASE()
         {
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
+            ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
             WORKPACK = new HashSet<WORKPACK>();
         }
 
@@ -50,5 +51,8 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<WORKPACK> WORKPACK { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
     }
 }

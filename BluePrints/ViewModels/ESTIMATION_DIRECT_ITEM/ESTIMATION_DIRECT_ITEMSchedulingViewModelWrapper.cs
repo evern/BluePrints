@@ -48,7 +48,6 @@ namespace BluePrints.ViewModels
 
         #region Database Operation
         private DEPARTMENT defaultConstructionDEPARTMENT;
-        private Data.PHASE defaultConstructionPHASE;
 
         protected override ProgressType progress_type => ProgressType.Construct;
 
@@ -61,7 +60,7 @@ namespace BluePrints.ViewModels
 
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, assign_default_construction_department);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc, assign_default_construction_phase);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc, assign_estimation);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS, STOCK_GROUPProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
@@ -76,14 +75,6 @@ namespace BluePrints.ViewModels
                 mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Construction department not found, please add " + BluePrintsResources.Default_Construction_Department.ToString() + " in department view")));
 
             defaultConstructionDEPARTMENT = entity;
-        }
-
-        private void assign_default_construction_phase(BluePrints.Data.PHASE entity)
-        {
-            if (entity == null && !SupressCompulsoryEntityNotFoundMessage)
-                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Site phase not found, please add " + BluePrintsResources.Default_Construction_Phase.ToString() + " in phase view")));
-
-            defaultConstructionPHASE = entity;
         }
 
         private void assign_estimation(ESTIMATION_DIRECT entity)
@@ -122,7 +113,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<Data.PHASE>, IQueryable<Data.PHASE>> PHASEProjectionFunc()
         {
-            return query => query.Where(x => x.INTERNAL_NUM == BluePrintsResources.Default_Construction_Phase);
+            return query => query.Where(x => x.PHASE_TYPE == PhaseType.Construct);
         }
 
         private Func<IRepositoryQuery<STOCK_GROUP>, IQueryable<STOCK_GROUP>> STOCK_GROUPProjectionFunc()

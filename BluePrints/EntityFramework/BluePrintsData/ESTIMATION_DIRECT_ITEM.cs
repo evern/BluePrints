@@ -20,6 +20,8 @@ namespace BluePrints.Data
 
         public Guid? GUID_VARIATION { get; set; }
 
+        public Guid? GUID_PHASE { get; set; }
+
         public Guid? GUID_AREA { get; set; }
 
         public Guid? GUID_SUBAREA { get; set; }
@@ -47,6 +49,8 @@ namespace BluePrints.Data
 
         public decimal DC_QUANTITY { get; set; }
 
+        public decimal? RATE_OVERRIDE { get; set; }
+
         public Estimation_DirectProgressType PROGRESS_TYPE { get; set; }
 
         public decimal? PRODUCTIVITY_OVERRIDE { get; set; }
@@ -70,6 +74,8 @@ namespace BluePrints.Data
         public virtual AREA AREA { get; set; }
 
         public virtual AREA AREA1 { get; set; }
+
+        public virtual PHASE PHASE { get; set; }
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 

@@ -769,7 +769,6 @@ namespace BluePrints.Common.Base
         }
         #endregion
 
-
         #region P6 Interaction
         public void PushToP6()
         {

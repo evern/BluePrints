@@ -359,6 +359,7 @@
                                                IsDetailButtonVisibleBinding="{Binding Row.HaveDisciplineCodes}"
                                                NewItemRowPosition="None">
                                     <dxg:TableView.RowCellMenuCustomizations>
+                                        <dxb:BarButtonItem Content="Copy With Headers" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" />
                                         <dxb:BarButtonItem Content="Refresh"
                                                            Command="{Binding View.DataContext.RefreshCommand}"
                                                            Glyph="{dx:DXImage Image=Refresh_16x16.png}" />

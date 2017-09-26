@@ -165,6 +165,7 @@
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
                                 <dxg:TableView.RowCellMenuCustomizations>
+                                    <dxb:BarButtonItem Content="Copy With Headers" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" />
                                     <dxb:BarButtonItem Content="Edit" Command="{Binding View.DataContext.EditCommand}"
                                                    Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                     <dxb:BarButtonItem Content="Fill Down"

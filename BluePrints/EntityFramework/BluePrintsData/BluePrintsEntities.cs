@@ -321,6 +321,11 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_PHASE);
 
             modelBuilder.Entity<PHASE>()
+                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
+                .WithOptional(e => e.PHASE)
+                .HasForeignKey(e => e.GUID_PHASE);
+
+            modelBuilder.Entity<PHASE>()
                 .HasMany(e => e.WORKPACK)
                 .WithOptional(e => e.PHASE)
                 .HasForeignKey(e => e.GUID_DPHASE);

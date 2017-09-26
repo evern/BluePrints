@@ -100,7 +100,7 @@ namespace BluePrints.Common.Projections
 
         public void SetOriginalEntityKey(Guid newGuid) { }
 
-        public decimal ItemRate => RATE == null || RATE.RATE1 == null ? 0 : (decimal)RATE.RATE1;
+        public decimal ItemRate => Entity.RATE_OVERRIDE == null ? RATE == null || RATE.RATE1 == null ? 0 : (decimal)RATE.RATE1 : (decimal)Entity.RATE_OVERRIDE;
 
         public decimal Estimated_Costs => Estimated_Units * ItemRate;
 
