@@ -86,7 +86,12 @@ namespace BluePrints.ViewModels
 
         protected override void assign_additional_callbacks(CollectionViewModel<ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork> mainViewModel)
         {
+            mainViewModel.ManualPasteAction = ManualPasteAction;
+        }
 
+        public void ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATION_DIRECT_ITEMVariation pasteEntity)
+        {
+            ((ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper)collectionViewModelWrapper).ManualPasteAction(pasteData, pasteEntity.Entity);
         }
 
         protected override void CellValueNewRowChanging(CellValueChangedEventArgs e)

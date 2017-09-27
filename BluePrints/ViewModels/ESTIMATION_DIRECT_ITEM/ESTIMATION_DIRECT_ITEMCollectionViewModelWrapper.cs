@@ -270,14 +270,14 @@ namespace BluePrints.ViewModels
             SetViewSpecificProperties();
         }
 
-        private void ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATION_DIRECT_ITEMProgress pasteEntity)
+        public void ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATION_DIRECT_ITEMProgress pasteEntity)
         {
-            KeyValuePair<ColumnBase, string> stock_code_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity." + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.StockCodeGuid));
+            KeyValuePair<ColumnBase, string> stock_code_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.StockCodeGuid)));
 
             if (stock_code_data.Key != null)
             {
-                KeyValuePair<ColumnBase, string> supply_rate_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.STOCK_CODE." + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.STOCK_CODE.RATE_SUPPLY));
-                KeyValuePair<ColumnBase, string> install_rate_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.STOCK_CODE." + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.STOCK_CODE.HOURS_INSTALL));
+                KeyValuePair<ColumnBase, string> supply_rate_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.STOCK_CODE.RATE_SUPPLY)));
+                KeyValuePair<ColumnBase, string> install_rate_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.STOCK_CODE.HOURS_INSTALL)));
 
                 if (supply_rate_data.Key != null && install_rate_data.Key != null)
                 {
@@ -301,11 +301,11 @@ namespace BluePrints.ViewModels
                         }
                         else
                         {
-                            KeyValuePair<ColumnBase, string> uom_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.STOCK_CODE." + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.STOCK_CODE.UOM));
-                            KeyValuePair<ColumnBase, string> name_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.STOCK_CODE." + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.STOCK_CODE.NAME));
-                            KeyValuePair<ColumnBase, string> type_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.STOCK_CODE." + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.STOCK_CODE.TYPE));
-                            KeyValuePair<ColumnBase, string> spec_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.STOCK_CODE." + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.STOCK_CODE.SPEC));
-                            KeyValuePair<ColumnBase, string> desc_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.STOCK_CODE." + BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.STOCK_CODE.DESCRIPTION));
+                            KeyValuePair<ColumnBase, string> uom_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.STOCK_CODE.UOM)));
+                            KeyValuePair<ColumnBase, string> name_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.STOCK_CODE.NAME)));
+                            KeyValuePair<ColumnBase, string> type_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.STOCK_CODE.TYPE)));
+                            KeyValuePair<ColumnBase, string> spec_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.STOCK_CODE.SPEC)));
+                            KeyValuePair<ColumnBase, string> desc_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.STOCK_CODE.DESCRIPTION)));
                             pasteEntity.Entity.STOCK_CODE.CODE = stock_code_data.Value;
                             pasteEntity.Entity.STOCK_CODE.UOM = uom_data.Value;
                             pasteEntity.Entity.STOCK_CODE.NAME = name_data.Value;
@@ -328,8 +328,11 @@ namespace BluePrints.ViewModels
                             if (from_stock_code != null)
                                 pasteEntity.Entity.STOCK_CODE.GUID_ORIGINAL = from_stock_code.GUID;
 
-                            pasteEntity.Entity.StockCodeGuid = createNewSTOCK_CODE(pasteEntity.Entity.STOCK_CODE);
-                            pasteEntity.Entity.Entity.GUID_STOCK_CODE = pasteEntity.Entity.StockCodeGuid;
+                            if(pasteEntity.Entity.STOCK_CODE.NAME != string.Empty)
+                            {
+                                pasteEntity.Entity.StockCodeGuid = createNewSTOCK_CODE(pasteEntity.Entity.STOCK_CODE);
+                                pasteEntity.Entity.Entity.GUID_STOCK_CODE = pasteEntity.Entity.StockCodeGuid;
+                            }
                         }
                     }
                 }
@@ -710,12 +713,20 @@ namespace BluePrints.ViewModels
 
             if (fieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEM().PROGRESS_TYPE))
             {
-                if (validateEntity.Entity.Entity.GUID_STOCK_GROUP != null)
+                if (validateEntity.Entity.Entity.STOCK_CODE == null)
                 {
-                    STOCK_GROUP entity_commodity_code = STOCK_GROUPCollection.FirstOrDefault(x => x.GUID == validateEntity.Entity.Entity.GUID_STOCK_GROUP);
-                    if (entity_commodity_code != null)
+                    Estimation_DirectProgressType newValue = (Estimation_DirectProgressType)currentValue;
+                    if (newValue != Estimation_DirectProgressType.Standalone)
                     {
-                        if ((validateEntity.Entity.Entity.STOCK_CODE.UOM != entity_commodity_code.UOM) && ((Estimation_DirectProgressType)currentValue) == Estimation_DirectProgressType.Trackable)
+                        error_message = "Cannot set " + newValue.ToString() + " when stock code is empty";
+                    }
+                }
+                else if (validateEntity.Entity.Entity.GUID_STOCK_GROUP != null)
+                {
+                    STOCK_GROUP entity_stock_group = STOCK_GROUPCollection.FirstOrDefault(x => x.GUID == validateEntity.Entity.Entity.GUID_STOCK_GROUP);
+                    if (entity_stock_group != null)
+                    {
+                        if ((validateEntity.Entity.Entity.STOCK_CODE.UOM != entity_stock_group.UOM) && ((Estimation_DirectProgressType)currentValue) == Estimation_DirectProgressType.Trackable)
                         {
                             error_message = "Cannot set trackable when UOM is different from stock group";
                         }

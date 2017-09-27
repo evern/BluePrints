@@ -64,6 +64,39 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public Estimation_DirectProgressType PROGRESS_TYPE
+        {
+            get
+            {
+                return Entity.PROGRESS_TYPE;
+            }
+            set
+            {
+                if(value == Estimation_DirectProgressType.Trackable)
+                {
+                    if (STOCK_CODE == null)
+                        return;
+
+                    if (Entity.STOCK_GROUP == null)
+                        return;
+
+                    if (STOCK_CODE.UOM != Entity.STOCK_GROUP.UOM)
+                        return;
+                }
+
+                if(value == Estimation_DirectProgressType.Auto)
+                {
+                    if (STOCK_CODE == null)
+                        return;
+
+                    if (Entity.STOCK_GROUP == null)
+                        return;
+                }
+
+                Entity.PROGRESS_TYPE = value;
+            }
+        }
+
         public bool IsStockCodeValid(Guid? commodityCodeGuid)
         {
             return true;

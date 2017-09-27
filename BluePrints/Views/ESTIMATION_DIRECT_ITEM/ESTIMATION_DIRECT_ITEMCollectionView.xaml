@@ -190,7 +190,7 @@
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.STOCK_GROUPCollection, ElementName=userControl}" DisplayMember="CODE" ValueMember="GUID" ValidateOnTextInput="True" ValidateOnEnterKeyPressed="True" IncrementalFiltering="True" NullValueButtonPlacement="Popup" ImmediatePopup="True"></dxe:ComboBoxEditSettings>
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colPROGRESS_TYPE" FieldName="Entity.Entity.PROGRESS_TYPE" Header="PROGRESS_TYPE" FilterPopupMode="CheckedList">
+                                <dxg:GridColumn Name="colPROGRESS_TYPE" FieldName="Entity.PROGRESS_TYPE" Header="PROGRESS_TYPE" FilterPopupMode="CheckedList">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Estimation_DirectProgressType}}" />
                                     </dxg:GridColumn.EditSettings>
