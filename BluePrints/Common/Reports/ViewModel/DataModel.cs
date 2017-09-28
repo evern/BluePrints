@@ -296,7 +296,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public BluePrintsProgressableByQuantityProjectionBase(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments)
             : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments)
         {
-
+            
         }
 
         public decimal Estimated_Quantity => Entity.Estimated_Quantity;
@@ -330,6 +330,22 @@ namespace BluePrints.Common.ViewModel.Reporting
             get
             {
                 return (Total_Quantity - AbsoluteTotalInstalledQuantity) * UnitsPerQuantity;
+            }
+        }
+
+        public virtual decimal Schedule_Estimated_Quantity
+        {
+            get
+            {
+                return SchedulePercentage * Estimated_Quantity;
+            }
+        }
+
+        public virtual decimal Schedule_Estimated_Current_Period_Quantity
+        {
+            get
+            {
+                return ScheduleCurrentPeriodPercentage * Estimated_Quantity;
             }
         }
 
@@ -583,6 +599,17 @@ namespace BluePrints.Common.ViewModel.Reporting
                     return 0;
 
                 return Stats.Budgeted.CurrentPeriodCumulativeDataPoint.UnitsPercentage;
+            }
+        }
+
+        public decimal ScheduleCurrentPeriodPercentage
+        {
+            get
+            {
+                if (Stats == null || Stats.Budgeted == null || Stats.Budgeted.CurrentPeriodDataPoint == null)
+                    return 0;
+
+                return Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage;
             }
         }
 

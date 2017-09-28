@@ -129,6 +129,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public string Department_Code => ((IReportable)ProgressItem).Department_Code;
 
+        public decimal ScheduleCurrentPeriodPercentage => ((IReportable)ProgressItem).ScheduleCurrentPeriodPercentage;
+
         public override void Update()
         {
             ProgressItem.Update();
@@ -402,6 +404,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string Workpack_Name => Reportable.Workpack_Name;
 
         public string Department_Code => Reportable.Department_Code;
+
+        public decimal Schedule_Estimated_Quantity => Reportable.Schedule_Estimated_Quantity;
+
+        public decimal Schedule_Estimated_Current_Period_Quantity => Reportable.Schedule_Estimated_Current_Period_Quantity;
+
+        public decimal ScheduleCurrentPeriodPercentage => Reportable.ScheduleCurrentPeriodPercentage;
 
         public void SetReportingDataDate(DateTime dataDate)
         {

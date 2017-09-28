@@ -577,7 +577,7 @@ namespace BluePrints.ViewModels
             if (loadPROJECT == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectEstimates" + loadPROJECT.GUID.ToString(),
+            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectProgress" + loadPROJECT.GUID.ToString(),
                 new EntitiesParameter<PROJECT>(loadPROJECT),
                     "PROGRESSCollectionView",
                     "[" + loadPROJECT.NUMBER + "] Progresses");

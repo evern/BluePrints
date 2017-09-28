@@ -331,15 +331,15 @@ namespace BluePrints.ViewModels
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectWorkpacks" + keyString, projectKey, childTitlePrefix + "Workpacks", "WORKPACKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Workpacks"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageBaseline))
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables", "BASELINE_ITEMCollectionView", new DualEntitiesParameter<PROJECT, IAmBaseline>(entity, null), null, "Deliverables"));
+                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables", "BASELINE_ITEMCollectionView", new DualEntitiesParameter<PROJECT, IAmBaseline>(entity, null), null, "Deliverables"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageEstimation))
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates", "ESTIMATION_DIRECT_ITEMCollectionView", new DualEntitiesParameter<PROJECT, IAmBaseline>(entity, null), null, "Estimate"));
+                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates", "ESTIMATION_DIRECT_ITEMCollectionView", new DualEntitiesParameter<PROJECT, IAmBaseline>(entity, null), null, "Estimate"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageProgress))
             {
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectOffsiteProgress" + keyString, projectKey, childTitlePrefix + "Design Progress", "OffsiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress"));
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectSiteDirectProgress" + keyString, projectKey, childTitlePrefix + "Site Direct Progress", "SiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress"));
+                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectOffsiteProgress" + keyString, projectKey, childTitlePrefix + "Design Progress", "OffsiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress"));
+                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectSiteDirectProgress" + keyString, projectKey, childTitlePrefix + "Site Direct Progress", "SiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageVariation))

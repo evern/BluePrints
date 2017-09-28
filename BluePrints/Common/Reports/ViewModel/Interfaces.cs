@@ -31,6 +31,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public interface IReportable_Quantity : IReportable, IHaveQuantity, ICanTrack, IHaveStock_Group, ICanProgressByQuantity
     {
+        decimal Schedule_Estimated_Quantity { get; }
+        decimal Schedule_Estimated_Current_Period_Quantity { get; }
         decimal Remaining_Hours_To_Completion { get; }
         decimal MinEstimateQuantity { get; }
         decimal Earned_Install_Costs_OnDataDate { get; }
@@ -117,6 +119,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Total_Percentage_ToDate { get; }
         decimal Baseline_Percentage { get; }
         decimal SchedulePercentage { get; }
+        decimal ScheduleCurrentPeriodPercentage { get; }
         decimal MinPercentage { get; }
         decimal MaxPercentage { get; }
         bool ShouldSaveProgress { get; }
