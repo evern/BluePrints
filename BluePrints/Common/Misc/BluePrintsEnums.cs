@@ -230,6 +230,16 @@ namespace BluePrints.Common
         Cancel
     }
 
+    public enum ExoBurnedFilterType
+    {
+        [Display(Name = "All")]
+        All,
+        [Display(Name = "Design")]
+        Design,
+        [Display(Name = "Construct")]
+        Construct
+    }
+
     public enum Estimation_DirectProgressType
     {
         [Display(Name = "Standalone")]

@@ -52,7 +52,7 @@ namespace BluePrints.Common.Projections
             if (projectSummarizer == null)
                 return;
 
-            projectSummarizer.BuildBurnedDataPoints();
+            projectSummarizer.BuildBurnedDataPoints(ExoBurnedFilterType.All);
             projectSummarizer.Build(showLoadingScreen, isCosts);
             this.RaisePropertiesChanged();
         }

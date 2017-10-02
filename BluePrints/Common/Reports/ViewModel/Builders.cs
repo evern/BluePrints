@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Entity.Core.Objects;
+using System.Diagnostics;
 using System.Linq;
 using static BluePrints.Data.BluePrintsEntities;
 
@@ -30,7 +31,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.projectWORKPACKS = WORKPACKS;
         }
 
-        public void BuildExoDataPoints(ProjectSummaryStats summaryObject)
+        public void BuildExoDataPoints(ProjectSummaryStats summaryObject, ExoBurnedFilterType filterType)
         {
             try
             {
@@ -46,7 +47,19 @@ namespace BluePrints.Common.ViewModel.Reporting
                 IEnumerable<WORKPACK> workpacks = projectWORKPACKS;
                 string projectNumber = ProjectNumber;
 
-                IEnumerable<string> qualifiedWorkpacks = workpacks == null ? new List<string>() : workpacks.Select(x => x.INTERNAL_NAME1);
+                IEnumerable<string> qualifiedWorkpacks;
+                if (workpacks == null)
+                    qualifiedWorkpacks = new List<string>();
+                else
+                {
+                    if (filterType == ExoBurnedFilterType.All)
+                        qualifiedWorkpacks = workpacks.Select(x => x.INTERNAL_NAME1);
+                    else if (filterType == ExoBurnedFilterType.Design)
+                        qualifiedWorkpacks = workpacks.Where(x => x.TYPE == WorkpackType.OffsiteDirect || x.TYPE == WorkpackType.OffsiteIndirect).Select(x => x.INTERNAL_NAME1);
+                    else
+                        qualifiedWorkpacks = workpacks.Where(x => x.TYPE == WorkpackType.SiteDirect || x.TYPE == WorkpackType.SiteIndirect).Select(x => x.INTERNAL_NAME1);
+                }
+
                 var PrimeroUnitOfWork = PrimeroUOW;
                 var jobTransactions = from JOBTRANS in PrimeroUnitOfWork.JOB_TRANSACTIONS
                                       join JOBCOST_HDR2 in PrimeroUnitOfWork.JOBCOST_HDR
@@ -98,6 +111,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         burnedDataPoint.CostGroup = jobTransaction.COSTDESC;
                         burnedDataPoint.CostType = jobTransaction.COSTDESC3;
 
+                        Debug.Print(burnedDataPoint.Units + "|" + burnedDataPoint.Workpack_Name + "|" + burnedDataPoint.ProgressDate + "|" + burnedDataPoint.ResourceName);
                         burnedDataPoints.Add(burnedDataPoint);
 
                         ExoDataPoint actualDataPoint = new ExoDataPoint();

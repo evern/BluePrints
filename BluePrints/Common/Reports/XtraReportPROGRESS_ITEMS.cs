@@ -2,6 +2,7 @@
 using DevExpress.XtraReports.Parameters;
 using DevExpress.XtraReports.UI;
 using System;
+using System.Collections.Generic;
 
 namespace BluePrints.Reports
 {
@@ -15,33 +16,16 @@ namespace BluePrints.Reports
 
         private void rptProgressItem_ParametersRequestSubmit(object sender, ParametersRequestEventArgs e)
         {
-            var reportBy = "Units";
+            var replaceTo = "Units";
 
             foreach (var info in e.ParametersInformation)
                 if (info.Parameter.Name == "reportBy")
-                    reportBy = (string) info.Parameter.Value;
-
-            xrDataSummaryCumulativeBurnedPercent.DataBindings.Clear();
-            xrDataSummaryCumulativeEarnedPercent.DataBindings.Clear();
-            xrDataSummaryCumulativePlannedPercent.DataBindings.Clear();
-            xrDataSummaryPeriodBurnedPercent.DataBindings.Clear();
-            xrDataSummaryPeriodEarnedPercent.DataBindings.Clear();
-            xrDataSummaryPeriodPlannedPercent.DataBindings.Clear();
-
-            xrDataBaselineBudgeted.DataBindings.Clear();
-            xrDataCumulativePlannedUOM.DataBindings.Clear();
-            xrDataCumulativePlannedPercentage.DataBindings.Clear();
-            xrDataCumulativeEarnedUOM.DataBindings.Clear();
-            xrDataCumulativeEarnedPercentage.DataBindings.Clear();
-            xrDataPeriodPlannedUOM.DataBindings.Clear();
-            xrDataPeriodPlannedPercentage.DataBindings.Clear();
-            xrDataPeriodCurrentUOM.DataBindings.Clear();
-            xrDataPeriodCurrentPercentage.DataBindings.Clear();
+                    replaceTo = (string) info.Parameter.Value;
 
             string strReplaceFrom;
             string strReplaceTo;
             string formatString;
-            if (reportBy == "Costs")
+            if (replaceTo == "Costs")
             {
                 strReplaceFrom = "Units";
                 strReplaceTo = "Costs";
@@ -54,67 +38,40 @@ namespace BluePrints.Reports
                 formatString = "{0:n1}";
             }
 
+            string percentageFormatString = "{0:0.00%}";
 
-            xrDataSummaryCumulativeBurnedPercent.DataBindings.Add(new XRBinding("Text", objectDataSource1,
-                "Summary_CumulativeBurned." + reportBy + "Percentage", "{0:0.00%}"));
-            xrDataSummaryCumulativeEarnedPercent.DataBindings.Add(new XRBinding("Text", objectDataSource1,
-                "Summary_CumulativeEarned." + reportBy + "Percentage", "{0:0.00%}"));
-            xrDataSummaryCumulativePlannedPercent.DataBindings.Add(new XRBinding("Text", objectDataSource1,
-                "Summary_CumulativePlanned." + reportBy + "Percentage", "{0:0.00%}"));
-            xrDataSummaryPeriodBurnedPercent.DataBindings.Add(new XRBinding("Text", objectDataSource1,
-                "Summary_PeriodBurned." + reportBy + "Percentage", "{0:0.00%}"));
-            xrDataSummaryPeriodEarnedPercent.DataBindings.Add(new XRBinding("Text", objectDataSource1,
-                "Summary_PeriodEarned." + reportBy + "Percentage", "{0:0.00%}"));
-            xrDataSummaryPeriodPlannedPercent.DataBindings.Add(new XRBinding("Text", objectDataSource1,
-                "Summary_PeriodPlanned." + reportBy + "Percentage", "{0:0.00%}"));
+            replaceDataMember(xrDataSummaryCumulativeEarnedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
+            replaceDataMember(xrDataSummaryCumulativePlannedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
+            replaceDataMember(xrDataSummaryCumulativeBurnedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
 
-            if (reportBy == "Units")
-                xrDataBaselineBudgeted.DataBindings.Add(new XRBinding("Text", objectDataSource1,
-                    "ReportableObjects.BASELINE_ITEMJoinRATE.BASELINE_ITEM.ESTIMATED_HOURS", formatString));
-            else
-                xrDataBaselineBudgeted.DataBindings.Add(new XRBinding("Text", objectDataSource1,
-                    "ReportableObjects.BASELINE_ITEMJoinRATE.ESTIMATED_COSTS", formatString));
+            replaceDataMember(xrDataSummaryPeriodEarnedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
+            replaceDataMember(xrDataSummaryPeriodPlannedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
+            replaceDataMember(xrDataSummaryPeriodBurnedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
 
-            xrDataCumulativePlannedUOM.DataBindings.Add(new XRBinding("Text", objectDataSource1,
-                "ReportableObjects.Summary_CumulativeOriginal." + reportBy, formatString));
-            xrDataCumulativePlannedPercentage.DataBindings.Add(new XRBinding("Text", objectDataSource1,
-                "ReportableObjects.Summary_CumulativeOriginal." + reportBy + "Percentage", "{0:0.00%}"));
+            replaceDataMember(xrDataBaselineBudgeted, strReplaceFrom, strReplaceTo, formatString);
 
-            xrDataCumulativeEarnedUOM.DataBindings.Add(new XRBinding("Text", objectDataSource1,
-                "ReportableObjects.Summary_CumulativeEarned." + strReplaceTo, formatString));
+            replaceDataMember(xrDataCumulativePlannedUOM, strReplaceFrom, strReplaceTo, formatString);
+            replaceDataMember(xrDataCumulativePlannedPercentage, strReplaceFrom, strReplaceTo, percentageFormatString);
 
-            xrDataCumulativeEarnedPercentage.DataBindings.Add(new XRBinding("Text", objectDataSource1,
-                "ReportableObjects.Summary_CumulativeEarned." + reportBy + "Percentage", "{0:0.00%}"));
+            replaceDataMember(xrDataCumulativeEarnedUOM, strReplaceFrom, strReplaceTo, formatString);
+            replaceDataMember(xrDataCumulativeEarnedPercentage, strReplaceFrom, strReplaceTo, percentageFormatString);
 
-            xrDataPeriodPlannedUOM.DataBindings.Add(new XRBinding("Text", objectDataSource1,
-                "ReportableObjects.Summary_PeriodPlanned." + strReplaceTo, formatString));
+            replaceDataMember(xrDataPeriodPlannedUOM, strReplaceFrom, strReplaceTo, formatString);
+            replaceDataMember(xrDataPeriodPlannedPercentage, strReplaceFrom, strReplaceTo, percentageFormatString);
 
-            xrDataPeriodPlannedPercentage.DataBindings.Add(new XRBinding("Text", objectDataSource1,
-                "ReportableObjects.Summary_PeriodPlanned." + reportBy + "Percentage", "{0:0.00%}"));
+            replaceDataMember(xrDataPeriodCurrentUOM, strReplaceFrom, strReplaceTo, formatString);
+            replaceDataMember(xrDataPeriodCurrentPercentage, strReplaceFrom, strReplaceTo, percentageFormatString);
 
-            xrDataPeriodCurrentUOM.DataBindings.Add(new XRBinding("Text", objectDataSource1,
-                "ReportableObjects.Summary_PeriodEarned." + strReplaceTo, formatString));
 
-            xrDataPeriodCurrentPercentage.DataBindings.Add(new XRBinding("Text", objectDataSource1,
-                "ReportableObjects.Summary_PeriodEarned." + reportBy + "Percentage", "{0:0.00%}"));
+            xrChart1.Series["Planned"].ValueDataMembersSerializable = xrChart1.Series["Planned"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
+            xrChart1.Series["Earned"].ValueDataMembersSerializable = xrChart1.Series["Earned"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
+            xrChart1.Series["Burned"].ValueDataMembersSerializable = xrChart1.Series["Burned"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
+            xrChart1.Series["Remaining"].ValueDataMembersSerializable = xrChart1.Series["Remaining"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
 
-            xrChart1.Series["Planned"].ValueDataMembersSerializable = "Stats.Current.CumulativeDataPoints." +
-                                                                           reportBy + "Percentage";
-            xrChart1.Series["Earned"].ValueDataMembersSerializable = "Stats.Earned.CumulativeDataPoints." +
-                                                                          reportBy + "Percentage";
-            xrChart1.Series["Burned"].ValueDataMembersSerializable = "Stats.Burned.CumulativeDataPoints." +
-                                                                          reportBy + "Percentage";
-            xrChart1.Series["Remaining"].ValueDataMembersSerializable =
-                "Stats.Remaining.CumulativeDataPoints." + reportBy + "Percentage";
-
-            xrChart1.Series["Period Planned"].ValueDataMembersSerializable = "Stats.Current.DataPoints." +
-                                                                                  reportBy;
-            xrChart1.Series["Period Earned"].ValueDataMembersSerializable = "Stats.Earned.DataPoints." +
-                                                                                 reportBy;
-            xrChart1.Series["Period Burned"].ValueDataMembersSerializable = "Stats.Burned.DataPoints." +
-                                                                                 reportBy;
-            xrChart1.Series["Period Remaining"].ValueDataMembersSerializable =
-                "Stats.Remaining.DataPoints." + reportBy;
+            xrChart1.Series["Period Planned"].ValueDataMembersSerializable = xrChart1.Series["Period Planned"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
+            xrChart1.Series["Period Earned"].ValueDataMembersSerializable = xrChart1.Series["Period Earned"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
+            xrChart1.Series["Period Burned"].ValueDataMembersSerializable = xrChart1.Series["Period Burned"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
+            xrChart1.Series["Period Remaining"].ValueDataMembersSerializable = xrChart1.Series["Period Remaining"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
 
             //labels
             xrLblCumulativeEarnedUOM.Text = xrLblCumulativeEarnedUOM.Text.Replace(strReplaceFrom, strReplaceTo);
@@ -149,6 +106,16 @@ namespace BluePrints.Reports
                 SummaryCumulativeEarnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
             SummaryPeriodEarnedEfficiency_Bad.Condition =
                 SummaryPeriodEarnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
+        }
+
+        private void replaceDataMember(XRLabel label, string replaceFrom, string replaceTo, string formatString)
+        {
+            string propertyName = string.Empty;
+            propertyName = label.DataBindings[0].DataMember;
+            propertyName = propertyName.Replace(replaceFrom, replaceTo);
+            label.DataBindings.Clear();
+            label.DataBindings.Add(new XRBinding("Text", objectDataSource1,
+                propertyName, formatString));
         }
 
         private SummaryStats ReportData { get; set; }

@@ -233,11 +233,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             FullStatsBuilder = fullStatsBuilder;
         }
 
-        public void BuildBurnedDataPoints()
+        public void BuildBurnedDataPoints(ExoBurnedFilterType filterType)
         {
             ProjectSummaryStats projectSummaryStats = this.SummaryStats as ProjectSummaryStats;
             if (projectSummaryStats != null)
-                FullStatsBuilder.BuildExoDataPoints(projectSummaryStats);
+                FullStatsBuilder.BuildExoDataPoints(projectSummaryStats, filterType);
         }
 
         public void RecalculateStats(bool isCosts)
