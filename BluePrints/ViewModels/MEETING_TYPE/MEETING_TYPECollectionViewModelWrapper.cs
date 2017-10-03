@@ -132,7 +132,7 @@ namespace BluePrints.ViewModels
                     "MINUTE_TITLECollectionView",
                     "[" + DisplaySelectedEntity.NAME + "] Titles");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
         #endregion
     }

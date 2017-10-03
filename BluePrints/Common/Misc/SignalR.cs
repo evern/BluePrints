@@ -1,8 +1,11 @@
 ﻿using BaseModel.Misc;
 using BluePrints.Data;
+using BluePrints.ViewModels;
 using DevExpress.Mvvm;
 using Microsoft.AspNet.SignalR.Client;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Windows;
 
@@ -15,14 +18,10 @@ namespace BluePrints.Common
 
         public static async void ConnectAsync()
         {
-            Connection = new HubConnection(System.Configuration.ConfigurationManager.ConnectionStrings["SignalR"].ConnectionString);
+            Connection = new HubConnection(System.Configuration.ConfigurationManager.ConnectionStrings["SignalR"].ConnectionString, new Dictionary<string, string> { { "UserName", LoginCredentials.CurrentUser.NAME }});
+            
             HubProxy = Connection.CreateHubProxy("MyHub");
-
-            HubProxy.On<string, string, string, string, string>("AddMessage", (entityName, key, messageType, sender, hwid) =>
-                Application.Current.Dispatcher.Invoke(
-                    () => HubReceiveMessage(entityName, key, messageType, sender, hwid)
-                )
-            );
+            HubProxy.On<string, string, string, string, string>("AddMessage", (entityName, key, messageType, sender, hwid) => Application.Current.Dispatcher.Invoke(() => HubReceiveMessage(entityName, key, messageType, sender, hwid)));
 
             try
             {
@@ -52,8 +51,27 @@ namespace BluePrints.Common
                 ConnectAsync();
         }
 
+        public static void HubLogMessage(string message)
+        {
+            if (Connection.State == ConnectionState.Connected)
+                HubProxy.Invoke("Log", message);
+            else if (Connection.State == ConnectionState.Disconnected)
+                ConnectAsync();
+        }
+
         public static void HubReceiveMessage(string entityName, string key, string messageType, string sender, string hwid)
         {
+            //empty string for message type is reserved for shutdown message
+            if(messageType == string.Empty)
+            {
+                Window active_window = Application.Current.Windows.OfType<Window>().FirstOrDefault(x => x.ToString().Contains("LoginWindow"));
+                if (active_window == null)
+                    return;
+
+                LoginViewModel loginViewModel = (LoginViewModel)active_window.DataContext;
+                loginViewModel.SignalRShutdown(entityName);
+            }
+
             //ignore messages returned from hub because it was transmitted locally
             if (hwid == LoginCredentials.CurrentHWID)
                 return;

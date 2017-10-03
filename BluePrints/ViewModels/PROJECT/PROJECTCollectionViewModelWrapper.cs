@@ -528,7 +528,7 @@ namespace BluePrints.ViewModels
                     "AREACollectionView",
                     "[" + DisplaySelectedEntity.NUMBER + "] Areas");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public void EditRate()
@@ -541,7 +541,7 @@ namespace BluePrints.ViewModels
                     "RATECollectionView",
                     "[" + DisplaySelectedEntity.NUMBER + "] Rates");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public void EditBaseline()
@@ -554,7 +554,7 @@ namespace BluePrints.ViewModels
                     "BASELINECollectionView",
                     "[" + DisplaySelectedEntity.NUMBER + "] Baselines");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public void EditEstimate()
@@ -567,7 +567,7 @@ namespace BluePrints.ViewModels
                     "ESTIMATION_DIRECTCollectionView",
                     "[" + DisplaySelectedEntity.NUMBER + "] Estimates");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public void EditProgress()
@@ -580,7 +580,7 @@ namespace BluePrints.ViewModels
                     "PROGRESSCollectionView",
                     "[" + DisplaySelectedEntity.NUMBER + "] Progresses");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
         #endregion
 
@@ -609,7 +609,7 @@ namespace BluePrints.ViewModels
                 "PROJECTView", 
                 "[" + DisplaySelectedEntity.NUMBER + "]");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
         #endregion
     }

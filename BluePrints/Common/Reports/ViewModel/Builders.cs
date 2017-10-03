@@ -111,7 +111,6 @@ namespace BluePrints.Common.ViewModel.Reporting
                         burnedDataPoint.CostGroup = jobTransaction.COSTDESC;
                         burnedDataPoint.CostType = jobTransaction.COSTDESC3;
 
-                        Debug.Print(burnedDataPoint.Units + "|" + burnedDataPoint.Workpack_Name + "|" + burnedDataPoint.ProgressDate + "|" + burnedDataPoint.ResourceName);
                         burnedDataPoints.Add(burnedDataPoint);
 
                         ExoDataPoint actualDataPoint = new ExoDataPoint();

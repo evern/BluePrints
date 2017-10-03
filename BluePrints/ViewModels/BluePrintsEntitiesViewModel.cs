@@ -18,6 +18,8 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using DevExpress.Mvvm;
+using BluePrints.Common.Base;
 
 namespace BluePrints.ViewModels
 {
@@ -275,6 +277,19 @@ namespace BluePrints.ViewModels
             dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_MeetingAction", dataCategoryId, "Meeting Actions", "MEETING_ACTIONCollectionView"));
 
             return bluePrintsEntitiesModuleDescriptions;
+        }
+
+        public override IDocument NavigateCore(BluePrintsEntitiesModuleDescription module)
+        {
+            if (module == null || DocumentManagerService == null)
+                return null;
+
+            DocumentInfo documentInfo = new DocumentInfo(module.Id, module.DocumentParameter, module.DocumentType, module.ModuleTitle);
+            var document = DocumentManagerService.ShowExistingEntityDocumentWithLogging(documentInfo, this);
+            //var document = DocumentManagerService.FindDocumentByIdOrCreate(module.ModuleTitle,
+            //    x => NavigateToDocument(module));
+            //document.Show();
+            return document;
         }
 
         private void CreateProjectTree(PROJECT entity)

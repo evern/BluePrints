@@ -420,7 +420,7 @@ namespace BluePrints.ViewModels
                 view_name,
                 "[" + loadPROJECT.NUMBER + "] " + "[" + DisplaySelectedEntity.Entity.NAME + "] " + tab_title);
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         /// <summary>

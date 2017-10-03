@@ -61,6 +61,12 @@ namespace BluePrints.ViewModels
             Application.Current.Dispatcher.BeginInvoke(new Action(() => EVERNPCLogin()));
         }
 
+        public void SignalRShutdown(string message)
+        {
+            MessageBoxService.ShowMessage(message);
+            Environment.Exit(1);
+        }
+
         public void OnLoaded()
         {
             string themeName = Properties.Settings.Default["ThemeName"] as string;
@@ -91,7 +97,6 @@ namespace BluePrints.ViewModels
         public void Login()
         {
             UserAuthenticationResult authenticationResult = UserAuthenticate;
-
             if (authenticationResult == UserAuthenticationResult.Authenticated || UserName == BluePrintsResources.Default_AdminUsername && UserPassword == BluePrintsResources.Default_AdminPassword)
             {
                 if (UserName == BluePrintsResources.Default_AdminUsername)
@@ -107,7 +112,6 @@ namespace BluePrints.ViewModels
             }
             else
                 SetUsernamePasswordError(authenticationResult);
-
         }
 
         protected IMessageBoxService MessageBoxService

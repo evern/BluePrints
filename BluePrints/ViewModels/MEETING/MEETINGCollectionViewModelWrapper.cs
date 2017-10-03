@@ -401,7 +401,7 @@ namespace BluePrints.ViewModels
                     "MINUTE_AGENDACollectionView",
                     "[" + DisplaySelectedEntity.EntityNumber + "] Agenda");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
         #endregion
     }

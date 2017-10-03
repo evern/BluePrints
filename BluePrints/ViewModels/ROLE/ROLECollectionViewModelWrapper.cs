@@ -231,7 +231,7 @@ namespace BluePrints.ViewModels
                 return;
 
             //DocumentInfo documentInfo = new DocumentInfo(loadProject.Guid.ToString() + DisplaySelectedEntity.Guid.ToString(), new EntitiesParameter<ROLE>(DisplaySelectedEntity), "CommodityCollectionView", "[" + DisplaySelectedEntity.Name + "] Commodities");
-            //DocumentManagerService.ShowExistingEntityDocument(documentInfo, this);
+            //DocumentManagerService.ShowExistingEntityDocumentWithLogging(documentInfo, this);
         }
 
         public CollectionViewModel<ROLE_PERMISSION, ROLE_PERMISSION, Guid, IBluePrintsEntitiesUnitOfWork> ROLE_PERMISSIONViewModel

@@ -6,6 +6,7 @@ using BaseModel.ViewModel.Document;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
+using BluePrints.Common.Base;
 using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel;
@@ -509,7 +510,7 @@ namespace BluePrints.ViewModels
                 "WORKPACKDashboardView",
                 "[" + DisplaySelectedEntity.Entity.NUMBER + "] WORKPACK Dashboard");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         /// <summary>
@@ -530,7 +531,7 @@ namespace BluePrints.ViewModels
                     "AREACollectionView",
                     "[" + loadPROJECT.NUMBER + "] Areas");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public void EditRate()
@@ -543,7 +544,7 @@ namespace BluePrints.ViewModels
                     "RATECollectionView",
                     "[" + loadPROJECT.NUMBER + "] Rates");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public void EditBaseline()
@@ -556,7 +557,7 @@ namespace BluePrints.ViewModels
                     "BASELINECollectionView",
                     "[" + loadPROJECT.NUMBER + "] Baselines");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public void EditEstimate()
@@ -569,7 +570,7 @@ namespace BluePrints.ViewModels
                     "ESTIMATION_DIRECTCollectionView",
                     "[" + loadPROJECT.NUMBER + "] Estimates");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public void EditProgress()
@@ -582,7 +583,7 @@ namespace BluePrints.ViewModels
                     "PROGRESSCollectionView",
                     "[" + loadPROJECT.NUMBER + "] Progresses");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public IEnumerable<USER> MANAGERCollection

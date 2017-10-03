@@ -164,7 +164,7 @@ namespace BluePrints.ViewModels
             DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new DualEntitiesParameter<Data.PROJECT, IAmBaseline>(null,
                 DisplaySelectedEntity), "ESTIMATION_DIRECT_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Direct Estimate");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public bool CanP6BASELINE_ASSIGN()
@@ -180,7 +180,7 @@ namespace BluePrints.ViewModels
                 "ESTIMATION_DIRECT_ITEMSchedulingView",
                 DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
         #endregion
     }

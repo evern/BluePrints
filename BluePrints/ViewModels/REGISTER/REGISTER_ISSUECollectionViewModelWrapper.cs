@@ -198,7 +198,7 @@ namespace BluePrints.ViewModels
                 "REGISTER_HOLDCollectionView",
                 "[" + loadPROJECT.NUMBER + "] Hold Register");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public bool CanSendToHoldRegister()
@@ -247,7 +247,7 @@ namespace BluePrints.ViewModels
                     "REGISTER_CHANGECollectionView",
                     "[" + loadPROJECT.NUMBER + "] Change Register");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
             delayedRefreshTimer.Start();
         }
 
@@ -275,7 +275,7 @@ namespace BluePrints.ViewModels
                     "REGISTER_HOLDCollectionView",
                     "[" + loadPROJECT.NUMBER + "] Hold Register");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
             delayedRefreshTimer.Start();
         }
 

@@ -4,6 +4,7 @@ using BaseModel.ViewModel.Document;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
+using BluePrints.Common.Base;
 using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel;
@@ -278,7 +279,7 @@ namespace BluePrints.ViewModels
                 "WORKPACKDashboardView",
                 "[" + DisplaySelectedEntity.Entity.NUMBER + "] WORKPACK Dashboard");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         /// <summary>

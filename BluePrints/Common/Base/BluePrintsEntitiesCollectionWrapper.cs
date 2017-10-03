@@ -2,13 +2,6 @@
 using BaseModel.Misc;
 using BaseModel.ViewModel.Loader;
 using DevExpress.Mvvm;
-using DevExpress.Mvvm.DataAnnotations;
-using DevExpress.Mvvm.POCO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BluePrints.Common.Base
 {
@@ -26,6 +19,7 @@ namespace BluePrints.Common.Base
             SpellCheckerModule = new SpellCheckerModule();
             SpellCheckerModule.ApplySpellCheckMode(true);
             ShowNotification();
+
             base.SetCurrentHWID(LoginCredentials.CurrentHWID);
             base.OnLoaded();
         }

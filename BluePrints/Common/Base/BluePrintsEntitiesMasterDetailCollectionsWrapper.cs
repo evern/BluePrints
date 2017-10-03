@@ -22,6 +22,7 @@ namespace BluePrints.Common.Base
         {
             SpellCheckerModule = new SpellCheckerModule();
             SpellCheckerModule.ApplySpellCheckMode(true);
+
             base.OnLoaded();
         }
     }
@@ -40,6 +41,7 @@ namespace BluePrints.Common.Base
         {
             SpellCheckerModule = new SpellCheckerModule();
             SpellCheckerModule.ApplySpellCheckMode(true);
+
             base.OnLoaded();
         }
     }

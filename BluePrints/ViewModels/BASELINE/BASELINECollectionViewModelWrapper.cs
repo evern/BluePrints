@@ -160,7 +160,7 @@ namespace BluePrints.ViewModels
 
             DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
                 new DualEntitiesParameter<Data.PROJECT, IAmBaseline>(null, DisplaySelectedEntity), "BASELINE_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Baseline");
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public bool CanP6BASELINE_ASSIGN()
@@ -175,7 +175,7 @@ namespace BluePrints.ViewModels
                 "BASELINE_ITEMSchedulingView", 
                 DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public bool CanP6MODBASELINE_ASSIGN()
@@ -191,7 +191,7 @@ namespace BluePrints.ViewModels
                 "BASELINE_ITEMSchedulingView",
                 DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6MODBASELINE_NAME + " Mapping");
 
-            DocumentManagerService.ShowExistingEntityDocument(DocumentInfo, this);
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
         #endregion
     }
