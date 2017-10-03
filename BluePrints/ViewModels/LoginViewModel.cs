@@ -41,6 +41,7 @@ namespace BluePrints.ViewModels
 
         private IEnumerable<USER> USERS { get; set; }
         private DispatcherTimer delayedHideDispatcher;
+        private DispatcherTimer delayedConnectDispatcher;
         bool isUsernameLoadedFromXML;
         protected virtual BaseModel.ViewModel.Services.IWindowService WindowService { get { return this.GetService<BaseModel.ViewModel.Services.IWindowService>(); } }
 
@@ -50,15 +51,26 @@ namespace BluePrints.ViewModels
             delayedHideDispatcher = new DispatcherTimer();
             delayedHideDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
             delayedHideDispatcher.Tick += delayedHideDispatcher_Tick;
+
+            delayedConnectDispatcher = new DispatcherTimer();
+            delayedConnectDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
+            delayedConnectDispatcher.Tick += DelayedConnectDispatcher_Tick;
             USERS = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork().USERS.AsEnumerable();
             UserName = XMLHelpers.GetSettings_Username();
             if (UserName != string.Empty)
                 isUsernameLoadedFromXML = true;
-#if DEBUG
-            UserName = "superadmin";
-#endif
-
+//#if DEBUG
+//            UserName = "superadmin";
+//#endif
+            
             Application.Current.Dispatcher.BeginInvoke(new Action(() => EVERNPCLogin()));
+        }
+
+        private void DelayedConnectDispatcher_Tick(object sender, EventArgs e)
+        {
+            delayedConnectDispatcher.Stop();
+
+            SignalR.ConnectAsync(UserName);
         }
 
         public void OnLoaded()
@@ -67,6 +79,7 @@ namespace BluePrints.ViewModels
             if (themeName == "")
                 themeName = "Office2016Colorful";
             ApplicationThemeHelper.ApplicationThemeName = themeName;
+            delayedConnectDispatcher.Start();
         }
 
         private void delayedHideDispatcher_Tick(object sender, EventArgs e)
@@ -77,15 +90,15 @@ namespace BluePrints.ViewModels
 
         public void EVERNPCLogin()
         {
-#if DEBUG
-            if (Environment.MachineName == "EVERN-PC")
-            {
-                UserName = BluePrintsResources.Default_AdminUsername;
-                UserPassword = BluePrintsResources.Default_AdminPassword;
-                delayedHideDispatcher.Start();
-                Login();
-            }
-#endif
+//#if DEBUG
+//            if (Environment.MachineName == "EVERN-PC")
+//            {
+//                UserName = BluePrintsResources.Default_AdminUsername;
+//                UserPassword = BluePrintsResources.Default_AdminPassword;
+//                delayedHideDispatcher.Start();
+//                Login();
+//            }
+//#endif
         }
 
         public void Login()
@@ -100,7 +113,7 @@ namespace BluePrints.ViewModels
                     LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == UserName.ToUpper());
 
                 LoginCredentials.CurrentHWID = CommonMethods.GetHWID();
-                SignalR.ConnectAsync();
+                
                 ShowMainWindow();
                 delayedHideDispatcher.Start();
             }
@@ -231,7 +244,10 @@ namespace BluePrints.ViewModels
         public void SignalRShutdown(string message)
         {
             WindowService.Show();
-            mainWindow.Hide();
+
+            if(mainWindow != null)
+                mainWindow.Hide();
+
             MessageBoxService.ShowMessage(message);
             Environment.Exit(1);
         }

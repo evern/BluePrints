@@ -17,9 +17,9 @@ namespace BluePrints.Common
         public static IHubProxy HubProxy { get; set; }
         public static HubConnection Connection { get; set; }
 
-        public static async void ConnectAsync()
+        public static async void ConnectAsync(string userName)
         {
-            Connection = new HubConnection(System.Configuration.ConfigurationManager.ConnectionStrings["SignalR"].ConnectionString, new Dictionary<string, string> { { "UserName", LoginCredentials.CurrentUser.NAME }});
+            Connection = new HubConnection(System.Configuration.ConfigurationManager.ConnectionStrings["SignalR"].ConnectionString, new Dictionary<string, string> { { "UserName", userName } });
             
             HubProxy = Connection.CreateHubProxy("MyHub");
             HubProxy.On<string, string, string, string, string>("AddMessage", (entityName, key, messageType, sender, hwid) => Application.Current.Dispatcher.Invoke(() => HubReceiveMessage(entityName, key, messageType, sender, hwid)));
@@ -49,7 +49,7 @@ namespace BluePrints.Common
             if (Connection.State == ConnectionState.Connected)
                 HubProxy.Invoke("Send", entityName, key, messageType, sender, LoginCredentials.CurrentUser.NAME, hwid);
             else if (Connection.State == ConnectionState.Disconnected)
-                ConnectAsync();
+                ConnectAsync(LoginCredentials.CurrentUser.NAME);
         }
 
         public static void HubLogMessage(string message)
@@ -57,7 +57,7 @@ namespace BluePrints.Common
             if (Connection.State == ConnectionState.Connected)
                 HubProxy.Invoke("Log", message);
             else if (Connection.State == ConnectionState.Disconnected)
-                ConnectAsync();
+                ConnectAsync(LoginCredentials.CurrentUser.NAME);
         }
 
         public static void HubReceiveMessage(string entityName, string key, string messageType, string sender, string hwid)
