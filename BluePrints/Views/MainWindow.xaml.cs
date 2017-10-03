@@ -1,4 +1,6 @@
 ﻿using DevExpress.Xpf.Core;
+using System;
+using System.Windows;
 using System.Windows.Input;
 
 namespace BluePrints

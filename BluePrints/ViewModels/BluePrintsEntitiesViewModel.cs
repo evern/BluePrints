@@ -33,10 +33,6 @@ namespace BluePrints.ViewModels
 
         protected Dispatcher MainThreadDispatcher = Application.Current.Dispatcher;
         private readonly CollectionViewModel<PROJECT, Guid, IBluePrintsEntitiesUnitOfWork> _projectCollectionViewModel;
-        protected IMessageBoxService MessageBoxService
-        {
-            get { return this.GetRequiredService<IMessageBoxService>(); }
-        }
 
         /// <summary>
         ///     Initializes a new instance of the BluePrintsEntitiesViewModel class.
@@ -71,12 +67,6 @@ namespace BluePrints.ViewModels
         {
             Properties.Settings.Default["ThemeName"] = ApplicationThemeHelper.ApplicationThemeName;
             Properties.Settings.Default.Save();
-            Environment.Exit(1);
-        }
-
-        public void SignalRShutdown(string message)
-        {
-            MessageBoxService.ShowMessage(message);
             Environment.Exit(1);
         }
 

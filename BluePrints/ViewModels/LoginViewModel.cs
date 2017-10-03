@@ -221,10 +221,19 @@ namespace BluePrints.ViewModels
             preloadMainWindow = null;
         }
 
+        MainWindow mainWindow;
         public void ShowMainWindow()
         {
-            MainWindow mainWindow = new MainWindow();
+            mainWindow = new MainWindow();
             mainWindow.Show();
+        }
+
+        public void SignalRShutdown(string message)
+        {
+            WindowService.Show();
+            mainWindow.Hide();
+            MessageBoxService.ShowMessage(message);
+            Environment.Exit(1);
         }
 
         public void Window_KeyUp(KeyEventArgs e)

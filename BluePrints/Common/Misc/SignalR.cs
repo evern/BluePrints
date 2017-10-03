@@ -65,12 +65,11 @@ namespace BluePrints.Common
             //empty string for message type is reserved for shutdown message
             if(messageType == string.Empty)
             {
-                Window active_window = Application.Current.Windows.OfType<Window>().FirstOrDefault(x => x.ToString().Contains("MainWindow"));
+                Window active_window = Application.Current.Windows.OfType<Window>().FirstOrDefault(x => x.ToString().Contains("LoginWindow"));
                 if (active_window == null)
                     return;
 
-                BluePrintsEntitiesViewModel loginViewModel = (BluePrintsEntitiesViewModel)((BluePrintsEntitiesView)active_window.Content).DataContext;
-                loginViewModel.SignalRShutdown(entityName);
+               ((LoginViewModel)((LoginWindow)active_window).DataContext).SignalRShutdown(entityName);
             }
 
             //ignore messages returned from hub because it was transmitted locally
