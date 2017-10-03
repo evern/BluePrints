@@ -324,8 +324,6 @@ namespace BluePrints.ViewModels
 
         public Action InterfacePauseUndoRedoManagerCallBack { get; set; }
 
-
-
         /// <summary>
         /// this view model can be used in variation or default collection view, only default collection view specific properties are set here
         /// </summary>
@@ -579,6 +577,7 @@ namespace BluePrints.ViewModels
         public void Interface_CellValueNewRowChanging(string field_name, object new_value, BASELINE_ITEMProgress active_progress)
         {
             field_name = DataUtils.FormatColumnFieldname(field_name);
+
             if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA))
             {
                 if (new_value != null)
