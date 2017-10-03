@@ -481,7 +481,6 @@
     <Compile Include="EntityFramework\Annotations\MEETING_TYPE.cs" />
     <Compile Include="EntityFramework\Annotations\MEETING_USER.cs" />
     <Compile Include="EntityFramework\Annotations\MINUTE_TITLE.cs" />
-    <Compile Include="EntityFramework\Annotations\MINUTE_COMMENT.cs" />
     <Compile Include="EntityFramework\Annotations\MINUTE_AGENDA.cs" />
     <Compile Include="EntityFramework\Annotations\MEETING.cs" />
     <Compile Include="EntityFramework\Annotations\CLIENT.cs" />
@@ -505,7 +504,6 @@
     <Compile Include="EntityFramework\BluePrintsData\MINUTE_TITLE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\MINUTE_AGENDA.cs" />
     <Compile Include="EntityFramework\BluePrintsData\MEETING_USER.cs" />
-    <Compile Include="EntityFramework\BluePrintsData\MINUTE_COMMENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\MEETING.cs" />
     <Compile Include="EntityFramework\BluePrintsData\CLIENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\AREA.cs" />

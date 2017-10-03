@@ -220,12 +220,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<MEETING_TYPE>(), (MEETING_TYPE x) => x.GUID); }
         }
 
-        IRepository<MINUTE_COMMENT, Guid> IBluePrintsEntitiesUnitOfWork.MINUTE_COMMENTS
-        {
-            get { return GetRepository(x => x.Set<MINUTE_COMMENT>(), (MINUTE_COMMENT x) => x.GUID); }
-        }
-
-
         IRepository<MEETING_USER, Guid> IBluePrintsEntitiesUnitOfWork.MEETING_USERS
         {
             get { return GetRepository(x => x.Set<MEETING_USER>(), (MEETING_USER x) => x.GUID); }

@@ -52,9 +52,6 @@ namespace BluePrints.Data
         public virtual MEETING_ACTION MEETING_ACTION { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<MINUTE_COMMENT> MINUTE_COMMENT { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MINUTE_AGENDA> MINUTE_AGENDA1 { get; set; }
 
         public virtual MINUTE_AGENDA MINUTE_AGENDA2 { get; set; }

@@ -215,11 +215,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<MEETING_ACTION, Guid> MEETING_ACTIONS { get; }
 
         /// <summary>
-        /// The MINUTE_COMMENTS entities repository.
-        /// </summary>
-        IRepository<MINUTE_COMMENT, Guid> MINUTE_COMMENTS { get; }
-
-        /// <summary>
         /// The MEETING_USERS entities repository.
         /// </summary>
         IRepository<MEETING_USER, Guid> MEETING_USERS { get; }

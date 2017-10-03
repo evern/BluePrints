@@ -24,7 +24,6 @@ namespace BluePrints.Data
         public virtual DbSet<ESTIMATION_DIRECT> ESTIMATION_DIRECT { get; set; }
         public virtual DbSet<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
         public virtual DbSet<MEETING> MEETING { get; set; }
-        public virtual DbSet<MINUTE_COMMENT> MINUTE_COMMENT { get; set; }
         public virtual DbSet<MEETING_USER> MEETING_USER { get; set; }
         public virtual DbSet<MINUTE_AGENDA> MINUTE_AGENDA { get; set; }
         public virtual DbSet<MINUTE_TITLE> MINUTE_TITLE { get; set; }
@@ -286,11 +285,6 @@ namespace BluePrints.Data
                 .WithRequired(e => e.MEETING_TYPE)
                 .HasForeignKey(e => e.GUID_MEETING_TYPE)
                 .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<MINUTE_AGENDA>()
-                .HasMany(e => e.MINUTE_COMMENT)
-                .WithOptional(e => e.MINUTE_AGENDA)
-                .HasForeignKey(e => e.GUID_AGENDA);
 
             modelBuilder.Entity<MINUTE_AGENDA>()
                 .HasMany(e => e.MINUTE_AGENDA1)
