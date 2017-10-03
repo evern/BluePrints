@@ -1,6 +1,7 @@
 ﻿using BaseModel.Misc;
 using BluePrints.Data;
 using BluePrints.ViewModels;
+using BluePrints.Views;
 using DevExpress.Mvvm;
 using Microsoft.AspNet.SignalR.Client;
 using System;
@@ -64,11 +65,11 @@ namespace BluePrints.Common
             //empty string for message type is reserved for shutdown message
             if(messageType == string.Empty)
             {
-                Window active_window = Application.Current.Windows.OfType<Window>().FirstOrDefault(x => x.ToString().Contains("LoginWindow"));
+                Window active_window = Application.Current.Windows.OfType<Window>().FirstOrDefault(x => x.ToString().Contains("MainWindow"));
                 if (active_window == null)
                     return;
 
-                LoginViewModel loginViewModel = (LoginViewModel)active_window.DataContext;
+                BluePrintsEntitiesViewModel loginViewModel = (BluePrintsEntitiesViewModel)((BluePrintsEntitiesView)active_window.Content).DataContext;
                 loginViewModel.SignalRShutdown(entityName);
             }
 

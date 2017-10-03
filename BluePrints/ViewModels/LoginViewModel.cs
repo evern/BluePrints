@@ -61,12 +61,6 @@ namespace BluePrints.ViewModels
             Application.Current.Dispatcher.BeginInvoke(new Action(() => EVERNPCLogin()));
         }
 
-        public void SignalRShutdown(string message)
-        {
-            MessageBoxService.ShowMessage(message);
-            Environment.Exit(1);
-        }
-
         public void OnLoaded()
         {
             string themeName = Properties.Settings.Default["ThemeName"] as string;
