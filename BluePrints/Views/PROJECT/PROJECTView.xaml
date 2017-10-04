@@ -160,7 +160,7 @@
                             </custom:GridControlEx>
                         </dxlc:LayoutGroup>
                         <dxlc:LayoutGroup Name="LayoutGroupChart" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" View="Group" Orientation="Vertical">
-                            <dxc:ChartControl x:Name="chartSCurve" Grid.Row="2" Padding="0" Margin="0" dx:DXSerializer.Enabled="False" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}">
+                            <dxc:ChartControl x:Name="chartSCurve" Grid.Row="2" AutoLayout="False" Padding="0" Margin="0" dx:DXSerializer.Enabled="False" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}">
                                 <dxc:XYDiagram2D SeriesItemsSource="{StaticResource dashboardXYChartSeries}">
                                     <dxc:XYDiagram2D.AxisX>
                                         <dxc:AxisX2D>
