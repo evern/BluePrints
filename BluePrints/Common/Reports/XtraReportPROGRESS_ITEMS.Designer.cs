@@ -376,7 +376,7 @@
             this.xrDataPeriodCurrentUOM.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataPeriodCurrentUOM.CanGrow = false;
             this.xrDataPeriodCurrentUOM.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverables.Stats.Earned.CurrentPeriodDataPoint.Units")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverables.Stats.Earned.CurrentPeriodDataPoint.Units", "{0:n1}")});
             this.xrDataPeriodCurrentUOM.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataPeriodCurrentUOM.KeepTogether = true;
             this.xrDataPeriodCurrentUOM.LocationFloat = new DevExpress.Utils.PointFloat(902.9998F, 0F);
