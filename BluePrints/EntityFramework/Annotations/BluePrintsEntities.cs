@@ -173,11 +173,6 @@ namespace BluePrints.Data
             await RefreshDeliverablesRemainingDataPointsByProject(projectNumber);
         }
 
-        public static async Task RefreshAllProjectDataPoints()
-        {
-            await RefreshAllDataPoints();
-        }
-
         public static async Task RefreshAllDataPoints()
         {
             using (BluePrintsEntities dbContext = new BluePrintsEntities())
