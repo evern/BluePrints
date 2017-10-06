@@ -1,29 +1,9 @@
-﻿<UserControl x:Name="userControl" x:Class="BluePrints.Views.PROJECTDashboardView"
-             xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
-             xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts"
-             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
-             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
-             xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
-             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
-             xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel"
-             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-             xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
-             xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
-             xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
-             xmlns:common="clr-namespace:BluePrints.Common"
-             xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters"
-             mc:Ignorable="d" d:DesignHeight="1200" d:DesignWidth="1200"
-             DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTDashboardViewModelWrapper}">
+﻿<UserControl x:Name="userControl" x:Class="BluePrints.Views.PROJECTDashboardView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:common="clr-namespace:BluePrints.Common" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" mc:Ignorable="d" d:DesignHeight="1200" d:DesignWidth="1200" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTDashboardViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ChartResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
@@ -31,39 +11,21 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Style="{StaticResource DashboardView.RootContainer}">
-        <Grid DataContext="{Binding MainViewModel}" >
+        <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
-                <dxr:RibbonControl RibbonStyle="OfficeSlim" DockPanel.Dock="Top" AllowCustomization="False"
-                                   MDIMergeStyle="Always">
+                <dxr:RibbonControl RibbonStyle="OfficeSlim" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Home">
                             <dxr:RibbonPageGroup Caption="PROJECT Tasks">
-                                <dxb:BarCheckItem x:Name="biCheckUnits" Content="Units"
-                                                  Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}"
-                                                  CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}"
-                                                  Glyph="{dx:DXImageOffice2013 Image=Time_16x16.png}"
-                                                  LargeGlyph="{dx:DXImageOffice2013 Image=Time_32x32.png}"
-                                                  IsChecked="True" />
-                                <dxb:BarCheckItem x:Name="biCheckCosts" Content="Costs"
-                                                  Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}"
-                                                  CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}"
-                                                  Glyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}"
-                                                  LargeGlyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}"
-                                                  IsChecked="{Binding ElementName=biCheckUnits, Path=IsChecked, Converter={StaticResource BooleanNegationConverter}}" />
-                                <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
-                                                   LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
-                                                   Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />
+                                <dxb:BarCheckItem x:Name="biCheckUnits" Content="Units" Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=Time_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Time_32x32.png}" IsChecked="True" />
+                                <dxb:BarCheckItem x:Name="biCheckCosts" Content="Costs" Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}" IsChecked="{Binding ElementName=biCheckUnits, Path=IsChecked, Converter={StaticResource BooleanNegationConverter}}" />
+                                <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />
                                 <!--<dxb:BarCheckItem Content="Auto Refresh"
                                                   IsChecked="{Binding DataContext.DoNotAutoRefresh, ElementName=userControl, Converter={dxmvvm:BooleanNegationConverter}}"
                                                   Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />-->
-                                <dxb:BarButtonItem Content="P6 Issues"
-                                               Command="{Binding DataContext.ShowP6ErrorsCommand, ElementName=userControl}"
-                                               LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}"
-                                               Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" />
-                                <dxb:BarButtonItem Content="Exo Issues"
-                                               Command="{Binding DataContext.ShowExoErrorsCommand, ElementName=userControl}"
-                                               LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}"
-                                               Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" />
+                                <dxb:BarButtonItem Content="Calculate Stats" Command="{Binding DataContext.Refresh_From_P6Command, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" Glyph="{dx:DXImage Image=Reset2_16x16.png}" />
+                                <dxb:BarButtonItem Content="P6 Issues" Command="{Binding DataContext.ShowP6ErrorsCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" />
+                                <dxb:BarButtonItem Content="Exo Issues" Command="{Binding DataContext.ShowExoErrorsCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -130,9 +92,7 @@
                             </dxg:GridControl.TotalSummary>
                         </custom:GridControlEx>
                     </dxlc:LayoutGroup>
-                    <dxlc:LayoutGroup Name="LayoutGroupChart"
-                                      DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
-                                      View="Group" Orientation="Vertical">
+                    <dxlc:LayoutGroup Name="LayoutGroupChart" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" View="Group" Orientation="Vertical">
                         <dxc:ChartControl Name="chartSCurve" AutoLayout="False" Padding="0" Margin="0" dx:DXSerializer.Enabled="False">
                             <dxc:XYDiagram2D SeriesItemsSource="{StaticResource dashboardXYChartSeries}">
                                 <dxc:XYDiagram2D.AxisX>

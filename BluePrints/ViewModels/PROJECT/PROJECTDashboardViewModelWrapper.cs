@@ -229,6 +229,16 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        public async void Refresh_From_P6()
+        {
+            backgroundWorkerCollection.ForEach(x => x.CancelAsync());
+
+            LoadingScreenManager.ShowLoadingScreen(1);
+            await BluePrintsContextHelper.RefreshAllDataPoints();
+            LoadingScreenManager.Progress();
+            FullRefresh();
+        }
+
         public IEnumerable<USER> MANAGERCollection
         {
             get

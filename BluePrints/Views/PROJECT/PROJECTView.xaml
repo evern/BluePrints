@@ -1,28 +1,9 @@
-﻿<UserControl x:Name="userControl" 
-             x:Class="BluePrints.Views.PROJECTView"
-             xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
-             xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts"
-             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
-             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
-             xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
-             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" 
-             xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel"
-             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" 
-             xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" 
-             xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" 
-             xmlns:common="clr-namespace:BluePrints.Common" 
-             mc:Ignorable="d" d:DesignHeight="1920" d:DesignWidth="1080"
-             DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTViewModelWrapper}">
+﻿<UserControl x:Name="userControl" x:Class="BluePrints.Views.PROJECTView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:common="clr-namespace:BluePrints.Common" mc:Ignorable="d" d:DesignHeight="1920" d:DesignWidth="1080" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/NestedControlResourceDictionary.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/NestedControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ChartResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
@@ -44,42 +25,15 @@
                         <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                             <dxr:RibbonPage Caption="Home">
                                 <dxr:RibbonPageGroup Caption="PROJECT Tasks">
-                                    <dxb:BarCheckItem x:Name="biCheckUnits" Content="Units"
-                                              Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}"
-                                              CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}"
-                                              Glyph="{dx:DXImageOffice2013 Image=Time_16x16.png}"
-                                              LargeGlyph="{dx:DXImageOffice2013 Image=Time_32x32.png}" IsChecked="True" />
-                                    <dxb:BarCheckItem x:Name="biCheckCosts" Content="Costs"
-                                              Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}"
-                                              CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}"
-                                              Glyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}"
-                                              LargeGlyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}"
-                                              IsChecked="{Binding ElementName=biCheckUnits, Path=IsChecked, Converter={StaticResource BooleanNegationConverter}}" />
-                                    <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
-                                               LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
-                                               Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Calculate Stats" Command="{Binding DataContext.Refresh_From_P6Command, ElementName=userControl}"
-                                               LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}"
-                                               Glyph="{dx:DXImage Image=Reset2_16x16.png}" />
-                                    <dxb:BarCheckItem Content="Auto Refresh"
-                                                  IsChecked="{Binding DataContext.DoNotAutoRefresh, ElementName=userControl, Converter={dxmvvm:BooleanNegationConverter}}"
-                                                  Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />
-                                    <dxb:BarButtonItem Content="P6 Issues"
-                                               Command="{Binding DataContext.ShowP6ErrorsCommand, ElementName=userControl}"
-                                               LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}"
-                                               Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Exo Issues"
-                                               Command="{Binding DataContext.ShowExoErrorsCommand, ElementName=userControl}"
-                                               LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}"
-                                               Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Save Layout"
-                                                   Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}"
-                                                   LargeGlyph="{dx:DXImage Image=Save_32x32.png}"
-                                                   Glyph="{dx:DXImage Image=Save_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Reset Layout"
-                                                   Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}"
-                                                   LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}"
-                                                   Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
+                                    <dxb:BarCheckItem x:Name="biCheckUnits" Content="Units" Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=Time_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Time_32x32.png}" IsChecked="True" />
+                                    <dxb:BarCheckItem x:Name="biCheckCosts" Content="Costs" Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}" IsChecked="{Binding ElementName=biCheckUnits, Path=IsChecked, Converter={StaticResource BooleanNegationConverter}}" />
+                                    <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Calculate Stats" Command="{Binding DataContext.Refresh_From_P6Command, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" Glyph="{dx:DXImage Image=Reset2_16x16.png}" />
+                                    <dxb:BarCheckItem Content="Auto Refresh" IsChecked="{Binding DataContext.DoNotAutoRefresh, ElementName=userControl, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />
+                                    <dxb:BarButtonItem Content="P6 Issues" Command="{Binding DataContext.ShowP6ErrorsCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Exo Issues" Command="{Binding DataContext.ShowExoErrorsCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Save Layout" Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" Glyph="{dx:DXImage Image=Save_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Reset Layout" Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
                                     <dxb:BarCheckItem Content="Cell Selection" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" Glyph="{dx:DXImage Image=SplitTableCells_16x16.png}" LargeGlyph="{dx:DXImage Image=SplitTableCells_32x32.png}" />
                                     <dxb:BarButtonItem Content="Export" Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
                                     <dxb:BarItemSeparator />
