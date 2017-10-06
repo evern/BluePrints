@@ -232,8 +232,10 @@ namespace BluePrints.ViewModels
         public async void Refresh_From_P6()
         {
             backgroundWorkerCollection.ForEach(x => x.CancelAsync());
-            BluePrintsContextHelper.RefreshAllDataPoints();
-            MessageBoxService.ShowMessage("Refresh all data points sent to server, please reload this view in 5 minutes");
+            LoadingScreenManager.ShowLoadingScreen(1);
+            await BluePrintsContextHelper.RefreshAllDataPoints();
+            LoadingScreenManager.Progress();
+            FullRefresh();
         }
 
         public IEnumerable<USER> MANAGERCollection

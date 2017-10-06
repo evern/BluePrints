@@ -177,6 +177,7 @@ namespace BluePrints.Data
         {
             using (BluePrintsEntities dbContext = new BluePrintsEntities())
             {
+                dbContext.Database.CommandTimeout = 500;
                 Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshAllDataPoints");
                 var i = await returnTask;
             }
