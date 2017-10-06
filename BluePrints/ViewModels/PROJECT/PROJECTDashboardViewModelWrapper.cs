@@ -210,6 +210,11 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => GridControlService?.RefreshSummary()));
         }
 
+        public override bool CanFullRefresh()
+        {
+            return CanRefresh_From_P6();
+        }
+
         public override void FullRefresh()
         {
             ReloadEntitiesCollection();
