@@ -987,7 +987,7 @@ namespace BluePrints.ViewModels
 
                         newWORKPACK.GUID_PROJECT = loadPROJECT.GUID;
                         newWORKPACK.GUID_DAREA = entity.Entity.Entity.GUID_AREA;
-                        newWORKPACK.GUID_DSUBAREA = entity.Entity.Entity.GUID_SUBAREA == null ? defaultSubArea == null ? defaultSubArea.GUID : (Guid?)null : entity.Entity.Entity.GUID_SUBAREA;
+                        newWORKPACK.GUID_DSUBAREA = entity.Entity.Entity.GUID_SUBAREA == null ? defaultSubArea != null ? defaultSubArea.GUID : (Guid?)null : entity.Entity.Entity.GUID_SUBAREA;
                         newWORKPACK.GUID_DPHASE = entity.Entity.Entity.GUID_PHASE;
 
                         newWORKPACK.INTERNAL_NAME1 = internalName; 
