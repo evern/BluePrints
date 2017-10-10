@@ -5,6 +5,7 @@ using BluePrints.Common.Helpers;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel;
 using BluePrints.Data;
+using DevExpress.LookAndFeel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Charts;
@@ -113,7 +114,6 @@ namespace BluePrints.ViewModels
                     LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == UserName.ToUpper());
 
                 LoginCredentials.CurrentHWID = CommonMethods.GetHWID();
-                
                 ShowMainWindow();
                 delayedHideDispatcher.Start();
             }
