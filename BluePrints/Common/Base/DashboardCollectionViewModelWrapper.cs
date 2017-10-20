@@ -8,14 +8,17 @@ using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
+using BluePrints.Reports;
 using DevExpress.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Bars;
+using DevExpress.Xpf.Printing;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Threading;
 
 namespace BluePrints.Common.ViewModel
@@ -170,9 +173,9 @@ namespace BluePrints.Common.ViewModel
         #endregion
 
         #region Exo Affinity
-        private IDialogService IssuesDialogService
+        private DevExpress.Mvvm.IDialogService IssuesDialogService
         {
-            get { return this.GetRequiredService<IDialogService>("IssuesDialogService"); }
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("IssuesDialogService"); }
         }
 
         public bool CanShowExoErrors()
@@ -195,6 +198,29 @@ namespace BluePrints.Common.ViewModel
 
             DialogCollectionViewModel<WORKPACK> viewModel = DialogCollectionViewModel<WORKPACK>.Create(projectSummary.ExoMissingWORKPACKS);
             IssuesDialogService.ShowDialog(MessageButton.OK, "Exo Affinity Report", "ExoAffinityReport", viewModel);
+        }
+
+        public void ExportToPDF()
+        {
+            ProjectSummaryStats projectSummary = DisplaySelectedEntity.Stats as ProjectSummaryStats;
+            if (projectSummary == null)
+                return;
+
+            var progressReport = new XtraReportDashboard();
+
+            string title = string.Empty;
+            PROJECT_Dashboard project_dashboard = DisplaySelectedEntity as PROJECT_Dashboard;
+            if (project_dashboard != null)
+                title = project_dashboard.Entity.NAME;
+
+            progressReport.AssignProperties(projectSummary, projectSummary.ReportingDataDate, title);
+            var previewWindow = new DocumentPreviewWindow();
+            previewWindow.PreviewControl.DocumentSource = progressReport;
+            previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            previewWindow.WindowState = WindowState.Maximized;
+            progressReport.RequestParameters = false;
+            progressReport.CreateDocument(true);
+            previewWindow.Show();
         }
         #endregion
 

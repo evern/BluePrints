@@ -16,8 +16,7 @@ namespace BluePrints.Reports
             ParametersRequestSubmit += rptBaselineItem_ParametersRequestSubmit;
         }
 
-        public void AssignProperties(PROJECT PROJECT, BASELINE BASELINE,
-            IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMS)
+        public void AssignProperties(PROJECT PROJECT, BASELINE BASELINE, IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMS)
         {
             objectDataSource1.DataSource = BASELINE_ITEMS;
             title1.Value = BASELINE.NAME;

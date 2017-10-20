@@ -246,7 +246,7 @@
             // 
             // BottomMargin
             // 
-            this.BottomMargin.HeightF = 12.62493F;
+            this.BottomMargin.HeightF = 13F;
             this.BottomMargin.Name = "BottomMargin";
             this.BottomMargin.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
             this.BottomMargin.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopLeft;
@@ -1258,6 +1258,7 @@
             xyDiagram1.AxisX.Title.Text = "Week Starting";
             xyDiagram1.AxisX.Title.Visibility = DevExpress.Utils.DefaultBoolean.True;
             xyDiagram1.AxisX.VisibleInPanesSerializable = "-1";
+            xyDiagram1.AxisY.Alignment = DevExpress.XtraCharts.AxisAlignment.Far;
             xyDiagram1.AxisY.Label.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             xyDiagram1.AxisY.Label.TextPattern = "{V:0.00%}";
             xyDiagram1.AxisY.Tickmarks.MinorVisible = false;
@@ -1270,6 +1271,7 @@
             xyDiagram1.DefaultPane.EnableAxisXZooming = DevExpress.Utils.DefaultBoolean.False;
             xyDiagram1.DefaultPane.EnableAxisYScrolling = DevExpress.Utils.DefaultBoolean.False;
             xyDiagram1.DefaultPane.EnableAxisYZooming = DevExpress.Utils.DefaultBoolean.False;
+            secondaryAxisY1.Alignment = DevExpress.XtraCharts.AxisAlignment.Near;
             secondaryAxisY1.AxisID = 0;
             secondaryAxisY1.Name = "Secondary AxisY Units";
             secondaryAxisY1.VisibleInPanesSerializable = "-1";
