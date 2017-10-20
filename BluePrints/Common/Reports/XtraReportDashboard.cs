@@ -36,7 +36,7 @@ namespace BluePrints.Reports
                 defaultReport.SaveLayout(ms);
                 this.LoadLayout(ms);
 
-                AssignProperties(ReportData, dataDate, title1.Value.ToString());
+                AssignProperties(ReportData, dataDate, projectTitle);
             }
             else if (!showBurned)
             {
@@ -45,7 +45,7 @@ namespace BluePrints.Reports
                 noBurnReport.SaveLayout(ms);
                 this.LoadLayout(ms);
 
-                AssignProperties(ReportData, dataDate, title1.Value.ToString());
+                AssignProperties(ReportData, dataDate, projectTitle);
             }
 
             string strReplaceFrom;
@@ -126,12 +126,14 @@ namespace BluePrints.Reports
 
         private SummaryStats ReportData { get; set; }
         private DateTime dataDate { get; set; }
+        private string projectTitle { get; set; }
 
         public void AssignProperties(SummaryStats reportData, DateTime reportingDataDate, string title)
         {
             ReportData = reportData;
             objectDataSource1.DataSource = ReportData;
             title1.Value = title;
+            projectTitle = title;
             dataDate = reportingDataDate;
             datadate1.Value = reportingDataDate;
         }
