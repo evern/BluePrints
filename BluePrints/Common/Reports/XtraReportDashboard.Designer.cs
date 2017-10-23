@@ -95,9 +95,9 @@
             this.xrLabelPeriod = new DevExpress.XtraReports.UI.XRLabel();
             this.SubBand1 = new DevExpress.XtraReports.UI.SubBand();
             this.xrChart1 = new DevExpress.XtraReports.UI.XRChart();
+            this.objectDataSource1 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
             this.reportBy = new DevExpress.XtraReports.Parameters.Parameter();
             this.showBurn = new DevExpress.XtraReports.Parameters.Parameter();
-            this.objectDataSource1 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.xrChart1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(xyDiagram1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(secondaryAxisY1)).BeginInit();
@@ -779,6 +779,11 @@
         series8};
             this.xrChart1.SizeF = new System.Drawing.SizeF(1605F, 846.736F);
             // 
+            // objectDataSource1
+            // 
+            this.objectDataSource1.DataSource = typeof(BluePrints.Common.ViewModel.Reporting.DeliverableSummaryStats);
+            this.objectDataSource1.Name = "objectDataSource1";
+            // 
             // reportBy
             // 
             this.reportBy.Description = "Report By";
@@ -794,11 +799,6 @@
             this.showBurn.Name = "showBurn";
             this.showBurn.Type = typeof(bool);
             this.showBurn.ValueInfo = "True";
-            // 
-            // objectDataSource1
-            // 
-            this.objectDataSource1.DataSource = typeof(BluePrints.Common.ViewModel.Reporting.DeliverableSummaryStats);
-            this.objectDataSource1.Name = "objectDataSource1";
             // 
             // XtraReportDashboard
             // 

@@ -27,7 +27,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>553</ApplicationRevision>
+    <ApplicationRevision>554</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -627,6 +627,9 @@
     </Compile>
     <Compile Include="Views\MINUTE_TITLE\MINUTE_TITLECollectionView.xaml.cs">
       <DependentUpon>MINUTE_TITLECollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROJECT\PROJECTViewWindow.xaml.cs">
+      <DependentUpon>PROJECTViewWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml.cs">
       <DependentUpon>STOCK_CODECollectionView.xaml</DependentUpon>
@@ -1402,6 +1405,10 @@
     <Page Include="Views\MINUTE_TITLE\MINUTE_TITLECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PROJECT\PROJECTViewWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>

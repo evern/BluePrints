@@ -20,6 +20,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using DevExpress.Mvvm;
 using BluePrints.Common.Base;
+using BluePrints.Views;
 
 namespace BluePrints.ViewModels
 {
@@ -187,7 +188,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-                const string projectCategoryId = "View_Projects";
+        const string projectCategoryId = "View_Projects";
         const string dataCategoryId = "Category_Data";
         const string activeCategoryId = "Category_Active";
         const string tenderCategoryId = "Category_Tender";
@@ -279,17 +280,51 @@ namespace BluePrints.ViewModels
             return bluePrintsEntitiesModuleDescriptions;
         }
 
+
+        private Dictionary<string, PROJECTViewWindow> openedProjectView = new Dictionary<string, PROJECTViewWindow>();
         public override IDocument NavigateCore(BluePrintsEntitiesModuleDescription module)
         {
             if (module == null || DocumentManagerService == null)
                 return null;
 
-            DocumentInfo documentInfo = new DocumentInfo(module.Id, module.DocumentParameter, module.DocumentType, module.ModuleTitle);
-            var document = DocumentManagerService.ShowExistingEntityDocumentWithLogging(documentInfo, this);
-            //var document = DocumentManagerService.FindDocumentByIdOrCreate(module.ModuleTitle,
-            //    x => NavigateToDocument(module));
-            //document.Show();
-            return document;
+            if(module.DocumentType == "PROJECTView")
+            {
+                KeyValuePair<string, PROJECTViewWindow> existingProjectView = openedProjectView.FirstOrDefault(x => x.Key == module.Id.ToString());
+                if(existingProjectView.Value != null)
+                {
+                    PROJECTViewWindow projectView = existingProjectView.Value;
+                    projectView.Tag = module.Id.ToString();
+                    projectView.WindowClosed = windowClosed;
+                    projectView.Activate();
+                }
+                else
+                {
+                    PROJECTViewWindow projectView = new PROJECTViewWindow();
+                    projectView.Tag = module.Id.ToString();
+                    projectView.WindowClosed = windowClosed;
+                    PROJECTViewModelWrapper viewModel = (PROJECTViewModelWrapper)projectView.DataContext;
+                    viewModel.OnParameterChanged(module.DocumentParameter);
+                    openedProjectView.Add(module.Id.ToString(), projectView);
+                    projectView.Show();
+                }
+
+                return null;
+            }
+            else
+            {
+                DocumentInfo documentInfo = new DocumentInfo(module.Id, module.DocumentParameter, module.DocumentType, module.ModuleTitle);
+                var document = DocumentManagerService.ShowExistingEntityDocumentWithLogging(documentInfo, this);
+                //var document = DocumentManagerService.FindDocumentByIdOrCreate(module.ModuleTitle,
+                //    x => NavigateToDocument(module));
+                //document.Show();
+
+                return document;
+            }
+        }
+
+        private void windowClosed(string Id)
+        {
+            openedProjectView.Remove(Id);
         }
 
         private void CreateProjectTree(PROJECT entity)

@@ -272,6 +272,7 @@ namespace BluePrints.ViewModels
 
         public void ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATION_DIRECT_ITEMProgress pasteEntity)
         {
+            onBeforeSavedGenerateAndAssignWorkpack(pasteEntity);
             KeyValuePair<ColumnBase, string> stock_code_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.StockCodeGuid)));
 
             if (stock_code_data.Key != null)
