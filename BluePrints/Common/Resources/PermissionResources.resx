@@ -141,6 +141,9 @@
   <data name="ManageEstimation" xml:space="preserve">
     <value>Allow user to manage estimations</value>
   </data>
+  <data name="ManageHoliday" xml:space="preserve">
+    <value>Allow user to manage S-Curve holidays</value>
+  </data>
   <data name="ManagePhase" xml:space="preserve">
     <value>Allow user to manage phase</value>
   </data>

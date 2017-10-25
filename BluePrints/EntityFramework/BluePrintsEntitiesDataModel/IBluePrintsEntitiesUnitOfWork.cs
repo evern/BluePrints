@@ -70,6 +70,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<ESTIMATION_DIRECT_ITEM, Guid> ESTIMATION_DIRECT_ITEMS { get; }
 
         /// <summary>
+        /// The HOLIDAY entities repository.
+        /// </summary>
+        IRepository<HOLIDAY, Guid> HOLIDAYS { get; }
+
+        /// <summary>
         /// The PHASE entities repository.
         /// </summary>
         IRepository<PHASE, Guid> PHASES { get; }

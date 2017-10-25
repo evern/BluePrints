@@ -257,6 +257,9 @@ namespace BluePrints.ViewModels
 
             dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_UOMs", dataCategoryId, "Unit of Measures", "UOMCollectionView"));
 
+            if (LoginCredentials.hasPermission(PermissionResources.ManageHoliday))
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Holidays", dataCategoryId, "Holidays", "HOLIDAYCollectionView"));
+
             if (LoginCredentials.hasPermission(PermissionResources.ManageStockCode))
             {
                 dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageStock_Group", dataCategoryId, "Global Stock Groups", "STOCK_GROUPCollectionView"));

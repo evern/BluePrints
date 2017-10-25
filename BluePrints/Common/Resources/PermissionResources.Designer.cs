@@ -133,6 +133,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to manage S-Curve holidays.
+        /// </summary>
+        internal static string ManageHoliday {
+            get {
+                return ResourceManager.GetString("ManageHoliday", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to manage phase.
         /// </summary>
         internal static string ManagePhase {

@@ -1,0 +1,22 @@
+﻿<UserControl
+    x:Name="userControl" x:Class="BluePrints.Views.DateFromTo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    Height="150" Width="500">
+    <dxlc:LayoutControl Orientation="Vertical">
+        <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
+            <dxlc:LayoutGroup Height="50" Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
+                <dxlc:LayoutItem Height="50" Label="From:">
+                    <dxe:DateEdit x:Name="dateFrom" Text="{Binding DateFrom, Mode=TwoWay}" Mask="dd-MMM-yy" MaskUseAsDisplayFormat="True" />
+                </dxlc:LayoutItem>
+                <dxlc:LayoutItem Height="50" Label="To:">
+                    <dxe:DateEdit x:Name="dateTo" Text="{Binding DateTo, Mode=TwoWay}" Mask="dd-MMM-yy" MaskUseAsDisplayFormat="True" />
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+            <dxlc:LayoutGroup Height="30" HorizontalAlignment="Right" Name="LayoutGroupButtons" View="Group" Orientation="Horizontal" />
+        </dxlc:LayoutGroup>
+    </dxlc:LayoutControl>
+</UserControl>

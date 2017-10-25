@@ -23,6 +23,7 @@ namespace BluePrints.Data
         public virtual DbSet<DOCTYPE> DOCTYPE { get; set; }
         public virtual DbSet<ESTIMATION_DIRECT> ESTIMATION_DIRECT { get; set; }
         public virtual DbSet<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
+        public virtual DbSet<HOLIDAY> HOLIDAY { get; set; }
         public virtual DbSet<MEETING> MEETING { get; set; }
         public virtual DbSet<MEETING_USER> MEETING_USER { get; set; }
         public virtual DbSet<MINUTE_AGENDA> MINUTE_AGENDA { get; set; }

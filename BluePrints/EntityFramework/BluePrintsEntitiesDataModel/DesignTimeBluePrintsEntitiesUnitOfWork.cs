@@ -82,6 +82,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((ESTIMATION_DIRECT_ITEM x) => x.GUID); }
         }
 
+        IRepository<HOLIDAY, Guid> IBluePrintsEntitiesUnitOfWork.HOLIDAYS
+        {
+            get { return GetRepository((HOLIDAY x) => x.GUID); }
+        }
+
         IRepository<PHASE, Guid> IBluePrintsEntitiesUnitOfWork.PHASES
         {
             get { return GetRepository((PHASE x) => x.GUID); }
