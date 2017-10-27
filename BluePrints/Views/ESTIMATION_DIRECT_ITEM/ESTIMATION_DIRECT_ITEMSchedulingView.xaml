@@ -223,7 +223,10 @@
                                         </dxg:LookUpEdit>
                                     </dxlc:LayoutItem>
                                 </dxlc:LayoutGroup>
-                                <dxlc:LayoutGroup Orientation="Horizontal">
+                                <dxlc:LayoutGroup Orientation="Horizontal" >
+                                    <dxlc:LayoutItem Label="{Binding DataContext.Assignment_UOM, ElementName=userControl}" Visibility="{Binding DataContext.QuantityAssignmentVisibility, ElementName=userControl}">
+                                        <dxe:SpinEdit EditValue="{Binding DataContext.Assignment_Quantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=userControl}" MinValue="0" MaxValue="{Binding DataContext.Remaining_Quantity, ElementName=userControl}" Increment="1" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True" />
+                                    </dxlc:LayoutItem>
                                     <dxlc:LayoutItem Label="Percentage:" IsRequired="True">
                                         <dxe:SpinEdit EditValue="{Binding DataContext.Assignment_Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=userControl}" MinValue="{Binding DataContext.Assignment_MinValue, ElementName=userControl}" MaxValue="{Binding DataContext.Assignment_MaxValue, ElementName=userControl}" Increment="0.1"
                                             MaskType="Numeric" Mask="p2" MaskUseAsDisplayFormat="True" />

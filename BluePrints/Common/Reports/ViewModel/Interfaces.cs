@@ -103,6 +103,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         List<P6_ASSIGNMENT> P6_Assignments { get; set; }
         decimal Assigned_Percentage { get; }
         decimal Remaining_Percentage { get; }
+        decimal P6_Assignment_Total_Quantity { get; }
+        string P6_Assignment_UOM { get; }
     }
 
     public interface ICanSetProgresses

@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace BluePrints.Common.Base
@@ -337,10 +338,33 @@ namespace BluePrints.Common.Base
         public abstract IEnumerable<ICanAssignP6> Deliverables_Source { get; }
 
         ObservableCollection<ICanAssignP6> selected_deliverables;
-        public ObservableCollection<ICanAssignP6> Selected_Deliverables { get => selected_deliverables; set { selected_deliverables = value; this.RaisePropertyChanged(x => x.Selected_Deliverables); } }
+        public ObservableCollection<ICanAssignP6> Selected_Deliverables
+        {
+            get => selected_deliverables;
+            set { selected_deliverables = value; this.RaisePropertyChanged(x => x.Selected_Deliverables); }
+        }
 
         ICanAssignP6 selected_deliverable;
-        public ICanAssignP6 Selected_Deliverable { get => selected_deliverable; set { selected_deliverable = value; this.RaisePropertyChanged(x => x.Selected_Deliverable); } }
+        public ICanAssignP6 Selected_Deliverable
+        {
+            get => selected_deliverable;
+            set
+            {
+                selected_deliverable = value;
+                raiseQuantityAssignmentPropertiesChanged();
+            }
+        }
+
+        public void raiseQuantityAssignmentPropertiesChanged()
+        {
+            this.RaisePropertyChanged(x => x.Selected_Deliverable);
+            this.RaisePropertyChanged(x => x.Assignment_MinValue);
+            this.RaisePropertyChanged(x => x.QuantityAssignmentVisibility);
+            this.RaisePropertyChanged(x => x.Remaining_Quantity);
+            Assignment_Quantity = 0;
+            this.RaisePropertyChanged(x => x.Assignment_Quantity);
+            this.RaisePropertyChanged(x => x.Assignment_UOM);
+        }
 
         public P6_ASSIGNMENTProjection Selected_P6_Assignment { get; set; }
         public ObservableCollection<P6_ASSIGNMENTProjection> Selected_P6_Assignments { get; set; }
@@ -392,6 +416,58 @@ namespace BluePrints.Common.Base
             }
         }
 
+        private decimal assignment_quantity { get; set; }
+        public decimal Assignment_Quantity
+        {
+            get { return assignment_quantity; }
+            set
+            {
+                if (Selected_Deliverable == null)
+                    return;
+
+                Assignment_Value = (Assigned_Quantity + value) / Selected_Deliverable.P6_Assignment_Total_Quantity;
+                assignment_quantity = value;
+                this.RaisePropertyChanged(x => x.Assignment_Value);
+            }
+        }
+
+        public decimal Assigned_Quantity
+        {
+            get
+            {
+                if (Selected_Deliverable == null)
+                    return 0;
+
+                decimal total_quantity = Selected_Deliverable.P6_Assignment_Total_Quantity;
+                decimal assigned_Percentage = Selected_Deliverable.Assigned_Percentage;
+                return assigned_Percentage > 1 ? total_quantity : assigned_Percentage * total_quantity;
+            }
+        }
+
+        public decimal Remaining_Quantity
+        {
+            get
+            {
+                if (Selected_Deliverable == null)
+                    return 0;
+
+                decimal total_quantity = Selected_Deliverable.P6_Assignment_Total_Quantity;
+                decimal remaining_percentage = 1- Selected_Deliverable.Assigned_Percentage;
+                return remaining_percentage < 0 ? 0 : remaining_percentage * total_quantity;
+            }
+        }
+
+        public string Assignment_UOM
+        {
+            get
+            {
+                if (Selected_Deliverable == null)
+                    return string.Empty;
+
+                return Selected_Deliverable.P6_Assignment_UOM;
+            }
+        }
+
         public decimal Assignment_MinValue
         {
             get
@@ -417,8 +493,18 @@ namespace BluePrints.Common.Base
         private void Selected_Deliverables_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             mainThreadDispatcher.BeginInvoke(new Action(() => SetMaxUnits()));
-            this.RaisePropertyChanged(x => x.Assignment_MinValue);
             refresh_p6_assignments();
+        }
+
+        public Visibility QuantityAssignmentVisibility
+        {
+            get
+            {
+                if (Selected_Deliverable == null || Selected_Deliverables == null || Selected_Deliverables.Count > 1)
+                    return Visibility.Hidden;
+                else
+                    return Visibility.Visible;
+            }
         }
 
         /// <summary>
@@ -486,6 +572,7 @@ namespace BluePrints.Common.Base
             P6_ASSIGNMENTSCollectionViewModel.BulkSave(save_assignments);
             SetMaxUnits();
             raise_deliverable_assignment_changes();
+            raiseQuantityAssignmentPropertiesChanged();
         }
 
         public bool CanAdd_Assignments()

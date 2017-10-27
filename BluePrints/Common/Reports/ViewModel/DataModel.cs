@@ -251,7 +251,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         public Guid? Baseline_Guid { get => Entity.Baseline_Guid; set => Entity.Baseline_Guid = value; }
         public decimal? DB_Productivity_Override { get => Entity.DB_Productivity_Override; set => Entity.DB_Productivity_Override = value; }
         public string EntityNumber { get => Entity.Entity.INTERNAL_NUM; set => Entity.Entity.INTERNAL_NUM = value; }
-
         public string EntityGroup => Entity.EntityGroup;
 
         public Guid? DeliverableStatusProgressGuid
@@ -459,6 +458,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Estimated_Supply_Cost => Entity.Estimated_Supply_Cost;
 
         public decimal Variation_Supply_Cost => Entity.Variation_Supply_Cost;
+
+        public override decimal P6_Assignment_Total_Quantity => Entity.Total_Quantity;
+
+        public override string P6_Assignment_UOM => Entity.UOM;
 
         protected override decimal getNewPercentage()
         {
@@ -852,5 +855,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string Workpack_Name => Entity.Workpack_Name;
 
         public string Department_Code => Entity.Department_Code;
+
+        public virtual decimal P6_Assignment_Total_Quantity => Entity.Total_Units;
+
+        public virtual string P6_Assignment_UOM => "Hrs";
     }
 }
