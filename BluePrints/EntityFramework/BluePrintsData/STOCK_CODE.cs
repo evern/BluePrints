@@ -26,16 +26,16 @@ namespace BluePrints.Data
         public StockCodeType STOCK_CODE_TYPE { get; set; }
 
         [Required]
-        [StringLength(100)]
+        [StringLength(1000)]
         public string NAME { get; set; }
 
-        [StringLength(100)]
+        [StringLength(1000)]
         public string TYPE { get; set; }
 
-        [StringLength(100)]
+        [StringLength(1000)]
         public string SPEC { get; set; }
 
-        [StringLength(500)]
+        [StringLength(1000)]
         public string DESCRIPTION { get; set; }
 
         [Required]
