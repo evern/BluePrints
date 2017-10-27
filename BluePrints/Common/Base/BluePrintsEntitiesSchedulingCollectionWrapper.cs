@@ -412,6 +412,7 @@ namespace BluePrints.Common.Base
             set
             {
                 assignment_value = value;
+                this.RaisePropertyChanged(x => x.Assignment_Quantity);
                 this.RaiseCanExecuteChanged(x => x.Add_Assignments());
             }
         }
@@ -419,7 +420,13 @@ namespace BluePrints.Common.Base
         private decimal assignment_quantity { get; set; }
         public decimal Assignment_Quantity
         {
-            get { return assignment_quantity; }
+            get
+            {
+                if (Selected_Deliverable == null)
+                    return 0;
+
+                return (Assignment_Value * Selected_Deliverable.P6_Assignment_Total_Quantity) - Assigned_Quantity;
+            }
             set
             {
                 if (Selected_Deliverable == null)
@@ -526,6 +533,7 @@ namespace BluePrints.Common.Base
         {
             Assignment_Value = Assignment_MaxValue;
             this.RaisePropertyChanged(x => x.Assignment_Value);
+            this.RaisePropertyChanged(x => x.Assignment_Quantity);
         }
 
         public bool CanSetMaxUnits()
