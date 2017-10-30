@@ -429,7 +429,7 @@ namespace BluePrints.Common.Base
             }
             set
             {
-                if (Selected_Deliverable == null)
+                if (Selected_Deliverable == null || Selected_Deliverable.P6_Assignment_Total_Quantity == 0)
                     return;
 
                 Assignment_Value = (Assigned_Quantity + value) / Selected_Deliverable.P6_Assignment_Total_Quantity;
