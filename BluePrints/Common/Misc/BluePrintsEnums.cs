@@ -213,8 +213,8 @@ namespace BluePrints.Common
 
     public enum VariationType
     {
-        Internal,
-        External
+        Internal = 0,
+        External = 1
     }
 
     public enum StockCodeType

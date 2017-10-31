@@ -33,7 +33,7 @@ namespace BluePrints.ViewModels
         private const string ViewLayoutName = "BluePrintsEntitiesViewModel";
 
         protected Dispatcher MainThreadDispatcher = Application.Current.Dispatcher;
-        private readonly CollectionViewModel<PROJECT, Guid, IBluePrintsEntitiesUnitOfWork> _projectCollectionViewModel;
+        private CollectionViewModel<PROJECT, Guid, IBluePrintsEntitiesUnitOfWork> _projectCollectionViewModel;
 
         /// <summary>
         ///     Initializes a new instance of the BluePrintsEntitiesViewModel class.
@@ -43,12 +43,29 @@ namespace BluePrints.ViewModels
         protected BluePrintsEntitiesViewModel()
             : base(BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory())
         {
-            _projectCollectionViewModel =
-                CollectionViewModel<PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>.CreateCollectionViewModel(
-                    unitOfWorkFactory, x => x.PROJECTS);
+            initializeCategoryDescription();
+            _projectCollectionViewModel = CollectionViewModel<PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>.CreateCollectionViewModel(unitOfWorkFactory, x => x.PROJECTS);
             _projectCollectionViewModel.OnEntitiesLoadedCallBack = OnEntitiesLoadedCallBack;
             _projectCollectionViewModel.OnAfterEntitiesChangedCallBack = OnAfterEntitiesChanged;
-            _projectCollectionViewModel.Entities.ToList();      
+            _projectCollectionViewModel.Entities.ToList();
+        }
+
+        private void clearAllProjectModules()
+        {
+            List<BluePrintsEntitiesModuleDescription> bluePrintsModules = CreateBluePrintsModules().ToList();
+            List<BluePrintsEntitiesModuleDescription> removeModules = new List<BluePrintsEntitiesModuleDescription>();
+            foreach(BluePrintsEntitiesModuleDescription bluePrintsModule in Modules)
+            {
+                if (!bluePrintsModules.Any(x => x.Id.ToString() == bluePrintsModule.Id.ToString()))
+                    removeModules.Add(bluePrintsModule);
+            }
+
+            foreach(BluePrintsEntitiesModuleDescription removeModule in removeModules)
+            {
+                Modules.Remove(removeModule);
+            }
+
+            initializeCategoryDescription();
         }
 
         /// <summary>
@@ -150,25 +167,29 @@ namespace BluePrints.ViewModels
             if (_projectCollectionViewModel == null)
                 return;
 
-            Guid primaryKey = (Guid)key;
-            RemoveProjectModule(primaryKey);
+            clearAllProjectModules();
+            CreateProjectModules(_projectCollectionViewModel.Entities);
+            //Guid primaryKey = (Guid)key;
+            //RemoveProjectModule(primaryKey);
 
-            if (messageType == EntityMessageType.Added || messageType == EntityMessageType.Changed)
-            {
-                PROJECT project = _projectCollectionViewModel.Entities.FirstOrDefault(x => x.GUID == primaryKey);
-                if (project != null)
-                    if (messageType == EntityMessageType.Added)
-                    {
-                        CreateProjectTree(project);
-                    }
-                    else if (messageType == EntityMessageType.Changed)
-                    {
-                        if (project.STATUS == ProjectStatus.Active || project.STATUS == ProjectStatus.Tender)
-                        {
-                            CreateProjectTree(project);
-                        }
-                    }
-            }
+            //if (messageType == EntityMessageType.Added || messageType == EntityMessageType.Changed)
+            //{
+            //    PROJECT project = _projectCollectionViewModel.Entities.FirstOrDefault(x => x.GUID == primaryKey);
+            //    if (project != null)
+            //    {
+            //        if (messageType == EntityMessageType.Added)
+            //        {
+            //            CreateProjectTree(project);
+            //        }
+            //        else if (messageType == EntityMessageType.Changed)
+            //        {
+            //            if (project.STATUS == ProjectStatus.Active || project.STATUS == ProjectStatus.Tender)
+            //            {
+            //                CreateProjectTree(project);
+            //            }
+            //        }
+            //    }
+            //}
         }
 
         private void RemoveProjectModule(Guid primaryKey)
@@ -195,14 +216,27 @@ namespace BluePrints.ViewModels
         const string myProjectCategoryId = "Category_MyProject";
         const string myTenderCategoryId = "Category_MyTender";
         const string stockGroupCategoryId = "Category_StockGroup";
-        BluePrintsEntitiesModuleDescription projectEditableCategoryDescription = new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects", "PROJECTCollectionView");
-        BluePrintsEntitiesModuleDescription projectCategoryDescription = new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects");
-        BluePrintsEntitiesModuleDescription myProjectsCategoryDescription = new BluePrintsEntitiesModuleDescription(myProjectCategoryId, projectCategoryId, "My Projects");
-        BluePrintsEntitiesModuleDescription myTendersCategoryDescription = new BluePrintsEntitiesModuleDescription(myTenderCategoryId, projectCategoryId, "My Tenders");
-        BluePrintsEntitiesModuleDescription projectActiveCategoryDescription = new BluePrintsEntitiesModuleDescription(activeCategoryId, projectCategoryId, "Active");
-        BluePrintsEntitiesModuleDescription projectTenderCategoryDescription = new BluePrintsEntitiesModuleDescription(tenderCategoryId, projectCategoryId, "Tender", null, null, null, null, false);
-        BluePrintsEntitiesModuleDescription dataCategoryDescription = new BluePrintsEntitiesModuleDescription(dataCategoryId, null, "Data", null, null, null, null, false);
-        BluePrintsEntitiesModuleDescription stockGroupCategoryDescription = new BluePrintsEntitiesModuleDescription(stockGroupCategoryId, null, "Stock Group", null, null, null, null, false);
+        BluePrintsEntitiesModuleDescription projectEditableCategoryDescription;
+        BluePrintsEntitiesModuleDescription projectCategoryDescription;
+        BluePrintsEntitiesModuleDescription myProjectsCategoryDescription;
+        BluePrintsEntitiesModuleDescription myTendersCategoryDescription;
+        BluePrintsEntitiesModuleDescription projectActiveCategoryDescription;
+        BluePrintsEntitiesModuleDescription projectTenderCategoryDescription;
+        BluePrintsEntitiesModuleDescription dataCategoryDescription;
+        BluePrintsEntitiesModuleDescription stockGroupCategoryDescription;
+
+        private void initializeCategoryDescription()
+        {
+            projectEditableCategoryDescription = new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects", "PROJECTCollectionView");
+            projectCategoryDescription = new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects");
+            myProjectsCategoryDescription = new BluePrintsEntitiesModuleDescription(myProjectCategoryId, projectCategoryId, "My Projects");
+            myTendersCategoryDescription = new BluePrintsEntitiesModuleDescription(myTenderCategoryId, projectCategoryId, "My Tenders");
+            projectActiveCategoryDescription = new BluePrintsEntitiesModuleDescription(activeCategoryId, projectCategoryId, "Active");
+            projectTenderCategoryDescription = new BluePrintsEntitiesModuleDescription(tenderCategoryId, projectCategoryId, "Tender", null, null, null, null, false);
+            dataCategoryDescription = new BluePrintsEntitiesModuleDescription(dataCategoryId, null, "Data", null, null, null, null, false);
+            stockGroupCategoryDescription = new BluePrintsEntitiesModuleDescription(stockGroupCategoryId, null, "Stock Group", null, null, null, null, false);
+        }
+
         protected override BluePrintsEntitiesModuleDescription[] CreateModules()
         {
             return CreateBluePrintsModules();

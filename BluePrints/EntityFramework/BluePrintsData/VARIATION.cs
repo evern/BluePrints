@@ -9,14 +9,6 @@ namespace BluePrints.Data
     [Table("VARIATION")]
     public partial class VARIATION
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public VARIATION()
-        {
-            BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
-            ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
-            VARIATION_ITEM = new HashSet<VARIATION_ITEM>();
-        }
-
         [Key]
         public Guid GUID { get; set; }
 

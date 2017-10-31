@@ -5,11 +5,21 @@ namespace BluePrints.Data
     using BluePrints.Common.Base;
     using DevExpress.Mvvm;
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
 
     [ConstraintAttributes("GUID_PROJECT, NAME")]
     public partial class VARIATION : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public VARIATION()
+        {
+            BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
+            ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
+            VARIATION_ITEM = new HashSet<VARIATION_ITEM>();
+            TYPE = Common.VariationType.External;
+        }
+
         [NotMapped]
         public Guid EntityKey
         {

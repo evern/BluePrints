@@ -19,6 +19,5 @@ namespace BluePrints.Views
             ((PROJECTDashboardViewModelWrapper)this.DataContext).cleanUpEntitiesLoader();
             this.DataContext = null;
         }
-
     }
 }
