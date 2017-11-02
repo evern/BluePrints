@@ -43,7 +43,7 @@ namespace BluePrints.ViewModels
         {
             if (loadVARIATION.APPROVED == null)
                 //When variation is not approved, retrieve current live deliverables and variation deliverables
-                return query.Where(x => (x.GUID_BASELINE == load_context_guid && x.GUID_VARIATION != variation_guid) || (x.GUID_VARIATION == variation_guid && x.GUID_BASELINE == null));
+                return query.Where(x => (x.GUID_BASELINE == load_context_guid) || (x.GUID_VARIATION == variation_guid && x.GUID_BASELINE == null));
             else
                 //When variation is approved, retrieve deliverables from variation connected baseline
                 return query.Where(x => x.GUID_BASELINE == variation_baseline_guid && x.GUID_VARIATION == variation_guid);
