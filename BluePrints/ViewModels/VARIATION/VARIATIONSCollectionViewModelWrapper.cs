@@ -529,6 +529,57 @@ namespace BluePrints.ViewModels
                 mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE<ESTIMATION_DIRECT, ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProjection, ESTIMATION_DIRECT_ITEMProgress, ESTIMATION_DIRECT_ITEMVariation>(projections.ToList(), LiveESTIMATION_DIRECT, ESTIMATION_DIRECTViewModel, bluePrintsUOW, bluePrintsUOW.ESTIMATION_DIRECT_ITEMS)));
         }
 
+        public bool CanRevert()
+        {
+            return (MainViewModel != null && MainViewModel.Entities.Count > 0);
+        }
+
+        public void Revert()
+        {
+            if (MessageBoxService.ShowMessage("Are you sure you want to revert changes to the baseline?", "Revert Baseline", MessageButton.OKCancel) == MessageResult.Cancel)
+                return;
+
+            string liveBaselineRevision = LiveBASELINE.Revision;
+            string lastBaselineRevision = ((char)(liveBaselineRevision.Last() - 1)).ToString();
+            VARIATIONProjection lastVariation = MainViewModel.Entities.FirstOrDefault(x => getBaselineRevision(x.Entity.GUID_BASELINE) == liveBaselineRevision);
+            if(lastVariation == null)
+            {
+                MessageBoxService.ShowMessage("Last variation revision does not match latest baseline revision");
+                return;
+            }
+
+            BASELINE lastBaseline = BASELINECollection.FirstOrDefault(x => x.REVISION == lastBaselineRevision);
+            if(lastBaseline == null)
+            {
+                MessageBoxService.ShowMessage("Last baseline not found");
+                return;
+            }
+
+            BASELINE live_baseline = new BASELINE();
+            DataUtils.ShallowCopy(live_baseline, LiveBASELINE);
+            live_baseline.REVISION = live_baseline.REVISION + "_Reverted";
+            live_baseline.STATUS = BaselineStatus.Superseded;
+            BASELINEViewModel.Save(live_baseline);
+
+            lastBaseline.STATUS = BaselineStatus.Live;
+            BASELINEViewModel.Save(lastBaseline);
+
+            lastVariation.Entity.APPROVED = null;
+            lastVariation.Entity.APPROVEDBY = null;
+            MainViewModel.Save(lastVariation);
+
+            Refresh();
+        }
+
+        private string getBaselineRevision(Guid? baseline_guid)
+        {
+            BASELINE baseline = BASELINECollection.FirstOrDefault(x => x.GUID == baseline_guid);
+            if (baseline != null)
+                return baseline.REVISION;
+
+            return string.Empty;
+        }
+
         public void ReviseBASELINE<TBaseline, TEntity, TDeliverableRate, TReportable, TVariation>(IEnumerable<object> objects, TBaseline liveBASELINE, CollectionViewModel<TBaseline, TBaseline, Guid, IBluePrintsEntitiesUnitOfWork> collectionViewModel, IBluePrintsEntitiesUnitOfWork unitOfWork, IRepository<TEntity, Guid> repository)
             where TBaseline : class, IAmBaseline, new()
             where TEntity : class, IDeliverable, ISupportVariation, new()
@@ -560,6 +611,7 @@ namespace BluePrints.ViewModels
             List<TEntity> newBASELINE_ITEMS = new List<TEntity>();
 
             LoadingScreenManager.ShowLoadingScreen(variation_items.Count);
+
             foreach (var variation_item in variation_items)
             {
                 TEntity new_deliverable = new TEntity();

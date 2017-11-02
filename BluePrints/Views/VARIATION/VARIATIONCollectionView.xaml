@@ -49,6 +49,10 @@
                                                Command="{Binding DataContext.ApproveCommand, ElementName=userControl}"
                                                LargeGlyph="{dx:DXImage Image=Apply_32x32.png}"
                                                Glyph="{dx:DXImage Image=Apply_16x16.png}" />
+                                <dxb:BarButtonItem Content="Revert"
+                                               Command="{Binding DataContext.RevertCommand, ElementName=userControl}"
+                                               LargeGlyph="{dx:DXImage Image=DoublePrev_16x16.png}"
+                                               Glyph="{dx:DXImage Image=DoublePrev_32x32.png}" ToolTip="Revert changes made by last variation" />
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
                                                LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
                                                Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
