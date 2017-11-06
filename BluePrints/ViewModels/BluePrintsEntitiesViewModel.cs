@@ -164,11 +164,7 @@ namespace BluePrints.ViewModels
         const string projectViewIdPrefix = "View_Project";
         private void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
-            if (_projectCollectionViewModel == null)
-                return;
-
-            clearAllProjectModules();
-            CreateProjectModules(_projectCollectionViewModel.Entities);
+            RefreshProjectNavigations();
             //Guid primaryKey = (Guid)key;
             //RemoveProjectModule(primaryKey);
 
@@ -190,6 +186,20 @@ namespace BluePrints.ViewModels
             //        }
             //    }
             //}
+        }
+
+        public bool CanRefreshProjectNavigations()
+        {
+            return _projectCollectionViewModel != null;
+        }
+
+        public void RefreshProjectNavigations()
+        {
+            if (_projectCollectionViewModel == null)
+                return;
+
+            clearAllProjectModules();
+            CreateProjectModules(_projectCollectionViewModel.Entities);
         }
 
         private void RemoveProjectModule(Guid primaryKey)
