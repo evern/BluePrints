@@ -263,6 +263,12 @@
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" Increment="0.1" NullValueButtonPlacement="EditBox" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn Name="colCREATED" FieldName="Last_Updated" Header="UPDATED" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" />
+                                <dxg:GridColumn Name="colCREATEDBY" FieldName="Last_UpdatedBy" Header="UPDATEDBY" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" >
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                             </dxg:GridControlBand>
                         </dxg:GridControl.Bands>
                         <dxg:GridControl.GroupSummary>

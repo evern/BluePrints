@@ -199,6 +199,18 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
+                            <dxg:GridColumn Name="colCREATED" FieldName="Entity.Entity.CREATED" Header="CREATED" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" />
+                            <dxg:GridColumn Name="colCREATEDBY" FieldName="Entity.Entity.CREATEDBY" Header="CREATEDBY" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Name="colUPDATED" FieldName="Entity.Entity.UPDATED" Header="UPDATED" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" />
+                            <dxg:GridColumn Name="colUPDATEDBY" FieldName="Entity.Entity.UPDATEDBY" Header="UPDATEDBY" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.GroupSummary>
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.COMMENTS" SummaryType="Count" ShowInColumn="Entity.Entity.COMMENTS" DisplayFormat="Total {0} Records" />

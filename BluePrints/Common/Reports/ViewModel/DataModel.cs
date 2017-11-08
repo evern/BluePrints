@@ -551,6 +551,46 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Total_Percentage => Total_Units == 0 ? 0 : (Earned_Units_Total / Total_Units);
 
+        #region local non-interface variables
+        public DateTime? Last_Updated
+        {
+            get
+            {
+                if (PROGRESS_ITEMS.Count == 0)
+                    return null;
+
+                IEnumerable<PROGRESS_ITEM> progress_itemSortedByDate = PROGRESS_ITEMS.OrderBy(x => x.CREATED).ThenBy(x => x.UPDATED);
+                var lastProgressItem = progress_itemSortedByDate.Last();
+                if (lastProgressItem.UPDATED != null)
+                    return lastProgressItem.UPDATED;
+
+                if(lastProgressItem.CREATED != null)
+                    return lastProgressItem.CREATED;
+
+                return null;
+            }
+        }
+
+        public Guid? Last_UpdatedBy
+        {
+            get
+            {
+                if (PROGRESS_ITEMS.Count == 0)
+                    return null;
+
+                IEnumerable<PROGRESS_ITEM> progress_itemSortedByDate = PROGRESS_ITEMS.OrderBy(x => x.CREATED).ThenBy(x => x.UPDATED);
+                var lastProgressItem = progress_itemSortedByDate.Last();
+                if (lastProgressItem.UPDATEDBY != null)
+                    return lastProgressItem.UPDATEDBY;
+
+                if (lastProgressItem.CREATEDBY != null)
+                    return lastProgressItem.CREATEDBY;
+
+                return null;
+            }
+        }
+        #endregion
+
         private decimal? set_total_earned_percentage;
         public decimal Total_Earned_Percentage
         {
