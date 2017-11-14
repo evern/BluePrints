@@ -142,7 +142,7 @@
                                     <dxe:CheckEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colESTIMATED_HOURS" FieldName="Entity.Entity.ESTIMATED_HOURS" Header="ESTIMATED_HOURS" FilterPopupMode="CheckedList">
+                            <dxg:GridColumn Name="colESTIMATED_HOURS" FieldName="Entity.Entity.ESTIMATED_HOURS" Header="ESTIMATED_HOURS" FilterPopupMode="CheckedList" SortMode="Custom">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid>
@@ -283,6 +283,7 @@
                             </dxg:TableView>
                         </dxg:GridControl.View>
                         <dxmvvm:Interaction.Behaviors>
+                            <dxmvvm:EventToCommand EventName="CustomColumnSort" Command="{Binding DataContext.OnCustomColumnSortCommand, ElementName=userControl}" PassEventArgsToCommand="True"/>
                             <!--<common:CustomTableViewDragDropManager AllowDrag="{Binding DataContext.Allow_Drag_Drop, ElementName=userControl}" AllowDrop="{Binding DataContext.Allow_Drag_Drop, ElementName=userControl}" >
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand EventName="Drop" Command="{Binding DataContext.TableView_DropCommand, ElementName=userControl}" PassEventArgsToCommand="True"/>

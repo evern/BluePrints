@@ -723,6 +723,18 @@ namespace BluePrints.ViewModels
                 UnpauseUndoRedo();
         }
 
+        public void OnCustomColumnSort(CustomColumnSortEventArgs e)
+        {
+            if (e.Column.FieldName == "Entity.Entity.ESTIMATED_HOURS")
+            {
+                decimal decimal_value1 = (decimal)e.Value1;
+                decimal decimal_value2 = (decimal)e.Value2;
+
+                e.Result = decimal_value1.CompareTo(decimal_value2);
+                e.Handled = true;
+            }
+        }
+
         /// <summary>
         /// Concatenate entities to be saved and entities to be renamed.
         /// </summary>
@@ -1173,7 +1185,7 @@ namespace BluePrints.ViewModels
         protected override string ViewName
         {
             //get { return "BASELINE_ITEMSViewModelWrapper" + view_project_specific_affix; }
-            get { return "BASELINE_ITEMSViewModelWrapper_v1"; }
+            get { return "BASELINE_ITEMSViewModelWrapper_v2"; }
         }
 
         private string view_project_specific_affix
