@@ -562,6 +562,18 @@ namespace BluePrints.ViewModels
                 MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }
 
+        public void OnCustomColumnSort(CustomColumnSortEventArgs e)
+        {
+            if (e.Column.FieldName == "Entity.Entity.ESTIMATED_HOURS")
+            {
+                decimal decimal_value1 = (decimal)e.Value1;
+                decimal decimal_value2 = (decimal)e.Value2;
+
+                e.Result = decimal_value1.CompareTo(decimal_value2);
+                e.Handled = true;
+            }
+        }
+
         /// <summary>
         /// Allow undo-redo behavior to be added for automated cell value changing. This behavior doesn't have to be applied on new row because AddUndo for EntityMessageType.Added is already handling this
         /// </summary>
@@ -1223,7 +1235,8 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return "BASELINE_ITEMSViewModelWrapper" + view_project_specific_affix;
+                //return "BASELINE_ITEMSViewModelWrapper" + view_project_specific_affix;
+                return "BASELINE_ITEMSViewModelWrapper_v2";
             }
         }
 
