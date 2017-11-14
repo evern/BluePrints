@@ -485,7 +485,7 @@ namespace BluePrints.Common.ViewModel
 {
     public partial class BluePrintsEntitiesModuleDescription : ModuleDescription<BluePrintsEntitiesModuleDescription>
     {
-        public BluePrintsEntitiesModuleDescription(object id, object parentId, string title, string documentType = null, object documentParameter = null, ImageSource image = null, string navigationTitle = null, string imagePath = "", bool treeViewIsExpanded = true)
+        public BluePrintsEntitiesModuleDescription(object id, object parentId, string title, string documentType = null, object documentParameter = null, ImageSource image = null, string navigationTitle = null, bool treeViewIsExpanded = true, string imagePath = "")
             : base(id, parentId, title, documentType, documentParameter, image, navigationTitle, treeViewIsExpanded)
         {
             ChildModules = new RangeObservableCollection<BluePrintsEntitiesModuleDescription>();
