@@ -114,7 +114,8 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "DELIVERABLES_STATUSCollectionViewModelWrapper" + view_project_specific_affix; }
+            //get { return "DELIVERABLES_STATUSCollectionViewModelWrapper" + view_project_specific_affix; }
+            get { return "DELIVERABLES_STATUSCollectionViewModelWrapper_v1" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix

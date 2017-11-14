@@ -146,7 +146,8 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper" + view_project_specific_affix; }
+            //get { return "ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper" + view_project_specific_affix; }
+            get { return "ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper_v1" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix

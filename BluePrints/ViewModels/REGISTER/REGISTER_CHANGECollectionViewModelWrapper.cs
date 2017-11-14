@@ -155,7 +155,8 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "REGISTER_CHANGECollectionViewModelWrapper" + view_project_specific_affix; }
+            //get { return "REGISTER_CHANGECollectionViewModelWrapper" + view_project_specific_affix; }
+            get { return "REGISTER_CHANGECollectionViewModelWrapper_v1"; }
         }
 
         private string view_project_specific_affix

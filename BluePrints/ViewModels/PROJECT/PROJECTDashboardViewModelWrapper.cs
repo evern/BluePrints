@@ -137,8 +137,7 @@ namespace BluePrints.ViewModels
             var DELIVERABLE_STATUSES = loaderCollection.GetCollection<DELIVERABLES_STATUS>();
 
             return
-                query =>
-                    DashboardQueries.Multiple_Project_DashboardTransformation(query.OrderBy(x => x.NUMBER), BASELINES, ESTIMATION_DIRECTS, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS);
+                query => DashboardQueries.Multiple_Project_DashboardTransformation(query.OrderBy(x => x.NUMBER), BASELINES, ESTIMATION_DIRECTS, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS);
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)

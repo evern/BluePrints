@@ -255,7 +255,8 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "SiteDirectProgressCollectionViewModelWrapper" + view_project_specific_affix; }
+            //get { return "SiteDirectProgressCollectionViewModelWrapper" + view_project_specific_affix; }
+            get { return "SiteDirectProgressCollectionViewModelWrapper_v1" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix

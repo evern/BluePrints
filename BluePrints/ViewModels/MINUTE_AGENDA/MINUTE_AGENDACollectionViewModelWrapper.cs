@@ -423,7 +423,8 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "MINUTE_AGENDACollectionViewModelWrapper_V2" + view_project_specific_affix; }
+            //get { return "MINUTE_AGENDACollectionViewModelWrapper_V2" + view_project_specific_affix; }
+            get { return "MINUTE_AGENDACollectionViewModelWrapper_v2"; }
         }
 
         private string view_project_specific_affix
