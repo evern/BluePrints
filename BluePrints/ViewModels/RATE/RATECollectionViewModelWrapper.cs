@@ -102,7 +102,8 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "RATECollectionViewModelWrapper" + view_project_specific_affix; }
+            //get { return "RATECollectionViewModelWrapper" + view_project_specific_affix; }
+            get { return "RATECollectionViewModelWrapper_v1"; }
         }
 
         private string view_project_specific_affix

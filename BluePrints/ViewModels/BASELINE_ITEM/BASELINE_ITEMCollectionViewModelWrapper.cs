@@ -1173,7 +1173,7 @@ namespace BluePrints.ViewModels
         protected override string ViewName
         {
             //get { return "BASELINE_ITEMSViewModelWrapper" + view_project_specific_affix; }
-            get { return "BASELINE_ITEMSViewModelWrapper"; }
+            get { return "BASELINE_ITEMSViewModelWrapper_v1"; }
         }
 
         private string view_project_specific_affix

@@ -110,7 +110,8 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "AREACollectionViewModelWrapper" + view_project_specific_affix; }
+            //get { return "AREACollectionViewModelWrapper" + view_project_specific_affix; }
+            get { return "AREACollectionViewModelWrapper_v1" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix

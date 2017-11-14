@@ -131,7 +131,8 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "COMMODITY_CODECollectionViewModelWrapper" + view_project_specific_affix; }
+            //get { return "COMMODITY_CODECollectionViewModelWrapper" + view_project_specific_affix; }
+            get { return "COMMODITY_CODECollectionViewModelWrapper_v1" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix
