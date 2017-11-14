@@ -80,9 +80,15 @@ namespace BluePrints.Common.ViewModel.Reporting
         string Department_Code { get; }
         string Discipline_Code { get; }
         string Deliverable_Name { get; }
-        Guid? Workpack_Guid { get; }
+        Guid? Phase_Guid { get; set; }
+        Guid? Workpack_Guid { get; set; }
         Guid? Area_Guid { get; }
         Guid? SubArea_Guid { get; }
+    }
+
+    public interface IHaveProcurementWorkpack
+    {
+        Guid? Procurement_Workpack_Guid { get; set; }
     }
 
     #region Ability Specification Interfaces

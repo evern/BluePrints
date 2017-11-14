@@ -620,6 +620,12 @@
     <Compile Include="Views\CLIENT\CLIENTCollectionView.xaml.cs">
       <DependentUpon>CLIENTCollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ESTIMATION_DIRECT_ITEM\ESTIMATION_DIRECT_ITEMCollectionView - Backup.xaml.cs">
+      <DependentUpon>ESTIMATION_DIRECT_ITEMCollectionView - Backup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ESTIMATION_DIRECT_ITEM\ESTIMATION_INDIRECT_ITEMCollectionView.xaml.cs">
+      <DependentUpon>ESTIMATION_INDIRECT_ITEMCollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\HOLIDAY\HOLIDAYCollectionView.xaml.cs">
       <DependentUpon>HOLIDAYCollectionView.xaml</DependentUpon>
     </Compile>
@@ -1397,6 +1403,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\CLIENT\CLIENTCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ESTIMATION_DIRECT_ITEM\ESTIMATION_DIRECT_ITEMCollectionView - Backup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ESTIMATION_DIRECT_ITEM\ESTIMATION_INDIRECT_ITEMCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

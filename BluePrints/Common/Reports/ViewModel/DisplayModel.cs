@@ -131,6 +131,10 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal ScheduleCurrentPeriodPercentage => ((IReportable)ProgressItem).ScheduleCurrentPeriodPercentage;
 
+        public Guid? Phase_Guid { get => ((IReportable)ProgressItem).Phase_Guid; set => ((IReportable)ProgressItem).Phase_Guid = value; }
+
+        Guid? IDeliverable.Workpack_Guid { get => ((IReportable)ProgressItem).Workpack_Guid; set => ((IReportable)ProgressItem).Workpack_Guid = value; }
+
         public override void Update()
         {
             ProgressItem.Update();
@@ -410,6 +414,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Schedule_Estimated_Current_Period_Quantity => Reportable.Schedule_Estimated_Current_Period_Quantity;
 
         public decimal ScheduleCurrentPeriodPercentage => Reportable.ScheduleCurrentPeriodPercentage;
+
+        public Guid? Phase_Guid { get => Reportable.Phase_Guid; set => Reportable.Phase_Guid = value; }
+
+        Guid? IDeliverable.Workpack_Guid { get => Reportable.Workpack_Guid; set => Reportable.Workpack_Guid = value; }
 
         public void SetReportingDataDate(DateTime dataDate)
         {

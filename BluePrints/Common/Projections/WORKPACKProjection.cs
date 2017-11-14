@@ -49,6 +49,10 @@ namespace BluePrints.Common.Projections
 
         public string Department_Code => string.Empty;
 
+        public Guid? Phase_Guid { get => Entity.GUID_DPHASE; set => Entity.GUID_DPHASE = value; }
+
+        Guid? IDeliverable.Workpack_Guid { get; set; }
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
             throw new NotImplementedException();

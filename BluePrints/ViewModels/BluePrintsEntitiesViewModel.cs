@@ -428,7 +428,10 @@ namespace BluePrints.ViewModels
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectWorkpacks" + keyString, projectKey, childTitlePrefix + "Workpacks", "WORKPACKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Workpacks"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageBaseline))
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables", "BASELINE_ITEMCollectionView", new DualEntitiesParameter<PROJECT, IAmBaseline>(entity, null), null, "Deliverables"));
+            {
+                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectIndirectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables [Indirect]", "BASELINE_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, DeliverablesViewType.Indirect), null, "Deliverables [Indirect]"));
+                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectDirectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables [Direct]", "BASELINE_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, DeliverablesViewType.Direct), null, "Deliverables [Direct]"));
+            }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageEstimation))
                 construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates", "ESTIMATION_DIRECT_ITEMCollectionView", new DualEntitiesParameter<PROJECT, IAmBaseline>(entity, null), null, "Estimate"));

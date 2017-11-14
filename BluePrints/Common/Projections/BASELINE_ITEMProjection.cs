@@ -83,6 +83,10 @@ namespace BluePrints.Common.Projections
         public string EntityNumber { get => Entity.EntityNumber; set => Entity.EntityNumber = value; }
 
         public string EntityGroup => Entity.EntityGroup;
+
+        public Guid? Phase_Guid { get => Entity.Phase_Guid; set => Entity.Phase_Guid = value; }
+
+        Guid? IDeliverable.Workpack_Guid { get => Entity.Workpack_Guid; set => Entity.Workpack_Guid = value; }
     }
 
     public static class BASELINE_ITEMProjectionQueries

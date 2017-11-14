@@ -72,6 +72,8 @@ namespace BluePrints.ViewModels
         private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory =
             P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
+        private DeliverablesViewType viewType { get; set; }
+
         protected override void resolveParameters(object parameter)
         {
             Interface_InitializeParameters(parameter);
@@ -79,9 +81,10 @@ namespace BluePrints.ViewModels
 
         public void Interface_InitializeParameters(object parameter)
         {
-            var receiveParameter = (DualEntitiesParameter<PROJECT, IAmBaseline>)parameter;
+            var receiveParameter = (TripleEntitiesParameter<PROJECT, IAmBaseline, object>)parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadESTIMATION_DIRECT = (ESTIMATION_DIRECT)receiveParameter.GetSecondEntity();
+            viewType = (DeliverablesViewType)receiveParameter.GetThirdEntity();
 
             if (loadPROJECT != null)
                 isQueryForLiveStatus = true;
@@ -270,9 +273,39 @@ namespace BluePrints.ViewModels
             SetViewSpecificProperties();
         }
 
+        /// <summary>
+        /// Each estimation entity will need to be assigned to a construction phased workpack and a procurement phased workpack
+        /// </summary>
+        /// <param name="entity"></param>
+        private void onBeforeSavedDualWorkpackAssignment(ESTIMATION_DIRECT_ITEMProgress entity)
+        {
+            PhaseType? phaseType = null;
+            ChargeType? chargeType = null;
+
+            PhaseType? procurementPhaseType = null;
+
+            if(viewType == DeliverablesViewType.Direct)
+            {
+                phaseType = PhaseType.Construct;
+                chargeType = ChargeType.Direct;
+                procurementPhaseType = PhaseType.Procurement;
+            }
+            else if(viewType == DeliverablesViewType.Indirect)
+            {
+                phaseType = PhaseType.Construct;
+                chargeType = ChargeType.Indirect;
+                procurementPhaseType = PhaseType.Procurement;
+            }
+
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, WORKPACKSCollectionViewModel, phaseType, chargeType);
+
+            //by passing in only procurement phase type, the first occurence will be retrieved
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, WORKPACKSCollectionViewModel, procurementPhaseType, null, true);
+        }
+
         public void ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATION_DIRECT_ITEMProgress pasteEntity)
         {
-            onBeforeSavedGenerateAndAssignWorkpack(pasteEntity);
+            onBeforeSavedDualWorkpackAssignment(pasteEntity);
             KeyValuePair<ColumnBase, string> stock_code_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.StockCodeGuid)));
 
             if (stock_code_data.Key != null)
@@ -285,6 +318,11 @@ namespace BluePrints.ViewModels
                     Regex rgx = new Regex("[^0-9a-z\\.]");
                     string clean_supply_rate = rgx.Replace(supply_rate_data.Value, string.Empty);
                     string clean_install_rate = rgx.Replace(install_rate_data.Value, string.Empty);
+                    if (clean_supply_rate == string.Empty)
+                        clean_supply_rate = "0";
+
+                    if (clean_install_rate == string.Empty)
+                        clean_install_rate = "0";
 
                     decimal supply_value;
                     decimal install_value;
@@ -423,7 +461,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public bool OnBeforeEntitySaved(ESTIMATION_DIRECT_ITEMProgress entity)
         {
-            onBeforeSavedGenerateAndAssignWorkpack(entity);
+            onBeforeSavedDualWorkpackAssignment(entity);
             onBeforeSavedProjectStockCodeLogging(entity);
 
             //entity.Entity.Entity.GUID_ESTIMATION_DIRECT = loadESTIMATION_DIRECT.GUID;
@@ -433,51 +471,6 @@ namespace BluePrints.ViewModels
         public void OnEntitiesSavedCallBack(Guid primaryKey, ESTIMATION_DIRECT_ITEMProgress projectionEntity, ESTIMATION_DIRECT_ITEM entity, bool isNewEntity)
         {
             projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
-        }
-
-        private void onBeforeSavedGenerateAndAssignWorkpack(ESTIMATION_DIRECT_ITEMProgress entity)
-        {
-            if(entity.Entity.Entity.GUID_AREA != null && entity.Entity.Entity.GUID_PHASE != null)
-            {
-                string internalNumber = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber(entity.Entity.Entity.GUID_AREA, entity.Entity.Entity.GUID_SUBAREA, loadPROJECT, AREACollection, SUBAREACollection, entity.Entity.Entity.GUID_PHASE, PHASECollection);
-                if(internalNumber != string.Empty)
-                {
-                    WORKPACK existingWORKPACK = WORKPACKCollection.FirstOrDefault(x => x.INTERNAL_NAME1 == internalNumber);
-                    if (existingWORKPACK == null)
-                    {
-                        var newWORKPACK = new WORKPACK();
-
-                        List<AREA> sub_area_collection = new List<AREA>();
-                        AREA defaultSubArea = null;
-                        if (sub_area_collection.Count > 0)
-                        {
-                            defaultSubArea = sub_area_collection.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.Default_Sub_Area);
-                        }
-
-
-                        newWORKPACK.GUID_PROJECT = loadPROJECT.GUID;
-                        newWORKPACK.GUID_DAREA = entity.Entity.Entity.GUID_AREA;
-                        newWORKPACK.GUID_DSUBAREA = entity.Entity.Entity.GUID_SUBAREA == null ? defaultSubArea != null ? defaultSubArea.GUID : (Guid?)null : entity.Entity.Entity.GUID_SUBAREA;
-                        newWORKPACK.GUID_DPHASE = entity.Entity.Entity.GUID_PHASE;
-                        newWORKPACK.INTERNAL_NAME1 = internalNumber;
-                        newWORKPACK.STARTDATE = DateTime.Now;
-                        newWORKPACK.ENDDATE =
-                            BluePrintsDataUtils.WORKPACK_Calculate_EndDate((DateTime)newWORKPACK.STARTDATE, loadPROJECT);
-                        var reviewStartDate = (DateTime)newWORKPACK.STARTDATE;
-                        var reviewEndDate = (DateTime)newWORKPACK.ENDDATE;
-                        BluePrintsDataUtils.WORKPACK_Calculate_ReviewPeriod(ref reviewStartDate, ref reviewEndDate,
-                            loadPROJECT, false);
-                        newWORKPACK.REVIEWSTARTDATE = reviewStartDate;
-                        newWORKPACK.REVIEWENDDATE = reviewEndDate;
-                        newWORKPACK.AUTOGENERATED = true;
-                        newWORKPACK.TYPE = WorkpackType.SiteDirect;
-                        WORKPACKSCollectionViewModel.Save(newWORKPACK);
-                        entity.Entity.Entity.GUID_WORKPACK = newWORKPACK.GUID;
-                    }
-                    else
-                        entity.Entity.Entity.GUID_WORKPACK = existingWORKPACK.GUID;
-                }
-            }
         }
 
         private void onBeforeSavedProjectStockCodeLogging(ESTIMATION_DIRECT_ITEMProgress entity)

@@ -11,7 +11,7 @@ using BluePrints.Common.Base;
 
 namespace BluePrints.Data
 {
-    public partial class ESTIMATION_DIRECT_ITEM : BluePrintsEntityBase, IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, IHaveDBProductivityOverride, ISupportVariation
+    public partial class ESTIMATION_DIRECT_ITEM : BluePrintsEntityBase, IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementWorkpack
     {
         public ESTIMATION_DIRECT_ITEM()
         {
@@ -94,7 +94,12 @@ namespace BluePrints.Data
 
         public string Deliverable_Name => STOCK_CODE == null ? string.Empty : STOCK_CODE.CODE;
 
-        public Guid? Workpack_Guid => GUID_WORKPACK;
+        [NotMapped]
+        public Guid? Workpack_Guid
+        {
+            get { return GUID_WORKPACK; }
+            set { GUID_WORKPACK = value; }
+        }
 
         [NotMapped]
         public string Discipline_Code
@@ -159,5 +164,11 @@ namespace BluePrints.Data
                 return "CN";
             }
         }
+
+        [NotMapped]
+        public Guid? Phase_Guid { get => GUID_PHASE; set => GUID_PHASE = value; }
+
+        [NotMapped]
+        public Guid? Procurement_Workpack_Guid { get => GUID_PWORKPACK; set => GUID_PWORKPACK = value; }
     }
 }

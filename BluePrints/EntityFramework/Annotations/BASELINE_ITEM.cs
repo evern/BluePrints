@@ -259,6 +259,7 @@ namespace BluePrints.Data
         public Guid? Workpack_Guid
         {
             get { return GUID_WORKPACK; }
+            set { GUID_WORKPACK = value; }
         }
 
         [NotMapped]
@@ -317,5 +318,8 @@ namespace BluePrints.Data
 
         [NotMapped]
         public string EntityGroup => string.Empty;
+
+        [NotMapped]
+        public Guid? Phase_Guid { get => GUID_PHASE; set => GUID_PHASE = value; }
     }
 }

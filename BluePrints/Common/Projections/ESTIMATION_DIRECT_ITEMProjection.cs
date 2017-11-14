@@ -58,7 +58,7 @@ namespace BluePrints.Common.Projections
                 else if (IsStockCodeValid(setValue))
                 {
                     Entity.GUID_STOCK_CODE = setValue;
-                    if(StockCodeCollection != null)
+                    if (StockCodeCollection != null)
                         STOCK_CODE = StockCodeCollection.FirstOrDefault(x => x.GUID == setValue);
                 }
             }
@@ -72,7 +72,7 @@ namespace BluePrints.Common.Projections
             }
             set
             {
-                if(value == Estimation_DirectProgressType.Trackable)
+                if (value == Estimation_DirectProgressType.Trackable)
                 {
                     if (STOCK_CODE == null)
                         return;
@@ -84,7 +84,7 @@ namespace BluePrints.Common.Projections
                         return;
                 }
 
-                if(value == Estimation_DirectProgressType.Auto)
+                if (value == Estimation_DirectProgressType.Auto)
                 {
                     if (STOCK_CODE == null)
                         return;
@@ -210,6 +210,10 @@ namespace BluePrints.Common.Projections
         public string Workpack_Name => Entity.Workpack_Name;
 
         public string Department_Code => Entity.Department_Code;
+
+        public Guid? Phase_Guid { get; set; }
+
+        Guid? IDeliverable.Workpack_Guid { get => Entity.Workpack_Guid; set => Entity.Workpack_Guid = value; }
     }
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries

@@ -97,6 +97,7 @@ namespace BluePrints.ViewModels
         public IEnumerable<BASELINE_ITEMProgress> SelectedEntities { get; set; }
         public virtual IEnumerable<BASELINE_ITEMProgress> EditableAllEntities => GetEditableAllEntitiesCallBack != null ? GetEditableAllEntitiesCallBack() : MainViewModel.Entities;
         public Func<IEnumerable<BASELINE_ITEMProgress>> GetEditableAllEntitiesCallBack { get; set; }
+        private DeliverablesViewType viewType { get; set; }
 
         /// <summary>
         /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.
@@ -169,9 +170,10 @@ namespace BluePrints.ViewModels
 
         public void Interface_InitializeParameters(object parameter)
         {
-            var receiveParameter = (DualEntitiesParameter<PROJECT, IAmBaseline>)parameter;
+            var receiveParameter = (TripleEntitiesParameter<PROJECT, IAmBaseline, object>)parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadBASELINE = (BASELINE)receiveParameter.GetSecondEntity();
+            viewType = (DeliverablesViewType)receiveParameter.GetThirdEntity();
 
             if (loadPROJECT != null)
                 isQueryForLiveStatus = true;
@@ -240,7 +242,12 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == WorkpackType.OffsiteDirect);
+            if(viewType == DeliverablesViewType.Direct)
+                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == WorkpackType.OffsiteDirect);
+            else if(viewType == DeliverablesViewType.Indirect)
+                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == WorkpackType.OffsiteIndirect);
+            else
+                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && (x.TYPE == WorkpackType.OffsiteIndirect || x.TYPE == WorkpackType.OffsiteDirect));
         }
 
         private Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
@@ -299,12 +306,18 @@ namespace BluePrints.ViewModels
             if (BaseEntityQueryCallBack != null)
                 return BaseEntityQueryCallBack(query);
 
-            return query.Where(x => x.GUID_BASELINE == load_context_guid);
+            if(viewType == DeliverablesViewType.Direct)
+                return query.Where(x => x.GUID_BASELINE == load_context_guid && x.PHASE != null && x.PHASE.CHARGE_TYPE == ChargeType.Direct);
+            else if(viewType == DeliverablesViewType.Indirect)
+                return query.Where(x => x.GUID_BASELINE == load_context_guid && x.PHASE != null && x.PHASE.CHARGE_TYPE == ChargeType.Indirect);
+            else
+                return query.Where(x => x.GUID_BASELINE == load_context_guid);
         }
 
         public Action<IEnumerable<BASELINE_ITEMProgress>> OnReportablesLoadedCallBack { get; set; }
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
         {
+            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
             MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
             MainViewModel.ValidateSetValueIsContinueCallBack = validateSetValueCallBack;
@@ -345,19 +358,53 @@ namespace BluePrints.ViewModels
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }
 
+        /// <summary>
+        /// CallBack to apply global convention
+        /// </summary>
+        public bool OnBeforeEntitySaved(BASELINE_ITEMProgress entity)
+        {
+            PhaseType? phaseType = null;
+            ChargeType? chargeType = null;
+
+            PHASE directPHASE = PHASECollection.FirstOrDefault(x => (x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design) && (x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Direct));
+            if (viewType == DeliverablesViewType.Direct)
+            {
+                phaseType = PhaseType.Design;
+                chargeType = ChargeType.Direct;
+                if (directPHASE != null)
+                    entity.Phase_Guid = directPHASE.GUID;
+            }
+            else if(viewType == DeliverablesViewType.Indirect)
+            {
+                phaseType = PhaseType.Design;
+                chargeType = ChargeType.Indirect;
+                PHASE indirectPHASE = PHASECollection.FirstOrDefault(x => (x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design) && (x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Indirect));
+                if (indirectPHASE != null)
+                    entity.Phase_Guid = indirectPHASE.GUID;
+            }
+            else if (entity.Phase_Guid == null && directPHASE != null)
+            {
+                entity.Phase_Guid = directPHASE.GUID;
+            }
+
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, WORKPACKSCollectionViewModel, phaseType, chargeType);
+            //entity.Entity.Entity.GUID_ESTIMATION_DIRECT = loadESTIMATION_DIRECT.GUID;
+            return true;
+        }
+
         public Action<BASELINE_ITEMProgress> ApplyViewSpecificPropertiesToEntityCallBack { get; set; }
         protected override void OnBeforeApplyProjectionPropertiesToEntity(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity)
         {
-            if (projectionEntity.Entity.Entity.GUID_PHASE == null)
-            {
-                IEnumerable<PHASE> phase_collection = loaderCollection.GetCollection<PHASE>();
-                if (phase_collection != null)
-                {
-                    PHASE default_design_phase = phase_collection.FirstOrDefault(x => x.INTERNAL_NUM == DefaultPhaseInternalNumber);
-                    if (default_design_phase != null)
-                        projectionEntity.Entity.Entity.GUID_PHASE = default_design_phase.GUID;
-                }
-            }
+            //if (projectionEntity.Entity.Entity.GUID_PHASE == null)
+            //{
+            //    IEnumerable<PHASE> phase_collection = loaderCollection.GetCollection<PHASE>();
+            //    if (phase_collection != null)
+            //    {
+            //        PHASE default_design_phase = phase_collection.FirstOrDefault(x => x.INTERNAL_NUM == DefaultPhaseInternalNumber);
+            //        if (default_design_phase != null)
+            //            projectionEntity.Entity.Entity.GUID_PHASE = default_design_phase.GUID;
+            //    }
+            //}
 
             if (ApplyViewSpecificPropertiesToEntityCallBack == null)
                 projectionEntity.Entity.Entity.GUID_BASELINE = loadBASELINE.GUID;
@@ -966,9 +1013,11 @@ namespace BluePrints.ViewModels
                     if (entity.Entity.Entity.GUID_AREA == Guid.Empty || entity.Entity.Entity.GUID_DISCIPLINE == Guid.Empty)
                         continue;
 
+                    Guid? phase_guid;
+                    WorkpackType? workpackType = null;
                     string internalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber(
                         entity.Entity.Entity.GUID_AREA, entity.Entity.Entity.GUID_SUBAREA, 
-                        loadPROJECT, AREACollection, SUBAREACollection, entity.Entity.Entity.GUID_PHASE, PHASECollection);
+                        loadPROJECT, AREACollection, SUBAREACollection, out phase_guid, out workpackType, entity.Entity.Entity.GUID_PHASE, PHASECollection);
 
                     if (internalName == string.Empty)
                         return;
@@ -1172,7 +1221,10 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "BASELINE_ITEMSViewModelWrapper" + view_project_specific_affix; }
+            get
+            {
+                return "BASELINE_ITEMSViewModelWrapper" + view_project_specific_affix;
+            }
         }
 
         private string view_project_specific_affix
@@ -1302,6 +1354,17 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.CODE);
                 return collection;
+            }
+        }
+
+        public CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACKSCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<WORKPACK>();
             }
         }
         #endregion

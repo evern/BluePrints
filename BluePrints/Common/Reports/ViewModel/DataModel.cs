@@ -899,5 +899,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         public virtual decimal P6_Assignment_Total_Quantity => Entity.Total_Units;
 
         public virtual string P6_Assignment_UOM => "Hrs";
+
+        public Guid? Phase_Guid { get => Entity.Phase_Guid; set => Entity.Phase_Guid = value; }
+
+        Guid? IDeliverable.Workpack_Guid { get => Entity.Workpack_Guid; set => Entity.Workpack_Guid = value; }
     }
 }

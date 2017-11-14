@@ -561,6 +561,11 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_WORKPACK);
 
             modelBuilder.Entity<WORKPACK>()
+                .HasMany(e => e.ESTIMATION_DIRECT_ITEM1)
+                .WithOptional(e => e.WORKPACK1)
+                .HasForeignKey(e => e.GUID_PWORKPACK);
+
+            modelBuilder.Entity<WORKPACK>()
                 .HasMany(e => e.WORKPACK_ASSIGNMENT)
                 .WithRequired(e => e.WORKPACK)
                 .HasForeignKey(e => e.GUID_WORKPACK)
