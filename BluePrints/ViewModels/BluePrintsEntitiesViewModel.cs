@@ -429,8 +429,8 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageBaseline))
             {
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectIndirectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables [Indirect]", "BASELINE_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, DeliverablesViewType.Indirect), null, "Deliverables [Indirect]"));
                 design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectDirectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables [Direct]", "BASELINE_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, DeliverablesViewType.Direct), null, "Deliverables [Direct]"));
+                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectIndirectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables [Indirect]", "BASELINE_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, DeliverablesViewType.Indirect), null, "Deliverables [Indirect]"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageEstimation))
@@ -485,17 +485,20 @@ namespace BluePrints.Common.ViewModel
 {
     public partial class BluePrintsEntitiesModuleDescription : ModuleDescription<BluePrintsEntitiesModuleDescription>
     {
-        public BluePrintsEntitiesModuleDescription(object id, object parentId, string title, string documentType = null, object documentParameter = null, ImageSource image = null, string navigationTitle = null, bool treeViewIsExpanded = true)
+        public BluePrintsEntitiesModuleDescription(object id, object parentId, string title, string documentType = null, object documentParameter = null, ImageSource image = null, string navigationTitle = null, string imagePath = "", bool treeViewIsExpanded = true)
             : base(id, parentId, title, documentType, documentParameter, image, navigationTitle, treeViewIsExpanded)
         {
             ChildModules = new RangeObservableCollection<BluePrintsEntitiesModuleDescription>();
-            if (!CanNavigate)
-                Image = new BitmapImage(
-                    new Uri("pack://application:,,,/DevExpress.Images.v17.1;component/Images/Data/ManageDataSource_16x16.png"));
-                    //new Uri(@"/Common/Images/PRIMERO.jpg", UriKind.Relative));
+            if(imagePath != string.Empty)
+                Image = new BitmapImage(new Uri(@"/Common/Images/" + imagePath, UriKind.Relative));
             else
-                Image = new BitmapImage(
-                    new Uri("pack://application:,,,/DevExpress.Images.v17.1;component/Images/Actions/Open_16x16.png"));
+            {
+                if (!CanNavigate)
+                    Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v17.1;component/Images/Data/ManageDataSource_16x16.png"));
+                    //new Uri(@"/Common/Images/PRIMERO.jpg", UriKind.Relative));
+                else
+                    Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v17.1;component/Images/Actions/Open_16x16.png"));
+            }
         }
 
         public RangeObservableCollection<BluePrintsEntitiesModuleDescription> ChildModules { get; set; }
