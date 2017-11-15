@@ -74,15 +74,18 @@
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlVARIATION_ITEM" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxmvvm:Interaction.Behaviors>
+                            <dxmvvm:EventToCommand EventName="CustomColumnSort" Command="{Binding DataContext.OnCustomColumnSortCommand, ElementName=userControl}" PassEventArgsToCommand="True"/>
+                        </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_PHASE" Header="PHASE" VisibleIndex="0">
-                                <dxg:GridColumn.EditSettings>
+                            <custom:GridColumnEx FieldName="Entity.Entity.Entity.GUID_PHASE" Header="PHASE" VisibleIndex="0">
+                                <custom:GridColumnEx.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}"
                                         IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM"
                                         ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.EditSettings>
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit Name="PART_Editor"
                                                           ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}"
@@ -90,18 +93,18 @@
                                                           DisplayMember="INTERNAL_NUM" ValueMember="GUID"
                                                           IsEnabled="{Binding RowData.Row.IsReadOnly, Converter={StaticResource BooleanNegationConverter}}" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Name="colWORKPACKInternalName1"
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx Name="colWORKPACKInternalName1"
                                             FieldName="Entity.Entity.Entity.GUID_WORKPACK" Tag="True;True;Autofill from area and sub-area"
                                             Header="WORKPACK" VisibleIndex="1">
-                                <dxg:GridColumn.EditSettings>
+                                <custom:GridColumnEx.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
                                         IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NAME1"
                                         ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.EditSettings>
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit Name="PART_Editor"
                                                           ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
@@ -109,16 +112,16 @@
                                                           DisplayMember="INTERNAL_NAME1" ValueMember="GUID"
                                                           IsEnabled="{Binding RowData.Row.IsReadOnly, Converter={StaticResource BooleanNegationConverter}}" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_AREA" Header="AREA" Tag="True;True;Autofill workpack">
-                                <dxg:GridColumn.EditSettings>
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="Entity.Entity.Entity.GUID_AREA" Header="AREA" Tag="True;True;Autofill workpack">
+                                <custom:GridColumnEx.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
                                         IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM"
                                         ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.EditSettings>
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit Name="PART_Editor"
                                                           ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
@@ -126,10 +129,10 @@
                                                           DisplayMember="INTERNAL_NUM" ValueMember="GUID"
                                                           IsEnabled="{Binding RowData.Row.IsReadOnly, Converter={StaticResource BooleanNegationConverter}}" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText" Tag="True;True;Autofill from workpack">
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="Entity.Entity.Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText" Tag="True;True;Autofill from workpack">
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit 
                                                   x:Name="PART_Editor"
@@ -144,23 +147,23 @@
                                                   ImmediatePopup="True">
                                         </dxe:ComboBoxEdit>
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.CellTemplate>
                                 <!--For Filtering-->
-                                <dxg:GridColumn.EditSettings>
+                                <custom:GridColumnEx.EditSettings>
                                     <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
                                                               ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}"
                                                               IsTextEditable="True" AutoComplete="True"
                                                               DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DOCTYPE" Header="DOCTYPE">
-                                <dxg:GridColumn.EditSettings>
+                                </custom:GridColumnEx.EditSettings>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="Entity.Entity.Entity.GUID_DOCTYPE" Header="DOCTYPE">
+                                <custom:GridColumnEx.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}"
                                         IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
                                         ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.EditSettings>
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit Name="PART_Editor"
                                                           ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}"
@@ -168,16 +171,16 @@
                                                           DisplayMember="NAME" ValueMember="GUID"
                                                           IsEnabled="{Binding RowData.Row.IsReadOnly, Converter={StaticResource BooleanNegationConverter}}" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DISCIPLINE" Header="DISCIPLINE">
-                                <dxg:GridColumn.EditSettings>
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="Entity.Entity.Entity.GUID_DISCIPLINE" Header="DISCIPLINE">
+                                <custom:GridColumnEx.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
                                         IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
                                         ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.EditSettings>
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit Name="PART_Editor"
                                                           ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
@@ -185,10 +188,10 @@
                                                           DisplayMember="NAME" ValueMember="GUID"
                                                           IsEnabled="{Binding RowData.Row.IsReadOnly, Converter={StaticResource BooleanNegationConverter}}" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.DISCIPLINE_NUM" Header="DISC. NUM" >
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="Entity.Entity.Entity.DISCIPLINE_NUM" Header="DISC. NUM" >
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:SpinEdit Name="PART_Editor" IsTextEditable="True" IsFloatValue="False"
                                                                       Increment="1" MinValue="1" MaxValue="99"
@@ -196,16 +199,16 @@
                                                                       IsEnabled="{Binding RowData.Row.IsEnabled}"
                                                                       MaskUseAsDisplayFormat="True" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DEPARTMENT" Header="DEPARTMENT">
-                                <dxg:GridColumn.EditSettings>
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="Entity.Entity.Entity.GUID_DEPARTMENT" Header="DEPARTMENT">
+                                <custom:GridColumnEx.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}"
                                         IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
                                         ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.EditSettings>
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit Name="PART_Editor"
                                                           ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}"
@@ -213,126 +216,126 @@
                                                           DisplayMember="NAME" ValueMember="GUID"
                                                           IsEnabled="{Binding RowData.Row.IsReadOnly, Converter={StaticResource BooleanNegationConverter}}" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.INTERNAL_NUM" Header="INTERNAL NUM" Tag="True;False;Autofill from area, department, discipline and doc-type">
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="Entity.Entity.Entity.INTERNAL_NUM" Header="INTERNAL NUM" Tag="True;False;Autofill from area, department, discipline and doc-type">
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <!-- Use IsEnabled because when textEdit is invoked the 2nd time IsReadOnly didn't get picked up in the binding -->
                                         <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsEnabled}" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.CLIENT_NUM" Header="CLIENT NUM">
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="Entity.Entity.Entity.CLIENT_NUM" Header="CLIENT NUM">
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsEnabled}" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.REVISION_NUMBER" Header="REVISION NUM">
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="Entity.Entity.Entity.REVISION_NUMBER" Header="REVISION NUM">
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsEnabled}" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.DELIVERABLE_TYPE" Header="TYPE">
-                                <dxg:GridColumn.EditSettings>
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="Entity.Entity.Entity.DELIVERABLE_TYPE" Header="TYPE">
+                                <custom:GridColumnEx.EditSettings>
                                     <dxe:ComboBoxEditSettings Name="PART_Editor"
                                                               ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DeliverableType}}"
                                                               IsTextEditable="True" AutoComplete="True" />
-                                </dxg:GridColumn.EditSettings>
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.EditSettings>
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit Name="PART_Editor"
                                                           ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DeliverableType}}"
                                                           IsTextEditable="True" AutoComplete="True"
                                                           IsEnabled="{Binding RowData.Row.IsReadOnly, Converter={StaticResource BooleanNegationConverter}}" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.PRIMARY_TITLE" Header="PRIMARY TITLE">
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="Entity.Entity.Entity.PRIMARY_TITLE" Header="PRIMARY TITLE">
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsEnabled}" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.SECONDARY_TITLE" Header="SECONDARY TITLE">
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="Entity.Entity.Entity.SECONDARY_TITLE" Header="SECONDARY TITLE">
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsEnabled}" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.COMMENTS" Header="COMMENTS">
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="Entity.Entity.Entity.COMMENTS" Header="COMMENTS">
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsEnabled}" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Entity.BY_DURATION" Header="BY DURATION" >
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="Entity.Entity.Entity.BY_DURATION" Header="BY DURATION" >
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:CheckEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsEnabled}" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Total_Units" Header="TOTAL HOURS" ReadOnly="True" IsEnabled="False">
-                                <dxg:GridColumn.EditSettings>
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="Total_Units" Header="TOTAL HOURS" ReadOnly="True" IsEnabled="False" SortMode="Custom">
+                                <custom:GridColumnEx.EditSettings>
                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Variation_Units" Header="ADJUST HOURS">
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.EditSettings>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="Variation_Units" Header="ADJUST HOURS" SortMode="Custom">
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" Increment="1"
                                                       MaskUseAsDisplayFormat="True"
                                                       MinValue="{Binding RowData.Row.MinNegativeUnits}"
                                                       IsReadOnly="{Binding RowData.Row.AdjustUnitsReadOnly}" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Total_Cost" ReadOnly="True" Header="COSTS"
-                                            AllowSearchPanel="False">
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="Total_Cost" ReadOnly="True" Header="COSTS"
+                                            AllowSearchPanel="False" SortMode="Custom">
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True"
                                                       MaskType="Numeric" Mask="c" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Forecast_Units" Header="VARIATION UNITS" ReadOnly="True">
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="Forecast_Units" Header="VARIATION UNITS" ReadOnly="True" SortMode="Custom">
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" Increment="1"
                                                       MaskUseAsDisplayFormat="True"
                                                       IsReadOnly="True" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Variation_Cost" ReadOnly="True" Header="VARIATION COSTS"
-                                            AllowSearchPanel="False">
-                                <dxg:GridColumn.CellTemplate>
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="Variation_Cost" ReadOnly="True" Header="VARIATION COSTS"
+                                            AllowSearchPanel="False" SortMode="Custom">
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True"
                                                       MaskType="Numeric" Mask="c" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="ACTION" FieldName="Variation_Action" ReadOnly="True" IsEnabled="False">
-                                <dxg:GridColumn.EditSettings>
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx Header="ACTION" FieldName="Variation_Action" ReadOnly="True" IsEnabled="False">
+                                <custom:GridColumnEx.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
                                                               ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationAction}}"
                                                               AllowDrop="False" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="UNBOUND_CANCEL" Header="CANCEL" ReadOnly="True"
+                                </custom:GridColumnEx.EditSettings>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx FieldName="UNBOUND_CANCEL" Header="CANCEL" ReadOnly="True"
                                             UnboundType="Boolean" AllowEditing="False"
                                             >
-                                <dxg:GridColumn.CellTemplate>
+                                <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <Button Height="18"
                                                 Command="{Binding DataContext.CancelDeliverableCommand, ElementName=userControl}"
@@ -347,8 +350,8 @@
                                             </StackPanel>
                                         </Button>
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
+                                </custom:GridColumnEx.CellTemplate>
+                            </custom:GridColumnEx>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.GroupSummary>
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Total_Units"

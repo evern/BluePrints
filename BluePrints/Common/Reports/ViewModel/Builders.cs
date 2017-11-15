@@ -55,9 +55,15 @@ namespace BluePrints.Common.ViewModel.Reporting
                     if (filterType == ExoBurnedFilterType.All)
                         qualifiedWorkpacks = workpacks.Select(x => x.INTERNAL_NAME1);
                     else if (filterType == ExoBurnedFilterType.Design)
-                        qualifiedWorkpacks = workpacks.Where(x => x.TYPE == WorkpackType.OffsiteDirect || x.TYPE == WorkpackType.OffsiteIndirect).Select(x => x.INTERNAL_NAME1);
+                        qualifiedWorkpacks = workpacks.Select(x => x.INTERNAL_NAME1);
                     else
-                        qualifiedWorkpacks = workpacks.Where(x => x.TYPE == WorkpackType.SiteDirect || x.TYPE == WorkpackType.SiteIndirect).Select(x => x.INTERNAL_NAME1);
+                        qualifiedWorkpacks = workpacks.Select(x => x.INTERNAL_NAME1);
+
+                    //Can't do this because legacy workpack exists
+                    //else if (filterType == ExoBurnedFilterType.Design)
+                    //    qualifiedWorkpacks = workpacks.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Design).Select(x => x.INTERNAL_NAME1);
+                    //else
+                    //    qualifiedWorkpacks = workpacks.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Construct).Select(x => x.INTERNAL_NAME1);
                 }
 
                 var PrimeroUnitOfWork = PrimeroUOW;

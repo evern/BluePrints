@@ -39,7 +39,7 @@ namespace BluePrints.Common.Base
             if (AppNotificationService == null || GlobalVariables.IsNotificationShown)
                 return;
 
-            INotification notification = AppNotificationService.CreatePredefinedNotification("Update: Search bar is removed, to enable it press CTRL + F. Have a nice day", null, null, null);
+            INotification notification = AppNotificationService.CreatePredefinedNotification("Update 15 Nov 2017: If anything doesn't work as expected, please push reset layout and reload this view. Have a nice day", null, null, null);
             GlobalVariables.IsNotificationShown = true;
             notification.ShowAsync();
         }

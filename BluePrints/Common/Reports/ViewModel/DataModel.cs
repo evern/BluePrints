@@ -157,7 +157,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class ESTIMATION_DIRECT_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATION_DIRECT_ITEMProjection>, IHaveDBProductivityOverride, ISupportVariation
+    public class ESTIMATION_DIRECT_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATION_DIRECT_ITEMProjection>, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementWorkpack
     {
         public ESTIMATION_DIRECT_ITEMProgress()
         {
@@ -179,6 +179,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Estimated_Value { get => Entity.Estimated_Value; set => Entity.Estimated_Value = value; }
 
         public decimal DC_Value { get => Entity.DC_Value; set => Entity.DC_Value = value; }
+
+        public Guid? Procurement_Workpack_Guid { get => Entity.Procurement_Workpack_Guid; set => Entity.Procurement_Workpack_Guid = value; }
     }
 
     [BulkEditDisabledAttributes("DeliverableStatusProgressGuid, DeliverableStatusGuid")]
@@ -704,6 +706,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Earned_Percentage_OnDataDate => Total_Units == 0 ? 0 : (Earned_Units_OnDataDate / Total_Units);
 
         public virtual decimal Earned_Units_OnDataDate => PROGRESS_ITEM_Current == null ? 0 : PROGRESS_ITEM_Current.EARNED_UNITS;
+
+        public virtual decimal Earned_Costs_OnDataDate => Earned_Units_OnDataDate * Entity.ItemRate;
 
         public virtual decimal Earned_Units_ToDate => Earned_Units_BeforeDataDate + Earned_Units_OnDataDate;
 

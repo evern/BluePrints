@@ -63,123 +63,124 @@
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlOffsiteDirectProgress" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand Command="{Binding DataContext.CustomSummaryCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="CustomSummary" />
+                            <dxmvvm:EventToCommand EventName="CustomColumnSort" Command="{Binding DataContext.OnCustomColumnSortCommand, ElementName=userControl}" PassEventArgsToCommand="True"/>
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Bands>
                             <dxg:GridControlBand Name="bandGeneral" Header="General">
-                                <dxg:GridColumn Name="columnWorkpack" FieldName="Entity.Entity.GUID_WORKPACK" Header="WORKPACK" FilterPopupMode="CheckedList" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
+                                <custom:GridColumnEx Name="columnWorkpack" FieldName="Entity.Entity.GUID_WORKPACK" Header="WORKPACK" FilterPopupMode="CheckedList" ReadOnly="True">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA" FilterPopupMode="CheckedList" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA" FilterPopupMode="CheckedList" ReadOnly="True">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="colSUBAREA" FieldName="Entity.Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText" FilterPopupMode="CheckedList" ReadOnly="True">
-                                    <dxg:GridColumn.CellTemplate>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="colSUBAREA" FieldName="Entity.Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText" FilterPopupMode="CheckedList" ReadOnly="True">
+                                    <custom:GridColumnEx.CellTemplate>
                                         <DataTemplate>
                                             <dxe:ComboBoxEdit x:Name="PART_Editor" ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}" DisplayMember="INTERNAL_NUM" ValueMember="GUID" ValidateOnTextInput="True" ValidateOnEnterKeyPressed="True" IncrementalFiltering="True" NullValueButtonPlacement="Popup" ImmediatePopup="True"></dxe:ComboBoxEdit>
                                         </DataTemplate>
-                                    </dxg:GridColumn.CellTemplate>
+                                    </custom:GridColumnEx.CellTemplate>
                                     <!--For Filtering-->
-                                    <dxg:GridColumn.EditSettings>
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="colDOCTYPE" FieldName="Entity.Entity.GUID_DOCTYPE" Header="DOCTYPE" FilterPopupMode="CheckedList" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="colDOCTYPE" FieldName="Entity.Entity.GUID_DOCTYPE" Header="DOCTYPE" FilterPopupMode="CheckedList" ReadOnly="True">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.Entity.GUID_DISCIPLINE" Header="DISCIPLINE" FilterPopupMode="CheckedList" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="colDISCIPLINE" FieldName="Entity.Entity.GUID_DISCIPLINE" Header="DISCIPLINE" FilterPopupMode="CheckedList" ReadOnly="True">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="colDEPARTMENT" FieldName="Entity.Entity.GUID_DEPARTMENT" Header="DEPARTMENT" FilterPopupMode="CheckedList" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="colDEPARTMENT" FieldName="Entity.Entity.GUID_DEPARTMENT" Header="DEPARTMENT" FilterPopupMode="CheckedList" ReadOnly="True">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnInternalNum" FieldName="Entity.Entity.INTERNAL_NUM" Header="INTERNAL NUM" FilterPopupMode="CheckedList" ReadOnly="True" IsEnabled="False" />
-                                <dxg:GridColumn Name="columnType" FieldName="Entity.Entity.DELIVERABLE_TYPE" Header="TYPE" FilterPopupMode="CheckedList" ReadOnly="True" IsEnabled="False" />
-                                <dxg:GridColumn Name="columnTitle" FieldName="Entity.Entity.PRIMARY_TITLE" Header="PRIMARY TITLE" FilterPopupMode="CheckedList" ReadOnly="True" IsEnabled="False" />
-                                <dxg:GridColumn Name="columnTitle2" FieldName="Entity.Entity.SECONDARY_TITLE" Header="SECONDARY TITLE" FilterPopupMode="CheckedList" ReadOnly="True" IsEnabled="False" />
-                                <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.Entity.COMMENTS" Header="COMMENTS" ReadOnly="True" FilterPopupMode="CheckedList" />
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="columnInternalNum" FieldName="Entity.Entity.INTERNAL_NUM" Header="INTERNAL NUM" FilterPopupMode="CheckedList" ReadOnly="True" IsEnabled="False" />
+                                <custom:GridColumnEx Name="columnType" FieldName="Entity.Entity.DELIVERABLE_TYPE" Header="TYPE" FilterPopupMode="CheckedList" ReadOnly="True" IsEnabled="False" />
+                                <custom:GridColumnEx Name="columnTitle" FieldName="Entity.Entity.PRIMARY_TITLE" Header="PRIMARY TITLE" FilterPopupMode="CheckedList" ReadOnly="True" IsEnabled="False" />
+                                <custom:GridColumnEx Name="columnTitle2" FieldName="Entity.Entity.SECONDARY_TITLE" Header="SECONDARY TITLE" FilterPopupMode="CheckedList" ReadOnly="True" IsEnabled="False" />
+                                <custom:GridColumnEx Name="colCOMMENTS" FieldName="Entity.Entity.COMMENTS" Header="COMMENTS" ReadOnly="True" FilterPopupMode="CheckedList" />
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandBudgeted" Header="Budgeted">
-                                <dxg:GridColumn Name="colBY_DURATION" ReadOnly="True" IsEnabled="False" FieldName="Entity.Entity.BY_DURATION" Header="BY DURATION" FilterPopupMode="CheckedList" />
-                                <dxg:GridColumn Name="columnEstimatedHours" FieldName="Entity.Entity.ESTIMATED_HOURS" Header="ESTIMATED HOURS" FilterPopupMode="CheckedList" ReadOnly="True" IsEnabled="False" Visible="False">
-                                    <dxg:GridColumn.EditSettings>
+                                <custom:GridColumnEx Name="colBY_DURATION" ReadOnly="True" IsEnabled="False" FieldName="Entity.Entity.BY_DURATION" Header="BY DURATION" FilterPopupMode="CheckedList" />
+                                <custom:GridColumnEx Name="columnEstimatedHours" FieldName="Entity.Entity.ESTIMATED_HOURS" Header="ESTIMATED HOURS" FilterPopupMode="CheckedList" ReadOnly="True" IsEnabled="False" Visible="False" SortMode="Custom">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnDCHours" FieldName="Entity.Entity.DC_HOURS" Header="DC HOURS" ReadOnly="True" IsEnabled="False" FilterPopupMode="CheckedList" Visible="False">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="columnDCHours" FieldName="Entity.Entity.DC_HOURS" Header="DC HOURS" ReadOnly="True" IsEnabled="False" FilterPopupMode="CheckedList" Visible="False" SortMode="Custom">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" Increment="1" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnTotalHours" FieldName="Entity.Entity.Total_Units" Header="TOTAL HOURS" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="columnTotalHours" FieldName="Entity.Entity.Total_Units" Header="TOTAL HOURS" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnRate" FieldName="Entity.ItemRate" Header="RATE" ReadOnly="True" IsEnabled="False" FilterPopupMode="CheckedList" Visible="False">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="columnRate" FieldName="Entity.ItemRate" Header="RATE" ReadOnly="True" IsEnabled="False" FilterPopupMode="CheckedList" Visible="False" SortMode="Custom">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnStatus" FieldName="DeliverableStatusProgressGuid" Header="STATUS" FilterPopupMode="CheckedList" ColumnFilterMode="DisplayText">
-                                    <dxg:GridColumn.CellTemplate>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="columnStatus" FieldName="DeliverableStatusProgressGuid" Header="STATUS" FilterPopupMode="Custom" ColumnFilterMode="DisplayText">
+                                    <custom:GridColumnEx.CellTemplate>
                                         <DataTemplate>
                                             <dxe:ComboBoxEdit x:Name="PART_Editor" ItemsSource="{Binding RowData.Row.Entity.Entity.DeliverableStatusCollection}" DisplayMember="NAME" ValueMember="GUID" ValidateOnTextInput="True" ValidateOnEnterKeyPressed="True" IncrementalFiltering="True" NullValueButtonPlacement="Popup" ImmediatePopup="True"></dxe:ComboBoxEdit>
                                         </DataTemplate>
-                                    </dxg:GridColumn.CellTemplate>
+                                    </custom:GridColumnEx.CellTemplate>
                                     <!--For Filtering-->
-                                    <dxg:GridColumn.EditSettings>
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnUser" FieldName="Entity.Entity.GUID_USER" FilterPopupMode="CheckedList" Header="RESOURCE">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="columnUser" FieldName="Entity.Entity.GUID_USER" FilterPopupMode="CheckedList" Header="RESOURCE">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandCumulative" Header="Cumulative">
-                                <dxg:GridColumn Name="columnBaselinePercentage" Header="BASELINE %" FieldName="Baseline_Percentage" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
-                                    <dxg:GridColumn.EditSettings>
+                                <custom:GridColumnEx Name="columnBaselinePercentage" Header="BASELINE %" FieldName="Baseline_Percentage" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnTotalPercentage" Header="TOTAL %" FieldName="Total_Percentage_ToDate" ReadOnly="True" IsEnabled="False" FilterPopupMode="CheckedList" Visible="False">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="columnTotalPercentage" Header="TOTAL %" FieldName="Total_Percentage_ToDate" ReadOnly="True" IsEnabled="False" FilterPopupMode="CheckedList" Visible="False" SortMode="Custom">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnSchedulePercentage" FieldName="SchedulePercentage" Header="SCHEDULE %" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="columnSchedulePercentage" FieldName="SchedulePercentage" Header="SCHEDULE %" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnDueDate" FieldName="DueDate" Header="DUE DATE" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="columnDueDate" FieldName="DueDate" Header="DUE DATE" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:DateEditSettings />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnForecastDate" FieldName="ForecastDate" Header="FORECAST DATE" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="columnForecastDate" FieldName="ForecastDate" Header="FORECAST DATE" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:DateEditSettings />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="colTargetDate" FieldName="Entity.Entity.TARGET_DATE" Header="TARGET DATE" FilterPopupMode="CheckedList">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="colTargetDate" FieldName="Entity.Entity.TARGET_DATE" Header="TARGET DATE" FilterPopupMode="CheckedList" SortMode="Custom">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnTotalEarnedPercentage" FieldName="Total_Earned_Percentage" Header="CURRENT %" AllowEditing="True" FilterPopupMode="CheckedList">
-                                    <dxg:GridColumn.CellTemplate>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="columnTotalEarnedPercentage" FieldName="Total_Earned_Percentage" Header="CURRENT %" AllowEditing="True" FilterPopupMode="CheckedList" SortMode="Custom">
+                                    <custom:GridColumnEx.CellTemplate>
                                         <DataTemplate>
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
@@ -212,63 +213,63 @@
                                                 <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="p0" MaskUseAsDisplayFormat="True" Increment="0.01" MaxValue="{Binding RowData.Row.MaxPercentage}" MinValue="{Binding RowData.Row.MinPercentage}" Grid.Column="2" />
                                             </Grid>
                                         </DataTemplate>
-                                    </dxg:GridColumn.CellTemplate>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnEarnedUnits" Header="EARNED UNITS" FieldName="Earned_Units_ToDate" ReadOnly="True" IsEnabled="False" FilterPopupMode="CheckedList">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.CellTemplate>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="columnEarnedUnits" Header="EARNED UNITS" FieldName="Earned_Units_ToDate" ReadOnly="True" IsEnabled="False" FilterPopupMode="CheckedList" SortMode="Custom">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnTotalEarnedCost" Header="TOTAL EARNED $" FieldName="Earned_Cost_ToDate" ReadOnly="True" IsEnabled="False" Visible="False" FilterPopupMode="CheckedList">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="columnTotalEarnedCost" Header="TOTAL EARNED $" FieldName="Earned_Costs_ToDate" ReadOnly="True" IsEnabled="False" Visible="False" FilterPopupMode="CheckedList" SortMode="Custom">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandPeriod" Header="Period">
-                                <dxg:GridColumn Name="columnPeriodPlannedPercentage" Header="PLANNED %" FieldName="ScheduleCurrentPeriodPercentage" ReadOnly="True" IsEnabled="False" FilterPopupMode="CheckedList">
-                                    <dxg:GridColumn.EditSettings>
+                                <custom:GridColumnEx Name="columnPeriodPlannedPercentage" Header="PLANNED %" FieldName="ScheduleCurrentPeriodPercentage" ReadOnly="True" IsEnabled="False" FilterPopupMode="CheckedList" SortMode="Custom">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnPeriodEarnedPercentage" Header="EARNED %" FieldName="Earned_Percentage_OnDataDate" ReadOnly="True" IsEnabled="False" FilterPopupMode="CheckedList">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="columnPeriodEarnedPercentage" Header="EARNED %" FieldName="Earned_Percentage_OnDataDate" ReadOnly="True" IsEnabled="False" FilterPopupMode="CheckedList" SortMode="Custom">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnPeriodEarnedUnits" Header="EARNED UNITS" FieldName="Earned_Units_OnDataDate" ReadOnly="True" IsEnabled="False" FilterPopupMode="CheckedList">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="columnPeriodEarnedUnits" Header="EARNED UNITS" FieldName="Earned_Units_OnDataDate" ReadOnly="True" IsEnabled="False" FilterPopupMode="CheckedList" SortMode="Custom">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="columnCurrentEarnedCost" Header="CURRENT EARNED COSTS" FieldName="Earned_Costs_OnDataDate" ReadOnly="True" IsEnabled="False" Visible="False" FilterPopupMode="CheckedList">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="columnCurrentEarnedCost" Header="CURRENT EARNED COSTS" FieldName="Earned_Costs_OnDataDate" ReadOnly="True" IsEnabled="False" Visible="False" FilterPopupMode="CheckedList" SortMode="Custom">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="c" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Name="bandProductivity" Header="Productivity">
-                                <dxg:GridColumn FieldName="Current_Productivity" Header="CURRENT_PRODUCTIVITY" IsEnabled="False" ReadOnly="True" FilterPopupMode="CheckedList">
-                                    <dxg:GridColumn.EditSettings>
+                                <custom:GridColumnEx FieldName="Current_Productivity" Header="CURRENT_PRODUCTIVITY" IsEnabled="False" ReadOnly="True" FilterPopupMode="CheckedList">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Override_Productivity" Header="OVERRIDE_PRODUCTIVITY" FilterPopupMode="CheckedList">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx FieldName="Override_Productivity" Header="OVERRIDE_PRODUCTIVITY" FilterPopupMode="CheckedList">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" Increment="0.1" NullValueButtonPlacement="EditBox" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Remaining_Productivity" Header="REMAINING_PRODUCTIVITY" IsEnabled="False" ReadOnly="True" FilterPopupMode="CheckedList">
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx FieldName="Remaining_Productivity" Header="REMAINING_PRODUCTIVITY" IsEnabled="False" ReadOnly="True" FilterPopupMode="CheckedList">
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" Increment="0.1" NullValueButtonPlacement="EditBox" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Name="colCREATED" FieldName="Last_Updated" Header="UPDATED" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" />
-                                <dxg:GridColumn Name="colCREATEDBY" FieldName="Last_UpdatedBy" Header="UPDATEDBY" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" >
-                                    <dxg:GridColumn.EditSettings>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="colCREATED" FieldName="Last_Updated" Header="UPDATED" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" />
+                                <custom:GridColumnEx Name="colCREATEDBY" FieldName="Last_UpdatedBy" Header="UPDATEDBY" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" >
+                                    <custom:GridColumnEx.EditSettings>
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
                             </dxg:GridControlBand>
                         </dxg:GridControl.Bands>
                         <dxg:GridControl.GroupSummary>

@@ -202,15 +202,6 @@ namespace BluePrints.Common
         Current
     }
 
-    public enum WorkpackType
-    {
-        OffsiteDirect,
-        OffsiteIndirect,
-        SiteDirect,
-        SiteIndirect,
-        Supply
-    }
-
     public enum VariationType
     {
         Internal = 0,

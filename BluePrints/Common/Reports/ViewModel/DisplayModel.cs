@@ -135,6 +135,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         Guid? IDeliverable.Workpack_Guid { get => ((IReportable)ProgressItem).Workpack_Guid; set => ((IReportable)ProgressItem).Workpack_Guid = value; }
 
+        public decimal Earned_Costs_OnDataDate => ((IReportable)ProgressItem).Earned_Costs_OnDataDate;
+
         public override void Update()
         {
             ProgressItem.Update();
@@ -320,6 +322,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Earned_Units_BeforeDataDate => Reportable.Earned_Units_BeforeDataDate;
 
         public decimal Earned_Units_OnDataDate => Reportable.Earned_Units_OnDataDate;
+
+        public decimal Earned_Costs_OnDataDate => Reportable.Earned_Costs_OnDataDate;
 
         public decimal Earned_Units_ToDate => Reportable.Earned_Units_ToDate;
 
