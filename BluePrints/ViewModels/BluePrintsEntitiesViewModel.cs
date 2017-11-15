@@ -428,10 +428,16 @@ namespace BluePrints.ViewModels
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectWorkpacks" + keyString, projectKey, childTitlePrefix + "Workpacks", "WORKPACKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Workpacks"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageBaseline))
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables", "BASELINE_ITEMCollectionView", new DualEntitiesParameter<PROJECT, IAmBaseline>(entity, null), null, "Deliverables"));
+            {
+                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectDirectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables [Direct]", "BASELINE_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, DeliverablesViewType.Direct), null, "Deliverables [Direct]"));
+                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectIndirectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables [Indirect]", "BASELINE_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, DeliverablesViewType.Indirect), null, "Deliverables [Indirect]"));
+            }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageEstimation))
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates", "ESTIMATION_DIRECT_ITEMCollectionView", new DualEntitiesParameter<PROJECT, IAmBaseline>(entity, null), null, "Estimate"));
+            {
+                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectDirectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates [Direct]", "ESTIMATION_DIRECT_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, DeliverablesViewType.Direct), null, "Estimate [Direct]"));
+                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectIndirectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates [Indirect]", "ESTIMATION_DIRECT_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, DeliverablesViewType.Indirect), null, "Estimate [Indirect]"));
+            }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageProgress))
             {
@@ -482,17 +488,20 @@ namespace BluePrints.Common.ViewModel
 {
     public partial class BluePrintsEntitiesModuleDescription : ModuleDescription<BluePrintsEntitiesModuleDescription>
     {
-        public BluePrintsEntitiesModuleDescription(object id, object parentId, string title, string documentType = null, object documentParameter = null, ImageSource image = null, string navigationTitle = null, bool treeViewIsExpanded = true)
+        public BluePrintsEntitiesModuleDescription(object id, object parentId, string title, string documentType = null, object documentParameter = null, ImageSource image = null, string navigationTitle = null, bool treeViewIsExpanded = true, string imagePath = "")
             : base(id, parentId, title, documentType, documentParameter, image, navigationTitle, treeViewIsExpanded)
         {
             ChildModules = new RangeObservableCollection<BluePrintsEntitiesModuleDescription>();
-            if (!CanNavigate)
-                Image = new BitmapImage(
-                    new Uri("pack://application:,,,/DevExpress.Images.v17.1;component/Images/Data/ManageDataSource_16x16.png"));
-                    //new Uri(@"/Common/Images/PRIMERO.jpg", UriKind.Relative));
+            if(imagePath != string.Empty)
+                Image = new BitmapImage(new Uri(@"/Common/Images/" + imagePath, UriKind.Relative));
             else
-                Image = new BitmapImage(
-                    new Uri("pack://application:,,,/DevExpress.Images.v17.1;component/Images/Actions/Open_16x16.png"));
+            {
+                if (!CanNavigate)
+                    Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v17.1;component/Images/Data/ManageDataSource_16x16.png"));
+                    //new Uri(@"/Common/Images/PRIMERO.jpg", UriKind.Relative));
+                else
+                    Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v17.1;component/Images/Actions/Open_16x16.png"));
+            }
         }
 
         public RangeObservableCollection<BluePrintsEntitiesModuleDescription> ChildModules { get; set; }

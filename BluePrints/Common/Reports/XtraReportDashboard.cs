@@ -50,18 +50,18 @@ namespace BluePrints.Reports
 
             string strReplaceFrom;
             string strReplaceTo;
-            string formatString;
+            //string formatString;
             if (replaceTo == "Costs")
             {
                 strReplaceFrom = "Units";
                 strReplaceTo = "Costs";
-                formatString = "{0:c}";
+                //formatString = "{0:c}";
             }
             else
             {
                 strReplaceFrom = "Costs";
                 strReplaceTo = "Units";
-                formatString = "{0:n1}";
+                //formatString = "{0:n1}";
             }
 
             string percentageFormatString = "{0:0.00%}";

@@ -234,4 +234,7 @@
   <data name="Default_Procurement_Department" xml:space="preserve">
     <value>PROCUREMENT</value>
   </data>
+  <data name="Default_Area" xml:space="preserve">
+    <value>000</value>
+  </data>
 </root>

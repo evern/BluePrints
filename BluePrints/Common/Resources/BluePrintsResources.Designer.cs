@@ -142,6 +142,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 000.
+        /// </summary>
+        internal static string Default_Area {
+            get {
+                return ResourceManager.GetString("Default_Area", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CONSTRUCTION.
         /// </summary>
         internal static string Default_Construction_Department {

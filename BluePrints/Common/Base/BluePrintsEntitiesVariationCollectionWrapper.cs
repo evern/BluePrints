@@ -55,7 +55,8 @@ namespace BluePrints.Common.Base
             collectionViewModelWrapper.OnReportablesLoadedCallBack = OnViewModelWrapperLoadedCallBack;
             collectionViewModelWrapper.ApplyViewSpecificPropertiesToEntityCallBack = ApplyViewSpecificPropertiesToEntityCallBack;
             collectionViewModelWrapper.SetParentViewModel(this);
-            collectionViewModelWrapper.OnParameterChanged(new DualEntitiesParameter<PROJECT, IAmBaseline>(loadPROJECT, null));
+            TripleEntitiesParameter<PROJECT, IAmBaseline, object> collectionViewParameter = new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(loadPROJECT, null, DeliverablesViewType.Both);
+            collectionViewModelWrapper.OnParameterChanged(collectionViewParameter);
             #endregion
         }
 

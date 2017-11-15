@@ -202,15 +202,6 @@ namespace BluePrints.Common
         Current
     }
 
-    public enum WorkpackType
-    {
-        OffsiteDirect,
-        OffsiteIndirect,
-        SiteDirect,
-        SiteIndirect,
-        Supply
-    }
-
     public enum VariationType
     {
         Internal = 0,
@@ -275,7 +266,17 @@ namespace BluePrints.Common
         [Display(Name = "Design")]
         Design = 0,
         [Display(Name = "Construct")]
-        Construct = 1
+        Construct = 1,
+        [Display(Name = "Procurement")]
+        Procurement = 2
+    }
+
+    public enum ChargeType
+    {
+        [Display(Name = "Direct")]
+        Direct = 0,
+        [Display(Name = "Indirect")]
+        Indirect = 1
     }
 
     public enum ProgressType
@@ -478,6 +479,16 @@ namespace BluePrints.Common
         Internal = 0,
         [Display(Name = "Client")]
         Client = 1,
+    }
+
+    public enum DeliverablesViewType
+    {
+        [Display(Name = "Indirect")]
+        Indirect = 0,
+        [Display(Name = "Direct")]
+        Direct = 1,
+        [Display(Name = "Both")]
+        Both = 2
     }
 
     public class ReportingEnum

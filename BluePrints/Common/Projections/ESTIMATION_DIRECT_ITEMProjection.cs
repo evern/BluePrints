@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IDeliverable_Quantity, IHaveStockCode, IHaveDBProductivityOverride, ISupportVariation
+    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IDeliverable_Quantity, IHaveStockCode, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementWorkpack
     {
         public ESTIMATION_DIRECT_ITEMProjection()
             : base()
@@ -58,7 +58,7 @@ namespace BluePrints.Common.Projections
                 else if (IsStockCodeValid(setValue))
                 {
                     Entity.GUID_STOCK_CODE = setValue;
-                    if(StockCodeCollection != null)
+                    if (StockCodeCollection != null)
                         STOCK_CODE = StockCodeCollection.FirstOrDefault(x => x.GUID == setValue);
                 }
             }
@@ -72,7 +72,7 @@ namespace BluePrints.Common.Projections
             }
             set
             {
-                if(value == Estimation_DirectProgressType.Trackable)
+                if (value == Estimation_DirectProgressType.Trackable)
                 {
                     if (STOCK_CODE == null)
                         return;
@@ -84,7 +84,7 @@ namespace BluePrints.Common.Projections
                         return;
                 }
 
-                if(value == Estimation_DirectProgressType.Auto)
+                if (value == Estimation_DirectProgressType.Auto)
                 {
                     if (STOCK_CODE == null)
                         return;
@@ -210,6 +210,12 @@ namespace BluePrints.Common.Projections
         public string Workpack_Name => Entity.Workpack_Name;
 
         public string Department_Code => Entity.Department_Code;
+
+        public Guid? Phase_Guid { get => Entity.Phase_Guid; set => Entity.Phase_Guid = value; }
+
+        Guid? IDeliverable.Workpack_Guid { get => Entity.Workpack_Guid; set => Entity.Workpack_Guid = value; }
+
+        public Guid? Procurement_Workpack_Guid { get => Entity.GUID_PWORKPACK; set => Entity.GUID_PWORKPACK = value; }
     }
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries

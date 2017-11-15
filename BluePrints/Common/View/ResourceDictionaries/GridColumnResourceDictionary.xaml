@@ -28,6 +28,12 @@
                                           ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:PhaseType}}" />
             </dxg:GridColumn.EditSettings>
         </dxg:GridColumn>
+        <dxg:GridColumn FieldName="CHARGE_TYPE">
+            <dxg:GridColumn.EditSettings>
+                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" NullValueButtonPlacement="Popup"
+                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ChargeType}}" />
+            </dxg:GridColumn.EditSettings>
+        </dxg:GridColumn>
     </collections:ArrayList>
     <collections:ArrayList x:Key="RATEColumns">
         <dxg:GridColumn Header="GROUP" FieldName="COST_GROUP"

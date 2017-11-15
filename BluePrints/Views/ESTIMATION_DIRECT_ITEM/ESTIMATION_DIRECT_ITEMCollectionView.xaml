@@ -46,14 +46,19 @@
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlESTIMATION_DIRECT_ITEM" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Bands>
                             <dxg:GridControlBand Name="bandGeneral" Header="General">
-                                <dxg:GridColumn Name="colWORKPACK" FieldName="Entity.Entity.GUID_WORKPACK" Header="WORKPACK" ReadOnly="True">
+                                <custom:GridColumnEx Name="colPHASE" FieldName="Entity.Entity.GUID_PHASE" Header="PHASE" FilterPopupMode="CheckedList" VisibleIndex="0">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.ConstructionPHASECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </custom:GridColumnEx>
+                                <dxg:GridColumn Name="colWORKPACK" VisibleIndex="1" FieldName="Entity.Entity.GUID_WORKPACK" Header="WORKPACK" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colPHASE" FieldName="Entity.Entity.GUID_PHASE" Header="PHASE" FilterPopupMode="CheckedList" VisibleIndex="0">
+                                <dxg:GridColumn Name="colProcurementWORKPACK" VisibleIndex="2" FieldName="Entity.Entity.GUID_PWORKPACK" Header="PROCUREMENT" Visible="{Binding DataContext.IsProcurementWorkpackVisible, ElementName=userControl}" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
+                                        <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.ProcurementWORKPACKCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA" FilterPopupMode="CheckedList">

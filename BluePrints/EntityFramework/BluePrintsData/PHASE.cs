@@ -30,6 +30,8 @@ namespace BluePrints.Data
 
         public PhaseType? PHASE_TYPE { get; set; }
 
+        public ChargeType? CHARGE_TYPE { get; set; }
+
         [Required]
         [StringLength(200)]
         public string TITLE { get; set; }
