@@ -15,6 +15,7 @@ namespace BluePrints
         public MainWindow()
         {
             InitializeComponent();
+
 #if RELEASE
             this.Title = "BluePrints";
             Icon = new BitmapImage(new Uri(@"pack://application:,,,/" + Assembly.GetExecutingAssembly().GetName().Name + ";component/" + "Common/Images/Logo.ico", UriKind.Absolute));

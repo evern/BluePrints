@@ -23,7 +23,6 @@ namespace BluePrints.Views
                 txtPassword.Focus();
 
             imagePrimeroIcon.Source = new BitmapImage(new Uri(@"/Common/Images/PRIMERO.jpg", UriKind.Relative));
-
         }
 
         public void ShowErrorCallBack(bool isPasswordField, string errorMessage)
