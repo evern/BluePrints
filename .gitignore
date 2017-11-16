@@ -156,3 +156,10 @@ $RECYCLE.BIN/
 .DS_Store
 /packages
 /.vs/BluePrints/v15/Server/sqlite3
+/.vs
+/.vs/ProjectSettings.json
+/.vs/slnx.sqlite
+/.vs/VSWorkspaceState.json
+/.vs/ProjectSettings.json
+/.vs
+/.vs/slnx.sqlite
