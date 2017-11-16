@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BluePrints</RootNamespace>
-    <AssemblyName>BluePrints</AssemblyName>
+    <AssemblyName>BluePrints BETA</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -66,10 +66,11 @@
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Common\Images\Logo.ico</ApplicationIcon>
+    <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Hybrid|AnyCPU'">
     <OutputPath>bin\Hybrid\</OutputPath>
+    <DefineConstants>HYBRID</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DevExpress.Charts.v17.1.Core, Version=17.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
@@ -4394,12 +4395,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Common\Images\LogoBeta.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="D:\Sources\Repo\BaseModel\BaseModel\BaseModel\BaseModel.csproj">
-      <Project>{25f838cc-cf00-4ba1-a2dd-21b4c02592ce}</Project>
-      <Name>BaseModel</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\SlowCheetah.2.5.48\build\SlowCheetah.targets" Condition="Exists('..\packages\SlowCheetah.2.5.48\build\SlowCheetah.targets')" />
