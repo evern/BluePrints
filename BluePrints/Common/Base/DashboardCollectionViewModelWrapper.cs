@@ -2,6 +2,7 @@
 using BaseModel.Misc;
 using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
+using BaseModel.ViewModel.Services;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Base;
 using BluePrints.Common.Misc;
@@ -23,6 +24,12 @@ using System.Windows.Threading;
 
 namespace BluePrints.Common.ViewModel
 {
+    public class Summary
+    {
+        public SummaryItemType Type { get; set; }
+        public string FieldName { get; set; }
+    }
+
     public abstract class DashboardViewModelWrapper<TEntity, TProjection, TPrimaryKey, TUnitOfWork> :
         BluePrintsEntitiesCollectionWrapper
         <TEntity, TProjection, TPrimaryKey, TUnitOfWork>, ISupportStatsSwitching
@@ -33,9 +40,37 @@ namespace BluePrints.Common.ViewModel
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> UnitOfWorkFactory;
         private DispatcherTimer dispatchTimer;
         private DispatcherTimer first_loaded_dispatchTimer;
+        //in single project mode selected change is suppressed but resume after summary has been loaded
+        protected bool isSuppressPropertyChange;
+        private bool isChartLoading { get; set; }
+        private bool isSummaryLoading { get; set; }
+
+        public bool IsChartLoading
+        {
+            get => IsChartLoading;
+            set
+            {
+                isChartLoading = value;
+                this.RaisePropertyChanged(x => x.IsChartLoading);
+            }
+        }
+
+        public bool IsSummaryLoading
+        {
+            get => isSummaryLoading;
+            set
+            {
+                isSummaryLoading = value;
+                this.RaisePropertyChanged(x => x.IsSummaryLoading);
+            }
+        }
+
         public DashboardViewModelWrapper()
         {
             DoNotAutoRefresh = true;
+            IsSummaryLoading = true;
+            IsChartLoading = true;
+            isSuppressPropertyChange = false;
 
             Selected_Dashboards = new ObservableCollection<IHaveStats>();
             Selected_Dashboards.CollectionChanged += SelectedDashboard_CollectionChanged;
@@ -58,13 +93,13 @@ namespace BluePrints.Common.ViewModel
 
         private void first_loaded_dispatchTimer_Tick(object sender, EventArgs e)
         {
+            first_loaded_dispatchTimer.Stop();
             if (MainViewModel == null)
                 return;
 
-            first_loaded_dispatchTimer.Stop();
             if (MainViewModel.Entities.Count > 0)
             {
-                this.SwitchBinding(false);
+                this.SwitchBinding(false, GridControlService);
                 SummaryEntity = MainViewModel.Entities.First();
                 this.RaisePropertyChanged(x => x.SummaryEntity);
             }
@@ -73,7 +108,10 @@ namespace BluePrints.Common.ViewModel
         private void dispatchTimer_Tick(object sender, EventArgs e)
         {
             dispatchTimer.Stop();
-            OnSelectedEntitiesChanged(Selected_Dashboards);
+            if (isSuppressPropertyChange)
+                isSuppressPropertyChange = false;
+            else
+                OnSelectedEntitiesChanged(Selected_Dashboards);
         }
 
         private void SelectedDashboard_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -88,6 +126,7 @@ namespace BluePrints.Common.ViewModel
         public ObservableCollection<IHaveStats> Selected_Dashboards { get; set; }
         public void OnSelectedEntitiesChanged(IEnumerable<IHaveStats> entities)
         {
+            IsChartLoading = true;
             if (MainViewModel == null)
                 return;
             
@@ -109,6 +148,7 @@ namespace BluePrints.Common.ViewModel
                 }
             }
 
+            IsChartLoading = false;
             this.RaisePropertyChanged(x => x.SummaryEntity);
         }
 
@@ -125,7 +165,7 @@ namespace BluePrints.Common.ViewModel
             var calculationType = button.Name.ToUpper().Contains("COSTS")
                 ? DashboardViewType.Costs
                 : DashboardViewType.Units;
-            this.SwitchBinding(calculationType == DashboardViewType.Costs);
+            this.SwitchBinding(calculationType == DashboardViewType.Costs, GridControlService);
             ChangeViewMemberFieldNames?.Invoke(calculationType);
 
             IHaveSummary IHaveSummary = SummaryEntity as IHaveSummary;
@@ -338,7 +378,7 @@ namespace BluePrints.Common.ViewModel
 
     public static class ISupportStatsSwitchingExtension
     {
-        public static void SwitchBinding(this ISupportStatsSwitching stats_switch, bool is_cost)
+        public static void SwitchBinding(this ISupportStatsSwitching stats_switch, bool is_cost, IGridControlService gridControlService)
         {
             stats_switch.IsActualVisible = is_cost ? true : false;
             stats_switch.Field_Mask = is_cost ? "c" : "n";
@@ -363,7 +403,6 @@ namespace BluePrints.Common.ViewModel
             string field_selection_string = is_cost ? cost_string : units_string;
             string field_percentage_selection_string = is_cost ? cost_percentage_string : units_percentage_string;
 
-
             string total_budgeted_convention = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats) + ".{0}";
             stats_switch.Total_Budgeted = is_cost ? String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.TotalCosts)) : String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.TotalUnits));
 
@@ -378,6 +417,25 @@ namespace BluePrints.Common.ViewModel
             stats_switch.Period_Earned_Units = String.Format(current_period_string, earned_string) + field_selection_string;
             stats_switch.Period_Burned_Units = String.Format(current_period_string, burned_string) + field_selection_string;
             stats_switch.Period_Actual_Units = String.Format(current_period_string, actual_string) + field_selection_string;
+
+            string summaryPercentageString = "{0:p2}";
+            string summaryDecimalString = "{0:0.00}";
+            if (is_cost)
+                summaryDecimalString = "{0:c2}";
+
+            gridControlService.ClearSummary();
+            gridControlService.AddSummary("WorkpackCode", SummaryItemType.Count, "Total {0} Records");
+            gridControlService.AddSummary(stats_switch.Cumulative_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
+            gridControlService.AddSummary(stats_switch.Cumulative_Planned_Units, SummaryItemType.Sum, summaryDecimalString);
+            gridControlService.AddSummary(stats_switch.Cumulative_Earned_Units, SummaryItemType.Sum, summaryDecimalString);
+            gridControlService.AddSummary(stats_switch.Cumulative_Burned_Units, SummaryItemType.Sum, summaryDecimalString);
+            gridControlService.AddSummary(stats_switch.Cumulative_Actual_Units, SummaryItemType.Sum, summaryDecimalString);
+
+            gridControlService.AddSummary(stats_switch.Period_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
+            gridControlService.AddSummary(stats_switch.Period_Planned_Units, SummaryItemType.Sum, summaryDecimalString);
+            gridControlService.AddSummary(stats_switch.Period_Earned_Units, SummaryItemType.Sum, summaryDecimalString);
+            gridControlService.AddSummary(stats_switch.Period_Burned_Units, SummaryItemType.Sum, summaryDecimalString);
+            gridControlService.AddSummary(stats_switch.Period_Actual_Units, SummaryItemType.Sum, summaryDecimalString);
 
             string header_convention = "{0} {1}";
             string units_display_string = "Units";
