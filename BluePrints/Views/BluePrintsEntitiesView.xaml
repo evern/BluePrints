@@ -117,41 +117,41 @@
                     </dxr:RibbonPage>
                 </dxr:RibbonDefaultPageCategory>
             </dxr:RibbonControl>
+            <dxa:AccordionControl x:Name="TreeListControl" 
+                                IsCollapseButtonVisible="True"
+                                ExpandItemOnHeaderClick="False"
+                                ShowSearchControl="True"
+                                dx:DXSerializer.SerializationID="NavigationTree" ExpandMode="Multiple"
+                                ChildrenPath="ChildModules"
+                                ItemsSource="{Binding Modules}"
+                                SelectedItem="{Binding SelectedModule}" BorderThickness="0"
+                                Background="Transparent"
+                                ScrollViewer.HorizontalScrollBarVisibility="Disabled" CollapsedItemClickAction="ShowItems" >
+                <dxmvvm:Interaction.Behaviors>
+                    <dxmvvm:EventToCommand EventName="MouseDoubleClick" Command="{Binding NavigateCommand}" />
+                </dxmvvm:Interaction.Behaviors>
+                <dxa:AccordionControl.ItemContainerStyle>
+                    <Style TargetType="dxa:AccordionItem">
+                        <Setter Property="Glyph" Value="{Binding Image}" />
+                        <Setter Property="GlyphTemplate">
+                            <Setter.Value>
+                                <DataTemplate>
+                                    <Image Width="16" Height="16" SnapsToDevicePixels="True" Source="{Binding}" />
+                                </DataTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="IsExpanded" Value="{Binding TreeViewIsExpanded}" />
+                        <Setter Property="ShowInCollapsedMode" Value="{Binding ShowInCollapseMode}" />
+                    </Style>
+                </dxa:AccordionControl.ItemContainerStyle>
+            </dxa:AccordionControl>
             <dxdo:DockLayoutManager dx:DXSerializer.Enabled="False" BorderThickness="0" Margin="0" Padding="0"
                                     Name="dockLayoutManager" MDIMergeStyle="WhenChildActivated">
                 <dxdo:LayoutGroup Orientation="Horizontal" ItemHeight="*" BorderThickness="0" Margin="0" Padding="0">
                     <dxdo:LayoutGroup BorderThickness="0" Margin="0" Padding="0">
-                        <dxdo:LayoutPanel MaxWidth="300" ItemWidth="Auto">
-                            <dxa:AccordionControl x:Name="TreeListControl" 
-                                                  ExpandItemOnHeaderClick="False"
-                                                 dx:DXSerializer.SerializationID="NavigationTree" ExpandMode="Multiple"
-                                                 ChildrenPath="ChildModules"
-                                                 ItemsSource="{Binding Modules}"
-                                                 SelectedItem="{Binding SelectedModule}" BorderThickness="0"
-                                                 Background="Transparent"
-                                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" >
-                                <dxmvvm:Interaction.Behaviors>
-                                    <dxmvvm:EventToCommand EventName="MouseDoubleClick"
-                                                                   Command="{Binding NavigateCommand}" />
-                                </dxmvvm:Interaction.Behaviors>
-                                <dxa:AccordionControl.ItemContainerStyle>
-                                    <Style TargetType="dxa:AccordionItem">
-                                        <Setter Property="Glyph" Value="{Binding Image}" />
-                                        <Setter Property="GlyphTemplate">
-                                            <Setter.Value>
-                                                <DataTemplate>
-                                                    <Image Width="16"
-                                                       Height="16"
-                                                       SnapsToDevicePixels="True"
-                                                       Source="{Binding}" />
-                                                </DataTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                        <Setter Property="IsExpanded" Value="{Binding TreeViewIsExpanded}" />
-                                    </Style>
-                                </dxa:AccordionControl.ItemContainerStyle>
-                            </dxa:AccordionControl>
-                        </dxdo:LayoutPanel>
+                        <!--<dxdo:LayoutPanel MaxWidth="300" ItemWidth="Auto">
+                            
+                        </dxdo:LayoutPanel>-->
                         <dxdo:DocumentGroup x:Name="documentGroup" BorderThickness="0" Margin="0" Padding="0" TabContentCacheMode="None" >
                             <dxmvvm:Interaction.Behaviors>
                                 <dxdo:TabbedDocumentUIService />
