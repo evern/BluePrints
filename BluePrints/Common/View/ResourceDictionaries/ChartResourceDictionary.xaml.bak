@@ -1,10 +1,12 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+                    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
+                    xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts" 
                     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
                     xmlns:dxsc="clr-namespace:DevExpress.Xpf.SpellChecker;assembly=DevExpress.Xpf.SpellChecker.v17.1"
-                    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-                    xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts"
+                    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" 
+                    xmlns:collections="clr-namespace:System.Collections;assembly=mscorlib" 
+                    xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel"
                     xmlns:local="clr-namespace:BluePrints.Views">
     <Style x:Key="DashboardView.RootContainer" TargetType="FrameworkElement">
         <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
@@ -20,6 +22,8 @@
                         </dx:DialogService>
                         <dx:DXMessageBoxService />
                         <dx:WindowedDocumentUIService YieldToParent="True" />
+                        <services:GridControlService x:Name="DefaultGridControlService" GridControl="{Binding ElementName=GridControl}" />
+                        <dxmvvm:EventToCommand Event="Loaded" Command="{Binding OnLoadedCommand}" />
                     </ItemsControl>
                 </DataTemplate>
             </Setter.Value>
@@ -31,7 +35,8 @@
         <Setter Property="MarkerVisible" Value="False" />
         <Setter Property="ArgumentDataMember" Value="ProgressDate" />
         <Setter Property="ArgumentScaleType" Value="DateTime" />
-        <Setter Property="ValueDataMember" Value="UnitsPercentage" />
+        <Setter Property="ValueDataMember" Value="{Binding DataContext.LineSeriesValueDataMember, ElementName=userControl}" />
+        <Setter Property="dxc:XYDiagram2D.SeriesAxisY" Value="{Binding ElementName=secondaryAxisY}" />
         <Setter Property="ValueScaleType" Value="Numerical" />
         <Setter Property="LineStyle">
             <Setter.Value>
@@ -40,11 +45,32 @@
         </Setter>
     </Style>
     <Style x:Key="DefaultBarSideBySideSeries2DTemplate" TargetType="{x:Type dxc:BarSideBySideSeries2D}">
-        <Setter Property="CrosshairLabelPattern" Value="{}{S} - [{V:n2}]" />
+        <Setter Property="CrosshairLabelPattern" Value="{Binding DataContext.BarSeriesCrosshairPattern, ElementName=userControl}" />
         <Setter Property="ArgumentDataMember" Value="ProgressDate" />
         <Setter Property="ArgumentScaleType" Value="DateTime" />
-        <Setter Property="ValueDataMember" Value="Units" />
+        <Setter Property="ValueDataMember" Value="{Binding DataContext.BarSeriesValueDataMember, ElementName=userControl}" />
         <Setter Property="ValueScaleType" Value="Numerical" />
-        <Setter Property="dxc:XYDiagram2D.SeriesAxisY" Value="{Binding ElementName=secondaryAxisY}" />
+        <Setter Property="BarWidth" Value="5" />
+        <Setter Property="CheckableInLegend" Value="True" />
     </Style>
+    <collections:ArrayList x:Key="dashboardXYChartSeries">
+        <dxc:BarSideBySideSeries2D DisplayName="{Binding DataContext.Header_Budgeted, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" Brush="LightBlue" DataSource="{Binding SummaryEntity.Stats.Budgeted.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
+        <dxc:BarSideBySideSeries2D DisplayName="{Binding DataContext.Header_Earned, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" Brush="LightGreen" DataSource="{Binding SummaryEntity.Stats.Earned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
+        <dxc:BarSideBySideSeries2D DisplayName="{Binding DataContext.Header_Remaining, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" Brush="LightGray" DataSource="{Binding SummaryEntity.Stats.Remaining.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
+        <dxc:BarSideBySideSeries2D DisplayName="{Binding DataContext.Header_Burned, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" Brush="LightCoral" DataSource="{Binding SummaryEntity.Stats.Burned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
+        <dxc:BarSideBySideSeries2D DisplayName="{Binding DataContext.Header_Actual, ElementName=userControl}" Visible="{Binding DataContext.IsActualVisible, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" Brush="#FFFFA200" DataSource="{Binding SummaryEntity.Stats.Actual.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
+        <dxc:LineSeries2D DisplayName="Budgeted %" Style="{StaticResource DefaultLineSeries2DTemplate}" Brush="SteelBlue" DataSource="{Binding SummaryEntity.Stats.Budgeted.CumulativeDataPoints}" />
+        <dxc:LineSeries2D DisplayName="Remaining %" Style="{StaticResource DefaultLineSeries2DTemplate}" Brush="Gray" DataSource="{Binding SummaryEntity.Stats.Remaining.CumulativeDataPoints}" />
+        <dxc:LineSeries2D DisplayName="Earned %" Style="{StaticResource DefaultLineSeries2DTemplate}" Brush="Green" DataSource="{Binding SummaryEntity.Stats.Earned.CumulativeDataPoints}" />
+        <dxc:LineSeries2D DisplayName="Burned %" Style="{StaticResource DefaultLineSeries2DTemplate}" Brush="Red" DataSource="{Binding SummaryEntity.Stats.Burned.CumulativeDataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
+        <dxc:LineSeries2D DisplayName="Actual %" Visible="{Binding DataContext.IsActualVisible, ElementName=userControl}" Style="{StaticResource DefaultLineSeries2DTemplate}" Brush="Red" DataSource="{Binding SummaryEntity.Stats.Actual.CumulativeDataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
+    </collections:ArrayList>
+    <collections:ArrayList x:Key="userDashboardXYChartSeries">
+        <dxc:BarSideBySideSeries2D DisplayName="{Binding DataContext.Header_Budgeted, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" Brush="LightBlue" DataSource="{Binding SummaryEntity.Stats.Budgeted.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
+        <dxc:BarSideBySideSeries2D DisplayName="{Binding DataContext.Header_Earned, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" Brush="LightGreen" DataSource="{Binding SummaryEntity.Stats.Earned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
+        <dxc:BarSideBySideSeries2D DisplayName="{Binding DataContext.Header_Remaining, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" Brush="LightGray" DataSource="{Binding SummaryEntity.Stats.Remaining.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
+        <dxc:LineSeries2D DisplayName="Budgeted %" Style="{StaticResource DefaultLineSeries2DTemplate}" Brush="SteelBlue" DataSource="{Binding SummaryEntity.Stats.Budgeted.CumulativeDataPoints}" />
+        <dxc:LineSeries2D DisplayName="Remaining %" Style="{StaticResource DefaultLineSeries2DTemplate}" Brush="Gray" DataSource="{Binding SummaryEntity.Stats.Remaining.CumulativeDataPoints}" />
+        <dxc:LineSeries2D DisplayName="Earned %" Style="{StaticResource DefaultLineSeries2DTemplate}" Brush="Green" DataSource="{Binding SummaryEntity.Stats.Earned.CumulativeDataPoints}" />
+    </collections:ArrayList>
 </ResourceDictionary>
