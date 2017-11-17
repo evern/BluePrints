@@ -5,6 +5,49 @@
                     xmlns:dxsc="clr-namespace:DevExpress.Xpf.SpellChecker;assembly=DevExpress.Xpf.SpellChecker.v17.1"
                     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
                     xmlns:local="clr-namespace:BluePrints.Views">
+    <Style x:Key="WBSBackgroundStyle" TargetType="{x:Type dxg:RowControl}">
+        <Setter Property="Background">
+            <Setter.Value>
+                <Binding Path="Row.WBSLevel" >
+                    <Binding.Converter>
+                        <dxmvvm:ObjectToObjectConverter>
+                            <dxmvvm:MapItem Source="1" Target="PowderBlue"/>
+                            <dxmvvm:MapItem Source="2" Target="PaleGreen"/>
+                            <dxmvvm:MapItem Source="3" Target="MistyRose"/>
+                            <dxmvvm:MapItem Source="4" Target="PaleTurquoise"/>
+                            <dxmvvm:MapItem Source="5" Target="Tomato"/>
+                            <dxmvvm:MapItem Source="6" Target="Plum"/>
+                            <dxmvvm:MapItem Source="7" Target="PeachPuff"/>
+                        </dxmvvm:ObjectToObjectConverter>
+                    </Binding.Converter>
+                </Binding>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Foreground" Value="Black" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=IsSelected}" Value="True">
+                <Setter Property="Background" Value="Gray" />
+                <Setter Property="Foreground" Value="White" />
+            </DataTrigger>
+            <Trigger Property="dxg:GridViewBase.IsFocusedRow" Value="True">
+                <Setter Property="Background" Value="Salmon" />
+                <Setter Property="Foreground" Value="White" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="SelectionBackgroundStyle" TargetType="{x:Type dxg:RowControl}">
+        <Setter Property="Foreground" Value="Black" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=IsSelected}" Value="True">
+                <Setter Property="Background" Value="Gray" />
+                <Setter Property="Foreground" Value="White" />
+            </DataTrigger>
+            <Trigger Property="dxg:GridViewBase.IsFocusedRow" Value="True">
+                <Setter Property="Background" Value="Salmon" />
+                <Setter Property="Foreground" Value="White" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
     <Style x:Key="BasicGridControlTemplate" TargetType="{x:Type dxg:GridControl}">
         <Setter Property="ShowLoadingPanel" Value="{Binding IsLoading}" />
         <Setter Property="ItemsSource" Value="{Binding Entities}" />

@@ -65,9 +65,10 @@ namespace BluePrints.Common.Projections
             projectSummarizer.RecalculateStats(isCosts);
         }
 
-        public List<Dashboard> Workpack_Dashboards { get; set; }
+        public List<DashboardTreeStructure> Workpack_TreeDashboards { get; set; }
+        public List<DashboardFlatStructure> Workpack_Dashboards { get; set; }
         public List<Dashboard_Export_Data_Point> Export_Data { get; set; }
-        public bool IHaveWorkpack_Dashboards { get { return Workpack_Dashboards != null && Workpack_Dashboards.Count > 0; } }
+        public bool IHaveWorkpack_Dashboards { get { return Workpack_TreeDashboards != null && Workpack_TreeDashboards.Count > 0; } }
     }
 
     public static class DashboardQueries

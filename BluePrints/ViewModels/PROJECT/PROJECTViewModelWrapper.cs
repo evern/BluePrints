@@ -12,6 +12,7 @@ using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
+using DevExpress.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
@@ -20,6 +21,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 
 namespace BluePrints.ViewModels
 {
@@ -53,13 +55,14 @@ namespace BluePrints.ViewModels
         public Action<ESTIMATION_DIRECTCollectionViewModelWrapper> AssignESTIMATION_DIRECTDelegates;
         public Action<AREACollectionViewModelWrapper> AssignAREADelegates;
         public Action<RATECollectionViewModelWrapper> AssignRATEDelegates;
-
+        private List<DashboardTreeStructure> hierarchicalDashboard = null;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter =
                 (EntitiesParameter<PROJECT>) parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
+            isSuppressPropertyChange = true;
         }
 
         public override void OnLoaded()
@@ -187,13 +190,16 @@ namespace BluePrints.ViewModels
         {
             var argumentObject = (object[])e.Argument;
             var project = (PROJECT_Dashboard)argumentObject[0];
-
+            
             if(project != null)
             {
                 project.BuildStats(false);
                 project.RecalculateStats(false);
-                project.Workpack_Dashboards = DashboardHelpers.ProjectDashboardHierarchicalBuilder((ProjectSummaryStats)project.Stats);
+                project.Workpack_Dashboards = DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, loadPROJECT.WORKPACK);
                 project.Update();
+
+                mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.SingleProjectDashboards)));
+                mainThreadDispatcher.BeginInvoke(new Action(() => IsSummaryLoading = false));
             }
 
             if (((BackgroundWorker)sender).CancellationPending)
@@ -216,9 +222,12 @@ namespace BluePrints.ViewModels
 
         public override void ExportToExcel()
         {
+            if (hierarchicalDashboard == null)
+                return;
+
             LoadingScreenManager.ShowLoadingScreen(1);
             PROJECT_Dashboard project = DisplayEntities.First();
-            project.Export_Data = DashboardHelpers.BuildExportData(project.Workpack_Dashboards);
+            project.Export_Data = DashboardHelpers.BuildExportData(hierarchicalDashboard);
             this.RaisePropertyChanged(x => x.ExcelExportData);
             LoadingScreenManager.CloseLoadingScreen();
             base.ExportToExcel();
@@ -322,6 +331,111 @@ namespace BluePrints.ViewModels
             base.CellValueAnyRowChanging(e);
         }
 
+        decimal runningTotals;
+        decimal runningCurrent;
+        decimal runningPeriod;
+        decimal currentValue;
+        public void CustomSummary(CustomSummaryEventArgs e)
+        {
+            if (e.SummaryProcess == CustomSummaryProcess.Start)
+            {
+                runningPeriod = 0;
+                runningCurrent = 0;
+                runningTotals = 0;
+                currentValue = 0;
+            }
+            if (e.SummaryProcess == CustomSummaryProcess.Calculate)
+            {
+                GridSummaryItem gridSummaryItem = e.Item as GridSummaryItem;
+                if (gridSummaryItem != null)
+                {
+                    string fieldName = gridSummaryItem.FieldName;
+                    bool is_cost = fieldName.ToUpper().Contains("COSTS");
+                    bool is_period = !fieldName.ToUpper().Contains("CUMULATIVE");
+
+                    if (is_cost)
+                    {
+                        runningTotals += ((IHaveStats)e.Row).Stats.BudgetedCosts;
+
+                        if (e.IsGroupSummary && ((IHaveStats)e.Row).Stats.Earned != null)
+                        {
+                            if (is_period)
+                            {
+                                if (((IHaveStats)e.Row).Stats.Earned.CurrentPeriodDataPoint != null)
+                                    currentValue = ((IHaveStats)e.Row).Stats.Earned.CurrentPeriodDataPoint.Costs;
+                            }
+                            else
+                            {
+                                if (((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint != null)
+                                    currentValue = ((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint.Costs;
+                            }
+                        }
+                        else if (e.IsTotalSummary)
+                        {
+                            if (is_period)
+                            {
+                                if (((IHaveStats)e.Row).Stats.Earned.CurrentPeriodDataPoint != null)
+                                    runningPeriod += ((IHaveStats)e.Row).Stats.Earned.CurrentPeriodDataPoint.Costs;
+                            }
+                            else
+                            {
+                                if (((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint != null)
+                                    runningCurrent += ((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint.Costs;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        runningTotals += ((IHaveStats)e.Row).Stats.BudgetedUnits;
+                        if (e.IsGroupSummary && ((IHaveStats)e.Row).Stats.Earned != null)
+                        {
+                            if (is_period)
+                            {
+                                if (((IHaveStats)e.Row).Stats.Earned.CurrentPeriodDataPoint != null)
+                                    currentValue = ((IHaveStats)e.Row).Stats.Earned.CurrentPeriodDataPoint.Units;
+                            }
+                            else
+                            {
+                                if (((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint != null)
+                                    currentValue = ((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint.Units;
+                            }
+                        }
+                        else if (e.IsTotalSummary)
+                        {
+                            if (is_period)
+                            {
+                                if (((IHaveStats)e.Row).Stats.Earned.CurrentPeriodDataPoint != null)
+                                    runningPeriod += ((IHaveStats)e.Row).Stats.Earned.CurrentPeriodDataPoint.Units;
+                            }
+                            else
+                            {
+                                if (((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint != null)
+                                    runningCurrent += ((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint.Units;
+                            }
+                        }
+                    }
+
+
+                    if (runningTotals != 0)
+                    {
+                        if (e.IsGroupSummary)
+                            e.TotalValue = currentValue / runningTotals;
+                        else if(e.IsTotalSummary)
+                        {
+                            if (is_period)
+                                e.TotalValue = runningPeriod / runningTotals;
+                            else
+                                e.TotalValue = runningCurrent / runningTotals;
+                        }
+                    }
+                    else
+                        e.TotalValue = 0;
+                }
+                else
+                    e.TotalValue = 0;
+            }
+        }
+
         public async void Refresh_From_P6()
         {
             LoadingScreenManager.ShowLoadingScreen(1);
@@ -371,6 +485,17 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        public IEnumerable<DashboardFlatStructure> SingleProjectDashboards
+        {
+            get
+            {
+                if (DisplayEntities == null || DisplayEntities.Count == 0)
+                    return null;
+
+                return DisplayEntities.First().Workpack_Dashboards;
+            }
+        }
+
         private BASELINECollectionViewModelWrapper baselineViewModel;
 
         public BASELINECollectionViewModelWrapper BASELINEViewModel

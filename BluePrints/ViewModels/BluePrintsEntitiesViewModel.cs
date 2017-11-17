@@ -219,6 +219,7 @@ namespace BluePrints.ViewModels
             }
         }
 
+        const string dashboardCategoryId = "Category_Dashboard";
         const string projectCategoryId = "View_Projects";
         const string dataCategoryId = "Category_Data";
         const string activeCategoryId = "Category_Active";
@@ -226,6 +227,7 @@ namespace BluePrints.ViewModels
         const string myProjectCategoryId = "Category_MyProject";
         const string myTenderCategoryId = "Category_MyTender";
         const string stockGroupCategoryId = "Category_StockGroup";
+        BluePrintsEntitiesModuleDescription dashboardCategoryDescription;
         BluePrintsEntitiesModuleDescription projectEditableCategoryDescription;
         BluePrintsEntitiesModuleDescription projectCategoryDescription;
         BluePrintsEntitiesModuleDescription myProjectsCategoryDescription;
@@ -237,14 +239,14 @@ namespace BluePrints.ViewModels
 
         private void initializeCategoryDescription()
         {
-            projectEditableCategoryDescription = new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects", "PROJECTCollectionView");
-            projectCategoryDescription = new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects");
-            myProjectsCategoryDescription = new BluePrintsEntitiesModuleDescription(myProjectCategoryId, projectCategoryId, "My Projects");
-            myTendersCategoryDescription = new BluePrintsEntitiesModuleDescription(myTenderCategoryId, projectCategoryId, "My Tenders");
-            projectActiveCategoryDescription = new BluePrintsEntitiesModuleDescription(activeCategoryId, projectCategoryId, "Active");
-            projectTenderCategoryDescription = new BluePrintsEntitiesModuleDescription(tenderCategoryId, projectCategoryId, "Tender", null, null, null, null, false);
-            dataCategoryDescription = new BluePrintsEntitiesModuleDescription(dataCategoryId, null, "Data", null, null, null, null, false);
-            stockGroupCategoryDescription = new BluePrintsEntitiesModuleDescription(stockGroupCategoryId, null, "Stock Group", null, null, null, null, false);
+            projectEditableCategoryDescription = new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects", "PROJECTCollectionView", null, null, null, true, true);
+            projectCategoryDescription = new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects", null, null, null, null, true, true);
+            myProjectsCategoryDescription = new BluePrintsEntitiesModuleDescription(myProjectCategoryId, projectCategoryId, "My Projects", null, null, null, null, true, false);
+            myTendersCategoryDescription = new BluePrintsEntitiesModuleDescription(myTenderCategoryId, projectCategoryId, "My Tenders", null, null, null, null, true, false);
+            projectActiveCategoryDescription = new BluePrintsEntitiesModuleDescription(activeCategoryId, projectCategoryId, "Active", null, null, null, null, true, false);
+            projectTenderCategoryDescription = new BluePrintsEntitiesModuleDescription(tenderCategoryId, projectCategoryId, "Tender", null, null, null, null, false, false);
+            dataCategoryDescription = new BluePrintsEntitiesModuleDescription(dataCategoryId, null, "Data", null, null, null, null, false, true);
+            stockGroupCategoryDescription = new BluePrintsEntitiesModuleDescription(stockGroupCategoryId, null, "Stock Group", null, null, null, null, false, false);
         }
 
         protected override BluePrintsEntitiesModuleDescription[] CreateModules()
@@ -256,11 +258,13 @@ namespace BluePrints.ViewModels
         {
             List<BluePrintsEntitiesModuleDescription> bluePrintsEntitiesModuleDescriptions = new List<BluePrintsEntitiesModuleDescription>();
 
+            dashboardCategoryDescription = new BluePrintsEntitiesModuleDescription(dashboardCategoryId, null, "Dashboards", null, null, null, null, false, true);
+            bluePrintsEntitiesModuleDescriptions.Add(dashboardCategoryDescription);
             if (LoginCredentials.hasPermission(PermissionResources.ViewDashboard))
-                bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_Dashboard", null, "Dashboard", "PROJECTDashboardView"));
+                dashboardCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Dashboard", dashboardCategoryId, "Dashboard", "PROJECTDashboardView"));
 
-            bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_UserDashboard", null, "My Dashboard", "USERDashboardView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser)));
-            bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription("View_UserDeliverables", null, "My Deliverables", "User_OffisteDirectProgressCollectionView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser)));
+            dashboardCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_UserDashboard", dashboardCategoryId, "My Dashboard", "USERDashboardView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser)));
+            dashboardCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_UserDeliverables", dashboardCategoryId, "My Deliverables", "User_OffisteDirectProgressCollectionView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser)));
 
             return bluePrintsEntitiesModuleDescriptions.ToArray();
         }
@@ -488,8 +492,8 @@ namespace BluePrints.Common.ViewModel
 {
     public partial class BluePrintsEntitiesModuleDescription : ModuleDescription<BluePrintsEntitiesModuleDescription>
     {
-        public BluePrintsEntitiesModuleDescription(object id, object parentId, string title, string documentType = null, object documentParameter = null, ImageSource image = null, string navigationTitle = null, bool treeViewIsExpanded = true, string imagePath = "")
-            : base(id, parentId, title, documentType, documentParameter, image, navigationTitle, treeViewIsExpanded)
+        public BluePrintsEntitiesModuleDescription(object id, object parentId, string title, string documentType = null, object documentParameter = null, ImageSource image = null, string navigationTitle = null, bool treeViewIsExpanded = true, bool showInCollapseMode = false, string imagePath = "")
+            : base(id, parentId, title, documentType, documentParameter, image, navigationTitle, treeViewIsExpanded, showInCollapseMode)
         {
             ChildModules = new RangeObservableCollection<BluePrintsEntitiesModuleDescription>();
             if(imagePath != string.Empty)
@@ -497,10 +501,10 @@ namespace BluePrints.Common.ViewModel
             else
             {
                 if (!CanNavigate)
-                    Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v17.1;component/Images/Data/ManageDataSource_16x16.png"));
+                    Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v17.2;component/Images/Data/ManageDataSource_16x16.png"));
                     //new Uri(@"/Common/Images/PRIMERO.jpg", UriKind.Relative));
                 else
-                    Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v17.1;component/Images/Actions/Open_16x16.png"));
+                    Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v17.2;component/Images/Actions/Open_16x16.png"));
             }
         }
 

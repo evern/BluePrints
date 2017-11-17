@@ -60,11 +60,10 @@ namespace BluePrints.ViewModels
             UserName = XMLHelpers.GetSettings_Username();
             if (UserName != string.Empty)
                 isUsernameLoadedFromXML = true;
-#if DEBUG
-            UserName = "superadmin";
-#endif
 
-            Application.Current.Dispatcher.BeginInvoke(new Action(() => EVERNPCLogin()));
+#if DEBUG
+            Application.Current.Dispatcher.BeginInvoke(new Action(() => immediateLogin()));
+#endif
         }
 
         private void DelayedConnectDispatcher_Tick(object sender, EventArgs e)
@@ -89,17 +88,15 @@ namespace BluePrints.ViewModels
             WindowService.Hide();
         }
 
-        public void EVERNPCLogin()
+        private void immediateLogin()
         {
-#if DEBUG
-            if (Environment.MachineName == "EVERN-PC")
-            {
-                UserName = BluePrintsResources.Default_AdminUsername;
-                UserPassword = BluePrintsResources.Default_AdminPassword;
-                delayedHideDispatcher.Start();
-                Login();
-            }
-#endif
+            //if (Environment.MachineName == "EVERN-PC")
+            //{
+            UserName = BluePrintsResources.Default_AdminUsername;
+            UserPassword = BluePrintsResources.Default_AdminPassword;
+            delayedHideDispatcher.Start();
+            Login();
+            //}
         }
 
         public void Login()

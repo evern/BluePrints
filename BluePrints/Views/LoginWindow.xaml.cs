@@ -3,7 +3,9 @@ using DevExpress.Xpf.Core;
 using DevExpress.Xpf.Editors.Helpers;
 using DevExpress.Xpf.Editors.Validation;
 using DevExpress.XtraEditors.DXErrorProvider;
+using System;
 using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace BluePrints.Views
 {
@@ -15,15 +17,12 @@ namespace BluePrints.Views
         public LoginWindow()
         {
             InitializeComponent();
-            //LoginViewModel viewModel = LoginViewModel.Create();
-            //viewModel.ShowErrorCallBack = ShowErrorCallBack;
-            //viewModel.HideControlCallBack = Hide;
-            //viewModel.ShowControlCallBack = Show;
-            //DataContext = viewModel;
             if (txtUsername.Text == string.Empty)
                 txtUsername.Focus();
             else
                 txtPassword.Focus();
+
+            imagePrimeroIcon.Source = new BitmapImage(new Uri(@"/Common/Images/PRIMERO.jpg", UriKind.Relative));
         }
 
         public void ShowErrorCallBack(bool isPasswordField, string errorMessage)

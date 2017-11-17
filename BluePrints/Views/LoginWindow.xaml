@@ -23,7 +23,7 @@
     <dxlc:LayoutControl Orientation="Vertical" MinHeight="320" MaxHeight="320" MaxWidth="600" MinWidth="550">
         <dxlc:LayoutGroup x:Name="LayoutGroupWorkpackSelection" View="Group" Orientation="Vertical">
             <dxlc:LayoutItem x:Name="layoutItemLogo">
-                <dxe:ImageEdit Source="/BluePrints;component/Common/Images/PRIMERO.jpg" IsReadOnly="True" />
+                <dxe:ImageEdit x:Name="imagePrimeroIcon" IsReadOnly="True" />
             </dxlc:LayoutItem>
             <dxlc:LayoutItem Label="Username" IsRequired="True" x:Name="layoutItemUsername" Height="30" Margin="10">
                 <dxe:TextEdit x:Name="txtUsername"
