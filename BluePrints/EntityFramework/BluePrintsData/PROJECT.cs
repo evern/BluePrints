@@ -37,6 +37,8 @@ namespace BluePrints.Data
 
         public decimal REVIEWPERIOD { get; set; }
 
+        public bool P6WORKPACKASSIGN { get; set; }
+
         public ProjectDocumentStatus? DOC_KICKOFF { get; set; }
 
         [StringLength(500)]

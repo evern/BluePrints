@@ -84,7 +84,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPROJECT" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                    <custom:GridControlEx x:Name="GridControl" MouseUp="GridControl_MouseUp" dx:DXSerializer.SerializationID="GridControlPROJECT" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand PassEventArgsToCommand="True"
                                                    Command="{Binding DataContext.EditCommand, ElementName=userControl}"
@@ -149,6 +149,11 @@
                                             Mask="{Binding EditValue, ConverterParameter=Day, Converter={StaticResource QuantityExpressionConverter}, RelativeSource={RelativeSource Self}}" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Assign Workpack" FieldName="P6WORKPACKASSIGN">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:CheckEditSettings />
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Design Kick-Off Held" FieldName="DOC_KICKOFF">
                                 <dxg:GridColumn.EditSettings>

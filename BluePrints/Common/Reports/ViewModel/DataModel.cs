@@ -907,5 +907,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public Guid? Phase_Guid { get => Entity.Phase_Guid; set => Entity.Phase_Guid = value; }
 
         Guid? IDeliverable.Workpack_Guid { get => Entity.Workpack_Guid; set => Entity.Workpack_Guid = value; }
+
+        public string P6AssignmentName => Entity.Deliverable_Name;
     }
 }

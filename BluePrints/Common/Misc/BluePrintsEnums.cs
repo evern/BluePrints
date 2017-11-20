@@ -145,6 +145,12 @@ namespace BluePrints.Common
         Modified
     }
 
+    public enum BaselineMappingMode
+    {
+        Default,
+        ByWorkpack
+    }
+
     public enum AppointmentActivityType
     {
         WBS = 0,
