@@ -1100,12 +1100,6 @@ namespace BluePrints.ViewModels
                         newWORKPACK.GUID_SUBJOB = (Guid)entity.Entity.Entity.GUID_SUBJOB;
                         newWORKPACK.GUID_DISCIPLINE = (Guid)entity.Entity.Entity.GUID_DISCIPLINE;
                         newWORKPACK.DISCIPLINE_NUM = entity.Entity.Entity.DISCIPLINE_NUM;
-
-                        //have to populate associating entity so that workpack name can be generated
-                        SUBJOB subjob = SUBJOBCollection.FirstOrDefault(x => x.GUID == newWORKPACK.GUID_SUBJOB);
-                        DISCIPLINE discipline = DISCIPLINECollection.FirstOrDefault(x => x.GUID == newWORKPACK.GUID_DISCIPLINE);
-                        newWORKPACK.SUBJOB = subjob;
-                        newWORKPACK.DISCIPLINE = discipline;
                         BluePrintsDataUtils.WORKPACK_Populate_Name(newWORKPACK, SUBJOBCollection, DISCIPLINECollection);
                         ((CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>)
                         loaderCollection.GetViewModel<WORKPACK>()).Save(newWORKPACK);
