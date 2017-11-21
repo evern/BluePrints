@@ -5,6 +5,7 @@ using System.Linq;
 using BluePrints.Common.Projections;
 using System.Text;
 using System.Threading.Tasks;
+using BluePrints.ViewModels;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
@@ -41,6 +42,32 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
 
             return user_baseline_item_progresses.AsQueryable();
+        }
+
+        public static IQueryable<WorkpackGroup> ProgressItemWorkpackGroupTransformation(
+            IQueryable<BASELINE_ITEM> BASELINE_ITEMS,
+            PROJECT PROJECT,
+            PROGRESS PROGRESS,
+            IEnumerable<RATE> RATES,
+            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, bool isInternalNumberAlwaysEditable = false)
+        {
+            List<BASELINE_ITEMProgress> baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS, PROJECT, PROGRESS, RATES, PROGRESS_ITEMS, null, true, P6_ASSIGNMENTS).ToList();
+
+            List<WorkpackGroup> workpack_group = new List<WorkpackGroup>();
+            var progress_item_by_workpacks = baseline_item_progresses.GroupBy(x => x.Workpack_Name + "-" + x.Discipline_Code).Select(group => new { WorkpackName = group.Key, Progresses = group.ToList() });
+            foreach (var progress_item_by_workpack in progress_item_by_workpacks)
+            {
+                if (progress_item_by_workpack.Progresses != null)
+                {
+                    WorkpackGroup newWorkpackGroup = new WorkpackGroup();
+                    newWorkpackGroup.GroupName = progress_item_by_workpack.WorkpackName;
+                    newWorkpackGroup.Deliverables = progress_item_by_workpack.Progresses.Select(x => (ICanAssignP6)x).ToList();
+                    workpack_group.Add(newWorkpackGroup);
+                }
+            }
+
+            return workpack_group.AsQueryable();
         }
 
         public static IQueryable<BASELINE_ITEMProgress> OffsiteDirectProgressItemTransformation(

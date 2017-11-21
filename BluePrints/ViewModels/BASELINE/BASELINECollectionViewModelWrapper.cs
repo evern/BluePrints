@@ -159,41 +159,39 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
-                new DualEntitiesParameter<Data.PROJECT, IAmBaseline>(null, DisplaySelectedEntity), "BASELINE_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Baseline");
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new DualEntitiesParameter<Data.PROJECT, IAmBaseline>(null, DisplaySelectedEntity), "BASELINE_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Baseline");
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public bool CanP6BASELINE_ASSIGN()
         {
-            return DisplaySelectedEntity != null && DisplaySelectedEntity.P6BASELINE_NAME != null &&
-                   DisplaySelectedEntity.P6BASELINE_NAME != string.Empty;
+            return DisplaySelectedEntity != null && DisplaySelectedEntity.P6BASELINE_NAME != null && DisplaySelectedEntity.P6BASELINE_NAME != string.Empty;
         }
 
         public void P6BASELINE_ASSIGN()
         {
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original },
-                "BASELINE_ITEMSchedulingView", 
-                DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping");
+            string viewName;
+            if (loadPROJECT.P6WORKPACKASSIGN)
+                viewName = "BASELINE_ITEMGroupSchedulingView";
+            else
+                viewName = "BASELINE_ITEMSchedulingView";
 
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original, loadPROJECT }, viewName, DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping");
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
-        public bool CanP6MODBASELINE_ASSIGN()
-        {
-            return DisplaySelectedEntity != null && DisplaySelectedEntity.P6MODBASELINE_NAME != null &&
-                   DisplaySelectedEntity.P6MODBASELINE_NAME != string.Empty;
-        }
+        //public bool CanP6MODBASELINE_ASSIGN()
+        //{
+        //    return DisplaySelectedEntity != null && DisplaySelectedEntity.P6MODBASELINE_NAME != null &&
+        //           DisplaySelectedEntity.P6MODBASELINE_NAME != string.Empty;
+        //}
 
-        public void P6MODBASELINE_ASSIGN()
-        {
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
-                new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Modified },
-                "BASELINE_ITEMSchedulingView",
-                DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6MODBASELINE_NAME + " Mapping");
+        //public void P6MODBASELINE_ASSIGN()
+        //{
+        //    DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Modified, loadPROJECT }, "BASELINE_ITEMSchedulingView", DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6MODBASELINE_NAME + " Mapping");
 
-            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
-        }
+        //    DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
+        //}
         #endregion
     }
 }

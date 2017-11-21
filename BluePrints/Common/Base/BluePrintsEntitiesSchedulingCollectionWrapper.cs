@@ -157,6 +157,7 @@ namespace BluePrints.Common.Base
         protected IHaveP6Baselines p6_baseline_entity { get; set; }
         protected Data.PROJECT loadPROJECT;
         protected BaselineMappingSelectionType mappingType;
+        protected BaselineMappingMode mappingMode;
 
         protected IDialogService ActivityDetailDialogService
         {
@@ -173,7 +174,7 @@ namespace BluePrints.Common.Base
                 p6_baseline_entity = (IHaveP6Baselines)obj[0];
 
             mappingType = (BaselineMappingSelectionType)obj[1];
-
+            mappingMode = ((Data.PROJECT)obj[2]).P6WORKPACKASSIGN ? BaselineMappingMode.ByWorkpack : BaselineMappingMode.Default;
             Selected_Deliverables = new ObservableCollection<ICanAssignP6>();
             Selected_P6_Assignments = new ObservableCollection<P6_ASSIGNMENTProjection>();
             Selected_Deliverables.CollectionChanged += Selected_Deliverables_CollectionChanged;
@@ -277,7 +278,13 @@ namespace BluePrints.Common.Base
             if (activity == null)
                 return;
 
-            decimal total_activity_assigned_units = Deliverables_Source.Sum(x => x.P6_Assignments.Where(assignment => assignment.P6_ACTIVITYID == activity.P6_ActivityId)
+            IEnumerable<ICanAssignP6> calculateSource;
+            if (mappingMode == BaselineMappingMode.ByWorkpack)
+                calculateSource = Deliverables_Source.SelectMany(x => ((ICanAssignP6Group)x).Deliverables);
+            else
+                calculateSource = Deliverables_Source;
+
+            decimal total_activity_assigned_units = calculateSource.Sum(x => x.P6_Assignments.Where(assignment => assignment.P6_ACTIVITYID == activity.P6_ActivityId)
                                                     .Sum(assignment => ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m) * x.Total_Units));
 
             activity.Assigned_Units = total_activity_assigned_units;
@@ -389,7 +396,7 @@ namespace BluePrints.Common.Base
                         foreach (P6_ASSIGNMENT p6_assignments in process_deliverable.P6_Assignments)
                         {
                             if (Selected_Activity == null || p6_assignments.P6_ACTIVITYID == Selected_Activity.P6_ActivityId)
-                                p6_assignment.Add(new P6_ASSIGNMENTProjection() { Deliverable_OriginalEntityKey = process_deliverable.OriginalEntityKey, Deliverable_Name = process_deliverable.Deliverable_Name, Entity = p6_assignments });
+                                p6_assignment.Add(new P6_ASSIGNMENTProjection() { Deliverable_OriginalEntityKey = process_deliverable.OriginalEntityKey, Deliverable_Name = process_deliverable.P6AssignmentName, Entity = p6_assignments });
                         }
                     }
                 }
@@ -545,8 +552,19 @@ namespace BluePrints.Common.Base
 
         public void Add_Assignments()
         {
+            if (Selected_Deliverable == null)
+                return;
+
             bool show_already_assigned_message = false;
-            foreach (ICanAssignP6 deliverable in Selected_Deliverables)
+            ICanAssignP6Group assignGroup = Selected_Deliverable as ICanAssignP6Group;
+
+            IEnumerable<ICanAssignP6> active_deliverables;
+            if (mappingMode == BaselineMappingMode.ByWorkpack)
+                active_deliverables = Selected_Deliverables.SelectMany(x => ((ICanAssignP6Group)x).Deliverables);
+            else
+                active_deliverables = Selected_Deliverables;
+
+            foreach (ICanAssignP6 deliverable in active_deliverables)
             {
                 if (deliverable.Assigned_Percentage == Assignment_Value)
                 {
@@ -571,7 +589,8 @@ namespace BluePrints.Common.Base
                 MessageBoxService.ShowMessage("Current percentage is already assigned to an activity");
 
             summarize_wbs_parent_unit(Selected_Activity);
-            IEnumerable<P6_ASSIGNMENT> save_assignments = Selected_Deliverables.SelectMany(x => x.P6_Assignments.Where(y => y.GUID == Guid.Empty));
+
+            IEnumerable<P6_ASSIGNMENT> save_assignments = active_deliverables.SelectMany(x => x.P6_Assignments.Where(y => y.GUID == Guid.Empty));
             foreach(P6_ASSIGNMENT save_assignment in save_assignments)
             {
                 P6_ASSIGNMENTSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(save_assignment, null, null, null, EntityMessageType.Added);
@@ -647,19 +666,35 @@ namespace BluePrints.Common.Base
 
         private IEnumerable<P6_ASSIGNMENT> MovePriority(bool isUp, P6_ASSIGNMENTProjection selected_p6_assignment, out P6_ASSIGNMENTProjection swap_selected_p6_assignment)
         {
-            ICanAssignP6 context_deliverable = Deliverables_Source.First(x => x.OriginalEntityKey == selected_p6_assignment.Deliverable_OriginalEntityKey);
+            ICanAssignP6 context_deliverable;
+
+            IEnumerable<ICanAssignP6> targetDeliverables;
+            if (mappingMode == BaselineMappingMode.ByWorkpack)
+            {
+                targetDeliverables = Selected_Deliverables.SelectMany(x => ((ICanAssignP6Group)x).Deliverables);
+                context_deliverable = Deliverables_Source.SelectMany(x => ((ICanAssignP6Group)x).Deliverables).First(x => x.OriginalEntityKey == selected_p6_assignment.Deliverable_OriginalEntityKey);
+            }
+            else
+            {
+                targetDeliverables = Selected_Deliverables;
+                context_deliverable = Deliverables_Source.First(x => x.OriginalEntityKey == selected_p6_assignment.Deliverable_OriginalEntityKey);
+            }
+
             P6_ASSIGNMENT context_p6_assignment = selected_p6_assignment.Entity;
 
             var p6_assignments_in_order =
                 context_deliverable.P6_Assignments.OrderBy(x => x.LOW_VALUE).ToList();
 
+
+
+
             P6_ASSIGNMENT swap_p6_assignment;
             //look for next assignment in sequence
             if (!isUp)
-                swap_p6_assignment = Selected_Deliverables.Where(x => x.EntityKey == context_deliverable.EntityKey)
+                swap_p6_assignment = targetDeliverables.Where(x => x.EntityKey == context_deliverable.EntityKey)
                     .SelectMany(x => x.P6_Assignments).FirstOrDefault(x => x.LOW_VALUE == (context_p6_assignment.HIGH_VALUE + 0.01m));
             else
-                swap_p6_assignment = Selected_Deliverables.Where(x => x.EntityKey == context_deliverable.EntityKey)
+                swap_p6_assignment = targetDeliverables.Where(x => x.EntityKey == context_deliverable.EntityKey)
                     .SelectMany(x => x.P6_Assignments).FirstOrDefault(x => x.HIGH_VALUE == (context_p6_assignment.LOW_VALUE - 0.01m));
 
             if (swap_p6_assignment != null)

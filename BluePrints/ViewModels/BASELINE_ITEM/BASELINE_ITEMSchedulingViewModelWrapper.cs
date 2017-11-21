@@ -211,7 +211,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
-
         private void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
         {
             //estimated hours field is disabled but just in case
@@ -792,7 +791,7 @@ namespace BluePrints.ViewModels
         protected override string ViewName
         {
             //get { return "BASELINE_ITEMSViewModelWrapper" + view_project_specific_affix; }
-            get { return "BASELINE_ITEMSViewModelWrapper_v1" + view_project_specific_affix; }
+            get { return "BASELINE_ITEMSSchedulingGroupViewModelWrapper_v1" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix

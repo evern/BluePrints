@@ -104,9 +104,15 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal getCurrentPeriodEarnedUnits(decimal newPercentage);
     }
 
-    public interface ICanAssignP6 : IDeliverable, ICanUpdate
+    public interface ICanAssignP6Group : ICanAssignP6
+    {
+        List<ICanAssignP6> Deliverables { get; set; }
+    }
+
+    public interface ICanAssignP6 : ICanUpdate, IGuidEntityKey, IOriginalGuidEntityKey, IHaveHours
     {
         List<P6_ASSIGNMENT> P6_Assignments { get; set; }
+        string P6AssignmentName { get; }
         decimal Assigned_Percentage { get; }
         decimal Remaining_Percentage { get; }
         decimal P6_Assignment_Total_Quantity { get; }

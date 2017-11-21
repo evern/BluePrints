@@ -639,6 +639,7 @@
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\IBluePrintsEntitiesUnitOfWork.cs" />
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\BluePrintsEntitiesUnitOfWorkSource.cs" />
     <Compile Include="Common\Misc\BluePrintsEnums.cs" />
+    <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMGroupSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\CLIENT\CLIENTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\HOLIDAY\HOLIDAYCollectionViewModelWrapper.cs" />
@@ -664,6 +665,9 @@
     <Compile Include="ViewModels\VARIATION_ITEM\SiteDirectVariationCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\OffsiteDirectVariationCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\WORKPACK\WORKPACKDashboardViewModelWrapper.cs" />
+    <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMGroupSchedulingView.xaml.cs">
+      <DependentUpon>BASELINE_ITEMGroupSchedulingView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.xaml.cs">
       <DependentUpon>BASELINE_ITEMSchedulingView.xaml</DependentUpon>
     </Compile>
@@ -1441,6 +1445,10 @@
     <Page Include="Common\View\ResourceDictionaries\GridColumnResourceDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\BASELINE_ITEM\BASELINE_ITEMGroupSchedulingView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.xaml">
       <Generator>MSBuild:Compile</Generator>
