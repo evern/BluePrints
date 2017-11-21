@@ -171,8 +171,8 @@ namespace BluePrints.ViewModels
         public void P6BASELINE_ASSIGN()
         {
             string viewName;
-            if (loadPROJECT.P6WORKPACKASSIGN)
-                viewName = "BASELINE_ITEMGroupSchedulingView";
+            if (loadPROJECT.USE_WORKPACKS)
+                viewName = "BASELINE_ITEMWorkpackSchedulingView";
             else
                 viewName = "BASELINE_ITEMSchedulingView";
 

@@ -42,7 +42,7 @@ namespace BluePrints.Common.Projections
 
         public string Commodity_Display_Code => Commodity_Code;
 
-        public Guid? Workpack_Guid => Entity.Workpack_Guid;
+        public Guid? Subjob_Guid => Entity.Subjob_Guid;
 
         public decimal Estimated_Units => Entity.Estimated_Units;
 
@@ -76,7 +76,7 @@ namespace BluePrints.Common.Projections
         public decimal Estimated_Value { get => Entity.Estimated_Value; set => Entity.Estimated_Value = value; }
         public decimal DC_Value { get => Entity.DC_Value; set => Entity.DC_Value = value; }
 
-        public string Workpack_Name => Entity.Workpack_Name;
+        public string Subjob_Name => Entity.Subjob_Name;
 
         public string Department_Code => Entity.Department_Code;
 
@@ -86,7 +86,13 @@ namespace BluePrints.Common.Projections
 
         public Guid? Phase_Guid { get => Entity.Phase_Guid; set => Entity.Phase_Guid = value; }
 
-        Guid? IDeliverable.Workpack_Guid { get => Entity.Workpack_Guid; set => Entity.Workpack_Guid = value; }
+        Guid? IDeliverable.Subjob_Guid { get => Entity.Subjob_Guid; set => Entity.Subjob_Guid = value; }
+
+        public Guid? Discipline_Guid => Entity.GUID_DISCIPLINE;
+
+        public decimal Discipline_Number => Entity.DISCIPLINE_NUM;
+
+        public Guid? Workpack_Guid { get => Entity.GUID_WORKPACK; set => Entity.GUID_WORKPACK = value; }
     }
 
     public static class BASELINE_ITEMProjectionQueries

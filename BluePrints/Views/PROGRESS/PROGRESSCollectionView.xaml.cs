@@ -4,7 +4,7 @@ using System.Windows.Controls;
 namespace BluePrints.Views
 {
     /// <summary>
-    /// Interaction logic for PROJECTWORKPACKDetailsCollectionView.xaml
+    /// Interaction logic for PROJECTSUBJOBDetailsCollectionView.xaml
     /// </summary>
     public partial class PROGRESSCollectionView : UserControl
     {

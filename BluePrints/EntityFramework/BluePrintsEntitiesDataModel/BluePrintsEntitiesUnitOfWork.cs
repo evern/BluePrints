@@ -190,9 +190,9 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<VARIATION>(), (VARIATION x) => x.GUID); }
         }
 
-        IRepository<WORKPACK_ASSIGNMENT, Guid> IBluePrintsEntitiesUnitOfWork.WORKPACK_ASSIGNMENTS
+        IRepository<SUBJOB_ASSIGNMENT, Guid> IBluePrintsEntitiesUnitOfWork.SUBJOB_ASSIGNMENTS
         {
-            get { return GetRepository(x => x.Set<WORKPACK_ASSIGNMENT>(), (WORKPACK_ASSIGNMENT x) => x.GUID); }
+            get { return GetRepository(x => x.Set<SUBJOB_ASSIGNMENT>(), (SUBJOB_ASSIGNMENT x) => x.GUID); }
         }
 
         IRepository<P6_ASSIGNMENT, Guid> IBluePrintsEntitiesUnitOfWork.P6_ASSIGNMENTS
@@ -200,9 +200,9 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<P6_ASSIGNMENT>(), (P6_ASSIGNMENT x) => x.GUID); }
         }
 
-        IRepository<WORKPACK, Guid> IBluePrintsEntitiesUnitOfWork.WORKPACKS
+        IRepository<SUBJOB, Guid> IBluePrintsEntitiesUnitOfWork.SUBJOBS
         {
-            get { return GetRepository(x => x.Set<WORKPACK>(), (WORKPACK x) => x.GUID); }
+            get { return GetRepository(x => x.Set<SUBJOB>(), (SUBJOB x) => x.GUID); }
         }
 
         IRepository<CLIENT, Guid> IBluePrintsEntitiesUnitOfWork.CLIENTS
@@ -243,6 +243,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<CLIENT_PROJECT, Guid> IBluePrintsEntitiesUnitOfWork.CLIENT_PROJECTS
         {
             get { return GetRepository(x => x.Set<CLIENT_PROJECT>(), (CLIENT_PROJECT x) => x.GUID); }
+        }
+
+        IRepository<WORKPACK, Guid> IBluePrintsEntitiesUnitOfWork.WORKPACKS
+        {
+            get { return GetRepository(x => x.Set<WORKPACK>(), (WORKPACK x) => x.GUID); }
         }
     }
 }

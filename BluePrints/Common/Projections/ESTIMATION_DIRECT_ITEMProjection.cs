@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IDeliverable_Quantity, IHaveStockCode, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementWorkpack
+    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IDeliverable_Quantity, IHaveStockCode, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementSubjob
     {
         public ESTIMATION_DIRECT_ITEMProjection()
             : base()
@@ -117,7 +117,7 @@ namespace BluePrints.Common.Projections
 
         public string Commodity_Code => Entity.STOCK_GROUP == null ? string.Empty : Entity.STOCK_GROUP.CODE;
 
-        public Guid? Workpack_Guid => Entity.GUID_WORKPACK;
+        public Guid? Subjob_Guid => Entity.GUID_SUBJOB;
 
         public Guid? Area_Guid => Entity.GUID_AREA;
 
@@ -207,15 +207,21 @@ namespace BluePrints.Common.Projections
 
         public decimal Total_Cost => Total_Install_Cost + Total_Supply_Cost + Total_Freight_Cost;
 
-        public string Workpack_Name => Entity.Workpack_Name;
+        public string Subjob_Name => Entity.Subjob_Name;
 
         public string Department_Code => Entity.Department_Code;
 
         public Guid? Phase_Guid { get => Entity.Phase_Guid; set => Entity.Phase_Guid = value; }
 
-        Guid? IDeliverable.Workpack_Guid { get => Entity.Workpack_Guid; set => Entity.Workpack_Guid = value; }
+        Guid? IDeliverable.Subjob_Guid { get => Entity.Subjob_Guid; set => Entity.Subjob_Guid = value; }
 
-        public Guid? Procurement_Workpack_Guid { get => Entity.GUID_PWORKPACK; set => Entity.GUID_PWORKPACK = value; }
+        public Guid? Procurement_Subjob_Guid { get => Entity.GUID_PSUBJOB; set => Entity.GUID_PSUBJOB = value; }
+
+        public Guid? Discipline_Guid => throw new NotImplementedException();
+
+        public decimal Discipline_Number => throw new NotImplementedException();
+
+        public Guid? Workpack_Guid { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries

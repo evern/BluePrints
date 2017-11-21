@@ -75,20 +75,23 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public interface IDeliverable : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCommodity_Code, IHaveHours
     {
-        string Workpack_Name { get; }
+        string Subjob_Name { get; }
         string Phase_Code { get; }
         string Department_Code { get; }
         string Discipline_Code { get; }
         string Deliverable_Name { get; }
         Guid? Phase_Guid { get; set; }
-        Guid? Workpack_Guid { get; set; }
+        Guid? Subjob_Guid { get; set; }
         Guid? Area_Guid { get; }
         Guid? SubArea_Guid { get; }
+        Guid? Discipline_Guid { get; }
+        decimal Discipline_Number { get; }
+        Guid? Workpack_Guid { get; set; }
     }
 
-    public interface IHaveProcurementWorkpack
+    public interface IHaveProcurementSubjob
     {
-        Guid? Procurement_Workpack_Guid { get; set; }
+        Guid? Procurement_Subjob_Guid { get; set; }
     }
 
     #region Ability Specification Interfaces

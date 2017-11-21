@@ -50,14 +50,14 @@ namespace BluePrints.ViewModels
         //    {
         //        PROGRESS livePROGRESS = deliverableGroupByProject.Deliverables.First().Live_PROGRESS;
         //        BASELINE liveBASELINE = deliverableGroupByProject.Project.BASELINE.First(x => x.STATUS == BaselineStatus.Live);
-        //        IEnumerable<WORKPACK> projectWORKPACKS = deliverableGroupByProject.Project.WORKPACK;
+        //        IEnumerable<SUBJOB> projectSUBJOBS = deliverableGroupByProject.Project.SUBJOB;
         //        TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(livePROGRESS);
         //        DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(livePROGRESS);
         //        IEnumerable<VARIATION> projectVARIATIONS = deliverableGroupByProject.Project.VARIATION.Where(x => x.APPROVED != null && x.TYPE == VariationType.External);
 
         //        List <VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(projectVARIATIONS.AsQueryable(), deliverableGroupByProject.Deliverables.Select(x => x.Entity));
         //        ProjectSummaryStats projectSummary = new ProjectSummaryStats(MainViewModel.Entities, livePROGRESS, projectVariationAdjustment);
-        //        FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(deliverableGroupByProject.Project, livePROGRESS, projectWORKPACKS);
+        //        FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(deliverableGroupByProject.Project, livePROGRESS, projectSUBJOBS);
         //        FullSummarizer fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, deliverableGroupByProject.Project.NUMBER);
         //        firstLoadProjectStatsSummarizers.Add(fullSummarizer);
         //    }

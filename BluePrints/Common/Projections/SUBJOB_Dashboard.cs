@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class WORKPACK_Dashboard : BluePrintsProjectionBase<WORKPACK>, IHaveStats
+    public class SUBJOB_Dashboard : BluePrintsProjectionBase<SUBJOB>, IHaveStats
     {
         public ProgressStats Stats { get; set; }
         public IEnumerable<AREA> AvailableSubAreas { get; set; }
@@ -23,17 +23,17 @@ namespace BluePrints.Common.Projections
 
         public void GroupProjectStats(SummaryStats project_summary_stats)
         {
-            Stats = SummaryStatsHelpers.Group_Summary_Stats(project_summary_stats, x => x.Workpack_Guid == Entity.EntityKey, x => x.Workpack_Name == Entity.INTERNAL_NAME1);
+            Stats = SummaryStatsHelpers.Group_Summary_Stats(project_summary_stats, x => x.Subjob_Guid == Entity.EntityKey, x => x.Subjob_Name == Entity.INTERNAL_NAME1);
         }
 
-        #region WORKPACK Mapping
-        public bool IsGetModifiedWORKPACK_ASSIGNMENTS { get; set; }
-        public ICollection<WORKPACK_ASSIGNMENT> ObservableWORKPACK_ASSIGNMENTS
+        #region SUBJOB Mapping
+        public bool IsGetModifiedSUBJOB_ASSIGNMENTS { get; set; }
+        public ICollection<SUBJOB_ASSIGNMENT> ObservableSUBJOB_ASSIGNMENTS
         {
             get
             {
                 return
-                    Entity.WORKPACK_ASSIGNMENT.Where(x => x.ISMODIFIEDBASELINE == IsGetModifiedWORKPACK_ASSIGNMENTS).OrderBy(x => x.LOW_VALUE)
+                    Entity.SUBJOB_ASSIGNMENT.Where(x => x.ISMODIFIEDBASELINE == IsGetModifiedSUBJOB_ASSIGNMENTS).OrderBy(x => x.LOW_VALUE)
                         .ToList();
             }
         }
@@ -44,7 +44,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                return Stats.totalUnits * ObservableWORKPACK_ASSIGNMENTS.Sum(x => (x.HIGH_VALUE - x.LOW_VALUE) + 0.01m);
+                return Stats.totalUnits * ObservableSUBJOB_ASSIGNMENTS.Sum(x => (x.HIGH_VALUE - x.LOW_VALUE) + 0.01m);
             }
         }
 
@@ -52,34 +52,34 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                return ObservableWORKPACK_ASSIGNMENTS.Sum(x => (x.HIGH_VALUE - x.LOW_VALUE) + 0.01m);
+                return ObservableSUBJOB_ASSIGNMENTS.Sum(x => (x.HIGH_VALUE - x.LOW_VALUE) + 0.01m);
             }
         }
         #endregion
     }
 
-    public static class WORKPACK_DashboardQueries
+    public static class SUBJOB_DashboardQueries
     {
-        public static IQueryable<WORKPACK_Dashboard> Workpack_Dashboard(IQueryable<WORKPACK> WORKPACKS,
+        public static IQueryable<SUBJOB_Dashboard> Subjob_Dashboard(IQueryable<SUBJOB> SUBJOBS,
             IEnumerable<PROGRESS> PROGRESSES, BASELINE BASELINE, ESTIMATION_DIRECT ESTIMATION_DIRECT, 
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
             IEnumerable<RATE> RATES,
             IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSES)
         {
             var projectDashboard = DashboardQueries.Single_Project_DashboardTransformation(BASELINE.PROJECT, BASELINE, ESTIMATION_DIRECT, PROGRESSES, PROGRESS_ITEMS, RATES, null, true);
-            return Workpack_Dashboard_Summary(WORKPACKS, projectDashboard);
+            return Subjob_Dashboard_Summary(SUBJOBS, projectDashboard);
         }
 
-        public static IQueryable<WORKPACK_Dashboard> Workpack_Dashboard_Summary(IQueryable<WORKPACK> WORKPACKS,
+        public static IQueryable<SUBJOB_Dashboard> Subjob_Dashboard_Summary(IQueryable<SUBJOB> SUBJOBS,
             PROJECT_Dashboard projectDashboard, IEnumerable<AREA> subAreaCollection = null)
         {
-            IEnumerable<WORKPACK_Dashboard> workpack_dashboards = WORKPACKS.Where(x => x.GUID_PROJECT == projectDashboard.EntityKey).Select(x => new WORKPACK_Dashboard() {EntityKey = x.GUID, Entity = x});
-            List<WORKPACK_Dashboard> newWORKPACKDashboards = workpack_dashboards.ToList();
-            newWORKPACKDashboards.ForEach(x => x.GroupProjectStats((SummaryStats)projectDashboard.Stats));
+            IEnumerable<SUBJOB_Dashboard> subjob_dashboards = SUBJOBS.Where(x => x.GUID_PROJECT == projectDashboard.EntityKey).Select(x => new SUBJOB_Dashboard() {EntityKey = x.GUID, Entity = x});
+            List<SUBJOB_Dashboard> newSUBJOBDashboards = subjob_dashboards.ToList();
+            newSUBJOBDashboards.ForEach(x => x.GroupProjectStats((SummaryStats)projectDashboard.Stats));
             if (subAreaCollection != null)
-                newWORKPACKDashboards.ForEach(x => x.SetAvailableSubAreas(subAreaCollection));
+                newSUBJOBDashboards.ForEach(x => x.SetAvailableSubAreas(subAreaCollection));
 
-            return newWORKPACKDashboards.AsQueryable();
+            return newSUBJOBDashboards.AsQueryable();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿<UserControl x:Name="userControl" x:Class="BluePrints.Views.WORKPACKDashboardView"
+﻿<UserControl x:Name="userControl" x:Class="BluePrints.Views.SUBJOBDashboardView"
              xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -16,7 +16,7 @@
              xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
              xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters"
              mc:Ignorable="d" d:DesignHeight="1200" d:DesignWidth="1200"
-             DataContext="{dxmvvm:ViewModelSource viewmodel:WORKPACKDashboardViewModelWrapper}">
+             DataContext="{dxmvvm:ViewModelSource viewmodel:SUBJOBDashboardViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
@@ -72,7 +72,7 @@
                     </dxmvvm:Interaction.Behaviors>
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical" Height="500"
                                       dxlc:LayoutControl.AllowVerticalSizing="True">
-                        <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDashboardWORKPACK" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                        <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDashboardSUBJOB" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Bands>
                                 <dxg:GridControlBand Name="bandGeneral" Header="General">
                                     <dxg:GridColumn FieldName="Entity.GUID_DPHASE" Header="PHASE">

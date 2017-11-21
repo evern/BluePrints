@@ -9,7 +9,7 @@ using System.Linq;
 namespace BluePrints.Common.Projections
 {
     [ConstraintAttributes("Entity.GUID_PROJECT, Entity.INTERNAL_NAME1")]
-    public class WORKPACKProjection : BluePrintsProjectionBase<WORKPACK>, IDeliverable_Rates_Group
+    public class SUBJOBProjection : BluePrintsProjectionBase<SUBJOB>, IDeliverable_Rates_Group
     {
         public IEnumerable<IDeliverable_Rates> DeliverableRates { get; set; }
 
@@ -17,7 +17,7 @@ namespace BluePrints.Common.Projections
 
         public string Deliverable_Name => string.Empty;
 
-        public Guid? Workpack_Guid => Guid.Empty;
+        public Guid? Subjob_Guid => Guid.Empty;
 
         public Guid OriginalEntityKey => Guid.Empty;
 
@@ -45,13 +45,18 @@ namespace BluePrints.Common.Projections
 
         public string Commodity_Display_Code => Commodity_Code;
 
-        public string Workpack_Name => string.Empty;
+        public string Subjob_Name => string.Empty;
 
         public string Department_Code => string.Empty;
 
         public Guid? Phase_Guid { get => Entity.GUID_DPHASE; set => Entity.GUID_DPHASE = value; }
 
-        Guid? IDeliverable.Workpack_Guid { get; set; }
+        public Guid? Discipline_Guid => throw new NotImplementedException();
+
+        public decimal Discipline_Number => throw new NotImplementedException();
+
+        public Guid? Workpack_Guid { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        Guid? IDeliverable.Subjob_Guid { get; set; }
 
         public void SetOriginalEntityKey(Guid newGuid)
         {
@@ -59,10 +64,10 @@ namespace BluePrints.Common.Projections
         }
     }
 
-    public static class WORKPACKProjectionQueries
+    public static class SUBJOBProjectionQueries
     {
-        public static IQueryable<WORKPACKProjection> IDeliverable_Rates_Group_Transformation(
-            IQueryable<WORKPACK> WORKPACKS, IEnumerable<BASELINE_ITEM> BASELINE_ITEMS, PROGRESS PROGRESS, BASELINE BASELINE,
+        public static IQueryable<SUBJOBProjection> IDeliverable_Rates_Group_Transformation(
+            IQueryable<SUBJOB> SUBJOBS, IEnumerable<BASELINE_ITEM> BASELINE_ITEMS, PROGRESS PROGRESS, BASELINE BASELINE,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES)
         {
             IQueryable<BASELINE_ITEMProjection> baseline_rateProjection;
@@ -73,10 +78,10 @@ namespace BluePrints.Common.Projections
 
             var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
             return
-                WORKPACKS.ToArray().Select(x => new WORKPACKProjection()
+                SUBJOBS.ToArray().Select(x => new SUBJOBProjection()
                 {
                     Entity = x,
-                    DeliverableRates = baseline_rateProjection.Where(rateProjection => rateProjection.Workpack_Guid == x.GUID)
+                    DeliverableRates = baseline_rateProjection.Where(rateProjection => rateProjection.Subjob_Guid == x.GUID)
                 }).AsQueryable();
         }
     }

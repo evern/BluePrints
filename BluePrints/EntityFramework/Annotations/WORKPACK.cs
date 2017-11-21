@@ -9,20 +9,14 @@ namespace BluePrints.Data
     using DevExpress.Mvvm;
     using BluePrints.Common.Base;
 
-    [ConstraintAttributes("GUID_PROJECT, INTERNAL_NAME1")]
+    [ConstraintAttributes("NAME")]
     public partial class WORKPACK : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public WORKPACK()
         {
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
-            WORKPACK_ASSIGNMENT = new HashSet<WORKPACK_ASSIGNMENT>();
-            ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
-            ESTIMATION_DIRECT_ITEM1 = new HashSet<ESTIMATION_DIRECT_ITEM>();
-            STARTDATE = DateTime.Now;
-            ENDDATE = DateTime.Now;
-            REVIEWSTARTDATE = DateTime.Now;
-            REVIEWENDDATE = DateTime.Now;
+            DISCIPLINE_NUM = 1;
         }
 
         [NotMapped]
@@ -44,47 +38,6 @@ namespace BluePrints.Data
         {
             get { return CREATED; }
             set { CREATED = value; }
-        }
-
-        //Used for direct property access validation in fill/undo-redo
-        [NotMapped]
-        public Guid? SubAreaGuid
-        {
-            get
-            {
-                return GUID_DSUBAREA;
-            }
-            set
-            {
-                Guid? setValue = (Guid?)value;
-                if (setValue == null)
-                    GUID_DSUBAREA = null;
-                else if (IsSubAreaValid(setValue))
-                    GUID_DSUBAREA = setValue;
-            }
-        }
-
-        public bool IsSubAreaValid(Guid? subAreaGuid)
-        {
-            if (subAreaGuid == null)
-                return false;
-
-            if (SubAreaCollection == null)
-                return false;
-
-            return SubAreaCollection.Any(x => x.GUID == subAreaGuid);
-        }
-
-        [NotMapped]
-        public IEnumerable<AREA> SubAreaCollection
-        {
-            get
-            {
-                if (AREA == null)
-                    return null;
-
-                return AREA.AREA1;
-            }
         }
     }
 }

@@ -22,7 +22,7 @@ namespace BluePrints.Common.Projections
         {
         }
 
-        public PROJECT_Dashboard(IEnumerable<IReportable> reportableItems, IEnumerable<PROGRESS> PROGRESSES, IEnumerable<WORKPACK> WORKPACKS, IEnumerable<VARIATION> VARIATIONS, string project_number, decimal currency_conversion, IPrimeroEntitiesUnitOfWork PrimeroUOW = null)
+        public PROJECT_Dashboard(IEnumerable<IReportable> reportableItems, IEnumerable<PROGRESS> PROGRESSES, IEnumerable<SUBJOB> SUBJOBS, IEnumerable<VARIATION> VARIATIONS, string project_number, decimal currency_conversion, IPrimeroEntitiesUnitOfWork PrimeroUOW = null)
         {
             TimeSpan reporting_interval = ChronologicalHelpers.GetDefaultIntervalTimeSpan();
             DateTime? earliest_first_aligned_data_date = ChronologicalHelpers.GetEarliestFirstAlignedDataDate(PROGRESSES);
@@ -31,7 +31,7 @@ namespace BluePrints.Common.Projections
             List<VariationAdjustment> projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONS.AsQueryable(), reportableItems);
             FullStatsBuilder fullStatsBuilder = null;
             if (earliest_first_aligned_data_date != null)
-                fullStatsBuilder = new FullStatsBuilder(project_number, currency_conversion, reporting_interval, (DateTime)earliest_first_aligned_data_date, WORKPACKS, PrimeroUOW);
+                fullStatsBuilder = new FullStatsBuilder(project_number, currency_conversion, reporting_interval, (DateTime)earliest_first_aligned_data_date, SUBJOBS, PrimeroUOW);
 
             if(latest_data_date != null && earliest_first_aligned_data_date != null)
             {
@@ -65,10 +65,10 @@ namespace BluePrints.Common.Projections
             projectSummarizer.RecalculateStats(isCosts);
         }
 
-        public List<DashboardTreeStructure> Workpack_TreeDashboards { get; set; }
-        public List<DashboardFlatStructure> Workpack_Dashboards { get; set; }
+        public List<DashboardTreeStructure> Subjob_TreeDashboards { get; set; }
+        public List<DashboardFlatStructure> Subjob_Dashboards { get; set; }
         public List<Dashboard_Export_Data_Point> Export_Data { get; set; }
-        public bool IHaveWorkpack_Dashboards { get { return Workpack_TreeDashboards != null && Workpack_TreeDashboards.Count > 0; } }
+        public bool IHaveSubjob_Dashboards { get { return Subjob_TreeDashboards != null && Subjob_TreeDashboards.Count > 0; } }
     }
 
     public static class DashboardQueries
@@ -152,7 +152,7 @@ namespace BluePrints.Common.Projections
                     current_project_progresses.Add(live_estimation_direct_progress);
                 }
 
-                var current_project_dashboard = new PROJECT_Dashboard(reportables, current_project_progresses, current_project.WORKPACK, approved_project_variations, current_project.NUMBER, current_project.CURRENCYCONVERSION)
+                var current_project_dashboard = new PROJECT_Dashboard(reportables, current_project_progresses, current_project.SUBJOB, approved_project_variations, current_project.NUMBER, current_project.CURRENCYCONVERSION)
                 {
                     EntityKey = current_project.GUID,
                     Entity = current_project

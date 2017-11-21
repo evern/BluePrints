@@ -150,7 +150,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Assign Workpack" FieldName="P6WORKPACKASSIGN">
+                            <dxg:GridColumn Header="Assign Subjob" FieldName="P6SUBJOBASSIGN">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:CheckEditSettings />
                                 </dxg:GridColumn.EditSettings>

@@ -47,9 +47,9 @@
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlVARIATION_ITEM" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Bands>
                             <dxg:GridControlBand Name="bandGeneral" Header="General">
-                                <dxg:GridColumn Name="colWORKPACK" FieldName="Entity.Entity.Entity.GUID_WORKPACK" Header="WORKPACK" ReadOnly="True">
+                                <dxg:GridColumn Name="colSUBJOB" FieldName="Entity.Entity.Entity.GUID_SUBJOB" Header="SUBJOB" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
+                                        <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_PHASE" Header="PHASE" VisibleIndex="0">

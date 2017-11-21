@@ -67,9 +67,9 @@
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Bands>
                             <dxg:GridControlBand Name="bandGeneral" Header="General">
-                                <custom:GridColumnEx Name="columnWorkpack" FieldName="Entity.Entity.GUID_WORKPACK" Header="WORKPACK" FilterPopupMode="CheckedList" ReadOnly="True">
+                                <custom:GridColumnEx Name="columnSubjob" FieldName="Entity.Entity.GUID_SUBJOB" Header="SUBJOB" FilterPopupMode="CheckedList" ReadOnly="True">
                                     <custom:GridColumnEx.EditSettings>
-                                        <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
+                                        <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
                                     </custom:GridColumnEx.EditSettings>
                                 </custom:GridColumnEx>
                                 <custom:GridColumnEx Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA" FilterPopupMode="CheckedList" ReadOnly="True">

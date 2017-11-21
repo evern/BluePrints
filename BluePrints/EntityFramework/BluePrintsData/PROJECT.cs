@@ -37,7 +37,7 @@ namespace BluePrints.Data
 
         public decimal REVIEWPERIOD { get; set; }
 
-        public bool P6WORKPACKASSIGN { get; set; }
+        public bool USE_WORKPACKS { get; set; }
 
         public ProjectDocumentStatus? DOC_KICKOFF { get; set; }
 
@@ -135,6 +135,6 @@ namespace BluePrints.Data
         public virtual ICollection<VARIATION> VARIATION { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WORKPACK> WORKPACK { get; set; }
+        public virtual ICollection<SUBJOB> SUBJOB { get; set; }
     }
 }

@@ -20,9 +20,9 @@ namespace BluePrints.Views
     /// <summary>
     /// Interaction logic for BASELINE_ITEMCollectionView.xaml
     /// </summary>
-    public partial class BASELINE_ITEMGroupSchedulingView : UserControl
+    public partial class BASELINE_ITEMWorkpackSchedulingView : UserControl
     {
-        public BASELINE_ITEMGroupSchedulingView()
+        public BASELINE_ITEMWorkpackSchedulingView()
         {
             InitializeComponent();
         }

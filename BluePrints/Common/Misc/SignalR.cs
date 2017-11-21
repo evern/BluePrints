@@ -124,10 +124,10 @@ namespace BluePrints.Common
                 ReceiveMessage<VARIATION_ITEM, Guid>(PrimaryKey, MessageType, sender, hwid);
             else if (entityName == typeof(VARIATION).ToString())
                 ReceiveMessage<VARIATION, Guid>(PrimaryKey, MessageType, sender, hwid);
-            else if (entityName == typeof(WORKPACK_ASSIGNMENT).ToString())
-                ReceiveMessage<WORKPACK_ASSIGNMENT, Guid>(PrimaryKey, MessageType, sender, hwid);
-            else if (entityName == typeof(WORKPACK).ToString())
-                ReceiveMessage<WORKPACK, Guid>(PrimaryKey, MessageType, sender, hwid);
+            else if (entityName == typeof(SUBJOB_ASSIGNMENT).ToString())
+                ReceiveMessage<SUBJOB_ASSIGNMENT, Guid>(PrimaryKey, MessageType, sender, hwid);
+            else if (entityName == typeof(SUBJOB).ToString())
+                ReceiveMessage<SUBJOB, Guid>(PrimaryKey, MessageType, sender, hwid);
             else if (entityName == typeof(DELIVERABLES_STATUS).ToString())
                 ReceiveMessage<DELIVERABLES_STATUS, Guid>(PrimaryKey, MessageType, sender, hwid);
         }

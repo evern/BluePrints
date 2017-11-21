@@ -68,7 +68,7 @@ namespace BluePrints.ViewModels
         public ESTIMATION_DIRECT_ITEMProgress SelectedEntity { get => SelectedEntityCallBack != null ? SelectedEntityCallBack.Invoke() : DisplaySelectedEntity; }
         public IEnumerable<ESTIMATION_DIRECT_ITEMProgress> SelectedEntities { get; set; }
         public IEnumerable<ESTIMATION_DIRECT_ITEMProgress> EditableAllEntities { get; set; }
-        public bool IsProcurementWorkpackVisible { get; set; }
+        public bool IsProcurementSubjobVisible { get; set; }
         private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory =
             P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
@@ -86,7 +86,7 @@ namespace BluePrints.ViewModels
             loadESTIMATION_DIRECT = (ESTIMATION_DIRECT)receiveParameter.GetSecondEntity();
             viewType = (DeliverablesViewType)receiveParameter.GetThirdEntity();
 
-            IsProcurementWorkpackVisible = viewType != DeliverablesViewType.Indirect;
+            IsProcurementSubjobVisible = viewType != DeliverablesViewType.Indirect;
             if (loadPROJECT != null)
                 isQueryForLiveStatus = true;
         }
@@ -102,7 +102,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS, STOCK_GROUPProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, x => defaultDepartment = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
@@ -159,7 +159,7 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID == loadESTIMATION_DIRECT.GUID);
         }
 
-        private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        private Func<IRepositoryQuery<SUBJOB>, IQueryable<SUBJOB>> SUBJOBProjectionFunc()
         {
             if (viewType == DeliverablesViewType.Direct)
                 return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.PHASE != null && ((x.PHASE.PHASE_TYPE == PhaseType.Construct && x.PHASE.CHARGE_TYPE == ChargeType.Direct) || (x.PHASE.PHASE_TYPE == PhaseType.Procurement)));
@@ -285,10 +285,10 @@ namespace BluePrints.ViewModels
         }
 
         /// <summary>
-        /// Each estimation entity will need to be assigned to a construction phased workpack and a procurement phased workpack
+        /// Each estimation entity will need to be assigned to a construction phased subjob and a procurement phased subjob
         /// </summary>
         /// <param name="entity"></param>
-        private void onBeforeSavedDualWorkpackAssignment(ESTIMATION_DIRECT_ITEMProgress entity)
+        private void onBeforeSavedDualSubjobAssignment(ESTIMATION_DIRECT_ITEMProgress entity)
         {
             PhaseType? phaseType = null;
             ChargeType? chargeType = null;
@@ -318,16 +318,16 @@ namespace BluePrints.ViewModels
                 entity.Phase_Guid = defaultPHASE.GUID;
             }
 
-            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, WORKPACKSCollectionViewModel, phaseType, chargeType);
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, phaseType, chargeType);
 
             if(chargeType != ChargeType.Indirect)
                 //by passing in only procurement phase type, the first occurence of procurement PHASE will be retrieved
-                BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, WORKPACKSCollectionViewModel, procurementPhaseType, null, true);
+                BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, procurementPhaseType, null, true);
         }
 
         public void ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATION_DIRECT_ITEMProgress pasteEntity)
         {
-            onBeforeSavedDualWorkpackAssignment(pasteEntity);
+            onBeforeSavedDualSubjobAssignment(pasteEntity);
             KeyValuePair<ColumnBase, string> stock_code_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMProgress().Entity.StockCodeGuid)));
 
             if (stock_code_data.Key != null)
@@ -483,7 +483,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public bool OnBeforeEntitySaved(ESTIMATION_DIRECT_ITEMProgress entity)
         {
-            onBeforeSavedDualWorkpackAssignment(entity);
+            onBeforeSavedDualSubjobAssignment(entity);
             onBeforeSavedProjectStockCodeLogging(entity);
 
             //entity.Entity.Entity.GUID_ESTIMATION_DIRECT = loadESTIMATION_DIRECT.GUID;
@@ -1144,22 +1144,22 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<WORKPACK> WORKPACKCollection
+        public IEnumerable<SUBJOB> SUBJOBCollection
         {
             get
             {
-                var collection = GetEntities<WORKPACK>();
+                var collection = GetEntities<SUBJOB>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.INTERNAL_NAME1);
                 return collection;
             }
         }
 
-        public IEnumerable<WORKPACK> ProcurementWORKPACKCollection
+        public IEnumerable<SUBJOB> ProcurementSUBJOBCollection
         {
             get
             {
-                var collection = GetEntities<WORKPACK>();
+                var collection = GetEntities<SUBJOB>();
                 if (collection != null)
                     collection = collection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Procurement).OrderBy(x => x.INTERNAL_NAME1);
                 return collection;
@@ -1287,14 +1287,14 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACKSCollectionViewModel
+        public CollectionViewModel<SUBJOB, SUBJOB, Guid, IBluePrintsEntitiesUnitOfWork> SUBJOBSCollectionViewModel
         {
             get
             {
                 if (MainViewModel == null)
                     return null;
 
-                return (CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<WORKPACK>();
+                return (CollectionViewModel<SUBJOB, SUBJOB, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<SUBJOB>();
             }
         }
 

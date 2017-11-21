@@ -41,7 +41,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public bool FromP6 { get; private set; }
 
         /// <summary>
-        /// Used For Workpack Summary Stats
+        /// Used For Subjob Summary Stats
         /// </summary>
         /// <param name="summaryStats">Project Summary Stats</param>
         public Stats(SummaryStats summaryStats)
@@ -244,7 +244,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public class ExoDataPoint : DataPoint
     {
-        public string Workpack_Name { get; set; }
+        public string Subjob_Name { get; set; }
         public string ResourceName { get; set; }
         public string Role { get; set; }
         public string CostGroup { get; set; }
@@ -254,12 +254,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (Workpack_Name == string.Empty)
+                if (Subjob_Name == string.Empty)
                     return string.Empty;
-                else if (Workpack_Name.Length < 15)
+                else if (Subjob_Name.Length < 15)
                     return string.Empty;
                 
-                return Workpack_Name.Substring(13, 2);
+                return Subjob_Name.Substring(13, 2);
             }
         }
 
@@ -293,12 +293,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (Workpack_Name == string.Empty)
+                if (Subjob_Name == string.Empty)
                     return string.Empty;
-                else if (Workpack_Name.Length < 9)
+                else if (Subjob_Name.Length < 9)
                     return string.Empty;
 
-                return Workpack_Name.Substring(6, 3);
+                return Subjob_Name.Substring(6, 3);
             }
         }
 
@@ -306,12 +306,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (Workpack_Name == string.Empty)
+                if (Subjob_Name == string.Empty)
                     return string.Empty;
-                else if (Workpack_Name.Length < 12)
+                else if (Subjob_Name.Length < 12)
                     return string.Empty;
 
-                return Workpack_Name.Substring(10, 2);
+                return Subjob_Name.Substring(10, 2);
             }
         }
 

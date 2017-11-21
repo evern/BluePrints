@@ -84,7 +84,7 @@ namespace BluePrints.Common.Base
                 loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, false);
             }
 
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
@@ -107,7 +107,7 @@ namespace BluePrints.Common.Base
                 return query => query.Where(x => x.GUID == loadPROGRESS.GUID && x.TYPE == progress_type);
         }
 
-        protected virtual Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        protected virtual Func<IRepositoryQuery<SUBJOB>, IQueryable<SUBJOB>> SUBJOBProjectionFunc()
         {
             if (is_single_project_mode)
                 return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
@@ -224,7 +224,7 @@ namespace BluePrints.Common.Base
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
             List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), ReportableCollection);
             projectSummary = new ProjectSummaryStats(MainViewModel.Entities, loadPROGRESS.DATA_DATE, reportInterval, firstAlignedDataDate, projectVariationAdjustment);
-            FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT.NUMBER, loadPROJECT.CURRENCYCONVERSION, reportInterval, firstAlignedDataDate, WORKPACKCollection, primeroUnitOfWork);
+            FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT.NUMBER, loadPROJECT.CURRENCYCONVERSION, reportInterval, firstAlignedDataDate, SUBJOBCollection, primeroUnitOfWork);
             fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER);
         }
 
@@ -836,11 +836,11 @@ namespace BluePrints.Common.Base
             }
         }
 
-        public IEnumerable<WORKPACK> WORKPACKCollection
+        public IEnumerable<SUBJOB> SUBJOBCollection
         {
             get
             {
-                var collection = GetEntities<WORKPACK>();
+                var collection = GetEntities<SUBJOB>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.INTERNAL_NAME1);
                 return collection;

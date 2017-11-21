@@ -15,20 +15,20 @@ namespace BluePrints.Common.ViewModel.Reporting
 {
     public class FullStatsBuilder : PartialStatsBuilder
     {
-        protected IEnumerable<WORKPACK> projectWORKPACKS { get; set; }
+        protected IEnumerable<SUBJOB> projectSUBJOBS { get; set; }
         public TimeSpan ReportingInterval { get; private set; }
         public DateTime FirstAlignedDataDate { get; private set; }
         readonly string ProjectNumber;
         readonly IPrimeroEntitiesUnitOfWork PrimeroUOW;
 
-        public FullStatsBuilder(string project_number, decimal currency_conversion, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<WORKPACK> WORKPACKS, IPrimeroEntitiesUnitOfWork primeroUOW = null)
+        public FullStatsBuilder(string project_number, decimal currency_conversion, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<SUBJOB> SUBJOBS, IPrimeroEntitiesUnitOfWork primeroUOW = null)
             : base(currency_conversion)
         {
             ProjectNumber = project_number;
             PrimeroUOW = primeroUOW == null ? PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork() : primeroUOW;
             this.ReportingInterval = reporting_interval;
             this.FirstAlignedDataDate = first_aligned_data_date;
-            this.projectWORKPACKS = WORKPACKS;
+            this.projectSUBJOBS = SUBJOBS;
         }
 
         public void BuildExoDataPoints(ProjectSummaryStats summaryObject, ExoBurnedFilterType filterType)
@@ -44,26 +44,26 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 DateTime loopDate = FirstAlignedDataDate;
 
-                IEnumerable<WORKPACK> workpacks = projectWORKPACKS;
+                IEnumerable<SUBJOB> subjobs = projectSUBJOBS;
                 string projectNumber = ProjectNumber;
 
-                IEnumerable<string> qualifiedWorkpacks;
-                if (workpacks == null)
-                    qualifiedWorkpacks = new List<string>();
+                IEnumerable<string> qualifiedSubjobs;
+                if (subjobs == null)
+                    qualifiedSubjobs = new List<string>();
                 else
                 {
                     if (filterType == ExoBurnedFilterType.All)
-                        qualifiedWorkpacks = workpacks.Select(x => x.INTERNAL_NAME1);
+                        qualifiedSubjobs = subjobs.Select(x => x.INTERNAL_NAME1);
                     else if (filterType == ExoBurnedFilterType.Design)
-                        qualifiedWorkpacks = workpacks.Select(x => x.INTERNAL_NAME1);
+                        qualifiedSubjobs = subjobs.Select(x => x.INTERNAL_NAME1);
                     else
-                        qualifiedWorkpacks = workpacks.Select(x => x.INTERNAL_NAME1);
+                        qualifiedSubjobs = subjobs.Select(x => x.INTERNAL_NAME1);
 
-                    //Can't do this because legacy workpack exists
+                    //Can't do this because legacy subjob exists
                     //else if (filterType == ExoBurnedFilterType.Design)
-                    //    qualifiedWorkpacks = workpacks.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Design).Select(x => x.INTERNAL_NAME1);
+                    //    qualifiedSubjobs = subjobs.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Design).Select(x => x.INTERNAL_NAME1);
                     //else
-                    //    qualifiedWorkpacks = workpacks.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Construct).Select(x => x.INTERNAL_NAME1);
+                    //    qualifiedSubjobs = subjobs.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Construct).Select(x => x.INTERNAL_NAME1);
                 }
 
                 var PrimeroUnitOfWork = PrimeroUOW;
@@ -81,17 +81,17 @@ namespace BluePrints.Common.ViewModel.Reporting
                                       where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X"
                                       select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC };
 
-                var exoWorkpacks = from JOBCOST_HDR in PrimeroUnitOfWork.JOBCOST_HDR
+                var exoSubjobs = from JOBCOST_HDR in PrimeroUnitOfWork.JOBCOST_HDR
                                    where JOBCOST_HDR.JOBCODE.Contains(projectNumber)
                                    select new { JOBCOST_HDR.TITLE, JOBCOST_HDR.JOBCODE };
 
-                var exoWorkpacksList = exoWorkpacks.ToList();
-                foreach (WORKPACK workpack in workpacks)
+                var exoSubjobsList = exoSubjobs.ToList();
+                foreach (SUBJOB subjob in subjobs)
                 {
-                    var exoWorkpack = exoWorkpacksList.FirstOrDefault(x => x.JOBCODE == workpack.INTERNAL_NAME1);
-                    if (exoWorkpack == null)
+                    var exoSubjob = exoSubjobsList.FirstOrDefault(x => x.JOBCODE == subjob.INTERNAL_NAME1);
+                    if (exoSubjob == null)
                     {
-                        projectSummaryStats.AddMissingExoWorkpack(workpack);
+                        projectSummaryStats.AddMissingExoSubjob(subjob);
                     }
                 }
 
@@ -102,7 +102,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 List<DateTime> alignedDataDates = ChronologicalHelpers.GenerateAlignedDatesCollection(FirstAlignedDataDate, jobTransactionsList.Max(x => x.TRANSDATE).Value, ReportingInterval);
                 foreach (var jobTransaction in jobTransactionsList)
                 {
-                    if (qualifiedWorkpacks.Contains(jobTransaction.JOBCODE))
+                    if (qualifiedSubjobs.Contains(jobTransaction.JOBCODE))
                     {
                         ExoDataPoint burnedDataPoint = new ExoDataPoint();
                         burnedDataPoint.BudgetedUnits = 0;
@@ -110,7 +110,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         burnedDataPoint.Units = (decimal)jobTransaction.QUANTITY;
                         burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * this.CurrencyConversion;
                         burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
-                        burnedDataPoint.Workpack_Name = jobTransaction.JOBCODE;
+                        burnedDataPoint.Subjob_Name = jobTransaction.JOBCODE;
                         burnedDataPoint.ResourceName = jobTransaction.RESOURCENAME;
                         burnedDataPoint.Quantity = (decimal)jobTransaction.QUANTITY;
                         burnedDataPoint.Role = jobTransaction.TITLE;

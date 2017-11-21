@@ -68,7 +68,7 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.STATUS == ProjectStatus.Active);
         }
 
-        private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        private Func<IRepositoryQuery<SUBJOB>, IQueryable<SUBJOB>> SUBJOBProjectionFunc()
         {
             return query => query.Where(x => x.PROJECT.STATUS == ProjectStatus.Active);
         }

@@ -95,26 +95,26 @@
                                     </DataTemplate>
                                 </custom:GridColumnEx.CellTemplate>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colWORKPACKInternalName1"
-                                            FieldName="Entity.Entity.Entity.GUID_WORKPACK" Tag="True;True;Autofill from area and sub-area"
-                                            Header="WORKPACK" VisibleIndex="1">
+                            <custom:GridColumnEx Name="colSUBJOBInternalName1"
+                                            FieldName="Entity.Entity.Entity.GUID_SUBJOB" Tag="True;True;Autofill from area and sub-area"
+                                            Header="SUBJOB" VisibleIndex="1">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:ComboBoxEditSettings
-                                        ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
+                                        ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}"
                                         IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NAME1"
                                         ValueMember="GUID" />
                                 </custom:GridColumnEx.EditSettings>
                                 <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit Name="PART_Editor"
-                                                          ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
+                                                          ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}"
                                                           IsTextEditable="True" AutoComplete="True"
                                                           DisplayMember="INTERNAL_NAME1" ValueMember="GUID"
                                                           IsEnabled="{Binding RowData.Row.IsReadOnly, Converter={StaticResource BooleanNegationConverter}}" />
                                     </DataTemplate>
                                 </custom:GridColumnEx.CellTemplate>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx FieldName="Entity.Entity.Entity.GUID_AREA" Header="AREA" Tag="True;True;Autofill workpack">
+                            <custom:GridColumnEx FieldName="Entity.Entity.Entity.GUID_AREA" Header="AREA" Tag="True;True;Autofill subjob">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
@@ -131,7 +131,7 @@
                                     </DataTemplate>
                                 </custom:GridColumnEx.CellTemplate>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx FieldName="Entity.Entity.Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText" Tag="True;True;Autofill from workpack">
+                            <custom:GridColumnEx FieldName="Entity.Entity.Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText" Tag="True;True;Autofill from subjob">
                                 <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit 

@@ -46,11 +46,11 @@ namespace BluePrints.Common.Misc
     }
 
     /// <summary>
-    /// Dashboard workpack for splitting workpack into department, discipline and commodity specific for reporting
+    /// Dashboard subjob for splitting subjob into department, discipline and commodity specific for reporting
     /// </summary>
     public class DashboardFlatStructure : DashboardTreeStructure, IHaveStats
     {
-        public string WorkpackCode { get; set; }
+        public string SubjobCode { get; set; }
         public string AreaCode { get; set; }
         public string SubAreaCode { get; set; }
         public string DepartmentCode { get; set; }
@@ -60,7 +60,7 @@ namespace BluePrints.Common.Misc
 
     public class Dashboard_Export_Data_Point
     {
-        public string Workpack_Name { get; set; }
+        public string Subjob_Name { get; set; }
         public string Department_Name { get; set; }
         public string Discipline_Name { get; set; }
         public string Commodity_Code { get; set; }
@@ -82,10 +82,10 @@ namespace BluePrints.Common.Misc
 
     public static class DashboardHelpers
     {
-        public static List<Dashboard_Export_Data_Point> BuildExportData(List<DashboardTreeStructure> Workpack_Dashboards)
+        public static List<Dashboard_Export_Data_Point> BuildExportData(List<DashboardTreeStructure> Subjob_Dashboards)
         {
             List<Dashboard_Export_Data_Point> export_data = new List<Dashboard_Export_Data_Point>();
-            IEnumerable<DashboardTreeStructure> commodity_code_dashboards = Workpack_Dashboards.SelectMany(x => x.Child_Dashboards.SelectMany(department => department.Child_Dashboards.SelectMany(discipline => discipline.Child_Dashboards)));
+            IEnumerable<DashboardTreeStructure> commodity_code_dashboards = Subjob_Dashboards.SelectMany(x => x.Child_Dashboards.SelectMany(department => department.Child_Dashboards.SelectMany(discipline => discipline.Child_Dashboards)));
             foreach (DashboardTreeStructure commodity_code_dashboard in commodity_code_dashboards)
             {
                 if (commodity_code_dashboard.Stats != null)
@@ -128,7 +128,7 @@ namespace BluePrints.Common.Misc
                 new_export_data.Commodity_Code = commodity_code_dashboard.Code;
                 new_export_data.Discipline_Name = commodity_code_dashboard.Parent_Dashboard.Code;
                 new_export_data.Department_Name = commodity_code_dashboard.Parent_Dashboard.Parent_Dashboard.Code;
-                new_export_data.Workpack_Name = commodity_code_dashboard.Parent_Dashboard.Parent_Dashboard.Parent_Dashboard.Code;
+                new_export_data.Subjob_Name = commodity_code_dashboard.Parent_Dashboard.Parent_Dashboard.Parent_Dashboard.Code;
 
                 if (actual_data_points != null)
                 {
@@ -196,17 +196,17 @@ namespace BluePrints.Common.Misc
             project_dashboard.Summary = project_summary_stats;
 
             IEnumerable<ExoDataPoint> burned_data_points = project_summary_stats.GetBurnedDataPoints();
-            int maxProgress = project_dashboard.getSubDivideMaxProgress(burned_data_points, x => x.Workpack_Name, x => x.Workpack_Name);
+            int maxProgress = project_dashboard.getSubDivideMaxProgress(burned_data_points, x => x.Subjob_Name, x => x.Subjob_Name);
 
-            project_dashboard.SubDivideDashboardStats(burned_data_points, x => x.Workpack_Name, x => x.Workpack_Name);
+            project_dashboard.SubDivideDashboardStats(burned_data_points, x => x.Subjob_Name, x => x.Subjob_Name);
 
             LoadingScreenManager.ShowLoadingScreen(maxProgress);
-            //child dashboards are now subdivided into workpack dashboard
-            foreach (DashboardTreeStructure workpack_dashboard in project_dashboard.Child_Dashboards)
+            //child dashboards are now subdivided into subjob dashboard
+            foreach (DashboardTreeStructure subjob_dashboard in project_dashboard.Child_Dashboards)
             {
-                workpack_dashboard.SubDivideDashboardStats(burned_data_points, x => x.Department_Code, x => x.Department_Code);
+                subjob_dashboard.SubDivideDashboardStats(burned_data_points, x => x.Department_Code, x => x.Department_Code);
 
-                foreach (DashboardTreeStructure department_dashboard in workpack_dashboard.Child_Dashboards)
+                foreach (DashboardTreeStructure department_dashboard in subjob_dashboard.Child_Dashboards)
                 {
                     department_dashboard.SubDivideDashboardStats(burned_data_points, x => x.Discipline_Code, x => x.Discipline_Code);
 
@@ -224,24 +224,24 @@ namespace BluePrints.Common.Misc
             return project_dashboard.Child_Dashboards;
         }
 
-        public static List<DashboardFlatStructure> ProjectDashboardSummaryBuilder(ProjectSummaryStats project_summary_stats, out List<DashboardTreeStructure> hierarchicalDashboards, IEnumerable<WORKPACK> WORKPACKCollection)
+        public static List<DashboardFlatStructure> ProjectDashboardSummaryBuilder(ProjectSummaryStats project_summary_stats, out List<DashboardTreeStructure> hierarchicalDashboards, IEnumerable<SUBJOB> SUBJOBCollection)
         {
             List<DashboardFlatStructure> flatDashboards = new List<DashboardFlatStructure>();
             hierarchicalDashboards = ProjectDashboardHierarchicalBuilder(project_summary_stats);
 
-            foreach(DashboardTreeStructure workpack_dashboard in hierarchicalDashboards.OrderBy(x => x.Code))
+            foreach(DashboardTreeStructure subjob_dashboard in hierarchicalDashboards.OrderBy(x => x.Code))
             {
-                foreach (DashboardTreeStructure department_dashboard in workpack_dashboard.Child_Dashboards.OrderBy(x => x.Code))
+                foreach (DashboardTreeStructure department_dashboard in subjob_dashboard.Child_Dashboards.OrderBy(x => x.Code))
                 {
-                    WORKPACK workpack = WORKPACKCollection.FirstOrDefault(x => x.INTERNAL_NAME1 == workpack_dashboard.Code);
+                    SUBJOB subjob = SUBJOBCollection.FirstOrDefault(x => x.INTERNAL_NAME1 == subjob_dashboard.Code);
                     string areaCode = string.Empty;
 
-                    if(workpack!= null)
-                        areaCode = workpack.AREA == null ? string.Empty : workpack.AREA.INTERNAL_NUM;
+                    if(subjob!= null)
+                        areaCode = subjob.AREA == null ? string.Empty : subjob.AREA.INTERNAL_NUM;
                     if(department_dashboard.Child_Dashboards.Count == 0)
                     {
                         DashboardFlatStructure departmentLevelDashboard = new DashboardFlatStructure();
-                        departmentLevelDashboard.WorkpackCode = workpack_dashboard.Code;
+                        departmentLevelDashboard.SubjobCode = subjob_dashboard.Code;
                         departmentLevelDashboard.AreaCode = areaCode;
                         departmentLevelDashboard.DepartmentCode = department_dashboard.Code;
                         departmentLevelDashboard.DisciplineCode = string.Empty;
@@ -253,7 +253,7 @@ namespace BluePrints.Common.Misc
                         foreach (DashboardTreeStructure discipline_dashboard in department_dashboard.Child_Dashboards.OrderBy(x => x.Code))
                         {
                             DashboardFlatStructure commodityLevelDashboard = new DashboardFlatStructure();
-                            commodityLevelDashboard.WorkpackCode = workpack_dashboard.Code;
+                            commodityLevelDashboard.SubjobCode = subjob_dashboard.Code;
                             commodityLevelDashboard.AreaCode = areaCode;
                             commodityLevelDashboard.DepartmentCode = department_dashboard.Code;
                             commodityLevelDashboard.DisciplineCode = discipline_dashboard.Code;

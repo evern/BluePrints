@@ -74,7 +74,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
@@ -119,9 +119,9 @@ namespace BluePrints.ViewModels
         }
 
         /// <summary>
-        /// WORKPACK is used for write only so just load a single entry for repository to be initialized
+        /// SUBJOB is used for write only so just load a single entry for repository to be initialized
         /// </summary>
-        private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        private Func<IRepositoryQuery<SUBJOB>, IQueryable<SUBJOB>> SUBJOBProjectionFunc()
         {
             return query => query.Take(1);
         }
@@ -232,19 +232,19 @@ namespace BluePrints.ViewModels
 
                 if(defaultDepartment != null && defaultDiscipline != null)
                 {
-                    WORKPACK newWORKPACK = new WORKPACK();
-                    newWORKPACK.GUID_PROJECT = entity.GUID;
-                    newWORKPACK.INTERNAL_NAME1 = entity.NUMBER;
-                    newWORKPACK.STARTDATE = CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday);
-                    newWORKPACK.ENDDATE = ((DateTime)newWORKPACK.STARTDATE).AddDays(7).AddSeconds(-1);
-                    newWORKPACK.REVIEWSTARTDATE = (DateTime)newWORKPACK.STARTDATE; //effectively nullifies review date
-                    newWORKPACK.REVIEWENDDATE = (DateTime)newWORKPACK.STARTDATE; //effectively nullifies review date
-                    newWORKPACK.GUID_DAREA = newAREA.GUID;
-                    WORKPACKViewModel.Save(newWORKPACK);
+                    SUBJOB newSUBJOB = new SUBJOB();
+                    newSUBJOB.GUID_PROJECT = entity.GUID;
+                    newSUBJOB.INTERNAL_NAME1 = entity.NUMBER;
+                    newSUBJOB.STARTDATE = CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday);
+                    newSUBJOB.ENDDATE = ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1);
+                    newSUBJOB.REVIEWSTARTDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
+                    newSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
+                    newSUBJOB.GUID_DAREA = newAREA.GUID;
+                    SUBJOBViewModel.Save(newSUBJOB);
 
                     BASELINE_ITEM newBASELINE_ITEM = new BASELINE_ITEM();
                     newBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
-                    newBASELINE_ITEM.GUID_WORKPACK = newWORKPACK.GUID;
+                    newBASELINE_ITEM.GUID_SUBJOB = newSUBJOB.GUID;
                     newBASELINE_ITEM.GUID_DEPARTMENT = defaultDepartment.GUID;
                     newBASELINE_ITEM.GUID_DISCIPLINE = defaultDiscipline.GUID;
                     newBASELINE_ITEM.GUID_DOCTYPE = defaultDocType.GUID;
@@ -431,7 +431,7 @@ namespace BluePrints.ViewModels
         }
 
 
-        public CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACKViewModel
+        public CollectionViewModel<SUBJOB, SUBJOB, Guid, IBluePrintsEntitiesUnitOfWork> SUBJOBViewModel
         {
             get
             {
@@ -439,8 +439,8 @@ namespace BluePrints.ViewModels
                     return null;
 
                 return
-                    (CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>)
-                    loaderCollection.GetViewModel<WORKPACK>();
+                    (CollectionViewModel<SUBJOB, SUBJOB, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<SUBJOB>();
             }
         }
 

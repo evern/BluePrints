@@ -27,7 +27,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 BASELINE live_baseline = project.BASELINE.FirstOrDefault(x => x.STATUS == BaselineStatus.Live);
                 IEnumerable<BASELINE_ITEM> user_project_baseline_item = user_baseline_item_by_project.Deliverables;
-                IEnumerable<WORKPACK> workpacks = project.WORKPACK;
+                IEnumerable<SUBJOB> subjobs = project.SUBJOB;
                 IEnumerable<VARIATION> approved_variations = project.VARIATION.Where(x => x.APPROVED != null);
 
                 //need to use external PROGRESS_ITEMS because live_progress.PROGRESS_ITEM is cached and will not update OnMessage
@@ -44,7 +44,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return user_baseline_item_progresses.AsQueryable();
         }
 
-        public static IQueryable<WorkpackGroup> ProgressItemWorkpackGroupTransformation(
+        public static IQueryable<SubjobGroup> ProgressItemSubjobGroupTransformation(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS,
             PROJECT PROJECT,
             PROGRESS PROGRESS,
@@ -54,20 +54,20 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             List<BASELINE_ITEMProgress> baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS, PROJECT, PROGRESS, RATES, PROGRESS_ITEMS, null, true, P6_ASSIGNMENTS).ToList();
 
-            List<WorkpackGroup> workpack_group = new List<WorkpackGroup>();
-            var progress_item_by_workpacks = baseline_item_progresses.GroupBy(x => x.Workpack_Name + "-" + x.Discipline_Code).Select(group => new { WorkpackName = group.Key, Progresses = group.ToList() });
-            foreach (var progress_item_by_workpack in progress_item_by_workpacks)
+            List<SubjobGroup> subjob_group = new List<SubjobGroup>();
+            var progress_item_by_subjobs = baseline_item_progresses.GroupBy(x => x.Subjob_Name + "-" + x.Discipline_Code).Select(group => new { SubjobName = group.Key, Progresses = group.ToList() });
+            foreach (var progress_item_by_subjob in progress_item_by_subjobs)
             {
-                if (progress_item_by_workpack.Progresses != null)
+                if (progress_item_by_subjob.Progresses != null)
                 {
-                    WorkpackGroup newWorkpackGroup = new WorkpackGroup();
-                    newWorkpackGroup.GroupName = progress_item_by_workpack.WorkpackName;
-                    newWorkpackGroup.Deliverables = progress_item_by_workpack.Progresses.Select(x => (ICanAssignP6)x).ToList();
-                    workpack_group.Add(newWorkpackGroup);
+                    SubjobGroup newSubjobGroup = new SubjobGroup();
+                    newSubjobGroup.GroupName = progress_item_by_subjob.SubjobName;
+                    newSubjobGroup.Deliverables = progress_item_by_subjob.Progresses.Select(x => (ICanAssignP6)x).ToList();
+                    subjob_group.Add(newSubjobGroup);
                 }
             }
 
-            return workpack_group.AsQueryable();
+            return subjob_group.AsQueryable();
         }
 
         public static IQueryable<BASELINE_ITEMProgress> OffsiteDirectProgressItemTransformation(

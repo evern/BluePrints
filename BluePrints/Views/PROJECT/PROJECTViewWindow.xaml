@@ -55,7 +55,7 @@
                         <custom:GridControlEx x:Name="GridControlExcelExport" Grid.Row="0" dx:DXSerializer.Enabled="False" Visibility="Collapsed" ItemsSource="{Binding DataContext.ExcelExportData, ElementName=userControl}">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn FieldName="Type" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="Workpack_Name" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Subjob_Name" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Department_Name" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Discipline_Name" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Commodity_Code" ReadOnly="True" />
@@ -78,7 +78,7 @@
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:GridControl.Bands>
                                     <dxg:GridControlBand Header="General">
-                                        <dxg:GridColumn Header="Workpack" FieldName="WorkpackCode" MinWidth="300" />
+                                        <dxg:GridColumn Header="Subjob" FieldName="SubjobCode" MinWidth="300" />
                                         <dxg:GridColumn Header="Area" FieldName="AreaCode" />
                                         <dxg:GridColumn Header="Department" FieldName="DepartmentCode" />
                                         <dxg:GridColumn Header="Discipline" FieldName="DisciplineCode" />

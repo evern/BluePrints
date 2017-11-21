@@ -17,6 +17,8 @@ namespace BluePrints.Data
 
         public Guid? GUID_BASELINE { get; set; }
 
+        public Guid? GUID_WORKPACK { get; set; }
+
         public Guid? GUID_VARIATION { get; set; }
 
         public Guid? GUID_PHASE { get; set; }
@@ -25,7 +27,7 @@ namespace BluePrints.Data
 
         public Guid? GUID_SUBAREA { get; set; }
 
-        public Guid? GUID_WORKPACK { get; set; }
+        public Guid? GUID_SUBJOB { get; set; }
 
         public Guid? GUID_DEPARTMENT { get; set; }
 
@@ -107,6 +109,8 @@ namespace BluePrints.Data
         public virtual USER USER { get; set; }
 
         public virtual VARIATION VARIATION { get; set; }
+
+        public virtual SUBJOB SUBJOB { get; set; }
 
         public virtual WORKPACK WORKPACK { get; set; }
     }

@@ -3,14 +3,14 @@ namespace BluePrints.Data
     using System;
     using System.ComponentModel.DataAnnotations;
 
-    public partial class WORKPACK_ASSIGNMENT
+    public partial class SUBJOB_ASSIGNMENT
     {
         [Key]
         public Guid GUID { get; set; }
 
         public bool ISMODIFIEDBASELINE { get; set; }
 
-        public Guid GUID_WORKPACK { get; set; }
+        public Guid GUID_SUBJOB { get; set; }
 
         [Required]
         [StringLength(50)]
@@ -32,6 +32,6 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual WORKPACK WORKPACK { get; set; }
+        public virtual SUBJOB SUBJOB { get; set; }
     }
 }

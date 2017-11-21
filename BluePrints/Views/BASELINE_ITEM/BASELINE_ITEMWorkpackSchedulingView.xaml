@@ -1,6 +1,6 @@
 ﻿<UserControl 
              x:Name="userControl" 
-             x:Class="BluePrints.Views.BASELINE_ITEMGroupSchedulingView"
+             x:Class="BluePrints.Views.BASELINE_ITEMWorkpackSchedulingView"
              xmlns:view="clr-namespace:BluePrints.Views"
              xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -29,7 +29,7 @@
              xmlns:local="clr-namespace:BluePrints.Views"
              mc:Ignorable="d" 
              d:DesignHeight="1500" d:DesignWidth="1800"
-             DataContext="{dxmvvm:ViewModelSource viewmodel:BASELINE_ITEMGroupSchedulingViewModelWrapper}">
+             DataContext="{dxmvvm:ViewModelSource viewmodel:BASELINE_ITEMWorkpackSchedulingViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
             <common:RowNameConverter x:Key="RowNameConverter" />

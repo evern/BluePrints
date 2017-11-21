@@ -343,11 +343,11 @@
                                             DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colWORKPACKInternalName1" FieldName="Entity.Entity.GUID_WORKPACK"
-                                            Header="WORKPACK" Visible="true" ReadOnly="True" VisibleIndex="1">
+                                <dxg:GridColumn Name="colSUBJOBInternalName1" FieldName="Entity.Entity.GUID_SUBJOB"
+                                            Header="SUBJOB" Visible="true" ReadOnly="True" VisibleIndex="1">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1"
-                                            ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
+                                            ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}"
                                             IsTextEditable="True" AutoComplete="True"
                                             DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>

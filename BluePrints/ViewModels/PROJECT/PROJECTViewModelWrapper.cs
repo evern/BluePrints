@@ -195,7 +195,7 @@ namespace BluePrints.ViewModels
             {
                 project.BuildStats(false);
                 project.RecalculateStats(false);
-                project.Workpack_Dashboards = DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, loadPROJECT.WORKPACK);
+                project.Subjob_Dashboards = DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, loadPROJECT.SUBJOB);
                 project.Update();
 
                 mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.SingleProjectDashboards)));
@@ -217,7 +217,7 @@ namespace BluePrints.ViewModels
 
         public bool CanExportToExcel()
         {
-            return DisplayEntities != null && DisplayEntities.Count > 0 && DisplayEntities.First().Workpack_Dashboards != null;
+            return DisplayEntities != null && DisplayEntities.Count > 0 && DisplayEntities.First().Subjob_Dashboards != null;
         }
 
         public override void ExportToExcel()
@@ -492,7 +492,7 @@ namespace BluePrints.ViewModels
                 if (DisplayEntities == null || DisplayEntities.Count == 0)
                     return null;
 
-                return DisplayEntities.First().Workpack_Dashboards;
+                return DisplayEntities.First().Subjob_Dashboards;
             }
         }
 
@@ -630,10 +630,10 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString() + "WorkpackDashboardView",
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString() + "SubjobDashboardView",
                 DisplaySelectedEntity,
-                "WORKPACKDashboardView",
-                "[" + DisplaySelectedEntity.Entity.NUMBER + "] WORKPACK Dashboard");
+                "SUBJOBDashboardView",
+                "[" + DisplaySelectedEntity.Entity.NUMBER + "] SUBJOB Dashboard");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }

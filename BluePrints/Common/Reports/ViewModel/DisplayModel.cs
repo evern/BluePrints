@@ -47,7 +47,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public string Deliverable_Name => ((IReportable)ProgressItem).Deliverable_Name;
 
-        public Guid? Workpack_Guid => ((IReportable)ProgressItem).Workpack_Guid;
+        public Guid? Subjob_Guid => ((IReportable)ProgressItem).Subjob_Guid;
 
         public Guid OriginalEntityKey => ((IReportable)ProgressItem).OriginalEntityKey;
 
@@ -125,7 +125,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal? Remaining_Productivity => ((IReportable)ProgressItem).Remaining_Productivity;
 
-        public string Workpack_Name => ((IReportable)ProgressItem).Workpack_Name;
+        public string Subjob_Name => ((IReportable)ProgressItem).Subjob_Name;
 
         public string Department_Code => ((IReportable)ProgressItem).Department_Code;
 
@@ -133,9 +133,15 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid? Phase_Guid { get => ((IReportable)ProgressItem).Phase_Guid; set => ((IReportable)ProgressItem).Phase_Guid = value; }
 
-        Guid? IDeliverable.Workpack_Guid { get => ((IReportable)ProgressItem).Workpack_Guid; set => ((IReportable)ProgressItem).Workpack_Guid = value; }
+        Guid? IDeliverable.Subjob_Guid { get => ((IReportable)ProgressItem).Subjob_Guid; set => ((IReportable)ProgressItem).Subjob_Guid = value; }
 
         public decimal Earned_Costs_OnDataDate => ((IReportable)ProgressItem).Earned_Costs_OnDataDate;
+
+        public Guid? Discipline_Guid => ((IReportable)ProgressItem).Discipline_Guid;
+
+        public decimal Discipline_Number => ((IReportable)ProgressItem).Discipline_Number;
+
+        public Guid? Workpack_Guid { get => ((IReportable)ProgressItem).Workpack_Guid; set => ((IReportable)ProgressItem).Workpack_Guid = value; }
 
         public override void Update()
         {
@@ -233,7 +239,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public string Commodity_Code => Reportable.Commodity_Code;
 
-        public Guid? Workpack_Guid => Reportable.Workpack_Guid;
+        public Guid? Subjob_Guid => Reportable.Subjob_Guid;
 
         public Guid OriginalEntityKey => Reportable.OriginalEntityKey;
 
@@ -409,7 +415,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Variation_Supply_Cost => Reportable.Variation_Supply_Cost;
 
-        public string Workpack_Name => Reportable.Workpack_Name;
+        public string Subjob_Name => Reportable.Subjob_Name;
 
         public string Department_Code => Reportable.Department_Code;
 
@@ -421,7 +427,13 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid? Phase_Guid { get => Reportable.Phase_Guid; set => Reportable.Phase_Guid = value; }
 
-        Guid? IDeliverable.Workpack_Guid { get => Reportable.Workpack_Guid; set => Reportable.Workpack_Guid = value; }
+        Guid? IDeliverable.Subjob_Guid { get => Reportable.Subjob_Guid; set => Reportable.Subjob_Guid = value; }
+
+        public Guid? Discipline_Guid => Reportable.Discipline_Guid;
+
+        public decimal Discipline_Number => Reportable.Discipline_Number;
+
+        public Guid? Workpack_Guid { get => Reportable.Workpack_Guid; set => Reportable.Workpack_Guid = value; }
 
         public void SetReportingDataDate(DateTime dataDate)
         {

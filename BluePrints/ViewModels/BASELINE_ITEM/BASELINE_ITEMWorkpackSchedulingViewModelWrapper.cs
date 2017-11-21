@@ -29,7 +29,7 @@ using System.Windows;
 
 namespace BluePrints.ViewModels
 {
-    public class WorkpackGroup : ICanAssignP6Group
+    public class SubjobGroup : ICanAssignP6Group
     {
         public string GroupName { get; set; }
 
@@ -84,10 +84,10 @@ namespace BluePrints.ViewModels
     /// </summary>
     public partial class BASELINE_ITEMGroupSchedulingViewModelWrapper :
         BluePrintsEntitiesSchedulingCollectionWrapper
-        <BASELINE_ITEM, WorkpackGroup, Guid, IBluePrintsEntitiesUnitOfWork>
+        <BASELINE_ITEM, SubjobGroup, Guid, IBluePrintsEntitiesUnitOfWork>
     {
-        public Action ShowWORKPACKInternalName1;
-        public Action ShowWORKPACKInternalName2;
+        public Action ShowSUBJOBInternalName1;
+        public Action ShowSUBJOBInternalName2;
         public Action<bool> SetBaselineLockUnlock;
 
         /// <summary>
@@ -118,12 +118,12 @@ namespace BluePrints.ViewModels
         protected override void initializeEntitiesLoadersDescription()
         {
             MainViewModel = null;
-            base.cleanUpEntitiesLoader();
+            base.CleanUpEntitiesLoader();
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, assign_baseline);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
@@ -163,9 +163,9 @@ namespace BluePrints.ViewModels
                 SetBaselineLockUnlock?.Invoke(false);
         }
 
-        private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        private Func<IRepositoryQuery<SUBJOB>, IQueryable<SUBJOB>> SUBJOBProjectionFunc()
         {
-            //legacy workpack restrictions
+            //legacy subjob restrictions
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
@@ -207,14 +207,14 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<WorkpackGroup>>
+        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<SubjobGroup>>
             specifyMainViewModelProjection()
         {
             IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = GetEntities<P6_ASSIGNMENT>();
-            return query => ProgressQueries.ProgressItemWorkpackGroupTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, live_PROGRESS, RATECollection, PROGRESS_ITEMCollection, null, true, P6_ASSIGNMENTS);
+            return query => ProgressQueries.ProgressItemSubjobGroupTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, live_PROGRESS, RATECollection, PROGRESS_ITEMCollection, null, true, P6_ASSIGNMENTS);
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<WorkpackGroup> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<SubjobGroup> entities)
         {
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -355,7 +355,7 @@ namespace BluePrints.ViewModels
                 reportDesigner.Dispose();
         }
 
-        public Func<IEnumerable<WorkpackGroup>> GetGridVisibleRows;
+        public Func<IEnumerable<SubjobGroup>> GetGridVisibleRows;
 
         protected override string ExportExcelFilename()
         {

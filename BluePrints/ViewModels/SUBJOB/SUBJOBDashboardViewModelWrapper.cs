@@ -19,23 +19,23 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the PROJECTS collection view model.
     /// </summary>
-    public class WORKPACKDashboardViewModelWrapper :
-        DashboardViewModelWrapper<WORKPACK, WORKPACK_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>
+    public class SUBJOBDashboardViewModelWrapper :
+        DashboardViewModelWrapper<SUBJOB, SUBJOB_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
-        /// Creates a new instance of WORKPACK_ITEMSViewModelWrapper as a POCO view model.
+        /// Creates a new instance of SUBJOB_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static WORKPACKDashboardViewModelWrapper Create()
+        public static SUBJOBDashboardViewModelWrapper Create()
         {
-            return ViewModelSource.Create(() => new WORKPACKDashboardViewModelWrapper());
+            return ViewModelSource.Create(() => new SUBJOBDashboardViewModelWrapper());
         }
 
         /// <summary>
-        /// Initializes a new instance of the WORKPACKViewModel class.
-        /// This constructor is declared protected to avoid undesired instantiation of the WORKPACKViewModel type without the POCO proxy factory.
+        /// Initializes a new instance of the SUBJOBViewModel class.
+        /// This constructor is declared protected to avoid undesired instantiation of the SUBJOBViewModel type without the POCO proxy factory.
         /// </summary>
-        protected WORKPACKDashboardViewModelWrapper()
+        protected SUBJOBDashboardViewModelWrapper()
         {
 
         }
@@ -63,7 +63,7 @@ namespace BluePrints.ViewModels
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
@@ -77,16 +77,16 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == projectDashboard.Entity.GUID);
         }
 
-        protected override Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK_Dashboard>>
+        protected override Func<IRepositoryQuery<SUBJOB>, IQueryable<SUBJOB_Dashboard>>
             specifyMainViewModelProjection()
         {
-            return query => WORKPACK_DashboardQueries.Workpack_Dashboard_Summary(query, projectDashboard, SUBAREACollection);
+            return query => SUBJOB_DashboardQueries.Subjob_Dashboard_Summary(query, projectDashboard, SUBAREACollection);
         }
 
-        protected override bool OnMainViewModelLoaded(IEnumerable<WORKPACK_Dashboard> entities)
+        protected override bool OnMainViewModelLoaded(IEnumerable<SUBJOB_Dashboard> entities)
         {
             MainViewModel =
-                (CollectionViewModel<WORKPACK, WORKPACK_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>)
+                (CollectionViewModel<SUBJOB, SUBJOB_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>)
                 mainEntityLoaderDescription.GetViewModel();
             MainViewModel.SetParentViewModel(this);
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
@@ -108,7 +108,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "WORKPACKDashboardViewModelWrapper"; }
+            get { return "SUBJOBDashboardViewModelWrapper"; }
         }
 
         public IEnumerable<PHASE> PHASECollection

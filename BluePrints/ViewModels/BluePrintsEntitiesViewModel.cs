@@ -428,6 +428,9 @@ namespace BluePrints.ViewModels
             if (LoginCredentials.hasPermission(PermissionResources.ManageRate))
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectRates" + keyString, projectKey, childTitlePrefix + "Rates", "RATECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Rates"));
 
+            if (LoginCredentials.hasPermission(PermissionResources.ManageSubjob))
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectSubjobs" + keyString, projectKey, childTitlePrefix + "Subjobs", "SUBJOBCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Subjobs"));
+
             if (LoginCredentials.hasPermission(PermissionResources.ManageWorkpack))
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectWorkpacks" + keyString, projectKey, childTitlePrefix + "Workpacks", "WORKPACKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Workpacks"));
 

@@ -57,12 +57,12 @@
                 <Grid>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <custom:GridColumnEx Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA" FilterPopupMode="CheckedList" Tag="True;True;Autofill workpack">
+                            <custom:GridColumnEx Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA" FilterPopupMode="CheckedList" Tag="True;True;Autofill subjob">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colSUBAREA" FieldName="Entity.Entity.SubAreaGuid" Header="SUBAREA" FilterPopupMode="CheckedList" ColumnFilterMode="DisplayText" Tag="True;True;Autofill from workpack">
+                            <custom:GridColumnEx Name="colSUBAREA" FieldName="Entity.Entity.SubAreaGuid" Header="SUBAREA" FilterPopupMode="CheckedList" ColumnFilterMode="DisplayText" Tag="True;True;Autofill from subjob">
                                 <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit x:Name="PART_Editor" ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}" DisplayMember="INTERNAL_NUM" ValueMember="GUID" ValidateOnTextInput="True" ValidateOnEnterKeyPressed="True" IncrementalFiltering="True" NullValueButtonPlacement="Popup" ImmediatePopup="True"></dxe:ComboBoxEdit>
@@ -194,9 +194,14 @@
                                     <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colWORKPACKInternalName1" FieldName="Entity.Entity.GUID_WORKPACK" Header="WORKPACK" Visible="true" FilterPopupMode="CheckedList"  Tag="True;True;Autofill from area and sub-area">
+                            <custom:GridColumnEx Name="colSUBJOBInternalName1" FieldName="Entity.Entity.GUID_SUBJOB" Header="SUBJOB" Visible="true" FilterPopupMode="CheckedList"  Tag="True;True;Autofill from area and sub-area">
                                 <custom:GridColumnEx.EditSettings>
-                                    <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1" ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
+                                    <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1" ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
+                                </custom:GridColumnEx.EditSettings>
+                            </custom:GridColumnEx>
+                            <custom:GridColumnEx Name="colWORKPACK" FieldName="Entity.Entity.GUID_WORKPACK" Header="WORKPACK" Visible="true" FilterPopupMode="CheckedList"  Tag="True;True;Autofill from workpack, discipline and discipline number">
+                                <custom:GridColumnEx.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
                             <custom:GridColumnEx Name="colCREATED" FieldName="Entity.Entity.CREATED" Header="CREATED" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" />

@@ -148,7 +148,7 @@ namespace BluePrints.Common
     public enum BaselineMappingMode
     {
         Default,
-        ByWorkpack
+        BySubjob
     }
 
     public enum AppointmentActivityType

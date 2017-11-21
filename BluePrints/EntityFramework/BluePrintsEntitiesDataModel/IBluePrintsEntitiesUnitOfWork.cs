@@ -185,9 +185,9 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<VARIATION, Guid> VARIATIONS { get; }
 
         /// <summary>
-        /// The WORKPACK_ASSIGNMENTS entities repository.
+        /// The SUBJOB_ASSIGNMENTS entities repository.
         /// </summary>
-        IRepository<WORKPACK_ASSIGNMENT, Guid> WORKPACK_ASSIGNMENTS { get; }
+        IRepository<SUBJOB_ASSIGNMENT, Guid> SUBJOB_ASSIGNMENTS { get; }
 
         /// <summary>
         /// The BASELINE_ITEM_ASSIGNMENTS entities repository.
@@ -195,9 +195,9 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<P6_ASSIGNMENT, Guid> P6_ASSIGNMENTS { get; }
 
         /// <summary>
-        /// The WORKPACK entities repository.
+        /// The SUBJOB entities repository.
         /// </summary>
-        IRepository<WORKPACK, Guid> WORKPACKS { get; }
+        IRepository<SUBJOB, Guid> SUBJOBS { get; }
 
         /// <summary>
         /// The CLIENT entities repository.
@@ -238,5 +238,10 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// CLIENT_PROJECT entities repository.
         /// </summary>
         IRepository<CLIENT_PROJECT, Guid> CLIENT_PROJECTS { get; }
+
+        /// <summary>
+        /// The WORKPACK entities repository.
+        /// </summary>
+        IRepository<WORKPACK, Guid> WORKPACKS { get; }
     }
 }

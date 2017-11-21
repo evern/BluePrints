@@ -4,12 +4,12 @@ using System.Windows.Controls;
 
 namespace BluePrints.Views
 {
-    public partial class WORKPACKDashboardView : UserControl
+    public partial class SUBJOBDashboardView : UserControl
     {
-        public WORKPACKDashboardView()
+        public SUBJOBDashboardView()
         {
             InitializeComponent();
-            ((WORKPACKDashboardViewModelWrapper) DataContext).ChangeViewMemberFieldNames =
+            ((SUBJOBDashboardViewModelWrapper) DataContext).ChangeViewMemberFieldNames =
                 ChangeViewMemberFieldNames;
         }
 

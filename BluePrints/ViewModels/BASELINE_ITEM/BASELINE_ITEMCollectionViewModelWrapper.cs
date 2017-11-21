@@ -46,7 +46,7 @@ namespace BluePrints.ViewModels
         IEnumerable<TProgress> SelectedEntities { get; set; }
         //some functionality will edit existing live deliverables, so this has to be used to validate in context
         Func<IEnumerable<TProgress>> GetEditableAllEntitiesCallBack { get; set; }
-        void cleanUpEntitiesLoader();
+        void CleanUpEntitiesLoader();
 
         #region Undo-Redo
         Action<TProgress, string, object, object, EntityMessageType> InterfaceAddUndoRedoCallBack { get; set; }
@@ -187,6 +187,7 @@ namespace BluePrints.ViewModels
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, assign_baseline);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
@@ -239,10 +240,9 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID == loadBASELINE.GUID);
         }
 
-
-        private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        private Func<IRepositoryQuery<SUBJOB>, IQueryable<SUBJOB>> SUBJOBProjectionFunc()
         {
-            //not ready for this yet because some active projects are still using legacy workpack name
+            //not ready for this yet because some active projects are still using legacy subjob name
             //if (viewType == DeliverablesViewType.Direct)
             //    return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && (x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Design && x.PHASE.CHARGE_TYPE == ChargeType.Direct));
             //else if (viewType == DeliverablesViewType.Indirect)
@@ -250,6 +250,11 @@ namespace BluePrints.ViewModels
             //else
             //    return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && (x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Design));
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        {
+            return query => query.Where(x => x.SUBJOB.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
@@ -389,7 +394,9 @@ namespace BluePrints.ViewModels
                 entity.Phase_Guid = defaultPHASE.GUID;
             }
 
-            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, WORKPACKSCollectionViewModel, phaseType, chargeType);
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, phaseType, chargeType);
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(entity, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection);
+            
             //entity.Entity.Entity.GUID_ESTIMATION_DIRECT = loadESTIMATION_DIRECT.GUID;
             return true;
         }
@@ -677,17 +684,17 @@ namespace BluePrints.ViewModels
                 active_progress.Update();
             }
 
-            if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_WORKPACK))
+            if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_SUBJOB))
             {
-                var chosenWORKPACK = WORKPACKCollection.FirstOrDefault(entity => entity.GUID == (Guid)new_value);
-                if (chosenWORKPACK != null)
+                var chosenSUBJOB = SUBJOBCollection.FirstOrDefault(entity => entity.GUID == (Guid)new_value);
+                if (chosenSUBJOB != null)
                 {
-                    active_progress.Entity.Entity.GUID_AREA = chosenWORKPACK.GUID_DAREA;
+                    active_progress.Entity.Entity.GUID_AREA = chosenSUBJOB.GUID_DAREA;
                     //Area is required immediately for subarea selection
-                    active_progress.Entity.Entity.AREA = AREACollection.FirstOrDefault(x => x.GUID == chosenWORKPACK.GUID_DAREA);
-                    active_progress.Entity.Entity.GUID_SUBAREA = chosenWORKPACK.GUID_DSUBAREA;
-                    active_progress.Entity.Entity.GUID_PHASE = chosenWORKPACK.PHASE != null
-                        ? chosenWORKPACK.GUID_DPHASE
+                    active_progress.Entity.Entity.AREA = AREACollection.FirstOrDefault(x => x.GUID == chosenSUBJOB.GUID_DAREA);
+                    active_progress.Entity.Entity.GUID_SUBAREA = chosenSUBJOB.GUID_DSUBAREA;
+                    active_progress.Entity.Entity.GUID_PHASE = chosenSUBJOB.PHASE != null
+                        ? chosenSUBJOB.GUID_DPHASE
                         : null;
 
                     active_progress.Update();
@@ -991,6 +998,7 @@ namespace BluePrints.ViewModels
 
             var areaFieldName = localizeColumnFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA));
             var subAreaFieldName = localizeColumnFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().SubAreaGuid));
+            var subjobFieldName = localizeColumnFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_SUBJOB));
             var workpackFieldName = localizeColumnFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_WORKPACK));
             var internalNumberFieldName = localizeColumnFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().INTERNAL_NUM));
 
@@ -1003,7 +1011,7 @@ namespace BluePrints.ViewModels
 
             foreach (var entity in SelectedEntities)
             {
-                var entityWORKPACK = WORKPACKCollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_WORKPACK);
+                var entitySUBJOB = SUBJOBCollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_SUBJOB);
                 if (fieldName == internalNumberFieldName)
                 {
                     string internalNumber = generateInternalNumber(entity);
@@ -1012,68 +1020,99 @@ namespace BluePrints.ViewModels
                 }
                 else if (fieldName == areaFieldName || fieldName == subAreaFieldName)
                 {
-                    if (entityWORKPACK == null)
+                    if (entitySUBJOB == null)
                         continue;
 
                     if (fieldName == areaFieldName)
-                        setNestedValueWithUndo(entity, fieldName, entityWORKPACK.GUID_DAREA);
+                        setNestedValueWithUndo(entity, fieldName, entitySUBJOB.GUID_DAREA);
                     else if(fieldName == subAreaFieldName)
-                        setNestedValueWithUndo(entity, fieldName, entityWORKPACK.GUID_DSUBAREA);
+                        setNestedValueWithUndo(entity, fieldName, entitySUBJOB.GUID_DSUBAREA);
 
                     entitiesToSave.Add(entity);
                 }
-                else if (fieldName == workpackFieldName)
+                else if (fieldName == subjobFieldName)
                 {
-                    if (entity.Entity.Entity.GUID_AREA == Guid.Empty || entity.Entity.Entity.GUID_DISCIPLINE == Guid.Empty)
+                    if (entity.Entity.Entity.GUID_AREA == null || entity.Entity.Entity.GUID_DISCIPLINE == null)
                         continue;
 
                     Guid? phase_guid;
-                    string internalName = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber(
+                    string internalName = BluePrintsDataUtils.SUBJOB_Generate_InternalNumber(
                         entity.Entity.Entity.GUID_AREA, entity.Entity.Entity.GUID_SUBAREA, 
                         loadPROJECT, AREACollection, SUBAREACollection, out phase_guid, entity.Entity.Entity.GUID_PHASE, PHASECollection);
 
                     if (internalName == string.Empty)
                         return;
 
-                    var findWORKPACK =
-                        WORKPACKCollection.FirstOrDefault(
+                    var findSUBJOB =
+                        SUBJOBCollection.FirstOrDefault(
                             x =>
                                 x.INTERNAL_NAME1 == internalName);
 
-                    if (findWORKPACK == null)
+                    if (findSUBJOB == null)
                     {
-                        var newWORKPACK = new WORKPACK();
+                        var newSUBJOB = new SUBJOB();
 
                         List<AREA> sub_area_collection = SUBAREACollection.ToList();
                         AREA defaultSubArea = sub_area_collection.Count() == 0 ? null : sub_area_collection.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.Default_Sub_Area);
 
-                        newWORKPACK.GUID_PROJECT = loadPROJECT.GUID;
-                        newWORKPACK.GUID_DAREA = entity.Entity.Entity.GUID_AREA;
-                        newWORKPACK.GUID_DSUBAREA = entity.Entity.Entity.GUID_SUBAREA == null ? defaultSubArea != null ? defaultSubArea.GUID : (Guid?)null : entity.Entity.Entity.GUID_SUBAREA;
-                        newWORKPACK.GUID_DPHASE = entity.Entity.Entity.GUID_PHASE;
+                        newSUBJOB.GUID_PROJECT = loadPROJECT.GUID;
+                        newSUBJOB.GUID_DAREA = entity.Entity.Entity.GUID_AREA;
+                        newSUBJOB.GUID_DSUBAREA = entity.Entity.Entity.GUID_SUBAREA == null ? defaultSubArea != null ? defaultSubArea.GUID : (Guid?)null : entity.Entity.Entity.GUID_SUBAREA;
+                        newSUBJOB.GUID_DPHASE = entity.Entity.Entity.GUID_PHASE;
 
-                        newWORKPACK.INTERNAL_NAME1 = internalName; 
-                        newWORKPACK.STARTDATE = DateTime.Now;
-                        newWORKPACK.ENDDATE =
-                            BluePrintsDataUtils.WORKPACK_Calculate_EndDate((DateTime) newWORKPACK.STARTDATE, loadPROJECT);
-                        var reviewStartDate = (DateTime) newWORKPACK.STARTDATE;
-                        var reviewEndDate = (DateTime) newWORKPACK.ENDDATE;
-                        BluePrintsDataUtils.WORKPACK_Calculate_ReviewPeriod(ref reviewStartDate, ref reviewEndDate,
+                        newSUBJOB.INTERNAL_NAME1 = internalName; 
+                        newSUBJOB.STARTDATE = DateTime.Now;
+                        newSUBJOB.ENDDATE =
+                            BluePrintsDataUtils.SUBJOB_Calculate_EndDate((DateTime) newSUBJOB.STARTDATE, loadPROJECT);
+                        var reviewStartDate = (DateTime) newSUBJOB.STARTDATE;
+                        var reviewEndDate = (DateTime) newSUBJOB.ENDDATE;
+                        BluePrintsDataUtils.SUBJOB_Calculate_ReviewPeriod(ref reviewStartDate, ref reviewEndDate,
                             loadPROJECT, false);
-                        newWORKPACK.REVIEWSTARTDATE = reviewStartDate;
-                        newWORKPACK.REVIEWENDDATE = reviewEndDate;
-                        newWORKPACK.AUTOGENERATED = true;
-                        ((CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>)
-                            loaderCollection.GetViewModel<WORKPACK>()).Save(newWORKPACK);
+                        newSUBJOB.REVIEWSTARTDATE = reviewStartDate;
+                        newSUBJOB.REVIEWENDDATE = reviewEndDate;
+                        newSUBJOB.AUTOGENERATED = true;
+                        ((CollectionViewModel<SUBJOB, SUBJOB, Guid, IBluePrintsEntitiesUnitOfWork>)
+                            loaderCollection.GetViewModel<SUBJOB>()).Save(newSUBJOB);
 
-                        setNestedValueWithUndo(entity, fieldName, newWORKPACK.GUID);
+                        setNestedValueWithUndo(entity, fieldName, newSUBJOB.GUID);
                     }
                     else
                     {
-                        setNestedValueWithUndo(entity, fieldName, findWORKPACK.GUID);
+                        setNestedValueWithUndo(entity, fieldName, findSUBJOB.GUID);
                     }
 
                     entitiesToSave.Add(entity);
+                }
+                else if(fieldName == workpackFieldName)
+                {
+                    if (entity.Entity.Entity.GUID_SUBJOB == null|| entity.Entity.Entity.GUID_DISCIPLINE == null)
+                        continue;
+
+                    WORKPACK queryWORKPACK = WORKPACKCollection.FirstOrDefault(x => x.GUID_SUBJOB == entity.Entity.Entity.GUID_SUBJOB && x.GUID_DISCIPLINE == entity.Entity.Entity.GUID_DISCIPLINE && x.DISCIPLINE_NUM == entity.Entity.Entity.DISCIPLINE_NUM);
+                    if(queryWORKPACK != null)
+                    {
+                        setNestedValueWithUndo(entity, fieldName, queryWORKPACK.GUID);
+                        entitiesToSave.Add(entity);
+                    }
+                    else
+                    {
+                        WORKPACK newWORKPACK = new WORKPACK();
+                        newWORKPACK.GUID_SUBJOB = (Guid)entity.Entity.Entity.GUID_SUBJOB;
+                        newWORKPACK.GUID_DISCIPLINE = (Guid)entity.Entity.Entity.GUID_DISCIPLINE;
+                        newWORKPACK.DISCIPLINE_NUM = entity.Entity.Entity.DISCIPLINE_NUM;
+
+                        //have to populate associating entity so that workpack name can be generated
+                        SUBJOB subjob = SUBJOBCollection.FirstOrDefault(x => x.GUID == newWORKPACK.GUID_SUBJOB);
+                        DISCIPLINE discipline = DISCIPLINECollection.FirstOrDefault(x => x.GUID == newWORKPACK.GUID_DISCIPLINE);
+                        newWORKPACK.SUBJOB = subjob;
+                        newWORKPACK.DISCIPLINE = discipline;
+                        BluePrintsDataUtils.WORKPACK_Populate_Name(newWORKPACK, SUBJOBCollection, DISCIPLINECollection);
+                        ((CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>)
+                        loaderCollection.GetViewModel<WORKPACK>()).Save(newWORKPACK);
+
+                        setNestedValueWithUndo(entity, fieldName, newWORKPACK.GUID);
+                        entitiesToSave.Add(entity);
+                    }
                 }
             }
 
@@ -1266,13 +1305,24 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<SUBJOB> SUBJOBCollection
+        {
+            get
+            {
+                var collection = GetEntities<SUBJOB>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NAME1);
+                return collection;
+            }
+        }
+
         public IEnumerable<WORKPACK> WORKPACKCollection
         {
             get
             {
                 var collection = GetEntities<WORKPACK>();
                 if (collection != null)
-                    collection = collection.OrderBy(x => x.INTERNAL_NAME1);
+                    collection = collection.OrderBy(x => x.NAME);
                 return collection;
             }
         }
@@ -1367,6 +1417,17 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.CODE);
                 return collection;
+            }
+        }
+
+        public CollectionViewModel<SUBJOB, SUBJOB, Guid, IBluePrintsEntitiesUnitOfWork> SUBJOBSCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<SUBJOB, SUBJOB, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<SUBJOB>();
             }
         }
 

@@ -42,10 +42,10 @@
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical" Height="500" dxlc:LayoutControl.AllowVerticalSizing="True">
                         <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlMultiProjectDashboard" dx:DXSerializer.StoreLayoutMode="All" BandsSource="{StaticResource DashboardBands}" Style="{StaticResource DefaultGridControlTemplate}" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}" IsFilterEnabled="False">
                             <dxg:GridControl.DetailDescriptor>
-                                <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Workpack_TreeDashboards}">
-                                    <dxg:GridControl x:Name="detailWorkpackDashboardGridControl" dx:DXSerializer.SerializationID="GridControlDetailWorkpackDashboard" BandsSource="{StaticResource DashboardChildBands}" SelectionMode="Row" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}">
+                                <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Subjob_TreeDashboards}">
+                                    <dxg:GridControl x:Name="detailSubjobDashboardGridControl" dx:DXSerializer.SerializationID="GridControlDetailSubjobDashboard" BandsSource="{StaticResource DashboardChildBands}" SelectionMode="Row" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}">
                                         <dxg:GridControl.View>
-                                            <dxg:TableView x:Name="detailWorkpackDashboardTableView" RowStyle="{StaticResource WBSBackgroundStyle}" AllowEditing="False" ShowGroupPanel="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHave_ChildDashboard}" />
+                                            <dxg:TableView x:Name="detailSubjobDashboardTableView" RowStyle="{StaticResource WBSBackgroundStyle}" AllowEditing="False" ShowGroupPanel="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHave_ChildDashboard}" />
                                         </dxg:GridControl.View>
                                         <dxg:GridControl.DetailDescriptor>
                                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Child_Dashboards}">
@@ -78,7 +78,7 @@
                                 </dxg:DataControlDetailDescriptor>
                             </dxg:GridControl.DetailDescriptor>
                             <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" AllowEditing="False" UseLightweightTemplates="{x:Null}" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}" IsDetailButtonVisibleBinding="{Binding Row.IHaveWorkpack_Dashboards}" NewItemRowPosition="None" ShowGroupPanel="False" />
+                                <dxg:TableView x:Name="tableView" AllowEditing="False" UseLightweightTemplates="{x:Null}" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}" IsDetailButtonVisibleBinding="{Binding Row.IHaveSubjob_Dashboards}" NewItemRowPosition="None" ShowGroupPanel="False" />
                             </dxg:GridControl.View>
                             <dxg:GridControl.TotalSummary>
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryBudgeted" ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />

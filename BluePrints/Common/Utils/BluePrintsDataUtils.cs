@@ -16,28 +16,28 @@ namespace BluePrints.Common.ViewModel.Utils
     public static class BluePrintsDataUtils
     {
         /// <summary>
-        /// Assign workpack to deliverables or estimation direct item before saving
-        /// Optional parameter of phase type or charge type, otherwise use deliverables phase guid to generate workpack name
+        /// Assign subjob to deliverables or estimation direct item before saving
+        /// Optional parameter of phase type or charge type, otherwise use deliverables phase guid to generate subjob name
         /// </summary>
         /// <param name="entity"></param>
-        public static void OnBeforeSavedGenerateAndAssignWorkpack(PROJECT loadPROJECT, IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<AREA> SUBAREACollection, IDeliverable entity, CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACKCollectionViewModel, PhaseType? PhaseType = null, ChargeType? ChargeType = null, bool isProcurementWorkpack = false)
+        public static void OnBeforeSavedGenerateAndAssignSubjob(PROJECT loadPROJECT, IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<AREA> SUBAREACollection, IDeliverable entity, CollectionViewModel<SUBJOB, SUBJOB, Guid, IBluePrintsEntitiesUnitOfWork> SUBJOBCollectionViewModel, PhaseType? PhaseType = null, ChargeType? ChargeType = null, bool isProcurementSubjob = false)
         {
-            //provision for when workpack is manually assigned or using legacy workpack
-            if (entity.Workpack_Guid != null)
+            //provision for when subjob is manually assigned or using legacy subjob
+            if (entity.Subjob_Guid != null)
                 return;
 
-            IEnumerable<WORKPACK> WORKPACKCollection = WORKPACKCollectionViewModel.Entities;
+            IEnumerable<SUBJOB> SUBJOBCollection = SUBJOBCollectionViewModel.Entities;
             Guid? existingOrNewPhaseGuid;
-            IHaveProcurementWorkpack iHaveProcurementWorkpackEntity = entity as IHaveProcurementWorkpack;
-            bool assignToProcurementWorkpack = (isProcurementWorkpack && iHaveProcurementWorkpackEntity != null);
+            IHaveProcurementSubjob iHaveProcurementSubjobEntity = entity as IHaveProcurementSubjob;
+            bool assignToProcurementSubjob = (isProcurementSubjob && iHaveProcurementSubjobEntity != null);
 
-            string internalNumber = BluePrintsDataUtils.WORKPACK_Generate_InternalNumber(entity.Area_Guid, entity.SubArea_Guid, loadPROJECT, AREACollection, SUBAREACollection, out existingOrNewPhaseGuid, entity.Phase_Guid, PHASECollection, PhaseType, ChargeType);
+            string internalNumber = BluePrintsDataUtils.SUBJOB_Generate_InternalNumber(entity.Area_Guid, entity.SubArea_Guid, loadPROJECT, AREACollection, SUBAREACollection, out existingOrNewPhaseGuid, entity.Phase_Guid, PHASECollection, PhaseType, ChargeType);
             if (internalNumber != string.Empty)
             {
-                WORKPACK existingWORKPACK = WORKPACKCollection.FirstOrDefault(x => x.INTERNAL_NAME1 == internalNumber);
-                if (existingWORKPACK == null)
+                SUBJOB existingSUBJOB = SUBJOBCollection.FirstOrDefault(x => x.INTERNAL_NAME1 == internalNumber);
+                if (existingSUBJOB == null)
                 {
-                    var newWORKPACK = new WORKPACK();
+                    var newSUBJOB = new SUBJOB();
 
                     List<AREA> sub_area_collection = new List<AREA>();
                     AREA defaultSubArea = null;
@@ -46,54 +46,82 @@ namespace BluePrints.Common.ViewModel.Utils
                         defaultSubArea = sub_area_collection.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.Default_Sub_Area);
                     }
 
-                    newWORKPACK.GUID_PROJECT = loadPROJECT.GUID;
-                    newWORKPACK.GUID_DAREA = entity.Area_Guid;
-                    newWORKPACK.GUID_DSUBAREA = entity.SubArea_Guid == null ? defaultSubArea != null ? defaultSubArea.GUID : (Guid?)null : entity.SubArea_Guid;
-                    newWORKPACK.GUID_DPHASE = existingOrNewPhaseGuid;
-                    newWORKPACK.INTERNAL_NAME1 = internalNumber;
-                    newWORKPACK.STARTDATE = DateTime.Now;
-                    newWORKPACK.ENDDATE =
-                        BluePrintsDataUtils.WORKPACK_Calculate_EndDate((DateTime)newWORKPACK.STARTDATE, loadPROJECT);
-                    var reviewStartDate = (DateTime)newWORKPACK.STARTDATE;
-                    var reviewEndDate = (DateTime)newWORKPACK.ENDDATE;
-                    BluePrintsDataUtils.WORKPACK_Calculate_ReviewPeriod(ref reviewStartDate, ref reviewEndDate,
+                    newSUBJOB.GUID_PROJECT = loadPROJECT.GUID;
+                    newSUBJOB.GUID_DAREA = entity.Area_Guid;
+                    newSUBJOB.GUID_DSUBAREA = entity.SubArea_Guid == null ? defaultSubArea != null ? defaultSubArea.GUID : (Guid?)null : entity.SubArea_Guid;
+                    newSUBJOB.GUID_DPHASE = existingOrNewPhaseGuid;
+                    newSUBJOB.INTERNAL_NAME1 = internalNumber;
+                    newSUBJOB.STARTDATE = DateTime.Now;
+                    newSUBJOB.ENDDATE =
+                        BluePrintsDataUtils.SUBJOB_Calculate_EndDate((DateTime)newSUBJOB.STARTDATE, loadPROJECT);
+                    var reviewStartDate = (DateTime)newSUBJOB.STARTDATE;
+                    var reviewEndDate = (DateTime)newSUBJOB.ENDDATE;
+                    BluePrintsDataUtils.SUBJOB_Calculate_ReviewPeriod(ref reviewStartDate, ref reviewEndDate,
                         loadPROJECT, false);
-                    newWORKPACK.REVIEWSTARTDATE = reviewStartDate;
-                    newWORKPACK.REVIEWENDDATE = reviewEndDate;
-                    newWORKPACK.AUTOGENERATED = true;
-                    WORKPACKCollectionViewModel.Save(newWORKPACK);
+                    newSUBJOB.REVIEWSTARTDATE = reviewStartDate;
+                    newSUBJOB.REVIEWENDDATE = reviewEndDate;
+                    newSUBJOB.AUTOGENERATED = true;
+                    SUBJOBCollectionViewModel.Save(newSUBJOB);
 
-                    if (assignToProcurementWorkpack)
-                        iHaveProcurementWorkpackEntity.Procurement_Workpack_Guid = newWORKPACK.GUID;
+                    if (assignToProcurementSubjob)
+                        iHaveProcurementSubjobEntity.Procurement_Subjob_Guid = newSUBJOB.GUID;
                     else
                     {
-                        entity.Workpack_Guid = newWORKPACK.GUID;
+                        entity.Subjob_Guid = newSUBJOB.GUID;
                         entity.Phase_Guid = existingOrNewPhaseGuid;
                     }
                 }
                 else
                 {
-                    if (assignToProcurementWorkpack)
-                        iHaveProcurementWorkpackEntity.Procurement_Workpack_Guid = existingWORKPACK.GUID;
+                    if (assignToProcurementSubjob)
+                        iHaveProcurementSubjobEntity.Procurement_Subjob_Guid = existingSUBJOB.GUID;
                     else
                     {
                         entity.Phase_Guid = existingOrNewPhaseGuid;
-                        entity.Workpack_Guid = existingWORKPACK.GUID;
+                        entity.Subjob_Guid = existingSUBJOB.GUID;
                     }
                 }
             }
             else
             {
-                entity.Workpack_Guid = null;
-                if (assignToProcurementWorkpack)
-                    iHaveProcurementWorkpackEntity.Procurement_Workpack_Guid = null;
+                entity.Subjob_Guid = null;
+                if (assignToProcurementSubjob)
+                    iHaveProcurementSubjobEntity.Procurement_Subjob_Guid = null;
             }
         }
 
         /// <summary>
-        /// Calculates workpack end date using project settings and start date
+        /// Assign workpack to deliverables or estimation direct item before saving
+        /// Optional parameter of phase type or charge type, otherwise use deliverables phase guid to generate workpack name
         /// </summary>
-        public static DateTime WORKPACK_Calculate_EndDate(DateTime startDate, PROJECT fromPROJECT)
+        /// <param name="entity"></param>
+        public static void OnBeforeSavedGenerateAndAssignWorkpack(IDeliverable entity, CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACKCollectionViewModel, IEnumerable<SUBJOB> SUBJOBCollection, IEnumerable<DISCIPLINE> DISCIPLINECollection)
+        {
+            //provision for when workpack is manually assigned or using legacy workpack
+            if (entity.Subjob_Guid == null || entity.Discipline_Guid == null)
+                return;
+
+            WORKPACK existingWORKPACK = WORKPACKCollectionViewModel.Entities.FirstOrDefault(x => x.GUID_SUBJOB == entity.Subjob_Guid && x.GUID_DISCIPLINE == entity.Discipline_Guid && x.DISCIPLINE_NUM == entity.Discipline_Number);
+            if (existingWORKPACK == null)
+            {
+                WORKPACK newWORKPACK = new WORKPACK();
+                newWORKPACK.GUID_SUBJOB = (Guid)entity.Subjob_Guid;
+                newWORKPACK.GUID_DISCIPLINE = (Guid)entity.Discipline_Guid;
+                newWORKPACK.DISCIPLINE_NUM = entity.Discipline_Number;
+                BluePrintsDataUtils.WORKPACK_Populate_Name(newWORKPACK, SUBJOBCollection, DISCIPLINECollection);
+                WORKPACKCollectionViewModel.Save(newWORKPACK);
+                entity.Workpack_Guid = newWORKPACK.GUID;
+            }
+            else
+            {
+                entity.Workpack_Guid = existingWORKPACK.GUID;
+            }
+        }
+
+        /// <summary>
+        /// Calculates subjob end date using project settings and start date
+        /// </summary>
+        public static DateTime SUBJOB_Calculate_EndDate(DateTime startDate, PROJECT fromPROJECT)
         {
             var periodPercentage = 1 - Convert.ToDouble(fromPROJECT.REVIEWPERCENTAGE);
             var periodMultiplier = 1 / periodPercentage;
@@ -105,9 +133,9 @@ namespace BluePrints.Common.ViewModel.Utils
         }
 
         /// <summary>
-        /// Calculates workpack start date using project settings and end date
+        /// Calculates subjob start date using project settings and end date
         /// </summary>
-        public static DateTime WORKPACK_Calculate_StartDate(DateTime endDate, PROJECT fromPROJECT)
+        public static DateTime SUBJOB_Calculate_StartDate(DateTime endDate, PROJECT fromPROJECT)
         {
             var periodPercentage = 1 - Convert.ToDouble(fromPROJECT.REVIEWPERCENTAGE);
             var periodMultiplier = 1 / periodPercentage;
@@ -151,7 +179,7 @@ namespace BluePrints.Common.ViewModel.Utils
         /// Calculate the review start date or end date
         /// </summary>
         /// <param name="getEndDate">whether to get end date else return start date</param>
-        public static void WORKPACK_Calculate_ReviewPeriod(ref DateTime StartDate, ref DateTime EndDate,
+        public static void SUBJOB_Calculate_ReviewPeriod(ref DateTime StartDate, ref DateTime EndDate,
             PROJECT fromPROJECT, bool getEndDate)
         {
             var timeDifference = EndDate.Date.Subtract(StartDate.Date);
@@ -322,11 +350,23 @@ namespace BluePrints.Common.ViewModel.Utils
                 return string.Empty;
         }
 
+        public static void WORKPACK_Populate_Name(WORKPACK workpack, IEnumerable<SUBJOB> SUBJOBCollection, IEnumerable<DISCIPLINE> DISCIPLINECollection)
+        {
+            SUBJOB querySUBJOB = SUBJOBCollection.FirstOrDefault(x => x.GUID == workpack.GUID_SUBJOB);
+            DISCIPLINE queryDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == workpack.GUID_DISCIPLINE);
+
+            if(querySUBJOB != null && queryDISCIPLINE != null)
+            {
+                string discipline_number = workpack.DISCIPLINE_NUM > 9 ? "0" + workpack.DISCIPLINE_NUM.ToString("0") : "00" + workpack.DISCIPLINE_NUM.ToString("0");
+                workpack.NAME = querySUBJOB.INTERNAL_NAME1 + "-" + queryDISCIPLINE.CODE + discipline_number;
+            }
+        }
+
         /// <summary>
         /// Generate internal number2 when all required fields are populated
         /// Phase type and charge type option will precede the condition of checking by entity phase guid
         /// </summary>
-        public static string WORKPACK_Generate_InternalNumber(Guid? entityAreaGuid, Guid? entitySubAreaGuid, PROJECT PROJECT, IEnumerable<AREA> AREACollection, IEnumerable<AREA> SUBAREACollection, out Guid? phase_guid, Guid? assignedPHASEKey = null, IEnumerable<PHASE> PHASECollection = null, PhaseType? PhaseType = null, ChargeType? ChargeType = null)
+        public static string SUBJOB_Generate_InternalNumber(Guid? entityAreaGuid, Guid? entitySubAreaGuid, PROJECT PROJECT, IEnumerable<AREA> AREACollection, IEnumerable<AREA> SUBAREACollection, out Guid? phase_guid, Guid? assignedPHASEKey = null, IEnumerable<PHASE> PHASECollection = null, PhaseType? PhaseType = null, ChargeType? ChargeType = null)
         {
             phase_guid = null;
             if (entityAreaGuid == Guid.Empty)

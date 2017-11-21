@@ -6,7 +6,7 @@ namespace BluePrints.Data
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class WORKPACK_ASSIGNMENT : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class SUBJOB_ASSIGNMENT : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

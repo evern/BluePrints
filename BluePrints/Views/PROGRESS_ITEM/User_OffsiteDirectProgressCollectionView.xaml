@@ -79,12 +79,12 @@
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Bands>
                             <dxg:GridControlBand Name="bandGeneral" Header="General">
-                                <dxg:GridColumn Name="columnWorkpack"
-                                                FieldName="Entity.Entity.GUID_WORKPACK"
-                                                Header="WORKPACK" ReadOnly="True">
+                                <dxg:GridColumn Name="columnSubjob"
+                                                FieldName="Entity.Entity.GUID_SUBJOB"
+                                                Header="SUBJOB" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings
-                                            ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}"
+                                            ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}"
                                             IsTextEditable="False"
                                             DisplayMember="INTERNAL_NAME1"
                                             ValueMember="GUID" />

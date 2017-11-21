@@ -157,7 +157,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class ESTIMATION_DIRECT_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATION_DIRECT_ITEMProjection>, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementWorkpack
+    public class ESTIMATION_DIRECT_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATION_DIRECT_ITEMProjection>, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementSubjob
     {
         public ESTIMATION_DIRECT_ITEMProgress()
         {
@@ -180,7 +180,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal DC_Value { get => Entity.DC_Value; set => Entity.DC_Value = value; }
 
-        public Guid? Procurement_Workpack_Guid { get => Entity.Procurement_Workpack_Guid; set => Entity.Procurement_Workpack_Guid = value; }
+        public Guid? Procurement_Subjob_Guid { get => Entity.Procurement_Subjob_Guid; set => Entity.Procurement_Subjob_Guid = value; }
     }
 
     [BulkEditDisabledAttributes("DeliverableStatusProgressGuid, DeliverableStatusGuid")]
@@ -790,7 +790,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public string Deliverable_Name => Entity.Deliverable_Name;
 
-        public Guid? Workpack_Guid => Entity.Workpack_Guid;
+        public Guid? Subjob_Guid => Entity.Subjob_Guid;
 
         public Guid OriginalEntityKey => Entity.OriginalEntityKey;
 
@@ -896,7 +896,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal MinEstimateUnits => Earned_Units_Total - Variation_Units < 0 ? 0 : Earned_Units_Total - Variation_Units;
 
-        public string Workpack_Name => Entity.Workpack_Name;
+        public string Subjob_Name => Entity.Subjob_Name;
 
         public string Department_Code => Entity.Department_Code;
 
@@ -906,8 +906,14 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid? Phase_Guid { get => Entity.Phase_Guid; set => Entity.Phase_Guid = value; }
 
-        Guid? IDeliverable.Workpack_Guid { get => Entity.Workpack_Guid; set => Entity.Workpack_Guid = value; }
+        Guid? IDeliverable.Subjob_Guid { get => Entity.Subjob_Guid; set => Entity.Subjob_Guid = value; }
 
         public string P6AssignmentName => Entity.Deliverable_Name;
+
+        public Guid? Discipline_Guid => Entity.Discipline_Guid;
+
+        public decimal Discipline_Number => Entity.Discipline_Number;
+
+        public Guid? Workpack_Guid { get => Entity.Workpack_Guid; set => Entity.Workpack_Guid = value; }
     }
 }

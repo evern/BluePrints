@@ -55,7 +55,7 @@
                         <custom:GridControlEx x:Name="GridControlExcelExport" Grid.Row="0" dx:DXSerializer.Enabled="False" Visibility="Collapsed" ItemsSource="{Binding DataContext.ExcelExportData, ElementName=userControl}">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn FieldName="Type" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="Workpack_Name" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Subjob_Name" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Department_Name" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Discipline_Name" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Commodity_Code" ReadOnly="True" />
@@ -74,10 +74,10 @@
                         <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" dxlc:LayoutControl.AllowVerticalSizing="True" Orientation="Vertical" Height="300">
                             <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSingleProjectDashboard" BandsSource="{StaticResource DashboardBands}" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}" Style="{StaticResource DefaultGridControlTemplate}" IsFilterEnabled="False">
                                 <dxg:GridControl.DetailDescriptor>
-                                    <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Workpack_Dashboards}">
-                                        <dxg:GridControl x:Name="detailWorkpackDashboardGridControl" dx:DXSerializer.SerializationID="GridControlDetailWorkpackDashboard" BandsSource="{StaticResource DashboardChildBands}" SelectionMode="Row" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}">
+                                    <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Subjob_Dashboards}">
+                                        <dxg:GridControl x:Name="detailSubjobDashboardGridControl" dx:DXSerializer.SerializationID="GridControlDetailSubjobDashboard" BandsSource="{StaticResource DashboardChildBands}" SelectionMode="Row" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}">
                                             <dxg:GridControl.View>
-                                                <dxg:TableView x:Name="detailWorkpackDashboardTableView" RowStyle="{StaticResource WBSBackgroundStyle}" AllowEditing="False" ShowGroupPanel="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHave_ChildDashboard}" />
+                                                <dxg:TableView x:Name="detailSubjobDashboardTableView" RowStyle="{StaticResource WBSBackgroundStyle}" AllowEditing="False" ShowGroupPanel="False" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHave_ChildDashboard}" />
                                             </dxg:GridControl.View>
                                             <dxg:GridControl.DetailDescriptor>
                                                 <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Child_Dashboards}">
@@ -110,7 +110,7 @@
                                     </dxg:DataControlDetailDescriptor>
                                 </dxg:GridControl.DetailDescriptor>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView AllowEditing="False" UseLightweightTemplates="{x:Null}" ShowGroupFooters="False" ShowTotalSummary="False" Style="{StaticResource DefaultTableViewTemplate}" ShowSearchPanelMode="Never" IsDetailButtonVisibleBinding="{Binding Row.IHaveWorkpack_Dashboards}" NewItemRowPosition="None" ShowGroupPanel="False" AllowColumnFiltering="False" AllowGrouping="False" AllowColumnMoving="True" AllowFilterEditor="False" AllowSorting="False" ShowAutoFilterRow="False" ShowGroupedColumns="False" ShowCriteriaInAutoFilterRow="False" />
+                                    <dxg:TableView AllowEditing="False" UseLightweightTemplates="{x:Null}" ShowGroupFooters="False" ShowTotalSummary="False" Style="{StaticResource DefaultTableViewTemplate}" ShowSearchPanelMode="Never" IsDetailButtonVisibleBinding="{Binding Row.IHaveSubjob_Dashboards}" NewItemRowPosition="None" ShowGroupPanel="False" AllowColumnFiltering="False" AllowGrouping="False" AllowColumnMoving="True" AllowFilterEditor="False" AllowSorting="False" ShowAutoFilterRow="False" ShowGroupedColumns="False" ShowCriteriaInAutoFilterRow="False" />
                                 </dxg:GridControl.View>
                             </custom:GridControlEx>
                         </dxlc:LayoutGroup>

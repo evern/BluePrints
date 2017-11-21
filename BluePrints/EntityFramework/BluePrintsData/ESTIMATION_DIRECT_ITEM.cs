@@ -14,9 +14,9 @@ namespace BluePrints.Data
 
         public Guid GUID_ORIGINAL { get; set; }
 
-        public Guid? GUID_PWORKPACK { get; set; }
+        public Guid? GUID_PSUBJOB { get; set; }
 
-        public Guid? GUID_WORKPACK { get; set; }
+        public Guid? GUID_SUBJOB { get; set; }
 
         public Guid? GUID_ESTIMATION_DIRECT { get; set; }
 
@@ -91,8 +91,8 @@ namespace BluePrints.Data
 
         public virtual VARIATION VARIATION { get; set; }
 
-        public virtual WORKPACK WORKPACK { get; set; }
+        public virtual SUBJOB SUBJOB { get; set; }
 
-        public virtual WORKPACK WORKPACK1 { get; set; }
+        public virtual SUBJOB SUBJOB1 { get; set; }
     }
 }

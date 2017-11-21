@@ -81,7 +81,7 @@
                         <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlUserDashboard" dx:DXSerializer.StoreLayoutMode="All" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}" Style="{StaticResource DefaultGridControlTemplate}" IsFilterEnabled="False">
                             <dxg:GridControl.Bands>
                                 <dxg:GridControlBand Name="bandGeneral" Header="General">
-                                    <dxg:GridColumn Name="columnWorkpack" FieldName="Entity.Entity.WORKPACK.INTERNAL_NAME1" Header="WORKPACK" ReadOnly="True" />
+                                    <dxg:GridColumn Name="columnSubjob" FieldName="Entity.Entity.SUBJOB.INTERNAL_NAME1" Header="SUBJOB" ReadOnly="True" />
                                     <dxg:GridColumn Name="colAREA" FieldName="Entity.Entity.AREA.INTERNAL_NUM" Header="AREA" ReadOnly="True" />
                                     <dxg:GridColumn Name="colSUBAREA" FieldName="Entity.Entity.AREA1.INTERNAL_NUM" Header="SUBAREA" ColumnFilterMode="DisplayText" ReadOnly="True" />
                                     <dxg:GridColumn Name="colDOCTYPE" FieldName="Entity.Entity.DOCTYPE.NAME" Header="DOCTYPE" ReadOnly="True" />
@@ -128,7 +128,7 @@
                                 </dxg:GridControlBand>
                             </dxg:GridControl.Bands>
                             <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" AllowEditing="False" UseLightweightTemplates="{x:Null}" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}" IsDetailButtonVisibleBinding="{Binding Row.IHaveWorkpack_Dashboards}" NewItemRowPosition="None" ShowGroupPanel="False" />
+                                <dxg:TableView x:Name="tableView" AllowEditing="False" UseLightweightTemplates="{x:Null}" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}" IsDetailButtonVisibleBinding="{Binding Row.IHaveSubjob_Dashboards}" NewItemRowPosition="None" ShowGroupPanel="False" />
                             </dxg:GridControl.View>
                             <dxg:GridControl.TotalSummary>
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" x:Name="totalSummaryBudgeted" ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum" DisplayFormat="{}{0:n}" />

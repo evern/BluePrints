@@ -55,7 +55,7 @@ namespace BluePrints.Common.Base
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.TASKPRED, P6TASKPREDProjectionFunc);
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJWBS, PROJWBSProjectionFunc);
 
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
@@ -101,7 +101,7 @@ namespace BluePrints.Common.Base
             return query => query.Where(x => x.proj_short_name == projectName);
         }
 
-        private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        private Func<IRepositoryQuery<SUBJOB>, IQueryable<SUBJOB>> SUBJOBProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
@@ -174,7 +174,7 @@ namespace BluePrints.Common.Base
                 p6_baseline_entity = (IHaveP6Baselines)obj[0];
 
             mappingType = (BaselineMappingSelectionType)obj[1];
-            mappingMode = ((Data.PROJECT)obj[2]).P6WORKPACKASSIGN ? BaselineMappingMode.ByWorkpack : BaselineMappingMode.Default;
+            mappingMode = ((Data.PROJECT)obj[2]).USE_WORKPACKS ? BaselineMappingMode.BySubjob : BaselineMappingMode.Default;
             Selected_Deliverables = new ObservableCollection<ICanAssignP6>();
             Selected_P6_Assignments = new ObservableCollection<P6_ASSIGNMENTProjection>();
             Selected_Deliverables.CollectionChanged += Selected_Deliverables_CollectionChanged;
@@ -279,7 +279,7 @@ namespace BluePrints.Common.Base
                 return;
 
             IEnumerable<ICanAssignP6> calculateSource;
-            if (mappingMode == BaselineMappingMode.ByWorkpack)
+            if (mappingMode == BaselineMappingMode.BySubjob)
                 calculateSource = Deliverables_Source.SelectMany(x => ((ICanAssignP6Group)x).Deliverables);
             else
                 calculateSource = Deliverables_Source;
@@ -559,7 +559,7 @@ namespace BluePrints.Common.Base
             ICanAssignP6Group assignGroup = Selected_Deliverable as ICanAssignP6Group;
 
             IEnumerable<ICanAssignP6> active_deliverables;
-            if (mappingMode == BaselineMappingMode.ByWorkpack)
+            if (mappingMode == BaselineMappingMode.BySubjob)
                 active_deliverables = Selected_Deliverables.SelectMany(x => ((ICanAssignP6Group)x).Deliverables);
             else
                 active_deliverables = Selected_Deliverables;
@@ -669,7 +669,7 @@ namespace BluePrints.Common.Base
             ICanAssignP6 context_deliverable;
 
             IEnumerable<ICanAssignP6> targetDeliverables;
-            if (mappingMode == BaselineMappingMode.ByWorkpack)
+            if (mappingMode == BaselineMappingMode.BySubjob)
             {
                 targetDeliverables = Selected_Deliverables.SelectMany(x => ((ICanAssignP6Group)x).Deliverables);
                 context_deliverable = Deliverables_Source.SelectMany(x => ((ICanAssignP6Group)x).Deliverables).First(x => x.OriginalEntityKey == selected_p6_assignment.Deliverable_OriginalEntityKey);
@@ -1095,11 +1095,11 @@ namespace BluePrints.Common.Base
             }
         }
 
-        public IEnumerable<WORKPACK> WORKPACKCollection
+        public IEnumerable<SUBJOB> SUBJOBCollection
         {
             get
             {
-                var collection = GetEntities<WORKPACK>();
+                var collection = GetEntities<SUBJOB>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.INTERNAL_NAME1);
                 return collection;

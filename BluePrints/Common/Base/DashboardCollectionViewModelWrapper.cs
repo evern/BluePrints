@@ -224,7 +224,7 @@ namespace BluePrints.Common.ViewModel
                 return false;
 
             ProjectSummaryStats projectSummary = DisplaySelectedEntity.Stats as ProjectSummaryStats;
-            if (projectSummary == null || projectSummary.ExoMissingWORKPACKS == null || projectSummary.ExoMissingWORKPACKS.Count == 0)
+            if (projectSummary == null || projectSummary.ExoMissingSUBJOBS == null || projectSummary.ExoMissingSUBJOBS.Count == 0)
                 return false;
 
             return true;
@@ -233,10 +233,10 @@ namespace BluePrints.Common.ViewModel
         public void ShowExoErrors()
         {
             ProjectSummaryStats projectSummary = DisplaySelectedEntity.Stats as ProjectSummaryStats;
-            if (projectSummary == null || projectSummary.ExoMissingWORKPACKS == null || projectSummary.ExoMissingWORKPACKS.Count == 0)
+            if (projectSummary == null || projectSummary.ExoMissingSUBJOBS == null || projectSummary.ExoMissingSUBJOBS.Count == 0)
                 return;
 
-            DialogCollectionViewModel<WORKPACK> viewModel = DialogCollectionViewModel<WORKPACK>.Create(projectSummary.ExoMissingWORKPACKS);
+            DialogCollectionViewModel<SUBJOB> viewModel = DialogCollectionViewModel<SUBJOB>.Create(projectSummary.ExoMissingSUBJOBS);
             IssuesDialogService.ShowDialog(MessageButton.OK, "Exo Affinity Report", "ExoAffinityReport", viewModel);
         }
 
@@ -424,7 +424,7 @@ namespace BluePrints.Common.ViewModel
                 summaryDecimalString = "{0:c2}";
 
             gridControlService.ClearSummary();
-            gridControlService.AddSummary("WorkpackCode", SummaryItemType.Count, "Total {0} Records");
+            gridControlService.AddSummary("SubjobCode", SummaryItemType.Count, "Total {0} Records");
             gridControlService.AddSummary(stats_switch.Cumulative_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
             gridControlService.AddSummary(stats_switch.Cumulative_Planned_Units, SummaryItemType.Sum, summaryDecimalString);
             gridControlService.AddSummary(stats_switch.Cumulative_Earned_Units, SummaryItemType.Sum, summaryDecimalString);

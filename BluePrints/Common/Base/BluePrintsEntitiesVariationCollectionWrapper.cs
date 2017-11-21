@@ -543,10 +543,10 @@ namespace BluePrints.Common.Base
             }
         }
 
-        public override void cleanUpEntitiesLoader()
+        public override void CleanUpEntitiesLoader()
         {
-            collectionViewModelWrapper.cleanUpEntitiesLoader();
-            base.cleanUpEntitiesLoader();
+            collectionViewModelWrapper.CleanUpEntitiesLoader();
+            base.CleanUpEntitiesLoader();
         }
         #endregion
     }

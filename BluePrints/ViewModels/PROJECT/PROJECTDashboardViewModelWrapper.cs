@@ -189,7 +189,7 @@ namespace BluePrints.ViewModels
 
             project.BuildStats(false);
             project.RecalculateStats(false);
-            project.Workpack_TreeDashboards = DashboardHelpers.ProjectDashboardHierarchicalBuilder((ProjectSummaryStats)project.Stats);
+            project.Subjob_TreeDashboards = DashboardHelpers.ProjectDashboardHierarchicalBuilder((ProjectSummaryStats)project.Stats);
             project.Update();
 
             if (((BackgroundWorker)sender).CancellationPending)
@@ -295,10 +295,10 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString() + "WorkpackDashboardView",
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString() + "SubjobDashboardView",
                 DisplaySelectedEntity,
-                "WORKPACKDashboardView",
-                "[" + DisplaySelectedEntity.Entity.NUMBER + "] WORKPACK Dashboard");
+                "SUBJOBDashboardView",
+                "[" + DisplaySelectedEntity.Entity.NUMBER + "] SUBJOB Dashboard");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }

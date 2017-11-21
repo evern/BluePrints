@@ -99,14 +99,14 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public string Workpack_Name
+        public string Subjob_Name
         {
             get
             {
-                if (WORKPACK == null)
+                if (SUBJOB == null)
                     return string.Empty;
 
-                return WORKPACK.INTERNAL_NAME1;
+                return SUBJOB.INTERNAL_NAME1;
             }
         }
 
@@ -256,10 +256,10 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public Guid? Workpack_Guid
+        public Guid? Subjob_Guid
         {
-            get { return GUID_WORKPACK; }
-            set { GUID_WORKPACK = value; }
+            get { return GUID_SUBJOB; }
+            set { GUID_SUBJOB = value; }
         }
 
         [NotMapped]
@@ -321,5 +321,12 @@ namespace BluePrints.Data
 
         [NotMapped]
         public Guid? Phase_Guid { get => GUID_PHASE; set => GUID_PHASE = value; }
+
+        public Guid? Discipline_Guid => GUID_DISCIPLINE;
+
+        public decimal Discipline_Number => DISCIPLINE_NUM;
+
+        [NotMapped]
+        public Guid? Workpack_Guid { get => GUID_WORKPACK; set => GUID_WORKPACK = value; }
     }
 }

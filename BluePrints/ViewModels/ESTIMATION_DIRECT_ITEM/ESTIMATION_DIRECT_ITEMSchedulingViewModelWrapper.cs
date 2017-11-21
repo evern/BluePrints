@@ -54,7 +54,7 @@ namespace BluePrints.ViewModels
         protected override void initializeEntitiesLoadersDescription()
         {
             MainViewModel = null;
-            base.cleanUpEntitiesLoader();
+            base.CleanUpEntitiesLoader();
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
 

@@ -51,8 +51,8 @@ namespace BluePrints.Data
         public virtual DbSet<USER> USER { get; set; }
         public virtual DbSet<VARIATION> VARIATION { get; set; }
         public virtual DbSet<VARIATION_ITEM> VARIATION_ITEM { get; set; }
-        public virtual DbSet<WORKPACK> WORKPACK { get; set; }
-        public virtual DbSet<WORKPACK_ASSIGNMENT> WORKPACK_ASSIGNMENT { get; set; }
+        public virtual DbSet<SUBJOB> SUBJOB { get; set; }
+        public virtual DbSet<SUBJOB_ASSIGNMENT> SUBJOB_ASSIGNMENT { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -116,12 +116,12 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_AREA);
 
             modelBuilder.Entity<AREA>()
-                .HasMany(e => e.WORKPACK)
+                .HasMany(e => e.SUBJOB)
                 .WithOptional(e => e.AREA)
                 .HasForeignKey(e => e.GUID_DAREA);
 
             modelBuilder.Entity<AREA>()
-                .HasMany(e => e.WORKPACK1)
+                .HasMany(e => e.SUBJOB1)
                 .WithOptional(e => e.AREA1)
                 .HasForeignKey(e => e.GUID_DSUBAREA);
 
@@ -249,6 +249,12 @@ namespace BluePrints.Data
                 .WithOptional(e => e.DISCIPLINE)
                 .HasForeignKey(e => e.GUID_DISCIPLINE);
 
+            modelBuilder.Entity<DISCIPLINE>()
+                .HasMany(e => e.WORKPACK)
+                .WithRequired(e => e.DISCIPLINE)
+                .HasForeignKey(e => e.GUID_DISCIPLINE)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<DOCTYPE>()
                 .HasMany(e => e.BASELINE_ITEM)
                 .WithOptional(e => e.DOCTYPE)
@@ -321,7 +327,7 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_PHASE);
 
             modelBuilder.Entity<PHASE>()
-                .HasMany(e => e.WORKPACK)
+                .HasMany(e => e.SUBJOB)
                 .WithOptional(e => e.PHASE)
                 .HasForeignKey(e => e.GUID_DPHASE);
 
@@ -469,13 +475,13 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_PROJECT);
 
             modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.VARIATION)
+                .HasMany(e => e.SUBJOB)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.WORKPACK)
+                .HasMany(e => e.VARIATION)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
@@ -512,6 +518,41 @@ namespace BluePrints.Data
                 .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
                 .WithOptional(e => e.STOCK_GROUP)
                 .HasForeignKey(e => e.GUID_STOCK_GROUP);
+
+            modelBuilder.Entity<SUBJOB>()
+                .HasMany(e => e.BASELINE_ITEM)
+                .WithOptional(e => e.SUBJOB)
+                .HasForeignKey(e => e.GUID_SUBJOB);
+
+            modelBuilder.Entity<SUBJOB>()
+                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
+                .WithOptional(e => e.SUBJOB)
+                .HasForeignKey(e => e.GUID_SUBJOB);
+
+            modelBuilder.Entity<SUBJOB>()
+                .HasMany(e => e.ESTIMATION_DIRECT_ITEM1)
+                .WithOptional(e => e.SUBJOB1)
+                .HasForeignKey(e => e.GUID_PSUBJOB);
+
+            modelBuilder.Entity<SUBJOB>()
+                .HasMany(e => e.SUBJOB_ASSIGNMENT)
+                .WithRequired(e => e.SUBJOB)
+                .HasForeignKey(e => e.GUID_SUBJOB)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<SUBJOB>()
+                .HasMany(e => e.WORKPACK)
+                .WithRequired(e => e.SUBJOB)
+                .HasForeignKey(e => e.GUID_SUBJOB)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<SUBJOB_ASSIGNMENT>()
+                .Property(e => e.LOW_VALUE)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<SUBJOB_ASSIGNMENT>()
+                .Property(e => e.HIGH_VALUE)
+                .HasPrecision(10, 2);
 
             modelBuilder.Entity<USER>()
                 .HasMany(e => e.BASELINE_ITEM)
@@ -554,30 +595,6 @@ namespace BluePrints.Data
                 .HasMany(e => e.BASELINE_ITEM)
                 .WithOptional(e => e.WORKPACK)
                 .HasForeignKey(e => e.GUID_WORKPACK);
-
-            modelBuilder.Entity<WORKPACK>()
-                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
-                .WithOptional(e => e.WORKPACK)
-                .HasForeignKey(e => e.GUID_WORKPACK);
-
-            modelBuilder.Entity<WORKPACK>()
-                .HasMany(e => e.ESTIMATION_DIRECT_ITEM1)
-                .WithOptional(e => e.WORKPACK1)
-                .HasForeignKey(e => e.GUID_PWORKPACK);
-
-            modelBuilder.Entity<WORKPACK>()
-                .HasMany(e => e.WORKPACK_ASSIGNMENT)
-                .WithRequired(e => e.WORKPACK)
-                .HasForeignKey(e => e.GUID_WORKPACK)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<WORKPACK_ASSIGNMENT>()
-                .Property(e => e.LOW_VALUE)
-                .HasPrecision(10, 2);
-
-            modelBuilder.Entity<WORKPACK_ASSIGNMENT>()
-                .Property(e => e.HIGH_VALUE)
-                .HasPrecision(10, 2);
         }
     }
 }

@@ -48,7 +48,7 @@ namespace BluePrints.Common.Projections
 
         public string Deliverable_Name => string.Empty;
 
-        public Guid? Workpack_Guid => Guid.Empty;
+        public Guid? Subjob_Guid => Guid.Empty;
 
         public Guid OriginalEntityKey => Guid.Empty;
 
@@ -96,13 +96,18 @@ namespace BluePrints.Common.Projections
 
         public decimal Total_Cost => Total_Install_Cost + Total_Supply_Cost + Total_Freight_Cost;
 
-        public string Workpack_Name => string.Empty;
+        public string Subjob_Name => string.Empty;
 
         public string Department_Code => string.Empty;
 
         public Guid? Phase_Guid { get; set; }
 
-        Guid? IDeliverable.Workpack_Guid { get; set; }
+        public Guid? Discipline_Guid => throw new NotImplementedException();
+
+        public decimal Discipline_Number => throw new NotImplementedException();
+
+        public Guid? Workpack_Guid { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        Guid? IDeliverable.Subjob_Guid { get; set; }
 
         public void SetOriginalEntityKey(Guid newGuid)
         {
