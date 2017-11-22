@@ -29,62 +29,12 @@ using System.Windows;
 
 namespace BluePrints.ViewModels
 {
-    public class SubjobGroup : ICanAssignP6Group
-    {
-        public string GroupName { get; set; }
-
-        public List<ICanAssignP6> Deliverables { get; set; }
-        public List<P6_ASSIGNMENT> P6_Assignments
-        {
-            get
-            {
-                return Deliverables == null ? new List<P6_ASSIGNMENT>() : Deliverables.SelectMany(x => x.P6_Assignments).ToList();
-            }
-            set
-            {
-            }
-        }
-
-        public string P6AssignmentName => string.Empty;
-
-        public decimal Assigned_Percentage => Deliverables == null ? 0 : Deliverables.Count == 0 ? 0 : Deliverables.First().Assigned_Percentage;
-
-        public decimal Remaining_Percentage => Deliverables == null ? 0 : Deliverables.Count == 0 ? 0 : Deliverables.First().Remaining_Percentage;
-
-        public decimal P6_Assignment_Total_Quantity => 0;
-
-        public string P6_Assignment_UOM => Deliverables == null ? string.Empty : Deliverables.Count == 0 ? string.Empty : Deliverables.First().P6_Assignment_UOM;
-
-        public bool NewEntityFromView { get; set; }
-
-        public Guid EntityKey { get => Guid.Empty; set { } }
-
-        public Guid OriginalEntityKey { get => Guid.Empty; set { } }
-
-        public decimal Estimated_Units => Deliverables == null ? 0 : Deliverables.Count == 0 ? 0 : Deliverables.Sum(x => x.Estimated_Units);
-
-        public decimal Total_Units => Deliverables == null ? 0 : Deliverables.Count == 0 ? 0 : Deliverables.Sum(x => x.Total_Units);
-
-        public decimal Variation_Units => Deliverables == null ? 0 : Deliverables.Count == 0 ? 0 : Deliverables.Sum(x => x.Variation_Units);
-
-        public void SetOriginalEntityKey(Guid newGuid)
-        {
-
-        }
-
-        public void Update()
-        {
-            this.RaisePropertiesChanged();
-            Deliverables.ForEach(x => x.Update());
-        }
-    }
-
     /// <summary>
     /// Represents the single BASELINE object view model.
     /// </summary>
-    public partial class BASELINE_ITEMGroupSchedulingViewModelWrapper :
+    public partial class BASELINE_ITEMWorkpackSchedulingViewModelWrapper :
         BluePrintsEntitiesSchedulingCollectionWrapper
-        <BASELINE_ITEM, SubjobGroup, Guid, IBluePrintsEntitiesUnitOfWork>
+        <BASELINE_ITEM, WORKPACKProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         public Action ShowSUBJOBInternalName1;
         public Action ShowSUBJOBInternalName2;
@@ -94,10 +44,10 @@ namespace BluePrints.ViewModels
         /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static BASELINE_ITEMGroupSchedulingViewModelWrapper Create(
+        public static BASELINE_ITEMWorkpackSchedulingViewModelWrapper Create(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new BASELINE_ITEMGroupSchedulingViewModelWrapper(unitOfWorkFactory));
+            return ViewModelSource.Create(() => new BASELINE_ITEMWorkpackSchedulingViewModelWrapper(unitOfWorkFactory));
         }
 
         /// <summary>
@@ -105,7 +55,7 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the BASELINEViewModel type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected BASELINE_ITEMGroupSchedulingViewModelWrapper(
+        protected BASELINE_ITEMWorkpackSchedulingViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
@@ -122,6 +72,7 @@ namespace BluePrints.ViewModels
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, assign_baseline);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
@@ -140,6 +91,11 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID == live_PROGRESS.GUID_PROJECT);
             else
                 return query => query.Where(x => x.GUID == p6_baseline_entity.project_guid);
+        }
+
+        private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        {
+            return query => query.Where(x => x.SUBJOB.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
@@ -197,8 +153,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
         {
-            return
-                query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Baseline_Report.ToString());
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Baseline_Report.ToString());
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -207,14 +162,14 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<SubjobGroup>>
+        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<WORKPACKProjection>>
             specifyMainViewModelProjection()
         {
             IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = GetEntities<P6_ASSIGNMENT>();
-            return query => ProgressQueries.ProgressItemSubjobGroupTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, live_PROGRESS, RATECollection, PROGRESS_ITEMCollection, null, true, P6_ASSIGNMENTS);
+            return query => WORKPACKQueries.WORKPACKProjectionTransormation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), WORKPACKCollection, loadPROJECT, live_PROGRESS, RATECollection, PROGRESS_ITEMCollection, null, true, P6_ASSIGNMENTS);
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<SubjobGroup> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<WORKPACKProjection> entities)
         {
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -355,7 +310,7 @@ namespace BluePrints.ViewModels
                 reportDesigner.Dispose();
         }
 
-        public Func<IEnumerable<SubjobGroup>> GetGridVisibleRows;
+        public Func<IEnumerable<WORKPACKProjection>> GetGridVisibleRows;
 
         protected override string ExportExcelFilename()
         {
@@ -376,6 +331,18 @@ namespace BluePrints.ViewModels
                     loaderCollection.GetViewModel<BASELINE>();
             }
         }
+
+        public IEnumerable<WORKPACK> WORKPACKCollection
+        {
+            get
+            {
+                var collection = GetEntities<WORKPACK>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
         #endregion
     }
 }

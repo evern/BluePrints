@@ -174,7 +174,7 @@ namespace BluePrints.Common.Base
                 p6_baseline_entity = (IHaveP6Baselines)obj[0];
 
             mappingType = (BaselineMappingSelectionType)obj[1];
-            mappingMode = ((Data.PROJECT)obj[2]).USE_WORKPACKS ? BaselineMappingMode.BySubjob : BaselineMappingMode.Default;
+            mappingMode = ((Data.PROJECT)obj[2]).USE_WORKPACKS ? BaselineMappingMode.ByWorkpack : BaselineMappingMode.Default;
             Selected_Deliverables = new ObservableCollection<ICanAssignP6>();
             Selected_P6_Assignments = new ObservableCollection<P6_ASSIGNMENTProjection>();
             Selected_Deliverables.CollectionChanged += Selected_Deliverables_CollectionChanged;
@@ -279,10 +279,7 @@ namespace BluePrints.Common.Base
                 return;
 
             IEnumerable<ICanAssignP6> calculateSource;
-            if (mappingMode == BaselineMappingMode.BySubjob)
-                calculateSource = Deliverables_Source.SelectMany(x => ((ICanAssignP6Group)x).Deliverables);
-            else
-                calculateSource = Deliverables_Source;
+            calculateSource = Deliverables_Source;
 
             decimal total_activity_assigned_units = calculateSource.Sum(x => x.P6_Assignments.Where(assignment => assignment.P6_ACTIVITYID == activity.P6_ActivityId)
                                                     .Sum(assignment => ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m) * x.Total_Units));
@@ -339,6 +336,17 @@ namespace BluePrints.Common.Base
         #endregion
 
         #region Assignment View Properties
+        public string DeliverableHeaderTitle
+        {
+            get
+            {
+                if (mappingMode == BaselineMappingMode.ByWorkpack)
+                    return "Workpack";
+
+                return "Deliverable";
+            }
+        }
+
         private P6_Activity selected_activity;
         public P6_Activity Selected_Activity { get => selected_activity; set { selected_activity = value; this.RaisePropertyChanged(x => x.Selected_Activity); } }
 
@@ -556,13 +564,9 @@ namespace BluePrints.Common.Base
                 return;
 
             bool show_already_assigned_message = false;
-            ICanAssignP6Group assignGroup = Selected_Deliverable as ICanAssignP6Group;
 
             IEnumerable<ICanAssignP6> active_deliverables;
-            if (mappingMode == BaselineMappingMode.BySubjob)
-                active_deliverables = Selected_Deliverables.SelectMany(x => ((ICanAssignP6Group)x).Deliverables);
-            else
-                active_deliverables = Selected_Deliverables;
+            active_deliverables = Selected_Deliverables;
 
             foreach (ICanAssignP6 deliverable in active_deliverables)
             {
@@ -669,24 +673,12 @@ namespace BluePrints.Common.Base
             ICanAssignP6 context_deliverable;
 
             IEnumerable<ICanAssignP6> targetDeliverables;
-            if (mappingMode == BaselineMappingMode.BySubjob)
-            {
-                targetDeliverables = Selected_Deliverables.SelectMany(x => ((ICanAssignP6Group)x).Deliverables);
-                context_deliverable = Deliverables_Source.SelectMany(x => ((ICanAssignP6Group)x).Deliverables).First(x => x.OriginalEntityKey == selected_p6_assignment.Deliverable_OriginalEntityKey);
-            }
-            else
-            {
-                targetDeliverables = Selected_Deliverables;
-                context_deliverable = Deliverables_Source.First(x => x.OriginalEntityKey == selected_p6_assignment.Deliverable_OriginalEntityKey);
-            }
+            targetDeliverables = Selected_Deliverables;
+            context_deliverable = Deliverables_Source.First(x => x.OriginalEntityKey == selected_p6_assignment.Deliverable_OriginalEntityKey);
 
             P6_ASSIGNMENT context_p6_assignment = selected_p6_assignment.Entity;
 
-            var p6_assignments_in_order =
-                context_deliverable.P6_Assignments.OrderBy(x => x.LOW_VALUE).ToList();
-
-
-
+            var p6_assignments_in_order = context_deliverable.P6_Assignments.OrderBy(x => x.LOW_VALUE).ToList();
 
             P6_ASSIGNMENT swap_p6_assignment;
             //look for next assignment in sequence
@@ -922,26 +914,62 @@ namespace BluePrints.Common.Base
 
             List<TASKRSRC> ExistingTaskResource = new List<TASKRSRC>();
             List<P6_AssignmentProjection> missing_activities = new List<P6_AssignmentProjection>();
-            foreach (ICanAssignP6 deliverable in Deliverables_Source)
-            {
-                IEnumerable<P6_ASSIGNMENT> deliverable_assignments = deliverable.P6_Assignments;
-                foreach (P6_ASSIGNMENT deliverable_assignment in deliverable_assignments)
-                {
-                    TASK actual_context_task = actual_tasks.FirstOrDefault(x => x.task_code == deliverable_assignment.P6_ACTIVITYID);
-                    P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection((IDeliverable_Rates)deliverable, deliverable_assignment);
 
-                    if (actual_context_task != null && actual_context_task.delete_date == null)
+            if (mappingMode == BaselineMappingMode.Default)
+            {
+                foreach (ICanAssignP6 deliverable in Deliverables_Source)
+                {
+                    IEnumerable<P6_ASSIGNMENT> deliverable_assignments = deliverable.P6_Assignments;
+
+                    foreach (P6_ASSIGNMENT deliverable_assignment in deliverable_assignments)
                     {
-                        actual_context_task.target_work_qty += p6_assignment.UNITS;
-                        actual_context_task.remain_work_qty += p6_assignment.UNITS;
-                        foreach(TASKRSRC task_resource in actual_context_task.TASKRSRC)
+                        TASK actual_context_task = actual_tasks.FirstOrDefault(x => x.task_code == deliverable_assignment.P6_ACTIVITYID);
+
+                        P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection((IDeliverable_Rates)deliverable, deliverable_assignment);
+
+                        if (actual_context_task != null && actual_context_task.delete_date == null)
                         {
-                            ExistingTaskResource.Add(task_resource);
+                            actual_context_task.target_work_qty += p6_assignment.UNITS;
+                            actual_context_task.remain_work_qty += p6_assignment.UNITS;
+                            foreach (TASKRSRC task_resource in actual_context_task.TASKRSRC)
+                            {
+                                ExistingTaskResource.Add(task_resource);
+                            }
+                        }
+                        else
+                        {
+                            missing_activities.Add(p6_assignment);
                         }
                     }
-                    else
+                }
+            }
+            else
+            {
+                foreach(WORKPACKProjection workpack in Deliverables_Source)
+                {
+                    IEnumerable<P6_ASSIGNMENT> deliverable_assignments = workpack.P6_Assignments;
+                    foreach(ICanAssignP6 deliverable in workpack.Deliverables)
                     {
-                        missing_activities.Add(p6_assignment);
+                        foreach (P6_ASSIGNMENT deliverable_assignment in deliverable_assignments)
+                        {
+                            TASK actual_context_task = actual_tasks.FirstOrDefault(x => x.task_code == deliverable_assignment.P6_ACTIVITYID);
+
+                            P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection((IDeliverable_Rates)deliverable, deliverable_assignment);
+
+                            if (actual_context_task != null && actual_context_task.delete_date == null)
+                            {
+                                actual_context_task.target_work_qty += p6_assignment.UNITS;
+                                actual_context_task.remain_work_qty += p6_assignment.UNITS;
+                                foreach (TASKRSRC task_resource in actual_context_task.TASKRSRC)
+                                {
+                                    ExistingTaskResource.Add(task_resource);
+                                }
+                            }
+                            else
+                            {
+                                missing_activities.Add(p6_assignment);
+                            }
+                        }
                     }
                 }
             }

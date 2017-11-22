@@ -273,7 +273,7 @@
                                             SelectedItems="{Binding DataContext.Selected_P6_Assignments, Mode=TwoWay, ElementName=userControl}"
                                             ItemsSource="{Binding DataContext.P6_Assignments, ElementName=userControl}">
                                             <dxg:GridControl.Columns>
-                                                <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="Deliverable" FieldName="Deliverable_Name" MinWidth="200" />
+                                                <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="{Binding DataContext.DeliverableHeaderTitle, ElementName=userControl}" FieldName="Deliverable_Name" MinWidth="200" />
                                                 <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="P6 Id" FieldName="Entity.P6_ACTIVITYID" />
                                                 <dxg:GridColumn AllowEditing="False" ReadOnly="True" Header="P6 Description" FieldName="Entity.P6_ACTIVITYID" MinWidth="200">
                                                     <dxg:GridColumn.EditSettings>
@@ -334,7 +334,7 @@
                         <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDeliverables" dx:DXSerializer.StoreLayoutMode="All" CurrentItem="{Binding DataContext.Selected_Deliverable, ElementName=userControl, Mode=TwoWay}" SelectedItems="{Binding DataContext.Selected_Deliverables, ElementName=userControl, Mode=TwoWay}"
                                      Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn Header="NAME" FieldName="GroupName" ReadOnly="True" VisibleIndex="0" />
+                                <dxg:GridColumn Header="WORKPACK" FieldName="P6AssignmentName" ReadOnly="True" VisibleIndex="0" />
                                 <dxg:GridColumn Header="ESTIMATED_HOURS" FieldName="Estimated_Units"
                                             ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
@@ -425,9 +425,9 @@
                                                     </StackPanel>
                                                     <Separator />
                                                     <StackPanel Margin="5" Orientation="Horizontal">
-                                                        <StackPanel.Background>
+                                                        <!--<StackPanel.Background>
                                                                 <Binding Path="." Converter="{StaticResource RowColorConverter}" UpdateSourceTrigger="PropertyChanged"/>
-                                                            </StackPanel.Background>
+                                                            </StackPanel.Background>-->
                                                         <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Target: " />
                                                         <TextBlock Padding="0,3,3,0" Text="{Binding Path=DropTargetRow, Converter={StaticResource RowNameConverter}}"/>
                                                     </StackPanel>

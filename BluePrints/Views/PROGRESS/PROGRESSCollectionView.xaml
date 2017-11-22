@@ -110,6 +110,7 @@
                             <dxg:GridColumn FieldName="P6PROGRESS_NAME">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
+                                                              NullValueButtonPlacement="Popup" 
                                                               ItemsSource="{Binding DataContext.P6PROJECTSCollection, ElementName=userControl}"
                                                               DisplayMember="wbs_short_name"
                                                               ValueMember="wbs_short_name" />

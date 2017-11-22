@@ -44,31 +44,6 @@ namespace BluePrints.Common.ViewModel.Reporting
             return user_baseline_item_progresses.AsQueryable();
         }
 
-        public static IQueryable<SubjobGroup> ProgressItemSubjobGroupTransformation(
-            IQueryable<BASELINE_ITEM> BASELINE_ITEMS,
-            PROJECT PROJECT,
-            PROGRESS PROGRESS,
-            IEnumerable<RATE> RATES,
-            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, bool isInternalNumberAlwaysEditable = false)
-        {
-            List<BASELINE_ITEMProgress> baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS, PROJECT, PROGRESS, RATES, PROGRESS_ITEMS, null, true, P6_ASSIGNMENTS).ToList();
-
-            List<SubjobGroup> subjob_group = new List<SubjobGroup>();
-            var progress_item_by_subjobs = baseline_item_progresses.GroupBy(x => x.Subjob_Name + "-" + x.Discipline_Code).Select(group => new { SubjobName = group.Key, Progresses = group.ToList() });
-            foreach (var progress_item_by_subjob in progress_item_by_subjobs)
-            {
-                if (progress_item_by_subjob.Progresses != null)
-                {
-                    SubjobGroup newSubjobGroup = new SubjobGroup();
-                    newSubjobGroup.GroupName = progress_item_by_subjob.SubjobName;
-                    newSubjobGroup.Deliverables = progress_item_by_subjob.Progresses.Select(x => (ICanAssignP6)x).ToList();
-                    subjob_group.Add(newSubjobGroup);
-                }
-            }
-
-            return subjob_group.AsQueryable();
-        }
 
         public static IQueryable<BASELINE_ITEMProgress> OffsiteDirectProgressItemTransformation(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS,

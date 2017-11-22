@@ -51,12 +51,12 @@ namespace BluePrints.Common.Projections
 
         public Guid? Phase_Guid { get => Entity.GUID_DPHASE; set => Entity.GUID_DPHASE = value; }
 
-        public Guid? Discipline_Guid => throw new NotImplementedException();
+        public Guid? Discipline_Guid => Guid.Empty;
 
-        public decimal Discipline_Number => throw new NotImplementedException();
+        public decimal Discipline_Number => 0;
 
-        public Guid? Workpack_Guid { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        Guid? IDeliverable.Subjob_Guid { get; set; }
+        public Guid? Workpack_Guid { get => Guid.Empty; set { } }
+        Guid? IDeliverable.Subjob_Guid { get => Guid.Empty; set { } }
 
         public void SetOriginalEntityKey(Guid newGuid)
         {

@@ -394,6 +394,8 @@ namespace BluePrints.ViewModels
                 entity.Phase_Guid = defaultPHASE.GUID;
             }
 
+            if(entity.IsInternalNumberEditable)
+                entity.Entity.Entity.INTERNAL_NUM = generateInternalNumber(entity);
             BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, phaseType, chargeType);
             BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(entity, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection);
             
@@ -1012,7 +1014,7 @@ namespace BluePrints.ViewModels
             foreach (var entity in SelectedEntities)
             {
                 var entitySUBJOB = SUBJOBCollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_SUBJOB);
-                if (fieldName == internalNumberFieldName)
+                if (fieldName == internalNumberFieldName && entity.IsInternalNumberEditable)
                 {
                     string internalNumber = generateInternalNumber(entity);
                     setNestedValueWithUndo(entity, fieldName, internalNumber);

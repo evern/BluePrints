@@ -45,6 +45,12 @@ namespace BluePrints.Common
                 return p6Activity.Description;
             }
 
+            if (value is WORKPACKProjection)
+            {
+                var workpack_projection = value as WORKPACKProjection;
+                return workpack_projection.Entity.NAME;
+            }
+
             if (value is IReportable)
             {
                 var reportable = value as IReportable;
@@ -63,6 +69,10 @@ namespace BluePrints.Common
                 var role = listTreeListNodes.FirstOrDefault() as ROLEProjection;
                 if (role != null)
                     return role.Entity.NAME;
+
+                var workpack = listTreeListNodes.FirstOrDefault() as WORKPACKProjection;
+                if (workpack != null)
+                    return workpack.Entity.NAME;
 
                 var minute_title = listTreeListNodes.FirstOrDefault() as MINUTE_TITLE;
                 if (minute_title != null)
