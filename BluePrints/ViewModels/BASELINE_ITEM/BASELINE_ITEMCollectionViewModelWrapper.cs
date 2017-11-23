@@ -328,6 +328,7 @@ namespace BluePrints.ViewModels
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
             MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
             MainViewModel.ValidateSetValueIsContinueCallBack = validateSetValueCallBack;
+            MainViewModel.OnFillOrCellLevelPasting = OnFillOrCellLevelPasting;
             MainViewModel.SetParentViewModel(this);
 
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -340,6 +341,15 @@ namespace BluePrints.ViewModels
             }
 
             SetViewSpecificProperties();
+        }
+
+        public void OnFillOrCellLevelPasting(IEnumerable<BASELINE_ITEMProgress> entities)
+        {
+            foreach(BASELINE_ITEMProgress entity in entities)
+            {
+                if (entity.IsInternalNumberEditable)
+                    entity.Entity.Entity.INTERNAL_NUM = generateInternalNumber(entity);
+            }
         }
 
         public Action InterfacePauseUndoRedoManagerCallBack { get; set; }
