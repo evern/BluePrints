@@ -925,7 +925,7 @@ namespace BluePrints.Common.Base
                     {
                         TASK actual_context_task = actual_tasks.FirstOrDefault(x => x.task_code == deliverable_assignment.P6_ACTIVITYID);
 
-                        P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection((IDeliverable_Rates)deliverable, deliverable_assignment);
+                        P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection(deliverable, deliverable_assignment);
 
                         if (actual_context_task != null && actual_context_task.delete_date == null)
                         {
@@ -954,7 +954,7 @@ namespace BluePrints.Common.Base
                         {
                             TASK actual_context_task = actual_tasks.FirstOrDefault(x => x.task_code == deliverable_assignment.P6_ACTIVITYID);
 
-                            P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection((IDeliverable_Rates)deliverable, deliverable_assignment);
+                            P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection(deliverable, deliverable_assignment);
 
                             if (actual_context_task != null && actual_context_task.delete_date == null)
                             {
@@ -1077,13 +1077,13 @@ namespace BluePrints.Common.Base
                 foreach (P6_ASSIGNMENT deliverable_assignment in deliverable_assignments)
                 {
                     if (getAllActivities)
-                        missing_activities.Add(new P6_AssignmentProjection((IDeliverable_Rates)deliverable, deliverable_assignment));
+                        missing_activities.Add(new P6_AssignmentProjection(deliverable, deliverable_assignment));
                     else
                     {
                         P6_Activity existingTask = Activities_Source.FirstOrDefault(x => x.P6_ActivityId == deliverable_assignment.P6_ACTIVITYID);
                         if (existingTask == null)
                         {
-                            missing_activities.Add(new P6_AssignmentProjection((IDeliverable_Rates)deliverable, deliverable_assignment));
+                            missing_activities.Add(new P6_AssignmentProjection(deliverable, deliverable_assignment));
                         }
                     }
                 }

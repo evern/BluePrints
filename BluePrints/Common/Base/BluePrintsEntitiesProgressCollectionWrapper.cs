@@ -480,7 +480,7 @@ namespace BluePrints.Common.Base
                 foreach (P6_ASSIGNMENT deliverable_assignment in deliverable_assignments)
                 {
                     TASK actual_context_task = task_source.FirstOrDefault(x => x.task_code == deliverable_assignment.P6_ACTIVITYID);
-                    P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection((IDeliverable_Rates)deliverable, deliverable_assignment);
+                    P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection(deliverable, deliverable_assignment);
 
                     if (actual_context_task != null && actual_context_task.delete_date == null)
                     {

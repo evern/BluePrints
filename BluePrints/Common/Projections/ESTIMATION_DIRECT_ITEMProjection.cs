@@ -217,11 +217,11 @@ namespace BluePrints.Common.Projections
 
         public Guid? Procurement_Subjob_Guid { get => Entity.GUID_PSUBJOB; set => Entity.GUID_PSUBJOB = value; }
 
-        public Guid? Discipline_Guid => throw new NotImplementedException();
+        public Guid? Discipline_Guid => null;
 
-        public decimal Discipline_Number => throw new NotImplementedException();
+        public decimal Discipline_Number => 0;
 
-        public Guid? Workpack_Guid { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Guid? Workpack_Guid { get => Guid.Empty; set { } }
     }
 
     public static class ESTIMATION_DIRECT_ITEMProjectionQueries

@@ -355,11 +355,13 @@ namespace BluePrints.Common.ViewModel.Utils
             SUBJOB querySUBJOB = SUBJOBCollection.FirstOrDefault(x => x.GUID == workpack.GUID_SUBJOB);
             DISCIPLINE queryDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == workpack.GUID_DISCIPLINE);
 
-            if(querySUBJOB != null && queryDISCIPLINE != null)
+            if (querySUBJOB != null && queryDISCIPLINE != null)
             {
                 string discipline_number = workpack.DISCIPLINE_NUM > 9 ? "0" + workpack.DISCIPLINE_NUM.ToString("0") : "00" + workpack.DISCIPLINE_NUM.ToString("0");
                 workpack.NAME = querySUBJOB.INTERNAL_NAME1 + "-" + queryDISCIPLINE.CODE + discipline_number;
             }
+            else
+                workpack.NAME = string.Empty;
         }
 
         /// <summary>

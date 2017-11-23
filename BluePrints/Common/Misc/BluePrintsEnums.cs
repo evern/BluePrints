@@ -547,18 +547,18 @@ namespace BluePrints.Common
     /// </summary>
     public class P6_AssignmentProjection
     {
-        public P6_AssignmentProjection(IDeliverable_Rates deliverableProjection, P6_ASSIGNMENT baseline_item_assignment)
+        public P6_AssignmentProjection(ICanAssignP6 deliverableProjection, P6_ASSIGNMENT baseline_item_assignment)
         {
             this.deliverableProjection = deliverableProjection;
             this.deliverable_assignment = baseline_item_assignment;
         }
 
         public readonly P6_ASSIGNMENT deliverable_assignment;
-        public readonly IDeliverable_Rates deliverableProjection;
+        public readonly ICanAssignP6 deliverableProjection;
 
         public string INTERNAL_NUM
         {
-            get { return deliverableProjection.Deliverable_Name; }
+            get { return deliverableProjection.P6AssignmentName; }
         }
 
         public string P6_ACTIVITY

@@ -73,7 +73,7 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            INotification notification = AppNotificationService.CreatePredefinedNotification("Update: This view has been converted to a window due to excessive crashing, sorry for the inconvenience!", null, null, null);
+            INotification notification = AppNotificationService.CreatePredefinedNotification("If view is not responding please email and report to su.bing-wen@primero.com.au, sorry for any inconvenience!", null, null, null);
             GlobalVariables.IsProjectViewNotificationShown = true;
             notification.ShowAsync();
 

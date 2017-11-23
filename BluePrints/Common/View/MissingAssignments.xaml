@@ -14,7 +14,7 @@
                 <dxlc:LayoutItem Height="500" >
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlMissingAssignments" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="INTERNAL NUM" ReadOnly="True" FieldName="INTERNAL_NUM" />
+                            <dxg:GridColumn Header="NAME" ReadOnly="True" Width="130" FieldName="INTERNAL_NUM" />
                             <dxg:GridColumn Header="P6 ID" ReadOnly="True" FieldName="P6_ACTIVITY" />
                             <dxg:GridColumn Header="UNITS" ReadOnly="True" FieldName="UNITS" />
                         </dxg:GridControl.Columns>
