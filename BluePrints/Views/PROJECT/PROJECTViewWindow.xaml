@@ -78,7 +78,7 @@
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:GridControl.Bands>
                                     <dxg:GridControlBand Header="General">
-                                        <dxg:GridColumn Header="Subjob" FieldName="SubjobCode" MinWidth="300" />
+                                        <dxg:GridColumn Header="Subjob" FieldName="SubjobCode" Width="150" />
                                         <dxg:GridColumn Header="Area" FieldName="AreaCode" />
                                         <dxg:GridColumn Header="Department" FieldName="DepartmentCode" />
                                         <dxg:GridColumn Header="Discipline" FieldName="DisciplineCode" />

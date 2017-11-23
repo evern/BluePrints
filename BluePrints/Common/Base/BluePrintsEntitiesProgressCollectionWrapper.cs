@@ -85,6 +85,7 @@ namespace BluePrints.Common.Base
             }
 
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
@@ -113,6 +114,14 @@ namespace BluePrints.Common.Base
                 return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
             else
                 return query => query.Where(x => x.PROJECT.STATUS == ProjectStatus.Active);
+        }
+
+        protected virtual Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        {
+            if (is_single_project_mode)
+                return query => query.Where(x => x.SUBJOB.GUID_PROJECT == loadPROJECT.GUID);
+            else
+                return query => query.Where(x => x.SUBJOB.PROJECT.STATUS == ProjectStatus.Active);
         }
 
         protected virtual Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
@@ -843,6 +852,17 @@ namespace BluePrints.Common.Base
                 var collection = GetEntities<SUBJOB>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.INTERNAL_NAME1);
+                return collection;
+            }
+        }
+
+        public IEnumerable<WORKPACK> WORKPACKCollection
+        {
+            get
+            {
+                var collection = GetEntities<WORKPACK>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
                 return collection;
             }
         }

@@ -20,6 +20,8 @@
 
         public string NAME { get; set; }
 
+        public string TITLE { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

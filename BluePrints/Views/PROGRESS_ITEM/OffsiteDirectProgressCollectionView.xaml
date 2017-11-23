@@ -72,6 +72,11 @@
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
                                     </custom:GridColumnEx.EditSettings>
                                 </custom:GridColumnEx>
+                                <custom:GridColumnEx Name="colWORKPACK" FieldName="Entity.Entity.GUID_WORKPACK" Header="WORKPACK" FilterPopupMode="CheckedList" ReadOnly="True">
+                                    <custom:GridColumnEx.EditSettings>
+                                        <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                                    </custom:GridColumnEx.EditSettings>
+                                </custom:GridColumnEx>
                                 <custom:GridColumnEx Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA" FilterPopupMode="CheckedList" ReadOnly="True">
                                     <custom:GridColumnEx.EditSettings>
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
