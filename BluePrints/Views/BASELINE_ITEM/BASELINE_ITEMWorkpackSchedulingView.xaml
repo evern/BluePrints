@@ -164,7 +164,7 @@
                                         <dxg:GridColumn FieldName="DisplayActivityType" IsSmart="True" FixedWidth="True" Width="150" Header="Type" MinWidth="100" FilterPopupMode="CheckedList" />
                                         <dxg:GridColumn FieldName="Start" IsSmart="True" FixedWidth="True" Width="150" Header="Begin" CellTemplate="{StaticResource TimeTemplate}" />
                                         <dxg:GridColumn FieldName="End" IsSmart="True" FixedWidth="True" Width="150" Header="End" CellTemplate="{StaticResource TimeTemplate}" />
-                                        <dxg:GridColumn FieldName="Assigned_Units" IsSmart="True" FixedWidth="True" Width="150" >
+                                        <dxg:GridColumn FieldName="Assigned_Units" IsSmart="True" FixedWidth="True" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings DisplayFormat="n" />
                                             </dxg:GridColumn.EditSettings>
@@ -334,7 +334,7 @@
                         <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDeliverables" dx:DXSerializer.StoreLayoutMode="All" CurrentItem="{Binding DataContext.Selected_Deliverable, ElementName=userControl, Mode=TwoWay}" SelectedItems="{Binding DataContext.Selected_Deliverables, ElementName=userControl, Mode=TwoWay}"
                                      Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn Header="WORKPACK" FieldName="P6AssignmentName" ReadOnly="True" VisibleIndex="0" />
+                                <dxg:GridColumn Header="WORKPACK" FieldName="P6AssignmentName" Width="100" ReadOnly="True" VisibleIndex="0" />
                                 <dxg:GridColumn Header="ESTIMATED_HOURS" FieldName="Estimated_Units"
                                             ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
