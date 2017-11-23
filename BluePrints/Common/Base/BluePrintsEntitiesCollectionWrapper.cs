@@ -39,9 +39,12 @@ namespace BluePrints.Common.Base
             if (AppNotificationService == null || GlobalVariables.IsNotificationShown)
                 return;
 
-            INotification notification = AppNotificationService.CreatePredefinedNotification("Update 15 Nov 2017: If anything doesn't work as expected, please push reset layout and reload this view. Have a nice day", null, null, null);
+            INotification notification1 = AppNotificationService.CreatePredefinedNotification("Update 15 Nov 2017: If anything doesn't work as expected, please push reset layout and reload this view. Have a nice day", null, null, null);
+            INotification notification2 = AppNotificationService.CreatePredefinedNotification("Update 23 Nov 2017: The terminology: workpack is now called subjob", null, null, null);
+
             GlobalVariables.IsNotificationShown = true;
-            notification.ShowAsync();
+            notification1.ShowAsync();
+            notification2.ShowAsync();
         }
         //protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         //{
