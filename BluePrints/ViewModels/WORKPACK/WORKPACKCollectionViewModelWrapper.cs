@@ -153,11 +153,9 @@ namespace BluePrints.ViewModels
                         queryWORKPACK = newWORKPACK;
                     }
 
-                    if (deliverable.Entity.Entity.GUID_WORKPACK == null)
-                    {
+
                         deliverable.Entity.Entity.GUID_WORKPACK = queryWORKPACK.GUID;
                         baseline_itemCollectionViewModel.MainViewModel.Save(deliverable);
-                    }
                 }
 
                 LoadingScreenManager.Progress();
