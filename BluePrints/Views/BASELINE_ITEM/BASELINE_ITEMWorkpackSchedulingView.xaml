@@ -335,6 +335,7 @@
                                      Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn Header="WORKPACK" FieldName="P6AssignmentName" Width="100" ReadOnly="True" VisibleIndex="0" />
+                                <dxg:GridColumn Header="TITLE" FieldName="P6AssignmentDescription" Width="100" ReadOnly="True" VisibleIndex="0" />
                                 <dxg:GridColumn Header="ESTIMATED_HOURS" FieldName="Estimated_Units"
                                             ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
