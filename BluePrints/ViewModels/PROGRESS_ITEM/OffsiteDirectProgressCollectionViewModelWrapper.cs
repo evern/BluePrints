@@ -50,6 +50,12 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operation
+        protected override void resolveParameters(object parameter)
+        {
+            is_load_p6_task = true;
+            base.resolveParameters(parameter);
+        }
+
         private BASELINE loadBASELINE;
         protected override void initializeEntitiesLoadersDescription()
         {
@@ -180,7 +186,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, false, P6TASKCollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
@@ -319,6 +325,22 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.CODE);
                 return collection;
+            }
+        }
+
+        public IEnumerable<P6Data.TASK> P6TASKCollection
+        {
+            get
+            {
+                return GetEntities<P6Data.TASK>();
+            }
+        }
+
+        public IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTCollection
+        {
+            get
+            {
+                return GetEntities<P6_ASSIGNMENT>();
             }
         }
 

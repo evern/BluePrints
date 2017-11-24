@@ -51,7 +51,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, bool isInternalNumberAlwaysEditable = false)
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, bool isInternalNumberAlwaysEditable = false, IEnumerable<P6Data.TASK> P6_TASKS = null)
         {
             IQueryable<BASELINE_ITEMProjection> baseline_item_projection;
 
@@ -72,7 +72,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 Entity = x,
                 Live_PROGRESS = PROGRESS,
-                P6_Assignments = P6_ASSIGNMENTS == null ? null : P6_ASSIGNMENTS.Where(assignment => assignment.GUID_ORIGINAL == x.Entity.GUID_ORIGINAL).ToList(),
+                P6_Assignments = PopulateP6Assignment(x, PROJECT, P6_ASSIGNMENTS),
+                P6TASKCollection = P6_TASKS,
                 IsInternalNumberAlwaysEditable = isInternalNumberAlwaysEditable
             }).ToList();
 
@@ -88,6 +89,17 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
 
             return baseline_item_progresses.AsQueryable();
+        }
+
+        private static List<P6_ASSIGNMENT> PopulateP6Assignment(BASELINE_ITEMProjection baseline_item, PROJECT project, IEnumerable<P6_ASSIGNMENT> P6ASSIGNMENTCollection)
+        {
+            if (P6ASSIGNMENTCollection == null)
+                return new List<P6_ASSIGNMENT>();
+
+            if(project.USE_WORKPACKS)
+                return P6ASSIGNMENTCollection.Where(x => x.GUID_ORIGINAL == baseline_item.Workpack_Guid).ToList();
+
+            return P6ASSIGNMENTCollection.Where(x => x.GUID_ORIGINAL == baseline_item.OriginalEntityKey).ToList();
         }
 
         public static IQueryable<ReportablesDisplay> SiteDirectProgressItemTransformation(

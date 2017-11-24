@@ -1,6 +1,7 @@
 ﻿using BaseModel.Attributes;
 using BaseModel.Misc;
 using BluePrints.Common.Base;
+using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
@@ -860,6 +861,62 @@ namespace BluePrints.Common.ViewModel.Reporting
             savePROGRESS_ITEM.CREATED = DateTime.Now;
 
             return savePROGRESS_ITEM;
+        }
+
+        public bool IHaveMilestones
+        {
+            get
+            {
+                if (P6_Assignments == null || P6TASKCollection == null)
+                    return false;
+
+                //when deliverable exceeds this percentage the milestones won't be displayed
+                    decimal minAssignmentPercentage = 0;
+                if (this.Stats != null && this.Stats.Earned != null && this.Stats.Earned.CurrentPeriodCumulativeDataPoint != null)
+                    minAssignmentPercentage = this.Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage;
+
+                return P6_Assignments.Where(x => x.HIGH_VALUE > minAssignmentPercentage).Count() > 0;
+            }
+        }
+
+        public IEnumerable<P6Data.TASK> P6TASKCollection { get; set; }
+
+        List<Deliverable_Milestone> deliverable_milestones;
+        public IEnumerable<Deliverable_Milestone> Milestones
+        {
+            get
+            {
+                if(deliverable_milestones == null)
+                {
+                    deliverable_milestones = new List<Deliverable_Milestone>();
+                    if (P6_Assignments == null || P6TASKCollection == null)
+                        return new List<Deliverable_Milestone>();
+
+                    //when deliverable exceeds this percentage the milestones won't be displayed
+                    decimal minAssignmentPercentage = 0;
+                    if (this.Stats != null && this.Stats.Earned != null && this.Stats.Earned.CurrentPeriodCumulativeDataPoint != null)
+                        minAssignmentPercentage = this.Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage;
+
+                    foreach (P6_ASSIGNMENT p6assignment in P6_Assignments.Where(x => x.HIGH_VALUE > minAssignmentPercentage).OrderBy(x => x.HIGH_VALUE))
+                    {
+                        P6Data.TASK P6TASK = P6TASKCollection.FirstOrDefault(x => x.task_code == p6assignment.P6_ACTIVITYID);
+                        if (P6TASK != null && P6TASK.early_end_date != null)
+                        {
+                            Deliverable_Milestone milestone = new Deliverable_Milestone();
+                            milestone.Milestone = P6TASK.task_name;
+                            milestone.Percentage = p6assignment.HIGH_VALUE;
+                            milestone.DueDate = (DateTime)P6TASK.early_end_date;
+                            deliverable_milestones.Add(milestone);
+                        }
+                    }
+
+                    return deliverable_milestones;
+                }
+                else
+                {
+                    return deliverable_milestones;
+                }
+            }
         }
 
         private List<P6_ASSIGNMENT> p6_assignments;
