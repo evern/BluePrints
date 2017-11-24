@@ -64,6 +64,8 @@ namespace BluePrints.Common.Projections
 
         public Guid? P6_WorkpackGuid => Entity.GUID;
 
+        public string P6AssignmentDescription => Entity.TITLE;
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
         }

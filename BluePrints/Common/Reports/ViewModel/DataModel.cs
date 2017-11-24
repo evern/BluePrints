@@ -917,5 +917,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public Guid? Workpack_Guid { get => Entity.Workpack_Guid; set => Entity.Workpack_Guid = value; }
 
         public Guid? P6_WorkpackGuid => Workpack_Guid;
+
+        public string P6AssignmentDescription => string.Empty;
     }
 }
