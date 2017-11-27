@@ -413,6 +413,23 @@
     <Compile Include="Common\DragDrop\CustomDragDropManagers.cs" />
     <Compile Include="Common\DragDrop\RowColorConverter.cs" />
     <Compile Include="Common\DragDrop\RowNameConverter.cs" />
+    <Compile Include="Common\Filtering\ViewModel\AdvancedDisplayTextBehavior.cs" />
+    <Compile Include="Common\Filtering\ViewModel\AdvancedNavBarGroup.cs" />
+    <Compile Include="Common\Filtering\ViewModel\CustomFilterViewModel.cs" />
+    <Compile Include="Common\Filtering\ViewModel\FilterInfo.cs" />
+    <Compile Include="Common\Filtering\ViewModel\FilterItem.cs" />
+    <Compile Include="Common\Filtering\ViewModel\FiltersSettings.cs" />
+    <Compile Include="Common\Filtering\ViewModel\FilterTreeModelPageSpecificSettings.cs" />
+    <Compile Include="Common\Filtering\ViewModel\FilterTreeViewModel.cs" />
+    <Compile Include="Common\Filtering\ViewModel\IFilterTreeModelPageSpecificSettings.cs" />
+    <Compile Include="Common\Filtering\ViewModel\ISupportFiltering.cs" />
+    <Compile Include="Common\Filtering\ViewModel\TreeViewSelectedItemBehavior.cs" />
+    <Compile Include="Common\Filtering\View\CustomFilterView.xaml.cs">
+      <DependentUpon>CustomFilterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\Filtering\View\FilterTreeView.xaml.cs">
+      <DependentUpon>FilterTreeView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Common\Misc\ActiveDirectory.cs" />
     <Compile Include="Common\Helpers\CommonMethods.cs" />
     <Compile Include="Common\Helpers\CustomMessageBoxService.cs" />
@@ -1406,6 +1423,14 @@
     <Compile Include="Views\WORKPACK\WORKPACKCollectionView.xaml.cs">
       <DependentUpon>WORKPACKCollectionView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Common\Filtering\View\CustomFilterView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\Filtering\View\FilterTreeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Common\View\BasicMessageBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
