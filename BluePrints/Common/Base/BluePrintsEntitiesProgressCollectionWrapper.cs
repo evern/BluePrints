@@ -8,6 +8,7 @@ using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.P6Data;
+using BluePrints.P6EntitiesDataModel;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using BluePrints.Reports;
 using DevExpress.Data;
@@ -36,6 +37,7 @@ namespace BluePrints.Common.Base
     {
         #region Initialization
         protected Data.PROJECT loadPROJECT;
+        public P6Data.PROJECT p6PROJECT;
         protected PROGRESS loadPROGRESS;
         protected bool isQueryForLiveStatus;
         protected abstract CostGroup cost_group { get; }
@@ -47,8 +49,9 @@ namespace BluePrints.Common.Base
         //set current data date timer
         protected DispatcherTimer delayedPROGRESSSavingDispatcher;
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
+        protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected bool is_single_project_mode = true;
+        protected bool is_load_p6_task = false;
         public BluePrintsEntitiesProgressCollectionWrapper()
         {
             onMainViewModelFirstLoadedTimer = new DispatcherTimer();
@@ -84,6 +87,13 @@ namespace BluePrints.Common.Base
                 loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, false);
             }
 
+            if (is_load_p6_task)
+            {
+                loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.P6_ASSIGNMENTS, P6_ASSIGNMENTProjectionFunc);
+                loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJECT, P6PROJECTProjectionFunc, x => p6PROJECT = x);
+                loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.TASK, P6TASKProjectionFunc);
+            }
+
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
@@ -96,6 +106,30 @@ namespace BluePrints.Common.Base
         protected Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
         {
             return query => query.Where(x => x.APPROVED != null && x.TYPE == VariationType.External && x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<P6_ASSIGNMENT>, IQueryable<P6_ASSIGNMENT>> P6_ASSIGNMENTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<P6Data.TASK>, IQueryable<P6Data.TASK>> P6TASKProjectionFunc()
+        {
+            if (p6PROJECT == null)
+                return query => query.Where(x => x.PROJECT.proj_short_name == string.Empty);
+            else
+                return query => query.Where(x => x.proj_id == p6PROJECT.proj_id).Where(x => x.TASKACTV.Count > 0).Where(x => x.delete_date == null).Where(x => x.TASKACTV.Any(taskact => taskact.ACTVCODE != null && taskact.ACTVCODE.actv_code_name.ToUpper() == ProgressType.Design.ToString().ToUpper()));
+        }
+
+        private Func<IRepositoryQuery<P6Data.PROJECT>, IQueryable<P6Data.PROJECT>> P6PROJECTProjectionFunc()
+        {
+            string projectName;
+            if (loadPROGRESS.P6PROGRESS_NAME == null)
+                projectName = string.Empty;
+            else
+                projectName = loadPROGRESS.P6PROGRESS_NAME;
+
+            return query => query.Where(x => x.proj_short_name == projectName);
         }
 
         protected Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
