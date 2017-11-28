@@ -73,10 +73,10 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <Grid.ColumnDefinitions>
+                    <!--<Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*" />
                         <ColumnDefinition Width="1*" />
-                    </Grid.ColumnDefinitions>
+                    </Grid.ColumnDefinitions>-->
                     <custom:GridControlEx x:Name="GridControl" Grid.Column="0" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <custom:GridColumnEx Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA" FilterPopupMode="CheckedList" Tag="True;True;Autofill subjob">
@@ -343,9 +343,9 @@
                         </dxmvvm:Interaction.Behaviors>
                     </custom:GridControlEx>
                 </Grid>
-                <Grid Grid.Column="1">
+                <!--<Grid Grid.Column="1">
                     <filter:FilterTreeView DataContext="{Binding DataContext.FilterTreeViewModel, ElementName=userControl}" />
-                </Grid>
+                </Grid>-->
             </DockPanel>
         </Grid>
     </Grid>
