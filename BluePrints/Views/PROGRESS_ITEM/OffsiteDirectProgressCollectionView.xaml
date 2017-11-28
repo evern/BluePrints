@@ -67,6 +67,7 @@
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Bands>
                             <dxg:GridControlBand Name="bandGeneral" Header="General">
+                                <!--<custom:GridColumnEx FieldName="IAmCritical" Header="Critical" FilterPopupMode="CheckedList" ReadOnly="True" Visible="True" />-->
                                 <custom:GridColumnEx Name="columnSubjob" FieldName="Entity.Entity.GUID_SUBJOB" Header="SUBJOB" FilterPopupMode="CheckedList" ReadOnly="True">
                                     <custom:GridColumnEx.EditSettings>
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" IsTextEditable="False" DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
@@ -269,8 +270,8 @@
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" Increment="0.1" NullValueButtonPlacement="EditBox" />
                                     </custom:GridColumnEx.EditSettings>
                                 </custom:GridColumnEx>
-                                <custom:GridColumnEx Name="colCREATED" FieldName="Last_Updated" Header="UPDATED" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" />
-                                <custom:GridColumnEx Name="colCREATEDBY" FieldName="Last_UpdatedBy" Header="UPDATEDBY" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" >
+                                <custom:GridColumnEx FieldName="Last_Updated" Header="UPDATED" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" />
+                                <custom:GridColumnEx FieldName="Last_UpdatedBy" Header="UPDATEDBY" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" >
                                     <custom:GridColumnEx.EditSettings>
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
                                     </custom:GridColumnEx.EditSettings>
@@ -279,7 +280,7 @@
                         </dxg:GridControl.Bands>
                         <dxg:GridControl.DetailDescriptor>
                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Milestones}">
-                                <dxg:GridControl x:Name="gridControlChild" Style="{StaticResource DefaultDetailGridControlTemplate}">
+                                <dxg:GridControl x:Name="gridControlChild">
                                     <dxg:GridControl.Columns>
                                         <dxg:GridColumn Header="Required Percentage" FieldName="Percentage" ReadOnly="True">
                                             <dxg:GridColumn.EditSettings>
@@ -294,7 +295,7 @@
                                         <dxg:GridColumn Header="P6 Activity" FieldName="Milestone" ReadOnly="True"/>
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView x:Name="tableView1" Style="{StaticResource DefaultDetailTableViewTemplate}" >
+                                        <dxg:TableView x:Name="tableView1" AllowEditing="False" Style="{StaticResource DefaultDetailTableViewTemplate}" >
                                             <dxg:TableView.FormatConditions>
                                                 <dxg:DataBarFormatCondition FieldName="Percentage" MaxValue="1" MinValue="0" >
                                                     <dxc:DataBarFormat BorderBrush="#FF63C384" BorderBrushNegative="#FFFF555A">
@@ -361,6 +362,11 @@
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" ShowTotalSummary="True" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" IsDetailButtonVisibleBinding="{Binding Row.IHaveMilestones}">
+                                <dxg:TableView.FormatConditions>
+                                    <dxg:FormatCondition Expression="[IAmCritical] = 'True'" FieldName="IAmCritical" ApplyToRow="True">
+                                        <dx:Format Background="#FFFF9B98"/>
+                                    </dxg:FormatCondition>
+                                </dxg:TableView.FormatConditions>
                                 <dxg:TableView.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Copy With Headers" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" />
                                     <dxb:BarButtonItem Content="Bulk Edit" Command="{Binding View.DataContext.BulkColumnEditCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />

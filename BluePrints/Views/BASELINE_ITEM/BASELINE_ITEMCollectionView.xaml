@@ -1,6 +1,24 @@
-﻿<UserControl x:Name="userControl" x:Class="BluePrints.Views.BASELINE_ITEMCollectionView" xmlns:view="clr-namespace:BluePrints.Views" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxa="http://schemas.devexpress.com/winfx/2008/xaml/accordion" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:converters="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:common="clr-namespace:BluePrints.Common" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:helper="clr-namespace:BluePrints.Common.Helpers" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:BASELINE_ITEMCollectionViewModelWrapper}">
+﻿<UserControl x:Name="userControl" x:Class="BluePrints.Views.BASELINE_ITEMCollectionView" xmlns:filter="clr-namespace:BluePrints.Common.Filtering"  xmlns:view="clr-namespace:BluePrints.Views" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxa="http://schemas.devexpress.com/winfx/2008/xaml/accordion" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:converters="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:common="clr-namespace:BluePrints.Common" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:helper="clr-namespace:BluePrints.Common.Helpers" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:BASELINE_ITEMCollectionViewModelWrapper}">
     <UserControl.Resources>
         <ResourceDictionary>
+            <DataTemplate x:Key="glyphTemplate">
+                <dx:DXImage x:Name="glyph" Source="{Binding}" Width="16" Height="16" SnapsToDevicePixels="True" Margin="3,0,0,0" />
+                <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                        <Setter TargetName="glyph" Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                </DataTemplate.Triggers>
+            </DataTemplate>
+            <Style x:Key="accordionItemContainerStyle" TargetType="dxa:AccordionItem">
+                <Setter Property="Header" Value="{Binding Name}"/>
+                <Style.Triggers>
+                    <Trigger Property="ItemLevel" Value="1">
+                        <Setter Property="ShowInCollapsedMode" Value="{Binding ShowInCollapsedMode}"/>
+                        <Setter Property="Glyph" Value="{Binding Icon}"/>
+                        <Setter Property="GlyphTemplate" Value="{StaticResource glyphTemplate}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
             <common:RowNameConverter x:Key="RowNameConverter" />
             <converters:IReportableStatsMaximumUnitsConverter x:Key="IReportableStatsMaximumUnitsConverter" />
             <ResourceDictionary.MergedDictionaries>
@@ -55,7 +73,11 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                    <!--<Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>-->
+                    <custom:GridControlEx x:Name="GridControl" Grid.Column="0" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <custom:GridColumnEx Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA" FilterPopupMode="CheckedList" Tag="True;True;Autofill subjob">
                                 <custom:GridColumnEx.EditSettings>
@@ -321,6 +343,9 @@
                         </dxmvvm:Interaction.Behaviors>
                     </custom:GridControlEx>
                 </Grid>
+                <!--<Grid Grid.Column="1">
+                    <filter:FilterTreeView DataContext="{Binding DataContext.FilterTreeViewModel, ElementName=userControl}" />
+                </Grid>-->
             </DockPanel>
         </Grid>
     </Grid>

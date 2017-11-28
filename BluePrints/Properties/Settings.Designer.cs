@@ -12,7 +12,7 @@ namespace BluePrints.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.1.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.3.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -32,6 +32,46 @@ namespace BluePrints.Properties {
             }
             set {
                 this["ThemeName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Setting {
+            get {
+                return ((string)(this["Setting"]));
+            }
+            set {
+                this["Setting"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfFilterInfo xmlns:xsi=\"http://www" +
+            ".w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />" +
+            "")]
+        public global::BluePrints.Common.Filtering.FilterInfoList BASELINE_ITEMProgressCustomFilters {
+            get {
+                return ((global::BluePrints.Common.Filtering.FilterInfoList)(this["BASELINE_ITEMProgressCustomFilters"]));
+            }
+            set {
+                this["BASELINE_ITEMProgressCustomFilters"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfFilterInfo xmlns:xsi=\"http://www" +
+            ".w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />" +
+            "")]
+        public global::BluePrints.Common.Filtering.FilterInfoList BASELINE_ITEMProgressStaticFilters {
+            get {
+                return ((global::BluePrints.Common.Filtering.FilterInfoList)(this["BASELINE_ITEMProgressStaticFilters"]));
+            }
+            set {
+                this["BASELINE_ITEMProgressStaticFilters"] = value;
             }
         }
     }
