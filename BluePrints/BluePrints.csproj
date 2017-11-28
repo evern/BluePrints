@@ -427,6 +427,9 @@
     <Compile Include="Common\Filtering\View\CustomFilterView.xaml.cs">
       <DependentUpon>CustomFilterView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\Filtering\View\FilterAccordionView.xaml.cs">
+      <DependentUpon>FilterAccordionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Common\Filtering\View\FilterTreeView.xaml.cs">
       <DependentUpon>FilterTreeView.xaml</DependentUpon>
     </Compile>
@@ -1424,6 +1427,10 @@
       <DependentUpon>WORKPACKCollectionView.xaml</DependentUpon>
     </Compile>
     <Page Include="Common\Filtering\View\CustomFilterView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\Filtering\View\FilterAccordionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -41,5 +41,10 @@ namespace BluePrints.Common.Filtering
         protected virtual void OnNameChanged() {
             Update(EntitiesCount);
         }
+
+        public override string ToString()
+        {
+            return DisplayText;
+        }
     }
 }

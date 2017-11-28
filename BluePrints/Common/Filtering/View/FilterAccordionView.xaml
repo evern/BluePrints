@@ -1,0 +1,46 @@
+﻿<UserControl x:Name="filterControl" x:Class="BluePrints.Common.Filtering.FilterAccordionView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+        xmlns:dxa="http://schemas.devexpress.com/winfx/2008/xaml/accordion"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:viewmodel="clr-namespace:BluePrints.Common.Filtering"
+        xmlns:dxat="http://schemas.devexpress.com/winfx/2008/xaml/accordion/themekeys"
+        xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+        mc:Ignorable="d"
+        d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <!--<DataTemplate x:Key="glyphTemplate">
+            <dx:DXImage x:Name="glyph" Source="{Binding}" Width="16" Height="16" SnapsToDevicePixels="True" Margin="3,0,0,0" />
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                    <Setter TargetName="glyph" Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>-->
+        <!--<Style x:Key="{dxat:AccordionThemeKeys ResourceKey=CollapsedItemDecoratorStyle, IsThemeIndependent=True}"
+               BasedOn="{StaticResource {dxat:AccordionThemeKeys ResourceKey=CollapsedItemDecoratorStyleBase}}" TargetType="{x:Type dxa:CollapsedItemDecorator}">
+            <Setter Property="GlyphTemplate" Value="{StaticResource glyphTemplate}"/>
+        </Style>-->
+    </UserControl.Resources>
+    <dxa:AccordionControl ItemsSource="{Binding CustomFilters}" SelectionMode="Single" SummaryItemHeader="All Filters" ShowSearchControl="True" CollapsedItemClickAction="Select" IsExpanded="{Binding IsExpanded}" IsCollapseButtonVisible="True" CollapsePopupPlacement="Right" SelectedItem="{Binding SelectedItem, Mode=TwoWay}" BorderThickness="0" Background="Transparent" Foreground="{Binding Parent.Foreground, RelativeSource={RelativeSource Self}}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <dxa:AccordionControl.ItemContainerStyle>
+            <Style TargetType="dxa:AccordionItem">
+                <Setter Property="ShowInCollapsedMode" Value="True" />
+            </Style>
+        </dxa:AccordionControl.ItemContainerStyle>
+        <dxa:AccordionControl.ItemTemplate>
+            <DataTemplate DataType="{x:Type viewmodel:FilterItem}">
+                <TextBlock Text="{Binding DisplayText}" TextTrimming="WordEllipsis"
+                               Tag="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type dxa:AccordionView}}}" >
+                    <TextBlock.ContextMenu>
+                        <ContextMenu Name="menu">
+                            <MenuItem Header="Delete Custom Filter" Command="{Binding Path=PlacementTarget.Tag.DeleteCustomFilterCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}" CommandParameter="{Binding}" />
+                        </ContextMenu>
+                    </TextBlock.ContextMenu>
+                </TextBlock>
+            </DataTemplate>
+        </dxa:AccordionControl.ItemTemplate>
+    </dxa:AccordionControl>
+</UserControl>

@@ -44,7 +44,7 @@
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Home">
-                            <dxr:RibbonPageGroup Caption="BASELINE ITEM Tasks">
+                            <dxr:RibbonPageGroup Caption="Deliverables Tasks">
                                 <dxb:BarButtonItem Content="Delete Row" Command="{Binding BulkDeleteCommand}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
@@ -52,17 +52,23 @@
                                 <dxb:BarButtonItem Content="Save Layout" Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" Glyph="{dx:DXImage Image=Save_16x16.png}" />
                                 <dxb:BarButtonItem Content="Reset Layout" Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
                                 <dxb:BarCheckItem Content="Cell Selection" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" Glyph="{dx:DXImage Image=SplitTableCells_16x16.png}" LargeGlyph="{dx:DXImage Image=SplitTableCells_32x32.png}" />
+                                <dxb:BarButtonItem Content="Save Filters" Command="{Binding DataContext.SaveFiltersCommand, ElementName=userControl}" Glyph="{dxc:DXImage Image=QuickFilter_16x16.png}" LargeGlyph="{dx:DXImage Image=QuickFilter_32x32.png}" />
                                 <!--<dxb:BarCheckItem Content="Allow Drag Drop" IsChecked="{Binding DataContext.Allow_Drag_Drop, ElementName=userControl, Mode=TwoWay}" Glyph="{dx:DXImage Image=Inbox_16x16.png}" LargeGlyph="{dx:DXImage Image=Inbox_32x32.png}" />-->
                                 <dxb:BarItemSeparator />
                                 <dxb:BarButtonItem Content="Edit Report" Command="{Binding DataContext.EditReportCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                 <dxb:BarButtonItem Content="View Report" Command="{Binding DataContext.ViewReportCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Report_32x32.png}" Glyph="{dx:DXImage Image=Report_16x16.png}" />
                                 <dxb:BarItemSeparator />
-                                <dxb:BarCheckItem Content="Lock Baseline" IsChecked="{Binding DataContext.IsBASELINELocked, ElementName=userControl}" Glyph="{dxc:DXImage Image=ProtectDocument_16x16.png}" LargeGlyph="{dxc:DXImage Image=ProtectDocument_32x32.png}" />
-                                <dxb:BarCheckItem Content="Auto Number" IsChecked="{Binding DataContext.Is_Autofill_Internal_Number, ElementName=userControl}" Glyph="{dxc:DXImage Image=Wizard_16x16.png}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" />
-                                <dxb:BarButtonItem Content="Export" Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
-                                <dxb:BarButtonItem Content="Map Client Internal Number" Command="{Binding DataContext.MapClientNumberCommand, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" Glyph="{dx:DXImage Image=Wizard_16x16.png}" />
+                                <dxb:BarCheckItem Content="Lock Baseline" IsChecked="{Binding DataContext.IsBASELINELocked, ElementName=userControl}" Glyph="{dxc:DXImage Image=ProtectDocument_16x16.png}" LargeGlyph="{dxc:DXImage Image=ProtectDocument_32x32.png}" ToolTip="Lock total estimated units" />
+                                <!--<dxb:BarCheckItem Content="Auto Number" IsChecked="{Binding DataContext.Is_Autofill_Internal_Number, ElementName=userControl}" Glyph="{dxc:DXImage Image=Wizard_16x16.png}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" />-->
+                                <dxb:BarButtonItem Content="Export" Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" ToolTip="Export current view to excel" />
+                                <dxb:BarButtonItem Content="Map Client Internal Number" Command="{Binding DataContext.MapClientNumberCommand, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" Glyph="{dx:DXImage Image=Wizard_16x16.png}" ToolTip="Copy 2 columns from excel with the left being internal number and the right being client number, then paste it in here" />
                                 <dxb:BarItemSeparator />
-                                <dxb:BarCheckItem Content="Internal Number Always Editable" IsChecked="{Binding DataContext.InternalNumberAlwaysEditable, ElementName=userControl, Mode=TwoWay}" Glyph="{dxc:DXImage Image=EditName_16x16.png}" LargeGlyph="{dx:DXImage Image=EditName_32x32.png}" />
+                                <!--<dxb:BarCheckItem Content="Internal Number Always Editable" Glyph="{dxc:DXImage Image=EditName_16x16.png}" LargeGlyph="{dx:DXImage Image=EditName_32x32.png}" />-->
+                            </dxr:RibbonPageGroup>
+                            <dxr:RibbonPageGroup Caption="Internal Number Mode">
+                                <dxb:BarCheckItem Content="Default" IsChecked="{Binding DataContext.InternalNumDefault, ElementName=userControl, Mode=TwoWay}"  Glyph="{dxc:DXImage Image=CheckButtons_16x16.png}" LargeGlyph="{dx:DXImage Image=CheckButtons_32x32.png}" ToolTip="Only non-progressed internal number can be edited and auto-generated" />
+                                <dxb:BarCheckItem Content="Editable" IsChecked="{Binding DataContext.InternalNumAlwaysEditable, ElementName=userControl, Mode=TwoWay}"  Glyph="{dxc:DXImage Image=EditName_16x16.png}" LargeGlyph="{dx:DXImage Image=EditName_32x32.png}" ToolTip="All internal number can be auto-generated and edited" />
+                                <dxb:BarCheckItem Content="Manual" IsChecked="{Binding DataContext.InternalNumManual, ElementName=userControl, Mode=TwoWay}"  Glyph="{dxc:DXImage Image=BORules_16x16.png}" LargeGlyph="{dx:DXImage Image=BORules_32x32.png}" ToolTip="Only non-progressed internal number can be manually edited or populated by context menu option" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -72,281 +78,245 @@
                         <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
-                <Grid>
-                    <!--<Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
-                    </Grid.ColumnDefinitions>-->
-                    <custom:GridControlEx x:Name="GridControl" Grid.Column="0" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
-                        <dxg:GridControl.Columns>
-                            <custom:GridColumnEx Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA" FilterPopupMode="CheckedList" Tag="True;True;Autofill subjob">
-                                <custom:GridColumnEx.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
-                                </custom:GridColumnEx.EditSettings>
-                            </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colSUBAREA" FieldName="Entity.Entity.SubAreaGuid" Header="SUBAREA" FilterPopupMode="CheckedList" ColumnFilterMode="DisplayText" Tag="True;True;Autofill from subjob">
-                                <custom:GridColumnEx.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:ComboBoxEdit x:Name="PART_Editor" ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}" DisplayMember="INTERNAL_NUM" ValueMember="GUID" ValidateOnTextInput="True" ValidateOnEnterKeyPressed="True" IncrementalFiltering="True" NullValueButtonPlacement="Popup" ImmediatePopup="True"></dxe:ComboBoxEdit>
-                                    </DataTemplate>
-                                </custom:GridColumnEx.CellTemplate>
-                                <!--For Filtering-->
-                                <custom:GridColumnEx.EditSettings>
-                                    <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
-                                </custom:GridColumnEx.EditSettings>
-                            </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colDOCTYPE" FieldName="Entity.Entity.GUID_DOCTYPE" FilterPopupMode="CheckedList" Header="DOCTYPE">
-                                <custom:GridColumnEx.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
-                                </custom:GridColumnEx.EditSettings>
-                            </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colDISCIPLINE" FieldName="Entity.Entity.GUID_DISCIPLINE" FilterPopupMode="CheckedList" Header="DISCIPLINE">
-                                <custom:GridColumnEx.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
-                                </custom:GridColumnEx.EditSettings>
-                            </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colDISCIPLINE_NUM" FieldName="Entity.Entity.DISCIPLINE_NUM" FilterPopupMode="CheckedList" Header="DISC. NUM">
-                                <custom:GridColumnEx.EditSettings>
-                                    <dxe:SpinEditSettings IsTextEditable="True" IsFloatValue="False" Increment="1" MinValue="1" MaxValue="99" MaskType="Numeric" Mask="n0" MaskUseAsDisplayFormat="True" />
-                                </custom:GridColumnEx.EditSettings>
-                            </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colDEPARTMENT" FieldName="Entity.Entity.GUID_DEPARTMENT" FilterPopupMode="CheckedList" Header="DEPARTMENT">
-                                <custom:GridColumnEx.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
-                                </custom:GridColumnEx.EditSettings>
-                            </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colINTERNAL_NUM" FieldName="Entity.Entity.INTERNAL_NUM" FilterPopupMode="CheckedList" Tag="True;False;Autofill from area, department, discipline and doc-type" Header="INTERNAL_NUM">
-                                <custom:GridColumnEx.CellTemplate>
-                                    <DataTemplate>
-                                        <!-- Use IsEnabled because when textEdit is invoked the 2nd time IsReadOnly didn't get picked up in the binding -->
-                                        <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsInternalNumberEditable}" />
-                                    </DataTemplate>
-                                </custom:GridColumnEx.CellTemplate>
-                            </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colCLIENT_NUM" FieldName="Entity.Entity.CLIENT_NUM" FilterPopupMode="CheckedList" Header="CLIENT_NUM" />
-                            <custom:GridColumnEx Name="colREVISION_NUMBER" FieldName="Entity.Entity.REVISION_NUMBER" FilterPopupMode="CheckedList" Header="REVISION_NUM" />
-                            <custom:GridColumnEx Name="colDELIVERABLE_TYPE" FieldName="Entity.Entity.DELIVERABLE_TYPE" FilterPopupMode="CheckedList" Header="TYPE">
-                                <custom:GridColumnEx.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DeliverableType}}" />
-                                </custom:GridColumnEx.EditSettings>
-                            </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colPRIMARY_TITLE" FieldName="Entity.Entity.PRIMARY_TITLE" FilterPopupMode="CheckedList" Header="PRIMARY_TITLE" />
-                            <custom:GridColumnEx Name="colSECONDARY_TITLE" FieldName="Entity.Entity.SECONDARY_TITLE" FilterPopupMode="CheckedList" Header="SECONDARY_TITLE" />
-                            <custom:GridColumnEx Name="colCOMMENTS" FieldName="Entity.Entity.COMMENTS" Header="COMMENTS" FilterPopupMode="CheckedList" />
-                            <custom:GridColumnEx Name="colSTATUS" FieldName="Entity.Entity.DeliverableStatusGuid" Header="STATUS" ColumnFilterMode="DisplayText" FilterPopupMode="Custom">
-                                <custom:GridColumnEx.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:ComboBoxEdit x:Name="PART_Editor" ItemsSource="{Binding RowData.Row.Entity.Entity.DeliverableStatusCollection}" DisplayMember="NAME" ValueMember="GUID" ValidateOnTextInput="True" ValidateOnEnterKeyPressed="True" IncrementalFiltering="True" NullValueButtonPlacement="Popup" ImmediatePopup="True"></dxe:ComboBoxEdit>
-                                    </DataTemplate>
-                                </custom:GridColumnEx.CellTemplate>
-                                <!--For Filtering-->
-                                <custom:GridColumnEx.EditSettings>
-                                    <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox" ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
-                                </custom:GridColumnEx.EditSettings>
-                            </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colUSER" FieldName="Entity.Entity.GUID_USER" Header="RESOURCE" FilterPopupMode="CheckedList">
-                                <custom:GridColumnEx.EditSettings>
-                                    <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
-                                </custom:GridColumnEx.EditSettings>
-                            </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colBY_DURATION" FieldName="Entity.Entity.BY_DURATION" Header="BY DURATION" FilterPopupMode="CheckedList">
-                                <custom:GridColumnEx.EditSettings>
-                                    <dxe:CheckEditSettings />
-                                </custom:GridColumnEx.EditSettings>
-                            </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colESTIMATED_HOURS" FieldName="Entity.Entity.ESTIMATED_HOURS" Header="ESTIMATED_HOURS" FilterPopupMode="CheckedList" SortMode="Custom">
-                                <custom:GridColumnEx.CellTemplate>
-                                    <DataTemplate>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="15" />
-                                                <ColumnDefinition Width="15" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Image Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}" ToolTip="Cannot reduce anymore because these units has already been earned" Grid.Column="0">
-                                                <Image.Visibility>
-                                                    <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
-                                                        <MultiBinding.ConverterParameter>
-                                                            <sys:Boolean>False</sys:Boolean>
-                                                        </MultiBinding.ConverterParameter>
-                                                        <Binding ElementName="PART_Editor" Path="MinValue" />
-                                                        <Binding ElementName="PART_Editor" Path="EditValue" />
-                                                    </MultiBinding>
-                                                </Image.Visibility>
-                                            </Image>
-                                            <Image Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}" ToolTip="Maximum possible units, please reduce other deliverable units to increase this" Grid.Column="1">
-                                                <Image.Visibility>
-                                                    <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
-                                                        <MultiBinding.ConverterParameter>
-                                                            <sys:Boolean>False</sys:Boolean>
-                                                        </MultiBinding.ConverterParameter>
-                                                        <Binding ElementName="PART_Editor" Path="MaxValue" />
-                                                        <Binding ElementName="PART_Editor" Path="EditValue" />
-                                                    </MultiBinding>
-                                                </Image.Visibility>
-                                            </Image>
-                                            <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" Increment="1" IsReadOnly="{Binding RowData.Row.Entity.Entity.BY_DURATION}" MinValue="{Binding RowData.Row.MinEstimateUnits}" Grid.Column="2">
-                                                <dxe:SpinEdit.MaxValue>
-                                                    <MultiBinding Converter="{StaticResource IReportableStatsMaximumUnitsConverter}">
-                                                        <Binding ElementName="userControl" Path="DataContext.TotalAllowedUnits" />
-                                                        <Binding ElementName="userControl" Path="DataContext.DisplayEntities" />
-                                                        <Binding Path="RowData.Row" />
-                                                    </MultiBinding>
-                                                </dxe:SpinEdit.MaxValue>
-                                            </dxe:SpinEdit>
-                                        </Grid>
-                                    </DataTemplate>
-                                </custom:GridColumnEx.CellTemplate>
-                            </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colTARGET_DATE" FieldName="Entity.Entity.TARGET_DATE" Header="TARGET DATE" FilterPopupMode="CheckedList">
-                                <custom:GridColumnEx.EditSettings>
-                                    <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
-                                </custom:GridColumnEx.EditSettings>
-                            </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colDC_HOURS" FieldName="Entity.Entity.DC_HOURS" Header="DC_HOURS" ReadOnly="True" FilterPopupMode="CheckedList" />
-                            <custom:GridColumnEx Name="colTOTAL_COSTS" FieldName="Entity.Total_Costs" Header="COSTS" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True">
-                                <custom:GridColumnEx.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True" MaskType="Numeric" Mask="c" />
-                                    </DataTemplate>
-                                </custom:GridColumnEx.CellTemplate>
-                            </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colPHASE" FieldName="Entity.Entity.GUID_PHASE" Header="PHASE" FilterPopupMode="CheckedList" >
-                                <custom:GridColumnEx.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
-                                </custom:GridColumnEx.EditSettings>
-                            </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colSUBJOB" FieldName="Entity.Entity.GUID_SUBJOB" Header="SUBJOB" Visible="true" FilterPopupMode="CheckedList"  Tag="True;True;Autofill from area and sub-area">
-                                <custom:GridColumnEx.EditSettings>
-                                    <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1" ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
-                                </custom:GridColumnEx.EditSettings>
-                            </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colWORKPACK" FieldName="Entity.Entity.GUID_WORKPACK" Header="WORKPACK" Visible="true" FilterPopupMode="CheckedList" Tag="True;True;Autofill from workpack, discipline and discipline number">
-                                <custom:GridColumnEx.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
-                                </custom:GridColumnEx.EditSettings>
-                            </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colCREATED" FieldName="Entity.Entity.CREATED" Header="CREATED" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" />
-                            <custom:GridColumnEx Name="colCREATEDBY" FieldName="Entity.Entity.CREATEDBY" Header="CREATEDBY" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" >
-                                <custom:GridColumnEx.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
-                                </custom:GridColumnEx.EditSettings>
-                            </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colUPDATED" FieldName="Entity.Entity.UPDATED" Header="UPDATED" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" />
-                            <custom:GridColumnEx Name="colUPDATEDBY" FieldName="Entity.Entity.UPDATEDBY" Header="UPDATEDBY" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" >
-                                <custom:GridColumnEx.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
-                                </custom:GridColumnEx.EditSettings>
-                            </custom:GridColumnEx>
-                            <custom:GridColumnEx Name="colORIGINALKEY" FieldName="Entity.Entity.GUID_ORIGINAL" Header="PROGRESS KEY" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" />
-                        </dxg:GridControl.Columns>
-                        <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.COMMENTS" SummaryType="Count" ShowInColumn="Entity.Entity.COMMENTS" DisplayFormat="Total {0} Records" />
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.ESTIMATED_HOURS" SummaryType="Sum" ShowInColumn="Entity.Entity.ESTIMATED_HOURS" DisplayFormat="Total: {0}" />
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Total_Costs" SummaryType="Sum" ShowInColumn="Entity.Total_Costs" DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.DC_HOURS" SummaryType="Sum" ShowInColumn="Entity.Entity.DC_HOURS" DisplayFormat="Total: {0:n}" />
-                        </dxg:GridControl.GroupSummary>
-                        <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.COMMENTS" SummaryType="Count" ShowInColumn="Entity.Entity.COMMENTS" DisplayFormat="Total {0} Records" />
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.ESTIMATED_HOURS" SummaryType="Sum" ShowInColumn="Entity.Entity.ESTIMATED_HOURS" DisplayFormat="Total: {0}" />
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Total_Costs" SummaryType="Sum" ShowInColumn="Entity.Total_Costs" DisplayFormat="Total: {0:c2}" />
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.DC_HOURS" SummaryType="Sum" ShowInColumn="Entity.Entity.DC_HOURS" DisplayFormat="Total: {0:n}" />
-                        </dxg:GridControl.TotalSummary>
-                        <dxg:GridControl.View>
-                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" ShowGridMenu="tableView_ShowGridMenu">
-                                <dxmvvm:Interaction.Behaviors>
-                                    <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="CellValueChanged" />
-                                </dxmvvm:Interaction.Behaviors>
-                                <dxg:TableView.RowCellMenuCustomizations>
-                                    <dxb:BarButtonItem Name="contextMenuCopyWithHeader" Content="Copy With Headers" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" />
-                                    <dxb:BarButtonItem Name="contextMenuBulkEdit" Content="Bulk Edit" Command="{Binding View.DataContext.BulkColumnEditCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
-                                    <dxb:BarButtonItem Name="contextFindReplace" Content="Find and Replace" Command="{Binding DataContext.FindReplaceCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=Replace_16x16.png}" />
-                                    <dxb:BarButtonItem Name="contextMenuFillUp" Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" Command="{Binding View.DataContext.FillUpCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Name="contextMenuFillDown" Content="Fill Down" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" Command="{Binding View.DataContext.FillDownCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Name="contextMenuPopulate" Content="Populate" Glyph="{dx:DXImageOffice2013 Image=PictureShapeFillColor_16x16.png}" Command="{Binding DataContext.AutoPopulateCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem x:Name="contextMenuDuplicate" Content="Duplicate" Command="{Binding DataContext.DuplicateCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" />
-                                    <dxb:BarSubItem x:Name="contextMenuDuplicateMulti" Content="Duplicate Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}">
-                                        <dxb:BarEditItem x:Name="contextMenuDuplicateMultiCount" Content="Count" EditValue="2">
-                                            <dxb:BarEditItem.EditSettings>
-                                                <dxe:SpinEditSettings IsTextEditable="True" IsFloatValue="False" Increment="1" MinValue="2" MaxValue="99" MaskType="Numeric" Mask="n0" MaskUseAsDisplayFormat="True">
-                                                    <dxe:SpinEditSettings.Buttons>
-                                                        <dxe:ButtonInfo x:Name="contextMenuDuplicateMultiCountBtn" GlyphKind="Apply">
-                                                            <dxmvvm:Interaction.Behaviors>
-                                                                <dxmvvm:EventToCommand Command="{Binding DataContext.DuplicateMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuDuplicateMultiCount}" EventName="Click" />
-                                                            </dxmvvm:Interaction.Behaviors>
-                                                        </dxe:ButtonInfo>
-                                                    </dxe:SpinEditSettings.Buttons>
-                                                </dxe:SpinEditSettings>
-                                            </dxb:BarEditItem.EditSettings>
-                                        </dxb:BarEditItem>
-                                    </dxb:BarSubItem>
-                                    <dxb:BarButtonItem x:Name="contextMenuInsert" Content="Insert" Command="{Binding DataContext.InsertCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" />
-                                    <dxb:BarSubItem x:Name="contextMenuInsertMulti" Content="Insert Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}">
-                                        <dxb:BarEditItem x:Name="contextMenuInsertMultiCount" Content="Count" EditValue="2">
-                                            <dxb:BarEditItem.EditSettings>
-                                                <dxe:SpinEditSettings IsTextEditable="True" IsFloatValue="False" Increment="1" MinValue="2" MaxValue="99" MaskType="Numeric" Mask="n0" MaskUseAsDisplayFormat="True">
-                                                    <dxe:SpinEditSettings.Buttons>
-                                                        <dxe:ButtonInfo x:Name="contextMenuInsertMultiCountBtn" GlyphKind="Apply">
-                                                            <dxmvvm:Interaction.Behaviors>
-                                                                <dxmvvm:EventToCommand Command="{Binding DataContext.InsertMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuInsertMultiCount}" EventName="Click" />
-                                                            </dxmvvm:Interaction.Behaviors>
-                                                        </dxe:ButtonInfo>
-                                                    </dxe:SpinEditSettings.Buttons>
-                                                </dxe:SpinEditSettings>
-                                            </dxb:BarEditItem.EditSettings>
-                                        </dxb:BarEditItem>
-                                    </dxb:BarSubItem>
-                                    <dxb:BarButtonItem Content="Delete Row" Command="{Binding View.DataContext.BulkDeleteCommand}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                </dxg:TableView.RowCellMenuCustomizations>
-                                <dxg:TableView.FormatConditions>
-                                    <dxg:UniqueDuplicateRuleFormatCondition FieldName="Entity.Entity.INTERNAL_NUM">
-                                        <dxc:Format Background="Salmon" TextDecorations="{x:Null}" />
-                                    </dxg:UniqueDuplicateRuleFormatCondition>
-                                    <dxg:UniqueDuplicateRuleFormatCondition FieldName="Entity.Entity.GUID_ORIGINAL">
-                                        <dxc:Format Background="Salmon" TextDecorations="{x:Null}" />
-                                    </dxg:UniqueDuplicateRuleFormatCondition>
-                                </dxg:TableView.FormatConditions>
-                            </dxg:TableView>
-                        </dxg:GridControl.View>
-                        <dxmvvm:Interaction.Behaviors>
-                            <dxmvvm:EventToCommand EventName="CustomColumnSort" Command="{Binding DataContext.OnCustomColumnSortCommand, ElementName=userControl}" PassEventArgsToCommand="True"/>
-                            <!--<common:CustomTableViewDragDropManager AllowDrag="{Binding DataContext.Allow_Drag_Drop, ElementName=userControl}" AllowDrop="{Binding DataContext.Allow_Drag_Drop, ElementName=userControl}" >
-                                <dxmvvm:Interaction.Behaviors>
-                                    <dxmvvm:EventToCommand EventName="Drop" Command="{Binding DataContext.TableView_DropCommand, ElementName=userControl}" PassEventArgsToCommand="True"/>
-                                    <dxmvvm:EventToCommand EventName="Dropped" Command="{Binding DataContext.TableView_DroppedCommand, ElementName=userControl}" PassEventArgsToCommand="True"/>
-                                </dxmvvm:Interaction.Behaviors>
-                                <common:CustomTableViewDragDropManager.DragElementTemplate>
-                                    <DataTemplate>
-                                        <Border Background="White" CornerRadius="5" BorderThickness="2" BorderBrush="LightGray">
-                                            <StackPanel Orientation="Vertical" Background="White" HorizontalAlignment="Left" Margin="5">
-                                                <StackPanel Margin="5" Orientation="Vertical" Background="White">
-                                                    <TextBlock Padding="3" FontWeight="Bold" Text="{Binding Path=DraggingRows.Count, StringFormat='Dragging {0} row(s)'}" />
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Source: " />
-                                                        <TextBlock Padding="0,3,3,3" Text="{Binding Path=DraggingRows, Converter={StaticResource RowNameConverter}}"/>
-                                                    </StackPanel>
-                                                </StackPanel>
-                                                <Separator />
-                                                <StackPanel Margin="5" Orientation="Horizontal">
-                                                    <StackPanel.Background>
-                                                        <Binding Path="." Converter="{StaticResource RowColorConverter}" UpdateSourceTrigger="PropertyChanged"/>
-                                                    </StackPanel.Background>
-                                                    <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Target: " />
-                                                    <TextBlock Padding="0,3,3,0" Text="{Binding Path=DropTargetRow, Converter={StaticResource RowNameConverter}}"/>
-                                                </StackPanel>
-                                            </StackPanel>
-                                        </Border>
-                                    </DataTemplate>
-                                </common:CustomTableViewDragDropManager.DragElementTemplate>
-                            </common:CustomTableViewDragDropManager>-->
-                        </dxmvvm:Interaction.Behaviors>
-                    </custom:GridControlEx>
-                </Grid>
-                <!--<Grid Grid.Column="1">
-                    <filter:FilterTreeView DataContext="{Binding DataContext.FilterTreeViewModel, ElementName=userControl}" />
-                </Grid>-->
+                <filter:FilterAccordionView DataContext="{Binding DataContext.FilterTreeViewModel, ElementName=userControl}" />
+                <custom:GridControlEx x:Name="GridControl" Grid.Column="0" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}" DockPanel.Dock="Right">
+                    <dxg:GridControl.Columns>
+                        <custom:GridColumnEx Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA" FilterPopupMode="CheckedList" Tag="True;True;Autofill subjob">
+                            <custom:GridColumnEx.EditSettings>
+                                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
+                            </custom:GridColumnEx.EditSettings>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Name="colSUBAREA" FieldName="Entity.Entity.SubAreaGuid" Header="SUBAREA" FilterPopupMode="CheckedList" ColumnFilterMode="DisplayText" Tag="True;True;Autofill from subjob">
+                            <custom:GridColumnEx.CellTemplate>
+                                <DataTemplate>
+                                    <dxe:ComboBoxEdit x:Name="PART_Editor" ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}" DisplayMember="INTERNAL_NUM" ValueMember="GUID" ValidateOnTextInput="True" ValidateOnEnterKeyPressed="True" IncrementalFiltering="True" NullValueButtonPlacement="Popup" ImmediatePopup="True"></dxe:ComboBoxEdit>
+                                </DataTemplate>
+                            </custom:GridColumnEx.CellTemplate>
+                            <!--For Filtering-->
+                            <custom:GridColumnEx.EditSettings>
+                                <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
+                            </custom:GridColumnEx.EditSettings>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Name="colDOCTYPE" FieldName="Entity.Entity.GUID_DOCTYPE" FilterPopupMode="CheckedList" Header="DOCTYPE">
+                            <custom:GridColumnEx.EditSettings>
+                                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                            </custom:GridColumnEx.EditSettings>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Name="colDISCIPLINE" FieldName="Entity.Entity.GUID_DISCIPLINE" FilterPopupMode="CheckedList" Header="DISCIPLINE">
+                            <custom:GridColumnEx.EditSettings>
+                                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                            </custom:GridColumnEx.EditSettings>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Name="colDISCIPLINE_NUM" FieldName="Entity.Entity.DISCIPLINE_NUM" FilterPopupMode="CheckedList" Header="DISC. NUM">
+                            <custom:GridColumnEx.EditSettings>
+                                <dxe:SpinEditSettings IsTextEditable="True" IsFloatValue="False" Increment="1" MinValue="1" MaxValue="99" MaskType="Numeric" Mask="n0" MaskUseAsDisplayFormat="True" />
+                            </custom:GridColumnEx.EditSettings>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Name="colDEPARTMENT" FieldName="Entity.Entity.GUID_DEPARTMENT" FilterPopupMode="CheckedList" Header="DEPARTMENT">
+                            <custom:GridColumnEx.EditSettings>
+                                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                            </custom:GridColumnEx.EditSettings>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Name="colINTERNAL_NUM" FieldName="Entity.Entity.INTERNAL_NUM" FilterPopupMode="CheckedList" Tag="True;False;Autofill from area, department, discipline and doc-type" Header="INTERNAL_NUM">
+                            <custom:GridColumnEx.CellTemplate>
+                                <DataTemplate>
+                                    <!-- Use IsEnabled because when textEdit is invoked the 2nd time IsReadOnly didn't get picked up in the binding -->
+                                    <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsInternalNumberEditable}" />
+                                </DataTemplate>
+                            </custom:GridColumnEx.CellTemplate>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Name="colCLIENT_NUM" FieldName="Entity.Entity.CLIENT_NUM" FilterPopupMode="CheckedList" Header="CLIENT_NUM" />
+                        <custom:GridColumnEx Name="colREVISION_NUMBER" FieldName="Entity.Entity.REVISION_NUMBER" FilterPopupMode="CheckedList" Header="REVISION_NUM" />
+                        <custom:GridColumnEx Name="colDELIVERABLE_TYPE" FieldName="Entity.Entity.DELIVERABLE_TYPE" FilterPopupMode="CheckedList" Header="TYPE">
+                            <custom:GridColumnEx.EditSettings>
+                                <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DeliverableType}}" />
+                            </custom:GridColumnEx.EditSettings>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Name="colPRIMARY_TITLE" FieldName="Entity.Entity.PRIMARY_TITLE" FilterPopupMode="CheckedList" Header="PRIMARY_TITLE" />
+                        <custom:GridColumnEx Name="colSECONDARY_TITLE" FieldName="Entity.Entity.SECONDARY_TITLE" FilterPopupMode="CheckedList" Header="SECONDARY_TITLE" />
+                        <custom:GridColumnEx Name="colCOMMENTS" FieldName="Entity.Entity.COMMENTS" Header="COMMENTS" FilterPopupMode="CheckedList" />
+                        <custom:GridColumnEx Name="colSTATUS" FieldName="Entity.Entity.DeliverableStatusGuid" Header="STATUS" ColumnFilterMode="DisplayText" FilterPopupMode="Custom">
+                            <custom:GridColumnEx.CellTemplate>
+                                <DataTemplate>
+                                    <dxe:ComboBoxEdit x:Name="PART_Editor" ItemsSource="{Binding RowData.Row.Entity.Entity.DeliverableStatusCollection}" DisplayMember="NAME" ValueMember="GUID" ValidateOnTextInput="True" ValidateOnEnterKeyPressed="True" IncrementalFiltering="True" NullValueButtonPlacement="Popup" ImmediatePopup="True"></dxe:ComboBoxEdit>
+                                </DataTemplate>
+                            </custom:GridColumnEx.CellTemplate>
+                            <!--For Filtering-->
+                            <custom:GridColumnEx.EditSettings>
+                                <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox" ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                            </custom:GridColumnEx.EditSettings>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Name="colUSER" FieldName="Entity.Entity.GUID_USER" Header="RESOURCE" FilterPopupMode="CheckedList">
+                            <custom:GridColumnEx.EditSettings>
+                                <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                            </custom:GridColumnEx.EditSettings>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Name="colBY_DURATION" FieldName="Entity.Entity.BY_DURATION" Header="BY DURATION" FilterPopupMode="CheckedList">
+                            <custom:GridColumnEx.EditSettings>
+                                <dxe:CheckEditSettings />
+                            </custom:GridColumnEx.EditSettings>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Name="colESTIMATED_HOURS" FieldName="Entity.Entity.ESTIMATED_HOURS" Header="ESTIMATED_HOURS" FilterPopupMode="CheckedList" SortMode="Custom">
+                            <custom:GridColumnEx.CellTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="15" />
+                                            <ColumnDefinition Width="15" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Image Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}" ToolTip="Cannot reduce anymore because these units has already been earned" Grid.Column="0">
+                                            <Image.Visibility>
+                                                <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
+                                                    <MultiBinding.ConverterParameter>
+                                                        <sys:Boolean>False</sys:Boolean>
+                                                    </MultiBinding.ConverterParameter>
+                                                    <Binding ElementName="PART_Editor" Path="MinValue" />
+                                                    <Binding ElementName="PART_Editor" Path="EditValue" />
+                                                </MultiBinding>
+                                            </Image.Visibility>
+                                        </Image>
+                                        <Image Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}" ToolTip="Maximum possible units, please reduce other deliverable units to increase this" Grid.Column="1">
+                                            <Image.Visibility>
+                                                <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
+                                                    <MultiBinding.ConverterParameter>
+                                                        <sys:Boolean>False</sys:Boolean>
+                                                    </MultiBinding.ConverterParameter>
+                                                    <Binding ElementName="PART_Editor" Path="MaxValue" />
+                                                    <Binding ElementName="PART_Editor" Path="EditValue" />
+                                                </MultiBinding>
+                                            </Image.Visibility>
+                                        </Image>
+                                        <dxe:SpinEdit Name="PART_Editor" MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" Increment="1" IsReadOnly="{Binding RowData.Row.Entity.Entity.BY_DURATION}" MinValue="{Binding RowData.Row.MinEstimateUnits}" Grid.Column="2">
+                                            <dxe:SpinEdit.MaxValue>
+                                                <MultiBinding Converter="{StaticResource IReportableStatsMaximumUnitsConverter}">
+                                                    <Binding ElementName="userControl" Path="DataContext.TotalAllowedUnits" />
+                                                    <Binding ElementName="userControl" Path="DataContext.DisplayEntities" />
+                                                    <Binding Path="RowData.Row" />
+                                                </MultiBinding>
+                                            </dxe:SpinEdit.MaxValue>
+                                        </dxe:SpinEdit>
+                                    </Grid>
+                                </DataTemplate>
+                            </custom:GridColumnEx.CellTemplate>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Name="colTARGET_DATE" FieldName="Entity.Entity.TARGET_DATE" Header="TARGET DATE" FilterPopupMode="CheckedList">
+                            <custom:GridColumnEx.EditSettings>
+                                <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
+                            </custom:GridColumnEx.EditSettings>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Name="colDC_HOURS" FieldName="Entity.Entity.DC_HOURS" Header="DC_HOURS" ReadOnly="True" FilterPopupMode="CheckedList" />
+                        <custom:GridColumnEx Name="colTOTAL_COSTS" FieldName="Entity.Total_Costs" Header="COSTS" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True">
+                            <custom:GridColumnEx.CellTemplate>
+                                <DataTemplate>
+                                    <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True" MaskType="Numeric" Mask="c" />
+                                </DataTemplate>
+                            </custom:GridColumnEx.CellTemplate>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Name="colPHASE" FieldName="Entity.Entity.GUID_PHASE" Header="PHASE" FilterPopupMode="CheckedList" >
+                            <custom:GridColumnEx.EditSettings>
+                                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
+                            </custom:GridColumnEx.EditSettings>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Name="colSUBJOB" FieldName="Entity.Entity.GUID_SUBJOB" Header="SUBJOB" Visible="true" FilterPopupMode="CheckedList"  Tag="True;True;Autofill from area and sub-area">
+                            <custom:GridColumnEx.EditSettings>
+                                <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1" ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
+                            </custom:GridColumnEx.EditSettings>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Name="colWORKPACK" FieldName="Entity.Entity.GUID_WORKPACK" Header="WORKPACK" Visible="true" FilterPopupMode="CheckedList" Tag="True;True;Autofill from workpack, discipline and discipline number">
+                            <custom:GridColumnEx.EditSettings>
+                                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                            </custom:GridColumnEx.EditSettings>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Name="colCREATED" FieldName="Entity.Entity.CREATED" Header="CREATED" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" />
+                        <custom:GridColumnEx Name="colCREATEDBY" FieldName="Entity.Entity.CREATEDBY" Header="CREATEDBY" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" >
+                            <custom:GridColumnEx.EditSettings>
+                                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                            </custom:GridColumnEx.EditSettings>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Name="colUPDATED" FieldName="Entity.Entity.UPDATED" Header="UPDATED" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" />
+                        <custom:GridColumnEx Name="colUPDATEDBY" FieldName="Entity.Entity.UPDATEDBY" Header="UPDATEDBY" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" >
+                            <custom:GridColumnEx.EditSettings>
+                                <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
+                            </custom:GridColumnEx.EditSettings>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Name="colORIGINALKEY" FieldName="Entity.Entity.GUID_ORIGINAL" Header="PROGRESS KEY" AllowSearchPanel="False" FilterPopupMode="CheckedList" ReadOnly="True" Visible="False" />
+                    </dxg:GridControl.Columns>
+                    <dxg:GridControl.GroupSummary>
+                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.COMMENTS" SummaryType="Count" ShowInColumn="Entity.Entity.COMMENTS" DisplayFormat="Total {0} Records" />
+                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.ESTIMATED_HOURS" SummaryType="Sum" ShowInColumn="Entity.Entity.ESTIMATED_HOURS" DisplayFormat="Total: {0}" />
+                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Total_Costs" SummaryType="Sum" ShowInColumn="Entity.Total_Costs" DisplayFormat="Total: {0:c2}" />
+                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.DC_HOURS" SummaryType="Sum" ShowInColumn="Entity.Entity.DC_HOURS" DisplayFormat="Total: {0:n}" />
+                    </dxg:GridControl.GroupSummary>
+                    <dxg:GridControl.TotalSummary>
+                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.COMMENTS" SummaryType="Count" ShowInColumn="Entity.Entity.COMMENTS" DisplayFormat="Total {0} Records" />
+                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.ESTIMATED_HOURS" SummaryType="Sum" ShowInColumn="Entity.Entity.ESTIMATED_HOURS" DisplayFormat="Total: {0}" />
+                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Total_Costs" SummaryType="Sum" ShowInColumn="Entity.Total_Costs" DisplayFormat="Total: {0:c2}" />
+                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Entity.Entity.DC_HOURS" SummaryType="Sum" ShowInColumn="Entity.Entity.DC_HOURS" DisplayFormat="Total: {0:n}" />
+                    </dxg:GridControl.TotalSummary>
+                    <dxg:GridControl.View>
+                        <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" ShowGridMenu="tableView_ShowGridMenu">
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="CellValueChanged" />
+                            </dxmvvm:Interaction.Behaviors>
+                            <dxg:TableView.RowCellMenuCustomizations>
+                                <dxb:BarButtonItem Name="contextMenuCopyWithHeader" Content="Copy With Headers" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" />
+                                <dxb:BarButtonItem Name="contextMenuBulkEdit" Content="Bulk Edit" Command="{Binding View.DataContext.BulkColumnEditCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
+                                <dxb:BarButtonItem Name="contextFindReplace" Content="Find and Replace" Command="{Binding DataContext.FindReplaceCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=Replace_16x16.png}" />
+                                <dxb:BarButtonItem Name="contextMenuFillUp" Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" Command="{Binding View.DataContext.FillUpCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                                <dxb:BarButtonItem Name="contextMenuFillDown" Content="Fill Down" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" Command="{Binding View.DataContext.FillDownCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                                <dxb:BarButtonItem Name="contextMenuPopulate" Content="Populate" Glyph="{dx:DXImageOffice2013 Image=PictureShapeFillColor_16x16.png}" Command="{Binding DataContext.AutoPopulateCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                                <dxb:BarButtonItem x:Name="contextMenuDuplicate" Content="Duplicate" Command="{Binding DataContext.DuplicateCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" />
+                                <dxb:BarSubItem x:Name="contextMenuDuplicateMulti" Content="Duplicate Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}">
+                                    <dxb:BarEditItem x:Name="contextMenuDuplicateMultiCount" Content="Count" EditValue="2">
+                                        <dxb:BarEditItem.EditSettings>
+                                            <dxe:SpinEditSettings IsTextEditable="True" IsFloatValue="False" Increment="1" MinValue="2" MaxValue="99" MaskType="Numeric" Mask="n0" MaskUseAsDisplayFormat="True">
+                                                <dxe:SpinEditSettings.Buttons>
+                                                    <dxe:ButtonInfo x:Name="contextMenuDuplicateMultiCountBtn" GlyphKind="Apply">
+                                                        <dxmvvm:Interaction.Behaviors>
+                                                            <dxmvvm:EventToCommand Command="{Binding DataContext.DuplicateMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuDuplicateMultiCount}" EventName="Click" />
+                                                        </dxmvvm:Interaction.Behaviors>
+                                                    </dxe:ButtonInfo>
+                                                </dxe:SpinEditSettings.Buttons>
+                                            </dxe:SpinEditSettings>
+                                        </dxb:BarEditItem.EditSettings>
+                                    </dxb:BarEditItem>
+                                </dxb:BarSubItem>
+                                <dxb:BarButtonItem x:Name="contextMenuInsert" Content="Insert" Command="{Binding DataContext.InsertCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" />
+                                <dxb:BarSubItem x:Name="contextMenuInsertMulti" Content="Insert Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}">
+                                    <dxb:BarEditItem x:Name="contextMenuInsertMultiCount" Content="Count" EditValue="2">
+                                        <dxb:BarEditItem.EditSettings>
+                                            <dxe:SpinEditSettings IsTextEditable="True" IsFloatValue="False" Increment="1" MinValue="2" MaxValue="99" MaskType="Numeric" Mask="n0" MaskUseAsDisplayFormat="True">
+                                                <dxe:SpinEditSettings.Buttons>
+                                                    <dxe:ButtonInfo x:Name="contextMenuInsertMultiCountBtn" GlyphKind="Apply">
+                                                        <dxmvvm:Interaction.Behaviors>
+                                                            <dxmvvm:EventToCommand Command="{Binding DataContext.InsertMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuInsertMultiCount}" EventName="Click" />
+                                                        </dxmvvm:Interaction.Behaviors>
+                                                    </dxe:ButtonInfo>
+                                                </dxe:SpinEditSettings.Buttons>
+                                            </dxe:SpinEditSettings>
+                                        </dxb:BarEditItem.EditSettings>
+                                    </dxb:BarEditItem>
+                                </dxb:BarSubItem>
+                                <dxb:BarButtonItem Content="Delete Row" Command="{Binding View.DataContext.BulkDeleteCommand}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                            </dxg:TableView.RowCellMenuCustomizations>
+                            <dxg:TableView.FormatConditions>
+                                <dxg:UniqueDuplicateRuleFormatCondition FieldName="Entity.Entity.INTERNAL_NUM">
+                                    <dxc:Format Background="Salmon" TextDecorations="{x:Null}" />
+                                </dxg:UniqueDuplicateRuleFormatCondition>
+                                <dxg:UniqueDuplicateRuleFormatCondition FieldName="Entity.Entity.GUID_ORIGINAL">
+                                    <dxc:Format Background="Salmon" TextDecorations="{x:Null}" />
+                                </dxg:UniqueDuplicateRuleFormatCondition>
+                            </dxg:TableView.FormatConditions>
+                        </dxg:TableView>
+                    </dxg:GridControl.View>
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxmvvm:EventToCommand EventName="CustomColumnSort" Command="{Binding DataContext.OnCustomColumnSortCommand, ElementName=userControl}" PassEventArgsToCommand="True"/>
+                    </dxmvvm:Interaction.Behaviors>
+                </custom:GridControlEx>
             </DockPanel>
+
         </Grid>
     </Grid>
 </UserControl>

@@ -18,6 +18,13 @@ namespace BluePrints.Common
         }
     }
 
+    public enum DeliverableInternalNumberMode
+    {
+        [Display(Name = "Only Editable On Unprogressed")] Default = 0,
+        [Display(Name = "Always Editable")] AlwaysEditable = 1,
+        [Display(Name = "Manual")] Manual = 2
+    }
+
     public enum DesignManager
     {
         [Display(Name = "None")] None = 0,
