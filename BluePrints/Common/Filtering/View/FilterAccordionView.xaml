@@ -26,6 +26,7 @@
             AutoExpandAllItems="True"
             IsCollapseButtonVisible="True"
             ShowSearchControl="True"
+            IsExpanded="False"
             Margin="1" >
         <dxa:AccordionItem ItemDisplayMode="Header" Height="30" ShowInCollapsedMode="False" ExpandButtonPosition="None" IsExpanded="True">
             <dxa:AccordionItem.Header>

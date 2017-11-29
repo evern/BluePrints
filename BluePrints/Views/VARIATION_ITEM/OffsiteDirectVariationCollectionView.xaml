@@ -6,6 +6,7 @@
              xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
              xmlns:common="clr-namespace:BluePrints.Common"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:filter="clr-namespace:BluePrints.Common.Filtering"  
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -69,6 +70,19 @@
                             Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
+                <dxlc:LayoutControl DockPanel.Dock="Right">
+                    <dxlc:LayoutGroup.LayoutTransform>
+                        <RotateTransform Angle="90"/>
+                    </dxlc:LayoutGroup.LayoutTransform>
+                    <dxlc:LayoutGroup IsCollapsible="True" View="Group">
+                        <Grid>
+                            <Grid.LayoutTransform>
+                                <RotateTransform Angle="-90"/>
+                            </Grid.LayoutTransform>
+                            <filter:FilterAccordionView DataContext="{Binding DataContext.FilterTreeViewModel, ElementName=userControl}" />
+                        </Grid>
+                    </dxlc:LayoutGroup>
+                </dxlc:LayoutControl>
                 <Grid>
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />

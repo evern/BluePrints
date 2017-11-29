@@ -808,19 +808,6 @@ namespace BluePrints.ViewModels
             this.RaisePropertiesChanged();
         }
 
-        public bool CanSaveFilters()
-        {
-            return FilterTreeViewModel != null;
-        }
-
-        public void SaveFilters()
-        {
-            if (FilterTreeViewModel == null)
-                return;
-
-            FilterTreeViewModel.CreateCustomFilter();
-        }
-
         public bool CanDuplicate()
         {
             if (MainViewModel == null || SelectedEntities == null || SelectedEntities.Count() == 0)

@@ -59,7 +59,7 @@
                         <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
-                <!--<dxlc:LayoutControl DockPanel.Dock="Right">
+                <dxlc:LayoutControl DockPanel.Dock="Right">
                     <dxlc:LayoutGroup.LayoutTransform>
                         <RotateTransform Angle="90"/>
                     </dxlc:LayoutGroup.LayoutTransform>
@@ -71,7 +71,7 @@
                             <filter:FilterAccordionView DataContext="{Binding DataContext.FilterTreeViewModel, ElementName=userControl}" />
                         </Grid>
                     </dxlc:LayoutGroup>
-                </dxlc:LayoutControl>-->
+                </dxlc:LayoutControl>
                 <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlOffsiteDirectProgress" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:EventToCommand Command="{Binding DataContext.CustomSummaryCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="CustomSummary" />
