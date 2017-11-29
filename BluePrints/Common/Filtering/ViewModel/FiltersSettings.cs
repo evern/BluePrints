@@ -1,6 +1,7 @@
 ﻿using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.Properties;
@@ -17,6 +18,13 @@ namespace BluePrints.Common.Filtering
         {
             return FilterTreeViewModel<BASELINE_ITEMProgress, Guid>.Create(
                 new FilterTreeModelPageSpecificSettings<Settings>(Settings.Default, "Status", x => x.BASELINE_ITEMProgressStaticFilters, x => x.BASELINE_ITEMProgressCustomFilters
+            ), parentViewModel, entities).SetParentViewModel(parentViewModel);
+        }
+
+        public static FilterTreeViewModel<BASELINE_ITEMVariation, Guid> GetBASELINE_ITEMVariationFilterTree(ISupportFiltering<BASELINE_ITEMVariation> parentViewModel, IEnumerable<BASELINE_ITEMVariation> entities)
+        {
+            return FilterTreeViewModel<BASELINE_ITEMVariation, Guid>.Create(
+                new FilterTreeModelPageSpecificSettings<Settings>(Settings.Default, "Status", x => x.BASELINE_ITEMVariationStaticFilters, x => x.BASELINE_ITEMVariationCustomFilters
             ), parentViewModel, entities).SetParentViewModel(parentViewModel);
         }
 

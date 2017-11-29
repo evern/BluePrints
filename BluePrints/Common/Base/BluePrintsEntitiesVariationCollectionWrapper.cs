@@ -171,7 +171,7 @@ namespace BluePrints.Common.Base
             MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
             MainViewModel.ValidateSetValueIsContinueCallBack = ValidateSetValueCallBack;
             collectionViewModelWrapper.GetEditableAllEntitiesCallBack = getEditableAllEntities;
-            assign_additional_callbacks(MainViewModel);
+            assign_additional_callbacks(MainViewModel, entities);
             MainViewModel.SetParentViewModel(this);
 
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -190,7 +190,7 @@ namespace BluePrints.Common.Base
             }
         }
 
-        protected abstract void assign_additional_callbacks(CollectionViewModel<TMainEntity, TMainVariationEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork> mainViewModel);
+        protected abstract void assign_additional_callbacks(CollectionViewModel<TMainEntity, TMainVariationEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork> mainViewModel, IEnumerable<TMainVariationEntity> entities);
 
         #region Call Backs
         protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)

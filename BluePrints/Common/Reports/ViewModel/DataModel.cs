@@ -246,6 +246,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public bool IsInternalNumberAlwaysEditable { get; set; }
 
+        public bool IsInternalNumberManualOnly { get; set; }
+
         public bool IsByDuration => Entity.IsByDuration;
 
         public Guid? Variation_Guid { get => Entity.Variation_Guid; set => Entity.Variation_Guid = value; }

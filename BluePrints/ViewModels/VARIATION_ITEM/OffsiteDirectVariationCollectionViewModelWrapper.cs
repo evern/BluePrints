@@ -6,6 +6,7 @@ using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
+using BluePrints.Common.Filtering;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
@@ -27,7 +28,7 @@ namespace BluePrints.ViewModels
     /// </summary>
     public partial class OffsiteDirectVariationCollectionViewModelWrapper :
         BluePrintsEntitiesVariationCollectionWrapper
-        <BASELINE_ITEM, BASELINE_ITEMProgress, BASELINE_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork>
+        <BASELINE_ITEM, BASELINE_ITEMProgress, BASELINE_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork>, ISupportFiltering<BASELINE_ITEMVariation>
     {
         /// <summary>
         /// Creates a new instance of VARIATION_ITEMSViewModelWrapper as a POCO view model.
@@ -64,6 +65,8 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public FilterTreeViewModel<BASELINE_ITEMVariation, Guid> FilterTreeViewModel { get; set; }
+
         protected override string ViewName => "DESIGN_VARIATION_ITEMSViewModelWrapper_v1" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString();
 
         protected override void StartCreatingMainViewModel()
@@ -83,9 +86,9 @@ namespace BluePrints.ViewModels
             return query => Baseline_ItemVariationQuery.OffsiteDirectVariationItemTransformation(IReportableEntitiesCollection, loadVARIATION, VARIATION_ITEMS);
         }
 
-        protected override void assign_additional_callbacks(CollectionViewModel<BASELINE_ITEM, BASELINE_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork> mainViewModel)
+        protected override void assign_additional_callbacks(CollectionViewModel<BASELINE_ITEM, BASELINE_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork> mainViewModel, IEnumerable<BASELINE_ITEMVariation> entities)
         {
-
+            FilterTreeViewModel = FiltersSettings.GetBASELINE_ITEMVariationFilterTree(this, entities);
         }
 
         protected override void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)

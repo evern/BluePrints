@@ -84,7 +84,7 @@ namespace BluePrints.ViewModels
             return query => Estimation_Direct_ItemVariationQuery.SiteDirectVariationItemTransformation(IReportableEntitiesCollection, loadVARIATION, VARIATION_ITEMS);
         }
 
-        protected override void assign_additional_callbacks(CollectionViewModel<ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork> mainViewModel)
+        protected override void assign_additional_callbacks(CollectionViewModel<ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork> mainViewModel, IEnumerable<ESTIMATION_DIRECT_ITEMVariation> entities)
         {
             mainViewModel.ManualPasteAction = ManualPasteAction;
         }

@@ -56,6 +56,8 @@ namespace BluePrints.Common.Filtering
         public string StaticCategoryName { get; private set; }
         public string CustomCategoryName { get; private set; }
         public bool AllowCustomFilters { get { return settings.CustomFilters != null; } }
+        public bool IsExpanded { get; set; }
+
         public bool AllowFiltersContextMenu {
             get {
                 return AllowCustomFilters && allowFiltersContextMenu;
@@ -118,8 +120,18 @@ namespace BluePrints.Common.Filtering
         public void AddCustomFilter(string name, CriteriaOperator filterCriteria, string imageUri = null) {
             AddNewCustomFilter(CreateFilterItem(name, filterCriteria, imageUri));
         }
+
+        public void ClearFilters()
+        {
+            SelectedItem = null;
+        }
+
         protected virtual void OnSelectedItemChanged() {
-            ActiveFilterItem = SelectedItem.Clone();
+            if (SelectedItem != null)
+                ActiveFilterItem = SelectedItem.Clone();
+            else
+                ActiveFilterItem = null;
+
             UpdateFilterExpression();
             NavigateCore();
         }
@@ -193,14 +205,70 @@ namespace BluePrints.Common.Filtering
         }
 
         int GetEntityCount(CriteriaOperator criteria) {
-            return entities.Where(GetWhereExpression(criteria)).Count();
+            Expression<Func<TEntity, bool>> whereExpression = GetWhereExpression(criteria);
+            if (whereExpression != null)
+                return entities.Where(whereExpression).Count();
+            else
+                return 0;
         }
 
         Expression<Func<TEntity, bool>> GetWhereExpression(CriteriaOperator criteria) {
-            var caseInsensitiveCriteria = DevExpress.Data.Helpers.StringsTolowerCloningHelper.Process(criteria);
-            return this.IsInDesignMode()
-                ? CriteriaOperatorToExpressionConverter.GetLinqToObjectsWhere<TEntity>(caseInsensitiveCriteria)
-                : CriteriaOperatorToExpressionConverter.GetGenericWhere<TEntity>(caseInsensitiveCriteria);
+            try
+            {
+                var caseInsensitiveCriteria = DevExpress.Data.Helpers.StringsTolowerCloningHelper.Process(criteria);
+                var nullSafeCriteria = nullOrEmptyConversion(caseInsensitiveCriteria);
+                return this.IsInDesignMode()
+                    ? CriteriaOperatorToExpressionConverter.GetLinqToObjectsWhere<TEntity>(nullSafeCriteria)
+                    : CriteriaOperatorToExpressionConverter.GetGenericWhere<TEntity>(nullSafeCriteria);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        CriteriaOperator nullOrEmptyConversion(CriteriaOperator criteria)
+        {
+            string currentCriteria = criteria.ToString();
+            if (!currentCriteria.ToUpper().Contains("NULL"))
+                return criteria;
+            else
+            {
+                List<string> operatorArr = currentCriteria.Split(new string[] { " And " }, StringSplitOptions.None).ToList();
+                string newOperator = string.Empty;
+                foreach (string op in operatorArr)
+                {
+                    if(op.ToUpper().Contains("NULL"))
+                    {
+                        string propertyName = findPropertyName(op);
+                        if(propertyName != string.Empty)
+                        {
+                            if (op.ToUpper().Contains("NOT"))
+                                newOperator += "[" + propertyName + "] Is Not Null And ";
+                            else
+                                newOperator += "[" + propertyName + "] Is Null And ";
+                        }
+                    }
+                }
+
+                if (newOperator.Contains(" And "))
+                    return CriteriaOperator.Parse(newOperator.Substring(0, newOperator.Length - 5));
+                else
+                    return string.Empty;
+            }
+        }
+
+        string findPropertyName(string operatorString)
+        {
+            string mystr = operatorString;
+
+            List<string> myvariables = new List<string>();
+            while (mystr.Contains("["))
+            {
+                return mystr.Split('[', ']')[1];
+            };
+
+            return string.Empty;
         }
 
         IDialogService FilterDialogService { get { return this.GetRequiredService<IDialogService>("FilterDialogService"); } }
