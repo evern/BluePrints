@@ -120,8 +120,18 @@ namespace BluePrints.Common.Filtering
         public void AddCustomFilter(string name, CriteriaOperator filterCriteria, string imageUri = null) {
             AddNewCustomFilter(CreateFilterItem(name, filterCriteria, imageUri));
         }
+
+        public void ClearFilters()
+        {
+            SelectedItem = null;
+        }
+
         protected virtual void OnSelectedItemChanged() {
-            ActiveFilterItem = SelectedItem.Clone();
+            if (SelectedItem != null)
+                ActiveFilterItem = SelectedItem.Clone();
+            else
+                ActiveFilterItem = null;
+
             UpdateFilterExpression();
             NavigateCore();
         }

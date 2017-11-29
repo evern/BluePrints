@@ -78,8 +78,20 @@
                         <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
-                <filter:FilterAccordionView DataContext="{Binding DataContext.FilterTreeViewModel, ElementName=userControl}" />
-                <custom:GridControlEx x:Name="GridControl" Grid.Column="0" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}" DockPanel.Dock="Right">
+                <dxlc:LayoutControl DockPanel.Dock="Right">
+                    <dxlc:LayoutGroup.LayoutTransform>
+                        <RotateTransform Angle="90"/>
+                    </dxlc:LayoutGroup.LayoutTransform>
+                    <dxlc:LayoutGroup IsCollapsible="True" View="Group">
+                        <Grid>
+                            <Grid.LayoutTransform>
+                                <RotateTransform Angle="-90"/>
+                            </Grid.LayoutTransform>
+                            <filter:FilterAccordionView DataContext="{Binding DataContext.FilterTreeViewModel, ElementName=userControl}" />
+                        </Grid>
+                    </dxlc:LayoutGroup>
+                </dxlc:LayoutControl>
+                <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlBASELINE_ITEM" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}" DockPanel.Dock="Right">
                     <dxg:GridControl.Columns>
                         <custom:GridColumnEx Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA" FilterPopupMode="CheckedList" Tag="True;True;Autofill subjob">
                             <custom:GridColumnEx.EditSettings>
@@ -316,7 +328,6 @@
                     </dxmvvm:Interaction.Behaviors>
                 </custom:GridControlEx>
             </DockPanel>
-
         </Grid>
     </Grid>
 </UserControl>
