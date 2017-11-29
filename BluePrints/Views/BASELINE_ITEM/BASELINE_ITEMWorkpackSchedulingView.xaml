@@ -352,8 +352,8 @@
                             <dxg:GridControl.GroupSummary>
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="GroupName" SummaryType="Count"
                                                  ShowInColumn="GroupName" DisplayFormat="Total {0} Records" />
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="ESTIMATED_HOURS" SummaryType="Sum"
-                                                 ShowInColumn="ESTIMATED_HOURS"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Estimated_Units" SummaryType="Sum"
+                                                 ShowInColumn="Estimated_Units"
                                                  DisplayFormat="Total: {0}" />
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Variation_Units" SummaryType="Sum"
                                                  ShowInColumn="Variation_Units" DisplayFormat="Total: {0:n}" />
@@ -361,8 +361,8 @@
                             <dxg:GridControl.TotalSummary>
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="GroupName" SummaryType="Count"
                                                  ShowInColumn="GroupName" DisplayFormat="Total {0} Records" />
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="ESTIMATED_HOURS" SummaryType="Sum"
-                                                 ShowInColumn="ESTIMATED_HOURS"
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Estimated_Units" SummaryType="Sum"
+                                                 ShowInColumn="Estimated_Units"
                                                  DisplayFormat="Total: {0}" />
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Variation_Units" SummaryType="Sum"
                                                  ShowInColumn="Variation_Units" DisplayFormat="Total: {0:n}" />
