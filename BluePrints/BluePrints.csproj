@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BluePrints</RootNamespace>
-    <AssemblyName>BluePrints</AssemblyName>
+    <AssemblyName>BluePrints Beta</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -17,7 +17,7 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
-    <PublishUrl>\\Fileserver\Data3\General\BLUEPRINTS\</PublishUrl>
+    <PublishUrl>\\Fileserver\Data3\General\BLUEPRINTS_BETA\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Unc</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
@@ -66,7 +66,7 @@
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Common\Images\Logo.ico</ApplicationIcon>
+    <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Hybrid|AnyCPU'">
     <OutputPath>bin\Hybrid\</OutputPath>
@@ -413,6 +413,26 @@
     <Compile Include="Common\DragDrop\CustomDragDropManagers.cs" />
     <Compile Include="Common\DragDrop\RowColorConverter.cs" />
     <Compile Include="Common\DragDrop\RowNameConverter.cs" />
+    <Compile Include="Common\Filtering\ViewModel\AdvancedDisplayTextBehavior.cs" />
+    <Compile Include="Common\Filtering\ViewModel\AdvancedNavBarGroup.cs" />
+    <Compile Include="Common\Filtering\ViewModel\CustomFilterViewModel.cs" />
+    <Compile Include="Common\Filtering\ViewModel\FilterInfo.cs" />
+    <Compile Include="Common\Filtering\ViewModel\FilterItem.cs" />
+    <Compile Include="Common\Filtering\ViewModel\FiltersSettings.cs" />
+    <Compile Include="Common\Filtering\ViewModel\FilterTreeModelPageSpecificSettings.cs" />
+    <Compile Include="Common\Filtering\ViewModel\FilterTreeViewModel.cs" />
+    <Compile Include="Common\Filtering\ViewModel\IFilterTreeModelPageSpecificSettings.cs" />
+    <Compile Include="Common\Filtering\ViewModel\ISupportFiltering.cs" />
+    <Compile Include="Common\Filtering\ViewModel\TreeViewSelectedItemBehavior.cs" />
+    <Compile Include="Common\Filtering\View\CustomFilterView.xaml.cs">
+      <DependentUpon>CustomFilterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\Filtering\View\FilterAccordionView.xaml.cs">
+      <DependentUpon>FilterAccordionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\Filtering\View\FilterTreeView.xaml.cs">
+      <DependentUpon>FilterTreeView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Common\Misc\ActiveDirectory.cs" />
     <Compile Include="Common\Helpers\CommonMethods.cs" />
     <Compile Include="Common\Helpers\CustomMessageBoxService.cs" />
@@ -1406,6 +1426,18 @@
     <Compile Include="Views\WORKPACK\WORKPACKCollectionView.xaml.cs">
       <DependentUpon>WORKPACKCollectionView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Common\Filtering\View\CustomFilterView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\Filtering\View\FilterAccordionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\Filtering\View\FilterTreeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Common\View\BasicMessageBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

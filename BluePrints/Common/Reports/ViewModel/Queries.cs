@@ -51,7 +51,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, bool isInternalNumberAlwaysEditable = false, IEnumerable<P6Data.TASK> P6_TASKS = null)
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, IEnumerable<P6Data.TASK> P6_TASKS = null)
         {
             IQueryable<BASELINE_ITEMProjection> baseline_item_projection;
 
@@ -74,7 +74,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                 Live_PROGRESS = PROGRESS,
                 P6_Assignments = PopulateP6Assignment(x, PROJECT, P6_ASSIGNMENTS),
                 P6TASKCollection = P6_TASKS,
-                IsInternalNumberAlwaysEditable = isInternalNumberAlwaysEditable
+                IsInternalNumberAlwaysEditable = internalNumberMode == DeliverableInternalNumberMode.AlwaysEditable,
+                IsInternalNumberManualOnly = internalNumberMode == DeliverableInternalNumberMode.Manual
             }).ToList();
 
             dynamic progress_item_by_originalguid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });

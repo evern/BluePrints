@@ -6,6 +6,7 @@ using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
+using BluePrints.Common.Filtering;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
@@ -37,7 +38,7 @@ namespace BluePrints.ViewModels
     /// </summary>
     public partial class OffsiteDirectProgressCollectionViewModelWrapper :
         BluePrintsEntitiesProgressCollectionWrapper
-        <BASELINE_ITEM, BASELINE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>
+        <BASELINE_ITEM, BASELINE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>, ISupportFiltering<BASELINE_ITEMProgress>
     {
 
         /// <summary>
@@ -57,6 +58,7 @@ namespace BluePrints.ViewModels
         }
 
         private BASELINE loadBASELINE;
+        public FilterTreeViewModel<BASELINE_ITEMProgress, Guid> FilterTreeViewModel { get; set; }
         protected override void initializeEntitiesLoadersDescription()
         {
             MainViewModel = null;
@@ -186,11 +188,12 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, false, P6TASKCollection);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, DeliverableInternalNumberMode.Default, P6TASKCollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
         {
+            FilterTreeViewModel = FiltersSettings.GetBASELINE_ITEMProgressFilterTree(this, entities);
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }

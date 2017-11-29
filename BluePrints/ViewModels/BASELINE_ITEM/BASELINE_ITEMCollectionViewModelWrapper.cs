@@ -9,6 +9,7 @@ using BaseModel.ViewModel.UndoRedo;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
+using BluePrints.Common.Filtering;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
@@ -29,6 +30,8 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Linq.Expressions;
+using DevExpress.Data.Filtering;
 
 namespace BluePrints.ViewModels
 {
@@ -86,7 +89,7 @@ namespace BluePrints.ViewModels
     /// </summary>
     public partial class BASELINE_ITEMCollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
-        <BASELINE_ITEM, BASELINE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>, IDeliverableCollectionViewModelWrapper<BASELINE_ITEMProgress, BASELINE_ITEM>
+        <BASELINE_ITEM, BASELINE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>, IDeliverableCollectionViewModelWrapper<BASELINE_ITEMProgress, BASELINE_ITEM>, ISupportFiltering<BASELINE_ITEMProgress>
     {
         public Action<bool> SetBaselineLockUnlock;
         public Func<BASELINE_ITEMProgress> SelectedEntityCallBack { get; set; }
@@ -120,12 +123,13 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operations
+        public FilterTreeViewModel<BASELINE_ITEMProgress, Guid> FilterTreeViewModel { get; set; }
         public PROJECT loadPROJECT { get; set; }
         public BASELINE loadBASELINE { get; set; }
         public Guid load_context_guid => loadBASELINE == null ? Guid.Empty : loadBASELINE.GUID;
         public PROGRESS livePROGRESS { get; set; }
         private bool isQueryForLiveStatus;
-        public bool Is_Autofill_Internal_Number { get; set; }
+        //public bool Is_Autofill_Internal_Number { get; set; }
         private bool allow_drag_drop { get; set; }
         public bool Allow_Drag_Drop
         {
@@ -137,16 +141,46 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private bool internalNumberAlwaysEditable { get; set; }
-        public bool InternalNumberAlwaysEditable
+        public bool InternalNumAlwaysEditable
         {
-            get => internalNumberAlwaysEditable;
+            get => InternalNumberMode == DeliverableInternalNumberMode.AlwaysEditable;
             set
             {
-                internalNumberAlwaysEditable = value;
-                FullRefresh();
+                if (value)
+                {
+                    InternalNumberMode = DeliverableInternalNumberMode.AlwaysEditable;
+                    FullRefresh();
+                }
             }
         }
+
+        public bool InternalNumDefault
+        {
+            get => InternalNumberMode == DeliverableInternalNumberMode.Default;
+            set
+            {
+                if (value)
+                {
+                    InternalNumberMode = DeliverableInternalNumberMode.Default;
+                    FullRefresh();
+                }
+            }
+        }
+
+        public bool InternalNumManual
+        {
+            get => InternalNumberMode == DeliverableInternalNumberMode.Manual;
+            set
+            {
+                if (value)
+                {
+                    InternalNumberMode = DeliverableInternalNumberMode.Manual;
+                    FullRefresh();
+                }
+            }
+        }
+
+        private DeliverableInternalNumberMode InternalNumberMode { get; set; }
 
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void resolveParameters(object parameter)
@@ -172,12 +206,13 @@ namespace BluePrints.ViewModels
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadBASELINE = (BASELINE)receiveParameter.GetSecondEntity();
             viewType = (DeliverablesViewType)receiveParameter.GetThirdEntity();
+            InternalNumberMode = DeliverableInternalNumberMode.Default;
 
             if (loadPROJECT != null)
                 isQueryForLiveStatus = true;
 
             Allow_Drag_Drop = false;
-            Is_Autofill_Internal_Number = true;
+            //Is_Autofill_Internal_Number = true;
         }
 
         protected override void initializeEntitiesLoadersDescription()
@@ -302,7 +337,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(base_entity_query(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, null, false, null, internalNumberAlwaysEditable);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(base_entity_query(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, null, false, null, InternalNumberMode);
         }
 
         public Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BaseEntityQueryCallBack { get; set; }
@@ -322,6 +357,8 @@ namespace BluePrints.ViewModels
         public Action<IEnumerable<BASELINE_ITEMProgress>> OnReportablesLoadedCallBack { get; set; }
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
         {
+            FilterTreeViewModel = FiltersSettings.GetBASELINE_ITEMProgressFilterTree(this, entities);
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.FilterTreeViewModel)));
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
             MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
@@ -345,7 +382,7 @@ namespace BluePrints.ViewModels
         {
             foreach(BASELINE_ITEMProgress entity in entities)
             {
-                if (entity.IsInternalNumberEditable)
+                if (entity.IsInternalNumberEditable && !entity.IsInternalNumberManualOnly)
                     entity.Entity.Entity.INTERNAL_NUM = generateInternalNumber(entity);
             }
         }
@@ -731,7 +768,7 @@ namespace BluePrints.ViewModels
                 field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DEPARTMENT) ||
                 field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DISCIPLINE))
             {
-                if (Is_Autofill_Internal_Number && projection.IsInternalNumberEditable)
+                if (projection.IsInternalNumberEditable && !projection.IsInternalNumberManualOnly)
                     projection.Entity.Entity.INTERNAL_NUM = generateInternalNumber(projection);
 
                 projection.Update();

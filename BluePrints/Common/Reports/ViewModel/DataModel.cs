@@ -246,6 +246,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public bool IsInternalNumberAlwaysEditable { get; set; }
 
+        public bool IsInternalNumberManualOnly { get; set; }
+
         public bool IsByDuration => Entity.IsByDuration;
 
         public Guid? Variation_Guid { get => Entity.Variation_Guid; set => Entity.Variation_Guid = value; }
@@ -615,6 +617,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             set_total_earned_percentage = null;
             set_override_productivity = null;
             remaining_productivity = null;
+            deliverable_milestones = null;
             base.Update();
         }
 
@@ -867,15 +870,34 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (P6_Assignments == null || P6TASKCollection == null)
+                if (Milestones == null || Milestones.Count() == 0)
                     return false;
 
-                //when deliverable exceeds this percentage the milestones won't be displayed
-                    decimal minAssignmentPercentage = 0;
-                if (this.Stats != null && this.Stats.Earned != null && this.Stats.Earned.CurrentPeriodCumulativeDataPoint != null)
-                    minAssignmentPercentage = this.Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage;
+                return true;
+                //if (P6_Assignments == null || P6TASKCollection == null)
+                //    return false;
 
-                return P6_Assignments.Where(x => x.HIGH_VALUE > minAssignmentPercentage).Count() > 0;
+                ////when deliverable exceeds this percentage the milestones won't be displayed
+                //    decimal minAssignmentPercentage = 0;
+                //if (this.Stats != null && this.Stats.Earned != null && this.Stats.Earned.CurrentPeriodCumulativeDataPoint != null)
+                //    minAssignmentPercentage = this.Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage;
+
+                //return P6_Assignments.Where(x => x.HIGH_VALUE > minAssignmentPercentage).Count() > 0;
+            }
+        }
+
+        public bool IAmCritical
+        {
+            get
+            {
+                if (Milestones == null || Milestones.Count() == 0)
+                    return false;
+
+                Deliverable_Milestone nextCriticalMilestone = deliverable_milestones.FirstOrDefault(x => x.DueDate <= ReportingDataDate.AddDays(7));
+                if (nextCriticalMilestone != null)
+                    return true;
+
+                return false;
             }
         }
 
@@ -894,8 +916,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                     //when deliverable exceeds this percentage the milestones won't be displayed
                     decimal minAssignmentPercentage = 0;
-                    if (this.Stats != null && this.Stats.Earned != null && this.Stats.Earned.CurrentPeriodCumulativeDataPoint != null)
-                        minAssignmentPercentage = this.Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage;
+                    minAssignmentPercentage = Total_Percentage_ToDate;
 
                     foreach (P6_ASSIGNMENT p6assignment in P6_Assignments.Where(x => x.HIGH_VALUE > minAssignmentPercentage).OrderBy(x => x.HIGH_VALUE))
                     {

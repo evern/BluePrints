@@ -34,5 +34,73 @@ namespace BluePrints.Properties {
                 this["ThemeName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Setting {
+            get {
+                return ((string)(this["Setting"]));
+            }
+            set {
+                this["Setting"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfFilterInfo xmlns:xsi=\"http://www" +
+            ".w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />" +
+            "")]
+        public global::BluePrints.Common.Filtering.FilterInfoList BASELINE_ITEMProgressCustomFilters {
+            get {
+                return ((global::BluePrints.Common.Filtering.FilterInfoList)(this["BASELINE_ITEMProgressCustomFilters"]));
+            }
+            set {
+                this["BASELINE_ITEMProgressCustomFilters"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfFilterInfo xmlns:xsi=\"http://www" +
+            ".w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />" +
+            "")]
+        public global::BluePrints.Common.Filtering.FilterInfoList BASELINE_ITEMProgressStaticFilters {
+            get {
+                return ((global::BluePrints.Common.Filtering.FilterInfoList)(this["BASELINE_ITEMProgressStaticFilters"]));
+            }
+            set {
+                this["BASELINE_ITEMProgressStaticFilters"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfFilterInfo xmlns:xsi=\"http://www" +
+            ".w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />" +
+            "")]
+        public global::BluePrints.Common.Filtering.FilterInfoList BASELINE_ITEMVariationCustomFilters {
+            get {
+                return ((global::BluePrints.Common.Filtering.FilterInfoList)(this["BASELINE_ITEMVariationCustomFilters"]));
+            }
+            set {
+                this["BASELINE_ITEMVariationCustomFilters"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfFilterInfo xmlns:xsi=\"http://www" +
+            ".w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />" +
+            "")]
+        public global::BluePrints.Common.Filtering.FilterInfoList BASELINE_ITEMVariationStaticFilters {
+            get {
+                return ((global::BluePrints.Common.Filtering.FilterInfoList)(this["BASELINE_ITEMVariationStaticFilters"]));
+            }
+            set {
+                this["BASELINE_ITEMVariationStaticFilters"] = value;
+            }
+        }
     }
 }
