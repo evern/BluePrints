@@ -124,6 +124,7 @@ namespace BluePrints.Common.Filtering
         public void ClearFilters()
         {
             SelectedItem = null;
+            viewModel.GridControlService.ClearFilterCriteria();
         }
 
         protected virtual void OnSelectedItemChanged() {
