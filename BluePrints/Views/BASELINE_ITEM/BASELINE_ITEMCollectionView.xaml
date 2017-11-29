@@ -52,7 +52,6 @@
                                 <dxb:BarButtonItem Content="Save Layout" Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" Glyph="{dx:DXImage Image=Save_16x16.png}" />
                                 <dxb:BarButtonItem Content="Reset Layout" Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
                                 <dxb:BarCheckItem Content="Cell Selection" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" Glyph="{dx:DXImage Image=SplitTableCells_16x16.png}" LargeGlyph="{dx:DXImage Image=SplitTableCells_32x32.png}" />
-                                <dxb:BarButtonItem Content="Save Filters" Command="{Binding DataContext.SaveFiltersCommand, ElementName=userControl}" Glyph="{dxc:DXImage Image=QuickFilter_16x16.png}" LargeGlyph="{dx:DXImage Image=QuickFilter_32x32.png}" />
                                 <!--<dxb:BarCheckItem Content="Allow Drag Drop" IsChecked="{Binding DataContext.Allow_Drag_Drop, ElementName=userControl, Mode=TwoWay}" Glyph="{dx:DXImage Image=Inbox_16x16.png}" LargeGlyph="{dx:DXImage Image=Inbox_32x32.png}" />-->
                                 <dxb:BarItemSeparator />
                                 <dxb:BarButtonItem Content="Edit Report" Command="{Binding DataContext.EditReportCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
