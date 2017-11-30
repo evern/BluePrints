@@ -383,7 +383,13 @@ namespace BluePrints.ViewModels
             foreach(BASELINE_ITEMProgress entity in entities)
             {
                 if (entity.IsInternalNumberEditable && !entity.IsInternalNumberManualOnly)
-                    entity.Entity.Entity.INTERNAL_NUM = generateInternalNumber(entity);
+                {
+                    string oldValue = entity.Entity.Entity.INTERNAL_NUM;
+                    string newValue = generateInternalNumber(entity);
+                    entity.Entity.Entity.INTERNAL_NUM = newValue;
+
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, "Entity.Entity." + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.INTERNAL_NUM), oldValue, newValue, EntityMessageType.Changed);
+                }
             }
         }
 

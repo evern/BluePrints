@@ -90,7 +90,6 @@ namespace BluePrints.Common.Base
             if (is_load_p6_task)
             {
                 loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.P6_ASSIGNMENTS, P6_ASSIGNMENTProjectionFunc);
-                loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJECT, P6PROJECTProjectionFunc, x => p6PROJECT = x);
                 loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.TASK, P6TASKProjectionFunc);
             }
 
@@ -115,10 +114,10 @@ namespace BluePrints.Common.Base
 
         private Func<IRepositoryQuery<P6Data.TASK>, IQueryable<P6Data.TASK>> P6TASKProjectionFunc()
         {
-            if (p6PROJECT == null)
-                return query => query.Where(x => x.PROJECT.proj_short_name == string.Empty);
+            if (loadPROGRESS.P6PROGRESS_NAME == null || loadPROGRESS.P6PROGRESS_NAME == string.Empty)
+                return query => query.Where(x => x.proj_id == 0);
             else
-                return query => query.Where(x => x.proj_id == p6PROJECT.proj_id).Where(x => x.TASKACTV.Count > 0).Where(x => x.delete_date == null).Where(x => x.TASKACTV.Any(taskact => taskact.ACTVCODE != null && taskact.ACTVCODE.actv_code_name.ToUpper() == ProgressType.Design.ToString().ToUpper()));
+                return query => query.Where(x => x.PROJECT.proj_short_name == loadPROGRESS.P6PROGRESS_NAME && x.delete_date == null).Where(x => x.TASKACTV.Count > 0).Where(x => x.delete_date == null).Where(x => x.TASKACTV.Any(taskact => taskact.ACTVCODE != null && taskact.ACTVCODE.actv_code_name.ToUpper() == ProgressType.Design.ToString().ToUpper()));
         }
 
         private Func<IRepositoryQuery<P6Data.PROJECT>, IQueryable<P6Data.PROJECT>> P6PROJECTProjectionFunc()

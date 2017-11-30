@@ -425,6 +425,7 @@ namespace BluePrints.Common.ViewModel
 
             gridControlService.ClearSummary();
             gridControlService.AddSummary("SubjobCode", SummaryItemType.Count, "Total {0} Records");
+            gridControlService.AddSummary(stats_switch.Total_Budgeted, SummaryItemType.Sum, summaryDecimalString);
             gridControlService.AddSummary(stats_switch.Cumulative_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
             gridControlService.AddSummary(stats_switch.Cumulative_Planned_Units, SummaryItemType.Sum, summaryDecimalString);
             gridControlService.AddSummary(stats_switch.Cumulative_Earned_Units, SummaryItemType.Sum, summaryDecimalString);

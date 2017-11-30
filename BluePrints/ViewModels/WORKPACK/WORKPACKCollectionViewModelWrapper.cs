@@ -152,10 +152,14 @@ namespace BluePrints.ViewModels
                         MainViewModel.EntitiesUndoRedoManager.AddUndo(newWORKPACK, null, null, null, EntityMessageType.Added);
                         queryWORKPACK = newWORKPACK;
                     }
+                    else
+                    {
+                        //fix internal number with OnBeforeEntitySaved
+                        MainViewModel.Save(queryWORKPACK);
+                    }
 
-
-                        deliverable.Entity.Entity.GUID_WORKPACK = queryWORKPACK.GUID;
-                        baseline_itemCollectionViewModel.MainViewModel.Save(deliverable);
+                    deliverable.Entity.Entity.GUID_WORKPACK = queryWORKPACK.GUID;
+                    baseline_itemCollectionViewModel.MainViewModel.Save(deliverable);
                 }
 
                 LoadingScreenManager.Progress();

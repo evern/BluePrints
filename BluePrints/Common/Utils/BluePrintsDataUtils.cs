@@ -350,7 +350,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
             if (querySUBJOB != null && queryDISCIPLINE != null)
             {
-                string discipline_number = workpack.DISCIPLINE_NUM > 9 ? "0" + workpack.DISCIPLINE_NUM.ToString("0") : "00" + workpack.DISCIPLINE_NUM.ToString("0");
+                string discipline_number = workpack.DISCIPLINE_NUM > 9 ? "0" + workpack.DISCIPLINE_NUM.ToString("0") : "0" + workpack.DISCIPLINE_NUM.ToString("0");
                 workpack.NAME = querySUBJOB.INTERNAL_NAME1 + "-" + queryDISCIPLINE.CODE + discipline_number;
             }
             else
