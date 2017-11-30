@@ -35,7 +35,7 @@
                             <dxr:RibbonPageGroup Caption="BASELINE Tasks">
                                 <dxb:BarButtonItem Content="Edit" Command="{Binding DataContext.EditCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                 <dxb:BarButtonItem Content="Assignment" Command="{Binding DataContext.P6BASELINE_ASSIGNCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=CustomizeGrid_32x32.png}" Glyph="{dx:DXImage Image=CustomizeGrid_16x16.png}" />
-                                <dxb:BarButtonItem Content="Delete Row" Command="{Binding BulkDeleteCommand}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                <dxb:BarButtonItem Content="Delete Row" ToolTip="Delete selected rows" Command="{Binding BulkDeleteCommand}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                 <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                 <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
                                 <dxb:BarButtonItem Content="Redo" Command="{Binding RedoCommand}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />

@@ -2,6 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" 
                     xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
+                    xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+                    xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" 
                     xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
                     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
                     xmlns:collections="clr-namespace:System.Collections;assembly=mscorlib"

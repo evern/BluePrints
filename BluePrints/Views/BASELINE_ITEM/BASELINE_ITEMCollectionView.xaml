@@ -22,6 +22,7 @@
             <common:RowNameConverter x:Key="RowNameConverter" />
             <converters:IReportableStatsMaximumUnitsConverter x:Key="IReportableStatsMaximumUnitsConverter" />
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -43,31 +44,22 @@
             <DockPanel>
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="Home">
-                            <dxr:RibbonPageGroup Caption="Deliverables Tasks">
-                                <dxb:BarButtonItem Content="Delete Row" Command="{Binding BulkDeleteCommand}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
-                                <dxb:BarButtonItem Content="Redo" Command="{Binding RedoCommand}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
-                                <dxb:BarButtonItem Content="Save Layout" Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" Glyph="{dx:DXImage Image=Save_16x16.png}" />
-                                <dxb:BarButtonItem Content="Reset Layout" Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
-                                <dxb:BarCheckItem Content="Cell Selection" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" Glyph="{dx:DXImage Image=SplitTableCells_16x16.png}" LargeGlyph="{dx:DXImage Image=SplitTableCells_32x32.png}" />
-                                <!--<dxb:BarCheckItem Content="Allow Drag Drop" IsChecked="{Binding DataContext.Allow_Drag_Drop, ElementName=userControl, Mode=TwoWay}" Glyph="{dx:DXImage Image=Inbox_16x16.png}" LargeGlyph="{dx:DXImage Image=Inbox_32x32.png}" />-->
-                                <dxb:BarItemSeparator />
+                        <dxr:RibbonPage Caption="Area">
+                            <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                            <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                            <dxr:RibbonPageGroup Caption="Report">
                                 <dxb:BarButtonItem Content="Edit Report" Command="{Binding DataContext.EditReportCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                 <dxb:BarButtonItem Content="View Report" Command="{Binding DataContext.ViewReportCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Report_32x32.png}" Glyph="{dx:DXImage Image=Report_16x16.png}" />
-                                <dxb:BarItemSeparator />
-                                <dxb:BarCheckItem Content="Lock Baseline" IsChecked="{Binding DataContext.IsBASELINELocked, ElementName=userControl}" Glyph="{dxc:DXImage Image=ProtectDocument_16x16.png}" LargeGlyph="{dxc:DXImage Image=ProtectDocument_32x32.png}" ToolTip="Lock total estimated units" />
-                                <!--<dxb:BarCheckItem Content="Auto Number" IsChecked="{Binding DataContext.Is_Autofill_Internal_Number, ElementName=userControl}" Glyph="{dxc:DXImage Image=Wizard_16x16.png}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" />-->
                                 <dxb:BarButtonItem Content="Export" Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" ToolTip="Export current view to excel" />
-                                <dxb:BarButtonItem Content="Map Client Internal Number" Command="{Binding DataContext.MapClientNumberCommand, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" Glyph="{dx:DXImage Image=Wizard_16x16.png}" ToolTip="Copy 2 columns from excel with the left being internal number and the right being client number, then paste it in here" />
-                                <dxb:BarItemSeparator />
-                                <!--<dxb:BarCheckItem Content="Internal Number Always Editable" Glyph="{dxc:DXImage Image=EditName_16x16.png}" LargeGlyph="{dx:DXImage Image=EditName_32x32.png}" />-->
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Internal Number Mode">
                                 <dxb:BarCheckItem Content="Default" IsChecked="{Binding DataContext.InternalNumDefault, ElementName=userControl, Mode=TwoWay}"  Glyph="{dxc:DXImage Image=CheckButtons_16x16.png}" LargeGlyph="{dx:DXImage Image=CheckButtons_32x32.png}" ToolTip="Only non-progressed internal number can be edited and auto-generated" />
                                 <dxb:BarCheckItem Content="Editable" IsChecked="{Binding DataContext.InternalNumAlwaysEditable, ElementName=userControl, Mode=TwoWay}"  Glyph="{dxc:DXImage Image=EditName_16x16.png}" LargeGlyph="{dx:DXImage Image=EditName_32x32.png}" ToolTip="All internal number can be auto-generated and edited" />
                                 <dxb:BarCheckItem Content="Manual" IsChecked="{Binding DataContext.InternalNumManual, ElementName=userControl, Mode=TwoWay}"  Glyph="{dxc:DXImage Image=BORules_16x16.png}" LargeGlyph="{dx:DXImage Image=BORules_32x32.png}" ToolTip="Only non-progressed internal number can be manually edited or populated by context menu option" />
+                            </dxr:RibbonPageGroup>
+                            <dxr:RibbonPageGroup Caption="Features">
+                                <dxb:BarCheckItem Content="Lock Baseline" IsChecked="{Binding DataContext.IsBASELINELocked, ElementName=userControl}" Glyph="{dxc:DXImage Image=ProtectDocument_16x16.png}" LargeGlyph="{dxc:DXImage Image=ProtectDocument_32x32.png}" ToolTip="Lock total estimated units" />
+                                <dxb:BarButtonItem Content="Map Client Internal Number" Command="{Binding DataContext.MapClientNumberCommand, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" Glyph="{dx:DXImage Image=Wizard_16x16.png}" ToolTip="Copy 2 columns from excel with the left being internal number and the right being client number, then paste it in here" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

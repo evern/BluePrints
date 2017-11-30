@@ -4,6 +4,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -12,16 +13,9 @@
             <DockPanel>
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="Home">
-                            <dxr:RibbonPageGroup Caption="AREA Tasks">
-                                <dxb:BarButtonItem Content="Delete Row" Command="{Binding BulkDeleteCommand}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
-                                <dxb:BarButtonItem Content="Redo" Command="{Binding RedoCommand}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
-                                <dxb:BarButtonItem Content="Save Layout" Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" Glyph="{dx:DXImage Image=Save_16x16.png}" />
-                                <dxb:BarButtonItem Content="Reset Layout" Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
-                                <dxb:BarCheckItem Content="Cell Selection" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" Glyph="{dxc:DXImage Image=SplitTableCells_16x16.png}" LargeGlyph="{dxc:DXImage Image=SplitTableCells_32x32.png}" />
-                            </dxr:RibbonPageGroup>
+                        <dxr:RibbonPage Caption="Area">
+                            <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                            <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
