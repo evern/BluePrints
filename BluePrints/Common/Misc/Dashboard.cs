@@ -231,39 +231,52 @@ namespace BluePrints.Common.Misc
 
             foreach(DashboardTreeStructure subjob_dashboard in hierarchicalDashboards.OrderBy(x => x.Code))
             {
-                foreach (DashboardTreeStructure department_dashboard in subjob_dashboard.Child_Dashboards.OrderBy(x => x.Code))
+                if (subjob_dashboard.Child_Dashboards.Count == 0)
                 {
-                    SUBJOB subjob = SUBJOBCollection.FirstOrDefault(x => x.INTERNAL_NAME1 == subjob_dashboard.Code);
-                    string areaCode = string.Empty;
+                    DashboardFlatStructure subjobLevelDashboard = new DashboardFlatStructure();
+                    subjobLevelDashboard.SubjobCode = subjob_dashboard.Code;
+                    subjobLevelDashboard.AreaCode = string.Empty;
+                    subjobLevelDashboard.DepartmentCode = string.Empty;
+                    subjobLevelDashboard.DisciplineCode = string.Empty;
+                    subjobLevelDashboard.Stats = subjob_dashboard.Stats;
+                    flatDashboards.Add(subjobLevelDashboard);
+                }
+                else
+                {
+                    foreach (DashboardTreeStructure department_dashboard in subjob_dashboard.Child_Dashboards.OrderBy(x => x.Code))
+                    {
+                        SUBJOB subjob = SUBJOBCollection.FirstOrDefault(x => x.INTERNAL_NAME1 == subjob_dashboard.Code);
+                        string areaCode = string.Empty;
 
-                    if(subjob!= null)
-                        areaCode = subjob.AREA == null ? string.Empty : subjob.AREA.INTERNAL_NUM;
-                    if(department_dashboard.Child_Dashboards.Count == 0)
-                    {
-                        DashboardFlatStructure departmentLevelDashboard = new DashboardFlatStructure();
-                        departmentLevelDashboard.SubjobCode = subjob_dashboard.Code;
-                        departmentLevelDashboard.AreaCode = areaCode;
-                        departmentLevelDashboard.DepartmentCode = department_dashboard.Code;
-                        departmentLevelDashboard.DisciplineCode = string.Empty;
-                        departmentLevelDashboard.Stats = department_dashboard.Stats;
-                        flatDashboards.Add(departmentLevelDashboard);
-                    }
-                    else
-                    {
-                        foreach (DashboardTreeStructure discipline_dashboard in department_dashboard.Child_Dashboards.OrderBy(x => x.Code))
+                        if (subjob != null)
+                            areaCode = subjob.AREA == null ? string.Empty : subjob.AREA.INTERNAL_NUM;
+                        if (department_dashboard.Child_Dashboards.Count == 0)
                         {
-                            DashboardFlatStructure commodityLevelDashboard = new DashboardFlatStructure();
-                            commodityLevelDashboard.SubjobCode = subjob_dashboard.Code;
-                            commodityLevelDashboard.AreaCode = areaCode;
-                            commodityLevelDashboard.DepartmentCode = department_dashboard.Code;
-                            commodityLevelDashboard.DisciplineCode = discipline_dashboard.Code;
-                            commodityLevelDashboard.Stats = discipline_dashboard.Stats;
-                            flatDashboards.Add(commodityLevelDashboard);
+                            DashboardFlatStructure departmentLevelDashboard = new DashboardFlatStructure();
+                            departmentLevelDashboard.SubjobCode = subjob_dashboard.Code;
+                            departmentLevelDashboard.AreaCode = areaCode;
+                            departmentLevelDashboard.DepartmentCode = department_dashboard.Code;
+                            departmentLevelDashboard.DisciplineCode = string.Empty;
+                            departmentLevelDashboard.Stats = department_dashboard.Stats;
+                            flatDashboards.Add(departmentLevelDashboard);
+                        }
+                        else
+                        {
+                            foreach (DashboardTreeStructure discipline_dashboard in department_dashboard.Child_Dashboards.OrderBy(x => x.Code))
+                            {
+                                DashboardFlatStructure commodityLevelDashboard = new DashboardFlatStructure();
+                                commodityLevelDashboard.SubjobCode = subjob_dashboard.Code;
+                                commodityLevelDashboard.AreaCode = areaCode;
+                                commodityLevelDashboard.DepartmentCode = department_dashboard.Code;
+                                commodityLevelDashboard.DisciplineCode = discipline_dashboard.Code;
+                                commodityLevelDashboard.Stats = discipline_dashboard.Stats;
+                                flatDashboards.Add(commodityLevelDashboard);
 
-                            //foreach(DashboardTreeStructure commodity_dashboard in discipline_dashboard.Child_Dashboards.OrderBy(x => x.Code))
-                            //{
+                                //foreach(DashboardTreeStructure commodity_dashboard in discipline_dashboard.Child_Dashboards.OrderBy(x => x.Code))
+                                //{
 
-                            //}
+                                //}
+                            }
                         }
                     }
                 }

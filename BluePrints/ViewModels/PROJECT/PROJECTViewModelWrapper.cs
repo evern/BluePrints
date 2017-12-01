@@ -492,7 +492,8 @@ namespace BluePrints.ViewModels
                 if (DisplayEntities == null || DisplayEntities.Count == 0)
                     return null;
 
-                return DisplayEntities.First().Subjob_Dashboards;
+                List<DashboardFlatStructure> singleProjectDashboard = DisplayEntities.First().Subjob_Dashboards;
+                return singleProjectDashboard;
             }
         }
 
