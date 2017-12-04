@@ -772,6 +772,7 @@ namespace BluePrints.Common.Base
         
         #region Custom Summary
         private decimal cumulative_total_units = 0;
+        private decimal cumulative_baseline_units = 0;
         private decimal cumulative_current_units = 0;
         public void CustomSummary(CustomSummaryEventArgs e)
         {
@@ -780,13 +781,17 @@ namespace BluePrints.Common.Base
                 if (e.SummaryProcess == CustomSummaryProcess.Start)
                 {
                     cumulative_total_units = 0;
+                    cumulative_baseline_units = 0;
                     cumulative_current_units = 0;
                 }
                 if (e.SummaryProcess == CustomSummaryProcess.Calculate)
                 {
                     var total_units = ((IReportable)e.Row).Total_Units;
+                    var baseline_units = ((IReportable)e.Row).Estimated_Units;
 
                     cumulative_total_units += total_units;
+                    cumulative_baseline_units += baseline_units;
+
                     if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage))
                     {
                         cumulative_current_units += ((BASELINE_ITEMProgress)e.Row).Earned_Units_ToDate;
@@ -799,13 +804,31 @@ namespace BluePrints.Common.Base
                         if (cumulative_total_units > 0)
                             e.TotalValue = cumulative_current_units / cumulative_total_units;
                     }
-                    else if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Baseline_Percentage))
+                    else if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().SchedulePercentage))
                     {
                         IReportable reportable = ((IReportable)e.Row);
                         if (reportable.Stats != null && reportable.Stats.Budgeted != null && reportable.Stats.Budgeted.CurrentPeriodCumulativeDataPoint != null)
                         {
-                            cumulative_current_units += reportable.Stats.Budgeted.CurrentPeriodCumulativeDataPoint.BudgetedUnits;
+                            cumulative_current_units += reportable.Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units;
                             e.TotalValue = cumulative_current_units / cumulative_total_units;
+                        }
+                    }
+                    else if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().ScheduleCurrentPeriodPercentage))
+                    {
+                        IReportable reportable = ((IReportable)e.Row);
+                        if (reportable.Stats != null && reportable.Stats.Budgeted != null && reportable.Stats.Budgeted.CurrentPeriodDataPoint != null)
+                        {
+                            cumulative_current_units += reportable.Stats.Budgeted.CurrentPeriodDataPoint.Units;
+                            e.TotalValue = cumulative_current_units / cumulative_total_units;
+                        }
+                    }
+                    else if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Baseline_Percentage))
+                    {
+                        if(cumulative_baseline_units > 0)
+                        {
+                            IReportable reportable = ((IReportable)e.Row);
+                            cumulative_current_units += reportable.Earned_Units_ToDate;
+                            e.TotalValue = cumulative_current_units / cumulative_baseline_units;
                         }
                     }
                     else if ((((GridSummaryItem)e.Item).FieldName) == "Stats.Budgeted.CurrentPeriodDataPoint." + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage))

@@ -296,7 +296,7 @@ namespace BluePrints.ViewModels
         protected override string ViewName
         {
             //get { return "OffsiteDirectProgressViewModelWrapper" + view_project_specific_affix; }
-            get { return "OffsiteDirectProgressViewModelWrapper_v2"; }
+            get { return "OffsiteDirectProgressViewModelWrapper_v3"; }
         }
 
         private string view_project_specific_affix
