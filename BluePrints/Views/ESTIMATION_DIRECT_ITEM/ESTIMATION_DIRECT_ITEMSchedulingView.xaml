@@ -310,7 +310,7 @@
                         <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDeliverables" dx:DXSerializer.StoreLayoutMode="All" CurrentItem="{Binding DataContext.Selected_Deliverable, ElementName=userControl, Mode=TwoWay}" SelectedItems="{Binding DataContext.Selected_Deliverables, ElementName=userControl, Mode=TwoWay}"
                                      Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA" ReadOnly="True" AllowEditing="False" >
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_AREA" Header="AREA" ReadOnly="True" AllowEditing="False" >
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
@@ -318,7 +318,7 @@
                                         ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colSUBAREA" FieldName="Entity.Entity.SubAreaGuid" Header="SUBAREA" ReadOnly="True" AllowEditing="False" ColumnFilterMode="DisplayText">
+                                <dxg:GridColumn FieldName="Entity.Entity.SubAreaGuid" Header="SUBAREA" ReadOnly="True" AllowEditing="False" ColumnFilterMode="DisplayText">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:ComboBoxEdit 
@@ -342,7 +342,7 @@
                                                               DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.Entity.GUID_DISCIPLINE" Header="DISCIPLINE" ReadOnly="True" AllowEditing="False" >
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" Header="DISCIPLINE" ReadOnly="True" AllowEditing="False" >
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"
@@ -350,7 +350,7 @@
                                         ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colSTOCK_CODE" FieldName="Entity.CommodityCodeGuid" Header="COMMODITY CODE" ReadOnly="True" AllowEditing="False" >
+                                <dxg:GridColumn FieldName="Entity.CommodityCodeGuid" Header="COMMODITY CODE" ReadOnly="True" AllowEditing="False" >
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxg:LookUpEdit
@@ -406,9 +406,9 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colNAME" FieldName="Entity.Entity.NAME" Header="NAME" ReadOnly="True" AllowEditing="False" />
-                                <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.Entity.COMMENTS" Header="COMMENTS" ReadOnly="True" AllowEditing="False" />
-                                <dxg:GridColumn Name="colESTIMATED_QUANTITY" FieldName="Entity.Total_Quantity" Header="TOTAL QUANTITY" ReadOnly="True" AllowEditing="False" >
+                                <dxg:GridColumn FieldName="Entity.Entity.NAME" Header="NAME" ReadOnly="True" AllowEditing="False" />
+                                <dxg:GridColumn FieldName="Entity.Entity.COMMENTS" Header="COMMENTS" ReadOnly="True" AllowEditing="False" />
+                                <dxg:GridColumn FieldName="Entity.Total_Quantity" Header="TOTAL QUANTITY" ReadOnly="True" AllowEditing="False" >
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <Grid>

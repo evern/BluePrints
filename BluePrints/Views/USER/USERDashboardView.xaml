@@ -80,17 +80,17 @@
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical" Height="500" dxlc:LayoutControl.AllowVerticalSizing="True">
                         <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlUserDashboard" dx:DXSerializer.StoreLayoutMode="All" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}" Style="{StaticResource DefaultGridControlTemplate}" IsFilterEnabled="False">
                             <dxg:GridControl.Bands>
-                                <dxg:GridControlBand Name="bandGeneral" Header="General">
-                                    <dxg:GridColumn Name="columnSubjob" FieldName="Entity.Entity.SUBJOB.INTERNAL_NAME1" Header="SUBJOB" ReadOnly="True" />
-                                    <dxg:GridColumn Name="colAREA" FieldName="Entity.Entity.AREA.INTERNAL_NUM" Header="AREA" ReadOnly="True" />
-                                    <dxg:GridColumn Name="colSUBAREA" FieldName="Entity.Entity.AREA1.INTERNAL_NUM" Header="SUBAREA" ColumnFilterMode="DisplayText" ReadOnly="True" />
-                                    <dxg:GridColumn Name="colDOCTYPE" FieldName="Entity.Entity.DOCTYPE.NAME" Header="DOCTYPE" ReadOnly="True" />
-                                    <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.Entity.DISCIPLINE.NAME" Header="DISCIPLINE" ReadOnly="True" />
-                                    <dxg:GridColumn Name="colDEPARTMENT" FieldName="Entity.Entity.DEPARTMENT.NAME" Header="DEPARTMENT" ReadOnly="True" />
-                                    <dxg:GridColumn Name="columnInternalNum" FieldName="Entity.Entity.INTERNAL_NUM" Header="INTERNAL NUM" ReadOnly="True" IsEnabled="False" />
-                                    <dxg:GridColumn Name="columnType" FieldName="Entity.Entity.DELIVERABLE_TYPE" Header="TYPE" ReadOnly="True" IsEnabled="False" />
-                                    <dxg:GridColumn Name="columnTitle" FieldName="Entity.Entity.PRIMARY_TITLE" Header="PRIMARY TITLE" ReadOnly="True" IsEnabled="False" />
-                                    <dxg:GridColumn Name="columnTitle2" FieldName="Entity.Entity.SECONDARY_TITLE" Header="SECONDARY TITLE" ReadOnly="True" IsEnabled="False" />
+                                <dxg:GridControlBand Header="General">
+                                    <dxg:GridColumn FieldName="Entity.Entity.SUBJOB.INTERNAL_NAME1" Header="SUBJOB" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Entity.Entity.AREA.INTERNAL_NUM" Header="AREA" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Entity.Entity.AREA1.INTERNAL_NUM" Header="SUBAREA" ColumnFilterMode="DisplayText" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Entity.Entity.DOCTYPE.NAME" Header="DOCTYPE" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Entity.Entity.DISCIPLINE.NAME" Header="DISCIPLINE" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Entity.Entity.DEPARTMENT.NAME" Header="DEPARTMENT" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Entity.Entity.INTERNAL_NUM" Header="INTERNAL NUM" ReadOnly="True" IsEnabled="False" />
+                                    <dxg:GridColumn FieldName="Entity.Entity.DELIVERABLE_TYPE" Header="TYPE" ReadOnly="True" IsEnabled="False" />
+                                    <dxg:GridColumn FieldName="Entity.Entity.PRIMARY_TITLE" Header="PRIMARY TITLE" ReadOnly="True" IsEnabled="False" />
+                                    <dxg:GridColumn FieldName="Entity.Entity.SECONDARY_TITLE" Header="SECONDARY TITLE" ReadOnly="True" IsEnabled="False" />
                                 </dxg:GridControlBand>
                                 <dxg:GridControlBand Header="Cumulative">
                                     <dxg:GridColumn Header="Earned %" FieldName="{Binding DataContext.Cumulative_Earned_Percentage, ElementName=userControl}" ReadOnly="True" AllowEditing="False" VisibleIndex="80">

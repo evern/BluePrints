@@ -54,7 +54,7 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSiteDirectProgress" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Bands>
-                            <dxg:GridControlBand Name="bandGeneral" Header="General">
+                            <dxg:GridControlBand Header="General">
                                 <dxg:GridColumn FieldName="ProgressItem.Area_Guid" Header="AREA" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
@@ -93,7 +93,7 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="ProgressItem.UOM" Header="UOM" ReadOnly="True" IsEnabled="False" />
                             </dxg:GridControlBand>
-                            <dxg:GridControlBand Name="bandPeriod" Header="Period">
+                            <dxg:GridControlBand Header="Period">
                                 <dxg:GridColumn FieldName="ProgressItem.CurrentPeriodInstalledQuantity" Header="INSTALLED_QTY" IsEnabled="False">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
@@ -117,7 +117,7 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
-                            <dxg:GridControlBand Name="bandTotals" Header="Totals">
+                            <dxg:GridControlBand Header="Totals">
                                 <dxg:GridColumn FieldName="ProgressItem.Schedule_Estimated_Quantity" Header="PLANNED_QTY" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
@@ -149,7 +149,7 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
-                            <dxg:GridControlBand Name="bandProductivity" Header="Productivity">
+                            <dxg:GridControlBand Header="Productivity">
                                 <dxg:GridColumn FieldName="ProgressItem.Current_Productivity" Header="CURRENT_PRODUCTIVITY" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
@@ -171,7 +171,7 @@
                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Reportables}">
                                 <dxg:GridControl x:Name="gridControlChild">
                                     <dxg:GridControl.Bands>
-                                        <dxg:GridControlBand Name="child_bandGeneral" Header="General">
+                                        <dxg:GridControlBand Header="General">
                                             <dxg:GridColumn Binding="{Binding Area_Guid}" Header="AREA" ReadOnly="True">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
@@ -210,7 +210,7 @@
                                             </dxg:GridColumn>
                                             <dxg:GridColumn Binding="{Binding UOM}" Header="UOM" ReadOnly="True" IsEnabled="False" />
                                         </dxg:GridControlBand>
-                                        <dxg:GridControlBand Name="child_bandPeriod" Header="Period">
+                                        <dxg:GridControlBand Header="Period">
                                             <dxg:GridColumn Binding="{Binding CurrentPeriodInstalledQuantity}" Header="INSTALLED_QTY" IsEnabled="False">
                                                 <dxg:GridColumn.CellTemplate>
                                                     <DataTemplate>
@@ -234,7 +234,7 @@
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                         </dxg:GridControlBand>
-                                        <dxg:GridControlBand Name="child_bandTotals" Header="Totals">
+                                        <dxg:GridControlBand Header="Totals">
                                             <dxg:GridColumn Binding="{Binding Schedule_Estimated_Quantity}" Header="PLANNED_QTY" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />
@@ -266,7 +266,7 @@
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                         </dxg:GridControlBand>
-                                        <dxg:GridControlBand Name="child_bandProductivity" Header="Productivity">
+                                        <dxg:GridControlBand Header="Productivity">
                                             <dxg:GridColumn Binding="{Binding Current_Productivity}" Header="CURRENT_PRODUCTIVITY" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MaskUseAsDisplayFormat="True" />

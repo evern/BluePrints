@@ -85,7 +85,7 @@
                                           ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colSUBAREA" FieldName="Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText">
+                            <dxg:GridColumn FieldName="Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit 
@@ -109,7 +109,7 @@
                                                               DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn x:Name="colINTERNAL_NAME" Header="INTERNAL NAME" FieldName="Entity.INTERNAL_NAME1" />
+                            <dxg:GridColumn Header="INTERNAL NAME" FieldName="Entity.INTERNAL_NAME1" />
                             <dxg:GridColumn Header="DESCRIPTION" FieldName="Entity.INTERNAL_NAME2" />
                             <dxg:GridColumn Header="COMMENTS" FieldName="Entity.COMMENTS" />
                             <dxg:GridColumn Header="START DATE" FieldName="Entity.STARTDATE">
@@ -181,7 +181,7 @@
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
-                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" ShowGridMenu="tableView_ShowGridMenu">
+                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" >
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand PassEventArgsToCommand="True"
                                                            Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}"

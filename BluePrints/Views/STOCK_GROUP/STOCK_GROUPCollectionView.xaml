@@ -68,9 +68,9 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSTOCK_GROUP" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Name="colCODE" FieldName="Entity.CODE" Header="CODE" />
-                            <dxg:GridColumn Name="colDESCRIPTION" FieldName="Entity.DESCRIPTION" Header="DESCRIPTION" />
-                            <dxg:GridColumn Name="colUOM" FieldName="Entity.UOM" Header="UOM">
+                            <dxg:GridColumn FieldName="Entity.CODE" Header="CODE" />
+                            <dxg:GridColumn FieldName="Entity.DESCRIPTION" Header="DESCRIPTION" />
+                            <dxg:GridColumn FieldName="Entity.UOM" Header="UOM">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.UOMCollection, ElementName=userControl}"

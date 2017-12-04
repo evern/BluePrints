@@ -46,8 +46,8 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlVARIATION_ITEM" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Bands>
-                            <dxg:GridControlBand Name="bandGeneral" Header="General">
-                                <dxg:GridColumn Name="colSUBJOB" FieldName="Entity.Entity.Entity.GUID_SUBJOB" Header="SUBJOB" ReadOnly="True">
+                            <dxg:GridControlBand Header="General">
+                                <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_SUBJOB" Header="SUBJOB" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
@@ -62,7 +62,7 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colAREA" FieldName="Entity.Entity.Entity.GUID_AREA" Header="AREA">
+                                <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_AREA" Header="AREA">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
@@ -72,7 +72,7 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colSUBAREA" FieldName="Entity.Entity.Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText">
+                                <dxg:GridColumn FieldName="Entity.Entity.Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:ComboBoxEdit x:Name="PART_Editor" ItemsSource="{Binding RowData.Row.Entity.Entity.Entity.SubAreaCollection}" DisplayMember="INTERNAL_NUM" ValueMember="GUID" ValidateOnTextInput="True" ValidateOnEnterKeyPressed="True" IncrementalFiltering="True" NullValueButtonPlacement="Popup" IsEnabled="{Binding RowData.Row.IsEnabled}" ImmediatePopup="True"></dxe:ComboBoxEdit>
@@ -83,7 +83,7 @@
                                         <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colSTOCK_CODE" FieldName="Entity.Entity.StockCodeGuid" Header="STOCK CODE">
+                                <dxg:GridColumn FieldName="Entity.Entity.StockCodeGuid" Header="STOCK CODE">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.STOCK_CODECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="CODE" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
@@ -137,7 +137,7 @@
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="CODE" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.Entity.Entity.GUID_DISCIPLINE" Header="DISCIPLINE">
+                                <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DISCIPLINE" Header="DISCIPLINE">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:ComboBoxEdit Name="PART_Editor" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" IsEnabled="{Binding RowData.Row.IsEnabled}" ValueMember="GUID" />
@@ -147,28 +147,28 @@
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="NAME" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colDISCIPLINE_NUM" FieldName="Entity.Entity.Entity.DISCIPLINE_NUM" Header="DISC. NUM">
+                                <dxg:GridColumn FieldName="Entity.Entity.Entity.DISCIPLINE_NUM" Header="DISC. NUM">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit Name="PART_Editor" IsTextEditable="True" IsFloatValue="False" Increment="1" MinValue="1" MaxValue="99" MaskType="Numeric" Mask="n0" IsEnabled="{Binding RowData.Row.IsEnabled}" MaskUseAsDisplayFormat="True" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colTRUCK_PERCENTAGE" FieldName="Entity.Entity.Entity.TRUCK_PERCENTAGE" Header="TRUCK % PER QTY">
+                                <dxg:GridColumn FieldName="Entity.Entity.Entity.TRUCK_PERCENTAGE" Header="TRUCK % PER QTY">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit Name="PART_Editor" IsTextEditable="True" IsFloatValue="True" Increment="0.1" MinValue="0" MaxValue="1" MaskType="Numeric" Mask="p0" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.IsEnabled}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colRATE_OVERRIDE" FieldName="Entity.Entity.Entity.RATE_OVERRIDE" Header="RATE OVERRIDE" FilterPopupMode="CheckedList">
+                                <dxg:GridColumn FieldName="Entity.Entity.Entity.RATE_OVERRIDE" Header="RATE OVERRIDE" FilterPopupMode="CheckedList">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit Name="PART_Editor" IsFloatValue="True" Increment="1" MinValue="0" MaskType="Numeric" Mask="n2" NullValueButtonPlacement="EditBox" MaskUseAsDisplayFormat="True" IsEnabled="{Binding RowData.Row.IsEnabled}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.Entity.Entity.COMMENTS" Header="COMMENTS">
+                                <dxg:GridColumn FieldName="Entity.Entity.Entity.COMMENTS" Header="COMMENTS">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsEnabled}" />
@@ -176,7 +176,7 @@
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
-                            <dxg:GridControlBand Name="bandProgressSpecification" Header="Progress Specifications">
+                            <dxg:GridControlBand Header="Progress Specifications">
                                 <dxg:GridColumn Header="STOCK GROUP" FieldName="Entity.Entity.Entity.GUID_STOCK_GROUP">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
@@ -187,7 +187,7 @@
                                         <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.STOCK_GROUPCollection, ElementName=userControl}" IsTextEditable="True" AutoComplete="True" DisplayMember="CODE" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colPROGRESS_TYPE" FieldName="Entity.Entity.PROGRESS_TYPE" Header="PROGRESS_TYPE">
+                                <dxg:GridColumn FieldName="Entity.Entity.PROGRESS_TYPE" Header="PROGRESS_TYPE">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:ComboBoxEdit x:Name="PART_Editor" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Estimation_DirectProgressType}}" IsEnabled="{Binding RowData.Row.IsEnabled}" NullValueButtonPlacement="Popup" ImmediatePopup="True"></dxe:ComboBoxEdit>
@@ -198,7 +198,7 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
-                            <dxg:GridControlBand Name="bandVariation" Header="Variation">
+                            <dxg:GridControlBand Header="Variation">
                                 <dxg:GridColumn FieldName="Variation_Units" Header="ADJUST QUANTITY">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
@@ -266,7 +266,7 @@
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
-                            <dxg:GridControlBand Name="bandTotals" Header="Totals">
+                            <dxg:GridControlBand Header="Totals">
                                 <dxg:GridColumn FieldName="Total_Units" Header="TOTAL QUANTITY" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings MaskType="Numeric" Mask="n" MinValue="0" Increment="1" MaskUseAsDisplayFormat="True" />
@@ -298,7 +298,7 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
-                            <dxg:GridControlBand Name="bandStock" Header="Stock Code Details">
+                            <dxg:GridControlBand Header="Stock Code Details">
                                 <dxg:GridColumn Header="SUPPLY RATE" FieldName="Entity.Entity.STOCK_CODE.RATE_SUPPLY">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>

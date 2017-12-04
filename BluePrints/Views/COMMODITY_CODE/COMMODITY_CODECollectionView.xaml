@@ -71,16 +71,16 @@
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlCOMMODITY_CODE" dx:DXSerializer.StoreLayoutMode="All" 
                                      Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Name="colCODE" FieldName="Entity.CODE" Header="CODE" />
-                            <dxg:GridColumn Name="colDESCRIPTION" FieldName="Entity.DESCRIPTION" Header="DESCRIPTION" />
-                            <dxg:GridColumn Name="colUOM" FieldName="Entity.UOM" Header="UOM">
+                            <dxg:GridColumn FieldName="Entity.CODE" Header="CODE" />
+                            <dxg:GridColumn FieldName="Entity.DESCRIPTION" Header="DESCRIPTION" />
+                            <dxg:GridColumn FieldName="Entity.UOM" Header="UOM">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.UOMCollection, ElementName=userControl}"
                                         IsTextEditable="True" AutoComplete="True" DisplayMember="UOM1" ValueMember="UOM1" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.GUID_DISCIPLINE" Header="DISCIPLINE">
+                            <dxg:GridColumn FieldName="Entity.GUID_DISCIPLINE" Header="DISCIPLINE">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}"

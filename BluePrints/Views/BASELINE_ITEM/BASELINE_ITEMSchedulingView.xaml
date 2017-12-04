@@ -334,7 +334,7 @@
                         <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDeliverables" dx:DXSerializer.StoreLayoutMode="All" CurrentItem="{Binding DataContext.Selected_Deliverable, ElementName=userControl, Mode=TwoWay}" SelectedItems="{Binding DataContext.Selected_Deliverables, ElementName=userControl, Mode=TwoWay}"
                                      Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn Name="colPHASE" FieldName="Entity.Entity.GUID_PHASE"
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE"
                                             Header="PHASE" ReadOnly="True" VisibleIndex="0">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings 
@@ -343,7 +343,7 @@
                                             DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colSUBJOBInternalName1" FieldName="Entity.Entity.GUID_SUBJOB"
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_SUBJOB"
                                             Header="SUBJOB" Visible="true" ReadOnly="True" VisibleIndex="1">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1"
@@ -352,7 +352,7 @@
                                             DisplayMember="INTERNAL_NAME1" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colAREA" FieldName="Entity.Entity.GUID_AREA" Header="AREA" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_AREA" Header="AREA" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}"
@@ -360,7 +360,7 @@
                                         ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colSUBAREA" FieldName="Entity.Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Entity.Entity.SubAreaGuid" Header="SUBAREA" ColumnFilterMode="DisplayText" ReadOnly="True">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:ComboBoxEdit 
@@ -384,7 +384,7 @@
                                                               DisplayMember="INTERNAL_NUM" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colDOCTYPE" FieldName="Entity.Entity.GUID_DOCTYPE" Header="DOCTYPE" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_DOCTYPE" Header="DOCTYPE" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings
                                         ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}"
@@ -392,7 +392,7 @@
                                         ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colDISCIPLINE" FieldName="Entity.Entity.GUID_DISCIPLINE"
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE"
                                             Header="DISCIPLINE" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings
@@ -401,7 +401,7 @@
                                         ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colDEPARTMENT" FieldName="Entity.Entity.GUID_DEPARTMENT"
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_DEPARTMENT"
                                             Header="DEPARTMENT" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings
@@ -410,25 +410,25 @@
                                         ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colINTERNAL_NUM" FieldName="Entity.Entity.INTERNAL_NUM"
+                                <dxg:GridColumn FieldName="Entity.Entity.INTERNAL_NUM"
                                             Header="INTERNAL_NUM" ReadOnly="True"/>
-                                <dxg:GridColumn Name="colCLIENT_NUM" FieldName="Entity.Entity.CLIENT_NUM"
+                                <dxg:GridColumn FieldName="Entity.Entity.CLIENT_NUM"
                                             Header="CLIENT_NUM" ReadOnly="True" />
-                                <dxg:GridColumn Name="colREVISION_NUMBER" FieldName="Entity.Entity.REVISION_NUMBER"
+                                <dxg:GridColumn FieldName="Entity.Entity.REVISION_NUMBER"
                                             Header="REVISION_NUM" ReadOnly="True" />
-                                <dxg:GridColumn Name="colDELIVERABLE_TYPE" FieldName="Entity.Entity.DELIVERABLE_TYPE"
+                                <dxg:GridColumn FieldName="Entity.Entity.DELIVERABLE_TYPE"
                                             Header="TYPE" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
                                                               ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DeliverableType}}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colPRIMARY_TITLE" FieldName="Entity.Entity.PRIMARY_TITLE"
+                                <dxg:GridColumn FieldName="Entity.Entity.PRIMARY_TITLE"
                                             Header="PRIMARY_TITLE" ReadOnly="True" />
-                                <dxg:GridColumn Name="colSECONDARY_TITLE" FieldName="Entity.Entity.SECONDARY_TITLE"
+                                <dxg:GridColumn  FieldName="Entity.Entity.SECONDARY_TITLE"
                                             Header="SECONDARY_TITLE" ReadOnly="True"/>
-                                <dxg:GridColumn Name="colCOMMENTS" FieldName="Entity.Entity.COMMENTS" Header="COMMENTS" ReadOnly="True" />
-                                <dxg:GridColumn Name="colSTATUS" FieldName="Entity.Entity.DeliverableStatusGuid" Header="STATUS" ColumnFilterMode="DisplayText" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Entity.Entity.COMMENTS" Header="COMMENTS" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Entity.Entity.DeliverableStatusGuid" Header="STATUS" ColumnFilterMode="DisplayText" ReadOnly="True">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:ComboBoxEdit 
@@ -452,7 +452,7 @@
                                                               DisplayMember="NAME" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colUSER" FieldName="Entity.Entity.GUID_USER" Header="RESOURCE" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_USER" Header="RESOURCE" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings NullValueButtonPlacement="EditBox"
                                                               ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}"
@@ -460,12 +460,12 @@
                                                               DisplayMember="NAME" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colBY_DURATION" FieldName="Entity.Entity.BY_DURATION" Header="BY DURATION" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Entity.Entity.BY_DURATION" Header="BY DURATION" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:CheckEditSettings />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colESTIMATED_HOURS" FieldName="Entity.Entity.ESTIMATED_HOURS"
+                                <dxg:GridColumn FieldName="Entity.Entity.ESTIMATED_HOURS"
                                             Header="ESTIMATED_HOURS" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True" />
@@ -476,13 +476,13 @@
                                         <dxe:TextEditSettings MaskType="Numeric" Mask="p" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colTARGET_DATE" FieldName="Entity.Entity.TARGET_DATE" Header="TARGET DATE">
+                                <dxg:GridColumn FieldName="Entity.Entity.TARGET_DATE" Header="TARGET DATE">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Name="colDC_HOURS" FieldName="Entity.Entity.DC_HOURS" Header="DC_HOURS" ReadOnly="True" />
-                                <dxg:GridColumn Name="colTOTAL_COSTS" FieldName="Entity.Total_Costs" Header="COSTS" AllowSearchPanel="False" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Entity.Entity.DC_HOURS" Header="DC_HOURS" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Entity.Total_Costs" Header="COSTS" AllowSearchPanel="False" ReadOnly="True">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:TextEdit Name="PART_Editor" MaskUseAsDisplayFormat="True"

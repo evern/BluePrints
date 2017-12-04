@@ -74,7 +74,7 @@
                                       dxlc:LayoutControl.AllowVerticalSizing="True">
                         <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDashboardSUBJOB" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Bands>
-                                <dxg:GridControlBand Name="bandGeneral" Header="General">
+                                <dxg:GridControlBand Header="General">
                                     <dxg:GridColumn FieldName="Entity.GUID_DPHASE" Header="PHASE">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings
@@ -117,7 +117,7 @@
                                                     VisibleIndex="50" />
                                     <dxg:GridColumn Header="DESCRIPTION" FieldName="Entity.INTERNAL_NAME2"
                                                     VisibleIndex="60" />
-                                    <dxg:GridColumn x:Name="colCumulativeBudget" Header="Total Units"
+                                    <dxg:GridColumn Header="Total Units"
                                                     FieldName="Stats.BudgetedUnits" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="70">
                                         <dxg:GridColumn.EditSettings>
@@ -126,8 +126,8 @@
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                 </dxg:GridControlBand>
-                                <dxg:GridControlBand Name="bandCumulative" Header="Cumulative">
-                                    <dxg:GridColumn x:Name="colCumulativeEarnedPercentage" Header="Earned %"
+                                <dxg:GridControlBand Header="Cumulative">
+                                    <dxg:GridColumn Header="Earned %"
                                                     FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage"
                                                     ReadOnly="True" AllowEditing="False" VisibleIndex="80">
                                         <dxg:GridColumn.EditSettings>
@@ -135,7 +135,7 @@
                                                                   MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colCumulativePlanned" Header="Planned Units"
+                                    <dxg:GridColumn Header="Planned Units"
                                                     FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="90">
                                         <dxg:GridColumn.EditSettings>
@@ -143,7 +143,7 @@
                                                                   Mask="n" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colCumulativeEarned" Header="Earned Units"
+                                    <dxg:GridColumn Header="Earned Units"
                                                     FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="100">
                                         <dxg:GridColumn.EditSettings>
@@ -151,7 +151,7 @@
                                                                   Mask="n" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colCumulativeBurned" Header="Burned Units"
+                                    <dxg:GridColumn Header="Burned Units"
                                                     FieldName="Stats.Burned.CurrentPeriodCumulativeDataPoint.Units"  ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="110">
                                         <dxg:GridColumn.EditSettings>
@@ -159,7 +159,7 @@
                                                                   Mask="n" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colCumulativeActual" Header="Actual Units" Visible="False" 
+                                    <dxg:GridColumn Header="Actual Units" Visible="False" 
                                                     FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Units" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="120">
                                         <dxg:GridColumn.EditSettings>
@@ -168,8 +168,8 @@
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                 </dxg:GridControlBand>
-                                <dxg:GridControlBand Name="bandPeriod" Header="Period">
-                                    <dxg:GridColumn x:Name="colPeriodEarnedPercentage" Header="Earned %"
+                                <dxg:GridControlBand Header="Period">
+                                    <dxg:GridColumn Header="Earned %"
                                                     FieldName="Stats.Earned.CurrentPeriodDataPoint.UnitsPercentage" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="130">
                                         <dxg:GridColumn.EditSettings>
@@ -177,7 +177,7 @@
                                                                   MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colPeriodPlanned" Header="Planned Units"
+                                    <dxg:GridColumn Header="Planned Units"
                                                     FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="140">
                                         <dxg:GridColumn.EditSettings>
@@ -185,7 +185,7 @@
                                                                   Mask="n" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colPeriodEarned" Header="Earned Units"
+                                    <dxg:GridColumn Header="Earned Units"
                                                     FieldName="Stats.Earned.CurrentPeriodDataPoint.Units" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="150">
                                         <dxg:GridColumn.EditSettings>
@@ -193,7 +193,7 @@
                                                                   Mask="n" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colPeriodBurned" Header="Burned Units"
+                                    <dxg:GridColumn Header="Burned Units"
                                                     FieldName="Stats.Burned.CurrentPeriodDataPoint.Units" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="160">
                                         <dxg:GridColumn.EditSettings>
@@ -201,7 +201,7 @@
                                                                   Mask="n" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colPeriodActual" Header="Actual Units" Visible="False"
+                                    <dxg:GridColumn Header="Actual Units" Visible="False"
                                                     FieldName="Stats.Actual.CurrentPeriodDataPoint.Units" ReadOnly="True"
                                                     AllowEditing="False" VisibleIndex="170">
                                         <dxg:GridColumn.EditSettings>
@@ -210,21 +210,21 @@
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                 </dxg:GridControlBand>
-                                <dxg:GridControlBand Name="bandPerformance" Header="Performance">
-                                    <dxg:GridColumn x:Name="colInvisibleSummary_CumulativePlannedCost"
+                                <dxg:GridControlBand Header="Performance">
+                                    <dxg:GridColumn 
                                                     Header="Planned Cost" FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Costs"
                                                     Visible="False" />
-                                    <dxg:GridColumn x:Name="colInvisibleSummary_CumulativeEarnedCost"
+                                    <dxg:GridColumn 
                                                     Header="Earned Cost" FieldName="Stats.Earned.CurrentPeriodCumulativeDataPoint.Costs"
                                                     Visible="False" />
-                                    <dxg:GridColumn x:Name="colInvisibleSummary_CumulativeBurnedCost"
+                                    <dxg:GridColumn 
                                                     Header="Burned Cost" FieldName="Stats.Burned.CurrentPeriodCumulativeDataPoint.Costs"
                                                     Visible="False" />
-                                    <dxg:GridColumn x:Name="colInvisibleSummary_CumulativeActualCost"
+                                    <dxg:GridColumn 
                                                     Header="Actual Cost" FieldName="Stats.Actual.CurrentPeriodCumulativeDataPoint.Costs"
                                                     Visible="False" />
 
-                                    <dxg:GridColumn x:Name="colGrossProfit" Header="Gross Profit"
+                                    <dxg:GridColumn Header="Gross Profit"
                                                     FieldName="Stats.GrossProfit" ReadOnly="True" AllowEditing="False"
                                                     VisibleIndex="15">
                                         <dxg:GridColumn.EditSettings>
@@ -232,7 +232,7 @@
                                                                   MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colEfficiencyRatio" Header="Efficiency Ratio %"
+                                    <dxg:GridColumn Header="Efficiency Ratio %"
                                                     FieldName="Stats.EfficiencyRatio" ReadOnly="True" AllowEditing="False"
                                                     VisibleIndex="16">
                                         <dxg:GridColumn.EditSettings>
@@ -240,7 +240,7 @@
                                                                   MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn x:Name="colProgressRatio" Header="Progress Ratio %"
+                                    <dxg:GridColumn Header="Progress Ratio %"
                                                     FieldName="Stats.ProgressRatio" ReadOnly="True" AllowEditing="False"
                                                     VisibleIndex="17">
                                         <dxg:GridColumn.EditSettings>

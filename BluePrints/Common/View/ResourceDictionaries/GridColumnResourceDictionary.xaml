@@ -69,7 +69,7 @@
         </dxg:GridColumn>
     </collections:ArrayList>
     <collections:ArrayList x:Key="DashboardBands">
-        <dxg:GridControlBand Name="bandGeneral" Header="General">
+        <dxg:GridControlBand Header="General">
             <dxg:GridColumn Header="Number" FieldName="Entity.NUMBER" VisibleIndex="0" />
             <dxg:GridColumn Header="Name" FieldName="Entity.NAME" VisibleIndex="10" />
             <dxg:GridColumn Header="Client" FieldName="Entity.CLIENT" VisibleIndex="20" />
