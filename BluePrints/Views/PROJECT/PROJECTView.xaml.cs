@@ -16,10 +16,10 @@ namespace BluePrints.Views
         {
             InitializeComponent();
 
-            HwndSource source = (HwndSource)HwndSource.FromVisual(this);
-            HwndTarget target = source?.CompositionTarget;
-            if (target != null)
-                target.RenderMode = RenderMode.SoftwareOnly;
+            //HwndSource source = (HwndSource)HwndSource.FromVisual(this);
+            //HwndTarget target = source?.CompositionTarget;
+            //if (target != null)
+            //    target.RenderMode = RenderMode.SoftwareOnly;
         }
     }
 }

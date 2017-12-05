@@ -338,31 +338,31 @@ namespace BluePrints.ViewModels
             if (module == null || DocumentManagerService == null)
                 return null;
 
-            if (module.DocumentType == "PROJECTView")
-            {
-                KeyValuePair<string, PROJECTViewWindow> existingProjectView = openedProjectView.FirstOrDefault(x => x.Key == module.Id.ToString());
-                if (existingProjectView.Value != null)
-                {
-                    PROJECTViewWindow projectView = existingProjectView.Value;
-                    projectView.Tag = module.Id.ToString();
-                    projectView.WindowClosed = windowClosed;
-                    projectView.Activate();
-                }
-                else
-                {
-                    PROJECTViewWindow projectView = new PROJECTViewWindow();
-                    projectView.Tag = module.Id.ToString();
-                    projectView.WindowClosed = windowClosed;
-                    PROJECTViewModelWrapper viewModel = (PROJECTViewModelWrapper)projectView.DataContext;
-                    viewModel.OnParameterChanged(module.DocumentParameter);
-                    openedProjectView.Add(module.Id.ToString(), projectView);
-                    projectView.Show();
-                }
+            //if (module.DocumentType == "PROJECTView")
+            //{
+            //    KeyValuePair<string, PROJECTViewWindow> existingProjectView = openedProjectView.FirstOrDefault(x => x.Key == module.Id.ToString());
+            //    if (existingProjectView.Value != null)
+            //    {
+            //        PROJECTViewWindow projectView = existingProjectView.Value;
+            //        projectView.Tag = module.Id.ToString();
+            //        projectView.WindowClosed = windowClosed;
+            //        projectView.Activate();
+            //    }
+            //    else
+            //    {
+            //        PROJECTViewWindow projectView = new PROJECTViewWindow();
+            //        projectView.Tag = module.Id.ToString();
+            //        projectView.WindowClosed = windowClosed;
+            //        PROJECTViewModelWrapper viewModel = (PROJECTViewModelWrapper)projectView.DataContext;
+            //        viewModel.OnParameterChanged(module.DocumentParameter);
+            //        openedProjectView.Add(module.Id.ToString(), projectView);
+            //        projectView.Show();
+            //    }
 
-                return null;
-            }
-            else
-            {
+            //    return null;
+            //}
+            //else
+            //{
                 DocumentInfo documentInfo = new DocumentInfo(module.Id, module.DocumentParameter, module.DocumentType, module.ModuleTitle);
                 var document = DocumentManagerService.ShowExistingEntityDocumentWithLogging(documentInfo, this);
                 //var document = DocumentManagerService.FindDocumentByIdOrCreate(module.ModuleTitle,
@@ -370,7 +370,7 @@ namespace BluePrints.ViewModels
                 //document.Show();
 
                 return document;
-            }
+            //}
         }
 
         private void windowClosed(string Id)

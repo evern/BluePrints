@@ -18,16 +18,18 @@ namespace BluePrints.Common.ViewModel.Reporting
         protected IEnumerable<SUBJOB> projectSUBJOBS { get; set; }
         public TimeSpan ReportingInterval { get; private set; }
         public DateTime FirstAlignedDataDate { get; private set; }
+        readonly DateTime CurrentDataDate;
         readonly string ProjectNumber;
         readonly IPrimeroEntitiesUnitOfWork PrimeroUOW;
 
-        public FullStatsBuilder(string project_number, decimal currency_conversion, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<SUBJOB> SUBJOBS, IPrimeroEntitiesUnitOfWork primeroUOW = null)
+        public FullStatsBuilder(string project_number, decimal currency_conversion, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<SUBJOB> SUBJOBS, DateTime current_date_date, IPrimeroEntitiesUnitOfWork primeroUOW = null)
             : base(currency_conversion)
         {
             ProjectNumber = project_number;
             PrimeroUOW = primeroUOW == null ? PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork() : primeroUOW;
             this.ReportingInterval = reporting_interval;
             this.FirstAlignedDataDate = first_aligned_data_date;
+            this.CurrentDataDate = current_date_date;
             this.projectSUBJOBS = SUBJOBS;
         }
 
@@ -78,7 +80,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                                       on JOBTRANS.COST_GROUP equals JOB_COSTGROUPS.SEQNO
                                       join JOB_COSTTYPES in PrimeroUnitOfWork.JOB_COSTTYPES
                                       on JOBTRANS.COST_TYPE equals JOB_COSTTYPES.SEQNO
-                                      where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X"
+                                      where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X" && JOBTRANS.TRANSDATE <= CurrentDataDate
                                       select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC };
 
                 var exoSubjobs = from JOBCOST_HDR in PrimeroUnitOfWork.JOBCOST_HDR

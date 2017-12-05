@@ -30,11 +30,9 @@ namespace BluePrints.Common.Projections
             
             List<VariationAdjustment> projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONS.AsQueryable(), reportableItems);
             FullStatsBuilder fullStatsBuilder = null;
-            if (earliest_first_aligned_data_date != null)
-                fullStatsBuilder = new FullStatsBuilder(project_number, currency_conversion, reporting_interval, (DateTime)earliest_first_aligned_data_date, SUBJOBS, PrimeroUOW);
-
             if(latest_data_date != null && earliest_first_aligned_data_date != null)
             {
+                fullStatsBuilder = new FullStatsBuilder(project_number, currency_conversion, reporting_interval, (DateTime)earliest_first_aligned_data_date, SUBJOBS, (DateTime)latest_data_date, PrimeroUOW);
                 Stats = new ProjectSummaryStats(reportableItems, (DateTime)latest_data_date, reporting_interval, (DateTime)earliest_first_aligned_data_date, projectVariationAdjustments);
                 projectSummarizer = new FullSummarizer((ProjectSummaryStats)Stats, fullStatsBuilder, project_number);
             }
