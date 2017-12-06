@@ -194,7 +194,7 @@ namespace BluePrints.Common.Base
             MainViewModel.OnMappingAdditionalChangedEntitiesProperties = OnMappingAdditionalChangedEntitiesProperties;
             MainViewModel.OnBeforeAssignRepositoryToExistingProjection = OnBeforeAssignRepositoryToExistingProjection;
             MainViewModel.ValidateSetValueIsContinueCallBack = validateSetValueCallBack;
-            MainViewModel.CanPasteRowLevel = false;
+            MainViewModel.DisablePasteRowLevel = true;
             PROGRESS_ITEMSCollectionViewModel.SetParentViewModel(this);
 
             MainViewModel.SetParentViewModel(this);

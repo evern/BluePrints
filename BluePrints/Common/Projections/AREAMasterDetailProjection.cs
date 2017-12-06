@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
+    [RequiredAttributes("Entity.TITLE, Entity.INTERNAL_NUM")]
     //[ConstraintAttributes("Entity.GUID_PARENT, Entity.INTERNAL_NUM")]
     public class AREAMasterDetailProjection : BluePrintsProjectionMasterDetailBase<AREA, AREAMasterDetailProjection>
     {

@@ -198,6 +198,17 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         }
 
+        public DateTime? StartDate
+        {
+            get
+            {
+                if (Stats == null || Stats.Budgeted == null || Stats.Budgeted.CumulativeDataPoints == null || Stats.Budgeted.CumulativeDataPoints.Count == 0)
+                    return null;
+
+                return Stats.Budgeted.CumulativeDataPoints.Min(x => x.ProgressDate);
+            }
+        }
+
         public DateTime? DueDate
         {
             get
