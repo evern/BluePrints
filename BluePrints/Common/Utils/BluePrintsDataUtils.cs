@@ -319,7 +319,10 @@ namespace BluePrints.Common.ViewModel.Utils
             {
                 var InternalNum = fromPROJECT.NUMBER;
                 if (selectedAREA != null)
-                    InternalNum += "-" + selectedAREA.INTERNAL_NUM;
+                {
+                    if(selectedDOCTYPE != null && selectedDOCTYPE.IS_AREA_SIGNIFICANT)
+                        InternalNum += "-" + selectedAREA.INTERNAL_NUM;
+                }
                 if (selectedDOCTYPE != null)
                     InternalNum += "-" + selectedDOCTYPE.CODE;
                 if (selectedDISCIPLINE != null)

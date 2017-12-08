@@ -29,6 +29,8 @@ namespace BluePrints.Data
         [StringLength(100)]
         public string NAME { get; set; }
 
+        public bool IS_AREA_SIGNIFICANT { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }
