@@ -378,17 +378,22 @@ namespace BluePrints.ViewModels
             SetViewSpecificProperties();
         }
 
-        public void OnFillOrCellLevelPasting(IEnumerable<BASELINE_ITEMProgress> entities)
+        public void OnFillOrCellLevelPasting(IEnumerable<BASELINE_ITEMProgress> entities, string fieldName)
         {
-            foreach(BASELINE_ITEMProgress entity in entities)
+            if(fieldName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_AREA)) ||
+                fieldName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_DOCTYPE)) ||
+                fieldName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_DISCIPLINE)))
             {
-                if (entity.IsInternalNumberEditable && !entity.IsInternalNumberManualOnly)
+                foreach (BASELINE_ITEMProgress entity in entities)
                 {
-                    string oldValue = entity.Entity.Entity.INTERNAL_NUM;
-                    string newValue = generateInternalNumber(entity);
-                    entity.Entity.Entity.INTERNAL_NUM = newValue;
+                    if (entity.IsInternalNumberEditable && !entity.IsInternalNumberManualOnly)
+                    {
+                        string oldValue = entity.Entity.Entity.INTERNAL_NUM;
+                        string newValue = generateInternalNumber(entity);
+                        entity.Entity.Entity.INTERNAL_NUM = newValue;
 
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, "Entity.Entity." + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.INTERNAL_NUM), oldValue, newValue, EntityMessageType.Changed);
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, "Entity.Entity." + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.INTERNAL_NUM), oldValue, newValue, EntityMessageType.Changed);
+                    }
                 }
             }
         }
