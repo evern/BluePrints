@@ -40,7 +40,7 @@ namespace BluePrints.Common.Base
                 return;
 
             INotification notification1 = AppNotificationService.CreatePredefinedNotification("Update 15 Nov 2017: If anything doesn't work as expected, please push reset layout and reload this view. Have a nice day", null, null, null);
-            INotification notification2 = AppNotificationService.CreatePredefinedNotification("Update 23 Nov 2017: The terminology: workpack is now called subjob", null, null, null);
+            INotification notification2 = AppNotificationService.CreatePredefinedNotification("Update 11 Dec 2017: Filter will not show (Blank)/(NonBlanks) now due instability issues", null, null, null);
 
             GlobalVariables.IsNotificationShown = true;
             notification1.ShowAsync();
