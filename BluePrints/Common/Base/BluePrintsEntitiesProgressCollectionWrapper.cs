@@ -599,6 +599,14 @@ namespace BluePrints.Common.Base
                         else
                             P6TASK.act_work_qty += current_assignment_units;
 
+                        if (P6TASK.act_work_qty == 0)
+                        {
+                            P6TASK.act_start_date = null;
+                            P6TASK.act_end_date = null;
+                            P6TASK.status_code = P6TASKSTATUS.TK_NotStart.ToString();
+                            break;
+                        }
+
                         if (P6TASK.target_work_qty <= 0)
                         {
                             errorMessage = P6TASK.task_code +  " doesn't have budgeted units, please re-populate budgeted units on baseline";
