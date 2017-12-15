@@ -25,37 +25,7 @@
         <dxb:BarButtonItem Content="Populate" ToolTip="Auto generate selected column values based on known variables" Command="{Binding DataContext.AutoPopulateCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=PictureShapeFillColor_16x16.png}" Name="contextMenuPopulate" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
         <dxb:BarButtonItem Content="Find and Replace" ToolTip="Replace characters found in selected columns to new values" Command="{Binding DataContext.FindReplaceCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=Replace_16x16.png}" Name="contextFindReplace" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
         <dxb:BarButtonItem Content="Duplicate" ToolTip="Duplicate selected deliverables and assign the same internal number" Command="{Binding DataContext.DuplicateCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" x:Name="contextMenuDuplicate" />
-        <dxb:BarSubItem Content="Duplicate Multiple" ToolTip="Specify number of times to duplicate selected deliverables and assign the same internal number" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" x:Name="contextMenuDuplicateMulti">
-            <dxb:BarEditItem Content="Count" x:Name="contextMenuDuplicateMultiCount" EditValue="2">
-                <dxb:BarEditItem.EditSettings>
-                    <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
-                        <dxe:SpinEditSettings.Buttons>
-                            <dxe:ButtonInfo x:Name="contextMenuDuplicateMultiCountBtn" GlyphKind="Apply">
-                                <dxmvvm:Interaction.Behaviors>
-                                    <dxmvvm:EventToCommand Command="{Binding DataContext.DuplicateMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuDuplicateMultiCount}" EventName="Click" />
-                                </dxmvvm:Interaction.Behaviors>
-                            </dxe:ButtonInfo>
-                        </dxe:SpinEditSettings.Buttons>
-                    </dxe:SpinEditSettings>
-                </dxb:BarEditItem.EditSettings>
-            </dxb:BarEditItem>
-        </dxb:BarSubItem>
         <dxb:BarButtonItem Content="Insert" ToolTip="Insert new deliverables with continuing internal number affix. Also renames deliverables with internal number larger than the largest internal number affix to continue from the newly inserted deliverables" Command="{Binding DataContext.InsertCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" x:Name="contextMenuInsert" />
-        <dxb:BarSubItem Content="Insert Multiple" ToolTip="Specify number of times to insert new deliverables with continuing internal number affix. Also renames deliverables with internal number larger than the largest internal number affix to continue from the newly inserted deliverables" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" x:Name="contextMenuInsertMulti">
-            <dxb:BarEditItem Content="Count" x:Name="contextMenuInsertMultiCount" EditValue="2">
-                <dxb:BarEditItem.EditSettings>
-                    <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
-                        <dxe:SpinEditSettings.Buttons>
-                            <dxe:ButtonInfo x:Name="contextMenuInsertMultiCountBtn" GlyphKind="Apply">
-                                <dxmvvm:Interaction.Behaviors>
-                                    <dxmvvm:EventToCommand Command="{Binding DataContext.InsertMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuInsertMultiCount}" EventName="Click" />
-                                </dxmvvm:Interaction.Behaviors>
-                            </dxe:ButtonInfo>
-                        </dxe:SpinEditSettings.Buttons>
-                    </dxe:SpinEditSettings>
-                </dxb:BarEditItem.EditSettings>
-            </dxb:BarEditItem>
-        </dxb:BarSubItem>
     </collections:ArrayList>
     <collections:ArrayList x:Key="ContextMenuDefaultFooterButtons">
         <dxb:BarButtonItem Content="Delete Row" ToolTip="Delete selected rows" Command="{Binding View.DataContext.BulkDeleteCommand}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />

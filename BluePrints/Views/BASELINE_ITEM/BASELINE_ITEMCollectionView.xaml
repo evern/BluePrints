@@ -262,6 +262,36 @@
                             <dxg:TableView.RowCellMenuCustomizations>
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultDeliverablesButtons}" />
+                                <dxb:BarSubItem Content="Duplicate Multiple" ToolTip="Specify number of times to duplicate selected deliverables and assign the same internal number" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" x:Name="contextMenuDuplicateMulti">
+                                    <dxb:BarEditItem Content="Count" Name="contextMenuDuplicateMultiCount" EditValue="2">
+                                        <dxb:BarEditItem.EditSettings>
+                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
+                                                <dxe:SpinEditSettings.Buttons>
+                                                    <dxe:ButtonInfo GlyphKind="Apply">
+                                                        <dxmvvm:Interaction.Behaviors>
+                                                            <dxmvvm:EventToCommand Command="{Binding DataContext.DuplicateMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuDuplicateMultiCount}" EventName="Click" />
+                                                        </dxmvvm:Interaction.Behaviors>
+                                                    </dxe:ButtonInfo>
+                                                </dxe:SpinEditSettings.Buttons>
+                                            </dxe:SpinEditSettings>
+                                        </dxb:BarEditItem.EditSettings>
+                                    </dxb:BarEditItem>
+                                </dxb:BarSubItem>
+                                <dxb:BarSubItem Content="Insert Multiple" ToolTip="Specify number of times to insert new deliverables with continuing internal number affix. Also renames deliverables with internal number larger than the largest internal number affix to continue from the newly inserted deliverables" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" x:Name="contextMenuInsertMulti">
+                                    <dxb:BarEditItem Content="Count" Name="contextMenuInsertMultiCount" EditValue="2">
+                                        <dxb:BarEditItem.EditSettings>
+                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
+                                                <dxe:SpinEditSettings.Buttons>
+                                                    <dxe:ButtonInfo GlyphKind="Apply">
+                                                        <dxmvvm:Interaction.Behaviors>
+                                                            <dxmvvm:EventToCommand Command="{Binding DataContext.InsertMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuInsertMultiCount}" EventName="Click" />
+                                                        </dxmvvm:Interaction.Behaviors>
+                                                    </dxe:ButtonInfo>
+                                                </dxe:SpinEditSettings.Buttons>
+                                            </dxe:SpinEditSettings>
+                                        </dxb:BarEditItem.EditSettings>
+                                    </dxb:BarEditItem>
+                                </dxb:BarSubItem>
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
                             </dxg:TableView.RowCellMenuCustomizations>
                             <dxg:TableView.FormatConditions>
