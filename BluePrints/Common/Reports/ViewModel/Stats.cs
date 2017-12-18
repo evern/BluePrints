@@ -346,6 +346,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public Guid DeliverableGuid { get; set; }
         public bool IsFromP6 { get; set; }
 
+        public bool DoNotPlot { get; set; }
+
         public decimal UnitsPercentage
         {
             get

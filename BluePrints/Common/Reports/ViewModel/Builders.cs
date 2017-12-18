@@ -88,14 +88,17 @@ namespace BluePrints.Common.ViewModel.Reporting
                                    select new { JOBCOST_HDR.TITLE, JOBCOST_HDR.JOBCODE };
 
                 var exoSubjobsList = exoSubjobs.ToList();
-                foreach (SUBJOB subjob in subjobs)
-                {
-                    var exoSubjob = exoSubjobsList.FirstOrDefault(x => x.JOBCODE == subjob.INTERNAL_NAME1);
-                    if (exoSubjob == null)
-                    {
-                        projectSummaryStats.AddMissingExoSubjob(subjob);
-                    }
-                }
+
+                //double units = (double)jobTransactions.Where(x => x.QUANTITY != null).Sum(x => x.QUANTITY);
+                //string s = units.ToString();
+                //foreach (SUBJOB subjob in subjobs)
+                //{
+                //    var exoSubjob = exoSubjobsList.FirstOrDefault(x => x.JOBCODE == subjob.INTERNAL_NAME1);
+                //    if (exoSubjob == null)
+                //    {
+                //        projectSummaryStats.AddMissingExoSubjob(subjob);
+                //    }
+                //}
 
                 var jobTransactionsList = jobTransactions.ToList();
                 if (jobTransactionsList.Count == 0)
@@ -125,6 +128,13 @@ namespace BluePrints.Common.ViewModel.Reporting
                         DataUtils.ShallowCopy(actualDataPoint, burnedDataPoint);
                         actualDataPoint.Costs = jobTransaction.LINECOST == null ? 0 : (decimal)jobTransaction.LINECOST;
                         actualDataPoints.Add(actualDataPoint);
+                    }
+                    else
+                    {
+                        SUBJOB newSUBJOB = new SUBJOB();
+                        newSUBJOB.INTERNAL_NAME1 = jobTransaction.JOBCODE;
+                        newSUBJOB.MissingQuantity = Convert.ToDecimal(jobTransactionsList.Where(x => x.JOBCODE == jobTransaction.JOBCODE && x.QUANTITY != null).Sum(x => x.QUANTITY));
+                        projectSummaryStats.AddMissingExoSubjob(newSUBJOB);
                     }
                 }
 

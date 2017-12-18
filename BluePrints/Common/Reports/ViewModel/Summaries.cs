@@ -51,7 +51,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public void AddMissingExoSubjob(SUBJOB SUBJOB)
         {
-            ExoMissingSUBJOBS.Add(SUBJOB);
+            if(!ExoMissingSUBJOBS.Any(x => x.INTERNAL_NAME1 == SUBJOB.INTERNAL_NAME1))
+                ExoMissingSUBJOBS.Add(SUBJOB);
         }
     }
 

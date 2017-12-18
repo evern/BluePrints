@@ -77,6 +77,9 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
+        public decimal MissingQuantity { get; set; }
+
+        [NotMapped]
         public IEnumerable<AREA> SubAreaCollection
         {
             get

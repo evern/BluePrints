@@ -1,33 +1,23 @@
-﻿<UserControl
-    x:Name="userControl"
-    x:Class="BluePrints.Views.ExoAffinityReport"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
-    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
-    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
-    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
-    xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
-    Height="290" Width="300">
+﻿<UserControl x:Class="BluePrints.Views.ExoAffinityReport" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" x:Name="userControl" Width="300" Height="290">
     <dxlc:LayoutControl Orientation="Vertical">
-        <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
-            <dxlc:LayoutGroup Height="230" Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
-                <dxlc:LayoutItem Height="230" >
+        <dxlc:LayoutGroup Header="Edit Value" Name="LayoutGroupMain" Orientation="Vertical" View="Group">
+            <dxlc:LayoutGroup Name="LayoutGroupContent" Height="230" Orientation="Horizontal" View="Group">
+                <dxlc:LayoutItem Height="230">
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlExoAffinity" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="INTERNAL NUM" MinWidth="230" IsSmart="True" ReadOnly="True" FieldName="INTERNAL_NAME1" />
+                            <dxg:GridColumn Header="SUBJOB NUMBER" FieldName="INTERNAL_NAME1" ToolTip="Subjob number" ReadOnly="True" Width="130" IsSmart="True" />
+                            <dxg:GridColumn Header="HOURS" FieldName="MissingQuantity" ToolTip="Hours from exo with workpack not found in blueprints" ReadOnly="True" Width="100" IsSmart="True" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
-                            <dxg:TableView x:Name="tableView" ShowGroupedColumns="False" ShowGroupPanel="False"/>
+                            <dxg:TableView x:Name="tableView" ShowGroupPanel="False" ShowGroupedColumns="False" />
                         </dxg:GridControl.View>
                     </custom:GridControlEx>
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
-            <dxlc:LayoutGroup Height="25" HorizontalAlignment="Right" Name="LayoutGroupButtons" View="Group"
-                              Orientation="Horizontal" />
+            <dxlc:LayoutGroup Name="LayoutGroupButtons" Height="25" HorizontalAlignment="Right" Orientation="Horizontal" View="Group" />
         </dxlc:LayoutGroup>
     </dxlc:LayoutControl>
 </UserControl>
