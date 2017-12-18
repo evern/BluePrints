@@ -5,6 +5,7 @@ using System.Data.Entity.Core.Objects;
 using System.Linq;
 using static BluePrints.Data.BluePrintsEntities;
 using System;
+using System.Diagnostics;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
@@ -180,6 +181,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
                 List<StoredProcedure_RemainingDataPoint> remainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPointsByProject(this.projectNumber);
+                double sumRemaining = remainingDataPoints.Sum(x => x.PeriodRemainingUnits);
+                string s = sumRemaining.ToString();
+
                 foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
                 {
                     ReportablesDisplay reportablesDisplay = reportableObject as ReportablesDisplay;
@@ -202,13 +206,13 @@ namespace BluePrints.Common.ViewModel.Reporting
                         }
                         else
                         {
-                            reportablesDisplay.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Deliverable_Guid == reportableObject.EntityKey), reportableObject.Stats.Earned.DataPoints);
+                            reportablesDisplay.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Deliverable_Guid == reportableObject.OriginalEntityKey), reportableObject.Stats.Earned.DataPoints);
                             reportablesDisplay.Update();
                         }
                     }
                     else
                     {
-                        reportableObject.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Deliverable_Guid == reportableObject.EntityKey), reportableObject.Stats.Earned.DataPoints);
+                        reportableObject.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Deliverable_Guid == reportableObject.OriginalEntityKey), reportableObject.Stats.Earned.DataPoints);
                         reportableObject.Update();
                     }
 
