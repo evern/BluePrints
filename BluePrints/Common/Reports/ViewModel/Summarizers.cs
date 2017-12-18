@@ -181,8 +181,17 @@ namespace BluePrints.Common.ViewModel.Reporting
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
                 List<StoredProcedure_RemainingDataPoint> remainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPointsByProject(this.projectNumber);
-                double sumRemaining = remainingDataPoints.Sum(x => x.PeriodRemainingUnits);
-                string s = sumRemaining.ToString();
+                //double sumRemaining = remainingDataPoints.Sum(x => x.PeriodRemainingUnits);
+                //string s = sumRemaining.ToString();
+
+                //foreach (var remainingDataPoint in remainingDataPoints)
+                //{
+                //    IEnumerable<IReportable> reportableObjects = ((SummaryStats)this.SummaryStats).Reportables;
+                //    if (reportableObjects.Any(x => x.OriginalEntityKey == remainingDataPoint.Original_Guid))
+                //    {
+                //        Debug.Print(remainingDataPoint.PeriodRemainingUnits.ToString());
+                //    }
+                //}
 
                 foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
                 {
@@ -195,9 +204,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                             List<StoredProcedure_RemainingDataPoint> currentGroupDeliverableDataPoints = new List<StoredProcedure_RemainingDataPoint>();
                             foreach (IReportable reportable in reportable_Group.Reportables)
                             {
-                                reportable.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Deliverable_Guid == reportable.OriginalEntityKey), reportable.Stats.Earned.DataPoints);
+                                reportable.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey), reportable.Stats.Earned.DataPoints);
                                 reportable.Update();
-                                currentGroupDeliverableDataPoints.AddRange(remainingDataPoints.Where(x => x.Deliverable_Guid == reportable.OriginalEntityKey));
+                                currentGroupDeliverableDataPoints.AddRange(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
                             }
 
                             reportable_Group.Stats.Remaining.SetRemainingData(currentGroupDeliverableDataPoints, reportable_Group.Stats.Earned.DataPoints);
@@ -206,13 +215,18 @@ namespace BluePrints.Common.ViewModel.Reporting
                         }
                         else
                         {
-                            reportablesDisplay.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Deliverable_Guid == reportableObject.OriginalEntityKey), reportableObject.Stats.Earned.DataPoints);
+                            reportablesDisplay.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), reportableObject.Stats.Earned.DataPoints);
                             reportablesDisplay.Update();
                         }
                     }
                     else
                     {
-                        reportableObject.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Deliverable_Guid == reportableObject.OriginalEntityKey), reportableObject.Stats.Earned.DataPoints);
+                        reportableObject.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), reportableObject.Stats.Earned.DataPoints);
+                        //if (reportableObject.Stats.Remaining.DataPoints != null)
+                        //    Debug.Print(reportableObject.Stats.Remaining.DataPoints.Sum(x => x.Units).ToString());
+                        //else
+                        //    Debug.Print(reportableObject.OriginalEntityKey.ToString());
+
                         reportableObject.Update();
                     }
 

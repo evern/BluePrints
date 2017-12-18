@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using static BluePrints.Data.BluePrintsEntities;
 
@@ -125,8 +126,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             List<DataPoint> convertedDataPoints = DataPointsHelpers.ConvertStoredProcedureRemainingDataPointToDataPoints(rawStoredProcedureDataPoints).ToList();
 
-            if(earnedDataPoints != null)
-                convertedDataPoints.AddRange(earnedDataPoints.ToList());
+            //if(earnedDataPoints != null)
+            //    convertedDataPoints.AddRange(earnedDataPoints.ToList());
 
             if (convertedDataPoints.All(x => x.IsFromP6))
                 SetFromP6();
@@ -186,8 +187,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 if (dataPoints == null && CumulativeDataPoints != null && CumulativeDataPoints.Count() > 0 && reportingDataDate != null)
                 {
-                    DateTime? plotStartdate = hideDataPointsBeforeDataDate ? reportingDataDate : (DateTime ?)null;
-                    dataPoints = DataPointsHelpers.ConvertCumulativeToPeriodDataPoint(CumulativeDataPoints, plotStartdate);
+                    //DateTime? plotStartdate = hideDataPointsBeforeDataDate ? reportingDataDate : (DateTime ?)null;
+                    //dataPoints = DataPointsHelpers.ConvertCumulativeToPeriodDataPoint(CumulativeDataPoints, plotStartdate);
+                    dataPoints = DataPointsHelpers.ConvertCumulativeToPeriodDataPoint(CumulativeDataPoints);
                 }
 
                 return dataPoints;
