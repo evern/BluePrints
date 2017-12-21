@@ -155,7 +155,7 @@
                                 <dxe:CheckEditSettings />
                             </custom:GridColumnEx.EditSettings>
                         </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Estimated Hours" FieldName="Entity.Entity.ESTIMATED_HOURS" HeaderToolTip="Baseline hours" FilterPopupMode="CheckedList" SortMode="Custom">
+                        <custom:GridColumnEx Header="Estimated Hours" FieldName="Entity.Entity.ESTIMATED_HOURS" HeaderToolTip="Baseline hours" FilterPopupMode="CheckedList">
                             <custom:GridColumnEx.CellTemplate>
                                 <DataTemplate>
                                     <Grid>
@@ -304,9 +304,9 @@
                             </dxg:TableView.FormatConditions>
                         </dxg:TableView>
                     </dxg:GridControl.View>
-                    <dxmvvm:Interaction.Behaviors>
+                    <!--<dxmvvm:Interaction.Behaviors>
                         <dxmvvm:EventToCommand Command="{Binding DataContext.OnCustomColumnSortCommand, ElementName=userControl}" EventName="CustomColumnSort" PassEventArgsToCommand="True" />
-                    </dxmvvm:Interaction.Behaviors>
+                    </dxmvvm:Interaction.Behaviors>-->
                 </custom:GridControlEx>
             </DockPanel>
         </Grid>

@@ -42,9 +42,9 @@
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlVARIATION_ITEM" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
-                        <dxmvvm:Interaction.Behaviors>
+                        <!--<dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand Command="{Binding DataContext.OnCustomColumnSortCommand, ElementName=userControl}" EventName="CustomColumnSort" PassEventArgsToCommand="True" />
-                        </dxmvvm:Interaction.Behaviors>
+                        </dxmvvm:Interaction.Behaviors>-->
                         <dxg:GridControl.Columns>
                             <custom:GridColumnEx Header="Area" FieldName="Entity.Entity.Entity.GUID_AREA" HeaderToolTip="Changing this field will affect subjob and workpack name. Only editable on newly added variation deliverable" Tag="True;True;Autofill subjob">
                                 <custom:GridColumnEx.EditSettings>
@@ -164,7 +164,7 @@
                                     </DataTemplate>
                                 </custom:GridColumnEx.CellTemplate>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Variation Hours" FieldName="Variation_Units" HeaderToolTip="Previously approved variation hours" SortMode="Custom">
+                            <custom:GridColumnEx Header="Variation Hours" FieldName="Variation_Units" HeaderToolTip="Previously approved variation hours">
                                 <dxg:GridColumn.HeaderStyle>
                                     <Style TargetType="Control">
                                         <Setter Property="Background" Value="LightCyan" />
@@ -176,26 +176,26 @@
                                     </DataTemplate>
                                 </custom:GridColumnEx.CellTemplate>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Total Hours" FieldName="Total_Units" HeaderToolTip="Estimated Hours + Variation Hours" ReadOnly="True" IsEnabled="False" SortMode="Custom">
+                            <custom:GridColumnEx Header="Total Hours" FieldName="Total_Units" HeaderToolTip="Estimated Hours + Variation Hours" ReadOnly="True" IsEnabled="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Total Costs" FieldName="Total_Cost" HeaderToolTip="Rate * (Estimated Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True" AllowSearchPanel="False" SortMode="Custom">
+                            <custom:GridColumnEx Header="Total Costs" FieldName="Total_Cost" HeaderToolTip="Rate * (Estimated Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True" AllowSearchPanel="False">
                                 <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </DataTemplate>
                                 </custom:GridColumnEx.CellTemplate>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Adjustment Hours" FieldName="Forecast_Units" HeaderToolTip="Hours that will be adjusted after variation approval" ReadOnly="True" SortMode="Custom">
+                            <custom:GridColumnEx Header="Adjustment Hours" FieldName="Forecast_Units" HeaderToolTip="Hours that will be adjusted after variation approval" ReadOnly="True">
                                 <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:SpinEdit Name="PART_Editor" Increment="1" IsReadOnly="True" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </DataTemplate>
                                 </custom:GridColumnEx.CellTemplate>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Adjustment Costs" FieldName="Variation_Cost" HeaderToolTip="Costs that will be adjusted after variation approval" ReadOnly="True" AllowSearchPanel="False" SortMode="Custom">
+                            <custom:GridColumnEx Header="Adjustment Costs" FieldName="Variation_Cost" HeaderToolTip="Costs that will be adjusted after variation approval" ReadOnly="True" AllowSearchPanel="False">
                                 <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />

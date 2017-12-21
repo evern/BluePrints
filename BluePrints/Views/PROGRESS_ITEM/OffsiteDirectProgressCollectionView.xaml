@@ -62,7 +62,7 @@
                 <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlOffsiteDirectProgress" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:EventToCommand Command="{Binding DataContext.CustomSummaryCommand, ElementName=userControl}" EventName="CustomSummary" PassEventArgsToCommand="True" />
-                        <dxmvvm:EventToCommand Command="{Binding DataContext.OnCustomColumnSortCommand, ElementName=userControl}" EventName="CustomColumnSort" PassEventArgsToCommand="True" />
+                        <!--<dxmvvm:EventToCommand Command="{Binding DataContext.OnCustomColumnSortCommand, ElementName=userControl}" EventName="CustomColumnSort" PassEventArgsToCommand="True" />-->
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl.Bands>
                         <dxg:GridControlBand Header="General (Read Only)">
@@ -115,22 +115,22 @@
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Budgeted">
                             <custom:GridColumnEx Header="By Duration" FieldName="Entity.Entity.BY_DURATION" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" />
-                            <custom:GridColumnEx Header="Estimated Hours" FieldName="Entity.Entity.ESTIMATED_HOURS" HeaderToolTip="Baseline hours" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom" Visible="False">
+                            <custom:GridColumnEx Header="Estimated Hours" FieldName="Entity.Entity.ESTIMATED_HOURS" HeaderToolTip="Baseline hours" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" Visible="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Variation Hours" FieldName="Entity.Entity.DC_HOURS" HeaderToolTip="Variation hours have to be added from the variation page and approved to be shown here" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom" Visible="False">
+                            <custom:GridColumnEx Header="Variation Hours" FieldName="Entity.Entity.DC_HOURS" HeaderToolTip="Variation hours have to be added from the variation page and approved to be shown here" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" Visible="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Total Hours" FieldName="Entity.Entity.Total_Units" HeaderToolTip="Estimated Hours + Variation Hours" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom">
+                            <custom:GridColumnEx Header="Total Hours" FieldName="Entity.Entity.Total_Units" HeaderToolTip="Estimated Hours + Variation Hours" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Rate" FieldName="Entity.ItemRate" HeaderToolTip="From rates table by deliverables discipline" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom" Visible="False">
+                            <custom:GridColumnEx Header="Rate" FieldName="Entity.ItemRate" HeaderToolTip="From rates table by deliverables discipline" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" Visible="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </custom:GridColumnEx.EditSettings>
@@ -153,42 +153,42 @@
                             </custom:GridColumnEx>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Cumulative">
-                            <custom:GridColumnEx Header="Baseline %" FieldName="Baseline_Percentage" HeaderToolTip="% as benchmarked with baseline. May exceed 100% if variation exists" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom">
+                            <custom:GridColumnEx Header="Baseline %" FieldName="Baseline_Percentage" HeaderToolTip="% as benchmarked with baseline. May exceed 100% if variation exists" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Total %" FieldName="Total_Percentage_ToDate" HeaderToolTip="% as benchmarked with baseline + variation" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom" Visible="False">
+                            <custom:GridColumnEx Header="Total %" FieldName="Total_Percentage_ToDate" HeaderToolTip="% as benchmarked with baseline + variation" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" Visible="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Schedule %" FieldName="SchedulePercentage" HeaderToolTip="Required % as obtained from P6 or subjob dates" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom">
+                            <custom:GridColumnEx Header="Schedule %" FieldName="SchedulePercentage" HeaderToolTip="Required % as obtained from P6 or subjob dates" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Start Date" FieldName="StartDate" HeaderToolTip="Date obtained from subjob or P6" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom">
+                            <custom:GridColumnEx Header="Start Date" FieldName="StartDate" HeaderToolTip="Date obtained from subjob or P6" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:DateEditSettings />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Due Date" FieldName="DueDate" HeaderToolTip="Date obtained from subjob or P6" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom">
+                            <custom:GridColumnEx Header="Due Date" FieldName="DueDate" HeaderToolTip="Date obtained from subjob or P6" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:DateEditSettings />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Forecast Finish Date" FieldName="ForecastDate" HeaderToolTip="Date obtained from subjob or P6. Calculated by 1.0 productivity by default and can be overridden by Override Productivity column" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom">
+                            <custom:GridColumnEx Header="Forecast Finish Date" FieldName="ForecastDate" HeaderToolTip="Date obtained from subjob or P6. Calculated by 1.0 productivity by default and can be overridden by Override Productivity column" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:DateEditSettings />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Target Date" FieldName="Entity.Entity.TARGET_DATE" HeaderToolTip="Internal manual target date. Can be set by anyone" FilterPopupMode="CheckedList" SortMode="Custom">
+                            <custom:GridColumnEx Header="Target Date" FieldName="Entity.Entity.TARGET_DATE" HeaderToolTip="Internal manual target date. Can be set by anyone" FilterPopupMode="CheckedList">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Current %" FieldName="Total_Earned_Percentage" HeaderToolTip="Cumulative % earned since the start of the project. Update this to earn units for this period" AllowEditing="True" FilterPopupMode="CheckedList" SortMode="Custom">
+                            <custom:GridColumnEx Header="Current %" FieldName="Total_Earned_Percentage" HeaderToolTip="Cumulative % earned since the start of the project. Update this to earn units for this period" AllowEditing="True" FilterPopupMode="CheckedList">
                                 <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <Grid>
@@ -224,34 +224,34 @@
                                     </DataTemplate>
                                 </custom:GridColumnEx.CellTemplate>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Total Earned Units" FieldName="Earned_Units_ToDate" HeaderToolTip="Cumulative earned units" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom">
+                            <custom:GridColumnEx Header="Total Earned Units" FieldName="Earned_Units_ToDate" HeaderToolTip="Cumulative earned units" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:TextEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Total Earned Costs" FieldName="Earned_Costs_ToDate" HeaderToolTip="Cumulative earned costs" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom" Visible="False">
+                            <custom:GridColumnEx Header="Total Earned Costs" FieldName="Earned_Costs_ToDate" HeaderToolTip="Cumulative earned costs" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" Visible="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Period">
-                            <custom:GridColumnEx Header="Planned %" FieldName="ScheduleCurrentPeriodPercentage" HeaderToolTip="Required % for current period obtained from subjob or P6" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom">
+                            <custom:GridColumnEx Header="Planned %" FieldName="ScheduleCurrentPeriodPercentage" HeaderToolTip="Required % for current period obtained from subjob or P6" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Earned %" FieldName="Earned_Percentage_OnDataDate" HeaderToolTip="% earned for this period" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom">
+                            <custom:GridColumnEx Header="Earned %" FieldName="Earned_Percentage_OnDataDate" HeaderToolTip="% earned for this period" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Earned Units" FieldName="Earned_Units_OnDataDate" HeaderToolTip="Units earned on this period" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom">
+                            <custom:GridColumnEx Header="Earned Units" FieldName="Earned_Units_OnDataDate" HeaderToolTip="Units earned on this period" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Earned Costs" FieldName="Earned_Costs_OnDataDate" HeaderToolTip="Costs earned on this period" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" SortMode="Custom" Visible="False">
+                            <custom:GridColumnEx Header="Earned Costs" FieldName="Earned_Costs_OnDataDate" HeaderToolTip="Costs earned on this period" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" Visible="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </custom:GridColumnEx.EditSettings>

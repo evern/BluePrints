@@ -150,21 +150,21 @@ namespace BluePrints.ViewModels
             base.CellValueExistingRowChanging(e);
         }
 
-        public void OnCustomColumnSort(CustomColumnSortEventArgs e)
-        {
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Total_Units) ||
-                e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Total_Cost) ||
-                e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Variation_Units) ||
-                e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Forecast_Units) ||
-                e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Variation_Cost))
-            {
-                decimal decimal_value1 = e.Value1 == null ? 0 : (decimal)e.Value1;
-                decimal decimal_value2 = e.Value2 == null ? 0 : (decimal)e.Value2;
+        //public void OnCustomColumnSort(CustomColumnSortEventArgs e)
+        //{
+        //    if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Total_Units) ||
+        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Total_Cost) ||
+        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Variation_Units) ||
+        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Forecast_Units) ||
+        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Variation_Cost))
+        //    {
+        //        decimal decimal_value1 = e.Value1 == null ? 0 : (decimal)e.Value1;
+        //        decimal decimal_value2 = e.Value2 == null ? 0 : (decimal)e.Value2;
 
-                e.Result = decimal_value1.CompareTo(decimal_value2);
-                e.Handled = true;
-            }
-        }
+        //        e.Result = decimal_value1.CompareTo(decimal_value2);
+        //        e.Handled = true;
+        //    }
+        //}
 
         //when internal number is not unique, do not set internal number property
         protected override bool affixOtherFillDownAllowance(BASELINE_ITEMVariation fillDownEntity, string fieldName, object fillValue)
