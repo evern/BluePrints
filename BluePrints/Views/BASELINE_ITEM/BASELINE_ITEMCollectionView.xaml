@@ -44,7 +44,7 @@
             <DockPanel>
                 <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="Deliverables">
+                        <dxr:RibbonPage Caption="Live Deliverables">
                             <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                             <dxr:RibbonPageGroup Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
@@ -53,9 +53,9 @@
                                 <dxb:BarCheckItem Content="Editable" ToolTip="All internal number can be auto-generated and edited" IsChecked="{Binding DataContext.InternalNumAlwaysEditable, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=EditName_32x32.png}" Glyph="{dxc:DXImage Image=EditName_16x16.png}" />
                                 <dxb:BarCheckItem Content="Manual" ToolTip="Only non-progressed internal number can be manually edited or populated by context menu option" IsChecked="{Binding DataContext.InternalNumManual, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=BORules_32x32.png}" Glyph="{dxc:DXImage Image=BORules_16x16.png}" />
                             </dxr:RibbonPageGroup>
-                            <dxr:RibbonPageGroup Caption="Features">
+                            <dxr:RibbonPageGroup Caption="Tools">
                                 <dxb:BarCheckItem Content="Lock Baseline" ToolTip="Lock total estimated units, so that units assigned to all deliverables cannot exceed the current total units" IsChecked="{Binding DataContext.IsBASELINELocked, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=ProtectDocument_32x32.png}" Glyph="{dxc:DXImage Image=ProtectDocument_16x16.png}" />
-                                <dxb:BarButtonItem Content="Import Click Numbers" ToolTip="Copy 2 columns from excel with the left being internal number and the right being client number, then paste it in here" Command="{Binding DataContext.MapClientNumberCommand, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" Glyph="{dx:DXImage Image=Wizard_16x16.png}" />
+                                <dxb:BarButtonItem Content="Import Client Numbers" ToolTip="Copy 2 columns from excel with the left being internal number and the right being client number, then paste it in here" Command="{Binding DataContext.MapClientNumberCommand, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" Glyph="{dx:DXImage Image=Wizard_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -261,7 +261,9 @@
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:TableView.RowCellMenuCustomizations>
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                <dxb:BarItemLinkSeparator />
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultDeliverablesButtons}" />
+                                <dxb:BarItemLinkSeparator />
                                 <dxb:BarSubItem Content="Duplicate Multiple" ToolTip="Specify number of times to duplicate selected deliverables and assign the same internal number" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" x:Name="contextMenuDuplicateMulti">
                                     <dxb:BarEditItem Content="Count" Name="contextMenuDuplicateMultiCount" EditValue="2">
                                         <dxb:BarEditItem.EditSettings>
@@ -292,6 +294,7 @@
                                         </dxb:BarEditItem.EditSettings>
                                     </dxb:BarEditItem>
                                 </dxb:BarSubItem>
+                                <dxb:BarItemLinkSeparator />
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
                             </dxg:TableView.RowCellMenuCustomizations>
                             <dxg:TableView.FormatConditions>

@@ -46,30 +46,30 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlBASELINE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="NAME" />
-                            <dxg:GridColumn FieldName="REVISION" />
-                            <dxg:GridColumn FieldName="COMMENTS" />
-                            <dxg:GridColumn FieldName="ACTUAL_UNITS">
+                            <dxg:GridColumn Header="Name" FieldName="NAME" />
+                            <dxg:GridColumn Header="Revision" FieldName="REVISION" />
+                            <dxg:GridColumn Header="Comments" FieldName="COMMENTS" />
+                            <dxg:GridColumn Header="Actual Units" FieldName="ACTUAL_UNITS">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="10" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="BUDGETED_UNITS">
+                            <dxg:GridColumn Header="Budgeted Units" FieldName="BUDGETED_UNITS" HeaderToolTip="Keying in budgeted unit here will restrict maximum units allowed in deliverables">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="10" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ALLOW_EXCEED">
+                            <!--<dxg:GridColumn Header="Allow Exceed" FieldName="ALLOW_EXCEED">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:CheckEditSettings />
                                 </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="STATUS">
+                            </dxg:GridColumn>-->
+                            <dxg:GridColumn Header="Status" FieldName="STATUS">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:BaselineStatus}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="P6BASELINE_NAME" MinWidth="200">
+                            <dxg:GridColumn Header="P6 Baseline Schedule Name" FieldName="P6BASELINE_NAME" MinWidth="200">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="wbs_short_name" IsTextEditable="True" ItemsSource="{Binding DataContext.P6PROJECTSCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="wbs_short_name" />
                                 </dxg:GridColumn.EditSettings>
@@ -97,14 +97,11 @@
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
                                 <dxg:TableView.RowCellMenuCustomizations>
-                                    <dxb:BarButtonItem Content="Copy With Headers" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Edit" Command="{Binding DataContext.EditCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" Glyph="{dx:DXImage Image=Edit_16x16.png}" CommandParameter="{Binding SelectedEntity}" />
+                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                    <dxb:BarItemLinkSeparator />
                                     <dxb:BarButtonItem Content="Assignment" Command="{Binding DataContext.P6BASELINE_ASSIGNCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=CustomizeGrid_32x32.png}" Glyph="{dx:DXImage Image=CustomizeGrid_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Bulk Edit" Command="{Binding View.DataContext.BulkColumnEditCommand}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Content="Fill Up" Command="{Binding View.DataContext.FillUpCommand}" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Content="Fill Down" Command="{Binding View.DataContext.FillDownCommand}" Glyph="{dx:DXImageOffice2013 Image=Download_16x16.png}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Content="Delete Row" Command="{Binding View.DataContext.BulkDeleteCommand}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Refresh" Command="{Binding View.DataContext.RefreshCommand}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                    <dxb:BarItemLinkSeparator />
+                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>

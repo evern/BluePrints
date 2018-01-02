@@ -98,12 +98,12 @@
                             <dxlc:LayoutGroup HorizontalAlignment="Stretch" dxlc:LayoutControl.AllowHorizontalSizing="True">
                                 <dxg:GridControl dxc:DXSerializer.SerializationID="GridControlActivities" DesignTimeDataObjectType="{x:Type commonviewmodel:P6_Activity}" ItemsSource="{Binding DataContext.Activities_Source, ElementName=userControl}" SelectedItem="{Binding DataContext.Selected_Activity, Mode=TwoWay, ElementName=userControl}">
                                     <dxg:GridControl.Columns>
-                                        <dxg:GridColumn Header="Activity Id" FieldName="P6_ActivityId" Width="100" FilterPopupMode="CheckedList" FixedWidth="True" IsSmart="True" />
-                                        <dxg:GridColumn Header="Task" FieldName="Description" Width="300" FilterPopupMode="CheckedList" IsSmart="True" />
-                                        <dxg:GridColumn Header="Type" FieldName="DisplayActivityType" Width="150" FilterPopupMode="CheckedList" FixedWidth="True" IsSmart="True" />
-                                        <dxg:GridColumn Header="Begin" FieldName="Start" Width="150" CellTemplate="{StaticResource TimeTemplate}" FixedWidth="True" IsSmart="True" />
-                                        <dxg:GridColumn Header="End" FieldName="End" Width="150" CellTemplate="{StaticResource TimeTemplate}" FixedWidth="True" IsSmart="True" />
-                                        <dxg:GridColumn FieldName="Assigned_Units" FixedWidth="True" IsSmart="True">
+                                        <dxg:GridColumn Header="Activity Id" FieldName="P6_ActivityId" Width="50" FilterPopupMode="CheckedList" IsSmart="True" />
+                                        <dxg:GridColumn Header="Task" FieldName="Description" FilterPopupMode="CheckedList" IsSmart="True" />
+                                        <dxg:GridColumn Header="Type" FieldName="DisplayActivityType" FilterPopupMode="CheckedList" FixedWidth="True" IsSmart="True" />
+                                        <dxg:GridColumn Header="Begin" FieldName="Start" Width="100" CellTemplate="{StaticResource TimeTemplate}" IsSmart="True" />
+                                        <dxg:GridColumn Header="End" FieldName="End" Width="100" CellTemplate="{StaticResource TimeTemplate}" IsSmart="True" />
+                                        <dxg:GridColumn FieldName="Assigned Units" Width="100" IsSmart="True">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings HorizontalContentAlignment="Left" DisplayFormat="n" />
                                             </dxg:GridColumn.EditSettings>
@@ -111,7 +111,7 @@
                                         <!--<dxg:GridColumn Binding="{Binding}" CellTemplate="{StaticResource GanttTemplate}" Header="Chart" />-->
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.View>
-                                        <dxg:TreeListView x:Name="treeView" AllowEditing="False" AllowPerPixelScrolling="True" AutoExpandAllNodes="True" AutoWidth="True" KeyFieldName="Id" NavigationStyle="Row" ParentFieldName="ParentId" RowStyle="{StaticResource WBSBackgroundStyle}" ShowTotalSummary="False" TreeDerivationMode="Selfreference">
+                                        <dxg:TreeListView x:Name="treeView" AllowEditing="False" AllowPerPixelScrolling="True" AutoExpandAllNodes="True" KeyFieldName="Id" NavigationStyle="Row" ParentFieldName="ParentId" RowStyle="{StaticResource WBSBackgroundStyle}" ShowTotalSummary="False" TreeDerivationMode="Selfreference">
                                             <dxmvvm:Interaction.Behaviors>
                                                 <dxmvvm:EventToCommand Command="{Binding DataContext.NodeExpandedCommand, ElementName=userControl}" EventName="NodeExpanded" />
                                                 <dxmvvm:EventToCommand Command="{Binding DataContext.Activities_MouseDownCommand, ElementName=userControl}" EventName="MouseDown" PassEventArgsToCommand="True" />
@@ -196,19 +196,19 @@
                                     <dxlc:LayoutItem HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                         <dxg:GridControl dxc:DXSerializer.SerializationID="GridControlP6Assignments" CurrentItem="{Binding DataContext.Selected_P6_Assignment, Mode=TwoWay, ElementName=userControl}" ItemsSource="{Binding DataContext.P6_Assignments, ElementName=userControl}" SelectedItems="{Binding DataContext.Selected_P6_Assignments, Mode=TwoWay, ElementName=userControl}" SelectionMode="Row" ShowBorder="False">
                                             <dxg:GridControl.Columns>
-                                                <dxg:GridColumn Header="Deliverable" FieldName="Deliverable_Name" ReadOnly="True" MinWidth="200" AllowEditing="False" />
-                                                <dxg:GridColumn Header="P6 Id" FieldName="Entity.P6_ACTIVITYID" ReadOnly="True" AllowEditing="False" />
+                                                <dxg:GridColumn Header="Deliverable" FieldName="Deliverable_Name" HeaderToolTip="Assignment deliverables" ReadOnly="True" MinWidth="200" AllowEditing="False" />
+                                                <dxg:GridColumn Header="P6 Id" FieldName="Entity.P6_ACTIVITYID" HeaderToolTip="P6 activity assigned" ReadOnly="True" AllowEditing="False" />
                                                 <dxg:GridColumn Header="P6 Description" FieldName="Entity.P6_ACTIVITYID" ReadOnly="True" MinWidth="200" AllowEditing="False">
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:ComboBoxEditSettings DisplayMember="Description" ItemsSource="{Binding DataContext.Activities_Source, ElementName=userControl}" ValueMember="P6_ActivityId" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn Header="From %" FieldName="Entity.LOW_VALUE" ReadOnly="True" AllowEditing="False">
+                                                <dxg:GridColumn Header="From %" FieldName="Entity.LOW_VALUE" HeaderToolTip="Assigned from percentage" ReadOnly="True" AllowEditing="False">
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:TextEditSettings DisplayFormat="p2" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn Header="To %" FieldName="Entity.HIGH_VALUE" ReadOnly="True" AllowEditing="False">
+                                                <dxg:GridColumn Header="To %" FieldName="Entity.HIGH_VALUE" HeaderToolTip="Assigned to percentage" ReadOnly="True" AllowEditing="False">
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:TextEditSettings DisplayFormat="p2" />
                                                     </dxg:GridColumn.EditSettings>

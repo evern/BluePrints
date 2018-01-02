@@ -1,45 +1,18 @@
-﻿<UserControl
-    x:Name="userControl"
-    x:Class="BluePrints.Views.MINUTE_AGENDACollectionView"
-    xmlns:view="clr-namespace:BluePrints.Views"
-    xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" 
-    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
-    xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
-    xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
-    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
-    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
-    xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" 
-    xmlns:common="clr-namespace:BluePrints.Common" 
-    xmlns:behavior="clr-namespace:BaseModel.View.Behaviors;assembly=BaseModel"
-    xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters"
-    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
-    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-    xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" 
-    xmlns:dxgt="http://schemas.devexpress.com/winfx/2008/xaml/grid/themekeys" 
-    xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel" 
-    xmlns:sys="clr-namespace:System;assembly=mscorlib" 
-    xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
-    mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
-    DataContext="{dxmvvm:ViewModelSource viewmodel:MINUTE_AGENDACollectionViewModelWrapper}">
+﻿<UserControl x:Class="BluePrints.Views.MINUTE_AGENDACollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:behavior="clr-namespace:BaseModel.View.Behaviors;assembly=BaseModel" xmlns:common="clr-namespace:BluePrints.Common" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxgt="http://schemas.devexpress.com/winfx/2008/xaml/grid/themekeys" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:MINUTE_AGENDACollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <common:RowNameConverter x:Key="RowNameConverter" />
             <converter:MeetingMasterDetailNewRowTextConverter x:Key="NewRowItemDescConverter" />
             <sys:Int32 x:Key="newItemRowHandle">-2147483647</sys:Int32>
-            <Style x:Key="AgendaNewItemRowStyle" TargetType="{x:Type dxg:RowControl}" x:Shared="False">
+            <Style x:Key="AgendaNewItemRowStyle" x:Shared="False" TargetType="{x:Type dxg:RowControl}">
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="dxg:RowControl">
                             <Grid>
                                 <Border x:Name="Background" Background="{TemplateBinding Background}" />
-                                <Border x:Name="BottomLine" BorderThickness="0,0,0,1" BorderBrush="{TemplateBinding BorderBrush}" VerticalAlignment="Bottom" />
+                                <Border x:Name="BottomLine" VerticalAlignment="Bottom" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0,0,0,1" />
                                 <Grid x:Name="PART_LayoutPanel" />
-                                <Border x:Name="PART_NewRowText" IsHitTestVisible="False" Background="{TemplateBinding Background}" Visibility="Collapsed">
+                                <Border x:Name="PART_NewRowText" Background="{TemplateBinding Background}" IsHitTestVisible="False" Visibility="Collapsed">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
@@ -47,7 +20,7 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
                                         <dxg:RowIndicatorControl Width="{Binding Path=View.ActualIndicatorWidth}" Template="{DynamicResource {dxgt:RowIndicatorThemeKey ResourceKey=ItemTemplate}}" />
-                                        <Image Source="{dx:DXImageOffice2013 Image=Backward_16x16.png}" Visibility="{Binding DataContext.IsArrowVisible, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" Width="16" Height="16" Grid.Column="1">
+                                        <Image Grid.Column="1" Width="16" Height="16" Source="{dx:DXImageOffice2013 Image=Backward_16x16.png}" Visibility="{Binding DataContext.IsArrowVisible, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}">
                                             <Image.RenderTransform>
                                                 <TranslateTransform x:Name="transTransform" X="0" Y="0" />
                                             </Image.RenderTransform>
@@ -55,9 +28,9 @@
                                                 <EventTrigger RoutedEvent="Image.Loaded">
                                                     <BeginStoryboard>
                                                         <Storyboard>
-                                                            <DoubleAnimation From="35" To="0" Duration="00:00:01" Storyboard.TargetName="transTransform" Storyboard.TargetProperty="X" AutoReverse="True" RepeatBehavior="Forever">
+                                                            <DoubleAnimation AutoReverse="True" RepeatBehavior="Forever" Storyboard.TargetName="transTransform" Storyboard.TargetProperty="X" From="35" To="0" Duration="00:00:01">
                                                                 <DoubleAnimation.EasingFunction>
-                                                                    <BounceEase Bounces="1" EasingMode="EaseOut" Bounciness="3" />
+                                                                    <BounceEase Bounces="1" Bounciness="3" EasingMode="EaseOut" />
                                                                 </DoubleAnimation.EasingFunction>
                                                             </DoubleAnimation>
                                                         </Storyboard>
@@ -65,7 +38,7 @@
                                                 </EventTrigger>
                                             </Image.Triggers>
                                         </Image>
-                                        <TextBlock Name="MyChangingColorText" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding DataContext.NewAgendaInstruction, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" FontWeight="Bold" Grid.Column="2">
+                                        <TextBlock Name="MyChangingColorText" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding DataContext.NewAgendaInstruction, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}">
                                             <TextBlock.Foreground>
                                                 <SolidColorBrush x:Name="MySolidColorBrush" Color="DarkBlue" />
                                             </TextBlock.Foreground>
@@ -74,7 +47,7 @@
                                                     <EventTrigger.Actions>
                                                         <BeginStoryboard>
                                                             <Storyboard>
-                                                                <ColorAnimation Storyboard.TargetName="MySolidColorBrush" Storyboard.TargetProperty="Color" From="DarkBlue" To="SteelBlue" Duration="0:0:2" AutoReverse="True" RepeatBehavior="Forever" />
+                                                                <ColorAnimation AutoReverse="True" RepeatBehavior="Forever" Storyboard.TargetName="MySolidColorBrush" Storyboard.TargetProperty="Color" From="DarkBlue" To="SteelBlue" Duration="0:0:2" />
                                                             </Storyboard>
                                                         </BeginStoryboard>
                                                     </EventTrigger.Actions>
@@ -102,40 +75,40 @@
                             </Grid>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="ShowHorizontalLine" Value="True">
-                                    <Setter Property="Visibility" Value="Collapsed" TargetName="BottomLine" />
+                                    <Setter TargetName="BottomLine" Property="Visibility" Value="Collapsed" />
                                 </Trigger>
                                 <Trigger Property="ShowBottomLine" Value="True">
-                                    <Setter Property="Visibility" Value="Visible" TargetName="BottomLine" />
-                                    <Setter Property="BorderBrush" Value="{DynamicResource {dxgt:GridRowThemeKey ResourceKey=BorderBrush}}" TargetName="BottomLine" />
+                                    <Setter TargetName="BottomLine" Property="Visibility" Value="Visible" />
+                                    <Setter TargetName="BottomLine" Property="BorderBrush" Value="{DynamicResource {dxgt:GridRowThemeKey ResourceKey=BorderBrush}}" />
                                 </Trigger>
                                 <Trigger Property="FadeSelection" Value="True">
-                                    <Setter Property="Opacity" Value="0.5" TargetName="Background" />
+                                    <Setter TargetName="Background" Property="Opacity" Value="0.5" />
                                 </Trigger>
                                 <Trigger Property="ShowRowBreak" Value="True">
-                                    <Setter Property="BorderThickness" Value="0,0,0,2" TargetName="BottomLine" />
-                                    <Setter Property="BorderBrush" Value="{StaticResource {dxgt:GridRowThemeKey ResourceKey=RowBreakBrush}}" TargetName="BottomLine" />
+                                    <Setter TargetName="BottomLine" Property="BorderThickness" Value="0,0,0,2" />
+                                    <Setter TargetName="BottomLine" Property="BorderBrush" Value="{StaticResource {dxgt:GridRowThemeKey ResourceKey=RowBreakBrush}}" />
                                 </Trigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
                                         <Condition Binding="{Binding RowHandle.Value}" Value="{StaticResource newItemRowHandle}" />
                                         <Condition Binding="{Binding IsFocused}" Value="False" />
                                     </MultiDataTrigger.Conditions>
-                                    <Setter Property="Visibility" Value="Visible" TargetName="PART_NewRowText" />
+                                    <Setter TargetName="PART_NewRowText" Property="Visibility" Value="Visible" />
                                 </MultiDataTrigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
             </Style>
-            <Style x:Key="CommentNewItemRowStyle" TargetType="{x:Type dxg:RowControl}" x:Shared="False">
+            <Style x:Key="CommentNewItemRowStyle" x:Shared="False" TargetType="{x:Type dxg:RowControl}">
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="dxg:RowControl">
                             <Grid>
                                 <Border x:Name="Background" Background="{TemplateBinding Background}" />
-                                <Border x:Name="BottomLine" BorderThickness="0,0,0,1" BorderBrush="{TemplateBinding BorderBrush}" VerticalAlignment="Bottom" />
+                                <Border x:Name="BottomLine" VerticalAlignment="Bottom" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0,0,0,1" />
                                 <Grid x:Name="PART_LayoutPanel" />
-                                <Border x:Name="PART_NewRowText" IsHitTestVisible="False" Background="{TemplateBinding Background}" Visibility="Collapsed">
+                                <Border x:Name="PART_NewRowText" Background="{TemplateBinding Background}" IsHitTestVisible="False" Visibility="Collapsed">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
@@ -143,13 +116,13 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
                                         <dxg:RowIndicatorControl Width="{Binding Path=View.ActualIndicatorWidth}" Template="{DynamicResource {dxgt:RowIndicatorThemeKey ResourceKey=ItemTemplate}}" />
-                                        <TextBlock Name="MyFadingText" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Type here to add new comment and press enter when complete" FontWeight="Bold" Grid.Column="2">
+                                        <TextBlock Name="MyFadingText" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" Text="Type here to add new comment and press enter when complete">
                                             <TextBlock.Triggers>
                                                 <EventTrigger RoutedEvent="TextBlock.Loaded">
                                                     <EventTrigger.Actions>
                                                         <BeginStoryboard>
                                                             <Storyboard>
-                                                                <DoubleAnimation Storyboard.TargetName="MyFadingText" Storyboard.TargetProperty="(TextBlock.Opacity)" From="1.0" To="0.3" Duration="0:0:1" AutoReverse="True" RepeatBehavior="Forever" />
+                                                                <DoubleAnimation AutoReverse="True" RepeatBehavior="Forever" Storyboard.TargetName="MyFadingText" Storyboard.TargetProperty="(TextBlock.Opacity)" From="1.0" To="0.3" Duration="0:0:1" />
                                                             </Storyboard>
                                                         </BeginStoryboard>
                                                     </EventTrigger.Actions>
@@ -161,25 +134,25 @@
                             </Grid>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="ShowHorizontalLine" Value="True">
-                                    <Setter Property="Visibility" Value="Collapsed" TargetName="BottomLine" />
+                                    <Setter TargetName="BottomLine" Property="Visibility" Value="Collapsed" />
                                 </Trigger>
                                 <Trigger Property="ShowBottomLine" Value="True">
-                                    <Setter Property="Visibility" Value="Visible" TargetName="BottomLine" />
-                                    <Setter Property="BorderBrush" Value="{DynamicResource {dxgt:GridRowThemeKey ResourceKey=BorderBrush}}" TargetName="BottomLine" />
+                                    <Setter TargetName="BottomLine" Property="Visibility" Value="Visible" />
+                                    <Setter TargetName="BottomLine" Property="BorderBrush" Value="{DynamicResource {dxgt:GridRowThemeKey ResourceKey=BorderBrush}}" />
                                 </Trigger>
                                 <Trigger Property="FadeSelection" Value="True">
-                                    <Setter Property="Opacity" Value="0.5" TargetName="Background" />
+                                    <Setter TargetName="Background" Property="Opacity" Value="0.5" />
                                 </Trigger>
                                 <Trigger Property="ShowRowBreak" Value="True">
-                                    <Setter Property="BorderThickness" Value="0,0,0,2" TargetName="BottomLine" />
-                                    <Setter Property="BorderBrush" Value="{StaticResource {dxgt:GridRowThemeKey ResourceKey=RowBreakBrush}}" TargetName="BottomLine" />
+                                    <Setter TargetName="BottomLine" Property="BorderThickness" Value="0,0,0,2" />
+                                    <Setter TargetName="BottomLine" Property="BorderBrush" Value="{StaticResource {dxgt:GridRowThemeKey ResourceKey=RowBreakBrush}}" />
                                 </Trigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
                                         <Condition Binding="{Binding RowHandle.Value}" Value="{StaticResource newItemRowHandle}" />
                                         <Condition Binding="{Binding IsFocused}" Value="False" />
                                     </MultiDataTrigger.Conditions>
-                                    <Setter Property="Visibility" Value="Visible" TargetName="PART_NewRowText" />
+                                    <Setter TargetName="PART_NewRowText" Property="Visibility" Value="Visible" />
                                 </MultiDataTrigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -188,7 +161,8 @@
             </Style>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -200,21 +174,21 @@
         </dxmvvm:Interaction.Behaviors>
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
-                <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False" MDIMergeStyle="Always">
+                <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="Home">
-                            <dxr:RibbonPageGroup Caption="MINUTE_AGENDA Tasks">
+                        <dxr:RibbonPage Caption="Meeting">
+                            <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                            <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                            <dxr:RibbonPageGroup Caption="Tools">
                                 <dxb:BarButtonItem Content="Insert Before" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.AddRowBeforeCommand, ElementName=userControl}" LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" />
                                 <dxb:BarButtonItem Content="Insert After" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.AddRowAfterCommand, ElementName=userControl}" LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" />
-                                <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                <dxb:BarButtonItem Content="Save Layout" Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" Glyph="{dx:DXImage Image=Save_16x16.png}" />
-                                <dxb:BarButtonItem Content="Reset Layout" Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
-                                <dxb:BarCheckItem Content="Cell Selection" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" Glyph="{dxc:DXImage Image=SplitTableCells_16x16.png}" LargeGlyph="{dxc:DXImage Image=SplitTableCells_32x32.png}" />
-                                <dxb:BarItemSeparator />
-                                <dxb:BarButtonItem Content="Edit Report" Command="{Binding DataContext.EditReportCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
-                                <dxb:BarButtonItem Content="View Report" Command="{Binding DataContext.ViewReportCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Report_32x32.png}" Glyph="{dx:DXImage Image=Report_16x16.png}" />
                                 <dxb:BarItemSeparator />
                                 <dxb:BarButtonItem Content="Show All Agendas" Command="{Binding DataContext.ShowAllAgendasCommand, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=ClearFilter_32x32.png}" Glyph="{dx:DXImage Image=ClearFilter_16x16.png}" />
+
+                            </dxr:RibbonPageGroup>
+                            <dxr:RibbonPageGroup Caption="Reporting">
+                                <dxb:BarButtonItem Content="Edit Report" Command="{Binding DataContext.EditReportCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
+                                <dxb:BarButtonItem Content="View Report" Command="{Binding DataContext.ViewReportCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Report_32x32.png}" Glyph="{dx:DXImage Image=Report_16x16.png}" />
                                 <dxb:BarItemSeparator />
                                 <dxb:BarStaticItem Content="Right click on titles or agenda to reveal more options" />
                             </dxr:RibbonPageGroup>
@@ -226,20 +200,20 @@
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
                     <dxlc:LayoutControl Orientation="Horizontal">
-                        <dxlc:LayoutGroup Name="LayoutGroupTree" View="Group" Header="Edit Value" Orientation="Vertical" Width="600" dxlc:LayoutControl.AllowHorizontalSizing="True">
+                        <dxlc:LayoutGroup Header="Edit Value" Name="LayoutGroupTree" Width="600" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Vertical" View="Group">
                             <Grid DataContext="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper, ElementName=userControl}">
-                                <dxg:GridControl Name="GridControlTree" dx:DXSerializer.SerializationID="MINUTE_TITLETree" MaxHeight="2000" Style="{StaticResource DualGridControlTemplate}">
+                                <dxg:GridControl Name="GridControlTree" MaxHeight="2000" dxc:DXSerializer.SerializationID="MINUTE_TITLETree" Style="{StaticResource DualGridControlTemplate}">
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxg:TreeListDragDropManager x:Name="dragDropManager">
                                             <dxmvvm:Interaction.Behaviors>
-                                                <dxmvvm:EventToCommand EventName="Drop" Command="{Binding DragDropManager_DropCommand}" PassEventArgsToCommand="True" />
-                                                <dxmvvm:EventToCommand EventName="Dropped" Command="{Binding DragDropManager_DroppedCommand}" PassEventArgsToCommand="True" />
+                                                <dxmvvm:EventToCommand Command="{Binding DragDropManager_DropCommand}" EventName="Drop" PassEventArgsToCommand="True" />
+                                                <dxmvvm:EventToCommand Command="{Binding DragDropManager_DroppedCommand}" EventName="Dropped" PassEventArgsToCommand="True" />
                                             </dxmvvm:Interaction.Behaviors>
                                             <dxg:TreeListDragDropManager.DragElementTemplate>
                                                 <DataTemplate>
-                                                    <Border Background="White" CornerRadius="5" BorderThickness="2" BorderBrush="LightGray">
-                                                        <StackPanel Orientation="Vertical" Background="White" HorizontalAlignment="Left" Margin="5">
-                                                            <StackPanel Margin="5" Orientation="Vertical" Background="White">
+                                                    <Border Background="White" BorderBrush="LightGray" BorderThickness="2" CornerRadius="5">
+                                                        <StackPanel Margin="5" HorizontalAlignment="Left" Background="White" Orientation="Vertical">
+                                                            <StackPanel Margin="5" Background="White" Orientation="Vertical">
                                                                 <TextBlock Padding="3" FontWeight="Bold" Text="{Binding Path=DraggingRows.Count, StringFormat='Dragging {0} row(s)'}" />
                                                                 <StackPanel Orientation="Horizontal">
                                                                     <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Source: " />
@@ -258,18 +232,18 @@
                                         </dxg:TreeListDragDropManager>
                                     </dxmvvm:Interaction.Behaviors>
                                     <dxg:GridControl.Columns>
-                                        <dxg:GridColumn FieldName="DisplayNumber" Width="75" Header="NUMBER" VisibleIndex="10" ReadOnly="True" />
-                                        <dxg:GridColumn FieldName="NAME" Header="NAME" VisibleIndex="20" />
-                                        <dxg:GridColumn Header="Total" Width="75" FieldName="Summary_Total_Agendas" VisibleIndex="30" />
-                                        <dxg:GridColumn Header="Due" Width="75" FieldName="Summary_Due_Agendas" VisibleIndex="40" />
-                                        <dxg:GridColumn Header="Closed" Width="75" FieldName="Summary_Closed_Agendas" VisibleIndex="50" />
-                                        <dxg:GridColumn FieldName="SORTORDER" Header="SORTORDER" Visible="False" VisibleIndex="60" />
+                                        <dxg:GridColumn Header="Number" FieldName="DisplayNumber" ReadOnly="True" Width="75" VisibleIndex="10" />
+                                        <dxg:GridColumn Header="Name" FieldName="NAME" VisibleIndex="20" />
+                                        <dxg:GridColumn Header="Total" FieldName="Summary_Total_Agendas" Width="75" VisibleIndex="30" />
+                                        <dxg:GridColumn Header="Due" FieldName="Summary_Due_Agendas" Width="75" VisibleIndex="40" />
+                                        <dxg:GridColumn Header="Closed" FieldName="Summary_Closed_Agendas" Width="75" VisibleIndex="50" />
+                                        <dxg:GridColumn Header="SORTORDER" FieldName="SORTORDER" Visible="False" VisibleIndex="60" />
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.View>
                                         <dxg:TreeListView x:Name="treeListView" Style="{StaticResource DualTreeListViewTemplate}">
                                             <dxg:TreeListView.RowCellMenuCustomizations>
-                                                <dxb:BarButtonItem Content="Insert Before" Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.AddRowBeforeCommand, ElementName=userControl}" />
-                                                <dxb:BarButtonItem Content="Insert After" Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.AddRowAfterCommand, ElementName=userControl}" />
+                                                <dxb:BarButtonItem Content="Insert Before" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.AddRowBeforeCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" />
+                                                <dxb:BarButtonItem Content="Insert After" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.AddRowAfterCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" />
                                                 <dxb:BarButtonItem Content="Delete Row" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.MainViewModel.BulkDeleteCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                                 <dxb:BarItemSeparator />
                                                 <dxb:BarButtonItem Content="Undo" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.MainViewModel.UndoCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
@@ -278,71 +252,71 @@
                                         </dxg:TreeListView>
                                     </dxg:GridControl.View>
                                     <dxg:GridControl.GroupSummary>
-                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="NAME" SummaryType="Count" ShowInColumn="NAME" DisplayFormat="Total {0} Record(s)" />
-                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Summary_Total_Agendas" SummaryType="Sum" ShowInColumn="Summary_Total_Agendas" DisplayFormat="Total: {0:n0}" />
-                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Summary_Due_Agendas" SummaryType="Sum" ShowInColumn="Summary_Due_Agendas" DisplayFormat="Due: {0:n0}" />
-                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Summary_Closed_Agendas" SummaryType="Sum" ShowInColumn="Summary_Closed_Agendas" DisplayFormat="Closed: {0:n0}" />
+                                        <dxg:GridSummaryItem FieldName="NAME" dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Record(s)" ShowInColumn="NAME" SummaryType="Count" />
+                                        <dxg:GridSummaryItem FieldName="Summary_Total_Agendas" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n0}" ShowInColumn="Summary_Total_Agendas" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem FieldName="Summary_Due_Agendas" dxc:DXSerializer.Enabled="False" DisplayFormat="Due: {0:n0}" ShowInColumn="Summary_Due_Agendas" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem FieldName="Summary_Closed_Agendas" dxc:DXSerializer.Enabled="False" DisplayFormat="Closed: {0:n0}" ShowInColumn="Summary_Closed_Agendas" SummaryType="Sum" />
                                     </dxg:GridControl.GroupSummary>
                                     <dxg:GridControl.TotalSummary>
-                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="NAME" SummaryType="Count" ShowInColumn="NAME" DisplayFormat="Total {0} Record(s)" />
-                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Summary_Total_Agendas" SummaryType="Sum" ShowInColumn="Summary_Total_Agendas" DisplayFormat="Total: {0:n0}" />
-                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Summary_Due_Agendas" SummaryType="Sum" ShowInColumn="Summary_Due_Agendas" DisplayFormat="Due: {0:n0}" />
-                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Summary_Closed_Agendas" SummaryType="Sum" ShowInColumn="Summary_Closed_Agendas" DisplayFormat="Closed: {0:n0}" />
+                                        <dxg:GridSummaryItem FieldName="NAME" dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Record(s)" ShowInColumn="NAME" SummaryType="Count" />
+                                        <dxg:GridSummaryItem FieldName="Summary_Total_Agendas" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n0}" ShowInColumn="Summary_Total_Agendas" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem FieldName="Summary_Due_Agendas" dxc:DXSerializer.Enabled="False" DisplayFormat="Due: {0:n0}" ShowInColumn="Summary_Due_Agendas" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem FieldName="Summary_Closed_Agendas" dxc:DXSerializer.Enabled="False" DisplayFormat="Closed: {0:n0}" ShowInColumn="Summary_Closed_Agendas" SummaryType="Sum" />
                                     </dxg:GridControl.TotalSummary>
                                 </dxg:GridControl>
                             </Grid>
                         </dxlc:LayoutGroup>
-                        <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" Header="Edit Value" Orientation="Vertical" >
-                            <custom:GridControlEx x:Name="GridControl" Style="{StaticResource DefaultGridControlTemplate}" CurrentItem="{Binding DataContext.DisplaySelectedEntity, Mode=TwoWay, ElementName=userControl}" dx:DXSerializer.SerializationID="GridControlMINUTE_AGENDA">
+                        <dxlc:LayoutGroup Header="Edit Value" Name="LayoutGroupGrid" Orientation="Vertical" View="Group">
+                            <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlMINUTE_AGENDA" CurrentItem="{Binding DataContext.DisplaySelectedEntity, Mode=TwoWay, ElementName=userControl}" Style="{StaticResource DefaultGridControlTemplate}">
                                 <dxmvvm:Interaction.Behaviors>
-                                    <dxmvvm:EventToCommand Command="{Binding DataContext.MasterRowExpandedCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="MasterRowExpanded" />
-                                    <dxmvvm:EventToCommand Command="{Binding DataContext.MasterRowCollapsedCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="MasterRowCollapsed" />
+                                    <dxmvvm:EventToCommand Command="{Binding DataContext.MasterRowExpandedCommand, ElementName=userControl}" EventName="MasterRowExpanded" PassEventArgsToCommand="True" />
+                                    <dxmvvm:EventToCommand Command="{Binding DataContext.MasterRowCollapsedCommand, ElementName=userControl}" EventName="MasterRowCollapsed" PassEventArgsToCommand="True" />
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:GridControl.Columns>
-                                    <dxg:GridColumn Header="AGENDA" FieldName="Entity.NAME" Width="500">
+                                    <dxg:GridColumn Header="Agenda" FieldName="Entity.NAME" Width="500">
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
-                                                <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" FontWeight="Bold" AcceptsReturn="False" VerticalScrollBarVisibility="Auto" />
+                                                <dxe:TextEdit Name="PART_Editor" AcceptsReturn="False" FontWeight="Bold" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
                                             </DataTemplate>
                                         </dxg:GridColumn.CellTemplate>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="RAISED_BY" FieldName="Entity.GUID_RAISE_USER">
+                                    <dxg:GridColumn Header="Raised By" FieldName="Entity.GUID_RAISE_USER">
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.MeetingUserCollection, ElementName=userControl}" DisplayMember="Full_Name" ValueMember="Guid" ValidateOnTextInput="True" ValidateOnEnterKeyPressed="True" IncrementalFiltering="True" />
+                                            <dxe:ComboBoxEditSettings DisplayMember="Full_Name" IncrementalFiltering="True" ItemsSource="{Binding DataContext.MeetingUserCollection, ElementName=userControl}" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="Guid" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="ACTION" FieldName="Entity.GUID_ACTION">
+                                    <dxg:GridColumn Header="Action" FieldName="Entity.GUID_ACTION">
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
-                                                <dxe:ComboBoxEdit Name="PART_Editor" DisplayMember="NAME" ValueMember="GUID" ValidateOnTextInput="False" AllowNullInput="True" ItemsSource="{Binding DataContext.MEETING_ACTIONCollection, ElementName=userControl}">
+                                                <dxe:ComboBoxEdit Name="PART_Editor" AllowNullInput="True" DisplayMember="NAME" ItemsSource="{Binding DataContext.MEETING_ACTIONCollection, ElementName=userControl}" ValidateOnTextInput="False" ValueMember="GUID">
                                                     <dxmvvm:Interaction.Behaviors>
-                                                        <dxmvvm:EventToCommand Command="{Binding DataContext.ProcessNewValueCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="ProcessNewValue" />
+                                                        <dxmvvm:EventToCommand Command="{Binding DataContext.ProcessNewValueCommand, ElementName=userControl}" EventName="ProcessNewValue" PassEventArgsToCommand="True" />
                                                     </dxmvvm:Interaction.Behaviors>
                                                 </dxe:ComboBoxEdit>
                                             </DataTemplate>
                                         </dxg:GridColumn.CellTemplate>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="ACTION_BY" FieldName="Entity.GUID_ACTION_USER">
+                                    <dxg:GridColumn Header="Action By" FieldName="Entity.GUID_ACTION_USER">
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.MeetingUserCollection, ElementName=userControl}" DisplayMember="Full_Name" ValueMember="Guid" ValidateOnTextInput="True" ValidateOnEnterKeyPressed="True" IncrementalFiltering="True" />
+                                            <dxe:ComboBoxEditSettings DisplayMember="Full_Name" IncrementalFiltering="True" ItemsSource="{Binding DataContext.MeetingUserCollection, ElementName=userControl}" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="Guid" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="DUE_DATE" FieldName="Entity.DUE_DATE">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:DateEditSettings />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn Header="PRIORITY" FieldName="Entity.PRIORITY">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:ComboBoxEditSettings ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:AgendaPriority}}" IsTextEditable="True" AutoComplete="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn Header="RAISE_DATE" FieldName="Entity.RAISE_DATE" ReadOnly="True">
+                                    <dxg:GridColumn Header="Due Date" FieldName="Entity.DUE_DATE">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:DateEditSettings />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="NUMBER" FieldName="Entity.NUMBER" />
+                                    <dxg:GridColumn Header="Priority" FieldName="Entity.PRIORITY">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:AgendaPriority}}" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="Raise Date" FieldName="Entity.RAISE_DATE" ReadOnly="True">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:DateEditSettings />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="Number" FieldName="Entity.NUMBER" />
                                     <dxg:GridColumn Header="KEY" FieldName="Entity.GUID" Visible="False" />
                                     <dxg:GridColumn Header="PARENTKEY" FieldName="Entity.GUID_MINUTE_TITLE" Visible="False" />
                                 </dxg:GridControl.Columns>
@@ -353,55 +327,55 @@
                                                 <behavior:DetailSyncBehavior />
                                             </i:Interaction.Behaviors>
                                             <dxg:GridControl.Columns>
-                                                <dxg:GridColumn Header="AGENDA" FieldName="Entity.NAME">
+                                                <dxg:GridColumn Header="Agenda" FieldName="Entity.NAME">
                                                     <dxg:GridColumn.CellTemplate>
                                                         <DataTemplate>
-                                                            <dxe:TextEdit Name="PART_Editor" TextWrapping="Wrap" AcceptsReturn="False" VerticalScrollBarVisibility="Auto" />
+                                                            <dxe:TextEdit Name="PART_Editor" AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
                                                         </DataTemplate>
                                                     </dxg:GridColumn.CellTemplate>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn Header="RAISED_BY" FieldName="Entity.GUID_RAISE_USER">
+                                                <dxg:GridColumn Header="Raised By" FieldName="Entity.GUID_RAISE_USER">
                                                     <dxg:GridColumn.EditSettings>
-                                                        <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.MeetingUserCollection, ElementName=userControl}" DisplayMember="Full_Name" ValueMember="Guid" ValidateOnTextInput="True" ValidateOnEnterKeyPressed="True" IncrementalFiltering="True" />
+                                                        <dxe:ComboBoxEditSettings DisplayMember="Full_Name" IncrementalFiltering="True" ItemsSource="{Binding DataContext.MeetingUserCollection, ElementName=userControl}" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="Guid" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn Header="ACTION" FieldName="Entity.GUID_ACTION">
+                                                <dxg:GridColumn Header="Action" FieldName="Entity.GUID_ACTION">
                                                     <dxg:GridColumn.CellTemplate>
                                                         <DataTemplate>
-                                                            <dxe:ComboBoxEdit Name="PART_Editor" DisplayMember="NAME" ValueMember="GUID" ValidateOnTextInput="False" AllowNullInput="True" ItemsSource="{Binding DataContext.MEETING_ACTIONCollection, ElementName=userControl}">
+                                                            <dxe:ComboBoxEdit Name="PART_Editor" AllowNullInput="True" DisplayMember="NAME" ItemsSource="{Binding DataContext.MEETING_ACTIONCollection, ElementName=userControl}" ValidateOnTextInput="False" ValueMember="GUID">
                                                                 <dxmvvm:Interaction.Behaviors>
-                                                                    <dxmvvm:EventToCommand Command="{Binding DataContext.ProcessNewValueCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="ProcessNewValue" />
+                                                                    <dxmvvm:EventToCommand Command="{Binding DataContext.ProcessNewValueCommand, ElementName=userControl}" EventName="ProcessNewValue" PassEventArgsToCommand="True" />
                                                                 </dxmvvm:Interaction.Behaviors>
                                                             </dxe:ComboBoxEdit>
                                                         </DataTemplate>
                                                     </dxg:GridColumn.CellTemplate>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn Header="ACTION_BY" FieldName="Entity.GUID_ACTION_USER">
+                                                <dxg:GridColumn Header="Action By" FieldName="Entity.GUID_ACTION_USER">
                                                     <dxg:GridColumn.EditSettings>
-                                                        <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.MeetingUserCollection, ElementName=userControl}" DisplayMember="Full_Name" ValueMember="Guid" ValidateOnTextInput="True" ValidateOnEnterKeyPressed="True" IncrementalFiltering="True" />
+                                                        <dxe:ComboBoxEditSettings DisplayMember="Full_Name" IncrementalFiltering="True" ItemsSource="{Binding DataContext.MeetingUserCollection, ElementName=userControl}" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="Guid" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn Header="DUE_DATE" FieldName="Entity.DUE_DATE">
-                                                    <dxg:GridColumn.EditSettings>
-                                                        <dxe:DateEditSettings />
-                                                    </dxg:GridColumn.EditSettings>
-                                                </dxg:GridColumn>
-                                                <dxg:GridColumn Header="PRIORITY" FieldName="Entity.PRIORITY">
-                                                    <dxg:GridColumn.EditSettings>
-                                                        <dxe:ComboBoxEditSettings ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:AgendaPriority}}" IsTextEditable="True" AutoComplete="True" />
-                                                    </dxg:GridColumn.EditSettings>
-                                                </dxg:GridColumn>
-                                                <dxg:GridColumn Header="RAISE_DATE" FieldName="Entity.RAISE_DATE" AllowEditing="False">
+                                                <dxg:GridColumn Header="Due Date" FieldName="Entity.DUE_DATE">
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:DateEditSettings />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn Header="NUMBER" FieldName="Entity.NUMBER" />
+                                                <dxg:GridColumn Header="Priority" FieldName="Entity.PRIORITY">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:AgendaPriority}}" />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn Header="Raise Date" FieldName="Entity.RAISE_DATE" AllowEditing="False">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:DateEditSettings />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn Header="Number" FieldName="Entity.NUMBER" />
                                             </dxg:GridControl.Columns>
                                             <dxg:GridControl.View>
-                                                <dxg:TableView x:Name="tableView1" ShowColumnHeaders="False"  AllowColumnMoving="False" Style="{StaticResource DefaultDetailTableViewTemplate}" ShowGroupPanel="False" NewItemRowPosition="Bottom" RowStyle="{StaticResource CommentNewItemRowStyle}">
+                                                <dxg:TableView x:Name="tableView1" AllowColumnMoving="False" NewItemRowPosition="Bottom" RowStyle="{StaticResource CommentNewItemRowStyle}" ShowColumnHeaders="False" ShowGroupPanel="False" Style="{StaticResource DefaultDetailTableViewTemplate}">
                                                     <dxmvvm:Interaction.Behaviors>
-                                                        <dxmvvm:EventToCommand Command="{Binding DataContext.InitNewRow_DetailCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="InitNewRow" />
+                                                        <dxmvvm:EventToCommand Command="{Binding DataContext.InitNewRow_DetailCommand, ElementName=userControl}" EventName="InitNewRow" PassEventArgsToCommand="True" />
                                                     </dxmvvm:Interaction.Behaviors>
                                                     <dxg:TableView.RowCellMenuCustomizations>
                                                         <!--<dxb:BarButtonItem Content="Bulk Edit" Command="{Binding DataContext.MainViewModel.BulkColumnEditCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
@@ -419,23 +393,18 @@
                                     </dxg:DataControlDetailDescriptor>
                                 </dxg:GridControl.DetailDescriptor>
                                 <dxg:GridControl.TotalSummary>
-                                    <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
                                 </dxg:GridControl.TotalSummary>
                                 <dxg:GridControl.GroupSummary>
-                                    <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" AllowColumnMoving="False" NewItemRowPosition="Bottom" ShowGroupPanel="False" ExpandDetailButtonWidth="50" RowStyle="{StaticResource AgendaNewItemRowStyle}" Tag="{Binding DataContext.NewAgendaInstruction, ElementName=userControl}">
+                                    <dxg:TableView x:Name="tableView" AllowColumnMoving="False" ExpandDetailButtonWidth="50" NewItemRowPosition="Bottom" RowStyle="{StaticResource AgendaNewItemRowStyle}" ShowGroupPanel="False" Style="{StaticResource DefaultTableViewTemplate}" Tag="{Binding DataContext.NewAgendaInstruction, ElementName=userControl}">
                                         <dxmvvm:Interaction.Behaviors>
-                                            <dxmvvm:EventToCommand Command="{Binding DataContext.InitNewRow_MasterCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="InitNewRow" />
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.InitNewRow_MasterCommand, ElementName=userControl}" EventName="InitNewRow" PassEventArgsToCommand="True" />
                                         </dxmvvm:Interaction.Behaviors>
                                         <dxg:TableView.RowCellMenuCustomizations>
-                                            <dxb:BarButtonItem Content="Copy With Headers" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" />
-                                            <!--<dxb:BarButtonItem Content="Bulk Edit" Command="{Binding View.DataContext.BulkColumnEditCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
-                                            <dxb:BarButtonItem Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" Command="{Binding View.DataContext.FillUpCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                            <dxb:BarButtonItem Content="Fill Down" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" Command="{Binding View.DataContext.FillDownCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />-->
-                                            <dxb:BarButtonItem Content="Delete Row" Command="{Binding View.DataContext.BulkDeleteCommand}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                            <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                            <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                             <dxb:BarItemSeparator />
                                             <dxb:BarButtonItem Content="Undo" Command="{Binding View.DataContext.UndoCommand}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
                                             <dxb:BarButtonItem Content="Redo" Command="{Binding View.DataContext.RedoCommand}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
@@ -443,6 +412,8 @@
                                             <dxb:BarButtonItem Content="Expand All" Command="{Binding DataContext.ExpandAllCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=AutoExpand_16x16.png}" />
                                             <dxb:BarButtonItem Content="Collapse All But This" Command="{Binding DataContext.CollapseAllButThisCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=CollapseFieldPivotTable_16x16.png}" />
                                             <dxb:BarButtonItem Content="Collapse All" Command="{Binding DataContext.CollapseAllCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=CollapseFieldPivotTable_16x16.png}" />
+                                            <dxb:BarItemLinkSeparator />
+                                            <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
                                         </dxg:TableView.RowCellMenuCustomizations>
                                     </dxg:TableView>
                                 </dxg:GridControl.View>

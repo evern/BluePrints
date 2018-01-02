@@ -9,7 +9,7 @@
     </collections:ArrayList>
     <collections:ArrayList x:Key="RibbonDefaultLayoutButtons">
         <dxb:BarButtonItem Content="Save Layout" ToolTip="Save current table filters, sorting, grouping and expanded group" Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" Glyph="{dx:DXImage Image=Save_16x16.png}" />
-        <dxb:BarButtonItem Content="Reset Layout" ToolTip="Reset layout to default. Current tab must be restarted for default layout to take effect" Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
+        <dxb:BarButtonItem Content="Reset Layout" ToolTip="Reset layout to default. Please reopen current view for default layout to take effect" Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
     </collections:ArrayList>
     <collections:ArrayList x:Key="RibbonDefaultReportingButtons">
         <dxb:BarButtonItem Content="Edit Report" ToolTip="Redesign the current report layout" Command="{Binding DataContext.EditReportCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />

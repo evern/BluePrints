@@ -5,8 +5,8 @@
                 <dxlc:LayoutItem Height="230">
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlExoAffinity" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="SUBJOB NUMBER" FieldName="INTERNAL_NAME1" ToolTip="Subjob number" ReadOnly="True" Width="130" IsSmart="True" />
-                            <dxg:GridColumn Header="HOURS" FieldName="MissingQuantity" ToolTip="Hours from exo with workpack not found in blueprints" ReadOnly="True" Width="100" IsSmart="True" />
+                            <dxg:GridColumn Header="SUBJOB NUMBER" FieldName="INTERNAL_NAME1" HeaderToolTip="Subjob number" ReadOnly="True" Width="130" IsSmart="True" />
+                            <dxg:GridColumn Header="HOURS" FieldName="MissingQuantity" HeaderToolTip="Hours from exo with workpack not found in blueprints" ReadOnly="True" Width="100" IsSmart="True" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
