@@ -33,7 +33,7 @@
                                     </dxb:BarButtonItem.GlyphTemplate>
                                 </dxb:BarButtonItem>
                             </dxr:RibbonPageGroup>
-                            <dxr:RibbonPageGroup Caption="Progress Tasks">
+                            <dxr:RibbonPageGroup Caption="Tools">
                                 <!--<dxb:BarButtonItem Content="Fix Status" Command="{Binding DataContext.FixDeliverablesStatusCommand, ElementName=userControl}" LargeGlyph="{dx:DXImageOffice2013 Image=Replace_32x32.png}" Glyph="{dx:DXImage Image=Replace_16x16.png}" />-->
                                 <dxb:BarButtonItem Content="Update % by Status" ToolTip="Bulk update all deliverables progress by it's status. Deliverables without statuses will be ignored. When deliverables status % is lower than current %, previous progresses will be reduced starting from previous interval." Command="{Binding DataContext.UpdateAllPercentagesByStatusCommand, ElementName=userControl}" LargeGlyph="{dx:DXImageOffice2013 Image=ClearFormatting_32x32.png}" Glyph="{dx:DXImage Image=ClearFormatting_16x16.png}" />
                                 <dxb:BarButtonItem Content="Progress P6" ToolTip="Update P6 earned units to current deliverables earned units." Command="{Binding DataContext.PushToP6OriginalCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}" Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" />
@@ -258,17 +258,17 @@
                             </custom:GridColumnEx>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Productivity">
-                            <custom:GridColumnEx Header="Current Productivity" FieldName="Current_Productivity" HeaderToolTip="Productivity based on (cumulative earned units / required units from subjob or P6)" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
+                            <custom:GridColumnEx Header="Current Productivity" FieldName="Current_Productivity" HeaderToolTip="Productivity is calculated as [current earned hours / schedule planned hours]" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Override Productivity" FieldName="Override_Productivity" HeaderToolTip="Override this productivity to affect forecasted end date. Need to push progress to P6 and press F9 on P6 to produce the new forecasted end date on P6. Then reopen this view to obtain the newly calculated forecast end date" FilterPopupMode="CheckedList">
+                            <custom:GridColumnEx Header="Override Productivity" FieldName="Override_Productivity" HeaderToolTip="By default current productivity will be used to forecast end date for P6 schedule activity. Use 1 for planned productivity in case schedule is too pessimistic. After productivity is set it is necessary to push progress to P6 then press F9 on P6 to produce the new forecasted end date then Close and reopen this view to obtain the newly calculated forecast end date" FilterPopupMode="CheckedList">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:SpinEditSettings Increment="0.1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" NullValueButtonPlacement="EditBox" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Remaining Productivity" FieldName="Remaining_Productivity" HeaderToolTip="Productivity required to finish project on time. Only deliverables mapped to critical P6 activities will have a value" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
+                            <custom:GridColumnEx Header="Remaining Productivity" FieldName="Remaining_Productivity" HeaderToolTip="Productivity required to finish project on time. Only critical items will have a value" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:SpinEditSettings Increment="0.1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" NullValueButtonPlacement="EditBox" />
                                 </custom:GridColumnEx.EditSettings>
@@ -376,11 +376,9 @@
                                 </dxg:FormatCondition>
                             </dxg:TableView.FormatConditions>
                             <dxg:TableView.RowCellMenuCustomizations>
-                                <dxb:BarButtonItem Content="Copy With Headers" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" />
-                                <dxb:BarButtonItem Content="Bulk Edit" Command="{Binding View.DataContext.BulkColumnEditCommand}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                <dxb:BarButtonItem Content="Fill Up" Command="{Binding View.DataContext.FillUpCommand}" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                <dxb:BarButtonItem Content="Fill Down" Command="{Binding View.DataContext.FillDownCommand}" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                <dxb:BarItemLinkSeparator />
+                                <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
                             </dxg:TableView.RowCellMenuCustomizations>
                         </dxg:TableView>
                     </dxg:GridControl.View>

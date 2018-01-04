@@ -1,4 +1,4 @@
-﻿<dx:DXWindow x:Class="BluePrints.Views.PROJECTViewWindow" x:Name="userControl" xmlns:dxi="http://schemas.devexpress.com/winfx/2008/xaml/core/internal" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:common="clr-namespace:BluePrints.Common" mc:Ignorable="d" d:DesignHeight="1920" d:DesignWidth="1080" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTViewModelWrapper}" WindowState="Maximized" >
+﻿<dx:DXWindow x:Class="BluePrints.Views.PROJECTViewWindow" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxi="http://schemas.devexpress.com/winfx/2008/xaml/core/internal" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="1920" d:DesignWidth="1080" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTViewModelWrapper}" WindowState="Maximized" mc:Ignorable="d">
     <dx:DXWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -8,6 +8,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ChartResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </dx:DXWindow.Resources>
@@ -21,28 +22,27 @@
         <Grid Style="{StaticResource DashboardView.RootContainer}">
             <Grid DataContext="{Binding MainViewModel}">
                 <DockPanel>
-                    <dxr:RibbonControl RibbonStyle="OfficeSlim"  DockPanel.Dock="Top" AllowCustomization="False">
+                    <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="OfficeSlim">
                         <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                            <dxr:RibbonPage Caption="Home">
-                                <dxr:RibbonPageGroup Caption="PROJECT Tasks">
-                                    <dxb:BarCheckItem x:Name="biCheckUnits" Content="Units" Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=Time_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Time_32x32.png}" IsChecked="True" />
-                                    <dxb:BarCheckItem x:Name="biCheckCosts" Content="Costs" Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Glyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}" IsChecked="{Binding ElementName=biCheckUnits, Path=IsChecked, Converter={StaticResource BooleanNegationConverter}}" />
-                                    <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Calculate Stats" Command="{Binding DataContext.Refresh_From_P6Command, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" Glyph="{dx:DXImage Image=Reset2_16x16.png}" />
-                                    <dxb:BarCheckItem Content="Auto Refresh" IsChecked="{Binding DataContext.DoNotAutoRefresh, ElementName=userControl, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />
-                                    <dxb:BarButtonItem Content="P6 Issues" Command="{Binding DataContext.ShowP6ErrorsCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Exo Issues" Command="{Binding DataContext.ShowExoErrorsCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" />
+                            <dxr:RibbonPage Caption="Project">
+                                <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                                <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                                <dxr:RibbonPageGroup Caption="Tools">
+                                    <dxb:BarButtonItem Content="Calculate Stats" ToolTip="Recalculate stats from P6. Must be performed after pressing F9 in P6" Command="{Binding DataContext.Refresh_From_P6Command, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" Glyph="{dx:DXImage Image=Reset2_16x16.png}" />
+                                    <!--<dxb:BarCheckItem Content="Auto Refresh" IsChecked="{Binding DataContext.DoNotAutoRefresh, ElementName=userControl, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />-->
+                                    <dxb:BarButtonItem Content="P6 Issues" ToolTip="Shows any invalid mappings because activity isn't found on P6" Command="{Binding DataContext.ShowP6ErrorsCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Exo Issues" ToolTip="Shows any subjobs in exo that isn't available in blueprints" Command="{Binding DataContext.ShowExoErrorsCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" />
                                     <dxb:BarButtonItem Content="Save Layout" Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" Glyph="{dx:DXImage Image=Save_16x16.png}" />
                                     <dxb:BarButtonItem Content="Reset Layout" Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
-                                    <dxb:BarCheckItem Content="Cell Selection" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" Glyph="{dx:DXImage Image=SplitTableCells_16x16.png}" LargeGlyph="{dx:DXImage Image=SplitTableCells_32x32.png}" />
-                                    <dxb:BarButtonItem Content="Export" Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
+                                    <dxb:BarCheckItem Content="Cell Selection" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=SplitTableCells_32x32.png}" Glyph="{dx:DXImage Image=SplitTableCells_16x16.png}" />
                                     <dxb:BarButtonItem Content="Export to PDF" Command="{Binding DataContext.ExportToPDFCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=ExportToPDF_32x32.png}" Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" />
-                                    <dxb:BarItemSeparator />
-                                    <dxb:BarButtonItem Content="Area" Command="{Binding DataContext.EditAreaCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Web_32x32.png}" Glyph="{dx:DXImage Image=Web_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Rate" Command="{Binding DataContext.EditRateCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Financial_32x32.png}" Glyph="{dx:DXImage Image=Financial_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Baselines" Command="{Binding DataContext.EditBaselineCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Information_32x32.png}" Glyph="{dx:DXImage Image=Information_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Estimates" Command="{Binding DataContext.EditEstimateCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Cube_32x32.png}" Glyph="{dx:DXImage Image=Cube_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Progresses" Command="{Binding DataContext.EditProgressCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Date&amp;Time_32x32.png}" Glyph="{dx:DXImage Image=Date&amp;Time_16x16.png}" />
+                                </dxr:RibbonPageGroup>
+                                <dxr:RibbonPageGroup Caption="Data">
+                                    <dxb:BarButtonItem Content="Area" ToolTip="View all project areas" Command="{Binding DataContext.EditAreaCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Web_32x32.png}" Glyph="{dx:DXImage Image=Web_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Rate" ToolTip="View all project rates" Command="{Binding DataContext.EditRateCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Financial_32x32.png}" Glyph="{dx:DXImage Image=Financial_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Baselines" ToolTip="View all revisions of project baseline" Command="{Binding DataContext.EditBaselineCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Information_32x32.png}" Glyph="{dx:DXImage Image=Information_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Estimates" ToolTip="View all revisions of project estimate" Command="{Binding DataContext.EditEstimateCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Cube_32x32.png}" Glyph="{dx:DXImage Image=Cube_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Progresses" ToolTip="View all revisions of project progress" Command="{Binding DataContext.EditProgressCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Date&amp;Time_32x32.png}" Glyph="{dx:DXImage Image=Date&amp;Time_16x16.png}" />
                                 </dxr:RibbonPageGroup>
                             </dxr:RibbonPage>
                         </dxr:RibbonDefaultPageCategory>
@@ -52,7 +52,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="0" />
                         </Grid.RowDefinitions>
-                        <custom:GridControlEx x:Name="GridControlExcelExport" Grid.Row="0" dx:DXSerializer.Enabled="False" Visibility="Collapsed" ItemsSource="{Binding DataContext.ExcelExportData, ElementName=userControl}">
+                        <custom:GridControlEx x:Name="GridControlExcelExport" Grid.Row="0" dx:DXSerializer.Enabled="False" ItemsSource="{Binding DataContext.ExcelExportData, ElementName=userControl}" Visibility="Collapsed">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn FieldName="Type" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Subjob_Name" ReadOnly="True" />
@@ -65,16 +65,16 @@
                                 <dxg:GridColumn FieldName="Actual_Costs" ReadOnly="True" />
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.View>
-                                <!--need to set tableView name here for export to work-->
+                                <!--  need to set tableView name here for export to work  -->
                                 <dxg:TableView Name="tableView" />
                             </dxg:GridControl.View>
                         </custom:GridControlEx>
                     </Grid>
                     <dxlc:LayoutControl x:Name="layoutControl" Orientation="Vertical">
-                        <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group" dxlc:LayoutControl.AllowVerticalSizing="True" Orientation="Vertical" Height="300">
-                            <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSingleProjectDashboard" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}" Style="{StaticResource SingleProjectGridControlTemplate}" ItemsSource="{Binding DataContext.SingleProjectDashboards, ElementName=userControl}" IsFilterEnabled="False">
+                        <dxlc:LayoutGroup Name="LayoutGroupGrid" Height="300" dxlc:LayoutControl.AllowVerticalSizing="True" Orientation="Vertical" View="Group">
+                            <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSingleProjectDashboard" IsFilterEnabled="False" ItemsSource="{Binding DataContext.SingleProjectDashboards, ElementName=userControl}" SelectedItems="{Binding DataContext.Selected_Dashboards, Mode=TwoWay, ElementName=userControl}" Style="{StaticResource SingleProjectGridControlTemplate}">
                                 <dxmvvm:Interaction.Behaviors>
-                                    <dxmvvm:EventToCommand Command="{Binding DataContext.CustomSummaryCommand, ElementName=userControl}" PassEventArgsToCommand="True" EventName="CustomSummary" />
+                                    <dxmvvm:EventToCommand Command="{Binding DataContext.CustomSummaryCommand, ElementName=userControl}" EventName="CustomSummary" PassEventArgsToCommand="True" />
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:GridControl.Bands>
                                     <dxg:GridControlBand Header="General">
@@ -82,92 +82,92 @@
                                         <dxg:GridColumn Header="Area" FieldName="AreaCode" />
                                         <dxg:GridColumn Header="Department" FieldName="DepartmentCode" />
                                         <dxg:GridColumn Header="Discipline" FieldName="DisciplineCode" />
-                                        <dxg:GridColumn Header="{Binding DataContext.Header_Total_Budgeted, ElementName=userControl}" FieldName="{Binding DataContext.Total_Budgeted, ElementName=userControl}">
+                                        <dxg:GridColumn Header="{Binding DataContext.Header_Total_Budgeted, ElementName=userControl}" FieldName="{Binding DataContext.Total_Budgeted, ElementName=userControl}" HeaderToolTip="Total units including variation">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings MaskType="Numeric" Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                     </dxg:GridControlBand>
                                     <dxg:GridControlBand Header="Cumulative">
-                                        <dxg:GridColumn Header="Earned %" FieldName="{Binding DataContext.Cumulative_Earned_Percentage, ElementName=userControl}" ReadOnly="True" AllowEditing="False" VisibleIndex="80">
+                                        <dxg:GridColumn Header="Earned %" FieldName="{Binding DataContext.Cumulative_Earned_Percentage, ElementName=userControl}" HeaderToolTip="Earned % to date" ReadOnly="True" AllowEditing="False" VisibleIndex="80">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings MaskType="Numeric" Mask="p2" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Header="{Binding DataContext.Header_Budgeted, ElementName=userControl}" FieldName="{Binding DataContext.Cumulative_Planned_Units, ElementName=userControl}" ReadOnly="True" AllowEditing="False" VisibleIndex="90">
+                                        <dxg:GridColumn Header="{Binding DataContext.Header_Budgeted, ElementName=userControl}" FieldName="{Binding DataContext.Cumulative_Planned_Units, ElementName=userControl}" HeaderToolTip="Schedule planned to date" ReadOnly="True" AllowEditing="False" VisibleIndex="90">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings MaskType="Numeric" Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Header="{Binding DataContext.Header_Earned, ElementName=userControl}" FieldName="{Binding DataContext.Cumulative_Earned_Units, ElementName=userControl}" ReadOnly="True" AllowEditing="False" VisibleIndex="100">
+                                        <dxg:GridColumn Header="{Binding DataContext.Header_Earned, ElementName=userControl}" FieldName="{Binding DataContext.Cumulative_Earned_Units, ElementName=userControl}" HeaderToolTip="Earned to date" ReadOnly="True" AllowEditing="False" VisibleIndex="100">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings MaskType="Numeric" Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Header="{Binding DataContext.Header_Burned, ElementName=userControl}" FieldName="{Binding DataContext.Cumulative_Burned_Units, ElementName=userControl}" ReadOnly="True" AllowEditing="False" VisibleIndex="110">
+                                        <dxg:GridColumn Header="{Binding DataContext.Header_Burned, ElementName=userControl}" FieldName="{Binding DataContext.Cumulative_Burned_Units, ElementName=userControl}" HeaderToolTip="Burned to date" ReadOnly="True" AllowEditing="False" VisibleIndex="110">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings MaskType="Numeric" Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Header="{Binding DataContext.Header_Actual, ElementName=userControl}" FieldName="{Binding DataContext.Cumulative_Actual_Units, ElementName=userControl}" Visible="{Binding DataContext.IsActualVisible, ElementName=userControl}" ReadOnly="True" AllowEditing="False" VisibleIndex="120">
+                                        <dxg:GridColumn Header="{Binding DataContext.Header_Actual, ElementName=userControl}" FieldName="{Binding DataContext.Cumulative_Actual_Units, ElementName=userControl}" HeaderToolTip="Actual costs to date" ReadOnly="True" AllowEditing="False" Visible="{Binding DataContext.IsActualVisible, ElementName=userControl}" VisibleIndex="120">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings MaskType="Numeric" Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                     </dxg:GridControlBand>
                                     <dxg:GridControlBand Header="Period">
-                                        <dxg:GridColumn Header="Earned %" FieldName="{Binding DataContext.Period_Earned_Percentage, ElementName=userControl}" ReadOnly="True" AllowEditing="False" VisibleIndex="130">
+                                        <dxg:GridColumn Header="Earned %" FieldName="{Binding DataContext.Period_Earned_Percentage, ElementName=userControl}" HeaderToolTip="Earned % for this period" ReadOnly="True" AllowEditing="False" VisibleIndex="130">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings MaskType="Numeric" Mask="p2" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Header="{Binding DataContext.Header_Budgeted, ElementName=userControl}" FieldName="{Binding DataContext.Period_Planned_Units, ElementName=userControl}" ReadOnly="True" AllowEditing="False" VisibleIndex="140">
+                                        <dxg:GridColumn Header="{Binding DataContext.Header_Budgeted, ElementName=userControl}" FieldName="{Binding DataContext.Period_Planned_Units, ElementName=userControl}" HeaderToolTip="Planned for this period" ReadOnly="True" AllowEditing="False" VisibleIndex="140">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings MaskType="Numeric" Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Header="{Binding DataContext.Header_Earned, ElementName=userControl}" FieldName="{Binding DataContext.Period_Earned_Units, ElementName=userControl}" ReadOnly="True" AllowEditing="False" VisibleIndex="150">
+                                        <dxg:GridColumn Header="{Binding DataContext.Header_Earned, ElementName=userControl}" FieldName="{Binding DataContext.Period_Earned_Units, ElementName=userControl}" HeaderToolTip="Earned for this period" ReadOnly="True" AllowEditing="False" VisibleIndex="150">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings MaskType="Numeric" Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Header="{Binding DataContext.Header_Burned, ElementName=userControl}" FieldName="{Binding DataContext.Period_Burned_Units, ElementName=userControl}" ReadOnly="True" AllowEditing="False" VisibleIndex="160">
+                                        <dxg:GridColumn Header="{Binding DataContext.Header_Burned, ElementName=userControl}" FieldName="{Binding DataContext.Period_Burned_Units, ElementName=userControl}" HeaderToolTip="Burned for this period" ReadOnly="True" AllowEditing="False" VisibleIndex="160">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings MaskType="Numeric" Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Header="{Binding DataContext.Header_Actual, ElementName=userControl}" FieldName="{Binding DataContext.Period_Actual_Units, ElementName=userControl}" Visible="{Binding DataContext.IsActualVisible, ElementName=userControl}" ReadOnly="True" AllowEditing="False" VisibleIndex="170">
+                                        <dxg:GridColumn Header="{Binding DataContext.Header_Actual, ElementName=userControl}" FieldName="{Binding DataContext.Period_Actual_Units, ElementName=userControl}" HeaderToolTip="Actual costs for this period" ReadOnly="True" AllowEditing="False" Visible="{Binding DataContext.IsActualVisible, ElementName=userControl}" VisibleIndex="170">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings MaskType="Numeric" Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                     </dxg:GridControlBand>
                                     <dxg:GridControlBand Header="Performance">
-                                        <dxg:GridColumn Header="Gross Profit" FieldName="Stats.GrossProfit" ReadOnly="True" AllowEditing="False" VisibleIndex="15">
+                                        <dxg:GridColumn Header="Gross Profit" FieldName="Stats.GrossProfit" HeaderToolTip="[(Total Earned Costs - Total Actual Costs) / Total Earned Costs]" ReadOnly="True" AllowEditing="False" VisibleIndex="15">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings MaskType="Numeric" Mask="p2" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Header="Efficiency Ratio %" FieldName="Stats.EfficiencyRatio" ReadOnly="True" AllowEditing="False" VisibleIndex="16">
+                                        <dxg:GridColumn Header="Efficiency Ratio %" FieldName="Stats.EfficiencyRatio" HeaderToolTip="[(Total Earned - Total Burned) / Total Burned]" ReadOnly="True" AllowEditing="False" VisibleIndex="16">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings MaskType="Numeric" Mask="p2" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Header="Progress Ratio %" FieldName="Stats.ProgressRatio" ReadOnly="True" AllowEditing="False" VisibleIndex="17">
+                                        <dxg:GridColumn Header="Progress Ratio %" FieldName="Stats.ProgressRatio" HeaderToolTip="[(Total Earned - Total Planned) / Total Planned]" ReadOnly="True" AllowEditing="False" VisibleIndex="17">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings MaskType="Numeric" Mask="p2" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                     </dxg:GridControlBand>
                                 </dxg:GridControl.Bands>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView Style="{StaticResource DefaultTableViewTemplate}" NewItemRowPosition="None" AllowEditing="False" ShowTotalSummary="True" custom:GroupChildSelector.Mode="Hierarchical" />
+                                    <dxg:TableView custom:GroupChildSelector.Mode="Hierarchical" AllowEditing="False" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}" />
                                 </dxg:GridControl.View>
                             </custom:GridControlEx>
                         </dxlc:LayoutGroup>
                         <dx:LoadingDecorator IsSplashScreenShown="{Binding DataContext.IsLoading, ElementName=userControl}">
-                            <dxlc:LayoutGroup Name="LayoutGroupChart" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" View="Group" Orientation="Vertical">
-                                <dxc:ChartControl x:Name="chartSCurve" Grid.Row="2" AutoLayout="False" Padding="0" Margin="0" dx:DXSerializer.Enabled="False" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}">
+                            <dxlc:LayoutGroup Name="LayoutGroupChart" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" Orientation="Vertical" View="Group">
+                                <dxc:ChartControl x:Name="chartSCurve" Grid.Row="2" Margin="0" Padding="0" dx:DXSerializer.Enabled="False" AutoLayout="False" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}">
                                     <dxc:XYDiagram2D SeriesItemsSource="{StaticResource dashboardXYChartSeries}">
                                         <dxc:XYDiagram2D.AxisX>
                                             <dxc:AxisX2D>

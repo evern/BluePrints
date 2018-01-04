@@ -1,87 +1,33 @@
-﻿<UserControl
-    x:Name="userControl"
-    x:Class="BluePrints.Views.VARIATIONCollectionView"
-    xmlns:view="clr-namespace:BluePrints.Views"
-    xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
-    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
-    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
-    xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
-    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
-    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-    xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions"
-    xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
-    xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
-    xmlns:common="clr-namespace:BluePrints.Common"
-    mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="600"
-    DataContext="{dxmvvm:ViewModelSource viewmodel:VARIATIONSCollectionViewModelWrapper}">
+﻿<UserControl x:Class="BluePrints.Views.VARIATIONCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:VARIATIONSCollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
-        <Grid DataContext="{Binding MainViewModel}" >
+        <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
-                <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top"
-                               AllowCustomization="False" MDIMergeStyle="Always">
+                <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Home">
-                            <dxr:RibbonPageGroup Caption="PROJECT Tasks">
-                                <dxb:BarButtonItem Content="Edit"
-                                               Command="{Binding DataContext.EditCommand, ElementName=userControl}"
-                                               LargeGlyph="{dx:DXImage Image=Edit_32x32.png}"
-                                               Glyph="{dx:DXImage Image=Edit_16x16.png}" />
-                                <dxb:BarButtonItem Content="Delete Row" Command="{Binding BulkDeleteCommand}"
-                                               LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"
-                                               Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                <dxb:BarButtonItem Content="Submit"
-                                               Command="{Binding DataContext.SubmitCommand, ElementName=userControl}"
-                                               LargeGlyph="{dx:DXImage Image=CheckBox_32x32.png}"
-                                               Glyph="{dx:DXImage Image=CheckBox_16x16.png}" />
-                                <dxb:BarButtonItem Content="Approve"
-                                               Command="{Binding DataContext.ApproveCommand, ElementName=userControl}"
-                                               LargeGlyph="{dx:DXImage Image=Apply_32x32.png}"
-                                               Glyph="{dx:DXImage Image=Apply_16x16.png}" />
-                                <dxb:BarButtonItem Content="Revert"
-                                               Command="{Binding DataContext.RevertCommand, ElementName=userControl}"
-                                               LargeGlyph="{dx:DXImage Image=DoublePrev_16x16.png}"
-                                               Glyph="{dx:DXImage Image=DoublePrev_32x32.png}" ToolTip="Revert changes made by last variation" />
-                                <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
-                                               LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
-                                               Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                <dxb:BarCheckItem Content="Auto Refresh"
-                                                  IsChecked="{Binding DataContext.DoNotAutoRefresh, ElementName=userControl, Converter={dxmvvm:BooleanNegationConverter}}"
-                                                  Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />
-                                <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}"
-                                               LargeGlyph="{dx:DXImage Image=Undo_32x32.png}"
-                                               Glyph="{dx:DXImage Image=Undo_16x16.png}" />
-                                <dxb:BarButtonItem Content="Redo" Command="{Binding RedoCommand}"
-                                               LargeGlyph="{dx:DXImage Image=Redo_32x32.png}"
-                                               Glyph="{dx:DXImage Image=Redo_16x16.png}" />
-                                <dxb:BarButtonItem Content="Save Layout"
-                                               Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}"
-                                               LargeGlyph="{dx:DXImage Image=Save_32x32.png}"
-                                               Glyph="{dx:DXImage Image=Save_16x16.png}" />
-                                <dxb:BarButtonItem Content="Reset Layout"
-                                               Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}"
-                                               LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}"
-                                               Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
-                                <dxb:BarCheckItem Content="Cell Selection" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" Glyph="{dx:DXImage Image=SplitTableCells_16x16.png}" LargeGlyph="{dx:DXImage Image=SplitTableCells_32x32.png}" />
+                            <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                            <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                            <dxr:RibbonPageGroup Caption="Tools">
+                                <dxb:BarCheckItem Content="Auto Refresh" IsChecked="{Binding DataContext.DoNotAutoRefresh, ElementName=userControl, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />
+                                <dxb:BarButtonItem Content="Edit" Command="{Binding DataContext.EditCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
+                                <dxb:BarButtonItem Content="Submit" Command="{Binding DataContext.SubmitCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=CheckBox_32x32.png}" Glyph="{dx:DXImage Image=CheckBox_16x16.png}" />
+                                <dxb:BarButtonItem Content="Approve" Command="{Binding DataContext.ApproveCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Apply_32x32.png}" Glyph="{dx:DXImage Image=Apply_16x16.png}" />
+                                <dxb:BarButtonItem Content="Revert" ToolTip="Revert changes made by last variation" Command="{Binding DataContext.RevertCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=DoublePrev_16x16.png}" Glyph="{dx:DXImage Image=DoublePrev_32x32.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
                 <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
                     <dxr:RibbonStatusBarControl.LeftItems>
-                        <dxb:BarStaticItem
-                        Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
@@ -90,106 +36,68 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlVARIATION" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxmvvm:Interaction.Behaviors>
-                            <dxmvvm:EventToCommand PassEventArgsToCommand="True"
-                                                   Command="{Binding DataContext.EditCommand, ElementName=userControl}"
-                                                   EventName="MouseDoubleClick" MarkRoutedEventsAsHandled="True">
+                            <dxmvvm:EventToCommand Command="{Binding DataContext.EditCommand, ElementName=userControl}" EventName="MouseDoubleClick" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True">
                                 <dxmvvm:EventToCommand.EventArgsConverter>
                                     <dx:EventArgsToDataRowConverter />
                                 </dxmvvm:EventToCommand.EventArgsConverter>
                             </dxmvvm:EventToCommand>
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="Entity.NAME" Header="NAME" VisibleIndex="10" FilterPopupMode="CheckedList" />
-                            <dxg:GridColumn FieldName="Entity.TYPE" Header="TYPE" VisibleIndex="20" FilterPopupMode="CheckedList">
+                            <dxg:GridColumn Header="Name" FieldName="Entity.NAME" FilterPopupMode="CheckedList" VisibleIndex="10" />
+                            <dxg:GridColumn Header="Type" FieldName="Entity.TYPE" HeaderToolTip="Internal variation will have additional units added into baseline units column. External variation will have additional units added to variation units column" FilterPopupMode="CheckedList" VisibleIndex="20">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings IsTextEditable="True" AutoComplete="True"
-                                          ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationType}}" />
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationType}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.COMMENTS" Header="COMMENTS" VisibleIndex="30" FilterPopupMode="CheckedList" />
-                            <dxg:GridColumn FieldName="Entity.CREATEDBY" Header="CREATEDBY" ReadOnly="True" VisibleIndex="40" FilterPopupMode="CheckedList">
+                            <dxg:GridColumn Header="Comments" FieldName="Entity.COMMENTS" FilterPopupMode="CheckedList" VisibleIndex="30" />
+                            <dxg:GridColumn Header="Created By" FieldName="Entity.CREATEDBY" ReadOnly="True" FilterPopupMode="CheckedList" VisibleIndex="40">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}"
-                                          IsTextEditable="True" AutoComplete="True" DisplayMember="NAME"
-                                          ValueMember="GUID" />
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.SUBMITTED" Header="SUBMITTED" VisibleIndex="50" FilterPopupMode="CheckedList" />
-                            <dxg:GridColumn FieldName="Entity.APPROVED" Header="APPROVED" VisibleIndex="60" FilterPopupMode="CheckedList" />
-                            <dxg:GridColumn Header="FROM BASELINE" FieldName="Entity.GUID_ORIBASELINE" ReadOnly="True" AllowEditing="False"
-                        VisibleIndex="70">
+                            <dxg:GridColumn Header="Submitted" FieldName="Entity.SUBMITTED" HeaderToolTip="Contents within submitted variation will be read only" FilterPopupMode="CheckedList" VisibleIndex="50" />
+                            <dxg:GridColumn Header="Approved" FieldName="Entity.APPROVED" HeaderToolTip="Contents within approved variation will only show changes made instead of the full deliverables list" FilterPopupMode="CheckedList" VisibleIndex="60" />
+                            <dxg:GridColumn Header="From Baseline" FieldName="Entity.GUID_ORIBASELINE" HeaderToolTip="Indicates variation is applied on which baseline" ReadOnly="True" AllowEditing="False" VisibleIndex="70">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings
-                    ItemsSource="{Binding DataContext.IAmBaselineCollection, ElementName=userControl}"
-                    IsTextEditable="True" AutoComplete="True" DisplayMember="REVISION" ValueMember="GUID" />
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="REVISION" IsTextEditable="True" ItemsSource="{Binding DataContext.IAmBaselineCollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="TO BASELINE" FieldName="Entity.GUID_BASELINE" ReadOnly="True" AllowEditing="False" VisibleIndex="80" FilterPopupMode="CheckedList">
+                            <dxg:GridColumn Header="To Baseline" FieldName="Entity.GUID_BASELINE" HeaderToolTip="Indicates approved variation cause changes to which baseline" ReadOnly="True" AllowEditing="False" FilterPopupMode="CheckedList" VisibleIndex="80">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings
-                    ItemsSource="{Binding DataContext.IAmBaselineCollection, ElementName=userControl}"
-                    IsTextEditable="True" AutoComplete="True" DisplayMember="REVISION" ValueMember="GUID" />
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="REVISION" IsTextEditable="True" ItemsSource="{Binding DataContext.IAmBaselineCollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="TOTAL_UNITS" VisibleIndex="90" FilterPopupMode="CheckedList">
+                            <dxg:GridColumn FieldName="Total Units" HeaderToolTip="Total units of this variation" FilterPopupMode="CheckedList" VisibleIndex="90">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings MaskUseAsDisplayFormat="True"
-                                                      MaskType="Numeric" Mask="n" />
+                                    <dxe:TextEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="TOTAL_COSTS" VisibleIndex="90" FilterPopupMode="CheckedList">
+                            <dxg:GridColumn FieldName="Total Costs" HeaderToolTip="Total costs of this variation" FilterPopupMode="CheckedList" VisibleIndex="90">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings MaskUseAsDisplayFormat="True"
-                                                      MaskType="Numeric" Mask="c" />
+                                    <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="TOTAL_UNITS"
-                                                 SummaryType="SUM"
-                                                 ShowInColumn="TOTAL_UNITS"
-                                                 DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="TOTAL_COSTS"
-                                                 SummaryType="SUM"
-                                                 ShowInColumn="TOTAL_COSTS"
-                                                 DisplayFormat="Total: {0:c}" />
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />
+                            <dxg:GridSummaryItem FieldName="TOTAL_UNITS" dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="TOTAL_UNITS" SummaryType="SUM" />
+                            <dxg:GridSummaryItem FieldName="TOTAL_COSTS" dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" ShowInColumn="TOTAL_COSTS" SummaryType="SUM" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="TOTAL_UNITS"
-                                                 SummaryType="SUM"
-                                                 ShowInColumn="TOTAL_UNITS"
-                                                 DisplayFormat="Total: {0:n}" />
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="TOTAL_COSTS"
-                                                 SummaryType="SUM"
-                                                 ShowInColumn="TOTAL_COSTS"
-                                                 DisplayFormat="Total: {0:c}" />
+                            <dxg:GridSummaryItem FieldName="TOTAL_UNITS" dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="TOTAL_UNITS" SummaryType="SUM" />
+                            <dxg:GridSummaryItem FieldName="TOTAL_COSTS" dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" ShowInColumn="TOTAL_COSTS" SummaryType="SUM" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
                                 <dxg:TableView.RowCellMenuCustomizations>
-                                    <dxb:BarButtonItem Content="Copy With Headers" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Edit" Command="{Binding View.DataContext.EditCommand}"
-                                                   Glyph="{dx:DXImage Image=Edit_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Fill Down"
-                                                   Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}"
-                                                   Command="{Binding View.DataContext.FillDownCommand}"
-                                                   CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Content="Submit"
-                                                   Command="{Binding DataContext.SubmitCommand, ElementName=userControl}"
-                                                   CommandParameter="{Binding Row.Row}"
-                                                   LargeGlyph="{dx:DXImage Image=CheckBox_32x32.png}"
-                                                   Glyph="{dx:DXImage Image=CheckBox_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Approve"
-                                                   Glyph="{dx:DXImageOffice2013 Image=Apply_16x16.png}"
-                                                   Command="{Binding DataContext.ApproveCommand, ElementName=userControl}" />
-                                    <dxb:BarButtonItem Content="Delete Row"
-                                                   Command="{Binding View.DataContext.BulkDeleteCommand}"
-                                                   Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Refresh"
-                                                   Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}"
-                                                   Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Edit" Command="{Binding View.DataContext.EditCommand}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Submit" Command="{Binding DataContext.SubmitCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=CheckBox_32x32.png}" Glyph="{dx:DXImage Image=CheckBox_16x16.png}" CommandParameter="{Binding Row.Row}" />
+                                    <dxb:BarButtonItem Content="Approve" Command="{Binding DataContext.ApproveCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=Apply_16x16.png}" />
+                                    <dxb:BarItemLinkSeparator />
+                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                    <dxb:BarItemLinkSeparator />
+                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>

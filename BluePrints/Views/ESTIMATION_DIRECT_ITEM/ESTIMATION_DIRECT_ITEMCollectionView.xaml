@@ -206,7 +206,7 @@
                                         <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Installation Hours" FieldName="Entity.STOCK_CODE.HOURS_INSTALL" HeaderToolTip="Installation hours per quantity. Changing this value will invoke a dialog to ask whether to update current stock item or create a new stock item with the updated rate" FilterPopupMode="CheckedList">
+                                <dxg:GridColumn Header="Install Hours" FieldName="Entity.STOCK_CODE.HOURS_INSTALL" HeaderToolTip="Installation hours per quantity. Changing this value will invoke a dialog to ask whether to update current stock item or create a new stock item with the updated rate" FilterPopupMode="CheckedList">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>

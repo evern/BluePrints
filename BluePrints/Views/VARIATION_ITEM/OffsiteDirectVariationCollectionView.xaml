@@ -13,7 +13,7 @@
             <DockPanel>
                 <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="Variation Deliverables">
+                        <dxr:RibbonPage Caption="Deliverables Variation">
                             <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                         </dxr:RibbonPage>
@@ -164,7 +164,7 @@
                                     </DataTemplate>
                                 </custom:GridColumnEx.CellTemplate>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Variation Hours" FieldName="Variation_Units" HeaderToolTip="Previously approved variation hours">
+                            <custom:GridColumnEx Header="Variation Hours" FieldName="Variation_Units" HeaderToolTip="Adjust variation hours here">
                                 <dxg:GridColumn.HeaderStyle>
                                     <Style TargetType="Control">
                                         <Setter Property="Background" Value="LightCyan" />

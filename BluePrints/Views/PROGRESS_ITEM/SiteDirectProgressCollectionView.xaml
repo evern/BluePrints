@@ -6,6 +6,7 @@
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -14,17 +15,15 @@
             <DockPanel>
                 <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="Home">
-                            <dxr:RibbonPageGroup Caption="Site Direct Progress Tasks">
-                                <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                <dxb:BarButtonItem Content="Undo" Command="{Binding UndoCommand}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
-                                <dxb:BarButtonItem Content="Redo" Command="{Binding RedoCommand}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
-                                <dxb:BarButtonItem Content="Save Layout" Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" Glyph="{dx:DXImage Image=Save_16x16.png}" />
-                                <dxb:BarButtonItem Content="Reset Layout" Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
-                                <dxb:BarCheckItem Content="Cell Selection" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=SplitTableCells_32x32.png}" Glyph="{dx:DXImage Image=SplitTableCells_16x16.png}" />
-                                <dxb:BarItemSeparator />
-                                <dxb:BarButtonItem Content="Backward" Command="{Binding DataContext.DateBackwardCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" />
-                                <dxb:BarButtonItem Content="Forward" Command="{Binding DataContext.DateForwardCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}">
+                        <dxr:RibbonPage Caption="Live Estimate Progress">
+                            <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                            <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                            <dxr:RibbonPageGroup Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
+                            <dxr:RibbonPageGroup Caption="Data Date">
+                                <dxb:BarButtonItem Content="Backward" ToolTip="Rewind data date to previous interval" Command="{Binding DataContext.DateBackwardCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" />
+                                <!--<dxb:BarStaticItem Content="Data Date" />-->
+                                <dxb:BarStaticItem Content="{Binding DataContext.DataDate, ElementName=userControl}" />
+                                <dxb:BarButtonItem Content="Forward" ToolTip="Forward data date to next interval" Command="{Binding DataContext.DateForwardCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}">
                                     <dxb:BarButtonItem.GlyphTemplate>
                                         <DataTemplate>
                                             <Image RenderTransformOrigin="0.5,0.5" Source="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=dxb:BarItemLinkInfo}, Path=Item.LargeGlyph}">
@@ -35,10 +34,11 @@
                                         </DataTemplate>
                                     </dxb:BarButtonItem.GlyphTemplate>
                                 </dxb:BarButtonItem>
-                                <dxb:BarItemSeparator />
-                                <dxb:BarStaticItem Content="Data Date" />
-                                <dxb:BarStaticItem Content="{Binding DataContext.DataDate, ElementName=userControl}" />
-                                <dxb:BarButtonItem Content="Progress P6" Command="{Binding DataContext.PushToP6OriginalCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}" Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" />
+                            </dxr:RibbonPageGroup>
+                            <dxr:RibbonPageGroup Caption="Tools">
+                                <!--<dxb:BarButtonItem Content="Fix Status" Command="{Binding DataContext.FixDeliverablesStatusCommand, ElementName=userControl}" LargeGlyph="{dx:DXImageOffice2013 Image=Replace_32x32.png}" Glyph="{dx:DXImage Image=Replace_16x16.png}" />-->
+                                <dxb:BarButtonItem Content="Update % by Status" ToolTip="Bulk update all deliverables progress by it's status. Deliverables without statuses will be ignored. When deliverables status % is lower than current %, previous progresses will be reduced starting from previous interval." Command="{Binding DataContext.UpdateAllPercentagesByStatusCommand, ElementName=userControl}" LargeGlyph="{dx:DXImageOffice2013 Image=ClearFormatting_32x32.png}" Glyph="{dx:DXImage Image=ClearFormatting_16x16.png}" />
+                                <dxb:BarButtonItem Content="Progress P6" ToolTip="Update P6 earned units to current deliverables earned units." Command="{Binding DataContext.PushToP6OriginalCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}" Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -55,112 +55,117 @@
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSiteDirectProgress" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Bands>
                             <dxg:GridControlBand Header="General">
-                                <dxg:GridColumn Header="AREA" FieldName="ProgressItem.Area_Guid" ReadOnly="True">
+                                <dxg:GridColumn Header="Area" FieldName="ProgressItem.Area_Guid" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="SUBAREA" FieldName="ProgressItem.SubArea_Guid" ReadOnly="True" ColumnFilterMode="DisplayText">
+                                <dxg:GridColumn Header="Sub-Area" FieldName="ProgressItem.SubArea_Guid" ReadOnly="True" ColumnFilterMode="DisplayText">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="STOCK_GROUP" FieldName="ProgressItem.Stock_Group_Guid" ReadOnly="True" IsEnabled="False">
+                                <dxg:GridColumn Header="Stock Group" FieldName="ProgressItem.Stock_Group_Guid" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="DESCRIPTION" IsTextEditable="True" ItemsSource="{Binding DataContext.STOCK_GROUPCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="STOCK_CODE" FieldName="ProgressItem.Deliverable_Name" ReadOnly="True" IsEnabled="False" />
-                                <dxg:GridColumn Header="TOTAL_QUANTITY" FieldName="ProgressItem.Total_Quantity" ReadOnly="True" IsEnabled="False">
+                                <dxg:GridColumn Header="Stock Code" FieldName="ProgressItem.Deliverable_Name" ReadOnly="True" IsEnabled="False" />
+                                <dxg:GridColumn Header="Total Qty" FieldName="ProgressItem.Total_Quantity" HeaderToolTip="Estimated quantity + variation quantity" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="TIME PER QTY" FieldName="ProgressItem.UnitsPerQuantity" ReadOnly="True" IsEnabled="False">
+                                <dxg:GridColumn Header="Hours Per Qty" FieldName="ProgressItem.UnitsPerQuantity" HeaderToolTip="Required installation hours per quantity" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings DisplayTextConverter="{StaticResource HoursToTextConverter}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="REMAINING TIME" FieldName="ProgressItem.Remaining_Hours_To_Completion" ReadOnly="True" IsEnabled="False">
+                                <dxg:GridColumn Header="Remaining Hours" FieldName="ProgressItem.Remaining_Hours_To_Completion" HeaderToolTip="Remaining hours to completion" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings DisplayTextConverter="{StaticResource HoursToTextConverter}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="TOTAL_TRACK_QUANTITY" FieldName="ProgressItem.Trackable_Total_Quantity" ReadOnly="True" IsEnabled="False">
+                                <dxg:GridColumn Header="Total Trackable Qty" FieldName="ProgressItem.Trackable_Total_Quantity" HeaderToolTip="Only estimate items marked as trackable will be summed up here" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="UOM" FieldName="ProgressItem.UOM" ReadOnly="True" IsEnabled="False" />
+                                <dxg:GridColumn Header="UOM" FieldName="ProgressItem.UOM" HeaderToolTip="Unit of measure" ReadOnly="True" IsEnabled="False" />
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Period">
-                                <dxg:GridColumn Header="INSTALLED_QTY" FieldName="ProgressItem.CurrentPeriodInstalledQuantity" IsEnabled="False">
+                                <dxg:GridColumn Header="Intalled Qty" FieldName="ProgressItem.CurrentPeriodInstalledQuantity" HeaderToolTip="Installed quantity for this period" IsEnabled="False">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding RowData.Row.ProgressItem.MaxCurrentQuantity}" MinValue="0" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="CURRENT_HOURS" FieldName="ProgressItem.Earned_Units_OnDataDate" IsEnabled="False">
+                                <dxg:GridColumn Header="Earned Hours" FieldName="ProgressItem.Earned_Units_OnDataDate" HeaderToolTip="Earned installation hours for this period" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="CURRENT_INSTALL_COSTS" FieldName="ProgressItem.Earned_Install_Costs_OnDataDate" IsEnabled="False">
+                                <dxg:GridColumn Header="Earned Install Costs" FieldName="ProgressItem.Earned_Install_Costs_OnDataDate" HeaderToolTip="Earned installation costs for this period" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="CURRENT_SUPPLY_COSTS" FieldName="ProgressItem.Earned_Supply_Costs_OnDataDate" IsEnabled="False">
+                                <dxg:GridColumn Header="Earned Supply Costs" FieldName="ProgressItem.Earned_Supply_Costs_OnDataDate" HeaderToolTip="Earned supply costs for this period" IsEnabled="False">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Total Earned Costs" FieldName="ProgressItem.Earned_Total_Costs_OnDataDate" HeaderToolTip="Total earned costs for this period" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Totals">
-                                <dxg:GridColumn Header="PLANNED_QTY" FieldName="ProgressItem.Schedule_Estimated_Quantity" IsEnabled="False">
+                                <dxg:GridColumn Header="Planned Qty" FieldName="ProgressItem.Schedule_Estimated_Quantity" HeaderToolTip="Planned quantity to date as per schedule" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="TOTAL_INSTALLED_QTY" FieldName="ProgressItem.AbsoluteTotalInstalledQuantity" IsEnabled="False">
+                                <dxg:GridColumn Header="Total Installed Qty" FieldName="ProgressItem.AbsoluteTotalInstalledQuantity" HeaderToolTip="Total Installed quantity to date" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="TOTAL_INSTALL_HOURS" FieldName="ProgressItem.Total_Units" ReadOnly="True" IsEnabled="False">
+                                <dxg:GridColumn Header="Total Installed Hours" FieldName="ProgressItem.Total_Units" HeaderToolTip="Total earned installation hours to date" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="TOTAL_INSTALL_COSTS" FieldName="ProgressItem.Total_Install_Cost" ReadOnly="True" IsEnabled="False">
+                                <dxg:GridColumn Header="Total Installed Costs" FieldName="ProgressItem.Total_Install_Cost" HeaderToolTip="Total earned installation costs to date" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="TOTAL_SUPPLY_COSTS" FieldName="ProgressItem.Total_Supply_Cost" ReadOnly="True" IsEnabled="False">
+                                <dxg:GridColumn Header="Total Supplied Costs" FieldName="ProgressItem.Total_Supply_Cost" HeaderToolTip="Total earned supply costs to date" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="TOTAL_COST" FieldName="ProgressItem.Total_Cost" ReadOnly="True" IsEnabled="False">
+                                <dxg:GridColumn Header="Total Costs" FieldName="ProgressItem.Total_Cost" HeaderToolTip="Total costs to date" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Productivity">
-                                <dxg:GridColumn Header="CURRENT_PRODUCTIVITY" FieldName="ProgressItem.Current_Productivity" IsEnabled="False">
+                                <dxg:GridColumn Header="Current Productivity" FieldName="ProgressItem.Current_Productivity" HeaderToolTip="Productivity is calculated as [current earned quantity / schedule planned quantity]" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="OVERRIDE_PRODUCTIVITY" FieldName="ProgressItem.Override_Productivity">
+                                <dxg:GridColumn Header="Override Productivity" FieldName="ProgressItem.Override_Productivity" HeaderToolTip="By default current productivity will be used to forecast end date for P6 schedule activity. Use 1 for planned productivity in case schedule is too pessimistic. After productivity is set it is necessary to push progress to P6 then press F9 on P6 to produce the new forecasted end date then Close and reopen this view to obtain the newly calculated forecast end date">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="0.1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" NullValueButtonPlacement="EditBox" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="REMAINING_PRODUCTIVITY" FieldName="ProgressItem.Remaining_Productivity" IsEnabled="False">
+                                <dxg:GridColumn Header="Remaining Productivity" FieldName="ProgressItem.Remaining_Productivity" HeaderToolTip="Productivity required to finish project on time. Only critical items will have a value" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="0.1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" NullValueButtonPlacement="EditBox" />
                                     </dxg:GridColumn.EditSettings>
@@ -172,107 +177,117 @@
                                 <dxg:GridControl x:Name="gridControlChild">
                                     <dxg:GridControl.Bands>
                                         <dxg:GridControlBand Header="General">
-                                            <dxg:GridColumn Header="AREA" ReadOnly="True" Binding="{Binding Area_Guid}">
+                                            <dxg:GridColumn Header="Area" ReadOnly="True" Binding="{Binding Area_Guid}">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" ValueMember="GUID" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Header="SUBAREA" ReadOnly="True" Binding="{Binding SubArea_Guid}" ColumnFilterMode="DisplayText">
+                                            <dxg:GridColumn Header="Sub-Area" ReadOnly="True" Binding="{Binding SubArea_Guid}" ColumnFilterMode="DisplayText">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Header="STOCK_GROUP" ReadOnly="True" Binding="{Binding Stock_Group_Guid}" IsEnabled="False">
+                                            <dxg:GridColumn Header="Stock Group" ReadOnly="True" Binding="{Binding Stock_Group_Guid}" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="DESCRIPTION" IsTextEditable="True" ItemsSource="{Binding DataContext.STOCK_GROUPCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Header="STOCK_CODE" ReadOnly="True" Binding="{Binding Deliverable_Name}" IsEnabled="False" />
-                                            <dxg:GridColumn Header="TOTAL_QUANTITY" ReadOnly="True" Binding="{Binding Total_Quantity}" IsEnabled="False">
+                                            <dxg:GridColumn Header="Stock Code" ReadOnly="True" Binding="{Binding Deliverable_Name}" IsEnabled="False" />
+                                            <dxg:GridColumn Header="Total Qty" HeaderToolTip="Estimated quantity + variation quantity" ReadOnly="True" Binding="{Binding Total_Quantity}" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Header="TIME PER QTY" ReadOnly="True" Binding="{Binding UnitsPerQuantity}" IsEnabled="False">
+                                            <dxg:GridColumn Header="Hours Per Qty" HeaderToolTip="Required installation hours per quantity" ReadOnly="True" Binding="{Binding UnitsPerQuantity}" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:TextEditSettings DisplayTextConverter="{StaticResource HoursToTextConverter}" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Header="REMAINING TIME" ReadOnly="True" Binding="{Binding Remaining_Hours_To_Completion}" IsEnabled="False">
+                                            <dxg:GridColumn Header="Remaining Hours" HeaderToolTip="Remaining hours to completion" ReadOnly="True" Binding="{Binding Remaining_Hours_To_Completion}" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:TextEditSettings DisplayTextConverter="{StaticResource HoursToTextConverter}" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Header="TOTAL_TRACK_QUANTITY" ReadOnly="True" Binding="{Binding Trackable_Total_Quantity}" IsEnabled="False">
+                                            <dxg:GridColumn Header="Total Trackable Qty" HeaderToolTip="Only estimate items marked as trackable will be summed up here" ReadOnly="True" Binding="{Binding Trackable_Total_Quantity}" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Header="UOM" ReadOnly="True" Binding="{Binding UOM}" IsEnabled="False" />
+                                            <dxg:GridColumn Header="UOM" HeaderToolTip="Unit of measure" ReadOnly="True" Binding="{Binding UOM}" IsEnabled="False" />
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Period">
-                                            <dxg:GridColumn Header="INSTALLED_QTY" Binding="{Binding CurrentPeriodInstalledQuantity}" IsEnabled="False">
+                                            <dxg:GridColumn Header="Installed Qty" HeaderToolTip="Installed quantity for this period" Binding="{Binding CurrentPeriodInstalledQuantity}" IsEnabled="False">
                                                 <dxg:GridColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding RowData.Row.MaxCurrentQuantity}" MinValue="0" />
                                                     </DataTemplate>
                                                 </dxg:GridColumn.CellTemplate>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Header="CURRENT_HOURS" Binding="{Binding Earned_Units_OnDataDate}" IsEnabled="False">
+                                            <dxg:GridColumn Header="Earned Hours" HeaderToolTip="Earned installation hours for this period" Binding="{Binding Earned_Units_OnDataDate}" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Header="CURRENT_INSTALL_COSTS" Binding="{Binding Earned_Install_Costs_OnDataDate}" IsEnabled="False">
+                                            <dxg:GridColumn Header="Earned Install Costs" HeaderToolTip="Earned installation costs for this period" Binding="{Binding Earned_Install_Costs_OnDataDate}" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Header="CURRENT_SUPPLY_COSTS" Binding="{Binding Earned_Supply_Costs_OnDataDate}" IsEnabled="False">
+                                            <dxg:GridColumn Header="Earned Supply Costs" HeaderToolTip="Earned supply costs for this period" Binding="{Binding Earned_Supply_Costs_OnDataDate}" IsEnabled="False">
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
+                                            <dxg:GridColumn Header="Total Earned Costs" HeaderToolTip="Total earned costs for this period" Binding="{Binding Earned_Total_Costs_OnDataDate}" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Totals">
-                                            <dxg:GridColumn Header="PLANNED_QTY" Binding="{Binding Schedule_Estimated_Quantity}" IsEnabled="False">
+                                            <dxg:GridColumn Header="Planned Qty" HeaderToolTip="Planned quantity to date as per schedule" ReadOnly="True" Binding="{Binding Schedule_Estimated_Quantity}" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Header="TOTAL_INSTALLED_QTY" Binding="{Binding AbsoluteTotalInstalledQuantity}" IsEnabled="False">
+                                            <dxg:GridColumn Header="Total Installed Qty" HeaderToolTip="Total Installed quantity to date" ReadOnly="True" Binding="{Binding AbsoluteTotalInstalledQuantity}" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Header="TOTAL_INSTALL_HOURS" ReadOnly="True" Binding="{Binding Total_Units}" IsEnabled="False">
+                                            <dxg:GridColumn Header="Total Installed Hours" ReadOnly="True" Binding="{Binding Total_Units}" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Header="TOTAL_INSTALL_COSTS" ReadOnly="True" Binding="{Binding Total_Install_Cost}" IsEnabled="False">
+                                            <dxg:GridColumn Header="Total Installed Costs" HeaderToolTip="Total earned installation costs to date" ReadOnly="True" Binding="{Binding Total_Install_Cost}" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Header="TOTAL_SUPPLY_COSTS" ReadOnly="True" Binding="{Binding Total_Supply_Cost}" IsEnabled="False">
+                                            <dxg:GridColumn Header="Total Supplied Costs" HeaderToolTip="Total earned supply costs to date" ReadOnly="True" Binding="{Binding Total_Supply_Cost}" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Header="TOTAL_COST" ReadOnly="True" Binding="{Binding Total_Cost}" IsEnabled="False">
+                                            <dxg:GridColumn Header="Total Costs" FieldName="ProgressItem.Total_Cost" HeaderToolTip="Total costs to date" ReadOnly="True" Binding="{Binding Total_Cost}" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Productivity">
-                                            <dxg:GridColumn Header="CURRENT_PRODUCTIVITY" Binding="{Binding Current_Productivity}" IsEnabled="False">
+                                            <dxg:GridColumn Header="Current Productivity" HeaderToolTip="Productivity is calculated as [current earned quantity / schedule planned quantity]" Binding="{Binding Current_Productivity}" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Header="OVERRIDE_PRODUCTIVITY" Binding="{Binding Override_Productivity}">
+                                            <dxg:GridColumn Header="Override Productivity" HeaderToolTip="By default current productivity will be used to forecast end date for P6 schedule activity. Use 1 for planned productivity in case schedule is too pessimistic. After productivity is set it is necessary to push progress to P6 then press F9 on P6 to produce the new forecasted end date then Close and reopen this view to obtain the newly calculated forecast end date" Binding="{Binding Override_Productivity}">
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:SpinEditSettings Increment="0.1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" NullValueButtonPlacement="EditBox" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
+                                            <dxg:GridColumn Header="Remaining Productivity" HeaderToolTip="Productivity required to finish project on time. Only critical items will have a value" Binding="{Binding Remaining_Productivity}" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Increment="0.1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" NullValueButtonPlacement="EditBox" />
                                                 </dxg:GridColumn.EditSettings>
@@ -304,12 +319,9 @@
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" IsDetailButtonVisibleBinding="{Binding Row.IsExpandable}" Style="{StaticResource DefaultTableViewTemplate}">
                                 <dxg:TableView.RowCellMenuCustomizations>
-                                    <dxb:BarButtonItem Content="Copy With Headers" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Bulk Edit" Command="{Binding View.DataContext.BulkColumnEditCommand}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Content="Fill Up" Command="{Binding View.DataContext.FillUpCommand}" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Content="Fill Down" Command="{Binding View.DataContext.FillDownCommand}" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                    <dxb:BarButtonItem Content="Delete Row" Command="{Binding View.DataContext.BulkDeleteCommand}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                    <dxb:BarItemLinkSeparator />
+                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>

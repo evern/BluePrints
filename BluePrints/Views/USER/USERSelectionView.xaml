@@ -1,22 +1,8 @@
-﻿<UserControl x:Class="BluePrints.Views.USERSelectionView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
-             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
-             xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
-             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
-             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
-             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
-             xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
-             mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300">
+﻿<UserControl x:Class="BluePrints.Views.USERSelectionView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" d:DesignHeight="300" d:DesignWidth="300" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -29,23 +15,20 @@
             <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group">
                 <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSelectionUSER" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource BasicGridControlTemplate}">
                     <dxg:GridControl.Columns>
-                        <dxg:GridColumn FieldName="NAME" />
-                        <dxg:GridColumn FieldName="FIRST_NAME" />
-                        <dxg:GridColumn FieldName="LAST_NAME" />
-                        <dxg:GridColumn FieldName="DEPARTMENT" />
-                        <dxg:GridColumn FieldName="TITLE" />
-                        <dxg:GridColumn FieldName="DESCRIPTION" />
-                        <dxg:GridColumn Header="ROLE" FieldName="GUID_ROLE">
+                        <dxg:GridColumn Header="Login Name" FieldName="NAME" />
+                        <dxg:GridColumn Header="First Name" FieldName="FIRST_NAME" />
+                        <dxg:GridColumn Header="Last Name" FieldName="LAST_NAME" />
+                        <dxg:GridColumn Header="Department" FieldName="DEPARTMENT" />
+                        <dxg:GridColumn Header="Title" FieldName="TITLE" />
+                        <dxg:GridColumn Header="Description" FieldName="DESCRIPTION" />
+                        <dxg:GridColumn Header="Role" FieldName="GUID_ROLE">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings
-                                    ItemsSource="{Binding DataContext.LookUpROLES.Entities, ElementName=userControl}"
-                                    IsTextEditable="False" DisplayMember="NAME" ValueMember="GUID" />
+                                <dxe:ComboBoxEditSettings DisplayMember="NAME" IsTextEditable="False" ItemsSource="{Binding DataContext.LookUpROLES.Entities, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.View>
-                        <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}"
-                                       AllowEditing="False" NewItemRowPosition="None" />
+                        <dxg:TableView x:Name="tableView" AllowEditing="False" NewItemRowPosition="None" Style="{StaticResource DefaultTableViewTemplate}" />
                     </dxg:GridControl.View>
                 </custom:GridControlEx>
             </dxlc:LayoutGroup>

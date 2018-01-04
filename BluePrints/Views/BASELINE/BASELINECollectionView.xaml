@@ -46,14 +46,14 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlBASELINE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="Name" FieldName="NAME" />
-                            <dxg:GridColumn Header="Revision" FieldName="REVISION" />
+                            <dxg:GridColumn Header="Name" FieldName="NAME" HeaderToolTip="Unique name" />
+                            <dxg:GridColumn Header="Revision" FieldName="REVISION" HeaderToolTip="Unique revision" />
                             <dxg:GridColumn Header="Comments" FieldName="COMMENTS" />
-                            <dxg:GridColumn Header="Actual Units" FieldName="ACTUAL_UNITS">
+                            <!--<dxg:GridColumn Header="Actual Units" FieldName="ACTUAL_UNITS">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="10" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
+                            </dxg:GridColumn>-->
                             <dxg:GridColumn Header="Budgeted Units" FieldName="BUDGETED_UNITS" HeaderToolTip="Keying in budgeted unit here will restrict maximum units allowed in deliverables">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="10" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
@@ -64,7 +64,7 @@
                                     <dxe:CheckEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>-->
-                            <dxg:GridColumn Header="Status" FieldName="STATUS">
+                            <dxg:GridColumn Header="Status" FieldName="STATUS" HeaderToolTip="[Live] will allow quick access to content via navigation menu. [Working] signifies upcoming revision. [Superseded] signifies outdated version">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:BaselineStatus}}" />
                                 </dxg:GridColumn.EditSettings>

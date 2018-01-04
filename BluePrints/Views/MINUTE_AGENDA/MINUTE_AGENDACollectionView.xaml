@@ -184,7 +184,6 @@
                                 <dxb:BarButtonItem Content="Insert After" Command="{Binding DataContext.MINUTE_TITLECollectionViewModelWrapper.AddRowAfterCommand, ElementName=userControl}" LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" />
                                 <dxb:BarItemSeparator />
                                 <dxb:BarButtonItem Content="Show All Agendas" Command="{Binding DataContext.ShowAllAgendasCommand, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=ClearFilter_32x32.png}" Glyph="{dx:DXImage Image=ClearFilter_16x16.png}" />
-
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Reporting">
                                 <dxb:BarButtonItem Content="Edit Report" Command="{Binding DataContext.EditReportCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
