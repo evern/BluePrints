@@ -21,9 +21,11 @@
         <dxb:BarButtonItem Content="Fill Up" ToolTip="Replicate column values for selected rows starting from last selection" Command="{Binding View.DataContext.FillUpCommand}" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" Name="contextMenuFillUp" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
         <dxb:BarButtonItem Content="Fill Down" ToolTip="Replicate column values for selected rows starting from first selection" Command="{Binding View.DataContext.FillDownCommand}" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" Name="contextMenuFillDown" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
     </collections:ArrayList>
-    <collections:ArrayList x:Key="ContextMenuDefaultDeliverablesButtons">
+    <collections:ArrayList x:Key="ContextMenuDefaultPopulateReplaceButtons">
         <dxb:BarButtonItem Content="Populate" ToolTip="Auto generate selected column values based on known variables" Command="{Binding DataContext.AutoPopulateCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=PictureShapeFillColor_16x16.png}" Name="contextMenuPopulate" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
         <dxb:BarButtonItem Content="Find and Replace" ToolTip="Replace characters found in selected columns to new values" Command="{Binding DataContext.FindReplaceCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=Replace_16x16.png}" Name="contextFindReplace" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+    </collections:ArrayList>
+    <collections:ArrayList x:Key="ContextMenuDuplicateInsertButtons">
         <dxb:BarButtonItem Content="Duplicate" ToolTip="Duplicate selected deliverables and assign the same internal number" Command="{Binding DataContext.DuplicateCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" x:Name="contextMenuDuplicate" />
         <dxb:BarButtonItem Content="Insert" ToolTip="Insert new deliverables with continuing internal number affix. Also renames deliverables with internal number larger than the largest internal number affix to continue from the newly inserted deliverables" Command="{Binding DataContext.InsertCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" x:Name="contextMenuInsert" />
     </collections:ArrayList>

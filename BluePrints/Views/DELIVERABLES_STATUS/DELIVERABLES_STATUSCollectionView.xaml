@@ -32,27 +32,27 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlDELIVERABLE_STATUS" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="Name" HeaderToolTip="Name of the status" />
+                            <dxg:GridColumn Header="Name" FieldName="NAME" HeaderToolTip="Name of the status" />
                             <dxg:GridColumn Header="Document Type" FieldName="GUID_DOCTYPE" HeaderToolTip="Document type which status can be chosen from">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Maximum Percentage" HeaderToolTip="Maximum allowed percentage for this status">
+                            <dxg:GridColumn Header="Maximum Percentage" FieldName="MAX_PERCENTAGE" HeaderToolTip="Maximum allowed percentage for this status">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="0.1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Auto Percentage" HeaderToolTip="Percentage that will be automatically assigned when status is assigned in progress">
+                            <dxg:GridColumn Header="Auto Percentage" FieldName="AUTO_PERCENTAGE" HeaderToolTip="Percentage that will be automatically assigned when status is assigned in progress">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:SpinEdit Name="PART_Editor" Increment="0.1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="For Deliverable" HeaderToolTip="Can this status be chosen for deliverable type of 'Deliverable'?" />
-                            <dxg:GridColumn FieldName="For Task" HeaderToolTip="Can this status be chosen for deliverable type of 'Task'?" />
-                            <dxg:GridColumn FieldName="For NCR" HeaderToolTip="Can this status be chosen for deliverable type of 'NCR'?" />
+                            <dxg:GridColumn Header="For Deliverable" FieldName="FOR_DELIVERABLE" HeaderToolTip="Can this status be chosen for deliverable type of 'Deliverable'?" />
+                            <dxg:GridColumn Header="For Task" FieldName="FOR_TASK" HeaderToolTip="Can this status be chosen for deliverable type of 'Task'?" />
+                            <dxg:GridColumn Header="For NCR" FieldName="FOR_NCR" HeaderToolTip="Can this status be chosen for deliverable type of 'NCR'?" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
