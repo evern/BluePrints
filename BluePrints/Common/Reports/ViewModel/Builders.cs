@@ -105,6 +105,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     return;
 
                 List<DateTime> alignedDataDates = ChronologicalHelpers.GenerateAlignedDatesCollection(FirstAlignedDataDate, jobTransactionsList.Max(x => x.TRANSDATE).Value, ReportingInterval);
+                HashSet<string> missingSubJobs = new HashSet<string>();
                 foreach (var jobTransaction in jobTransactionsList)
                 {
                     if (qualifiedSubjobs.Contains(jobTransaction.JOBCODE))
@@ -130,12 +131,15 @@ namespace BluePrints.Common.ViewModel.Reporting
                         actualDataPoints.Add(actualDataPoint);
                     }
                     else
-                    {
-                        SUBJOB newSUBJOB = new SUBJOB();
-                        newSUBJOB.INTERNAL_NAME1 = jobTransaction.JOBCODE;
-                        newSUBJOB.MissingQuantity = Convert.ToDecimal(jobTransactionsList.Where(x => x.JOBCODE == jobTransaction.JOBCODE && x.QUANTITY != null).Sum(x => x.QUANTITY));
-                        projectSummaryStats.AddMissingExoSubjob(newSUBJOB);
-                    }
+                        missingSubJobs.Add(jobTransaction.JOBCODE);
+                }
+
+                foreach(string missingSubJob in missingSubJobs)
+                {
+                    SUBJOB newSUBJOB = new SUBJOB();
+                    newSUBJOB.INTERNAL_NAME1 = missingSubJob;
+                    newSUBJOB.MissingQuantity = Convert.ToDecimal(jobTransactionsList.Where(x => x.JOBCODE == missingSubJob && x.QUANTITY != null).Sum(x => x.QUANTITY));
+                    projectSummaryStats.AddMissingExoSubjob(newSUBJOB);
                 }
 
                 projectSummaryStats.Burned = new Stats(summaryObject);

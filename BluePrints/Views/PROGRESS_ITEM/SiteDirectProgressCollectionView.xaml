@@ -22,7 +22,7 @@
                             <dxr:RibbonPageGroup Caption="Data Date">
                                 <dxb:BarButtonItem Content="Backward" ToolTip="Rewind data date to previous interval" Command="{Binding DataContext.DateBackwardCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" />
                                 <!--<dxb:BarStaticItem Content="Data Date" />-->
-                                <dxb:BarStaticItem Content="{Binding DataContext.DataDate, ElementName=userControl}" />
+                                <dxb:BarStaticItem Content="{Binding DataContext.DataDate, ElementName=userControl}" ToolTip="Data date" />
                                 <dxb:BarButtonItem Content="Forward" ToolTip="Forward data date to next interval" Command="{Binding DataContext.DateForwardCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}">
                                     <dxb:BarButtonItem.GlyphTemplate>
                                         <DataTemplate>

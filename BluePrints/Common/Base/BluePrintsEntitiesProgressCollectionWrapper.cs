@@ -333,7 +333,7 @@ namespace BluePrints.Common.Base
                 if (loadPROGRESS == null || loadPROGRESS.DATA_DATE == null)
                     return string.Empty;
 
-                return loadPROGRESS.DATA_DATE.ToString("g");
+                return loadPROGRESS.DATA_DATE.ToString("dd-MMM-yy");
             }
         }
 

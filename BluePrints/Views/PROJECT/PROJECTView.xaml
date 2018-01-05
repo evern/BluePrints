@@ -27,15 +27,16 @@
                             <dxr:RibbonPage Caption="Project">
                                 <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                                 <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                                <dxr:RibbonPageGroup Caption="Data Date">
+                                    <!--<dxb:BarStaticItem Content="Data Date" />-->
+                                    <dxb:BarStaticItem Content="{Binding DataContext.DataDate, ElementName=userControl}" ToolTip="Data date" />
+                                </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup Caption="Tools">
                                     <dxb:BarButtonItem Content="Calculate Stats" ToolTip="Recalculate stats from P6. Must be performed after pressing F9 in P6" Command="{Binding DataContext.Refresh_From_P6Command, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" Glyph="{dx:DXImage Image=Reset2_16x16.png}" />
                                     <!--<dxb:BarCheckItem Content="Auto Refresh" IsChecked="{Binding DataContext.DoNotAutoRefresh, ElementName=userControl, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />-->
                                     <dxb:BarButtonItem Content="P6 Issues" ToolTip="Shows any invalid mappings because activity isn't found on P6" Command="{Binding DataContext.ShowP6ErrorsCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" />
                                     <dxb:BarButtonItem Content="Exo Issues" ToolTip="Shows any subjobs in exo that isn't available in blueprints" Command="{Binding DataContext.ShowExoErrorsCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Save Layout" Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" Glyph="{dx:DXImage Image=Save_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Reset Layout" Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" />
-                                    <dxb:BarCheckItem Content="Cell Selection" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=SplitTableCells_32x32.png}" Glyph="{dx:DXImage Image=SplitTableCells_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Export to PDF" Command="{Binding DataContext.ExportToPDFCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=ExportToPDF_32x32.png}" Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Export" ToolTip="Export S-Curve to PDF" Command="{Binding DataContext.ExportToPDFCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=ExportToPDF_32x32.png}" Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" />
                                 </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup Caption="Data">
                                     <dxb:BarButtonItem Content="Area" ToolTip="View all project areas" Command="{Binding DataContext.EditAreaCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Web_32x32.png}" Glyph="{dx:DXImage Image=Web_16x16.png}" />

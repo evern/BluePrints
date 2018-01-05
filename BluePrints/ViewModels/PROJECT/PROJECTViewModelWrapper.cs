@@ -722,6 +722,23 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
+
+        public string DataDate
+        {
+            get
+            {
+                var collection = GetEntities<PROGRESS>();
+
+                PROGRESS livePROGRESS = null;
+                if (collection != null)
+                    livePROGRESS = collection.FirstOrDefault(x => x.STATUS == ProgressStatus.Live);
+
+                if(livePROGRESS != null)
+                    return livePROGRESS.DATA_DATE.ToString("dd-MMM-yy");
+
+                return string.Empty;
+            }
+        }
         #endregion
     }
 }
