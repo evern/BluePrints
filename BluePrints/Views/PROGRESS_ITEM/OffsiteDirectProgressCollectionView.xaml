@@ -286,17 +286,17 @@
                         <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Milestones}">
                             <dxg:GridControl x:Name="gridControlChild">
                                 <dxg:GridControl.Columns>
-                                    <dxg:GridColumn Header="Required Percentage" FieldName="Percentage" ReadOnly="True">
+                                    <dxg:GridColumn Header="Required Percentage" FieldName="Percentage" HeaderToolTip="Percentage required based on maped activity P6 schedule" ReadOnly="True">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings DisplayFormat="p2" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="On Date" FieldName="DueDate" ReadOnly="True">
+                                    <dxg:GridColumn Header="On Date" FieldName="DueDate" HeaderToolTip="Percentage required on date based on maped activity in P6 schedule" ReadOnly="True">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:DateEditSettings />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="P6 Activity" FieldName="Milestone" ReadOnly="True" Width="300" />
+                                    <dxg:GridColumn Header="P6 Activity" FieldName="Milestone" HeaderToolTip="P6 activity name for the required percentage" ReadOnly="True" Width="300" />
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.View>
                                     <dxg:TableView x:Name="tableView1" AllowEditing="False" Style="{StaticResource DefaultDetailTableViewTemplate}">
