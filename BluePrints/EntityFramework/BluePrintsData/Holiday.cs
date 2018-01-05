@@ -12,6 +12,8 @@ namespace BluePrints.Data
         [Key]
         public Guid GUID { get; set; }
 
+        public Guid GUID_PROJECT { get; set; }
+
         public DateTime HOLIDAY_DATE { get; set; }
 
         public DateTime CREATED { get; set; }
@@ -25,5 +27,7 @@ namespace BluePrints.Data
         public DateTime? DELETED { get; set; }
 
         public Guid? DELETEDBY { get; set; }
+
+        public virtual PROJECT PROJECT { get; set; }
     }
 }

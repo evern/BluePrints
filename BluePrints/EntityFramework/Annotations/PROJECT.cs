@@ -21,6 +21,7 @@ namespace BluePrints.Data
             STOCK_GROUP = new HashSet<STOCK_GROUP>();
             DELIVERABLES_STATUS = new HashSet<DELIVERABLES_STATUS>();
             ESTIMATION_DIRECT = new HashSet<ESTIMATION_DIRECT>();
+            HOLIDAY = new HashSet<HOLIDAY>();
             MEETING = new HashSet<MEETING>();
             MEETING_TYPE = new HashSet<MEETING_TYPE>();
             MINUTE_AGENDA = new HashSet<MINUTE_AGENDA>();

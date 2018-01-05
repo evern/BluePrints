@@ -1,4 +1,5 @@
 ﻿using BaseModel.DataModel;
+using BaseModel.Misc;
 using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
@@ -41,9 +42,11 @@ namespace BluePrints.ViewModels
 
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
+        private PROJECT loadPROJECT;
         protected override void resolveParameters(object parameter)
         {
+            var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
+            loadPROJECT = PROJECTParameter.GetEntity();
         }
 
         protected override void initializeEntitiesLoadersDescription()
@@ -59,11 +62,12 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<HOLIDAY>, IQueryable<HOLIDAY>> specifyMainViewModelProjection()
         {
-            return query => query.OrderBy(x => x.HOLIDAY_DATE);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.HOLIDAY_DATE);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<HOLIDAY> entities)
         {
+            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -107,6 +111,18 @@ namespace BluePrints.ViewModels
             get { return "HOLIDAYCollectionViewModelWrapper"; }
         }
 
+        #endregion
+
+        #region Collection Call Backs
+
+        /// <summary>
+        /// CallBack to apply global convention
+        /// </summary>
+        public bool OnBeforeEntitySaved(HOLIDAY entity)
+        {
+            entity.GUID_PROJECT = loadPROJECT.GUID;
+            return true;
+        }
         #endregion
     }
 }
