@@ -186,10 +186,10 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Var Install Cost" FieldName="Variation_Install_Hours" HeaderToolTip="Total variation hours required to install this stock item" ReadOnly="True" AllowSearchPanel="False">
+                                <dxg:GridColumn Header="Var Install Hours" FieldName="Variation_Install_Hours" HeaderToolTip="Total variation hours required to install this stock item" ReadOnly="True" AllowSearchPanel="False">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:TextEdit Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            <dxe:TextEdit Name="PART_Editor" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>

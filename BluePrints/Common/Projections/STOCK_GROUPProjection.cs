@@ -106,7 +106,7 @@ namespace BluePrints.Common.Projections
 
         public decimal Discipline_Number => throw new NotImplementedException();
 
-        public Guid? Workpack_Guid { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Guid? Workpack_Guid { get => null; set => throw new NotImplementedException(); }
         Guid? IDeliverable.Subjob_Guid { get; set; }
 
         public void SetOriginalEntityKey(Guid newGuid)
