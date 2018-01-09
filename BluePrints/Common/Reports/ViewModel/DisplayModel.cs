@@ -59,7 +59,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid? SubArea_Guid => ((IReportable)ProgressItem).SubArea_Guid;
 
-        public decimal Estimated_Units => ((IReportable)ProgressItem).Estimated_Units;
+        public decimal Budget_Units => ((IReportable)ProgressItem).Budget_Units;
 
         public decimal Total_Units => ((IReportable)ProgressItem).Total_Units;
 
@@ -67,7 +67,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal ItemRate => ((IReportable)ProgressItem).ItemRate;
 
-        public decimal Estimated_Costs => ((IReportable)ProgressItem).Estimated_Costs;
+        public decimal Budget_Costs => ((IReportable)ProgressItem).Budget_Costs;
 
         public decimal Variation_Costs => ((IReportable)ProgressItem).Variation_Costs;
 
@@ -249,13 +249,13 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid? SubArea_Guid => Reportable.SubArea_Guid;
 
-        public decimal Estimated_Units => Reportable.Estimated_Units;
+        public decimal Budget_Units => Reportable.Budget_Units;
 
         public decimal Total_Units => Reportable.Total_Units;
 
         public decimal ItemRate => Reportable.ItemRate;
 
-        public decimal Estimated_Costs => Reportable.Estimated_Costs;
+        public decimal Budget_Costs => Reportable.Budget_Costs;
 
         public decimal TotalCosts => Reportable.Total_Costs;
 

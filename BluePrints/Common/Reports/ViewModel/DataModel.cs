@@ -516,7 +516,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             List<VariationAdjustment> currentProgressItemAdjustments = variation_adjustments.Where(x => x.DeliverableOriginalGuid == entity.OriginalEntityKey).ToList();
 
             PartialStatsBuilder partialStatsBuilder = new PartialStatsBuilder(PROJECT.CURRENCYCONVERSION);
-            Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, entity.Estimated_Units, entity.Total_Units, entity.Estimated_Costs, entity.Total_Costs, currentProgressItemAdjustments);
+            Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, entity.Budget_Units, entity.Total_Units, entity.Budget_Costs, entity.Total_Costs, currentProgressItemAdjustments);
             statsSummarizer = new SingleObjectSummarizer(this, partialStatsBuilder);
         }
 
@@ -549,7 +549,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid? SubArea_Guid => Entity.SubArea_Guid;
 
-        public decimal Estimated_Units => Entity.Estimated_Units;
+        public decimal Budget_Units => Entity.Budget_Units;
 
         public virtual decimal Total_Units => Entity.Total_Units;
 
@@ -561,7 +561,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public virtual IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_AfterDataDate => PROGRESS_ITEMS.Where(y => y.EARNED_DATE > ReportingDataDate);
 
-        public decimal Baseline_Percentage => Estimated_Units == 0 ? 0 : (Earned_Units_ToDate / Estimated_Units);
+        public decimal Baseline_Percentage => Budget_Units == 0 ? 0 : (Earned_Units_ToDate / Budget_Units);
 
         public decimal Total_Percentage_ToDate => Total_Units == 0 ? 0 : (Earned_Units_ToDate / Total_Units);
 
@@ -811,7 +811,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal ItemRate => Entity.ItemRate;
 
-        public decimal Estimated_Costs => Entity.Estimated_Costs;
+        public decimal Budget_Costs => Entity.Budget_Costs;
 
         public decimal Variation_Costs => Entity.Variation_Costs;
 

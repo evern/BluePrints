@@ -155,7 +155,7 @@
                                 <dxe:CheckEditSettings />
                             </custom:GridColumnEx.EditSettings>
                         </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Estimated Hours" FieldName="Entity.Entity.ESTIMATED_HOURS" HeaderToolTip="Baseline hours" FilterPopupMode="CheckedList">
+                        <custom:GridColumnEx Header="Budget Hours" FieldName="Entity.Entity.ESTIMATED_HOURS" HeaderToolTip="Baseline hours" FilterPopupMode="CheckedList">
                             <custom:GridColumnEx.CellTemplate>
                                 <DataTemplate>
                                     <Grid>

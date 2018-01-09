@@ -797,7 +797,7 @@ namespace BluePrints.Common.Base
                 if (e.SummaryProcess == CustomSummaryProcess.Calculate)
                 {
                     var total_units = ((IReportable)e.Row).Total_Units;
-                    var baseline_units = ((IReportable)e.Row).Estimated_Units;
+                    var baseline_units = ((IReportable)e.Row).Budget_Units;
 
                     cumulative_total_units += total_units;
                     cumulative_baseline_units += baseline_units;

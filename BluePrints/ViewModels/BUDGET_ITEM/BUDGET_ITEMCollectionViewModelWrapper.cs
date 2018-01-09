@@ -621,7 +621,7 @@ namespace BluePrints.ViewModels
                     newProjection.Entity.Entity.GUID_VARIATION = null;
 
                     //when duplicated by variation this should be 0
-                    newProjection.Entity.Entity.ESTIMATED_QUANTITY = 0;
+                    newProjection.Entity.Entity.BUDGET_QUANTITY = 0;
 
                     newProjection.Entity.Entity.DC_QUANTITY = 0;
                     newProjection.Entity.Entity.PROGRESS_TYPE = Estimation_DirectProgressType.Standalone;
@@ -684,7 +684,7 @@ namespace BluePrints.ViewModels
         {
             string fieldName = DataUtils.FormatColumnFieldname(column_name);
             //estimated hours field is disabled but just in case
-            if (fieldName == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().ESTIMATED_QUANTITY))
+            if (fieldName == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().BUDGET_QUANTITY))
             {
                 if ((decimal)newValue < entity.MinEstimateQuantity)
                     return false;

@@ -22,7 +22,7 @@ namespace BluePrints.Common.Projections
 
         public string Commodity_Code => Entity.CODE;
 
-        public decimal Estimated_Units => Deliverables == null? 0 : Deliverables.Sum(x => x.Estimated_Units);
+        public decimal Budget_Units => Deliverables == null? 0 : Deliverables.Sum(x => x.Budget_Units);
 
         public decimal Total_Units => Deliverables == null ? 0 : Deliverables.Sum(x => x.Total_Units);
 
@@ -30,7 +30,7 @@ namespace BluePrints.Common.Projections
 
         public decimal Stock_Code_Supply_Rate => Deliverables == null ? 0 : Deliverables.Sum(x => x.Stock_Code_Supply_Rate);
 
-        public decimal Estimated_Costs => Deliverables == null ? 0 : Deliverables.Sum(x => x.Estimated_Costs);
+        public decimal Budget_Costs => Deliverables == null ? 0 : Deliverables.Sum(x => x.Budget_Costs);
 
         public decimal Total_Costs => Deliverables == null ? 0 : Deliverables.Sum(x => x.Total_Costs);
 
@@ -88,7 +88,7 @@ namespace BluePrints.Common.Projections
 
         public decimal Total_Supply_Cost => Deliverables == null || Deliverables.Count() == 0 ? 0 : Deliverables.Sum(x => x.Total_Supply_Cost);
 
-        public decimal Estimated_Install_Hours => Estimated_Units;
+        public decimal Estimated_Install_Hours => Budget_Units;
 
         public decimal Variation_Install_Hours => Variation_Units;
 

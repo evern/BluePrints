@@ -114,7 +114,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <param name="projectVariationAdjustments">Project variation adjustments that will be matched against each deliverable projection</param>
         /// <param name="progressItemHaveStats">Deliverable projection stats area already generated</param>
         public SummaryStats(IEnumerable<IReportable> progressItem, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<VariationAdjustment> projectVariationAdjustments)
-            : base(reporting_data_date, reporting_interval, first_aligned_data_date, progressItem.Sum(x => x.Estimated_Units), progressItem.Sum(x => x.Total_Units), progressItem.Sum(x => x.Estimated_Costs), progressItem.Sum(x => x.Total_Costs), projectVariationAdjustments)
+            : base(reporting_data_date, reporting_interval, first_aligned_data_date, progressItem.Sum(x => x.Budget_Units), progressItem.Sum(x => x.Total_Units), progressItem.Sum(x => x.Budget_Costs), progressItem.Sum(x => x.Total_Costs), projectVariationAdjustments)
         {
             Reportables = progressItem;
 

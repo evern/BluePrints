@@ -170,7 +170,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     public interface IHaveCosts
     {
         decimal ItemRate { get; }
-        decimal Estimated_Costs { get; }
+        decimal Budget_Costs { get; }
         decimal Variation_Costs { get; }
         decimal Total_Costs { get; }
     }
@@ -217,7 +217,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public interface IHaveHours
     {
-        decimal Estimated_Units { get; }
+        decimal Budget_Units { get; }
         decimal Total_Units { get; }
         decimal Variation_Units { get; }
     }

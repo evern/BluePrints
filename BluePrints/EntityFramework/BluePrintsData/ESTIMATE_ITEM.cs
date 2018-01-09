@@ -47,9 +47,9 @@ namespace BluePrints.Data
 
         public decimal? TRUCK_PERCENTAGE { get; set; }
 
-        public decimal ESTIMATED_QUANTITY { get; set; }
+        public decimal ESTIMATE_QUANTITY { get; set; }
 
-        public decimal BUDGETED_QUANTITY { get; set; }
+        public decimal BUDGET_QUANTITY { get; set; }
 
         public decimal DC_QUANTITY { get; set; }
 

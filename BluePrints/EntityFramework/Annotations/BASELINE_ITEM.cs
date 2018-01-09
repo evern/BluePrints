@@ -263,7 +263,7 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public decimal Estimated_Units
+        public decimal Budget_Units
         {
             get
             {

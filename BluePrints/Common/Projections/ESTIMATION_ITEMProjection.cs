@@ -123,9 +123,9 @@ namespace BluePrints.Common.Projections
 
         public Guid? SubArea_Guid => Entity.GUID_SUBAREA;
 
-        public decimal Total_Units_IncludingByDuration => Estimated_Units;
+        public decimal Total_Units_IncludingByDuration => Budget_Units;
 
-        public decimal Estimated_Units => Entity.STOCK_CODE == null ? STOCK_CODE == null ? 0 : STOCK_CODE.HOURS_INSTALL * Entity.ESTIMATED_QUANTITY : Entity.ESTIMATED_QUANTITY * Entity.STOCK_CODE.HOURS_INSTALL;
+        public decimal Budget_Units => Entity.STOCK_CODE == null ? STOCK_CODE == null ? 0 : STOCK_CODE.HOURS_INSTALL * Entity.BUDGET_QUANTITY : Entity.BUDGET_QUANTITY * Entity.STOCK_CODE.HOURS_INSTALL;
 
         public decimal Total_Units => Entity.Total_Units;
 
@@ -133,15 +133,15 @@ namespace BluePrints.Common.Projections
 
         public void SetOriginalEntityKey(Guid newGuid) { }
 
-        public decimal ItemRate => Entity.ESTIMATE_INSTALL_RATE == null ? RATE == null || RATE.RATE1 == null ? 0 : (decimal)RATE.RATE1 : (decimal)Entity.ESTIMATE_INSTALL_RATE;
+        public decimal ItemRate => Entity.BUDGET_INSTALL_RATE == null ? RATE == null || RATE.RATE1 == null ? 0 : (decimal)RATE.RATE1 : (decimal)Entity.BUDGET_INSTALL_RATE;
 
-        public decimal Estimated_Costs => Estimated_Units * ItemRate;
+        public decimal Budget_Costs => Budget_Units * ItemRate;
 
         public decimal Total_Costs => Total_Install_Cost + Total_Freight_Cost + Total_Supply_Cost;
 
-        public decimal Estimated_Quantity => Entity.ESTIMATED_QUANTITY;
+        public decimal Estimated_Quantity => Entity.BUDGET_QUANTITY;
 
-        public decimal Total_Quantity => Entity.ESTIMATED_QUANTITY + Entity.DC_QUANTITY;
+        public decimal Total_Quantity => Entity.BUDGET_QUANTITY + Entity.DC_QUANTITY;
 
         public string UOM => STOCK_CODE == null ? string.Empty : STOCK_CODE.UOM;
 
@@ -181,7 +181,7 @@ namespace BluePrints.Common.Projections
 
         public Guid? Stock_Group_Guid => Entity.STOCK_GROUP == null ? Guid.Empty : Entity.STOCK_GROUP.GUID;
 
-        public decimal Estimated_Install_Cost => Estimated_Units * ItemRate;
+        public decimal Estimated_Install_Cost => Budget_Units * ItemRate;
 
         public decimal Variation_Install_Cost => Variation_Units * ItemRate;
 
@@ -193,11 +193,11 @@ namespace BluePrints.Common.Projections
 
         public decimal Total_Freight_Cost => Estimated_Freight_Cost + Variation_Freight_Cost;
 
-        public decimal Estimated_Install_Hours => Entity.Estimated_Units;
+        public decimal Estimated_Install_Hours => Entity.Budget_Units;
 
         public decimal Variation_Install_Hours => Entity.Variation_Units;
 
-        public decimal Total_Install_Hours => Entity.Estimated_Units;
+        public decimal Total_Install_Hours => Entity.Budget_Units;
 
         public decimal Estimated_Supply_Cost => Estimated_Quantity * Stock_Code_Supply_Rate;
 

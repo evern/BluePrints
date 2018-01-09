@@ -130,9 +130,9 @@ namespace BluePrints.Common.Projections
 
         public bool IsApproved => ApprovedDate != null;
 
-        public decimal Total_Units => IsByDuration ? 0 : (base.Entity.Estimated_Units + Variation_Units);
+        public decimal Total_Units => IsByDuration ? 0 : (base.Entity.Budget_Units + Variation_Units);
 
-        public virtual decimal Total_Cost => IsByDuration ? 0 : (base.Entity.Estimated_Units + Variation_Units) * base.Entity.ItemRate;
+        public virtual decimal Total_Cost => IsByDuration ? 0 : (base.Entity.Budget_Units + Variation_Units) * base.Entity.ItemRate;
 
         public virtual decimal Variation_Cost => IsByDuration ? 0 : Forecast_Units * base.Entity.ItemRate;
 
