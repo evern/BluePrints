@@ -60,14 +60,14 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<DOCTYPE, Guid> DOCTYPES { get; }
 
         /// <summary>
-        /// The ESTIMATION_DIRECT entities repository.
+        /// The ESTIMATE entities repository.
         /// </summary>
-        IRepository<ESTIMATION_DIRECT, Guid> ESTIMATION_DIRECTS { get; }
+        IRepository<ESTIMATE, Guid> ESTIMATES { get; }
 
         /// <summary>
-        /// The ESTIMATION_DIRECT_ITEM entities repository.
+        /// The ESTIMATE_ITEM entities repository.
         /// </summary>
-        IRepository<ESTIMATION_DIRECT_ITEM, Guid> ESTIMATION_DIRECT_ITEMS { get; }
+        IRepository<ESTIMATE_ITEM, Guid> ESTIMATE_ITEMS { get; }
 
         /// <summary>
         /// The HOLIDAY entities repository.

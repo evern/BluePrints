@@ -62,6 +62,13 @@ namespace BluePrints.Common
         [Display(Name = "Live")] Live = 2
     }
 
+    public enum EstimateStatus
+    {
+        [Display(Name = "Superseded")] Superseded = 0,
+        [Display(Name = "Live Estimate")] LiveEstimate = 1,
+        [Display(Name = "Live Budget")] LiveBudget = 2
+    }
+
     public enum DeliverableType
     {
         [Display(Name = "Deliverable")] Deliverable = 0,

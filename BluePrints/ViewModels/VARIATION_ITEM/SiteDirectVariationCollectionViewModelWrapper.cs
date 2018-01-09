@@ -27,7 +27,7 @@ namespace BluePrints.ViewModels
     /// </summary>
     public partial class SiteDirectVariationCollectionViewModelWrapper :
         BluePrintsEntitiesVariationCollectionWrapper
-        <ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProgress, ESTIMATION_DIRECT_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork>, ICollectionViewModelsWrapper<ESTIMATION_DIRECT_ITEMVariation>
+        <ESTIMATE_ITEM, ESTIMATE_ITEMProgress, ESTIMATE_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork>, ICollectionViewModelsWrapper<ESTIMATE_ITEMVariation>
     {
         /// <summary>
         /// Creates a new instance of VARIATION_ITEMSViewModelWrapper as a POCO view model.
@@ -39,29 +39,29 @@ namespace BluePrints.ViewModels
         }
 
         //have to implement this here because LINQ to entity doesn't support translating interface properties
-        protected override IQueryable<ESTIMATION_DIRECT_ITEM> BaseEntityQueryCallBack(IRepositoryQuery<ESTIMATION_DIRECT_ITEM> query)
+        protected override IQueryable<ESTIMATE_ITEM> BaseEntityQueryCallBack(IRepositoryQuery<ESTIMATE_ITEM> query)
         {
             if (loadVARIATION.APPROVED == null)
                 //When variation is not approved, retrieve current live deliverables and variation deliverables
-                return query.Where(x => (x.GUID_ESTIMATION_DIRECT == load_context_guid) || (x.GUID_VARIATION == variation_guid && x.GUID_ESTIMATION_DIRECT == null));
+                return query.Where(x => (x.GUID_ESTIMATE == load_context_guid) || (x.GUID_VARIATION == variation_guid && x.GUID_ESTIMATE == null));
             else
                 //When variation is approved, retrieve deliverables from variation connected baseline
-                return query.Where(x => x.GUID_ESTIMATION_DIRECT == variation_baseline_guid && x.GUID_VARIATION == variation_guid);
+                return query.Where(x => x.GUID_ESTIMATE == variation_baseline_guid && x.GUID_VARIATION == variation_guid);
         }
 
-        ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper;
-        protected override IDeliverableCollectionViewModelWrapper<ESTIMATION_DIRECT_ITEMProgress, ESTIMATION_DIRECT_ITEM> collectionViewModelWrapper
+        ESTIMATE_ITEMCollectionViewModelWrapper ESTIMATE_ITEMCollectionViewModelWrapper;
+        protected override IDeliverableCollectionViewModelWrapper<ESTIMATE_ITEMProgress, ESTIMATE_ITEM> collectionViewModelWrapper
         {
             get
             {
-                if (ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper == null)
+                if (ESTIMATE_ITEMCollectionViewModelWrapper == null)
                 {
-                    ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper = ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.Create();
-                    ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.SetParentViewModel(this);
+                    ESTIMATE_ITEMCollectionViewModelWrapper = ESTIMATE_ITEMCollectionViewModelWrapper.Create();
+                    ESTIMATE_ITEMCollectionViewModelWrapper.SetParentViewModel(this);
                 }
 
 
-                return ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper;
+                return ESTIMATE_ITEMCollectionViewModelWrapper;
             }
         }
 
@@ -70,10 +70,10 @@ namespace BluePrints.ViewModels
         protected override void StartCreatingMainViewModel()
         {
             collectionViewModelWrapper.DefaultPhaseInternalNumber = BluePrintsResources.Default_Design_Phase;
-            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECT_ITEMS);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.ESTIMATE_ITEMS);
         }
 
-        protected override Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ESTIMATION_DIRECT_ITEMVariation>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<ESTIMATE_ITEMVariation>> specifyMainViewModelProjection()
         {
             IEnumerable<VARIATION_ITEM> VARIATION_ITEMS = new List<VARIATION_ITEM>();
             if (loaderCollection != null)
@@ -84,14 +84,14 @@ namespace BluePrints.ViewModels
             return query => Estimation_Direct_ItemVariationQuery.SiteDirectVariationItemTransformation(IReportableEntitiesCollection, loadVARIATION, VARIATION_ITEMS);
         }
 
-        protected override void assign_additional_callbacks(CollectionViewModel<ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork> mainViewModel, IEnumerable<ESTIMATION_DIRECT_ITEMVariation> entities)
+        protected override void assign_additional_callbacks(CollectionViewModel<ESTIMATE_ITEM, ESTIMATE_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork> mainViewModel, IEnumerable<ESTIMATE_ITEMVariation> entities)
         {
             mainViewModel.ManualPasteAction = ManualPasteAction;
         }
 
-        public void ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATION_DIRECT_ITEMVariation pasteEntity)
+        public void ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATE_ITEMVariation pasteEntity)
         {
-            ((ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper)collectionViewModelWrapper).ManualPasteAction(pasteData, pasteEntity.Entity);
+            ((ESTIMATE_ITEMCollectionViewModelWrapper)collectionViewModelWrapper).ManualPasteAction(pasteData, pasteEntity.Entity);
         }
 
         protected override void CellValueNewRowChanging(CellValueChangedEventArgs e)
@@ -105,14 +105,14 @@ namespace BluePrints.ViewModels
         }
 
         //when internal number is not unique, do not set internal number property
-        protected override bool affixOtherFillDownAllowance(ESTIMATION_DIRECT_ITEMVariation fillDownEntity, string fieldName, object fillValue)
+        protected override bool affixOtherFillDownAllowance(ESTIMATE_ITEMVariation fillDownEntity, string fieldName, object fillValue)
         {
             return true;
         }
 
-        protected override bool affixOtherBulkEditAllowance(ESTIMATION_DIRECT_ITEMVariation projection, string fieldName, object editValue)
+        protected override bool affixOtherBulkEditAllowance(ESTIMATE_ITEMVariation projection, string fieldName, object editValue)
         {
-            if (fieldName == BindableBase.GetPropertyName(() => new ESTIMATION_DIRECT_ITEMVariation().VARIATION_ITEM)
+            if (fieldName == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMVariation().VARIATION_ITEM)
                 + "."
                 + BindableBase.GetPropertyName(() => new VARIATION_ITEM().VARIATION_UNITS))
             {
@@ -123,17 +123,17 @@ namespace BluePrints.ViewModels
         }
 
         #region View Properties
-        public IEnumerable<SUBJOB> SUBJOBCollection => ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper == null ? null : ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.SUBJOBCollection;
-        public IEnumerable<PHASE> PHASECollection => ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper == null ? null : ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.PHASECollection;
-        public IEnumerable<AREA> AREACollection => ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper == null ? null : ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.AREACollection;
-        public IEnumerable<AREA> SUBAREACollection => ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper == null ? null : ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.SUBAREACollection;
+        public IEnumerable<SUBJOB> SUBJOBCollection => ESTIMATE_ITEMCollectionViewModelWrapper == null ? null : ESTIMATE_ITEMCollectionViewModelWrapper.SUBJOBCollection;
+        public IEnumerable<PHASE> PHASECollection => ESTIMATE_ITEMCollectionViewModelWrapper == null ? null : ESTIMATE_ITEMCollectionViewModelWrapper.PHASECollection;
+        public IEnumerable<AREA> AREACollection => ESTIMATE_ITEMCollectionViewModelWrapper == null ? null : ESTIMATE_ITEMCollectionViewModelWrapper.AREACollection;
+        public IEnumerable<AREA> SUBAREACollection => ESTIMATE_ITEMCollectionViewModelWrapper == null ? null : ESTIMATE_ITEMCollectionViewModelWrapper.SUBAREACollection;
         public IEnumerable<DEPARTMENT> DEPARTMENTCollection => null;
-        public IEnumerable<DISCIPLINE> DISCIPLINECollection => ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper == null ? null : ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.DISCIPLINECollection;
+        public IEnumerable<DISCIPLINE> DISCIPLINECollection => ESTIMATE_ITEMCollectionViewModelWrapper == null ? null : ESTIMATE_ITEMCollectionViewModelWrapper.DISCIPLINECollection;
         public IEnumerable<DOCTYPE> DOCTYPECollection => null;
 
-        public IEnumerable<STOCK_GROUP> STOCK_GROUPCollection => ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper == null ? null : ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.STOCK_GROUPCollection;
-        public IEnumerable<STOCK_CODE> STOCK_CODECollection => ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper == null ? null : ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.STOCK_CODECollection;
-        public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection => ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper == null ? null : ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.COMMODITY_CODECollection;
+        public IEnumerable<STOCK_GROUP> STOCK_GROUPCollection => ESTIMATE_ITEMCollectionViewModelWrapper == null ? null : ESTIMATE_ITEMCollectionViewModelWrapper.STOCK_GROUPCollection;
+        public IEnumerable<STOCK_CODE> STOCK_CODECollection => ESTIMATE_ITEMCollectionViewModelWrapper == null ? null : ESTIMATE_ITEMCollectionViewModelWrapper.STOCK_CODECollection;
+        public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection => ESTIMATE_ITEMCollectionViewModelWrapper == null ? null : ESTIMATE_ITEMCollectionViewModelWrapper.COMMODITY_CODECollection;
         #endregion
     }
 }

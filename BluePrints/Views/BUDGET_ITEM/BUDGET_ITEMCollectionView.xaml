@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BluePrints.Views.ESTIMATION_ITEMCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:converters="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxa="http://schemas.devexpress.com/winfx/2008/xaml/accordion" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:helper="clr-namespace:BluePrints.Common.Helpers" xmlns:local="clr-namespace:BluePrints.Views" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="300" d:DesignWidth="300" DataContext="{dxmvvm:ViewModelSource viewmodel:ESTIMATION_ITEMCollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.BUDGET_ITEMCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:converters="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxa="http://schemas.devexpress.com/winfx/2008/xaml/accordion" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:helper="clr-namespace:BluePrints.Common.Helpers" xmlns:local="clr-namespace:BluePrints.Views" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="300" d:DesignWidth="300" DataContext="{dxmvvm:ViewModelSource viewmodel:BUDGET_ITEMCollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -23,7 +23,7 @@
             <DockPanel>
                 <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="Live Estimate [Direct]">
+                        <dxr:RibbonPage Caption="Live Budget [Direct]">
                             <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                         </dxr:RibbonPage>
@@ -35,7 +35,7 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlESTIMATION_ITEM" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                    <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlBUDGET_ITEM" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Bands>
                             <dxg:GridControlBand Header="General">
                                 <dxg:GridColumn Header="Area" FieldName="Entity.Entity.GUID_AREA" FilterPopupMode="CheckedList">
@@ -105,7 +105,7 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Header="Name" FieldName="Entity.Entity.NAME" FilterPopupMode="CheckedList" />
                                 <dxg:GridColumn Header="Comments" FieldName="Entity.Entity.COMMENTS" FilterPopupMode="CheckedList" />
-                                <dxg:GridColumn Header="Quantity" FieldName="Entity.Entity.ESTIMATED_QUANTITY" FilterPopupMode="CheckedList">
+                                <dxg:GridColumn Header="Quantity" FieldName="Entity.Entity.BUDGETD_QUANTITY" FilterPopupMode="CheckedList">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <Grid>
@@ -136,7 +136,7 @@
                                                         </MultiBinding>
                                                     </Image.Visibility>
                                                 </Image>
-                                                <dxe:SpinEdit Name="PART_Editor" Grid.Column="2" Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="{Binding RowData.Row.MinEstimateQuantity}">
+                                                <dxe:SpinEdit Name="PART_Editor" Grid.Column="2" Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="{Binding RowData.Row.MinBudgetQuantity}">
                                                     <!--<dxe:SpinEdit.MaxValue>
                                                         <MultiBinding Converter="{StaticResource IReportableStatsMaximumUnitsConverter}">
                                                             <Binding ElementName="userControl" Path="DataContext.TotalAllowedUnits" />
@@ -169,7 +169,7 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Header="Progress Type" FieldName="Entity.PROGRESS_TYPE" HeaderToolTip="[Standalone] stock item will be progressed by itself only\n[Trackable] primary progressable stock item in the group\n[Auto] % will follow primary stock item i.e. trackable item" FilterPopupMode="CheckedList">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:EstimateProgressType}}" />
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Estimation_DirectProgressType}}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
@@ -244,7 +244,7 @@
                         </dxg:GridControl.Bands>
                         <dxg:GridControl.GroupSummary>
                             <dxg:GridSummaryItem FieldName="Entity.Entity.COMMENTS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_QUANTITY" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Entity.Entity.ESTIMATED_QUANTITY" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.BUDGETD_QUANTITY" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Entity.Entity.BUDGETD_QUANTITY" SummaryType="Sum" />
                             <dxg:GridSummaryItem FieldName="Entity.Entity.DC_QUANTITY" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Entity.Entity.DC_QUANTITY" SummaryType="Sum" />
                             <dxg:GridSummaryItem FieldName="Total_Install_Hours" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Total_Install_Hours" SummaryType="Sum" />
                             <dxg:GridSummaryItem FieldName="Total_Supply_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" ShowInColumn="Total_Supply_Cost" SummaryType="Sum" />
@@ -254,7 +254,7 @@
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem FieldName="Entity.Entity.COMMENTS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_QUANTITY" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Entity.Entity.ESTIMATED_QUANTITY" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.BUDGETD_QUANTITY" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Entity.Entity.BUDGETD_QUANTITY" SummaryType="Sum" />
                             <dxg:GridSummaryItem FieldName="Entity.Entity.DC_QUANTITY" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Entity.Entity.DC_QUANTITY" SummaryType="Sum" />
                             <dxg:GridSummaryItem FieldName="Total_Install_Hours" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Total_Install_Hours" SummaryType="Sum" />
                             <dxg:GridSummaryItem FieldName="Total_Supply_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" ShowInColumn="Total_Supply_Cost" SummaryType="Sum" />

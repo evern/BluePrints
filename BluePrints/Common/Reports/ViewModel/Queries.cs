@@ -104,13 +104,13 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
 
         public static IQueryable<ReportablesDisplay> SiteDirectProgressItemTransformation(
-            IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, PROJECT PROJECT, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<STOCK_GROUP> STOCK_GROUPS, IEnumerable<STOCK_CODE> projectSTOCK_CODES, IEnumerable<RATE> projectRATES)
+            IQueryable<ESTIMATE_ITEM> ESTIMATE_ITEMS, PROJECT PROJECT, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<STOCK_GROUP> STOCK_GROUPS, IEnumerable<STOCK_CODE> projectSTOCK_CODES, IEnumerable<RATE> projectRATES)
         {
             IEnumerable<PROGRESS_ITEM> arrPROGRESS_ITEMS = PROGRESS_ITEMS.ToArray();
             List<ReportablesDisplay> display_items = new List<ReportablesDisplay>();
 
-            IEnumerable<ESTIMATION_DIRECT_ITEMProgress> estimation_direct_item_progresses =
-                ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATION_DIRECT_ITEMS, PROJECT, projectRATES, PROGRESS, PROGRESS_ITEMS,
+            IEnumerable<ESTIMATE_ITEMProgress> estimation_direct_item_progresses =
+                ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATE_ITEMS, PROJECT, projectRATES, PROGRESS, PROGRESS_ITEMS,
                                                                                                 projectSTOCK_CODES,
                                                                                                 STOCK_GROUPS).AsEnumerable();
 

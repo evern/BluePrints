@@ -3,9 +3,9 @@ using System.Windows.Controls;
 
 namespace BluePrints.Views
 {
-    public partial class ESTIMATION_DIRECTCollectionView : UserControl
+    public partial class ESTIMATECollectionView : UserControl
     {
-        public ESTIMATION_DIRECTCollectionView()
+        public ESTIMATECollectionView()
         {
             InitializeComponent();
         }

@@ -11,7 +11,7 @@ namespace BluePrints.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public STOCK_GROUP()
         {
-            ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
+            ESTIMATE_ITEM = new HashSet<ESTIMATE_ITEM>();
         }
 
         [Key]
@@ -42,7 +42,7 @@ namespace BluePrints.Data
         public Guid? DELETEDBY { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
+        public virtual ICollection<ESTIMATE_ITEM> ESTIMATE_ITEM { get; set; }
 
         public virtual PROJECT PROJECT { get; set; }
     }

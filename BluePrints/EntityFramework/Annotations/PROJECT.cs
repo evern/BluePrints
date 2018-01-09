@@ -20,7 +20,7 @@ namespace BluePrints.Data
             CLIENT_PROJECT = new HashSet<CLIENT_PROJECT>();
             STOCK_GROUP = new HashSet<STOCK_GROUP>();
             DELIVERABLES_STATUS = new HashSet<DELIVERABLES_STATUS>();
-            ESTIMATION_DIRECT = new HashSet<ESTIMATION_DIRECT>();
+            ESTIMATE = new HashSet<ESTIMATE>();
             HOLIDAY = new HashSet<HOLIDAY>();
             MEETING = new HashSet<MEETING>();
             MEETING_TYPE = new HashSet<MEETING_TYPE>();

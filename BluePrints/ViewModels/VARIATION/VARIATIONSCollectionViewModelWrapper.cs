@@ -64,7 +64,7 @@ namespace BluePrints.ViewModels
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc, null, true);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
@@ -81,7 +81,7 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<ESTIMATION_DIRECT>, IQueryable<ESTIMATION_DIRECT>> ESTIMATION_DIRECTProjectionFunc()
+        private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
@@ -144,7 +144,7 @@ namespace BluePrints.ViewModels
             {
                 foreach (var entity in entities)
                 {
-                    CreateVARIATION_ITEMSViewModelWrapper<ESTIMATION_DIRECT_ITEMVariation>(entity.Entity, (projections, parentId) => mainThreadDispatcher.BeginInvoke(new Action(() => AssignVariationSummary(projections, parentId))), () => entity.GUID, true);
+                    CreateVARIATION_ITEMSViewModelWrapper<ESTIMATE_ITEMVariation>(entity.Entity, (projections, parentId) => mainThreadDispatcher.BeginInvoke(new Action(() => AssignVariationSummary(projections, parentId))), () => entity.GUID, true);
                 }
             }
         }
@@ -164,7 +164,7 @@ namespace BluePrints.ViewModels
         #region CallBacks
         public bool BeforeSaveValidation(VARIATIONProjection entity, bool isNewEntity)
         {
-            if (LiveBASELINE == null && LiveESTIMATION_DIRECT == null)
+            if (LiveBASELINE == null && LiveESTIMATE == null)
                 return false;
 
             return true;
@@ -191,7 +191,7 @@ namespace BluePrints.ViewModels
                 if (phaseType == ProgressType.Design)
                     entity.Entity.GUID_ORIBASELINE = entity.Entity.GUID_ORIBASELINE ?? LiveBASELINE.GUID;
                 else
-                    entity.Entity.GUID_ORIBASELINE = entity.Entity.GUID_ORIBASELINE ?? LiveESTIMATION_DIRECT.GUID;
+                    entity.Entity.GUID_ORIBASELINE = entity.Entity.GUID_ORIBASELINE ?? LiveESTIMATE.GUID;
             }
             else
                 entity.Entity.GUID_ORIBASELINE = null;
@@ -261,11 +261,11 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public CollectionViewModel<ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork> ESTIMATION_DIRECTViewModel
+        public CollectionViewModel<ESTIMATE, ESTIMATE, Guid, IBluePrintsEntitiesUnitOfWork> ESTIMATEViewModel
         {
             get
             {
-                return (CollectionViewModel<ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<ESTIMATION_DIRECT>();
+                return (CollectionViewModel<ESTIMATE, ESTIMATE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<ESTIMATE>();
             }
         }
 
@@ -296,14 +296,14 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public ESTIMATION_DIRECT LiveESTIMATION_DIRECT
+        public ESTIMATE LiveESTIMATE
         {
             get
             {
-                if (ESTIMATION_DIRECTCollection == null || BASELINECollection.Count() == 0)
+                if (ESTIMATECollection == null || BASELINECollection.Count() == 0)
                     return null;
                 else
-                    return ESTIMATION_DIRECTCollection.FirstOrDefault(x => x.STATUS == BaselineStatus.Live);
+                    return ESTIMATECollection.FirstOrDefault(x => x.STATUS == EstimateStatus.LiveBudget);
             }
         }
 
@@ -333,15 +333,15 @@ namespace BluePrints.ViewModels
                 if(phaseType == ProgressType.Design)
                     return BASELINECollection;
                 else
-                    return ESTIMATION_DIRECTCollection;
+                    return ESTIMATECollection;
             }
         }
 
-        public IEnumerable<ESTIMATION_DIRECT> ESTIMATION_DIRECTCollection
+        public IEnumerable<ESTIMATE> ESTIMATECollection
         {
             get
             {
-                var collection = GetEntities<ESTIMATION_DIRECT>();
+                var collection = GetEntities<ESTIMATE>();
                 return collection;
             }
         }
@@ -434,7 +434,7 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return false;
 
-            if (LiveBASELINE == null && LiveESTIMATION_DIRECT == null)
+            if (LiveBASELINE == null && LiveESTIMATE == null)
                 return false;
 
             if (DisplaySelectedEntity.Entity == null)
@@ -504,7 +504,7 @@ namespace BluePrints.ViewModels
             {
                 if (phaseType == ProgressType.Design && LiveBASELINE == null)
                     errorMessage = "Live baseline not found";
-                else if(phaseType == ProgressType.Construct && LiveESTIMATION_DIRECT == null)
+                else if(phaseType == ProgressType.Construct && LiveESTIMATE == null)
                     errorMessage = "Live estimate not found";
             }
 
@@ -518,7 +518,7 @@ namespace BluePrints.ViewModels
             if(phaseType == ProgressType.Design)
                 CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMVariation>(DisplaySelectedEntity.Entity, OnVARIATION_ITEMSLoaded, null, false);
             else if(phaseType == ProgressType.Construct)
-                CreateVARIATION_ITEMSViewModelWrapper<ESTIMATION_DIRECT_ITEMVariation>(DisplaySelectedEntity.Entity, OnVARIATION_ITEMSLoaded, null, false);
+                CreateVARIATION_ITEMSViewModelWrapper<ESTIMATE_ITEMVariation>(DisplaySelectedEntity.Entity, OnVARIATION_ITEMSLoaded, null, false);
         }
 
         private void OnVARIATION_ITEMSLoaded(IEnumerable<object> projections, object parentId)
@@ -527,7 +527,7 @@ namespace BluePrints.ViewModels
             if(phaseType == ProgressType.Design)
                 mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE<BASELINE, BASELINE_ITEM, BASELINE_ITEMProjection, BASELINE_ITEMProgress, BASELINE_ITEMVariation>(projections.ToList(), LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS)));
             else if (phaseType == ProgressType.Construct)
-                mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE<ESTIMATION_DIRECT, ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProjection, ESTIMATION_DIRECT_ITEMProgress, ESTIMATION_DIRECT_ITEMVariation>(projections.ToList(), LiveESTIMATION_DIRECT, ESTIMATION_DIRECTViewModel, bluePrintsUOW, bluePrintsUOW.ESTIMATION_DIRECT_ITEMS)));
+                mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE<ESTIMATE, ESTIMATE_ITEM, ESTIMATE_ITEMProjection, ESTIMATE_ITEMProgress, ESTIMATE_ITEMVariation>(projections.ToList(), LiveESTIMATE, ESTIMATEViewModel, bluePrintsUOW, bluePrintsUOW.ESTIMATE_ITEMS)));
         }
 
         public bool CanRevert()

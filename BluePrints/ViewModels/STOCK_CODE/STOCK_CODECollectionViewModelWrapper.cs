@@ -134,19 +134,19 @@ namespace BluePrints.ViewModels
 
         private void create_estimation_direct_item_view_model_wrapper()
         {
-            ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper variation_itemsViewModelWrapper = ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.Create();
+            ESTIMATE_ITEMCollectionViewModelWrapper variation_itemsViewModelWrapper = ESTIMATE_ITEMCollectionViewModelWrapper.Create();
             variation_itemsViewModelWrapper.SetParentViewModel(this);
             variation_itemsViewModelWrapper.OnEntitiesLoadedCallBack = trim_unused_stock_code;
             var baselineSupportParameterObj = variation_itemsViewModelWrapper as ISupportParameter;
             baselineSupportParameterObj.Parameter = new DualEntitiesParameter<PROJECT, IAmBaseline>(loadPROJECT, null);
         }
 
-        private void trim_unused_stock_code(IEnumerable<ESTIMATION_DIRECT_ITEMProgress> estimation_direct_items, object parentId)
+        private void trim_unused_stock_code(IEnumerable<ESTIMATE_ITEMProgress> estimation_direct_items, object parentId)
         {
             mainThreadDispatcher.BeginInvoke(new Action(() => main_thread_trim_unused_stock_code(estimation_direct_items, parentId)));
         }
 
-        private void main_thread_trim_unused_stock_code(IEnumerable<ESTIMATION_DIRECT_ITEMProgress> estimation_direct_items, object parentId)
+        private void main_thread_trim_unused_stock_code(IEnumerable<ESTIMATE_ITEMProgress> estimation_direct_items, object parentId)
         {
             List<STOCK_CODE> removeStockCodes = new List<STOCK_CODE>();
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();

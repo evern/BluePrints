@@ -80,7 +80,7 @@ namespace BluePrints.ViewModels
         {
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.RATES);
@@ -94,9 +94,9 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.STATUS == BaselineStatus.Live);
         }
 
-        private Func<IRepositoryQuery<ESTIMATION_DIRECT>, IQueryable<ESTIMATION_DIRECT>> ESTIMATION_DIRECTProjectionFunc()
+        private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
         {
-            return query => query.Where(x => x.STATUS == BaselineStatus.Live);
+            return query => query.Where(x => x.STATUS == EstimateStatus.LiveBudget);
         }
 
         private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
@@ -129,7 +129,7 @@ namespace BluePrints.ViewModels
             specifyMainViewModelProjection()
         {
             var BASELINES = loaderCollection.GetCollection<BASELINE>();
-            var ESTIMATION_DIRECTS = loaderCollection.GetCollection<ESTIMATION_DIRECT>();
+            var ESTIMATES = loaderCollection.GetCollection<ESTIMATE>();
             var PROGRESSES = loaderCollection.GetCollection<PROGRESS>();
             var PROGRESS_ITEMS = loaderCollection.GetCollection<PROGRESS_ITEM>();
             var RATES = loaderCollection.GetCollection<RATE>();
@@ -137,7 +137,7 @@ namespace BluePrints.ViewModels
             var DELIVERABLE_STATUSES = loaderCollection.GetCollection<DELIVERABLES_STATUS>();
 
             return
-                query => DashboardQueries.Multiple_Project_DashboardTransformation(query.OrderBy(x => x.NUMBER), BASELINES, ESTIMATION_DIRECTS, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS);
+                query => DashboardQueries.Multiple_Project_DashboardTransformation(query.OrderBy(x => x.NUMBER), BASELINES, ESTIMATES, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS);
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)

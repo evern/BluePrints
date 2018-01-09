@@ -49,11 +49,19 @@ namespace BluePrints.Data
 
         public decimal ESTIMATED_QUANTITY { get; set; }
 
+        public decimal BUDGETED_QUANTITY { get; set; }
+
         public decimal DC_QUANTITY { get; set; }
 
-        public decimal? RATE_OVERRIDE { get; set; }
+        public decimal ESTIMATE_INSTALL_RATE { get; set; }
 
-        public EstimateProgressType PROGRESS_TYPE { get; set; }
+        public decimal BUDGET_INSTALL_RATE { get; set; }
+
+        public decimal ESTIMATE_FREIGHT_RATE { get; set; }
+
+        public decimal BUDGET_FREIGHT_RATE { get; set; }
+
+        public Estimation_DirectProgressType PROGRESS_TYPE { get; set; }
 
         public decimal? PRODUCTIVITY_OVERRIDE { get; set; }
 

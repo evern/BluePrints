@@ -47,7 +47,27 @@ namespace BluePrints.Data
         public Guid project_guid => GUID_PROJECT;
 
         [NotMapped]
-        public BaselineStatus Baseline_Status { get => STATUS; set => STATUS = value; }
+        public BaselineStatus Baseline_Status
+        {
+            get
+            {
+                if (STATUS == EstimateStatus.LiveBudget)
+                    return BaselineStatus.Live;
+                else if (STATUS == EstimateStatus.Superseded)
+                    return BaselineStatus.Superseded;
+                else
+                    return BaselineStatus.Working;
+            }
+            set
+            {
+                if (value == BaselineStatus.Live)
+                    STATUS = EstimateStatus.LiveBudget;
+                else if (value == BaselineStatus.Superseded)
+                    STATUS = EstimateStatus.Superseded;
+                else
+                    STATUS = EstimateStatus.LiveEstimate;
+            }
+        }
 
         [NotMapped]
         public string Revision { get => REVISION; set => REVISION = value; }

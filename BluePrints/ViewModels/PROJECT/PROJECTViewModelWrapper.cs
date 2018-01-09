@@ -52,7 +52,7 @@ namespace BluePrints.ViewModels
         private PROJECT loadPROJECT;
         public Action<BASELINECollectionViewModelWrapper> AssignBASELINEDelegates;
         public Action<PROGRESSCollectionViewModelWrapper> AssignPROGRESSDelegates;
-        public Action<ESTIMATION_DIRECTCollectionViewModelWrapper> AssignESTIMATION_DIRECTDelegates;
+        public Action<ESTIMATECollectionViewModelWrapper> AssignESTIMATEDelegates;
         public Action<AREACollectionViewModelWrapper> AssignAREADelegates;
         public Action<RATECollectionViewModelWrapper> AssignRATEDelegates;
         private List<DashboardTreeStructure> hierarchicalDashboard = null;
@@ -84,7 +84,7 @@ namespace BluePrints.ViewModels
         {
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
@@ -98,9 +98,9 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.STATUS == BaselineStatus.Live && x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.REVISION);
         }
 
-        private Func<IRepositoryQuery<ESTIMATION_DIRECT>, IQueryable<ESTIMATION_DIRECT>> ESTIMATION_DIRECTProjectionFunc()
+        private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
         {
-            return query => query.Where(x => x.STATUS == BaselineStatus.Live && x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.REVISION);
+            return query => query.Where(x => x.STATUS == EstimateStatus.LiveBudget && x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.REVISION);
         }
 
         private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
@@ -141,14 +141,14 @@ namespace BluePrints.ViewModels
             specifyMainViewModelProjection()
         {
             var BASELINE = loaderCollection.GetObject<BASELINE>();
-            var ESTIMATION_DIRECT = loaderCollection.GetObject<ESTIMATION_DIRECT>();
+            var ESTIMATE = loaderCollection.GetObject<ESTIMATE>();
             var PROGRESSES = loaderCollection.GetCollection<PROGRESS>();
             var PROGRESS_ITEMS = loaderCollection.GetCollection<PROGRESS_ITEM>();
             var RATES = loaderCollection.GetCollection<RATE>();
             var VARIATIONS = loaderCollection.GetCollection<VARIATION>();
 
             List<PROJECT_Dashboard> project_dashboards = new List<PROJECT_Dashboard>();
-            PROJECT_Dashboard project_dashboard = DashboardQueries.Single_Project_DashboardTransformation(loadPROJECT, BASELINE, ESTIMATION_DIRECT, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS);
+            PROJECT_Dashboard project_dashboard = DashboardQueries.Single_Project_DashboardTransformation(loadPROJECT, BASELINE, ESTIMATE, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS);
 
             project_dashboards.Add(project_dashboard);
             return query => project_dashboards.AsQueryable();
@@ -573,19 +573,19 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private ESTIMATION_DIRECTCollectionViewModelWrapper estimationDirectViewModel;
+        private ESTIMATECollectionViewModelWrapper estimationDirectViewModel;
 
-        public ESTIMATION_DIRECTCollectionViewModelWrapper ESTIMATION_DIRECTViewModel
+        public ESTIMATECollectionViewModelWrapper ESTIMATEViewModel
         {
             get
             {
                 if (estimationDirectViewModel == null && loadPROJECT != null)
                 {
-                    estimationDirectViewModel = ESTIMATION_DIRECTCollectionViewModelWrapper.Create();
+                    estimationDirectViewModel = ESTIMATECollectionViewModelWrapper.Create();
                     estimationDirectViewModel.SetParentViewModel(this);
                     var baselineSupportParameterObj = estimationDirectViewModel as ISupportParameter;
                     baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(loadPROJECT);
-                    AssignESTIMATION_DIRECTDelegates?.Invoke(estimationDirectViewModel);
+                    AssignESTIMATEDelegates?.Invoke(estimationDirectViewModel);
                 }
 
                 return estimationDirectViewModel;
@@ -693,7 +693,7 @@ namespace BluePrints.ViewModels
 
             DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectEstimates" + loadPROJECT.GUID.ToString(),
                 new EntitiesParameter<PROJECT>(loadPROJECT),
-                    "ESTIMATION_DIRECTCollectionView",
+                    "ESTIMATECollectionView",
                     "[" + loadPROJECT.NUMBER + "] Estimates");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);

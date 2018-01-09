@@ -34,16 +34,16 @@ using System.Windows.Input;
 
 namespace BluePrints.ViewModels
 {
-    public class ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper :
-        BluePrintsEntitiesSchedulingCollectionWrapper<ESTIMATION_DIRECT_ITEM, ESTIMATION_DIRECT_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>, IHaveCanvasWidth
+    public class ESTIMATE_ITEMSchedulingViewModelWrapper :
+        BluePrintsEntitiesSchedulingCollectionWrapper<ESTIMATE_ITEM, ESTIMATE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>, IHaveCanvasWidth
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper Create()
+        public static ESTIMATE_ITEMSchedulingViewModelWrapper Create()
         {
-            return ViewModelSource.Create(() => new ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper());
+            return ViewModelSource.Create(() => new ESTIMATE_ITEMSchedulingViewModelWrapper());
         }
 
         #region Database Operation
@@ -61,7 +61,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, assign_default_construction_department);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc, assign_estimation);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc, assign_estimation);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS, STOCK_GROUPProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
@@ -77,7 +77,7 @@ namespace BluePrints.ViewModels
             defaultConstructionDEPARTMENT = entity;
         }
 
-        private void assign_estimation(ESTIMATION_DIRECT entity)
+        private void assign_estimation(ESTIMATE entity)
         {
             if (entity == null && !SupressCompulsoryEntityNotFoundMessage)
                 mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live estimation not found")));
@@ -93,10 +93,10 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID == p6_baseline_entity.project_guid);
         }
 
-        private Func<IRepositoryQuery<ESTIMATION_DIRECT>, IQueryable<ESTIMATION_DIRECT>> ESTIMATION_DIRECTProjectionFunc()
+        private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
         {
             if (isFromPROGRESS)
-                return query => query.Where(x => x.GUID_PROJECT == live_PROGRESS.GUID_PROJECT && x.STATUS == BaselineStatus.Live);
+                return query => query.Where(x => x.GUID_PROJECT == live_PROGRESS.GUID_PROJECT && x.STATUS == EstimateStatus.LiveBudget);
             else
                 return query => query.Where(x => x.GUID == p6_baseline_entity.EntityKey);
         }
@@ -128,15 +128,15 @@ namespace BluePrints.ViewModels
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECT_ITEMS);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.ESTIMATE_ITEMS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ESTIMATION_DIRECT_ITEMProgress>>
+        protected override Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<ESTIMATE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
             IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = GetEntities<P6_ASSIGNMENT>();
-            return query => ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query.Where(x => x.GUID_ESTIMATION_DIRECT == p6_baseline_entity.EntityKey), loadPROJECT, loaderCollection.GetCollection<RATE>(), live_PROGRESS, PROGRESS_ITEMCollection, STOCK_CODECollection, loaderCollection.GetCollection<STOCK_GROUP>(), null, true, P6_ASSIGNMENTS);
+            return query => ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query.Where(x => x.GUID_ESTIMATE == p6_baseline_entity.EntityKey), loadPROJECT, loaderCollection.GetCollection<RATE>(), live_PROGRESS, PROGRESS_ITEMCollection, STOCK_CODECollection, loaderCollection.GetCollection<STOCK_GROUP>(), null, true, P6_ASSIGNMENTS);
         }
         #endregion
 
@@ -146,8 +146,8 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            //get { return "ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper" + view_project_specific_affix; }
-            get { return "ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper_v1" + view_project_specific_affix; }
+            //get { return "ESTIMATE_ITEMSchedulingViewModelWrapper" + view_project_specific_affix; }
+            get { return "ESTIMATE_ITEMSchedulingViewModelWrapper_v1" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix

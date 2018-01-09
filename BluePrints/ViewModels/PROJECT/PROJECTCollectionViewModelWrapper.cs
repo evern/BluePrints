@@ -72,7 +72,7 @@ namespace BluePrints.ViewModels
         {
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
@@ -103,9 +103,9 @@ namespace BluePrints.ViewModels
         }
 
         /// <summary>
-        /// ESTIMATION_DIRECT is used for write only so just load a single entry for repository to be initialized
+        /// ESTIMATE is used for write only so just load a single entry for repository to be initialized
         /// </summary>
-        private Func<IRepositoryQuery<ESTIMATION_DIRECT>, IQueryable<ESTIMATION_DIRECT>> ESTIMATION_DIRECTProjectionFunc()
+        private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
         {
             return query => query.Take(1);
         }
@@ -190,12 +190,12 @@ namespace BluePrints.ViewModels
                 newBASELINE.STATUS = BaselineStatus.Live;
                 BASELINEViewModel.Save(newBASELINE);
 
-                ESTIMATION_DIRECT newESTIMATE_DIRECT = new ESTIMATION_DIRECT();
+                ESTIMATE newESTIMATE_DIRECT = new ESTIMATE();
                 newESTIMATE_DIRECT.GUID_PROJECT = entity.GUID;
                 newESTIMATE_DIRECT.NAME = entity.NUMBER + "_001";
                 newESTIMATE_DIRECT.REVISION = "A";
-                newESTIMATE_DIRECT.STATUS = BaselineStatus.Live;
-                ESTIMATION_DIRECTViewModel.Save(newESTIMATE_DIRECT);
+                newESTIMATE_DIRECT.STATUS = EstimateStatus.LiveEstimate;
+                ESTIMATEViewModel.Save(newESTIMATE_DIRECT);
 
                 PROGRESS newDesignPROGRESS = new PROGRESS();
                 newDesignPROGRESS.GUID_PROJECT = entity.GUID;
@@ -404,7 +404,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public CollectionViewModel<ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork> ESTIMATION_DIRECTViewModel
+        public CollectionViewModel<ESTIMATE, ESTIMATE, Guid, IBluePrintsEntitiesUnitOfWork> ESTIMATEViewModel
         {
             get
             {
@@ -412,8 +412,8 @@ namespace BluePrints.ViewModels
                     return null;
 
                 return
-                    (CollectionViewModel<ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork>)
-                    loaderCollection.GetViewModel<ESTIMATION_DIRECT>();
+                    (CollectionViewModel<ESTIMATE, ESTIMATE, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<ESTIMATE>();
             }
         }
 
@@ -564,7 +564,7 @@ namespace BluePrints.ViewModels
 
             DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectEstimates" + DisplaySelectedEntity.GUID.ToString(),
                 new EntitiesParameter<PROJECT>(DisplaySelectedEntity),
-                    "ESTIMATION_DIRECTCollectionView",
+                    "ESTIMATECollectionView",
                     "[" + DisplaySelectedEntity.NUMBER + "] Estimates");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);

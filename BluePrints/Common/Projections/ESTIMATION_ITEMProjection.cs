@@ -11,9 +11,9 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class ESTIMATION_DIRECT_ITEMProjection : BluePrintsProjectionBase<ESTIMATION_DIRECT_ITEM>, IDeliverable_Quantity, IHaveStockCode, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementSubjob
+    public class ESTIMATE_ITEMProjection : BluePrintsProjectionBase<ESTIMATE_ITEM>, IDeliverable_Quantity, IHaveStockCode, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementSubjob
     {
-        public ESTIMATION_DIRECT_ITEMProjection()
+        public ESTIMATE_ITEMProjection()
             : base()
         {
             //need to initialize commodity code here so that copy/paste is able to get property info within STOCK_GROUP
@@ -133,7 +133,7 @@ namespace BluePrints.Common.Projections
 
         public void SetOriginalEntityKey(Guid newGuid) { }
 
-        public decimal ItemRate => Entity.RATE_OVERRIDE == null ? RATE == null || RATE.RATE1 == null ? 0 : (decimal)RATE.RATE1 : (decimal)Entity.RATE_OVERRIDE;
+        public decimal ItemRate => Entity.ESTIMATE_INSTALL_RATE == null ? RATE == null || RATE.RATE1 == null ? 0 : (decimal)RATE.RATE1 : (decimal)Entity.ESTIMATE_INSTALL_RATE;
 
         public decimal Estimated_Costs => Estimated_Units * ItemRate;
 
@@ -224,16 +224,16 @@ namespace BluePrints.Common.Projections
         public Guid? Workpack_Guid { get => Guid.Empty; set { } }
     }
 
-    public static class ESTIMATION_DIRECT_ITEMProjectionQueries
+    public static class ESTIMATE_ITEMProjectionQueries
     {
-        public static IQueryable<ESTIMATION_DIRECT_ITEMProgress> IDeliverable_Progress_Transformation(
-            IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, PROJECT PROJECT, 
+        public static IQueryable<ESTIMATE_ITEMProgress> IDeliverable_Progress_Transformation(
+            IQueryable<ESTIMATE_ITEM> ESTIMATE_ITEMS, PROJECT PROJECT, 
             IEnumerable<RATE> RATES, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<STOCK_CODE> STOCK_CODES = null, IEnumerable<STOCK_GROUP> STOCK_GROUPS = null, 
             IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null)
         {
             var PROGRESS_ITEMSByOriginalGuid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
-            List<ESTIMATION_DIRECT_ITEMProjection> estimation_direct_item_rates =
-            ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Rates_Transformation(ESTIMATION_DIRECT_ITEMS,
+            List<ESTIMATE_ITEMProjection> estimation_direct_item_rates =
+            ESTIMATE_ITEMProjectionQueries.IDeliverable_Rates_Transformation(ESTIMATE_ITEMS,
                                                                                             RATES,
                                                                                             STOCK_CODES,
                                                                                             STOCK_GROUPS).ToList();
@@ -245,10 +245,10 @@ namespace BluePrints.Common.Projections
             else
                 projectVariationAdjustments = new List<VariationAdjustment>();
 
-            List<ESTIMATION_DIRECT_ITEMProgress> estimation_direct_item_progresses = new List<ESTIMATION_DIRECT_ITEMProgress>();
-            foreach (ESTIMATION_DIRECT_ITEMProjection estimation_direct_item_rate in estimation_direct_item_rates)
+            List<ESTIMATE_ITEMProgress> estimation_direct_item_progresses = new List<ESTIMATE_ITEMProgress>();
+            foreach (ESTIMATE_ITEMProjection estimation_direct_item_rate in estimation_direct_item_rates)
             {
-                ESTIMATION_DIRECT_ITEMProgress newEstimation_Direct_itemProgress = new ESTIMATION_DIRECT_ITEMProgress(PROJECT, PROGRESS, estimation_direct_item_rate, projectVariationAdjustments);
+                ESTIMATE_ITEMProgress newEstimation_Direct_itemProgress = new ESTIMATE_ITEMProgress(PROJECT, PROGRESS, estimation_direct_item_rate, projectVariationAdjustments);
                 newEstimation_Direct_itemProgress.P6_Assignments = P6_ASSIGNMENTS == null ? null : P6_ASSIGNMENTS.Where(assignment => assignment.GUID_ORIGINAL == estimation_direct_item_rate.OriginalEntityKey).ToList();
                 newEstimation_Direct_itemProgress.Live_PROGRESS = PROGRESS;
                 newEstimation_Direct_itemProgress.Entity = estimation_direct_item_rate;
@@ -265,18 +265,18 @@ namespace BluePrints.Common.Projections
             return estimation_direct_item_progresses.AsQueryable();
         }
 
-        public static IQueryable<ESTIMATION_DIRECT_ITEMProjection> IDeliverable_Rates_Transformation(
-            IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, 
+        public static IQueryable<ESTIMATE_ITEMProjection> IDeliverable_Rates_Transformation(
+            IQueryable<ESTIMATE_ITEM> ESTIMATE_ITEMS, 
             IEnumerable<RATE> RATES, IEnumerable<STOCK_CODE> STOCK_CODES = null, IEnumerable<STOCK_GROUP> STOCK_GROUPS = null)
         {
             IEnumerable<RATE> INSTALL_RATES = RATES.Where(x => x.DEPARTMENT.NAME.ToUpper() == BluePrintsResources.Default_Construction_Department);
             IEnumerable<RATE> FREIGHT_RATES = RATES.Where(x => x.DEPARTMENT.NAME.ToUpper() == BluePrintsResources.Default_Procurement_Department);
 
             return
-                ESTIMATION_DIRECT_ITEMS.OrderBy(x => x.CREATED).ToArray()
+                ESTIMATE_ITEMS.OrderBy(x => x.CREATED).ToArray()
                     .Select(
                         estimate_direct_item =>
-                            new ESTIMATION_DIRECT_ITEMProjection()
+                            new ESTIMATE_ITEMProjection()
                             {
                                 Entity = estimate_direct_item,
                                 STOCK_CODE = STOCK_CODES == null ? null : STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_direct_item.GUID_STOCK_CODE),

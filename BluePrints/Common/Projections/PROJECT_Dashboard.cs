@@ -71,21 +71,21 @@ namespace BluePrints.Common.Projections
 
     public static class DashboardQueries
     {
-        public static PROJECT_Dashboard Single_Project_DashboardTransformation(PROJECT PROJECT, BASELINE BASELINE, ESTIMATION_DIRECT ESTIMATION_DIRECT, IEnumerable<PROGRESS> PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES,
+        public static PROJECT_Dashboard Single_Project_DashboardTransformation(PROJECT PROJECT, BASELINE BASELINE, ESTIMATE ESTIMATE, IEnumerable<PROGRESS> PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES,
             IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false)
         {
             List<PROJECT> PROJECTS = new List<PROJECT>();
             List<BASELINE> BASELINES = new List<BASELINE>();
-            List<ESTIMATION_DIRECT> ESTIMATION_DIRECTS = new List<ESTIMATION_DIRECT>();
+            List<ESTIMATE> ESTIMATES = new List<ESTIMATE>();
 
             PROJECTS.Add(PROJECT);
             if (BASELINE != null)
                 BASELINES.Add(BASELINE);
 
-            if (ESTIMATION_DIRECT != null)
-                ESTIMATION_DIRECTS.Add(ESTIMATION_DIRECT);
+            if (ESTIMATE != null)
+                ESTIMATES.Add(ESTIMATE);
 
-            var project_dashboard = DashboardQueries.Multiple_Project_DashboardTransformation(PROJECTS.AsQueryable(), BASELINES, ESTIMATION_DIRECTS, PROGRESS, PROGRESS_ITEMS, RATES, VARIATIONS, PROJECT.GUID, buildStats);
+            var project_dashboard = DashboardQueries.Multiple_Project_DashboardTransformation(PROJECTS.AsQueryable(), BASELINES, ESTIMATES, PROGRESS, PROGRESS_ITEMS, RATES, VARIATIONS, PROJECT.GUID, buildStats);
 
             if (project_dashboard.Count() == 0)
                 return null;
@@ -94,7 +94,7 @@ namespace BluePrints.Common.Projections
         }
 
         public static IQueryable<PROJECT_Dashboard> Multiple_Project_DashboardTransformation(IQueryable<PROJECT> PROJECTS,
-            IEnumerable<BASELINE> BASELINES, IEnumerable<ESTIMATION_DIRECT> ESTIMATION_DIRECTS, IEnumerable<PROGRESS> PROGRESSES,
+            IEnumerable<BASELINE> BASELINES, IEnumerable<ESTIMATE> ESTIMATES, IEnumerable<PROGRESS> PROGRESSES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES, 
             IEnumerable<VARIATION> VARIATIONS = null,
             Guid? project_guid = null, bool buildStats = false)
@@ -111,7 +111,7 @@ namespace BluePrints.Common.Projections
             foreach (var current_project in project_single_or_active_selection)
             {
                 BASELINE live_baseline = BASELINES.FirstOrDefault(x => x.GUID_PROJECT == current_project.GUID);
-                ESTIMATION_DIRECT live_estimation_direct = ESTIMATION_DIRECTS.FirstOrDefault(x => x.GUID_PROJECT == current_project.GUID);
+                ESTIMATE live_estimation_direct = ESTIMATES.FirstOrDefault(x => x.GUID_PROJECT == current_project.GUID);
                 PROGRESS live_baseline_progress = PROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == current_project.GUID && x.STATUS == ProgressStatus.Live && x.TYPE == ProgressType.Design);
                 PROGRESS live_estimation_direct_progress = PROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == current_project.GUID && x.STATUS == ProgressStatus.Live && x.TYPE == ProgressType.Construct);
 
@@ -143,9 +143,9 @@ namespace BluePrints.Common.Projections
 
                 if (live_estimation_direct != null && live_estimation_direct_progress != null)
                 {
-                    IEnumerable<ESTIMATION_DIRECT_ITEM> live_estimation_direct_items = live_estimation_direct.ESTIMATION_DIRECT_ITEM;
-                    IEnumerable<ESTIMATION_DIRECT_ITEMProgress> project_estimation_direct_item_progresses =
-                    ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Progress_Transformation(live_estimation_direct_items.AsQueryable(), current_project, project_rates, live_estimation_direct_progress, live_estimation_direct_progresses, null, null, approved_project_variations);
+                    IEnumerable<ESTIMATE_ITEM> live_estimation_direct_items = live_estimation_direct.ESTIMATE_ITEM;
+                    IEnumerable<ESTIMATE_ITEMProgress> project_estimation_direct_item_progresses =
+                    ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(live_estimation_direct_items.AsQueryable(), current_project, project_rates, live_estimation_direct_progress, live_estimation_direct_progresses, null, null, approved_project_variations);
                     reportables.AddRange(project_estimation_direct_item_progresses);
                     current_project_progresses.Add(live_estimation_direct_progress);
                 }

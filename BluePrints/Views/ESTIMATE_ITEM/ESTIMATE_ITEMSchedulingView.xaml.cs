@@ -18,11 +18,11 @@ using System.Windows.Shapes;
 namespace BluePrints.Views
 {
     /// <summary>
-    /// Interaction logic for ESTIMATION_DIRECT_ITEMCollectionView.xaml
+    /// Interaction logic for ESTIMATE_ITEMCollectionView.xaml
     /// </summary>
-    public partial class ESTIMATION_DIRECT_ITEMSchedulingView : UserControl
+    public partial class ESTIMATE_ITEMSchedulingView : UserControl
     {
-        public ESTIMATION_DIRECT_ITEMSchedulingView()
+        public ESTIMATE_ITEMSchedulingView()
         {
             InitializeComponent();
         }

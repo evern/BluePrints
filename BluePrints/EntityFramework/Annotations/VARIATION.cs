@@ -15,7 +15,7 @@ namespace BluePrints.Data
         public VARIATION()
         {
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
-            ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
+            ESTIMATE_ITEM = new HashSet<ESTIMATE_ITEM>();
             VARIATION_ITEM = new HashSet<VARIATION_ITEM>();
             TYPE = Common.VariationType.External;
         }

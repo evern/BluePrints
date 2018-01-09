@@ -17,18 +17,18 @@ using System.Linq;
 
 namespace BluePrints.ViewModels
 {
-    public class ESTIMATION_DIRECTCollectionViewModelWrapper :
+    public class ESTIMATECollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
-        <ESTIMATION_DIRECT, ESTIMATION_DIRECT, Guid, IBluePrintsEntitiesUnitOfWork>
+        <ESTIMATE, ESTIMATE, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
-        /// Creates a new instance of ESTIMATION_DIRECT_ITEMSViewModelWrapper as a POCO view model.
+        /// Creates a new instance of ESTIMATE_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static ESTIMATION_DIRECTCollectionViewModelWrapper Create(
+        public static ESTIMATECollectionViewModelWrapper Create(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new ESTIMATION_DIRECTCollectionViewModelWrapper(unitOfWorkFactory));
+            return ViewModelSource.Create(() => new ESTIMATECollectionViewModelWrapper(unitOfWorkFactory));
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the PROJECTViewModel type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected ESTIMATION_DIRECTCollectionViewModelWrapper(
+        protected ESTIMATECollectionViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
@@ -76,17 +76,17 @@ namespace BluePrints.ViewModels
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<ESTIMATION_DIRECT>, IQueryable<ESTIMATION_DIRECT>>
+        protected override Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>>
             specifyMainViewModelProjection()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATION_DIRECT> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATE> entities)
         {
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
@@ -98,7 +98,7 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
-        public bool OnBeforeEntitySaved(ESTIMATION_DIRECT entity)
+        public bool OnBeforeEntitySaved(ESTIMATE entity)
         {
             entity.GUID_PROJECT = loadPROJECT.GUID;
             return true;
@@ -115,8 +115,8 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            //get { return "ESTIMATION_DIRECTCollectionViewModelWrapper" + view_project_specific_affix; }
-            get { return "ESTIMATION_DIRECTCollectionViewModelWrapper_v1" + view_project_specific_affix; }
+            //get { return "ESTIMATECollectionViewModelWrapper" + view_project_specific_affix; }
+            get { return "ESTIMATECollectionViewModelWrapper_v1" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix
@@ -163,7 +163,7 @@ namespace BluePrints.ViewModels
                 return;
             
             DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new DualEntitiesParameter<Data.PROJECT, IAmBaseline>(null,
-                DisplaySelectedEntity), "ESTIMATION_DIRECT_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Direct Estimate");
+                DisplaySelectedEntity), "ESTIMATE_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Direct Estimate");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
@@ -178,7 +178,7 @@ namespace BluePrints.ViewModels
         {
             DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
                 new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original },
-                "ESTIMATION_DIRECT_ITEMSchedulingView",
+                "ESTIMATE_ITEMSchedulingView",
                 DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);

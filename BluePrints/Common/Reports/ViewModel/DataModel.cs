@@ -158,14 +158,14 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class ESTIMATION_DIRECT_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATION_DIRECT_ITEMProjection>, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementSubjob
+    public class ESTIMATE_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATE_ITEMProjection>, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementSubjob
     {
-        public ESTIMATION_DIRECT_ITEMProgress()
+        public ESTIMATE_ITEMProgress()
         {
 
         }
 
-        public ESTIMATION_DIRECT_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments)
+        public ESTIMATE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments)
             : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments)
         {
 
