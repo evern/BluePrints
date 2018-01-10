@@ -62,13 +62,6 @@ namespace BluePrints.Common
         [Display(Name = "Live")] Live = 2
     }
 
-    public enum EstimateStatus
-    {
-        [Display(Name = "Superseded")] Superseded = 0,
-        [Display(Name = "Live Estimate")] LiveEstimate = 1,
-        [Display(Name = "Live Budget")] LiveBudget = 2
-    }
-
     public enum DeliverableType
     {
         [Display(Name = "Deliverable")] Deliverable = 0,
@@ -230,10 +223,8 @@ namespace BluePrints.Common
 
     public enum StockCodeType
     {
-        Direct = 0,
-        Design = 1,
-        Indirect = 2,
-        Overhead = 3
+        Estimate = 0,
+        Budget = 1
     }
 
     public enum DialogAction
@@ -509,6 +500,24 @@ namespace BluePrints.Common
         Direct = 1,
         [Display(Name = "Both")]
         Both = 2
+    }
+
+    public enum EstimateViewMode
+    {
+        [Display(Name = "Estimate")]
+        Estimate = 0,
+        [Display(Name = "Budget")]
+        Budget = 1
+    }
+
+    public enum EstimateLineType
+    {
+        [Display(Name = "Install")]
+        Install = 0,
+        [Display(Name = "Supply")]
+        Supply = 1,
+        [Display(Name = "Indirect")]
+        Indirect = 0
     }
 
     public class ReportingEnum

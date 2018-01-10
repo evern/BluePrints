@@ -44,7 +44,7 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Status" FieldName="STATUS">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:EstimateStatus}}" />
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:BaselineStatus}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="P6 Baseline Schedule Name" FieldName="P6BASELINE_NAME" MinWidth="200">

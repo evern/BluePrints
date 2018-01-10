@@ -93,7 +93,7 @@ namespace BluePrints.ViewModels
 
         protected override void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
         {
-            //estimated hours field is disabled but just in case
+            //budgeted hours field is disabled but just in case
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Variation_Units))
             {
                 BASELINE_ITEMVariation validateEntity = (BASELINE_ITEMVariation)e.Row;

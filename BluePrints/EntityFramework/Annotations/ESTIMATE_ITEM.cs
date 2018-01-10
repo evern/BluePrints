@@ -123,7 +123,7 @@ namespace BluePrints.Data
 
         public decimal Total_Units_IncludingByDuration => Budget_Units;
 
-        public decimal Budget_Units => STOCK_CODE == null ? 0 : BUDGET_QUANTITY * STOCK_CODE.HOURS_INSTALL;
+        public decimal Budget_Units => STOCK_CODE == null ? 0 : BUDGET_QUANTITY == null ? 0 : (decimal)BUDGET_QUANTITY * STOCK_CODE.HOURS_INSTALL;
 
         public decimal Total_Units => Budget_Units + Variation_Units;
 
@@ -139,7 +139,7 @@ namespace BluePrints.Data
         public Guid? Baseline_Guid { get => GUID_ESTIMATE; set => GUID_ESTIMATE = value; }
 
         [NotMapped]
-        public decimal Estimated_Value { get => BUDGET_QUANTITY; set => BUDGET_QUANTITY = value; }
+        public decimal Estimated_Value { get => BUDGET_QUANTITY == null ? 0 : (decimal)BUDGET_QUANTITY; set => BUDGET_QUANTITY = value; }
 
         [NotMapped]
         public decimal DC_Value { get => DC_QUANTITY; set => DC_QUANTITY = value; }

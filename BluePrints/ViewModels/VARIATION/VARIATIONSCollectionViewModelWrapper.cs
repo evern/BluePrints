@@ -303,7 +303,7 @@ namespace BluePrints.ViewModels
                 if (ESTIMATECollection == null || BASELINECollection.Count() == 0)
                     return null;
                 else
-                    return ESTIMATECollection.FirstOrDefault(x => x.STATUS == EstimateStatus.LiveBudget);
+                    return ESTIMATECollection.FirstOrDefault(x => x.STATUS == BaselineStatus.Live);
             }
         }
 

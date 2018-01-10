@@ -83,7 +83,7 @@
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Budgeted">
                                 <custom:GridColumnEx Header="By Duration" FieldName="Entity.Entity.BY_DURATION" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" />
-                                <custom:GridColumnEx Header="Estimated Hours" FieldName="Entity.Entity.ESTIMATED_HOURS" HeaderToolTip="Baseline hours" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" Visible="False">
+                                <custom:GridColumnEx Header="Estimated Hours" FieldName="Entity.Entity.BUDGET_HOURS" HeaderToolTip="Baseline hours" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" Visible="False">
                                     <custom:GridColumnEx.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </custom:GridColumnEx.EditSettings>
@@ -260,7 +260,7 @@
                             <dxg:GridSummaryItem FieldName="Earned_Units_ToDate" DisplayFormat="Total: {0:n}" ShowInColumn="Earned_Units_ToDate" SummaryType="Sum" />
                             <dxg:GridSummaryItem FieldName="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" DisplayFormat="Total: {0:p}" ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" SummaryType="Custom" />
                             <dxg:GridSummaryItem FieldName="DisplayPeriodEarnedCosts" DisplayFormat="Total: {0:c2}" ShowInColumn="DisplayPeriodEarnedCosts" SummaryType="Sum" />
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.BUDGET_HOURS" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
                             <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
                             <dxg:GridSummaryItem FieldName="Entity.Entity.Total_Units" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
                             <dxg:GridSummaryItem FieldName="PROGRESS_ITEMcurrent.EARNED_UNITS" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
@@ -276,7 +276,7 @@
                             <dxg:GridSummaryItem FieldName="Earned_Units_ToDate" DisplayFormat="Total: {0:n}" ShowInColumn="Earned_Units_ToDate" SummaryType="Sum" />
                             <dxg:GridSummaryItem FieldName="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" DisplayFormat="Total: {0:p}" ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" SummaryType="Custom" />
                             <dxg:GridSummaryItem FieldName="DisplayPeriodEarnedCosts" DisplayFormat="Total: {0:c2}" ShowInColumn="DisplayPeriodEarnedCosts" SummaryType="Sum" />
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.BUDGET_HOURS" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
                             <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
                             <dxg:GridSummaryItem FieldName="Entity.Entity.Total_Units" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
                             <dxg:GridSummaryItem FieldName="Entity.BASELINE_ITEM" DisplayFormat="Total {0} Records" ShowInColumn="Entity.BASELINE_ITEM" SummaryType="Count" />

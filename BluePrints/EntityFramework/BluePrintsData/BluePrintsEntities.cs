@@ -520,7 +520,12 @@ namespace BluePrints.Data
             modelBuilder.Entity<STOCK_CODE>()
                 .HasMany(e => e.ESTIMATE_ITEM)
                 .WithOptional(e => e.STOCK_CODE)
-                .HasForeignKey(e => e.GUID_STOCK_CODE);
+                .HasForeignKey(e => e.GUID_ESTIMATE_STOCK_CODE);
+
+            modelBuilder.Entity<STOCK_CODE>()
+                .HasMany(e => e.ESTIMATE_ITEM1)
+                .WithOptional(e => e.STOCK_CODE1)
+                .HasForeignKey(e => e.GUID_BUDGET_STOCK_CODE);
 
             modelBuilder.Entity<STOCK_GROUP>()
                 .HasMany(e => e.ESTIMATE_ITEM)

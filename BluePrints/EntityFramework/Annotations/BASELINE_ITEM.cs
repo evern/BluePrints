@@ -270,7 +270,7 @@ namespace BluePrints.Data
                 if (IsByDuration)
                     return BluePrintsConstants.DurationBasedTotalUnits;
 
-                return ESTIMATED_HOURS;
+                return BUDGET_HOURS;
             }
         }
 
@@ -282,7 +282,7 @@ namespace BluePrints.Data
                 if (IsByDuration)
                     return BluePrintsConstants.DurationBasedTotalUnits;
 
-                return ESTIMATED_HOURS + DC_HOURS;
+                return BUDGET_HOURS + DC_HOURS;
             }
         }
 
@@ -308,7 +308,7 @@ namespace BluePrints.Data
         public Guid? Baseline_Guid { get => GUID_BASELINE; set => GUID_BASELINE = value; } 
 
         [NotMapped]
-        public decimal Estimated_Value { get => ESTIMATED_HOURS; set => ESTIMATED_HOURS = value; }
+        public decimal Estimated_Value { get => BUDGET_HOURS; set => BUDGET_HOURS = value; }
 
         [NotMapped]
         public decimal DC_Value { get => DC_HOURS; set => DC_HOURS = value; }

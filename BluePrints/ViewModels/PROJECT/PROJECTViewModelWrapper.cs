@@ -100,7 +100,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
         {
-            return query => query.Where(x => x.STATUS == EstimateStatus.LiveBudget && x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.REVISION);
+            return query => query.Where(x => x.STATUS == BaselineStatus.Live && x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.REVISION);
         }
 
         private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()

@@ -14,6 +14,7 @@ namespace BluePrints.Data
         public STOCK_CODE()
         {
             ESTIMATE_ITEM = new HashSet<ESTIMATE_ITEM>();
+            ESTIMATE_ITEM1 = new HashSet<ESTIMATE_ITEM>();
             RATE_SUPPLY = 0;
             HOURS_INSTALL = 0;
         }

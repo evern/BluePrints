@@ -78,7 +78,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == EstimateStatus.LiveBudget);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
         }
 
         private void assign_estimation_direct(ESTIMATE estimation_direct)

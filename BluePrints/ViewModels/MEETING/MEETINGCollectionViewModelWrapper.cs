@@ -145,7 +145,7 @@ namespace BluePrints.ViewModels
         public bool validateSetValueCallBack(MEETING entity, string column_name, object newValue)
         {
             string fieldName = DataUtils.FormatColumnFieldname(column_name);
-            //estimated hours field is disabled but just in case
+            //budgeted hours field is disabled but just in case
             if (fieldName == BindableBase.GetPropertyName(() => new MEETING().MEETING_START))
             {
                 if (((DateTime)newValue) > entity.MEETING_END)

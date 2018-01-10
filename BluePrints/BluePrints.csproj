@@ -666,7 +666,6 @@
     <Compile Include="Common\Misc\BluePrintsEnums.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMWorkpackSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
-    <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\CLIENT\CLIENTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\HOLIDAY\HOLIDAYCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MEETING\MEETINGCollectionViewModelWrapper.cs" />

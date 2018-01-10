@@ -89,10 +89,6 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public override decimal UnitsPerQuantity => Reportables.Sum(x => x.UnitsPerQuantity);
 
-        public override decimal Total_Install_Cost => Reportables.Sum(x => x.Total_Install_Cost);
-
-        public override decimal Total_Supply_Cost => Reportables.Sum(x => x.Total_Supply_Cost);
-
         public override decimal Earned_Install_Costs_OnDataDate => Reportables.Sum(x => x.Earned_Install_Costs_OnDataDate);
 
         public override decimal Earned_Supply_Costs_OnDataDate => Reportables.Sum(x => x.Earned_Supply_Costs_OnDataDate);
@@ -314,9 +310,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             
         }
 
-        public decimal Estimated_Quantity => Entity.Estimated_Quantity;
+        public decimal Budget_Quantity => Entity.Budget_Quantity;
         public decimal Total_Quantity => Entity.Total_Quantity;
-        public string UOM => Entity.UOM;
+        public string Estimate_UOM => Entity.Estimate_UOM;
+
+        public string Budget_UOM => Entity.Budget_UOM;
 
         public virtual decimal QuantityPerUnit
         {
@@ -352,7 +350,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                return SchedulePercentage * Estimated_Quantity;
+                return SchedulePercentage * Budget_Quantity;
             }
         }
 
@@ -360,7 +358,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                return ScheduleCurrentPeriodPercentage * Estimated_Quantity;
+                return ScheduleCurrentPeriodPercentage * Budget_Quantity;
             }
         }
 
@@ -435,49 +433,71 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Total_Install_Hours => Total_Units;
 
-        public virtual decimal Total_Install_Cost => Entity.Total_Install_Cost;
+        public decimal Total_Estimate_Cost => Estimate_Install_Cost + Estimate_Freight_Cost + Estimate_Supply_Cost;
 
-        public virtual decimal Total_Supply_Cost => Entity.Total_Supply_Cost;
+        public decimal Estimate_Stock_Code_Install_Hours => Entity.Estimate_Stock_Code_Install_Hours;
 
-        public decimal Total_Cost => Total_Install_Cost + Total_Supply_Cost;
+        public decimal Budget_Stock_Code_Install_Hours => Entity.Budget_Stock_Code_Install_Hours;
 
-        public decimal Stock_Code_Install_Hours => Entity.Stock_Code_Install_Hours;
+        public decimal Estimate_Stock_Code_Supply_Rate => Entity.Estimate_Stock_Code_Supply_Rate;
 
-        public decimal Stock_Code_Supply_Rate => Entity.Stock_Code_Supply_Rate;
+        public decimal Budget_Stock_Code_Supply_Rate => Entity.Budget_Stock_Code_Supply_Rate;
 
         public decimal Variation_Quantity => Entity.Variation_Quantity;
 
-        public virtual decimal Earned_Install_Costs_OnDataDate => Earned_Units_OnDataDate * ItemRate;
+        public virtual decimal Earned_Install_Costs_OnDataDate => Earned_Units_OnDataDate * Budget_ItemRate;
 
-        public virtual decimal Earned_Supply_Costs_OnDataDate => Earned_Units_OnDataDate * Entity.Stock_Code_Supply_Rate;
+        public decimal Estimate_ItemRate => Entity.Estimate_ItemRate;
+
+        public virtual decimal Earned_Supply_Costs_OnDataDate => Earned_Units_OnDataDate * Entity.Estimate_Stock_Code_Supply_Rate;
 
         public decimal Earned_Total_Costs_OnDataDate => Earned_Install_Costs_OnDataDate + Earned_Supply_Costs_OnDataDate;
 
         public Guid? Stock_Group_Guid => Entity.Stock_Group_Guid;
 
-        public decimal FreightRate => Entity.FreightRate;
+        public decimal Budget_FreightRate => Entity.Budget_FreightRate;
 
-        public decimal Estimated_Install_Cost => Entity.Estimated_Install_Cost;
+        public decimal Estimate_Install_Cost => Entity.Estimate_Install_Cost;
 
         public decimal Variation_Install_Cost => Entity.Variation_Install_Cost;
 
-        public decimal Estimated_Freight_Cost => Entity.Estimated_Freight_Cost;
+        public decimal Estimate_Freight_Cost => Entity.Estimate_Freight_Cost;
 
         public decimal Variation_Freight_Cost => Entity.Variation_Freight_Cost;
 
-        public decimal Total_Freight_Cost => Entity.Total_Freight_Cost;
-
-        public decimal Estimated_Install_Hours => Entity.Estimated_Install_Hours;
+        public decimal Estimate_Install_Hours => Entity.Estimate_Install_Hours;
 
         public decimal Variation_Install_Hours => Entity.Variation_Install_Hours;
 
-        public decimal Estimated_Supply_Cost => Entity.Estimated_Supply_Cost;
+        public decimal Estimate_Supply_Cost => Entity.Estimate_Supply_Cost;
+
+        public decimal Budget_Supply_Cost => Entity.Budget_Supply_Cost;
 
         public decimal Variation_Supply_Cost => Entity.Variation_Supply_Cost;
 
         public override decimal P6_Assignment_Total_Quantity => Entity.Total_Quantity;
 
-        public override string P6_Assignment_UOM => Entity.UOM;
+        public override string P6_Assignment_UOM => Entity.Estimate_UOM;
+
+        public decimal Estimate_Quantity => Entity.Estimate_Quantity;
+
+        public decimal Budget_Install_Hours => Entity.Budget_Install_Hours;
+
+        public decimal Budget_Install_Cost => Entity.Budget_Install_Cost;
+
+        public decimal Total_Budget_Install_Cost => Entity.Total_Budget_Install_Cost;
+
+        public decimal Total_Budget_Freight_Cost => Entity.Total_Budget_Freight_Cost;
+
+        public decimal Total_Budget_Supply_Cost => Entity.Total_Budget_Supply_Cost;
+
+        public decimal Total_Budget_Cost => Entity.Total_Budget_Cost;
+
+        public decimal Budget_Freight_Cost => Entity.Budget_Freight_Cost;
+
+        public decimal Estimate_Units => Entity.Estimate_Units;
+
+        public decimal Estimate_FreightRate => Entity.Estimate_FreightRate;
 
         protected override decimal getNewPercentage()
         {
@@ -722,15 +742,15 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public virtual decimal Earned_Units_OnDataDate => PROGRESS_ITEM_Current == null ? 0 : PROGRESS_ITEM_Current.EARNED_UNITS;
 
-        public virtual decimal Earned_Costs_OnDataDate => Earned_Units_OnDataDate * Entity.ItemRate;
+        public virtual decimal Earned_Costs_OnDataDate => Earned_Units_OnDataDate * Entity.Budget_ItemRate;
 
         public virtual decimal Earned_Units_ToDate => Earned_Units_BeforeDataDate + Earned_Units_OnDataDate;
 
         public decimal Earned_Units_Total => Earned_Units_ToDate + Earned_Units_AfterDataDate;
 
-        public virtual decimal Earned_Costs_Total => Earned_Units_Total * Entity.ItemRate;
+        public virtual decimal Earned_Costs_Total => Earned_Units_Total * Entity.Budget_ItemRate;
 
-        public decimal Earned_Costs_ToDate => Earned_Units_ToDate * Entity.ItemRate;
+        public decimal Earned_Costs_ToDate => Earned_Units_ToDate * Entity.Budget_ItemRate;
         
         DateTime reportingDataDate { get; set; }
         public DateTime ReportingDataDate { get { return reportingDataDate; } }
@@ -809,7 +829,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid OriginalEntityKey => Entity.OriginalEntityKey;
 
-        public decimal ItemRate => Entity.ItemRate;
+        public decimal Budget_ItemRate => Entity.Budget_ItemRate;
 
         public decimal Budget_Costs => Entity.Budget_Costs;
 

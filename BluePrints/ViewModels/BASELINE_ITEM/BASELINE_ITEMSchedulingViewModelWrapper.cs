@@ -213,17 +213,17 @@ namespace BluePrints.ViewModels
         #region View Behavior
         private void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
         {
-            //estimated hours field is disabled but just in case
+            //budget hours field is disabled but just in case
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
-                BindableBase.GetPropertyName(() => new BASELINE_ITEM().ESTIMATED_HOURS))
+                BindableBase.GetPropertyName(() => new BASELINE_ITEM().BUDGET_HOURS))
             {
                 BASELINE_ITEMProgress validateEntity = (BASELINE_ITEMProgress)e.Row;
                 if (validateEntity.Entity.Entity.BY_DURATION && ((decimal)e.Value) > 0)
                 {
                     e.IsValid = false;
                     e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
-                    e.ErrorContent = "Cannot set estimated hours when deliverable is by duration";
+                    e.ErrorContent = "Cannot set budget hours when deliverable is by duration";
                 }
             }
             else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
@@ -252,16 +252,16 @@ namespace BluePrints.ViewModels
                 var activeBASELINE_ITEM = (BASELINE_ITEMProgress)e.Row;
                 if ((bool)e.Value)
                 {
-                    decimal oldValue = activeBASELINE_ITEM.Entity.Entity.ESTIMATED_HOURS;
+                    decimal oldValue = activeBASELINE_ITEM.Entity.Entity.BUDGET_HOURS;
                     if (oldValue > 0)
                     {
                         decimal newValue = 0;
-                        string estimatedHoursFieldName = BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+                        string budgetHoursFieldName = BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
                         BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
-                        BindableBase.GetPropertyName(() => new BASELINE_ITEM().ESTIMATED_HOURS);
-                        activeBASELINE_ITEM.Entity.Entity.ESTIMATED_HOURS = newValue;
+                        BindableBase.GetPropertyName(() => new BASELINE_ITEM().BUDGET_HOURS);
+                        activeBASELINE_ITEM.Entity.Entity.BUDGET_HOURS = newValue;
                         MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(activeBASELINE_ITEM, estimatedHoursFieldName, oldValue, newValue, EntityMessageType.Changed);
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(activeBASELINE_ITEM, budgetHoursFieldName, oldValue, newValue, EntityMessageType.Changed);
                     }
                 }
             }
@@ -381,14 +381,14 @@ namespace BluePrints.ViewModels
         }
 
         /// <summary>
-        /// Refresh all min max units for converter to do estimated hours validation
+        /// Refresh all min max units for converter to do budget hours validation
         /// </summary>
         public void CellValueChanged(CellValueChangedEventArgs e)
         {
             if (e.Column.FieldName ==
                                  BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
                                  BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
-                                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().ESTIMATED_HOURS))
+                                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().BUDGET_HOURS))
                 this.RaisePropertiesChanged();
 
             if (e.Column.FieldName ==
@@ -438,7 +438,7 @@ namespace BluePrints.ViewModels
                 loadBASELINE.BUDGETED_UNITS = 0;
             else
             {
-                decimal totalEstimatedHours = MainViewModel.Entities.Sum(x => x.Entity.Entity.ESTIMATED_HOURS);
+                decimal totalEstimatedHours = MainViewModel.Entities.Sum(x => x.Entity.Entity.BUDGET_HOURS);
                 loadBASELINE.BUDGETED_UNITS = totalEstimatedHours;
             }
 
@@ -575,7 +575,7 @@ namespace BluePrints.ViewModels
                     DataUtils.ShallowCopy(newProjection.Entity.Entity, selectedEntity.Entity.Entity);
                     newProjection.Entity.EntityKey = Guid.Empty;
                     newProjection.Entity.Entity.GUID_ORIGINAL = Guid.Empty;
-                    newProjection.Entity.Entity.ESTIMATED_HOURS = IsBASELINELocked ? 0 : selectedEntity.Entity.Entity.ESTIMATED_HOURS;
+                    newProjection.Entity.Entity.BUDGET_HOURS = IsBASELINELocked ? 0 : selectedEntity.Entity.Entity.BUDGET_HOURS;
                     newProjection.Entity.Entity.DC_HOURS = 0;
                     var selectedAREA = AREACollection.FirstOrDefault(x => x.GUID == newProjection.Entity.Entity.GUID_AREA);
                     var selectedDISCIPLINE =

@@ -194,7 +194,7 @@ namespace BluePrints.ViewModels
                 newESTIMATE_DIRECT.GUID_PROJECT = entity.GUID;
                 newESTIMATE_DIRECT.NAME = entity.NUMBER + "_001";
                 newESTIMATE_DIRECT.REVISION = "A";
-                newESTIMATE_DIRECT.STATUS = EstimateStatus.LiveEstimate;
+                newESTIMATE_DIRECT.STATUS = BaselineStatus.Working;
                 ESTIMATEViewModel.Save(newESTIMATE_DIRECT);
 
                 PROGRESS newDesignPROGRESS = new PROGRESS();

@@ -326,7 +326,7 @@
                                         <dxe:CheckEditSettings />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="ESTIMATED_HOURS" FieldName="Entity.Entity.ESTIMATED_HOURS" ReadOnly="True">
+                                <dxg:GridColumn Header="BUDGET_HOURS" FieldName="Entity.Entity.BUDGET_HOURS" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
@@ -352,13 +352,13 @@
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.GroupSummary>
                                 <dxg:GridSummaryItem FieldName="Entity.Entity.COMMENTS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />
-                                <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" ShowInColumn="Entity.Entity.ESTIMATED_HOURS" SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="Entity.Entity.BUDGET_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
                                 <dxg:GridSummaryItem FieldName="Entity.Total_Costs" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" ShowInColumn="Entity.Total_Costs" SummaryType="Sum" />
                                 <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Entity.Entity.DC_HOURS" SummaryType="Sum" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.TotalSummary>
                                 <dxg:GridSummaryItem FieldName="Entity.Entity.COMMENTS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />
-                                <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" ShowInColumn="Entity.Entity.ESTIMATED_HOURS" SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="Entity.Entity.BUDGET_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
                                 <dxg:GridSummaryItem FieldName="Entity.Total_Costs" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" ShowInColumn="Entity.Total_Costs" SummaryType="Sum" />
                                 <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Entity.Entity.DC_HOURS" SummaryType="Sum" />
                             </dxg:GridControl.TotalSummary>

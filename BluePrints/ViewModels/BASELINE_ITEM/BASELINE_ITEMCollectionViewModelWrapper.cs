@@ -551,8 +551,8 @@ namespace BluePrints.ViewModels
         public bool validateSetValueCallBack(BASELINE_ITEMProgress entity, string column_name, object newValue)
         {
             string fieldName = DataUtils.FormatColumnFieldname(column_name);
-            //estimated hours field is disabled but just in case
-            if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().ESTIMATED_HOURS))
+            //budget hours field is disabled but just in case
+            if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().BUDGET_HOURS))
             {
                 if (entity.Entity.Entity.BY_DURATION && ((decimal)newValue) > 0)
                     return false;
@@ -587,11 +587,11 @@ namespace BluePrints.ViewModels
         public string Interface_AdditionalValidateCellCallBack(BASELINE_ITEMProgress validateEntity, object currentValue, string fieldName)
         {
             string error_message = string.Empty;
-            //estimated hours field is disabled but just in case
-            if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().ESTIMATED_HOURS))
+            //budget hours field is disabled but just in case
+            if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().BUDGET_HOURS))
             {
                 if (validateEntity.Entity.Entity.BY_DURATION && ((decimal)currentValue) > 0)
-                    error_message = "Cannot set estimated hours when deliverable is by duration";
+                    error_message = "Cannot set budget hours when deliverable is by duration";
             }
             else if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
             {
@@ -631,7 +631,7 @@ namespace BluePrints.ViewModels
 
         //public void OnCustomColumnSort(CustomColumnSortEventArgs e)
         //{
-        //    if (e.Column.FieldName == Base_Entity_String + BindableBase.GetPropertyName(() => new BASELINE_ITEM().ESTIMATED_HOURS))
+        //    if (e.Column.FieldName == Base_Entity_String + BindableBase.GetPropertyName(() => new BASELINE_ITEM().BUDGET_HOURS))
         //    {
         //        decimal decimal_value1 = (decimal)e.Value1;
         //        decimal decimal_value2 = (decimal)e.Value2;
@@ -657,14 +657,14 @@ namespace BluePrints.ViewModels
             {
                 if ((bool)new_value)
                 {
-                    decimal oldValue = active_progress.Entity.Entity.ESTIMATED_HOURS;
+                    decimal oldValue = active_progress.Entity.Entity.BUDGET_HOURS;
                     if (oldValue > 0)
                     {
                         decimal newValue = 0;
-                        string estimatedHoursFieldName = BindableBase.GetPropertyName(() => new BASELINE_ITEM().ESTIMATED_HOURS);
-                        active_progress.Entity.Entity.ESTIMATED_HOURS = newValue;
+                        string budgetHoursFieldName = BindableBase.GetPropertyName(() => new BASELINE_ITEM().BUDGET_HOURS);
+                        active_progress.Entity.Entity.BUDGET_HOURS = newValue;
                         PauseUndoRedo();
-                        AddUndo(active_progress, estimatedHoursFieldName, oldValue, newValue, EntityMessageType.Changed);
+                        AddUndo(active_progress, budgetHoursFieldName, oldValue, newValue, EntityMessageType.Changed);
                     }
                 }
             }
@@ -761,11 +761,11 @@ namespace BluePrints.ViewModels
         }
 
         /// <summary>
-        /// Refresh all min max units for converter to do estimated hours validation
+        /// Refresh all min max units for converter to do budget hours validation
         /// </summary>
         public void CellValueChanged(CellValueChangedEventArgs e)
         {
-            if (e.Column.FieldName == Base_Entity_String + BindableBase.GetPropertyName(() => new BASELINE_ITEM().ESTIMATED_HOURS))
+            if (e.Column.FieldName == Base_Entity_String + BindableBase.GetPropertyName(() => new BASELINE_ITEM().BUDGET_HOURS))
                 this.RaisePropertiesChanged();
 
             Interface_CellValueChanged(e.Column.FieldName, (BASELINE_ITEMProgress)e.Row);
@@ -810,7 +810,7 @@ namespace BluePrints.ViewModels
                 loadBASELINE.BUDGETED_UNITS = 0;
             else
             {
-                decimal totalEstimatedHours = MainViewModel.Entities.Sum(x => x.Entity.Entity.ESTIMATED_HOURS);
+                decimal totalEstimatedHours = MainViewModel.Entities.Sum(x => x.Entity.Entity.BUDGET_HOURS);
                 loadBASELINE.BUDGETED_UNITS = totalEstimatedHours;
             }
 
@@ -966,9 +966,9 @@ namespace BluePrints.ViewModels
 
                     //when duplicated by variation this should be 0
                     if(BaseEntityQueryCallBack != null)
-                        newProjection.Entity.Entity.ESTIMATED_HOURS = 0;
+                        newProjection.Entity.Entity.BUDGET_HOURS = 0;
                     else
-                        newProjection.Entity.Entity.ESTIMATED_HOURS = IsBASELINELocked ? 0 : selectedEntity.Entity.Entity.ESTIMATED_HOURS;
+                        newProjection.Entity.Entity.BUDGET_HOURS = IsBASELINELocked ? 0 : selectedEntity.Entity.Entity.BUDGET_HOURS;
                     
                     newProjection.Entity.Entity.DC_HOURS = 0;
                     var selectedAREA = AREACollection.FirstOrDefault(x => x.GUID == newProjection.Entity.Entity.GUID_AREA);

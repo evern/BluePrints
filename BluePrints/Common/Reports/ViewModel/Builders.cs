@@ -171,7 +171,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 BudgetedUnits = reportable.Stats.BudgetedUnits,
                 BudgetedCosts = reportable.Stats.BudgetedCosts * CurrencyConversion,
                 Units = x.EARNED_UNITS,
-                Costs = x.EARNED_UNITS * reportable.ItemRate * CurrencyConversion,
+                Costs = x.EARNED_UNITS * reportable.Budget_ItemRate * CurrencyConversion,
                 ProgressDate = x.EARNED_DATE,
             }).ToArray();
             reportable.Stats.Earned.SetData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));

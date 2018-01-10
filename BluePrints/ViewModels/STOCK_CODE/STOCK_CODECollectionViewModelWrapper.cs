@@ -43,7 +43,6 @@ namespace BluePrints.ViewModels
         #region Database Operations
 
         private PROJECT loadPROJECT;
-        private StockCodeType loadCommodityCodeType;
         private DEPARTMENT defaultDepartment;
         private bool isProjectSpecific
         {
@@ -59,7 +58,6 @@ namespace BluePrints.ViewModels
             {
                 var projectCodeTypeParameter = (DualEntitiesParameter<PROJECT, StockCodeTypeClass>)parameter;
                 loadPROJECT = projectCodeTypeParameter.GetFirstEntity();
-                loadCommodityCodeType = projectCodeTypeParameter.GetSecondEntity().commodityCodeType;
             }
         }
 
@@ -95,9 +93,9 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> specifyMainViewModelProjection()
         {
             if (isProjectSpecific)
-                return query => query.Where(x => x.STOCK_CODE_TYPE == loadCommodityCodeType).Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.CODE);
+                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.CODE);
             else
-                return query => query.Where(x => x.STOCK_CODE_TYPE == loadCommodityCodeType).Where(x => x.GUID_PROJECT == null).OrderBy(x => x.CODE);
+                return query => query.Where(x => x.GUID_PROJECT == null).OrderBy(x => x.CODE);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<STOCK_CODE> entities)
@@ -118,7 +116,9 @@ namespace BluePrints.ViewModels
                 entity.GUID_PROJECT = loadPROJECT.GUID;
 
             entity.GUID_DEPARTMENT = defaultDepartment.GUID;
-            entity.STOCK_CODE_TYPE = loadCommodityCodeType;
+
+            //new item is not allowed, so stock code type will be whatever it was previously
+            //entity.STOCK_CODE_TYPE = loadCommodityCodeType;
             return true;
         }
 
@@ -152,7 +152,7 @@ namespace BluePrints.ViewModels
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
             foreach (STOCK_CODE projectStockCode in MainViewModel.Entities)
             {
-                if (!estimation_direct_items.Any(x => x.Entity.Entity.GUID_STOCK_CODE == projectStockCode.GUID))
+                if (!estimation_direct_items.Any(x => x.Entity.Entity.GUID_ESTIMATE_STOCK_CODE == projectStockCode.GUID))
                 {
                     removeStockCodes.Add(projectStockCode);
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(projectStockCode, null, null, null, EntityMessageType.Deleted);

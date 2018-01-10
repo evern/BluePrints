@@ -476,7 +476,7 @@ namespace BluePrints.Common.Base
         }
 
         /// <summary>
-        /// Refresh all min max units for converter to do estimated hours validation
+        /// Refresh all min max units for converter to do budgeted hours validation
         /// </summary>
         public void CellValueChanged(CellValueChangedEventArgs e)
         {

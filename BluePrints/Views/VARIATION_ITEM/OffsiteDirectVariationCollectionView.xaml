@@ -237,7 +237,7 @@
                                     <dxe:ComboBoxEditSettings AllowDrop="False" AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationAction}}" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Cancel" FieldName="UNBOUND_CANCEL" HeaderToolTip="Cancel this deliverable. When deliverable has already earned some units it's variation hours will be (estimated hours - earned hours)" ReadOnly="True" AllowEditing="False" UnboundType="Boolean">
+                            <custom:GridColumnEx Header="Cancel" FieldName="UNBOUND_CANCEL" HeaderToolTip="Cancel this deliverable. When deliverable has already earned some units it's variation hours will be (budgeted hours - earned hours)" ReadOnly="True" AllowEditing="False" UnboundType="Boolean">
                                 <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <Button Command="{Binding DataContext.CancelDeliverableCommand, ElementName=userControl}" Height="18" CommandParameter="{Binding RowData.Row}" IsEnabled="{Binding RowData.Row.IsCancellable}">

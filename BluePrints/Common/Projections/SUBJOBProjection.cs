@@ -35,7 +35,7 @@ namespace BluePrints.Common.Projections
 
         public decimal Variation_Units => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Variation_Units);
 
-        public decimal ItemRate => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.ItemRate);
+        public decimal Budget_ItemRate => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Budget_ItemRate);
 
         public decimal Budget_Costs => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Budget_Costs);
 

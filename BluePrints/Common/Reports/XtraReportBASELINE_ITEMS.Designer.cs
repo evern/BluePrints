@@ -175,7 +175,7 @@
             this.xrlblDataHours.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrlblDataHours.CanGrow = false;
             this.xrlblDataHours.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Entity.ESTIMATED_HOURS", "{0:n2}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Entity.BUDGET_HOURS", "{0:n2}")});
             this.xrlblDataHours.Dpi = 100F;
             this.xrlblDataHours.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrlblDataHours.LocationFloat = new DevExpress.Utils.PointFloat(805.0632F, 0F);
@@ -642,7 +642,7 @@
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrlblTotalHours.CanGrow = false;
             this.xrlblTotalHours.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Entity.ESTIMATED_HOURS")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Entity.BUDGET_HOURS")});
             this.xrlblTotalHours.Dpi = 100F;
             this.xrlblTotalHours.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrlblTotalHours.LocationFloat = new DevExpress.Utils.PointFloat(804.0634F, 0F);

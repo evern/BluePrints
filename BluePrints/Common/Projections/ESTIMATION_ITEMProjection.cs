@@ -17,49 +17,90 @@ namespace BluePrints.Common.Projections
             : base()
         {
             //need to initialize commodity code here so that copy/paste is able to get property info within STOCK_GROUP
-            stock_code = new STOCK_CODE();
+            estimate_stock_code = new STOCK_CODE();
         }
 
         public RATE FREIGHT_RATE { get; set; }
 
-        public decimal FreightRate => FREIGHT_RATE == null ? 0 : FREIGHT_RATE.RATE1 == null || Entity.TRUCK_PERCENTAGE == null ? 0 : (decimal)FREIGHT_RATE.RATE1 * (decimal)Entity.TRUCK_PERCENTAGE;
+        public decimal Budget_FreightRate => Entity.BUDGET_TRUCK_PERCENTAGE == null ? 0 : FREIGHT_RATE == null || FREIGHT_RATE.RATE1 == null ? 0 : ((Decimal)FREIGHT_RATE.RATE1) * (decimal)Entity.BUDGET_TRUCK_PERCENTAGE;
+
+        public decimal Estimate_FreightRate => Entity.ESTIMATE_TRUCK_PERCENTAGE == null ? 0 : FREIGHT_RATE == null || FREIGHT_RATE.RATE1 == null ? 0 : ((Decimal)FREIGHT_RATE.RATE1) * (decimal)Entity.ESTIMATE_TRUCK_PERCENTAGE;
 
         public IEnumerable<STOCK_CODE> StockCodeCollection { get; set; }
-        private STOCK_CODE stock_code;
-        public STOCK_CODE STOCK_CODE
+        private STOCK_CODE estimate_stock_code;
+        public STOCK_CODE ESTIMATE_STOCK_CODE
         {
             get
             {
-                return stock_code;
+                return estimate_stock_code;
             }
             set
             {
                 //Always go by value so that changes can be identified in view
                 if (value != null)
-                    DataUtils.ShallowCopy(stock_code, value);
+                    DataUtils.ShallowCopy(estimate_stock_code, value);
             }
         }
 
-        //Used for direct property access validation in fill/undo-redo
-        public Guid? StockCodeGuid
+        private STOCK_CODE budget_stock_code;
+        public STOCK_CODE BUDGET_STOCK_CODE
         {
             get
             {
-                return Entity.GUID_STOCK_CODE;
+                return budget_stock_code;
+            }
+            set
+            {
+                //Always go by value so that changes can be identified in view
+                if (value != null)
+                    DataUtils.ShallowCopy(budget_stock_code, value);
+            }
+
+        }
+        //Used for direct property access validation in fill/undo-redo
+        public Guid? Estimate_StockCodeGuid
+        {
+            get
+            {
+                return Entity.GUID_ESTIMATE_STOCK_CODE;
             }
             set
             {
                 Guid? setValue = (Guid?)value;
                 if (setValue == null)
                 {
-                    Entity.GUID_STOCK_CODE = null;
-                    STOCK_CODE = null;
+                    Entity.GUID_ESTIMATE_STOCK_CODE = null;
+                    ESTIMATE_STOCK_CODE = null;
                 }
                 else if (IsStockCodeValid(setValue))
                 {
-                    Entity.GUID_STOCK_CODE = setValue;
+                    Entity.GUID_ESTIMATE_STOCK_CODE = setValue;
                     if (StockCodeCollection != null)
-                        STOCK_CODE = StockCodeCollection.FirstOrDefault(x => x.GUID == setValue);
+                        ESTIMATE_STOCK_CODE = StockCodeCollection.FirstOrDefault(x => x.GUID == setValue);
+                }
+            }
+        }
+
+        //Used for direct property access validation in fill/undo-redo
+        public Guid? Budget_StockCodeGuid
+        {
+            get
+            {
+                return Entity.GUID_BUDGET_STOCK_CODE;
+            }
+            set
+            {
+                Guid? setValue = (Guid?)value;
+                if (setValue == null)
+                {
+                    Entity.GUID_BUDGET_STOCK_CODE = null;
+                    BUDGET_STOCK_CODE = null;
+                }
+                else if (IsStockCodeValid(setValue))
+                {
+                    Entity.GUID_ESTIMATE_STOCK_CODE = setValue;
+                    if (StockCodeCollection != null)
+                        BUDGET_STOCK_CODE = StockCodeCollection.FirstOrDefault(x => x.GUID == setValue);
                 }
             }
         }
@@ -74,19 +115,19 @@ namespace BluePrints.Common.Projections
             {
                 if (value == Estimation_DirectProgressType.Trackable)
                 {
-                    if (STOCK_CODE == null)
+                    if (ESTIMATE_STOCK_CODE == null)
                         return;
 
                     if (Entity.STOCK_GROUP == null)
                         return;
 
-                    if (STOCK_CODE.UOM != Entity.STOCK_GROUP.UOM)
+                    if (ESTIMATE_STOCK_CODE.UOM != Entity.STOCK_GROUP.UOM)
                         return;
                 }
 
                 if (value == Estimation_DirectProgressType.Auto)
                 {
-                    if (STOCK_CODE == null)
+                    if (ESTIMATE_STOCK_CODE == null)
                         return;
 
                     if (Entity.STOCK_GROUP == null)
@@ -111,7 +152,7 @@ namespace BluePrints.Common.Projections
 
         public RATE RATE { get; set; }
 
-        public string Deliverable_Name => STOCK_CODE == null ? string.Empty : STOCK_CODE.CODE;
+        public string Deliverable_Name => ESTIMATE_STOCK_CODE == null ? string.Empty : ESTIMATE_STOCK_CODE.CODE;
 
         public string Phase_Code => BluePrintsResources.Default_Construction_Phase;
 
@@ -125,7 +166,9 @@ namespace BluePrints.Common.Projections
 
         public decimal Total_Units_IncludingByDuration => Budget_Units;
 
-        public decimal Budget_Units => Entity.STOCK_CODE == null ? STOCK_CODE == null ? 0 : STOCK_CODE.HOURS_INSTALL * Entity.BUDGET_QUANTITY : Entity.BUDGET_QUANTITY * Entity.STOCK_CODE.HOURS_INSTALL;
+        public decimal Estimate_Units => Entity.STOCK_CODE == null ? ESTIMATE_STOCK_CODE == null ? 0 : ESTIMATE_STOCK_CODE.HOURS_INSTALL * Entity.ESTIMATE_QUANTITY : Entity.STOCK_CODE.HOURS_INSTALL * Entity.ESTIMATE_QUANTITY;
+
+        public decimal Budget_Units => Entity.STOCK_CODE1 == null ? BUDGET_STOCK_CODE == null ? 0 : Entity.BUDGET_QUANTITY == null ? 0 : BUDGET_STOCK_CODE.HOURS_INSTALL * (decimal)Entity.BUDGET_QUANTITY : Entity.STOCK_CODE1.HOURS_INSTALL * (decimal)Entity.BUDGET_QUANTITY;
 
         public decimal Total_Units => Entity.Total_Units;
 
@@ -133,37 +176,45 @@ namespace BluePrints.Common.Projections
 
         public void SetOriginalEntityKey(Guid newGuid) { }
 
-        public decimal ItemRate => Entity.BUDGET_INSTALL_RATE == null ? RATE == null || RATE.RATE1 == null ? 0 : (decimal)RATE.RATE1 : (decimal)Entity.BUDGET_INSTALL_RATE;
+        public decimal Budget_ItemRate => Entity.BUDGET_INSTALL_RATE;
 
-        public decimal Budget_Costs => Budget_Units * ItemRate;
+        public decimal Estimate_ItemRate => Entity.ESTIMATE_INSTALL_RATE;
 
-        public decimal Total_Costs => Total_Install_Cost + Total_Freight_Cost + Total_Supply_Cost;
+        public decimal Budget_Costs => Budget_Units * Budget_ItemRate;
 
-        public decimal Estimated_Quantity => Entity.BUDGET_QUANTITY;
+        public decimal Total_Costs => Total_Budget_Install_Cost + Total_Budget_Freight_Cost + Total_Budget_Supply_Cost;
 
-        public decimal Total_Quantity => Entity.BUDGET_QUANTITY + Entity.DC_QUANTITY;
+        public decimal Budget_Quantity => Entity.BUDGET_QUANTITY == null ? 0 : (decimal)Entity.BUDGET_QUANTITY;
 
-        public string UOM => STOCK_CODE == null ? string.Empty : STOCK_CODE.UOM;
+        public decimal Total_Quantity => Entity.BUDGET_QUANTITY == null ? 0 : (decimal)Entity.BUDGET_QUANTITY + Entity.DC_QUANTITY;
+
+        public string Estimate_UOM => ESTIMATE_STOCK_CODE == null ? string.Empty : ESTIMATE_STOCK_CODE.UOM;
+
+        public string Budget_UOM => BUDGET_STOCK_CODE == null ? string.Empty : BUDGET_STOCK_CODE.UOM;
 
         public Estimation_DirectProgressType Progress_Type => Entity.PROGRESS_TYPE;
 
-        public decimal Supply_Cost => Stock_Code_Supply_Rate * Estimated_Quantity;
+        public decimal Estimate_Supply_Cost => Estimate_Stock_Code_Supply_Rate * Estimate_Quantity;
 
-        public decimal Install_Cost => Total_Units * ItemRate;
+        public decimal Budget_Supply_Cost => Budget_Stock_Code_Supply_Rate * Estimate_Quantity;
+
+        public decimal Install_Cost => Total_Units * Budget_ItemRate;
 
         public string Discipline_Code => Entity.Discipline_Code;
 
         public decimal Variation_Units => Entity.Variation_Units;
 
-        public decimal Variation_Costs => Variation_Units * ItemRate;
+        public decimal Variation_Costs => Variation_Units * Budget_ItemRate;
 
-        public decimal Stock_Code_Supply_Rate => STOCK_CODE == null ? 0 : STOCK_CODE.RATE_SUPPLY;
+        public decimal Estimate_Stock_Code_Supply_Rate => ESTIMATE_STOCK_CODE == null ? 0 : ESTIMATE_STOCK_CODE.RATE_SUPPLY;
+        
+        public decimal Budget_Stock_Code_Supply_Rate => BUDGET_STOCK_CODE == null ? 0 : BUDGET_STOCK_CODE.RATE_SUPPLY;
 
-        public string Stock_Code_Type => STOCK_CODE == null ? string.Empty : STOCK_CODE.TYPE;
+        public string Estimate_Stock_Code_Type => ESTIMATE_STOCK_CODE == null ? string.Empty : ESTIMATE_STOCK_CODE.TYPE;
 
-        public string Stock_Code_Spec => STOCK_CODE == null ? string.Empty : STOCK_CODE.SPEC;
+        public string Estimate_Stock_Code_Spec => ESTIMATE_STOCK_CODE == null ? string.Empty : ESTIMATE_STOCK_CODE.SPEC;
 
-        public string Stock_Code_Description => STOCK_CODE == null ? string.Empty : STOCK_CODE.DESCRIPTION;
+        public string Estimate_Stock_Code_Description => ESTIMATE_STOCK_CODE == null ? string.Empty : ESTIMATE_STOCK_CODE.DESCRIPTION;
 
         public decimal? DB_Productivity_Override { get => Entity.DB_Productivity_Override; set => Entity.DB_Productivity_Override = value; }
 
@@ -175,37 +226,31 @@ namespace BluePrints.Common.Projections
 
         public decimal DC_Value { get => Entity.DC_Value; set => Entity.DC_Value = value; }
 
-        public decimal Stock_Code_Install_Hours => STOCK_CODE == null ? 0 : STOCK_CODE.HOURS_INSTALL;
+        public decimal Estimate_Stock_Code_Install_Hours => ESTIMATE_STOCK_CODE == null ? 0 : ESTIMATE_STOCK_CODE.HOURS_INSTALL;
+        
+        public decimal Budget_Stock_Code_Install_Hours => BUDGET_STOCK_CODE == null ? 0 : BUDGET_STOCK_CODE.HOURS_INSTALL;
 
         public decimal Variation_Quantity => Entity.DC_QUANTITY;
 
         public Guid? Stock_Group_Guid => Entity.STOCK_GROUP == null ? Guid.Empty : Entity.STOCK_GROUP.GUID;
 
-        public decimal Estimated_Install_Cost => Budget_Units * ItemRate;
+        public decimal Estimate_Install_Cost => Estimate_Units * Estimate_ItemRate;
 
-        public decimal Variation_Install_Cost => Variation_Units * ItemRate;
+        public decimal Variation_Install_Cost => Variation_Units * Estimate_ItemRate;
 
-        public decimal Total_Install_Cost => Estimated_Install_Cost + Variation_Install_Cost;
+        public decimal Estimate_Freight_Cost => Estimate_Quantity * Estimate_FreightRate;
 
-        public decimal Estimated_Freight_Cost => Estimated_Quantity * FreightRate;
+        public decimal Variation_Freight_Cost => Variation_Quantity * Budget_FreightRate;
 
-        public decimal Variation_Freight_Cost => Variation_Quantity * FreightRate;
-
-        public decimal Total_Freight_Cost => Estimated_Freight_Cost + Variation_Freight_Cost;
-
-        public decimal Estimated_Install_Hours => Entity.Budget_Units;
+        public decimal Estimate_Install_Hours => Entity.STOCK_CODE == null ? 0 : Entity.ESTIMATE_QUANTITY * ESTIMATE_STOCK_CODE.HOURS_INSTALL;
 
         public decimal Variation_Install_Hours => Entity.Variation_Units;
 
-        public decimal Total_Install_Hours => Entity.Budget_Units;
+        public decimal Total_Install_Hours => Budget_Install_Hours + Variation_Install_Hours;
 
-        public decimal Estimated_Supply_Cost => Estimated_Quantity * Stock_Code_Supply_Rate;
+        public decimal Variation_Supply_Cost => Variation_Quantity * Estimate_Stock_Code_Supply_Rate;
 
-        public decimal Variation_Supply_Cost => Variation_Quantity * Stock_Code_Supply_Rate;
-
-        public decimal Total_Supply_Cost => Estimated_Supply_Cost + Variation_Supply_Cost;
-
-        public decimal Total_Cost => Total_Install_Cost + Total_Supply_Cost + Total_Freight_Cost;
+        public decimal Total_Estimate_Cost => Estimate_Install_Cost + Estimate_Freight_Cost + Estimate_Supply_Cost;
 
         public string Subjob_Name => Entity.Subjob_Name;
 
@@ -222,6 +267,22 @@ namespace BluePrints.Common.Projections
         public decimal Discipline_Number => 0;
 
         public Guid? Workpack_Guid { get => Guid.Empty; set { } }
+
+        public decimal Estimate_Quantity => Entity.ESTIMATE_QUANTITY;
+
+        public decimal Budget_Install_Hours => Entity.STOCK_CODE1 == null ? 0 : Entity.BUDGET_QUANTITY == null ? 0 : (decimal)Entity.BUDGET_QUANTITY * BUDGET_STOCK_CODE.HOURS_INSTALL;
+
+        public decimal Budget_Install_Cost => Budget_Install_Hours * Budget_ItemRate;
+
+        public decimal Total_Budget_Install_Cost => Budget_Install_Cost + Variation_Install_Cost;
+
+        public decimal Total_Budget_Freight_Cost => Budget_Freight_Cost + Variation_Freight_Cost;
+
+        public decimal Total_Budget_Supply_Cost => Budget_Quantity * Estimate_Stock_Code_Supply_Rate;
+
+        public decimal Total_Budget_Cost => Total_Budget_Install_Cost + Total_Budget_Supply_Cost + Total_Budget_Freight_Cost;
+
+        public decimal Budget_Freight_Cost => Budget_Quantity * Budget_FreightRate;
     }
 
     public static class ESTIMATE_ITEMProjectionQueries
@@ -275,13 +336,13 @@ namespace BluePrints.Common.Projections
             return
                 ESTIMATE_ITEMS.OrderBy(x => x.CREATED).ToArray()
                     .Select(
-                        estimate_direct_item =>
+                        estimate_item =>
                             new ESTIMATE_ITEMProjection()
                             {
-                                Entity = estimate_direct_item,
-                                STOCK_CODE = STOCK_CODES == null ? null : STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_direct_item.GUID_STOCK_CODE),
-                                RATE = INSTALL_RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
-                                FREIGHT_RATE = FREIGHT_RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_direct_item.GUID_DISCIPLINE),
+                                Entity = estimate_item,
+                                ESTIMATE_STOCK_CODE = STOCK_CODES == null ? null : STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_item.GUID_ESTIMATE_STOCK_CODE),
+                                RATE = INSTALL_RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_item.GUID_DISCIPLINE),
+                                FREIGHT_RATE = FREIGHT_RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_item.GUID_DISCIPLINE),
                                 StockCodeCollection = STOCK_CODES == null ? null : STOCK_CODES
                             }).AsQueryable();
         }

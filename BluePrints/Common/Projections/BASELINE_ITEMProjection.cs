@@ -21,7 +21,7 @@ namespace BluePrints.Common.Projections
 
         public RATE RATE { get; set; }
 
-        public decimal ItemRate
+        public decimal Budget_ItemRate
         {
             get
             {
@@ -32,9 +32,9 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public decimal Budget_Costs => Budget_Units * ItemRate;
+        public decimal Budget_Costs => Budget_Units * Budget_ItemRate;
 
-        public decimal Total_Costs => Total_Units * ItemRate;
+        public decimal Total_Costs => Total_Units * Budget_ItemRate;
 
         public string Deliverable_Name => Entity.Deliverable_Name;
 
@@ -60,7 +60,7 @@ namespace BluePrints.Common.Projections
 
         public decimal Variation_Units => Entity.Variation_Units;
 
-        public decimal Variation_Costs => Entity.Variation_Units * ItemRate;
+        public decimal Variation_Costs => Entity.Variation_Units * Budget_ItemRate;
 
         public bool IsByDuration => Entity.IsByDuration;
 

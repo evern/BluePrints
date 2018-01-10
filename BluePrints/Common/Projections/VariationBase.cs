@@ -26,24 +26,24 @@ namespace BluePrints.Common.Projections
         public override decimal Variation_Cost => Variation_Total_Cost;
 
         //Variation_Units are actually quantity here
-        public decimal Variation_Install_Cost => Variation_Install_Hours * Entity.ItemRate;
+        public decimal Variation_Install_Cost => Variation_Install_Hours * Entity.Budget_ItemRate;
 
-        public decimal Variation_Supply_Cost => Variation_Units * Entity.Stock_Code_Supply_Rate;
+        public decimal Variation_Supply_Cost => Variation_Units * Entity.Estimate_Stock_Code_Supply_Rate;
 
-        public decimal Variation_Install_Hours => Variation_Units * Entity.Stock_Code_Install_Hours;
+        public decimal Variation_Install_Hours => Variation_Units * Entity.Estimate_Stock_Code_Install_Hours;
 
         //Cannot do this because entity's Variation_Install_Hours are committed hours coming from DC_Quantity where else current Variation_Install_hours are coming from uncommitted variation adjust quantity
         //public decimal Variation_Install_Hours => Entity.Variation_Install_Hours;
 
-        public decimal Total_Install_Hours => Total_Units * Entity.Stock_Code_Install_Hours;
+        public decimal Total_Install_Hours => Total_Units * Entity.Estimate_Stock_Code_Install_Hours;
 
-        public decimal Total_Install_Cost => Total_Install_Hours * base.Entity.ItemRate;
+        public decimal Total_Install_Cost => Total_Install_Hours * base.Entity.Budget_ItemRate;
 
-        public decimal Total_Supply_Cost => Total_Units * Entity.Stock_Code_Supply_Rate;
+        public decimal Total_Supply_Cost => Total_Units * Entity.Estimate_Stock_Code_Supply_Rate;
 
         public override decimal Total_Cost => Total_Install_Cost + Total_Supply_Cost;
 
-        public decimal Variation_Freight_Cost => Variation_Units * Entity.FreightRate;
+        public decimal Variation_Freight_Cost => Variation_Units * Entity.Budget_FreightRate;
 
         public decimal Variation_Total_Cost => Variation_Install_Cost + Variation_Supply_Cost + Variation_Freight_Cost;
     }
@@ -132,9 +132,9 @@ namespace BluePrints.Common.Projections
 
         public decimal Total_Units => IsByDuration ? 0 : (base.Entity.Budget_Units + Variation_Units);
 
-        public virtual decimal Total_Cost => IsByDuration ? 0 : (base.Entity.Budget_Units + Variation_Units) * base.Entity.ItemRate;
+        public virtual decimal Total_Cost => IsByDuration ? 0 : (base.Entity.Budget_Units + Variation_Units) * base.Entity.Budget_ItemRate;
 
-        public virtual decimal Variation_Cost => IsByDuration ? 0 : Forecast_Units * base.Entity.ItemRate;
+        public virtual decimal Variation_Cost => IsByDuration ? 0 : Forecast_Units * base.Entity.Budget_ItemRate;
 
         //use to show what the units will be after approval
         public decimal Forecast_Units

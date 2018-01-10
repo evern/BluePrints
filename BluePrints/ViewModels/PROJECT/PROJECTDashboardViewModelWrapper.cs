@@ -96,7 +96,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
         {
-            return query => query.Where(x => x.STATUS == EstimateStatus.LiveBudget);
+            return query => query.Where(x => x.STATUS == BaselineStatus.Live);
         }
 
         private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()

@@ -32,7 +32,9 @@ namespace BluePrints.Data
 
         public Guid? GUID_COMMODITY_CODE { get; set; }
 
-        public Guid? GUID_STOCK_CODE { get; set; }
+        public Guid? GUID_ESTIMATE_STOCK_CODE { get; set; }
+
+        public Guid? GUID_BUDGET_STOCK_CODE { get; set; }
 
         public Guid? GUID_STOCK_GROUP { get; set; }
 
@@ -45,21 +47,19 @@ namespace BluePrints.Data
         [StringLength(1000)]
         public string COMMENTS { get; set; }
 
-        public decimal? TRUCK_PERCENTAGE { get; set; }
+        public decimal? BUDGET_TRUCK_PERCENTAGE { get; set; }
+
+        public decimal? ESTIMATE_TRUCK_PERCENTAGE { get; set; }
 
         public decimal ESTIMATE_QUANTITY { get; set; }
 
-        public decimal BUDGET_QUANTITY { get; set; }
+        public decimal? BUDGET_QUANTITY { get; set; }
 
         public decimal DC_QUANTITY { get; set; }
 
         public decimal ESTIMATE_INSTALL_RATE { get; set; }
 
         public decimal BUDGET_INSTALL_RATE { get; set; }
-
-        public decimal ESTIMATE_FREIGHT_RATE { get; set; }
-
-        public decimal BUDGET_FREIGHT_RATE { get; set; }
 
         public Estimation_DirectProgressType PROGRESS_TYPE { get; set; }
 
@@ -94,6 +94,8 @@ namespace BluePrints.Data
         public virtual COMMODITY_CODE COMMODITY_CODE { get; set; }
 
         public virtual STOCK_CODE STOCK_CODE { get; set; }
+
+        public virtual STOCK_CODE STOCK_CODE1 { get; set; }
 
         public virtual STOCK_GROUP STOCK_GROUP { get; set; }
 

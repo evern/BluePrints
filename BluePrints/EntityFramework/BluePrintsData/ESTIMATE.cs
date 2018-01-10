@@ -37,7 +37,7 @@ namespace BluePrints.Data
         [StringLength(20)]
         public string P6MODBASELINE_NAME { get; set; }
 
-        public EstimateStatus STATUS { get; set; }
+        public BaselineStatus STATUS { get; set; }
 
         public DateTime CREATED { get; set; }
 
