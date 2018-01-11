@@ -794,39 +794,59 @@ namespace BluePrints.ViewModels
             return error_message;
         }
 
-        /// <summary>
-        /// Allow undo-redo behavior to be added for automated cell value changing. This behavior doesn't have to be applied on new row because AddUndo for EntityMessageType.Added is already handling this
-        /// </summary>
-        protected override void CellValueExistingRowChanging(CellValueChangedEventArgs e)
-        {
-            var active_progress = (ESTIMATE_ITEMProgress)e.Row;
-            Interface_CellValueExistingRowChanging(e.Column.FieldName, e.Value, active_progress);
-            base.CellValueExistingRowChanging(e);
-        }
-
-        public void Interface_CellValueExistingRowChanging(string field_name, object new_value, ESTIMATE_ITEMProgress active_progress)
+        public override void RowValueChanging(string field_name, object new_value, ESTIMATE_ITEMProgress projection, bool isNew)
         {
             field_name = DataUtils.FormatColumnFieldname(field_name);
             //if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_DISCIPLINE))
             //{
             //    resetProjectionCommodityCode(active_progress);
             //}
-            if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Estimate_StockCodeGuid))
+            if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_AREA))
             {
-                if(new_value != null)
+                Guid? oldValue = projection.Entity.Entity.GUID_SUBAREA;
+                Guid? newValue = (Guid?)null;
+
+                projection.Entity.Entity.GUID_SUBAREA = newValue;
+                if (!isNew)
                 {
-                    STOCK_CODE stock_code = STOCK_CODECollection.FirstOrDefault(x => x.GUID == (Guid)new_value);
-                    if(stock_code != null)
-                    {
-                        Guid? oldValue = active_progress.Entity.Entity.GUID_COMMODITY_CODE;
-                        Guid? newValue = stock_code.GUID_COMMODITY_CODE;
-                        string commodity_code_field_name = Base_Entity_String + BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_COMMODITY_CODE);
-                        active_progress.Entity.Entity.GUID_COMMODITY_CODE = newValue;
-                        PauseUndoRedo();
-                        AddUndo(active_progress, commodity_code_field_name, oldValue, newValue, EntityMessageType.Changed);
-                    }
+                    string subAreaFieldName = BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().SubAreaGuid);
+                    PauseUndoRedo();
+                    AddUndo(projection, subAreaFieldName, oldValue, newValue, EntityMessageType.Changed);
+                }
+                else
+                {
+                    //Area is required immediately for subarea selection
+                    projection.Entity.Entity.AREA = AREACollection.FirstOrDefault(x => x.GUID == (Guid)new_value);
+                    projection.Update();
                 }
             }
+            else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_DISCIPLINE))
+            {
+                updateProjectionStockCodeCollection(projection, (Guid?)new_value);
+                projection.Update();
+            }
+            //set default commodity code when stock code is changed
+            else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Estimate_StockCodeGuid))
+            {
+                if (new_value != null)
+                {
+                    Guid? commodityCodeGuid = null;
+                    setProjectionEstimateStockCode(projection, (Guid)new_value, out commodityCodeGuid);
+                    Guid? oldValue = projection.Entity.Entity.GUID_COMMODITY_CODE;
+                    Guid? newValue = commodityCodeGuid;
+                    projection.Entity.Entity.GUID_COMMODITY_CODE = newValue;
+
+                    if (!isNew)
+                    {
+                        string commodity_code_field_name = Base_Entity_String + BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_COMMODITY_CODE);
+                        PauseUndoRedo();
+                        AddUndo(projection, commodity_code_field_name, oldValue, newValue, EntityMessageType.Changed);
+                    }
+                    else
+                        projection.Update();
+                }
+            }
+            //set default discipline when commodity code is changed
             else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.GUID_COMMODITY_CODE))
             {
                 if (new_value != null)
@@ -834,55 +854,67 @@ namespace BluePrints.ViewModels
                     COMMODITY_CODE entity_commodity_code = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == (Guid)new_value);
                     if (entity_commodity_code != null)
                     {
-                        Guid? oldValue = active_progress.Entity.Entity.GUID_DISCIPLINE;
+                        Guid? oldValue = projection.Entity.Entity.GUID_DISCIPLINE;
                         Guid? newValue = entity_commodity_code.GUID_DISCIPLINE;
-                        string discipline_field_name = Base_Entity_String + BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_DISCIPLINE);
-                        active_progress.Entity.Entity.GUID_DISCIPLINE = newValue;
-                        PauseUndoRedo();
-                        AddUndo(active_progress, discipline_field_name, oldValue, newValue, EntityMessageType.Changed);
+                        projection.Entity.Entity.GUID_DISCIPLINE = newValue;
+
+                        if (!isNew)
+                        {
+                            string discipline_field_name = Base_Entity_String + BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_DISCIPLINE);
+                            PauseUndoRedo();
+                            AddUndo(projection, discipline_field_name, oldValue, newValue, EntityMessageType.Changed);
+                        }
+                        else
+                            projection.Update();
                     }
                 }
             }
+            //set stock group to null when progress type is changed
             else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.PROGRESS_TYPE))
             {
                 Estimation_DirectProgressType progress_Type = (Estimation_DirectProgressType)new_value;
                 if (progress_Type == Estimation_DirectProgressType.Standalone)
                 {
-                    Guid? oldValue = active_progress.Entity.Entity.GUID_STOCK_GROUP;
+                    Guid? oldValue = projection.Entity.Entity.GUID_STOCK_GROUP;
                     Guid? newValue = null;
-                    active_progress.Entity.Entity.GUID_STOCK_GROUP = newValue;
+                    projection.Entity.Entity.GUID_STOCK_GROUP = newValue;
                     string stock_group_fieldname = Base_Entity_String + BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_STOCK_GROUP);
                     PauseUndoRedo();
-                    AddUndo(active_progress, stock_group_fieldname, oldValue, newValue, EntityMessageType.Changed);
-                    active_progress.Update();
+                    AddUndo(projection, stock_group_fieldname, oldValue, newValue, EntityMessageType.Changed);
+                    projection.Update();
                 }
             }
+            //set progress type to standalone when stock group is changed
             else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.GUID_STOCK_GROUP))
             {
                 if (new_value == null)
                 {
-                    Estimation_DirectProgressType oldValue = active_progress.Entity.Entity.PROGRESS_TYPE;
+                    Estimation_DirectProgressType oldValue = projection.Entity.Entity.PROGRESS_TYPE;
                     Estimation_DirectProgressType newValue = Estimation_DirectProgressType.Standalone;
-                    active_progress.Entity.Entity.PROGRESS_TYPE = newValue;
+                    projection.Entity.Entity.PROGRESS_TYPE = newValue;
                     string progress_type_fieldname = Base_Entity_String + BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().PROGRESS_TYPE);
                     PauseUndoRedo();
-                    AddUndo(active_progress, progress_type_fieldname, oldValue, newValue, EntityMessageType.Changed);
-                    active_progress.Update();
+                    AddUndo(projection, progress_type_fieldname, oldValue, newValue, EntityMessageType.Changed);
+                    projection.Update();
                 }
             }
+
+            base.RowValueChanging(field_name, new_value, projection, isNew);
         }
 
-        public void Interface_CellValueChanged(string field_name, ESTIMATE_ITEMProgress projection)
+        private void setProjectionEstimateStockCode(ESTIMATE_ITEMProgress projection, Guid? stockCodeGuid, out Guid? commodityCodeGuid)
         {
-
-        }
-
-        private void setProjectionStockCode(ESTIMATE_ITEMProgress projection, Guid? stockCodeGuid)
-        {
+            STOCK_CODE findSTOCK_CODE = STOCK_CODECollection.FirstOrDefault(x => x.GUID == (Guid)stockCodeGuid);
             if (stockCodeGuid != null)
-                projection.Entity.ESTIMATE_STOCK_CODE = STOCK_CODECollection.FirstOrDefault(x => x.GUID == (Guid)stockCodeGuid);
+            {
+                projection.Entity.ESTIMATE_STOCK_CODE = findSTOCK_CODE;
+                commodityCodeGuid = findSTOCK_CODE.GUID_COMMODITY_CODE;
+            }
             else
+            {
                 projection.Entity.ESTIMATE_STOCK_CODE = null;
+                commodityCodeGuid = null;
+            }
 
             projection.Update();
         }
@@ -923,83 +955,6 @@ namespace BluePrints.ViewModels
                 AddUndo(projection, commoditycodeFieldName, oldValue, newValue, EntityMessageType.Changed);
             }
         }
-
-        protected override void CellValueNewRowChanging(CellValueChangedEventArgs e)
-        {
-            var active_progress = (ESTIMATE_ITEMProgress)e.Row;
-            Interface_CellValueNewRowChanging(e.Column.FieldName, e.Value, active_progress);
-
-            base.CellValueNewRowChanging(e);
-        }
-
-        public void Interface_CellValueNewRowChanging(string field_name, object new_value, ESTIMATE_ITEMProgress active_progress)
-        {
-            field_name = DataUtils.FormatColumnFieldname(field_name);
-            if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_AREA))
-            {
-                if (new_value != null)
-                {
-                    active_progress.Entity.Entity.GUID_AREA = (Guid)new_value;
-                    //Area is required immediately for subarea selection
-                    active_progress.Entity.Entity.AREA = AREACollection.FirstOrDefault(x => x.GUID == (Guid)new_value);
-
-                    active_progress.Update();
-                }
-
-                //SubArea must be removed immediately to nullify subarea selection
-                if (active_progress.Entity.Entity.GUID_SUBAREA != null)
-                {
-                    active_progress.Entity.Entity.GUID_SUBAREA = null;
-                    active_progress.Update();
-                }
-
-                active_progress.Update();
-            }
-            else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Estimate_StockCodeGuid))
-            {
-                if (new_value != null)
-                {
-                    setProjectionStockCode(active_progress, (Guid)new_value);
-                    if (active_progress.Entity.ESTIMATE_STOCK_CODE != null)
-                    {
-                        active_progress.Entity.Entity.GUID_COMMODITY_CODE = active_progress.Entity.ESTIMATE_STOCK_CODE.GUID_COMMODITY_CODE;
-                        active_progress.Update();
-                    }
-                }
-            }
-            else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_DISCIPLINE))
-            {
-                updateProjectionStockCodeCollection(active_progress, (Guid?)new_value);
-                active_progress.Update();
-            }
-            else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.GUID_COMMODITY_CODE))
-            {
-                var chosen_commodity_code = COMMODITY_CODECollection.FirstOrDefault(entity => entity.GUID == (Guid)new_value);
-                if (chosen_commodity_code != null)
-                {
-                    active_progress.Entity.Entity.GUID_DISCIPLINE = chosen_commodity_code.GUID_DISCIPLINE;
-                    active_progress.Update();
-                }
-            }
-            else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.PROGRESS_TYPE))
-            {
-                Estimation_DirectProgressType progress_Type = (Estimation_DirectProgressType)new_value;
-                if (progress_Type == Estimation_DirectProgressType.Standalone)
-                {
-                    active_progress.Entity.Entity.GUID_STOCK_GROUP = null;
-                    active_progress.Update();
-                }
-            }
-            else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.GUID_STOCK_GROUP))
-            {
-                if(new_value == null)
-                {
-                    active_progress.Entity.Entity.PROGRESS_TYPE = Estimation_DirectProgressType.Standalone;
-                    active_progress.Update();
-                }
-            }
-        }
-
         #endregion
 
         #region stock group Helpers

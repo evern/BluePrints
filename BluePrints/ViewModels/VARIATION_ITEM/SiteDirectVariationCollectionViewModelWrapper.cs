@@ -94,16 +94,6 @@ namespace BluePrints.ViewModels
             ((ESTIMATE_ITEMCollectionViewModelWrapper)collectionViewModelWrapper).ManualPasteAction(pasteData, pasteEntity.Entity);
         }
 
-        protected override void CellValueNewRowChanging(CellValueChangedEventArgs e)
-        {
-            base.CellValueNewRowChanging(e);
-        }
-
-        protected override void CellValueExistingRowChanging(CellValueChangedEventArgs e)
-        {
-            base.CellValueExistingRowChanging(e);
-        }
-
         //when internal number is not unique, do not set internal number property
         protected override bool affixOtherFillDownAllowance(ESTIMATE_ITEMVariation fillDownEntity, string fieldName, object fillValue)
         {

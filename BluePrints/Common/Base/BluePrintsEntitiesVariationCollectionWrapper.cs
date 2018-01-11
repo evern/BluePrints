@@ -442,45 +442,26 @@ namespace BluePrints.Common.Base
             }
         }
 
-        /// <summary>
-        /// allow undo-redo behavior to be added for automated cell value changing. This behavior doesn't have to be applied on new row because AddUndo for EntityMessageType.Added is already handling this
-        /// </summary>
-        protected override void CellValueExistingRowChanging(CellValueChangedEventArgs e)
+        public override void RowValueChanging(string field_name, object new_value, TMainVariationEntity projection, bool isNew)
         {
-            TMainVariationEntity current_row_item = (TMainVariationEntity)e.Row;
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Units))
+            if (!isNew && field_name == BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Units))
             {
-                if (current_row_item.Variation_Action != VariationAction.Add)
+                if (projection.Variation_Action != VariationAction.Add)
                 {
-                    VariationAction old_action = current_row_item.Variation_Action;
+                    VariationAction old_action = projection.Variation_Action;
 
-                    if ((decimal)e.Value == 0)
-                        current_row_item.Variation_Action = VariationAction.NoAction;
+                    if ((decimal)new_value == 0)
+                        projection.Variation_Action = VariationAction.NoAction;
                     else
-                        current_row_item.Variation_Action = VariationAction.Append;
+                        projection.Variation_Action = VariationAction.Append;
 
                     MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(current_row_item, BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Action), old_action, current_row_item.Variation_Action, EntityMessageType.Changed);
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Action), old_action, projection.Variation_Action, EntityMessageType.Changed);
                 }
             }
-            else
-                collectionViewModelWrapper.Interface_CellValueExistingRowChanging(e.Column.FieldName, e.Value, current_row_item.Entity);
 
-            base.CellValueExistingRowChanging(e);
-        }
-
-        protected override void CellValueNewRowChanging(CellValueChangedEventArgs e)
-        {
-            collectionViewModelWrapper.Interface_CellValueNewRowChanging(e.Column.FieldName, e.Value, ((TMainVariationEntity)e.Row).Entity);
-            base.CellValueNewRowChanging(e);
-        }
-
-        /// <summary>
-        /// Refresh all min max units for converter to do budgeted hours validation
-        /// </summary>
-        public void CellValueChanged(CellValueChangedEventArgs e)
-        {
-            collectionViewModelWrapper.Interface_CellValueChanged(e.Column.FieldName, ((TMainVariationEntity)e.Row).Entity);
+            collectionViewModelWrapper.RowValueChanging(field_name, new_value, projection.Entity, isNew);
+            base.RowValueChanging(field_name, new_value, projection, isNew);
         }
         #endregion
 
