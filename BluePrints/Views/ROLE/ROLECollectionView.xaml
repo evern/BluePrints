@@ -105,7 +105,7 @@
                             <dxg:GridControl.View>
                                 <dxg:TableView x:Name="tableView">
                                     <dxmvvm:Interaction.Behaviors>
-                                        <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
+                                        <dxmvvm:EventToCommand Command="{Binding DataContext.PermissionCellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
                                     </dxmvvm:Interaction.Behaviors>
                                 </dxg:TableView>
                             </dxg:GridControl.View>

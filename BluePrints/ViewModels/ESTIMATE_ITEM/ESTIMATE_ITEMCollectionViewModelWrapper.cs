@@ -117,6 +117,9 @@ namespace BluePrints.ViewModels
             if (estimation_direct == null && !SupressCompulsoryEntityNotFoundMessage)
                 mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Working estimate not found")));
 
+            if (viewMode == EstimateViewMode.Budget && (estimation_direct != null && estimation_direct.STATUS == BaselineStatus.Working))
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Budget (live estimate) not found")));
+
             loadESTIMATE = estimation_direct;
         }
 
@@ -157,7 +160,12 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
         {
             if (isQueryForLiveStatus)
-                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS != BaselineStatus.Superseded);
+            {
+                if(viewMode == EstimateViewMode.Estimate)
+                    return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Working);
+                else
+                    return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
+            }
             else
                 return query => query.Where(x => x.GUID == loadESTIMATE.GUID);
         }
@@ -429,11 +437,6 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-        protected bool ExistingRowAddUndoAndSaveCallBack(ESTIMATE_ITEMProgress projectionEntity, CellValueChangedEventArgs e)
-        {
-            return true;
-        }
-
         private void createAndAssignProjectSpecificSTOCK_CODE(ESTIMATE_ITEMProgress projectionEntity)
         {
             if (projectionEntity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE == null)
@@ -628,7 +631,7 @@ namespace BluePrints.ViewModels
                     newProjection.Entity.Entity.BUDGET_QUANTITY = 0;
 
                     newProjection.Entity.Entity.DC_QUANTITY = 0;
-                    newProjection.Entity.Entity.PROGRESS_TYPE = Estimation_DirectProgressType.Standalone;
+                    newProjection.Entity.Entity.PROGRESS_TYPE = EstimateProgressType.Standalone;
                     newProjection.Entity.Entity.DB_Productivity_Override = null;
                     //newProjection.Entity.Entity.ESTIMATE_QUANTITY = IsBASELINELocked ? 0 : selectedEntity.Entity.Entity.ESTIMATE_QUANTITY;
 
@@ -735,8 +738,8 @@ namespace BluePrints.ViewModels
             {
                 if (validateEntity.Entity.Entity.STOCK_CODE == null)
                 {
-                    Estimation_DirectProgressType newValue = (Estimation_DirectProgressType)currentValue;
-                    if (newValue != Estimation_DirectProgressType.Standalone)
+                    EstimateProgressType newValue = (EstimateProgressType)currentValue;
+                    if (newValue != EstimateProgressType.Standalone)
                     {
                         error_message = "Cannot set " + newValue.ToString() + " when stock code is empty";
                     }
@@ -746,7 +749,7 @@ namespace BluePrints.ViewModels
                     STOCK_GROUP entity_stock_group = STOCK_GROUPCollection.FirstOrDefault(x => x.GUID == validateEntity.Entity.Entity.GUID_STOCK_GROUP);
                     if (entity_stock_group != null)
                     {
-                        if ((validateEntity.Entity.Entity.STOCK_CODE.UOM != entity_stock_group.UOM) && ((Estimation_DirectProgressType)currentValue) == Estimation_DirectProgressType.Trackable)
+                        if ((validateEntity.Entity.Entity.STOCK_CODE.UOM != entity_stock_group.UOM) && ((EstimateProgressType)currentValue) == EstimateProgressType.Trackable)
                         {
                             error_message = "Cannot set trackable when UOM is different from stock group";
                         }
@@ -754,8 +757,8 @@ namespace BluePrints.ViewModels
                 }
                 else if (validateEntity.Entity.Entity.GUID_STOCK_GROUP == null)
                 {
-                    Estimation_DirectProgressType newValue = (Estimation_DirectProgressType)currentValue;
-                    if (newValue != Estimation_DirectProgressType.Standalone)
+                    EstimateProgressType newValue = (EstimateProgressType)currentValue;
+                    if (newValue != EstimateProgressType.Standalone)
                     {
                         error_message = "Cannot set " + newValue.ToString() + " when stock group is empty";
                     }
@@ -763,7 +766,7 @@ namespace BluePrints.ViewModels
             }
             else if (fieldName == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_STOCK_GROUP))
             {
-                if (validateEntity.Entity.Entity.PROGRESS_TYPE == Estimation_DirectProgressType.Trackable && currentValue != null)
+                if (validateEntity.Entity.Entity.PROGRESS_TYPE == EstimateProgressType.Trackable && currentValue != null)
                 {
                     STOCK_GROUP entity_commodity_code = STOCK_GROUPCollection.FirstOrDefault(x => x.GUID == (Guid)currentValue);
                     if (entity_commodity_code != null)
@@ -777,7 +780,7 @@ namespace BluePrints.ViewModels
             }
             else if (fieldName == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Estimate_StockCodeGuid))
             {
-                if (validateEntity.Entity.Entity.PROGRESS_TYPE == Estimation_DirectProgressType.Trackable && currentValue != null)
+                if (validateEntity.Entity.Entity.PROGRESS_TYPE == EstimateProgressType.Trackable && currentValue != null)
                 {
                     STOCK_GROUP entity_commodity_code = STOCK_GROUPCollection.FirstOrDefault(x => x.GUID == validateEntity.Entity.Entity.GUID_STOCK_GROUP);
                     STOCK_CODE entity_stock_code = STOCK_CODECollection.FirstOrDefault(x => x.GUID == (Guid)currentValue);
@@ -794,7 +797,7 @@ namespace BluePrints.ViewModels
             return error_message;
         }
 
-        public override void RowValueChanging(string field_name, object new_value, ESTIMATE_ITEMProgress projection, bool isNew)
+        public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, ESTIMATE_ITEMProgress projection, bool isNew)
         {
             field_name = DataUtils.FormatColumnFieldname(field_name);
             //if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_DISCIPLINE))
@@ -872,8 +875,8 @@ namespace BluePrints.ViewModels
             //set stock group to null when progress type is changed
             else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.PROGRESS_TYPE))
             {
-                Estimation_DirectProgressType progress_Type = (Estimation_DirectProgressType)new_value;
-                if (progress_Type == Estimation_DirectProgressType.Standalone)
+                EstimateProgressType progress_Type = (EstimateProgressType)new_value;
+                if (progress_Type == EstimateProgressType.Standalone)
                 {
                     Guid? oldValue = projection.Entity.Entity.GUID_STOCK_GROUP;
                     Guid? newValue = null;
@@ -889,8 +892,8 @@ namespace BluePrints.ViewModels
             {
                 if (new_value == null)
                 {
-                    Estimation_DirectProgressType oldValue = projection.Entity.Entity.PROGRESS_TYPE;
-                    Estimation_DirectProgressType newValue = Estimation_DirectProgressType.Standalone;
+                    EstimateProgressType oldValue = projection.Entity.Entity.PROGRESS_TYPE;
+                    EstimateProgressType newValue = EstimateProgressType.Standalone;
                     projection.Entity.Entity.PROGRESS_TYPE = newValue;
                     string progress_type_fieldname = Base_Entity_String + BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().PROGRESS_TYPE);
                     PauseUndoRedo();
@@ -899,7 +902,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            base.RowValueChanging(field_name, new_value, projection, isNew);
+            base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
         }
 
         private void setProjectionEstimateStockCode(ESTIMATE_ITEMProgress projection, Guid? stockCodeGuid, out Guid? commodityCodeGuid)

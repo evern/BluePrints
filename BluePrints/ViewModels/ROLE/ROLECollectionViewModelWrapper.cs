@@ -143,7 +143,7 @@ namespace BluePrints.ViewModels
             base.OnDisplaySelectedEntityChanged(entity);
         }
 
-        protected override void CellValueAnyRowChanging(CellValueChangedEventArgs e)
+        public void PermissionCellValueChanging(CellValueChangedEventArgs e)
         {
             RolePermissionAssignment editingRolePermissionAssignment = (RolePermissionAssignment)e.Row;
             //don't need to validate fieldname since only this field is changeable in role permission grid control
@@ -170,7 +170,8 @@ namespace BluePrints.ViewModels
             }
 
             refreshPermissions();
-            base.CellValueAnyRowChanging(e);
+
+            base.CellValueChanging(e);
         }
         #endregion
 

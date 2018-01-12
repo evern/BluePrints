@@ -158,11 +158,11 @@
                                 <dxg:GridColumn Header="PROGRESS_TYPE" FieldName="Entity.Entity.PROGRESS_TYPE" HeaderToolTip="Only editable on newly added variation deliverable">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:ComboBoxEdit x:Name="PART_Editor" ImmediatePopup="True" IsEnabled="{Binding RowData.Row.IsEnabled}" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Estimation_DirectProgressType}}" NullValueButtonPlacement="Popup" />
+                                            <dxe:ComboBoxEdit x:Name="PART_Editor" ImmediatePopup="True" IsEnabled="{Binding RowData.Row.IsEnabled}" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:EstimateProgressType}}" NullValueButtonPlacement="Popup" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Estimation_DirectProgressType}}" />
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:EstimateProgressType}}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>

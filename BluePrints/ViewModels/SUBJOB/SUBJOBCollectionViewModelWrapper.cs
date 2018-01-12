@@ -256,7 +256,7 @@ namespace BluePrints.ViewModels
 
         #region View Behavior
         string message_subjob_internal_name_change = "Do you wish to change subjob internal name too?";
-        public override void RowValueChanging(string field_name, object new_value, SUBJOBProjection projection, bool isNew)
+        public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, SUBJOBProjection projection, bool isNew)
         {
             if (field_name == "Entity.GUID_DPHASE" || field_name == "Entity.GUID_DDISCIPLINE" || field_name == "Entity.GUID_DDOCTYPE" || field_name == "Entity.GUID_DAREA" || field_name == "Entity.GUID_DSUBAREA")
             {
@@ -354,7 +354,7 @@ namespace BluePrints.ViewModels
                 projection.Update();
             }
 
-            base.RowValueChanging(field_name, new_value, projection, isNew);
+            base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
         }
         #endregion
 

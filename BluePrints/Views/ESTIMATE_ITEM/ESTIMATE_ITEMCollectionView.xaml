@@ -169,7 +169,7 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Header="Progress Type" FieldName="Entity.PROGRESS_TYPE" HeaderToolTip="[Standalone] stock item will be progressed by itself only\n[Trackable] primary progressable stock item in the group\n[Auto] % will follow primary stock item i.e. trackable item" FilterPopupMode="CheckedList">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Estimation_DirectProgressType}}" />
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:EstimateProgressType}}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>

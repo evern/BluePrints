@@ -164,7 +164,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public interface ICanTrack
     {
-        Estimation_DirectProgressType Progress_Type { get; }
+        EstimateProgressType Progress_Type { get; }
     }
 
     public interface IHaveCosts

@@ -200,7 +200,7 @@ namespace BluePrints.ViewModels
         {
             bool is_group = save_reportables_display(entity);
             //save progress is only used for saving standalone or group
-            if (entity.ProgressItem.Progress_Type == Estimation_DirectProgressType.Standalone || is_group)
+            if (entity.ProgressItem.Progress_Type == EstimateProgressType.Standalone || is_group)
             {
                 save_progress(entity);
                 //update must be here or else installed quantity will be cleared and progress will be saved with 0 units

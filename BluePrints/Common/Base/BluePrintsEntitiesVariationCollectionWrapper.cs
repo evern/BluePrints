@@ -442,7 +442,7 @@ namespace BluePrints.Common.Base
             }
         }
 
-        public override void RowValueChanging(string field_name, object new_value, TMainVariationEntity projection, bool isNew)
+        public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, TMainVariationEntity projection, bool isNew)
         {
             if (!isNew && field_name == BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Units))
             {
@@ -460,8 +460,8 @@ namespace BluePrints.Common.Base
                 }
             }
 
-            collectionViewModelWrapper.RowValueChanging(field_name, new_value, projection.Entity, isNew);
-            base.RowValueChanging(field_name, new_value, projection, isNew);
+            collectionViewModelWrapper.UnifiedCellValueChanging(field_name, old_value, new_value, projection.Entity, isNew);
+            base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
         }
         #endregion
 

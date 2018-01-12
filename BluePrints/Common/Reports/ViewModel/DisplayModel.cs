@@ -226,7 +226,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.Reportable = deliverable;
             if(is_nested)
             {
-                if (deliverable.Progress_Type == Estimation_DirectProgressType.Trackable)
+                if (deliverable.Progress_Type == EstimateProgressType.Trackable)
                     ColorIndex = 1;
                 else
                     ColorIndex = 2;
@@ -259,7 +259,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal TotalCosts => Reportable.Total_Costs;
 
-        public Estimation_DirectProgressType Progress_Type => Reportable.Progress_Type;
+        public EstimateProgressType Progress_Type => Reportable.Progress_Type;
 
         public decimal Budget_Quantity => Reportable.Budget_Quantity;
 

@@ -64,14 +64,14 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         protected override decimal getNewPercentage()
         {
-            decimal aggregate_total_quantity = Reportables.Where(x => x.Progress_Type == Estimation_DirectProgressType.Trackable).Sum(x => x.Total_Quantity);
+            decimal aggregate_total_quantity = Reportables.Where(x => x.Progress_Type == EstimateProgressType.Trackable).Sum(x => x.Total_Quantity);
             if (aggregate_total_quantity == 0)
                 return 0;
 
             return set_current_period_quantity == null ? 0 : (decimal)set_current_period_quantity / aggregate_total_quantity;
         }
 
-        private IEnumerable<IReportable_Quantity> trackable_reportables => Reportables.Where(x => x.Progress_Type == Estimation_DirectProgressType.Trackable);
+        private IEnumerable<IReportable_Quantity> trackable_reportables => Reportables.Where(x => x.Progress_Type == EstimateProgressType.Trackable);
 
         public decimal Trackable_Total_Units => trackable_reportables.Sum(x => x.Total_Units);
 
@@ -419,7 +419,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public virtual decimal MaxCurrentQuantity => Total_Quantity - TotalInstalledQuantity;
 
-        public Estimation_DirectProgressType Progress_Type
+        public EstimateProgressType Progress_Type
         {
             get
             {
@@ -427,7 +427,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (trackableEntity != null)
                     return trackableEntity.Progress_Type;
 
-                return Estimation_DirectProgressType.Standalone;
+                return EstimateProgressType.Standalone;
             }
         }
 

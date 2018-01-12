@@ -79,6 +79,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to manage budget.
+        /// </summary>
+        internal static string ManageBudget {
+            get {
+                return ResourceManager.GetString("ManageBudget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to manage commodities.
         /// </summary>
         internal static string ManageCommodity {

@@ -61,7 +61,7 @@ namespace BluePrints.Data
 
         public decimal BUDGET_INSTALL_RATE { get; set; }
 
-        public Estimation_DirectProgressType PROGRESS_TYPE { get; set; }
+        public EstimateProgressType PROGRESS_TYPE { get; set; }
 
         public decimal? PRODUCTIVITY_OVERRIDE { get; set; }
 

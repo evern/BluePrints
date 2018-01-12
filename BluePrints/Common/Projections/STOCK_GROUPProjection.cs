@@ -58,7 +58,7 @@ namespace BluePrints.Common.Projections
 
         public Guid OriginalEntityKey => Guid.Empty;
 
-        public Estimation_DirectProgressType Progress_Type => Estimation_DirectProgressType.Standalone;
+        public EstimateProgressType Progress_Type => EstimateProgressType.Standalone;
 
         public string Phase_Code => string.Empty;
 

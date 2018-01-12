@@ -244,7 +244,7 @@ namespace BluePrints.Common
         Construct
     }
 
-    public enum Estimation_DirectProgressType
+    public enum EstimateProgressType
     {
         [Display(Name = "Standalone")]
         Standalone,

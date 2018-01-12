@@ -59,7 +59,7 @@ namespace BluePrints.ViewModels
 
         #region Events
         string Interface_AdditionalValidateCellCallBack(TProgress active_progress, object new_value, string field_name);
-        void RowValueChanging(string field_name, object new_value, TProgress projection, bool isNew);
+        void UnifiedCellValueChanging(string field_name, object old_value, object new_value, TProgress projection, bool isNew);
         #endregion
 
         #region Commands
@@ -639,7 +639,7 @@ namespace BluePrints.ViewModels
         //    }
         //}
 
-        public override void RowValueChanging(string field_name, object new_value, BASELINE_ITEMProgress projection, bool isNew)
+        public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, BASELINE_ITEMProgress projection, bool isNew)
         {
             field_name = DataUtils.FormatColumnFieldname(field_name);
             if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
@@ -737,12 +737,13 @@ namespace BluePrints.ViewModels
                     string newValue = generateInternalNumber(projection);
                     projection.Entity.Entity.INTERNAL_NUM = newValue;
 
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, fieldName, oldValue, newValue, EntityMessageType.Changed);
+                    PauseUndoRedo();
+                    AddUndo(projection, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.INTERNAL_NUM), oldValue, newValue, EntityMessageType.Changed);
                     projection.Update();
                 }
             }
 
-            base.RowValueChanging(field_name, new_value, projection, isNew);
+            base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
         }
         #endregion
 

@@ -443,6 +443,12 @@ namespace BluePrints.ViewModels
                 construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectIndirectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates [Indirect]", "ESTIMATE_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Indirect, EstimateViewMode.Estimate)), null, "Estimate [Indirect]"));
             }
 
+            if (LoginCredentials.hasPermission(PermissionResources.ManageBudget))
+            {
+                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectDirectBudgets" + keyString, projectKey, childTitlePrefix + "Budgets [Direct]", "BUDGET_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Direct, EstimateViewMode.Budget)), null, "Budget [Direct]"));
+                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectIndirectBudgets" + keyString, projectKey, childTitlePrefix + "Budgets [Indirect]", "BUDGET_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Indirect, EstimateViewMode.Budget)), null, "Budget [Indirect]"));
+            }
+
             if (LoginCredentials.hasPermission(PermissionResources.ManageProgress))
             {
                 design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectOffsiteProgress" + keyString, projectKey, childTitlePrefix + "Design Progress", "OffsiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress"));

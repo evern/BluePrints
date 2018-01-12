@@ -18,6 +18,7 @@ namespace BluePrints.Common.Projections
         {
             //need to initialize commodity code here so that copy/paste is able to get property info within STOCK_GROUP
             estimate_stock_code = new STOCK_CODE();
+            budget_stock_code = new STOCK_CODE();
         }
 
         public RATE FREIGHT_RATE { get; set; }
@@ -105,7 +106,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public Estimation_DirectProgressType PROGRESS_TYPE
+        public EstimateProgressType PROGRESS_TYPE
         {
             get
             {
@@ -113,7 +114,7 @@ namespace BluePrints.Common.Projections
             }
             set
             {
-                if (value == Estimation_DirectProgressType.Trackable)
+                if (value == EstimateProgressType.Trackable)
                 {
                     if (ESTIMATE_STOCK_CODE == null)
                         return;
@@ -125,7 +126,7 @@ namespace BluePrints.Common.Projections
                         return;
                 }
 
-                if (value == Estimation_DirectProgressType.Auto)
+                if (value == EstimateProgressType.Auto)
                 {
                     if (ESTIMATE_STOCK_CODE == null)
                         return;
@@ -192,7 +193,7 @@ namespace BluePrints.Common.Projections
 
         public string Budget_UOM => BUDGET_STOCK_CODE == null ? string.Empty : BUDGET_STOCK_CODE.UOM;
 
-        public Estimation_DirectProgressType Progress_Type => Entity.PROGRESS_TYPE;
+        public EstimateProgressType Progress_Type => Entity.PROGRESS_TYPE;
 
         public decimal Estimate_Supply_Cost => Estimate_Stock_Code_Supply_Rate * Estimate_Quantity;
 

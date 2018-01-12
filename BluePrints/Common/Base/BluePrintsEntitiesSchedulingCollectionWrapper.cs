@@ -923,11 +923,11 @@ namespace BluePrints.Common.Base
 
                     foreach (P6_ASSIGNMENT deliverable_assignment in deliverable_assignments)
                     {
-                        TASK actual_context_task = actual_tasks.FirstOrDefault(x => x.task_code == deliverable_assignment.P6_ACTIVITYID);
+                        TASK actual_context_task = actual_tasks.FirstOrDefault(x => x.task_code == deliverable_assignment.P6_ACTIVITYID && x.delete_date == null);
 
                         P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection(deliverable, deliverable_assignment);
 
-                        if (actual_context_task != null && actual_context_task.delete_date == null)
+                        if (actual_context_task != null)
                         {
                             actual_context_task.target_work_qty += p6_assignment.UNITS;
                             actual_context_task.remain_work_qty += p6_assignment.UNITS;

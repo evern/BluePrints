@@ -119,7 +119,7 @@ namespace BluePrints.ViewModels
             base.AdditionalValidateCellCallBack(e);
         }
 
-        public override void RowValueChanging(string field_name, object new_value, BASELINE_ITEMVariation projection, bool isNew)
+        public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, BASELINE_ITEMVariation projection, bool isNew)
         {
             if (field_name == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
             {
@@ -135,8 +135,8 @@ namespace BluePrints.ViewModels
                     projection.Update();
             }
 
-            collectionViewModelWrapper.RowValueChanging(field_name, new_value, projection.Entity, isNew);
-            base.RowValueChanging(field_name, new_value, projection, isNew);
+            collectionViewModelWrapper.UnifiedCellValueChanging(field_name, old_value, new_value, projection.Entity, isNew);
+            base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
         }
 
 
