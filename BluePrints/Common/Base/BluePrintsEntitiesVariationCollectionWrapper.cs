@@ -168,8 +168,6 @@ namespace BluePrints.Common.Base
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = OnBeforeEntityDeleted;
             MainViewModel.OnMappingAdditionalChangedEntitiesProperties = OnMappingAdditionalChangedEntitiesProperties;
-            MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
-            MainViewModel.ValidateSetValueIsContinueCallBack = ValidateSetValueCallBack;
             collectionViewModelWrapper.GetEditableAllEntitiesCallBack = getEditableAllEntities;
             assign_additional_callbacks(MainViewModel, entities);
             MainViewModel.SetParentViewModel(this);
@@ -291,13 +289,14 @@ namespace BluePrints.Common.Base
             projectionEntity.Variation_Action = existingProjectionEntity.Variation_Action;
         }
 
-        public bool ValidateSetValueCallBack(TMainVariationEntity entity, string column_name, object newValue)
+        public override string UnifiedValueValidation(TMainVariationEntity entity, string field_name, object newValue)
         {
-            if (column_name == BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Units))
+            field_name = DataUtils.FormatColumnFieldname(field_name);
+            if (field_name == BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Units))
             {
                 decimal variation_units = (decimal)newValue;
                 if (variation_units < entity.MinNegativeUnits)
-                    return false;
+                    return "Variation units cannot be lower than " + entity.MinNegativeUnits;
                 else if (entity.Variation_Action != VariationAction.Add)
                 {
                     VariationAction old_action = entity.Variation_Action;
@@ -314,10 +313,10 @@ namespace BluePrints.Common.Base
             else
             {
                 if (entity.Variation_Action != VariationAction.Add)
-                    return false;
+                    return "Cannot change variation value on existing items";
             }
 
-            return true;
+            return string.Empty;
         }
 
         /// <summary>
@@ -429,19 +428,6 @@ namespace BluePrints.Common.Base
         #endregion
 
         #region View Events
-        protected virtual void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
-        {
-            TMainVariationEntity current_row_item = (TMainVariationEntity)e.Row;
-            string fieldName = DataUtils.FormatColumnFieldname(e.Column.FieldName);
-            string error_message = collectionViewModelWrapper.Interface_AdditionalValidateCellCallBack(current_row_item.Entity, e.Value, fieldName);
-            if (error_message != string.Empty)
-            {
-                e.IsValid = false;
-                e.ErrorContent = error_message;
-                e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
-            }
-        }
-
         public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, TMainVariationEntity projection, bool isNew)
         {
             if (!isNew && field_name == BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Units))

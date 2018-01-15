@@ -187,6 +187,11 @@ namespace BluePrints.ViewModels
             return loadPROJECT.NUMBER + "_Register_Risk.xlsx";
         }
 
+        public override string UnifiedValueValidation(REGISTER_RISK projection, string field_name, object new_value)
+        {
+            return string.Empty;
+        }
+
         public IEnumerable<AREA> AREACollection
         {
             get

@@ -58,7 +58,7 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Events
-        string Interface_AdditionalValidateCellCallBack(TProgress active_progress, object new_value, string field_name);
+        string UnifiedValueValidation(TProgress projection, string field_name, object new_value);
         void UnifiedCellValueChanging(string field_name, object old_value, object new_value, TProgress projection, bool isNew);
         #endregion
 
@@ -359,8 +359,6 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.FilterTreeViewModel)));
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
-            MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
-            MainViewModel.ValidateSetValueIsContinueCallBack = validateSetValueCallBack;
             MainViewModel.SetParentViewModel(this);
 
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -546,35 +544,11 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public bool validateSetValueCallBack(BASELINE_ITEMProgress entity, string column_name, object newValue)
-        {
-            string fieldName = DataUtils.FormatColumnFieldname(column_name);
-            //budget hours field is disabled but just in case
-            if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().BUDGET_HOURS))
-            {
-                if (entity.Entity.Entity.BY_DURATION && ((decimal)newValue) > 0)
-                    return false;
-                else if ((decimal)newValue < entity.MinEstimateUnits)
-                    return false;
-            }
-            else if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
-            {
-                if (entity.Earned_Units_Total > 0)
-                    return false;
-            }
-            else if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().INTERNAL_NUM))
-            {
-                return entity.IsInternalNumberEditable;
-            }
-
-            return true;
-        }
-
-        public void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
+        public void ValidateCellValue(GridCellValidationEventArgs e)
         {
             string fieldName = DataUtils.FormatColumnFieldname(e.Column.FieldName);
-            string error_message = Interface_AdditionalValidateCellCallBack((BASELINE_ITEMProgress)e.Row, e.Value, fieldName);
-            if(error_message != string.Empty)
+            string error_message = UnifiedValueValidation((BASELINE_ITEMProgress)e.Row, fieldName, e.Value);
+            if (error_message != string.Empty)
             {
                 e.IsValid = false;
                 e.ErrorContent = error_message;
@@ -582,22 +556,29 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public string Interface_AdditionalValidateCellCallBack(BASELINE_ITEMProgress validateEntity, object currentValue, string fieldName)
+        public override string UnifiedValueValidation(BASELINE_ITEMProgress entity, string column_name, object newValue)
         {
-            string error_message = string.Empty;
+            string fieldName = DataUtils.FormatColumnFieldname(column_name);
             //budget hours field is disabled but just in case
             if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().BUDGET_HOURS))
             {
-                if (validateEntity.Entity.Entity.BY_DURATION && ((decimal)currentValue) > 0)
-                    error_message = "Cannot set budget hours when deliverable is by duration";
+                if (entity.Entity.Entity.BY_DURATION && ((decimal)newValue) > 0)
+                    return "Cannot set budgeted hours when deliverables is by duration";
+                else if ((decimal)newValue < entity.MinEstimateUnits)
+                    return "Budgeted hours cannot be less than " + entity.MinEstimateUnits.ToString();
             }
             else if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
             {
-                if (validateEntity.Earned_Units_Total > 0)
-                    error_message = "Cannot change deliverable tracking type when percentage is already earned";
+                if (entity.Earned_Units_Total > 0)
+                    return "Cannot set budgeted hours when deliverables is by duration";
+            }
+            else if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().INTERNAL_NUM))
+            {
+                if (!entity.IsInternalNumberEditable)
+                    return "Cannot change internal number because deliverables has already been progressed";
             }
 
-            return error_message;
+            return string.Empty;
         }
 
         public Action<BASELINE_ITEMProgress, string, object, object, EntityMessageType> InterfaceAddUndoRedoCallBack { get; set; }

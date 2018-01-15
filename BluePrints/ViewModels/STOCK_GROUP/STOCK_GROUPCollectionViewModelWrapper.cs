@@ -115,12 +115,17 @@ namespace BluePrints.ViewModels
                 entity.Entity.GUID_PROJECT = loadPROJECT.GUID;
             return true;
         }
+
+        public override string UnifiedValueValidation(STOCK_GROUPProjection projection, string field_name, object new_value)
+        {
+            return string.Empty;
+        }
         #endregion
 
         #endregion
 
         #region View Commands
-       
+
         #endregion
 
         #region View Properties

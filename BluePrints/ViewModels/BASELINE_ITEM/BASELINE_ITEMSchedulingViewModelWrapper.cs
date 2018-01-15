@@ -168,7 +168,6 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
         {
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
-            MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
             MainViewModel.PasteListener = this.PasteListener;
             MainViewModel.SetParentViewModel(this);
 
@@ -211,33 +210,29 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
-        private void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
+        public override string UnifiedValueValidation(BASELINE_ITEMProgress projection, string field_name, object new_value)
         {
             //budget hours field is disabled but just in case
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+            if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().BUDGET_HOURS))
             {
-                BASELINE_ITEMProgress validateEntity = (BASELINE_ITEMProgress)e.Row;
-                if (validateEntity.Entity.Entity.BY_DURATION && ((decimal)e.Value) > 0)
-                {
-                    e.IsValid = false;
-                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
-                    e.ErrorContent = "Cannot set budget hours when deliverable is by duration";
-                }
+                BASELINE_ITEMProgress validateEntity = projection;
+                if (validateEntity.Entity.Entity.BY_DURATION && ((decimal)new_value) > 0)
+                    return "Cannot set budget hours when deliverable is by duration";
             }
-            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
+            else if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEMProjection().Entity) + "." +
                 BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
             {
-                BASELINE_ITEMProgress validateEntity = (BASELINE_ITEMProgress)e.Row;
+                BASELINE_ITEMProgress validateEntity = projection;
                 if (validateEntity.Earned_Units_Total > 0)
                 {
-                    e.IsValid = false;
-                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
-                    e.ErrorContent = "Cannot change deliverable tracking type when percentage is already earned";
+                    return "Cannot change deliverable tracking type when percentage is already earned";
                 }
             }
+
+            return string.Empty;
         }
         #endregion
 

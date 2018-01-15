@@ -279,8 +279,6 @@ namespace BluePrints.ViewModels
             //MainViewModel.DisablePasting = true;
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
-            MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
-            MainViewModel.ValidateSetValueIsContinueCallBack = validateSetValueCallBack;
             MainViewModel.ManualPasteAction = ManualPasteAction;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -687,114 +685,71 @@ namespace BluePrints.ViewModels
             return false;
         }
 
-        public bool validateSetValueCallBack(ESTIMATE_ITEMProgress entity, string column_name, object newValue)
+        public override string UnifiedValueValidation(ESTIMATE_ITEMProgress projection, string field_name, object new_value)
         {
-            string fieldName = DataUtils.FormatColumnFieldname(column_name);
+            string fieldName = DataUtils.FormatColumnFieldname(field_name);
             //budgeted hours field is disabled but just in case
-            if (fieldName == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().BUDGET_QUANTITY))
+            if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().PROGRESS_TYPE))
             {
-                if ((decimal)newValue < entity.MinEstimateQuantity)
-                    return false;
-            }
-            else if (fieldName == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.GUID_COMMODITY_CODE))
-            {
-                if (newValue != null)
+                if (projection.Entity.Entity.STOCK_CODE == null)
                 {
-                    COMMODITY_CODE entity_commodity_code = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == (Guid)newValue);
-                    if (entity_commodity_code != null)
-                    {
-                        Guid? oldDisciplineValue = entity.Entity.Entity.GUID_DISCIPLINE;
-                        Guid? newDisciplineValue = entity_commodity_code.GUID_DISCIPLINE;
-                        string discipline_field_name = Base_Entity_String + BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_DISCIPLINE);
-                        entity.Entity.Entity.GUID_DISCIPLINE = newDisciplineValue;
-                        PauseUndoRedo();
-                        AddUndo(entity, discipline_field_name, oldDisciplineValue, newDisciplineValue, EntityMessageType.Changed);
-                    }
-                }
-            }
-
-            return true;
-        }
-
-        private void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
-        {
-            string fieldName = DataUtils.FormatColumnFieldname(e.Column.FieldName);
-            string error_message = Interface_AdditionalValidateCellCallBack((ESTIMATE_ITEMProgress)e.Row, e.Value, fieldName);
-            if (error_message != string.Empty)
-            {
-                e.IsValid = false;
-                e.ErrorContent = error_message;
-                e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
-            }
-
-        }
-
-        public string Interface_AdditionalValidateCellCallBack(ESTIMATE_ITEMProgress validateEntity, object currentValue, string fieldName)
-        {
-            string error_message = string.Empty;
-            //budgeted hours field is disabled but just in case
-
-            if (fieldName == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().PROGRESS_TYPE))
-            {
-                if (validateEntity.Entity.Entity.STOCK_CODE == null)
-                {
-                    EstimateProgressType newValue = (EstimateProgressType)currentValue;
+                    EstimateProgressType newValue = (EstimateProgressType)new_value;
                     if (newValue != EstimateProgressType.Standalone)
                     {
-                        error_message = "Cannot set " + newValue.ToString() + " when stock code is empty";
+                        return "Cannot set " + newValue.ToString() + " when stock code is empty";
                     }
                 }
-                else if (validateEntity.Entity.Entity.GUID_STOCK_GROUP != null)
+                else if (projection.Entity.Entity.GUID_STOCK_GROUP != null)
                 {
-                    STOCK_GROUP entity_stock_group = STOCK_GROUPCollection.FirstOrDefault(x => x.GUID == validateEntity.Entity.Entity.GUID_STOCK_GROUP);
+                    STOCK_GROUP entity_stock_group = STOCK_GROUPCollection.FirstOrDefault(x => x.GUID == projection.Entity.Entity.GUID_STOCK_GROUP);
                     if (entity_stock_group != null)
                     {
-                        if ((validateEntity.Entity.Entity.STOCK_CODE.UOM != entity_stock_group.UOM) && ((EstimateProgressType)currentValue) == EstimateProgressType.Trackable)
+                        if ((projection.Entity.Entity.STOCK_CODE.UOM != entity_stock_group.UOM) && ((EstimateProgressType)new_value) == EstimateProgressType.Trackable)
                         {
-                            error_message = "Cannot set trackable when UOM is different from stock group";
+                            return "Cannot set trackable when UOM is different from stock group";
                         }
                     }
                 }
-                else if (validateEntity.Entity.Entity.GUID_STOCK_GROUP == null)
+                else if (projection.Entity.Entity.GUID_STOCK_GROUP == null)
                 {
-                    EstimateProgressType newValue = (EstimateProgressType)currentValue;
+                    EstimateProgressType newValue = (EstimateProgressType)new_value;
                     if (newValue != EstimateProgressType.Standalone)
                     {
-                        error_message = "Cannot set " + newValue.ToString() + " when stock group is empty";
+                        return "Cannot set " + newValue.ToString() + " when stock group is empty";
                     }
                 }
             }
-            else if (fieldName == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_STOCK_GROUP))
+            else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_STOCK_GROUP))
             {
-                if (validateEntity.Entity.Entity.PROGRESS_TYPE == EstimateProgressType.Trackable && currentValue != null)
+                if (projection.Entity.Entity.PROGRESS_TYPE == EstimateProgressType.Trackable && new_value != null)
                 {
-                    STOCK_GROUP entity_commodity_code = STOCK_GROUPCollection.FirstOrDefault(x => x.GUID == (Guid)currentValue);
+                    STOCK_GROUP entity_commodity_code = STOCK_GROUPCollection.FirstOrDefault(x => x.GUID == (Guid)new_value);
                     if (entity_commodity_code != null)
                     {
-                        if ((validateEntity.Entity.Entity.STOCK_CODE.UOM != entity_commodity_code.UOM))
+                        if ((projection.Entity.Entity.STOCK_CODE.UOM != entity_commodity_code.UOM))
                         {
-                            error_message = "Cannot set a stock group with different UOM than stock code when deliverable is trackable";
+                            return "Cannot set a stock group with different UOM than stock code when deliverable is trackable";
                         }
                     }
                 }
             }
-            else if (fieldName == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Estimate_StockCodeGuid))
+            else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Estimate_StockCodeGuid))
             {
-                if (validateEntity.Entity.Entity.PROGRESS_TYPE == EstimateProgressType.Trackable && currentValue != null)
+                if (projection.Entity.Entity.PROGRESS_TYPE == EstimateProgressType.Trackable && new_value != null)
                 {
-                    STOCK_GROUP entity_commodity_code = STOCK_GROUPCollection.FirstOrDefault(x => x.GUID == validateEntity.Entity.Entity.GUID_STOCK_GROUP);
-                    STOCK_CODE entity_stock_code = STOCK_CODECollection.FirstOrDefault(x => x.GUID == (Guid)currentValue);
+                    STOCK_GROUP entity_commodity_code = STOCK_GROUPCollection.FirstOrDefault(x => x.GUID == projection.Entity.Entity.GUID_STOCK_GROUP);
+                    STOCK_CODE entity_stock_code = STOCK_CODECollection.FirstOrDefault(x => x.GUID == (Guid)new_value);
                     if (entity_stock_code != null && entity_commodity_code != null)
                     {
                         if ((entity_commodity_code.UOM != entity_stock_code.UOM))
                         {
-                            error_message = "Cannot set a stock code with different UOM than stock group when deliverable is trackable";
+                            return "Cannot set a stock code with different UOM than stock group when deliverable is trackable";
                         }
                     }
                 }
             }
 
-            return error_message;
+            return string.Empty;
         }
 
         public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, ESTIMATE_ITEMProgress projection, bool isNew)

@@ -572,6 +572,11 @@ namespace BluePrints.ViewModels
             Refresh();
         }
 
+        public override string UnifiedValueValidation(VARIATIONProjection projection, string field_name, object new_value)
+        {
+            return string.Empty;
+        }
+
         private string getBaselineRevision(Guid? baseline_guid)
         {
             BASELINE baseline = BASELINECollection.FirstOrDefault(x => x.GUID == baseline_guid);

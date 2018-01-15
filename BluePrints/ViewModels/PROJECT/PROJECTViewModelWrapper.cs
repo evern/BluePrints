@@ -156,7 +156,6 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECT_Dashboard> entities)
         {
-            MainViewModel.AdditionalValidateCellCallBack = AdditionalCellValidation;
             MainViewModel.CanFillDownCallBack = CanFillDownCallBack;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -440,43 +439,34 @@ namespace BluePrints.ViewModels
             FullRefresh();
         }
 
-        private void AdditionalCellValidation(GridCellValidationEventArgs e)
+        public override string UnifiedValueValidation(PROJECT_Dashboard projection, string field_name, object new_value)
         {
-            PROJECT_Dashboard activePROJECT = (PROJECT_Dashboard)e.Row;
             string missingPathErrorString = "Path not selected";
             bool isError = false;
 
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Entity) + "." + BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF))
+            if (field_name == BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Entity) + "." + BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF))
             {
-                ProjectDocumentStatus newValue = (ProjectDocumentStatus)e.Value;
-                if (newValue == ProjectDocumentStatus.Yes && activePROJECT.Entity.DOC_KICKOFF_PATH == null)
-                {
+                ProjectDocumentStatus newValue = (ProjectDocumentStatus)new_value;
+                if (newValue == ProjectDocumentStatus.Yes && projection.Entity.DOC_KICKOFF_PATH == null)
                     isError = true;
-                }
             }
-            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Entity) + "." + BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT))
+            else if (field_name == BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Entity) + "." + BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT))
             {
-                ProjectDocumentStatus newValue = (ProjectDocumentStatus)e.Value;
-                if (newValue == ProjectDocumentStatus.Yes && activePROJECT.Entity.DOC_CLOSEOUT_PATH == null)
-                {
+                ProjectDocumentStatus newValue = (ProjectDocumentStatus)new_value;
+                if (newValue == ProjectDocumentStatus.Yes && projection.Entity.DOC_CLOSEOUT_PATH == null)
                     isError = true;
-                }
             }
-            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Entity) + "." + BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT))
+            else if (field_name == BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Entity) + "." + BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT))
             {
-                ProjectDocumentStatus newValue = (ProjectDocumentStatus)e.Value;
-                if (newValue == ProjectDocumentStatus.Yes && activePROJECT.Entity.DOC_SIDREPORT_PATH == null)
-                {
+                ProjectDocumentStatus newValue = (ProjectDocumentStatus)new_value;
+                if (newValue == ProjectDocumentStatus.Yes && projection.Entity.DOC_SIDREPORT_PATH == null)
                     isError = true;
-                }
             }
 
             if (isError)
-            {
-                e.IsValid = false;
-                e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
-                e.ErrorContent = missingPathErrorString;
-            }
+                return missingPathErrorString;
+
+            return string.Empty;
         }
         #endregion
 

@@ -114,6 +114,11 @@ namespace BluePrints.ViewModels
             ReloadEntitiesCollection();
         }
 
+        public override string UnifiedValueValidation(BASELINE_ITEMProgress projection, string field_name, object new_value)
+        {
+            return string.Empty;
+        }
+
         #endregion
 
         #region View Properties

@@ -320,6 +320,11 @@ namespace BluePrints.ViewModels
             backgroundWorkerCollection.Clear();
             base.OnClose(e);
         }
+
+        public override string UnifiedValueValidation(PROJECT_Dashboard projection, string field_name, object new_value)
+        {
+            return string.Empty;
+        }
         #endregion
     }
 }

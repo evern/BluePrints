@@ -316,6 +316,11 @@ namespace BluePrints.ViewModels
         {
             return loadPROJECT.NUMBER + "_Baseline_Rev_" + loadBASELINE.REVISION + ".xlsx";
         }
+
+        public override string UnifiedValueValidation(WORKPACKProjection projection, string field_name, object new_value)
+        {
+            return string.Empty;
+        }
         #endregion
 
         #region For Variation Usage

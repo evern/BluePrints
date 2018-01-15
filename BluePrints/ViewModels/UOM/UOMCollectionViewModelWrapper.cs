@@ -65,6 +65,11 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
+
+        public override string UnifiedValueValidation(UOM projection, string field_name, object new_value)
+        {
+            return string.Empty;
+        }
         #endregion
 
         #region View Properties

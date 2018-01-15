@@ -180,6 +180,11 @@ namespace BluePrints.ViewModels
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
+        public override string UnifiedValueValidation(BASELINE projection, string field_name, object new_value)
+        {
+            return string.Empty;
+        }
+
         //public bool CanP6MODBASELINE_ASSIGN()
         //{
         //    return DisplaySelectedEntity != null && DisplaySelectedEntity.P6MODBASELINE_NAME != null &&

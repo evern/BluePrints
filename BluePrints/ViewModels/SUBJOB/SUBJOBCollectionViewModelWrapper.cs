@@ -461,6 +461,11 @@ namespace BluePrints.ViewModels
             _isProcessingMultipleDuplicates = false;
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }
+
+        public override string UnifiedValueValidation(SUBJOBProjection projection, string field_name, object new_value)
+        {
+            return string.Empty;
+        }
         #endregion
     }
 }

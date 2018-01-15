@@ -235,6 +235,11 @@ namespace BluePrints.ViewModels
             //DocumentManagerService.ShowExistingEntityDocumentWithLogging(documentInfo, this);
         }
 
+        public override string UnifiedValueValidation(ROLEProjection projection, string field_name, object new_value)
+        {
+            return string.Empty;
+        }
+
         public CollectionViewModel<ROLE_PERMISSION, ROLE_PERMISSION, Guid, IBluePrintsEntitiesUnitOfWork> ROLE_PERMISSIONViewModel
         {
             get

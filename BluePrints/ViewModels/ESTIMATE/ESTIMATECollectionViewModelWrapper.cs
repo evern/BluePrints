@@ -109,7 +109,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
-
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
@@ -182,6 +181,11 @@ namespace BluePrints.ViewModels
                 DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
+        }
+
+        public override string UnifiedValueValidation(ESTIMATE projection, string field_name, object new_value)
+        {
+            return string.Empty;
         }
         #endregion
     }

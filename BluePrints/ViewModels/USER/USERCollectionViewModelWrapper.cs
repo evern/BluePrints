@@ -212,6 +212,11 @@ namespace BluePrints.ViewModels
 
             selectEntitiesViewModel = null;
         }
+
+        public override string UnifiedValueValidation(USER projection, string field_name, object new_value)
+        {
+            return string.Empty;
+        }
         #endregion
     }
 }

@@ -161,6 +161,11 @@ namespace BluePrints.ViewModels
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
             MainViewModel.BaseBulkDelete(removeStockCodes);
         }
+
+        public override string UnifiedValueValidation(STOCK_CODE projection, string field_name, object new_value)
+        {
+            return string.Empty;
+        }
         #endregion
 
         #region View Properties

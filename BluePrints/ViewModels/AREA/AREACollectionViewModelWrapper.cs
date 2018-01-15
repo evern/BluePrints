@@ -213,13 +213,18 @@ namespace BluePrints.ViewModels
             base.OnClose(e);
         }
 
+        public override string UnifiedValueValidation(AREAMasterDetailProjection projection, string field_name, object new_value)
+        {
+            return string.Empty;
+        }
+
         //private List<STOCK_CODE> getAreaStockCodes(AREA area, AREA subArea = null)
         //{
         //    List<STOCK_CODE> areaStockCodes = new List<STOCK_CODE>();
         //    Guid? subAreaGuid = null;
         //    if (subArea != null)
         //        subAreaGuid = subArea.GUID;
-            
+
         //    foreach (STOCK_CODE globalStockCode in GlobalSTOCK_CODECollection)
         //    {
         //        if (!ProjectSTOCK_CODECollection.Any(x => x.CODE == globalStockCode.CODE && x.GUID_AREA == area.GUID && x.GUID_SUBAREA == subAreaGuid && x.GUID_DISCIPLINE == globalStockCode.GUID_DISCIPLINE))
