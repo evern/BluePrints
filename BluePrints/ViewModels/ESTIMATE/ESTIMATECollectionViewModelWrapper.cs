@@ -1,4 +1,5 @@
-﻿using BaseModel.DataModel;
+﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Document;
 using BaseModel.ViewModel.Loader;
@@ -160,10 +161,9 @@ namespace BluePrints.ViewModels
         {
             if (DisplaySelectedEntity == null)
                 return;
-            
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new DualEntitiesParameter<Data.PROJECT, IAmBaseline>(null,
-                DisplaySelectedEntity), "ESTIMATE_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Direct Estimate");
 
+            EstimateViewMode estimateViewMode = DisplaySelectedEntity.STATUS == BaselineStatus.Working ? EstimateViewMode.Estimate : EstimateViewMode.Budget;
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>(null, DisplaySelectedEntity, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Both, estimateViewMode)), "ESTIMATE_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Direct Estimate");
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
@@ -175,16 +175,81 @@ namespace BluePrints.ViewModels
 
         public void P6BASELINE_ASSIGN()
         {
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
-                new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original },
-                "ESTIMATE_ITEMSchedulingView",
-                DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping");
-
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original, loadPROJECT}, "ESTIMATE_ITEMSchedulingView", DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping");
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
+        }
+
+        ESTIMATE_ITEMCollectionViewModelWrapper estimate_itemViewModelWrapper;
+        public void Approve()
+        {
+            if (DisplaySelectedEntity.STATUS == BaselineStatus.Live)
+                MessageBoxService.ShowMessage("Cannot approve live estimate");
+
+            estimate_itemViewModelWrapper = ESTIMATE_ITEMCollectionViewModelWrapper.Create();
+            estimate_itemViewModelWrapper.SetParentViewModel(this);
+            estimate_itemViewModelWrapper.SuppressNotification = true;
+            estimate_itemViewModelWrapper.SupressCompulsoryEntityNotFoundMessage = true;
+            estimate_itemViewModelWrapper.OnEntitiesLoadedCallBackManualDispose = true;
+            estimate_itemViewModelWrapper.OnEntitiesLoadedCallBack = onEstimateItemsLoaded;
+            ISupportParameter receiveParameterViewModel = estimate_itemViewModelWrapper as ISupportParameter;
+            EstimateViewMode estimateViewMode = DisplaySelectedEntity.STATUS == BaselineStatus.Working ? EstimateViewMode.Estimate : EstimateViewMode.Budget;
+            receiveParameterViewModel.Parameter = new TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>(null, DisplaySelectedEntity, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Both, estimateViewMode));
+        }
+
+        private void onEstimateItemsLoaded(IEnumerable<ESTIMATE_ITEMProgress> projections, object parentId)
+        {
+            mainThreadDispatcher.BeginInvoke(new Action(() => reviseEstimate(projections, parentId)));
+        }
+
+        private void reviseEstimate(IEnumerable<ESTIMATE_ITEMProgress> projections, object parentId)
+        {
+            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+
+            foreach (ESTIMATE_ITEMProgress projection in projections)
+            {
+                projection.Entity.Entity.BUDGET_QUANTITY = projection.Entity.Entity.ESTIMATE_QUANTITY;
+                projection.Entity.Entity.BUDGET_INSTALL_RATE = projection.Entity.Entity.ESTIMATE_INSTALL_RATE;
+                projection.Entity.Entity.BUDGET_TRUCK_PERCENTAGE = projection.Entity.Entity.ESTIMATE_TRUCK_PERCENTAGE;
+
+                STOCK_CODE estimate_stock_code = bluePrintsUOW.STOCK_CODES.FirstOrDefault(x => x.GUID == projection.Entity.Entity.GUID_ESTIMATE_STOCK_CODE);
+                if(estimate_stock_code != null)
+                {
+                    STOCK_CODE budget_stock_code = new STOCK_CODE();
+                    DataUtils.ShallowCopy(budget_stock_code, estimate_stock_code);
+                    budget_stock_code.GUID = Guid.Empty;
+                    budget_stock_code.STOCK_CODE_TYPE = StockCodeType.Budget;
+                    budget_stock_code.GUID_ORIGINAL = estimate_stock_code.GUID;
+                    bluePrintsUOW.STOCK_CODES.Add(budget_stock_code);
+                    bluePrintsUOW.SaveChanges();
+                    projection.Entity.Entity.GUID_BUDGET_STOCK_CODE = budget_stock_code.GUID;
+                }
+
+                estimate_itemViewModelWrapper.Save(projection);
+            }
+
+            estimate_itemViewModelWrapper.CleanUpEntitiesLoader();
         }
 
         public override string UnifiedValueValidation(ESTIMATE projection, string field_name, object new_value)
         {
+            if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE().STATUS))
+            {
+                if(new_value != null)
+                {
+                    object oldValue = DataUtils.GetNestedValue(field_name, projection);
+                    if (oldValue != null)
+                    {
+                        BaselineStatus oldStatus = (BaselineStatus)oldValue;
+                        BaselineStatus newStatus = (BaselineStatus)new_value;
+
+                        if (oldStatus == BaselineStatus.Working && newStatus == BaselineStatus.Live)
+                            return "Please use approve button to move estimate from working to live";
+                        else if (oldStatus == BaselineStatus.Live)
+                            return "Cannot change status once it is live";
+                    }
+                }
+            }
+
             return string.Empty;
         }
         #endregion

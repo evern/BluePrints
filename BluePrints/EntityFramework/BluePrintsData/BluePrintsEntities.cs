@@ -61,6 +61,7 @@ namespace BluePrints.Data
             modelBuilder.Conventions.Add(new FunctionConvention<BluePrintsEntities>());
             modelBuilder.AddComplexTypesFromAssembly(typeof(BluePrintsEntities).Assembly);
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+            Database.CommandTimeout = 100000;
 
             modelBuilder.Entity<AREA>()
                 .HasMany(e => e.AREA1)

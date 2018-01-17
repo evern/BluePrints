@@ -116,19 +116,19 @@ namespace BluePrints.Common.Projections
             {
                 if (value == EstimateProgressType.Trackable)
                 {
-                    if (ESTIMATE_STOCK_CODE == null)
+                    if (BUDGET_STOCK_CODE == null)
                         return;
 
                     if (Entity.STOCK_GROUP == null)
                         return;
 
-                    if (ESTIMATE_STOCK_CODE.UOM != Entity.STOCK_GROUP.UOM)
+                    if (BUDGET_STOCK_CODE.UOM != Entity.STOCK_GROUP.UOM)
                         return;
                 }
 
                 if (value == EstimateProgressType.Auto)
                 {
-                    if (ESTIMATE_STOCK_CODE == null)
+                    if (BUDGET_STOCK_CODE == null)
                         return;
 
                     if (Entity.STOCK_GROUP == null)
@@ -153,7 +153,7 @@ namespace BluePrints.Common.Projections
 
         public RATE RATE { get; set; }
 
-        public string Deliverable_Name => ESTIMATE_STOCK_CODE == null ? string.Empty : ESTIMATE_STOCK_CODE.CODE;
+        public string Deliverable_Name => BUDGET_STOCK_CODE == null ? string.Empty : BUDGET_STOCK_CODE.CODE;
 
         public string Phase_Code => BluePrintsResources.Default_Construction_Phase;
 
@@ -342,6 +342,7 @@ namespace BluePrints.Common.Projections
                             {
                                 Entity = estimate_item,
                                 ESTIMATE_STOCK_CODE = STOCK_CODES == null ? null : STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_item.GUID_ESTIMATE_STOCK_CODE),
+                                BUDGET_STOCK_CODE = STOCK_CODES == null ? null : STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_item.GUID_BUDGET_STOCK_CODE),
                                 RATE = INSTALL_RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_item.GUID_DISCIPLINE),
                                 FREIGHT_RATE = FREIGHT_RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_item.GUID_DISCIPLINE),
                                 StockCodeCollection = STOCK_CODES == null ? null : STOCK_CODES

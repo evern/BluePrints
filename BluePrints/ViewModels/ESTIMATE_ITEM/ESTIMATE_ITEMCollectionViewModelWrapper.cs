@@ -162,7 +162,7 @@ namespace BluePrints.ViewModels
             if (isQueryForLiveStatus)
             {
                 if(viewMode == EstimateViewMode.Estimate)
-                    return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Working);
+                    return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS != BaselineStatus.Superseded);
                 else
                     return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
             }
@@ -177,7 +177,7 @@ namespace BluePrints.ViewModels
             else if (viewType == DeliverablesViewType.Indirect)
                 return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.PHASE != null && (x.PHASE.PHASE_TYPE == PhaseType.Construct && x.PHASE.CHARGE_TYPE == ChargeType.Indirect));
             else
-                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.PHASE != null && (x.PHASE.PHASE_TYPE == PhaseType.Construct || x.PHASE.PHASE_TYPE == PhaseType.Procurement));
+                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.PHASE != null);
         }
 
         private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()
@@ -281,6 +281,7 @@ namespace BluePrints.ViewModels
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.ManualPasteAction = ManualPasteAction;
             MainViewModel.SetParentViewModel(this);
+            mainThreadDispatcher.BeginInvoke(new Action(() => showViewReadOnlyMessage()));
             base.AssignCallBacksAndRaisePropertyChange(entities);
 
             //used for interface when this is loaded from variation
@@ -291,6 +292,12 @@ namespace BluePrints.ViewModels
             }
 
             SetViewSpecificProperties();
+        }
+
+        private void showViewReadOnlyMessage()
+        {
+            if (!AllowEditingOnEstimate)
+                MessageBoxService.ShowMessage("Estimate is currently in read only mode because it has already been approved as a budget");
         }
 
         /// <summary>
@@ -328,7 +335,6 @@ namespace BluePrints.ViewModels
             }
 
             BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, phaseType, chargeType);
-
             if(chargeType != ChargeType.Indirect)
                 //by passing in only procurement phase type, the first occurence of procurement PHASE will be retrieved
                 BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, procurementPhaseType, null, true);
@@ -363,11 +369,25 @@ namespace BluePrints.ViewModels
                     if(rate_result && install_result)
                     {
                         STOCK_CODE project_stock_code = ProjectSTOCK_CODECollection.FirstOrDefault(x => x.CODE == stock_code_data.Value && x.RATE_SUPPLY == supply_value && x.HOURS_INSTALL == install_value);
+                        STOCK_CODE editing_stock_code;
+                        if (IsBudget)
+                            editing_stock_code = pasteEntity.Entity.BUDGET_STOCK_CODE;
+                        else
+                            editing_stock_code = pasteEntity.Entity.ESTIMATE_STOCK_CODE;
+
                         if (project_stock_code != null)
                         {
-                            pasteEntity.Entity.ESTIMATE_STOCK_CODE = project_stock_code;
-                            pasteEntity.Entity.Estimate_StockCodeGuid = project_stock_code.GUID;
-                            pasteEntity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE = project_stock_code.GUID;
+                            editing_stock_code = project_stock_code;
+                            if(IsBudget)
+                            {
+                                pasteEntity.Entity.Budget_StockCodeGuid = project_stock_code.GUID;
+                                pasteEntity.Entity.Entity.GUID_BUDGET_STOCK_CODE = project_stock_code.GUID;
+                            }
+                            else
+                            {
+                                pasteEntity.Entity.Estimate_StockCodeGuid = project_stock_code.GUID;
+                                pasteEntity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE = project_stock_code.GUID;
+                            }
                         }
                         else
                         {
@@ -376,12 +396,12 @@ namespace BluePrints.ViewModels
                             KeyValuePair<ColumnBase, string> type_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.ESTIMATE_STOCK_CODE.TYPE)));
                             KeyValuePair<ColumnBase, string> spec_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.ESTIMATE_STOCK_CODE.SPEC)));
                             KeyValuePair<ColumnBase, string> desc_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.ESTIMATE_STOCK_CODE.DESCRIPTION)));
-                            pasteEntity.Entity.ESTIMATE_STOCK_CODE.CODE = stock_code_data.Value;
-                            pasteEntity.Entity.ESTIMATE_STOCK_CODE.UOM = uom_data.Value;
-                            pasteEntity.Entity.ESTIMATE_STOCK_CODE.NAME = name_data.Value;
-                            pasteEntity.Entity.ESTIMATE_STOCK_CODE.TYPE = type_data.Value;
-                            pasteEntity.Entity.ESTIMATE_STOCK_CODE.SPEC = spec_data.Value;
-                            pasteEntity.Entity.ESTIMATE_STOCK_CODE.DESCRIPTION = desc_data.Value;
+                            editing_stock_code.CODE = stock_code_data.Value;
+                            editing_stock_code.UOM = uom_data.Value;
+                            editing_stock_code.NAME = name_data.Value;
+                            editing_stock_code.TYPE = type_data.Value;
+                            editing_stock_code.SPEC = spec_data.Value;
+                            editing_stock_code.DESCRIPTION = desc_data.Value;
 
                             Guid discipline_guid = Guid.Empty;
                             if (pasteEntity.Entity.Entity.GUID_DISCIPLINE == null)
@@ -389,26 +409,27 @@ namespace BluePrints.ViewModels
                             else
                                 discipline_guid = (Guid)pasteEntity.Entity.Entity.GUID_DISCIPLINE;
 
-                            pasteEntity.Entity.ESTIMATE_STOCK_CODE.GUID_DISCIPLINE = discipline_guid;
-                            pasteEntity.Entity.ESTIMATE_STOCK_CODE.GUID_DEPARTMENT = defaultDepartment.GUID;
+                            editing_stock_code.GUID_DISCIPLINE = discipline_guid;
+                            editing_stock_code.GUID_DEPARTMENT = defaultDepartment.GUID;
 
                             //use global stock code as original guid
                             STOCK_CODE from_stock_code = STOCK_CODECollection.FirstOrDefault(x => x.CODE == stock_code_data.Value);
 
                             if (from_stock_code != null)
-                                pasteEntity.Entity.ESTIMATE_STOCK_CODE.GUID_ORIGINAL = from_stock_code.GUID;
+                                editing_stock_code.GUID_ORIGINAL = from_stock_code.GUID;
 
-                            if(pasteEntity.Entity.ESTIMATE_STOCK_CODE.NAME != string.Empty)
+                            if(editing_stock_code.NAME != string.Empty)
                             {
-                                pasteEntity.Entity.Estimate_StockCodeGuid = createNewSTOCK_CODE(pasteEntity.Entity.ESTIMATE_STOCK_CODE);
-                                pasteEntity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE = pasteEntity.Entity.Estimate_StockCodeGuid;
+                                pasteEntity.Entity.Budget_StockCodeGuid = createNewSTOCK_CODE(editing_stock_code);
+                                if (IsBudget)
+                                    pasteEntity.Entity.Entity.GUID_BUDGET_STOCK_CODE = pasteEntity.Entity.Budget_StockCodeGuid;
+                                else
+                                    pasteEntity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE = pasteEntity.Entity.Estimate_StockCodeGuid;
                             }
                         }
                     }
                 }
             }
-
-            //string s = stock_code_data.ToString();
         }
 
         /// <summary>
@@ -416,9 +437,13 @@ namespace BluePrints.ViewModels
         /// </summary>
         private void SetViewSpecificProperties()
         {
-            SelectedEntities = DisplaySelectedEntities;
-            EditableAllEntities = MainViewModel.Entities;
-            DefaultPhaseInternalNumber = BluePrintsResources.Default_Construction_Phase;
+            //When this is not called externally as a nested wrapper
+            if(MainViewModel != null)
+            {
+                SelectedEntities = DisplaySelectedEntities;
+                EditableAllEntities = MainViewModel.Entities;
+                DefaultPhaseInternalNumber = BluePrintsResources.Default_Construction_Phase;
+            }
         }
 
         public Action<ESTIMATE_ITEMProgress> ApplyViewSpecificPropertiesToEntityCallBack { get; set; }
@@ -437,24 +462,39 @@ namespace BluePrints.ViewModels
         #region Collection Call Backs
         private void createAndAssignProjectSpecificSTOCK_CODE(ESTIMATE_ITEMProgress projectionEntity)
         {
-            if (projectionEntity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE == null)
+            Guid? stockcodeGuid;
+            if (IsBudget)
+                stockcodeGuid = projectionEntity.Entity.Entity.GUID_BUDGET_STOCK_CODE;
+            else
+                stockcodeGuid = projectionEntity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE;
+
+            if (stockcodeGuid == null)
                 return;
 
-            if(!ProjectSTOCK_CODECollection.Any(x => x.GUID == projectionEntity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE))
+            if(!ProjectSTOCK_CODECollection.Any(x => x.GUID == stockcodeGuid))
             {
-                STOCK_CODE stock_code = STOCK_CODECollection.FirstOrDefault(x => x.GUID == projectionEntity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE);
+                STOCK_CODE stock_code = STOCK_CODECollection.FirstOrDefault(x => x.GUID == stockcodeGuid);
                 if (stock_code != null)
                 {
-                    STOCK_CODE projectSTOCK_CODE = new STOCK_CODE();
-                    DataUtils.ShallowCopy(projectSTOCK_CODE, stock_code);
-                    projectSTOCK_CODE.GUID = Guid.Empty;
-                    projectSTOCK_CODE.GUID_PROJECT = loadPROJECT.GUID;
-                    projectSTOCK_CODE.STOCK_CODE_TYPE = StockCodeType.Estimate;
-                    STOCK_CODECollectionViewModel.Save(projectSTOCK_CODE);
-                    projectionEntity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE = projectSTOCK_CODE.GUID;
+                    STOCK_CODE newSTOCK_CODE = new STOCK_CODE();
+                    DataUtils.ShallowCopy(newSTOCK_CODE, stock_code);
+                    newSTOCK_CODE.GUID = Guid.Empty;
+                    newSTOCK_CODE.GUID_PROJECT = loadPROJECT.GUID;
+                    newSTOCK_CODE.STOCK_CODE_TYPE = IsBudget ? StockCodeType.Budget : StockCodeType.Estimate;
+                    STOCK_CODECollectionViewModel.Save(newSTOCK_CODE);
 
-                    //stock group is by value with shallow copy in setter so that user edited changes can be cross check with existing project stock group
-                    projectionEntity.Entity.ESTIMATE_STOCK_CODE = projectSTOCK_CODE;
+                    if(IsBudget)
+                    {
+                        projectionEntity.Entity.Entity.GUID_BUDGET_STOCK_CODE = newSTOCK_CODE.GUID;
+                        //stock group is by value with shallow copy in setter so that user edited changes can be cross check with existing project stock group
+                        projectionEntity.Entity.BUDGET_STOCK_CODE = newSTOCK_CODE;
+                    }
+                    else
+                    {
+                        projectionEntity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE = newSTOCK_CODE.GUID;
+                        //stock group is by value with shallow copy in setter so that user edited changes can be cross check with existing project stock group
+                        projectionEntity.Entity.ESTIMATE_STOCK_CODE = newSTOCK_CODE;
+                    }
                 }
                 else
                     return;
@@ -470,7 +510,7 @@ namespace BluePrints.ViewModels
             newStockCode.GUID = Guid.Empty;
             newStockCode.GUID_PROJECT = loadPROJECT.GUID;
             newStockCode.GUID_ORIGINAL = fromStockCode.GUID_ORIGINAL;
-            newStockCode.STOCK_CODE_TYPE = StockCodeType.Estimate;
+            newStockCode.STOCK_CODE_TYPE = IsBudget ? StockCodeType.Budget : StockCodeType.Estimate;
             STOCK_CODECollectionViewModel.Save(newStockCode);
             return newStockCode.GUID;
         }
@@ -502,18 +542,28 @@ namespace BluePrints.ViewModels
 
         private void onBeforeSavedProjectStockCodeLogging(ESTIMATE_ITEMProgress entity)
         {
-            if (entity.Entity.ESTIMATE_STOCK_CODE != null)
+            STOCK_CODE editingSTOCK_CODE;
+            if (IsBudget)
+                editingSTOCK_CODE = entity.Entity.BUDGET_STOCK_CODE;
+            else
+                editingSTOCK_CODE = entity.Entity.ESTIMATE_STOCK_CODE;
+
+            if (editingSTOCK_CODE != null)
             {
                 STOCK_CODE projectStockCode;
-                projectStock_CodeStatus commodityCodeStatus = getProjectStockCodeStatus(entity.Entity.ESTIMATE_STOCK_CODE, out projectStockCode);
+                projectStock_CodeStatus commodityCodeStatus = getProjectStockCodeStatus(editingSTOCK_CODE, out projectStockCode);
                 if (commodityCodeStatus == projectStock_CodeStatus.IsEmpty)
                     return;
                 else if (commodityCodeStatus == projectStock_CodeStatus.DontExists)
                     createAndAssignProjectSpecificSTOCK_CODE(entity);
                 else if (commodityCodeStatus == projectStock_CodeStatus.MetaExistsOnDifferentRecord)
                 {
-                    entity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE = projectStockCode.GUID;
-                    entity.Entity.ESTIMATE_STOCK_CODE = projectStockCode;
+                    if (IsBudget)
+                        entity.Entity.Entity.GUID_BUDGET_STOCK_CODE = projectStockCode.GUID;
+                    else
+                        entity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE = projectStockCode.GUID;
+
+                    editingSTOCK_CODE = projectStockCode;
                 }
                 else if (commodityCodeStatus == projectStock_CodeStatus.ExistsWithDifferentRateHours)
                 {
@@ -543,20 +593,23 @@ namespace BluePrints.ViewModels
 
                     string message = String.Format("Current stock code with\nSupply Rate: {0:#} Install Hours: {1:#}\n" +
                         "Is changed to\nSupply Rate: {2:#} Install Hours: {3:#}\n" +
-                        "Do you wish to add new or update?", projectStockCode.RATE_SUPPLY, projectStockCode.HOURS_INSTALL, entity.Entity.ESTIMATE_STOCK_CODE.RATE_SUPPLY, entity.Entity.ESTIMATE_STOCK_CODE.HOURS_INSTALL);
+                        "Do you wish to add new or update?", projectStockCode.RATE_SUPPLY, projectStockCode.HOURS_INSTALL, editingSTOCK_CODE.RATE_SUPPLY, editingSTOCK_CODE.HOURS_INSTALL);
 
                     BasicMessageBoxViewModel viewModel = BasicMessageBoxViewModel.Create(message);
                     UICommand result = StockCodeDialogService.ShowDialog(new List<UICommand>() { addCommand, editCommand, cancelCommand }, "Stock Code", "BasicMessageBox", viewModel);
                     if (result == addCommand)
                     {
-                        Guid newStockCodeGuid = createNewSTOCK_CODE(entity.Entity.ESTIMATE_STOCK_CODE);
-                        entity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE = newStockCodeGuid;
+                        Guid newStockCodeGuid = createNewSTOCK_CODE(editingSTOCK_CODE);
+                        if (IsBudget)
+                            entity.Entity.Entity.GUID_BUDGET_STOCK_CODE = newStockCodeGuid;
+                        else
+                            entity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE = newStockCodeGuid;
                     }
                     else if (result == editCommand)
-                        updateSTOCK_CODE(entity.Entity.ESTIMATE_STOCK_CODE);
+                        updateSTOCK_CODE(editingSTOCK_CODE);
                 }
                 else if (commodityCodeStatus == projectStock_CodeStatus.Exists)
-                    updateSTOCK_CODE(entity.Entity.ESTIMATE_STOCK_CODE);
+                    updateSTOCK_CODE(editingSTOCK_CODE);
             }
         }
         #endregion
@@ -671,9 +724,22 @@ namespace BluePrints.ViewModels
                 {
                     foreach (var entities in MainViewModel.Entities)
                     {
-                        if(entities.Entity.Entity.GUID_ESTIMATE_STOCK_CODE == (Guid)key)
+                        Guid? stock_code_guid;
+                        STOCK_CODE stock_code;
+                        if (IsBudget)
                         {
-                            entities.Entity.ESTIMATE_STOCK_CODE = changedStock_Code;
+                            stock_code_guid = entities.Entity.Entity.GUID_BUDGET_STOCK_CODE;
+                            stock_code = entities.Entity.BUDGET_STOCK_CODE;
+                        }
+                        else
+                        {
+                            stock_code_guid = entities.Entity.Entity.GUID_ESTIMATE_STOCK_CODE;
+                            stock_code = entities.Entity.ESTIMATE_STOCK_CODE;
+                        }
+
+                        if (stock_code_guid == (Guid)key)
+                        {
+                            stock_code = changedStock_Code;
                             entities.Update();
                         }
                     }
@@ -1227,6 +1293,8 @@ namespace BluePrints.ViewModels
         }
 
         public Func<IEnumerable<ESTIMATE_ITEMProgress>> GetEditableAllEntitiesCallBack { get; set; }
+
+        private bool IsBudget => loadESTIMATE.STATUS == BaselineStatus.Live;
 
         public bool AllowEditingOnEstimate
         {

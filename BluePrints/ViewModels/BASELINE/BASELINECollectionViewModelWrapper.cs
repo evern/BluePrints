@@ -159,7 +159,7 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new DualEntitiesParameter<Data.PROJECT, IAmBaseline>(null, DisplaySelectedEntity), "BASELINE_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Baseline");
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>(null, DisplaySelectedEntity, DeliverablesViewType.Both), "BASELINE_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Baseline");
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 

@@ -289,7 +289,6 @@ namespace BluePrints.Common
         [Display(Name = "Indirect")]
         Indirect = 1
     }
-
     public enum ProgressType
     {
         [Display(Name = "Design")]

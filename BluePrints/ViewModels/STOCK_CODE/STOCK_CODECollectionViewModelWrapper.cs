@@ -138,7 +138,7 @@ namespace BluePrints.ViewModels
             variation_itemsViewModelWrapper.SetParentViewModel(this);
             variation_itemsViewModelWrapper.OnEntitiesLoadedCallBack = trim_unused_stock_code;
             var baselineSupportParameterObj = variation_itemsViewModelWrapper as ISupportParameter;
-            baselineSupportParameterObj.Parameter = new DualEntitiesParameter<PROJECT, IAmBaseline>(loadPROJECT, null);
+            baselineSupportParameterObj.Parameter = new TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>(loadPROJECT, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Both, EstimateViewMode.Budget));
         }
 
         private void trim_unused_stock_code(IEnumerable<ESTIMATE_ITEMProgress> estimation_direct_items, object parentId)
@@ -152,7 +152,7 @@ namespace BluePrints.ViewModels
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
             foreach (STOCK_CODE projectStockCode in MainViewModel.Entities)
             {
-                if (!estimation_direct_items.Any(x => x.Entity.Entity.GUID_ESTIMATE_STOCK_CODE == projectStockCode.GUID))
+                if (!estimation_direct_items.Any(x => x.Entity.Entity.GUID_ESTIMATE_STOCK_CODE == projectStockCode.GUID || x.Entity.Entity.GUID_BUDGET_STOCK_CODE == projectStockCode.GUID))
                 {
                     removeStockCodes.Add(projectStockCode);
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(projectStockCode, null, null, null, EntityMessageType.Deleted);
