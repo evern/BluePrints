@@ -178,6 +178,22 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal DC_Value { get => Entity.DC_Value; set => Entity.DC_Value = value; }
 
         public Guid? Procurement_Subjob_Guid { get => Entity.Procurement_Subjob_Guid; set => Entity.Procurement_Subjob_Guid = value; }
+
+        public decimal Variance_Quantity => Budget_Quantity - Estimate_Quantity;
+
+        public decimal Variance_Stock_Code_Install_Hours => Budget_Stock_Code_Install_Hours - Estimate_Stock_Code_Install_Hours;
+
+        public decimal Variance_Stock_Code_Supply_Rate => Budget_Stock_Code_Supply_Rate - Estimate_Stock_Code_Supply_Rate;
+
+        public decimal Variance_Supply_Cost => Budget_Supply_Cost - Estimate_Supply_Cost;
+
+        public decimal Variance_Install_Cost => Budget_Install_Cost - Estimate_Install_Cost;
+
+        public decimal Variance_Install_Hours => Budget_Install_Hours - Estimate_Install_Hours;
+
+        public decimal Variance_FreightRate => Budget_FreightRate - Estimate_FreightRate;
+
+        public decimal Variance_Freight_Cost => Budget_Freight_Cost - Estimate_Freight_Cost;
     }
 
     [BulkEditDisabledAttributes("DeliverableStatusProgressGuid, DeliverableStatusGuid")]
@@ -1028,5 +1044,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public Guid? P6_WorkpackGuid => Workpack_Guid;
 
         public string P6AssignmentDescription => string.Empty;
+
+        public PhaseType? Phase => Entity.Phase;
     }
 }

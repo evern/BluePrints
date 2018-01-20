@@ -56,6 +56,9 @@ namespace BluePrints.Common.Projections
         public decimal Discipline_Number => 0;
 
         public Guid? Workpack_Guid { get => Guid.Empty; set { } }
+
+        public PhaseType? Phase => Entity.PHASE == null ? null : Entity.PHASE.PHASE_TYPE;
+
         Guid? IDeliverable.Subjob_Guid { get => Guid.Empty; set { } }
 
         public void SetOriginalEntityKey(Guid newGuid)

@@ -93,6 +93,8 @@ namespace BluePrints.Common.Projections
         public decimal Discipline_Number => Entity.DISCIPLINE_NUM;
 
         public Guid? Workpack_Guid { get => Entity.GUID_WORKPACK; set => Entity.GUID_WORKPACK = value; }
+
+        public PhaseType? Phase => Entity.Phase;
     }
 
     public static class BASELINE_ITEMProjectionQueries

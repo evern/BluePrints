@@ -76,6 +76,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     public interface IDeliverable : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCommodity_Code, IHaveHours
     {
         string Subjob_Name { get; }
+        PhaseType? Phase { get; }
         string Phase_Code { get; }
         string Department_Code { get; }
         string Discipline_Code { get; }

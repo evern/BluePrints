@@ -98,11 +98,11 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Discipline Number" FieldName="Entity.Entity.DISCIPLINE_NUM" FilterPopupMode="CheckedList">
+                                <!--<dxg:GridColumn Header="Discipline Number" FieldName="Entity.Entity.DISCIPLINE_NUM" FilterPopupMode="CheckedList">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
                                     </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
+                                </dxg:GridColumn>-->
                                 <dxg:GridColumn Header="Name" FieldName="Entity.Entity.NAME" FilterPopupMode="CheckedList" />
                                 <dxg:GridColumn Header="Comments" FieldName="Entity.Entity.COMMENTS" FilterPopupMode="CheckedList" />
                                 <dxg:GridColumn Header="Quantity" FieldName="Entity.Entity.ESTIMATE_QUANTITY" FilterPopupMode="CheckedList">
@@ -150,14 +150,19 @@
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Header="Variation Quantity" FieldName="Entity.Entity.DC_QUANTITY" HeaderToolTip="Variation quantities have to be added from the variation page and approved to be shown here" ReadOnly="True" FilterPopupMode="CheckedList" />
-                                <dxg:GridColumn Header="Truck % Per Quantity" FieldName="Entity.Entity.ESTIMATE_TRUCK_PERCENTAGE" HeaderToolTip="How many percentage will a single quantity occupy a truck" FilterPopupMode="CheckedList">
+                                <dxg:GridColumn Header="Rate Per Truck" FieldName="Entity.Rate_Per_Truck" HeaderToolTip="Rates are retrived from rates table with group of [Site] and department of [Procurement] and discipline of this commodity. Please refresh the view after changing rates in rates table" ReadOnly="True" FilterPopupMode="CheckedList">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Increment="0.1" IsTextEditable="True" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Truck % Per Qty" FieldName="Entity.Entity.ESTIMATE_TRUCK_PERCENTAGE" HeaderToolTip="How many percentage will a single quantity occupy a truck" FilterPopupMode="CheckedList">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="0.1" IsFloatValue="True" IsTextEditable="True" Mask="p3" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Header="Install Rate" FieldName="Entity.Entity.ESTIMATE_INSTALL_RATE" HeaderToolTip="Default value is standard rates by discipline" FilterPopupMode="CheckedList">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:SpinEditSettings Increment="1" IsFloatValue="True" IsTextEditable="True" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" NullValueButtonPlacement="EditBox" />
+                                        <dxe:SpinEditSettings Increment="1" IsFloatValue="True" IsTextEditable="True" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" NullValueButtonPlacement="EditBox" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>

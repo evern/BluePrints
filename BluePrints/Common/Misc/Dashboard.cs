@@ -28,6 +28,21 @@ namespace BluePrints.Common.Misc
 
         public string Code { get; set; }
 
+        public string PhaseCode
+        {
+            get
+            {
+                if (Code == string.Empty)
+                    return string.Empty;
+
+                List<string> codePartition = Code.Split('-').ToList();
+                if (codePartition.Count < 4)
+                    return string.Empty;
+
+                return codePartition[3];
+            }
+        }
+
         public List<DashboardTreeStructure> Child_Dashboards { get; set; }
 
         public bool IHave_ChildDashboard => Child_Dashboards != null && Child_Dashboards.Count > 0;
@@ -50,6 +65,7 @@ namespace BluePrints.Common.Misc
     /// </summary>
     public class DashboardFlatStructure : DashboardTreeStructure, IHaveStats
     {
+        public PhaseType? Phase { get; set; }
         public string SubjobCode { get; set; }
         public string AreaCode { get; set; }
         public string SubAreaCode { get; set; }
@@ -300,12 +316,16 @@ namespace BluePrints.Common.Misc
             List<DashboardFlatStructure> flatDashboards = new List<DashboardFlatStructure>();
             hierarchicalDashboards = ProjectDashboardHierarchicalBuilder(project_summary_stats);
 
-            foreach(DashboardTreeStructure subjob_dashboard in hierarchicalDashboards.OrderBy(x => x.Code))
+            IEnumerable<SUBJOB> design_subjobs = SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Design);
+            IEnumerable<SUBJOB> construction_subjobs = SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Construct);
+
+            foreach (DashboardTreeStructure subjob_dashboard in hierarchicalDashboards.OrderBy(x => x.Code))
             {
                 if (subjob_dashboard.Child_Dashboards.Count == 0)
                 {
                     DashboardFlatStructure subjobLevelDashboard = new DashboardFlatStructure();
                     subjobLevelDashboard.SubjobCode = subjob_dashboard.Code;
+                    subjobLevelDashboard.Phase = design_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Design : construction_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Construct : (PhaseType?)null;
                     subjobLevelDashboard.AreaCode = string.Empty;
                     subjobLevelDashboard.DepartmentCode = string.Empty;
                     subjobLevelDashboard.DisciplineCode = string.Empty;
@@ -325,6 +345,7 @@ namespace BluePrints.Common.Misc
                         {
                             DashboardFlatStructure departmentLevelDashboard = new DashboardFlatStructure();
                             departmentLevelDashboard.SubjobCode = subjob_dashboard.Code;
+                            departmentLevelDashboard.Phase = design_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Design : construction_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Construct : (PhaseType?)null;
                             departmentLevelDashboard.AreaCode = areaCode;
                             departmentLevelDashboard.DepartmentCode = department_dashboard.Code;
                             departmentLevelDashboard.DisciplineCode = string.Empty;
@@ -337,6 +358,7 @@ namespace BluePrints.Common.Misc
                             {
                                 DashboardFlatStructure commodityLevelDashboard = new DashboardFlatStructure();
                                 commodityLevelDashboard.SubjobCode = subjob_dashboard.Code;
+                                commodityLevelDashboard.Phase = design_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Design : construction_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Construct : (PhaseType?)null;
                                 commodityLevelDashboard.AreaCode = areaCode;
                                 commodityLevelDashboard.DepartmentCode = department_dashboard.Code;
                                 commodityLevelDashboard.DisciplineCode = discipline_dashboard.Code;

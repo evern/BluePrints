@@ -1222,7 +1222,10 @@ namespace BluePrints.ViewModels
                 if (loadPROJECT == null)
                     return null;
 
-                return STOCK_CODECollection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.CODE);
+                if(IsBudget)
+                    return STOCK_CODECollection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STOCK_CODE_TYPE == StockCodeType.Budget).OrderBy(x => x.CODE);
+                else
+                    return STOCK_CODECollection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STOCK_CODE_TYPE == StockCodeType.Estimate).OrderBy(x => x.CODE);
             }
         }
 

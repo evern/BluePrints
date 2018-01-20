@@ -23,6 +23,8 @@ namespace BluePrints.Common.Projections
 
         public RATE FREIGHT_RATE { get; set; }
 
+        public decimal Rate_Per_Truck => FREIGHT_RATE == null ? 0 : FREIGHT_RATE.RATE1 == null ? 0 : ((Decimal)FREIGHT_RATE.RATE1);
+
         public decimal Budget_FreightRate => Entity.BUDGET_TRUCK_PERCENTAGE == null ? 0 : FREIGHT_RATE == null || FREIGHT_RATE.RATE1 == null ? 0 : ((Decimal)FREIGHT_RATE.RATE1) * (decimal)Entity.BUDGET_TRUCK_PERCENTAGE;
 
         public decimal Estimate_FreightRate => Entity.ESTIMATE_TRUCK_PERCENTAGE == null ? 0 : FREIGHT_RATE == null || FREIGHT_RATE.RATE1 == null ? 0 : ((Decimal)FREIGHT_RATE.RATE1) * (decimal)Entity.ESTIMATE_TRUCK_PERCENTAGE;
@@ -197,7 +199,7 @@ namespace BluePrints.Common.Projections
 
         public decimal Estimate_Supply_Cost => Estimate_Stock_Code_Supply_Rate * Estimate_Quantity;
 
-        public decimal Budget_Supply_Cost => Budget_Stock_Code_Supply_Rate * Estimate_Quantity;
+        public decimal Budget_Supply_Cost => Budget_Stock_Code_Supply_Rate * Budget_Quantity;
 
         public decimal Install_Cost => Total_Units * Budget_ItemRate;
 
@@ -284,6 +286,8 @@ namespace BluePrints.Common.Projections
         public decimal Total_Budget_Cost => Total_Budget_Install_Cost + Total_Budget_Supply_Cost + Total_Budget_Freight_Cost;
 
         public decimal Budget_Freight_Cost => Budget_Quantity * Budget_FreightRate;
+
+        public PhaseType? Phase => Entity.Phase;
     }
 
     public static class ESTIMATE_ITEMProjectionQueries

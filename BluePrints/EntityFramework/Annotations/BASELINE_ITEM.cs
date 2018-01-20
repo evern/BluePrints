@@ -328,5 +328,7 @@ namespace BluePrints.Data
 
         [NotMapped]
         public Guid? Workpack_Guid { get => GUID_WORKPACK; set => GUID_WORKPACK = value; }
+
+        public PhaseType? Phase => PHASE == null ? null : PHASE.PHASE_TYPE;
     }
 }

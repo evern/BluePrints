@@ -15,6 +15,7 @@ using BluePrints.Data;
 using DevExpress.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Bars;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace BluePrints.ViewModels
 {
@@ -55,6 +57,7 @@ namespace BluePrints.ViewModels
         public Action<ESTIMATECollectionViewModelWrapper> AssignESTIMATEDelegates;
         public Action<AREACollectionViewModelWrapper> AssignAREADelegates;
         public Action<RATECollectionViewModelWrapper> AssignRATEDelegates;
+        private DispatcherTimer selectAllDispatcher;
         private List<DashboardTreeStructure> hierarchicalDashboard = null;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void resolveParameters(object parameter)
@@ -63,6 +66,10 @@ namespace BluePrints.ViewModels
                 (EntitiesParameter<PROJECT>) parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
             isSuppressPropertyChange = true;
+
+            selectAllDispatcher = new DispatcherTimer();
+            selectAllDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
+            selectAllDispatcher.Tick += SelectAllDispatcher_Tick;
         }
 
         public override void OnLoaded()
@@ -160,6 +167,12 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        private void SelectAllDispatcher_Tick(object sender, EventArgs e)
+        {
+            selectAllDispatcher.Stop();
+            mainThreadDispatcher.BeginInvoke(new Action(() => SelectAll()));
+        }
+
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)
         {
             MainViewModel =
@@ -212,6 +225,7 @@ namespace BluePrints.ViewModels
         {
             //for raising can export to excel
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaiseCanExecuteChanged(x => x.ExportToExcel())));
+            selectAllDispatcher.Start();
         }
 
         public bool CanExportToExcel()
@@ -471,6 +485,110 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        protected override void OnAfterSelectedEntitiesChanged()
+        {
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaiseSelectionChanged()));
+            base.OnAfterSelectedEntitiesChanged();
+        }
+
+        public void RaiseSelectionChanged()
+        {
+            this.RaisePropertyChanged(x => x.IsAllSelected);
+            this.RaisePropertyChanged(x => x.IsAllDesignSelected);
+            this.RaisePropertyChanged(x => x.IsAllConstructSelected);
+        }
+
+        public bool IsAllSelected
+        {
+            get
+            {
+                if (SingleProjectDashboards == null)
+                    return false;
+
+                return Selected_Dashboards.Count == SingleProjectDashboards.Count();
+            }
+        }
+
+        public bool IsAllDesignSelected
+        {
+            get
+            {
+                if (SingleProjectDashboards == null)
+                    return false;
+
+                IEnumerable<DashboardFlatStructure> selected_dashboards = Selected_Dashboards.Select(x => (DashboardFlatStructure)x);
+                IEnumerable<DashboardFlatStructure> designDashboards = SingleProjectDashboards.Where(x => x.Phase != null && x.Phase == PhaseType.Design);
+                return designDashboards.All(x => Selected_Dashboards.Any(y => y == x));
+            }
+        }
+
+        public bool IsAllConstructSelected
+        {
+            get
+            {
+                if (SingleProjectDashboards == null)
+                    return false;
+
+                IEnumerable<DashboardFlatStructure> selected_dashboards = Selected_Dashboards.Select(x => (DashboardFlatStructure)x);
+                IEnumerable<DashboardFlatStructure> constructDashboard = SingleProjectDashboards.Where(x => x.Phase != null && x.Phase == PhaseType.Construct);
+                return constructDashboard.All(x => Selected_Dashboards.Any(y => y == x));
+            }
+        }
+
+        public void SelectAll()
+        {
+            if (SingleProjectDashboards == null)
+                return;
+
+            Selected_Dashboards.Clear();
+            foreach (DashboardFlatStructure subjob_dashboard in SingleProjectDashboards)
+            {
+                Selected_Dashboards.Add(subjob_dashboard);
+            }
+            RaiseSelectionChanged();
+        }
+
+        public bool CanSelectSubjob(BarCheckItem button)
+        {
+            if (SingleProjectDashboards == null)
+                return false;
+
+            PhaseType? select_phase = button.Content.ToString() == PhaseType.Construct.ToString() ? PhaseType.Construct : button.Content.ToString() == PhaseType.Design.ToString() ? PhaseType.Design : (PhaseType?)null;
+            return SingleProjectDashboards.Where(x => x.Phase == select_phase).Count() > 0;
+        }
+
+        public void SelectSubjob(BarCheckItem button)
+        {
+            PhaseType? select_phase = button.Content.ToString() == PhaseType.Construct.ToString() ? PhaseType.Construct : button.Content.ToString() == PhaseType.Design.ToString() ? PhaseType.Design : (PhaseType?)null;
+            
+            if(button.IsChecked != null)
+            {
+                bool isCheck = (bool)button.IsChecked;
+                if (isCheck)
+                {
+                    foreach (DashboardFlatStructure subjob_dashboard in SingleProjectDashboards.Where(x => x.Phase == select_phase))
+                    {
+                        Selected_Dashboards.Add(subjob_dashboard);
+                    }
+                }
+                else
+                {
+                    List<DashboardFlatStructure> removeSubJobs = new List<DashboardFlatStructure>();
+                    foreach (DashboardFlatStructure subjob_dashboard in SingleProjectDashboards.Where(x => x.Phase == select_phase))
+                    {
+                        removeSubJobs.Add(subjob_dashboard);
+                    }
+
+                    foreach(DashboardFlatStructure removeSubJob in removeSubJobs)
+                    {
+                        Selected_Dashboards.Remove(removeSubJob);
+                    }
+                }
+            }
+
+            RaiseSelectionChanged();
+        }
+
         public IEnumerable<DashboardFlatStructure> SingleProjectDashboards
         {
             get
@@ -709,7 +827,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public string DataDate
+        public string DesignDataDate
         {
             get
             {
@@ -717,12 +835,29 @@ namespace BluePrints.ViewModels
 
                 PROGRESS livePROGRESS = null;
                 if (collection != null)
-                    livePROGRESS = collection.FirstOrDefault(x => x.STATUS == ProgressStatus.Live);
+                    livePROGRESS = collection.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == ProgressType.Design);
 
                 if(livePROGRESS != null)
                     return livePROGRESS.DATA_DATE.ToString("dd-MMM-yy");
 
-                return string.Empty;
+                return "N/A";
+            }
+        }
+
+        public string ConstructDataDate
+        {
+            get
+            {
+                var collection = GetEntities<PROGRESS>();
+
+                PROGRESS livePROGRESS = null;
+                if (collection != null)
+                    livePROGRESS = collection.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == ProgressType.Construct);
+
+                if (livePROGRESS != null)
+                    return livePROGRESS.DATA_DATE.ToString("dd-MMM-yy");
+
+                return "N/A";
             }
         }
         #endregion

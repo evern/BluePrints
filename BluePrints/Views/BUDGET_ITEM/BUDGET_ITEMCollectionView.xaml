@@ -98,11 +98,11 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Discipline Number" FieldName="Entity.Entity.DISCIPLINE_NUM" FilterPopupMode="CheckedList">
+                                <!--<dxg:GridColumn Header="Discipline Number" FieldName="Entity.Entity.DISCIPLINE_NUM" FilterPopupMode="CheckedList">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
                                     </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
+                                </dxg:GridColumn>-->
                                 <dxg:GridColumn Header="Name" FieldName="Entity.Entity.NAME" FilterPopupMode="CheckedList" />
                                 <dxg:GridColumn Header="Comments" FieldName="Entity.Entity.COMMENTS" FilterPopupMode="CheckedList" />
                                 <dxg:GridColumn Header="Quantity" FieldName="Entity.Entity.BUDGET_QUANTITY" FilterPopupMode="CheckedList">
@@ -150,7 +150,12 @@
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Header="Variation Quantity" FieldName="Entity.Entity.DC_QUANTITY" HeaderToolTip="Variation quantities have to be added from the variation page and approved to be shown here" ReadOnly="True" FilterPopupMode="CheckedList" />
-                                <dxg:GridColumn Header="Truck % Per Quantity" FieldName="Entity.Entity.BUDGET_TRUCK_PERCENTAGE" HeaderToolTip="How many percentage will a single quantity occupy a truck" FilterPopupMode="CheckedList">
+                                <dxg:GridColumn Header="Rate Per Truck" FieldName="Entity.Rate_Per_Truck" HeaderToolTip="Rates are retrived from rates table with group of [Site] and department of [Procurement] and discipline of this commodity. Please refresh the view after changing rates in rates table" ReadOnly="True" FilterPopupMode="CheckedList">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Increment="0.1" IsTextEditable="True" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Truck % Per Qty" FieldName="Entity.Entity.BUDGET_TRUCK_PERCENTAGE" HeaderToolTip="How many percentage will a single quantity occupy a truck" FilterPopupMode="CheckedList">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="0.1" IsFloatValue="True" IsTextEditable="True" Mask="p3" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
@@ -238,6 +243,50 @@
                                 <dxg:GridColumn Header="Commodity Code" FieldName="Entity.Entity.GUID_COMMODITY_CODE" HeaderToolTip="Automatically assigned field" FilterPopupMode="CheckedList">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings DisplayMember="CODE" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                            </dxg:GridControlBand>
+                            <dxg:GridControlBand Header="Stock Code Variance">
+                                <dxg:GridColumn Header="Install Hours" FieldName="Variance_Stock_Code_Install_Hours" HeaderToolTip="For information only. Stock code install hours variance between estimate and budget" ReadOnly="True" FilterPopupMode="CheckedList">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Supply Rate" FieldName="Variance_Stock_Code_Supply_Rate" HeaderToolTip="For information only. Supply rate variance between estimate and budget" ReadOnly="True" FilterPopupMode="CheckedList">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Increment="1" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                            </dxg:GridControlBand>
+                            <dxg:GridControlBand Header="Variance">
+                                <dxg:GridColumn Header="Quantity" FieldName="Variance_Quantity" HeaderToolTip="For information only. Quantity variance between estimate and budget" ReadOnly="True" FilterPopupMode="CheckedList">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Supply Cost" FieldName="Variance_Supply_Cost" HeaderToolTip="For information only. [Quantity * Supply Rate] variance between estimate and budget" ReadOnly="True" FilterPopupMode="CheckedList">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Increment="1" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Install Cost" FieldName="Variance_Install_Cost" HeaderToolTip="For information only. [Quantity * Install Hours * Install Rate] variance between estimate and budget" ReadOnly="True" FilterPopupMode="CheckedList">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Increment="1" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Install Hours" FieldName="Variance_Install_Hours" HeaderToolTip="For information only. [Quantity * Install Hours] variance between estimate and budget" ReadOnly="True" FilterPopupMode="CheckedList">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Freight Rate" FieldName="Variance_FreightRate" HeaderToolTip="For information only. [Truck % * Freight Rate] variance between estimate and budget" ReadOnly="True" FilterPopupMode="CheckedList">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Increment="1" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Freight Cost" FieldName="Variance_Freight_Cost" HeaderToolTip="For information only. [Quantity * Truck % * Freight Rate] Freight cost variance between estimate and budget" ReadOnly="True" FilterPopupMode="CheckedList">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Increment="1" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>

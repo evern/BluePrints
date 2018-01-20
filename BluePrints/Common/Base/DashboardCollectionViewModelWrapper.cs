@@ -129,27 +129,35 @@ namespace BluePrints.Common.ViewModel
             IsChartLoading = true;
             if (MainViewModel == null)
                 return;
-            
+
             if (entities.Count() > 0)
             {
                 SummaryEntity = ViewModelSource.Create(() => new TProjection());
                 ProgressStats progressStats = entities.First().Stats as ProgressStats;
                 SummaryStats summaryStats = entities.First().Stats as SummaryStats;
 
-                if(summaryStats != null)
+                if (summaryStats != null)
                 {
                     IEnumerable<SummaryStats> entitiesSummary = entities.Select(x => (SummaryStats)x.Stats);
                     SummaryEntity.Stats = new SummaryStats(entitiesSummary);
                 }
-                else if(progressStats != null)
+                else if (progressStats != null)
                 {
                     IEnumerable<ProgressStats> entitiesSummary = entities.Select(x => (ProgressStats)x.Stats);
                     SummaryEntity.Stats = new ProgressStats(entitiesSummary);
                 }
             }
+            else
+                SummaryEntity.Stats = null;
 
             IsChartLoading = false;
             this.RaisePropertyChanged(x => x.SummaryEntity);
+            OnAfterSelectedEntitiesChanged();
+        }
+
+        protected virtual void OnAfterSelectedEntitiesChanged()
+        {
+
         }
 
         public virtual bool CanChangeStatsType(object checkButton)
@@ -242,8 +250,8 @@ namespace BluePrints.Common.ViewModel
 
         public void ExportToPDF()
         {
-            ProjectSummaryStats projectSummary = DisplaySelectedEntity.Stats as ProjectSummaryStats;
-            if (projectSummary == null)
+            SummaryStats displaySummary = SummaryEntity.Stats as SummaryStats;
+            if (displaySummary == null)
                 return;
 
             var progressReport = new XtraReportDashboard();
@@ -253,7 +261,7 @@ namespace BluePrints.Common.ViewModel
             if (project_dashboard != null)
                 title = project_dashboard.Entity.NAME;
 
-            progressReport.AssignProperties(projectSummary, projectSummary.ReportingDataDate, title);
+            progressReport.AssignProperties(displaySummary, displaySummary.ReportingDataDate, title);
             var previewWindow = new DocumentPreviewWindow();
             previewWindow.PreviewControl.DocumentSource = progressReport;
             previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;

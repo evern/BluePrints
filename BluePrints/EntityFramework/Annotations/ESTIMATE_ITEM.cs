@@ -8,6 +8,7 @@ using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.Resources;
 using DevExpress.Mvvm;
 using BluePrints.Common.Base;
+using BluePrints.Common;
 
 namespace BluePrints.Data
 {
@@ -177,5 +178,7 @@ namespace BluePrints.Data
 
         [NotMapped]
         public Guid? Workpack_Guid { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public PhaseType? Phase => PHASE == null ? null : PHASE.PHASE_TYPE;
     }
 }

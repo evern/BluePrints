@@ -143,6 +143,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid? Workpack_Guid { get => ((IReportable)ProgressItem).Workpack_Guid; set => ((IReportable)ProgressItem).Workpack_Guid = value; }
 
+        public PhaseType? Phase => ((IReportable)ProgressItem).Phase;
+
         public override void Update()
         {
             ProgressItem.Update();
@@ -456,6 +458,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Budget_Supply_Cost => Reportable.Budget_Supply_Cost;
 
         public string Budget_UOM => Reportable.Budget_UOM;
+
+        public PhaseType? Phase => Reportable.Phase;
 
         public void SetReportingDataDate(DateTime dataDate)
         {

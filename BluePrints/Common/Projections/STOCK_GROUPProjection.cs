@@ -132,6 +132,8 @@ namespace BluePrints.Common.Projections
 
         public string Budget_UOM => Entity.UOM;
 
+        public PhaseType? Phase => null;
+
         Guid? IDeliverable.Subjob_Guid { get; set; }
 
         public void SetOriginalEntityKey(Guid newGuid)

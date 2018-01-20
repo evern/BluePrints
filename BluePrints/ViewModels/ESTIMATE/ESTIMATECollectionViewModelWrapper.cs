@@ -184,13 +184,14 @@ namespace BluePrints.ViewModels
         {
             if (DisplaySelectedEntity.STATUS == BaselineStatus.Live)
                 MessageBoxService.ShowMessage("Cannot approve live estimate");
-
+            
             estimate_itemViewModelWrapper = ESTIMATE_ITEMCollectionViewModelWrapper.Create();
             estimate_itemViewModelWrapper.SetParentViewModel(this);
             estimate_itemViewModelWrapper.SuppressNotification = true;
             estimate_itemViewModelWrapper.SupressCompulsoryEntityNotFoundMessage = true;
             estimate_itemViewModelWrapper.OnEntitiesLoadedCallBackManualDispose = true;
             estimate_itemViewModelWrapper.OnEntitiesLoadedCallBack = onEstimateItemsLoaded;
+            estimate_itemViewModelWrapper.OnEntitiesLoadedCallBackRelateParam = () => DisplaySelectedEntity.GUID;
             ISupportParameter receiveParameterViewModel = estimate_itemViewModelWrapper as ISupportParameter;
             EstimateViewMode estimateViewMode = DisplaySelectedEntity.STATUS == BaselineStatus.Working ? EstimateViewMode.Estimate : EstimateViewMode.Budget;
             receiveParameterViewModel.Parameter = new TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>(null, DisplaySelectedEntity, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Both, estimateViewMode));
@@ -228,6 +229,11 @@ namespace BluePrints.ViewModels
             }
 
             estimate_itemViewModelWrapper.CleanUpEntitiesLoader();
+
+            ESTIMATE estimate = this.DisplayEntities.FirstOrDefault(x => x.GUID.ToString() == parentId.ToString());
+            estimate.STATUS = BaselineStatus.Live;
+            MainViewModel.Save(estimate);
+            MessageBoxService.ShowMessage(estimate.NAME + " approved");
         }
 
         public override string UnifiedValueValidation(ESTIMATE projection, string field_name, object new_value)

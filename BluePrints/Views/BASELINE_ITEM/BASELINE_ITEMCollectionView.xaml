@@ -301,11 +301,14 @@
                             </dxg:TableView.RowCellMenuCustomizations>
                             <dxg:TableView.FormatConditions>
                                 <dxg:UniqueDuplicateRuleFormatCondition FieldName="Entity.Entity.INTERNAL_NUM">
-                                    <dxc:Format Background="Salmon" TextDecorations="{x:Null}" />
+                                    <dxc:Format Background="#FFFF9B98" />
                                 </dxg:UniqueDuplicateRuleFormatCondition>
                                 <dxg:UniqueDuplicateRuleFormatCondition FieldName="Entity.Entity.GUID_ORIGINAL">
-                                    <dxc:Format Background="Salmon" TextDecorations="{x:Null}" />
+                                    <dxc:Format Background="#FFFF9B98" />
                                 </dxg:UniqueDuplicateRuleFormatCondition>
+                                <dxg:FormatCondition FieldName="Entity.Total_Costs" Expression="[Entity.Total_Costs] = '0.00'">
+                                    <dxc:Format Background="#FFFF9B98" />
+                                </dxg:FormatCondition>
                             </dxg:TableView.FormatConditions>
                         </dxg:TableView>
                     </dxg:GridControl.View>
