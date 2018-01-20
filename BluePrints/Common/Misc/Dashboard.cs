@@ -87,6 +87,11 @@ namespace BluePrints.Common.Misc
         public decimal Actual_Costs { get; set; }
     }
 
+    public class Deliverable_Export_Data_Point
+    {
+
+    }
+
     public enum StatsType
     {
         Planned, 
@@ -98,6 +103,28 @@ namespace BluePrints.Common.Misc
 
     public static class DashboardHelpers
     {
+        public static List<Dashboard_Export_Data_Point> BuildExportData(IEnumerable<BASELINE_ITEMProgress> deliverables)
+        {
+            List<Dashboard_Export_Data_Point> export_data = new List<Dashboard_Export_Data_Point>();
+            foreach (BASELINE_ITEMProgress deliverable in deliverables)
+            {
+                if (deliverable.Stats != null)
+                {
+                    ProgressStats summary = deliverable.Stats;
+                    if (summary.Budgeted != null)
+                        export_data.AddRange(buildExportDataByType(deliverable, StatsType.Planned, summary.Budgeted.DataPoints));
+
+                    if (summary.Earned != null)
+                        export_data.AddRange(buildExportDataByType(deliverable, StatsType.Earned, summary.Earned.DataPoints));
+
+                    if (summary.Remaining != null)
+                        export_data.AddRange(buildExportDataByType(deliverable, StatsType.Remaining, summary.Remaining.DataPoints));
+                }
+            }
+
+            return export_data;
+        }
+
         public static List<Dashboard_Export_Data_Point> BuildExportData(List<DashboardTreeStructure> Subjob_Dashboards)
         {
             List<Dashboard_Export_Data_Point> export_data = new List<Dashboard_Export_Data_Point>();
@@ -155,8 +182,8 @@ namespace BluePrints.Common.Misc
                     if (summary.Earned != null)
                         export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Earned, summary.Earned.DataPoints));
 
-                    //if (summary.Burned != null)
-                    //    export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Burned, summary.Burned.DataPoints, summary.Actual.DataPoints));
+                    if (summary.Burned != null)
+                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Burned, summary.Burned.DataPoints, summary.Actual.DataPoints));
 
                     //if (summary.Actual != null)
                     //    export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Actual, summary.Actual.DataPoints));
@@ -216,6 +243,37 @@ namespace BluePrints.Common.Misc
                 new_export_data.Discipline_Name = commodity_code_dashboard.Parent_Dashboard.Code;
                 new_export_data.Department_Name = commodity_code_dashboard.Parent_Dashboard.Parent_Dashboard.Code;
                 new_export_data.Subjob_Name = commodity_code_dashboard.Parent_Dashboard.Parent_Dashboard.Parent_Dashboard.Code;
+
+                if (actual_data_points != null)
+                {
+                    ViewModel.Reporting.DataPoint current_period_actual = actual_data_points.FirstOrDefault(x => x.ProgressDate == data_point.ProgressDate);
+                    if (current_period_actual != null)
+                        new_export_data.Actual_Costs = current_period_actual.Costs;
+                }
+
+                export_data_by_type.Add(new_export_data);
+            }
+
+            return export_data_by_type;
+        }
+
+        private static List<Dashboard_Export_Data_Point> buildExportDataByType(BASELINE_ITEMProgress deliverable, StatsType stats_type, IEnumerable<ViewModel.Reporting.DataPoint> data_points, IEnumerable<ViewModel.Reporting.DataPoint> actual_data_points = null)
+        {
+            List<Dashboard_Export_Data_Point> export_data_by_type = new List<Dashboard_Export_Data_Point>();
+            if (data_points == null)
+                return export_data_by_type;
+
+            foreach (ViewModel.Reporting.DataPoint data_point in data_points)
+            {
+                Dashboard_Export_Data_Point new_export_data = new Dashboard_Export_Data_Point();
+                new_export_data.Type = stats_type;
+                new_export_data.Data_Date = data_point.ProgressDate;
+                new_export_data.Units = data_point.Units;
+                new_export_data.Costs = data_point.Costs;
+                new_export_data.Commodity_Code = deliverable.Entity.Entity.INTERNAL_NUM;
+                new_export_data.Discipline_Name = deliverable.Discipline_Code;
+                new_export_data.Department_Name = deliverable.Department_Code;
+                new_export_data.Subjob_Name = deliverable.Subjob_Name;
 
                 if (actual_data_points != null)
                 {

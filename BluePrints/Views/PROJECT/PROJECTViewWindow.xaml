@@ -16,9 +16,6 @@
         <dxmvvm:OpenFileDialogService Title="Select Document" Multiselect="False" />
     </dxmvvm:Interaction.Behaviors>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
-        <dxmvvm:Interaction.Behaviors>
-            <services:GridControlService Name="ExportGridControl" GridControl="{Binding ElementName=GridControl}" />
-        </dxmvvm:Interaction.Behaviors>
         <Grid Style="{StaticResource DashboardView.RootContainer}">
             <Grid DataContext="{Binding MainViewModel}">
                 <DockPanel>

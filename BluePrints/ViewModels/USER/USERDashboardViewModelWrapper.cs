@@ -4,6 +4,7 @@ using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
+using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
@@ -109,6 +110,27 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
+        List<Dashboard_Export_Data_Point> exportExcelData;
+        public List<Dashboard_Export_Data_Point> ExcelExportData
+        {
+            get => exportExcelData;
+            set
+            {
+                exportExcelData = value;
+                this.RaisePropertyChanged(x => x.ExcelExportData);
+            }
+        }
+
+        public override void ExportToExcel()
+        {
+            LoadingScreenManager.ShowLoadingScreen(1);
+            IEnumerable<BASELINE_ITEMProgress> deliverables = Selected_Dashboards.Select(x => (BASELINE_ITEMProgress)x);
+            ExcelExportData = DashboardHelpers.BuildExportData(deliverables);
+            this.RaisePropertyChanged(x => x.ExcelExportData);
+            LoadingScreenManager.CloseLoadingScreen();
+            base.ExportToExcel();
+        }
+
         public override void FullRefresh()
         {
             ReloadEntitiesCollection();
@@ -122,6 +144,26 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        //private List<DashboardTreeStructure> hierarchicalDashboard = null;
+        //public List<Dashboard_Export_Data_Point> ExcelExportData => DisplayEntities == null ? null : DisplayEntities.Count == 0 ? null : DisplayEntities.First().Export_Data;
+        //public bool CanExportToExcel()
+        //{
+        //    return DisplayEntities != null && DisplayEntities.Count > 0;
+        //}
+
+        //public override void ExportToExcel()
+        //{
+        //    if (hierarchicalDashboard == null)
+        //        return;
+
+        //    LoadingScreenManager.ShowLoadingScreen(1);
+        //    PROJECT_Dashboard project = DisplayEntities.First();
+        //    project.Export_Data = DashboardHelpers.BuildExportData(hierarchicalDashboard);
+        //    this.RaisePropertyChanged(x => x.ExcelExportData);
+        //    LoadingScreenManager.CloseLoadingScreen();
+        //    base.ExportToExcel();
+        //}
+
         public IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection
         {
             get
