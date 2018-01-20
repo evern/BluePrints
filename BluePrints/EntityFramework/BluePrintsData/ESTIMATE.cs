@@ -7,7 +7,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class ESTIMATION_DIRECT
+    public partial class ESTIMATE
     {
         [Key]
         public Guid GUID { get; set; }
@@ -52,7 +52,7 @@ namespace BluePrints.Data
         public Guid? DELETEDBY { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
+        public virtual ICollection<ESTIMATE_ITEM> ESTIMATE_ITEM { get; set; }
 
         public virtual PROJECT PROJECT { get; set; }
     }

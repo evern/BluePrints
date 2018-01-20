@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BluePrints.Views.ESTIMATION_DIRECTCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:ESTIMATION_DIRECTCollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.ESTIMATECollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:ESTIMATECollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -20,6 +20,9 @@
                                 <dxb:BarButtonItem Content="Edit" Command="{Binding DataContext.EditCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                 <dxb:BarButtonItem Content="Assignment" Command="{Binding DataContext.P6BASELINE_ASSIGNCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=CustomizeGrid_32x32.png}" Glyph="{dx:DXImage Image=CustomizeGrid_16x16.png}" />
                             </dxr:RibbonPageGroup>
+                            <dxr:RibbonPageGroup Caption="Tools">
+                                <dxb:BarButtonItem Content="Approve" Command="{Binding DataContext.ApproveCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Apply_32x32.png}" Glyph="{dx:DXImage Image=Apply_16x16.png}" />
+                            </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
@@ -27,7 +30,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlESTIMATION_DIRECT" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlESTIMATE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="Name" FieldName="NAME" />
                             <dxg:GridColumn Header="Revision" FieldName="REVISION" />

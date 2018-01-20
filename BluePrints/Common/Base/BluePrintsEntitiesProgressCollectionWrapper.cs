@@ -180,20 +180,14 @@ namespace BluePrints.Common.Base
 
         protected Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
         {
-            return
-                query =>
-                    query.Where(
-                        x =>
-                            x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Progress_Report.ToString());
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Progress_Report.ToString());
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<TMainProjectionEntity> entities)
         {
-            //MainViewModel.ExistingRowAddUndoAndSaveCallBack = ExistingRowAddUndoAndSaveCallBack;
             MainViewModel.OnAfterEntitySavedCallBack = OnAfterEntitySavedCallBack;
             MainViewModel.OnMappingAdditionalChangedEntitiesProperties = OnMappingAdditionalChangedEntitiesProperties;
             MainViewModel.OnBeforeAssignRepositoryToExistingProjection = OnBeforeAssignRepositoryToExistingProjection;
-            MainViewModel.ValidateSetValueIsContinueCallBack = validateSetValueCallBack;
             MainViewModel.DisablePasteRowLevel = true;
             PROGRESS_ITEMSCollectionViewModel.SetParentViewModel(this);
 
@@ -230,18 +224,18 @@ namespace BluePrints.Common.Base
             repositoryProjection.Stats = existingProjection.Stats;
         }
 
-        public bool validateSetValueCallBack(TMainProjectionEntity entity, string column_name, object newValue)
+        public override string UnifiedValueValidation(TMainProjectionEntity projection, string field_name, object new_value)
         {
-            if (column_name == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage))
+            if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage))
             {
-                var newPercentage = (decimal)newValue;
-                if (newPercentage > entity.MaxPercentage)
-                    return false;
-                else if (newPercentage < entity.MinPercentage)
-                    return false;
+                var newPercentage = (decimal)new_value;
+                if (newPercentage > projection.MaxPercentage)
+                    return "Percentage cannot exceed " + projection.MaxPercentage.ToString();
+                else if (newPercentage < projection.MinPercentage)
+                    return "Percentage cannot be less than " + projection.MinPercentage.ToString();
             }
 
-            return true;
+            return string.Empty;
         }
         #endregion
 
@@ -797,7 +791,7 @@ namespace BluePrints.Common.Base
                 if (e.SummaryProcess == CustomSummaryProcess.Calculate)
                 {
                     var total_units = ((IReportable)e.Row).Total_Units;
-                    var baseline_units = ((IReportable)e.Row).Estimated_Units;
+                    var baseline_units = ((IReportable)e.Row).Budget_Units;
 
                     cumulative_total_units += total_units;
                     cumulative_baseline_units += baseline_units;

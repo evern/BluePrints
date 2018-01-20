@@ -158,11 +158,11 @@
                                 <dxg:GridColumn Header="PROGRESS_TYPE" FieldName="Entity.Entity.PROGRESS_TYPE" HeaderToolTip="Only editable on newly added variation deliverable">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:ComboBoxEdit x:Name="PART_Editor" ImmediatePopup="True" IsEnabled="{Binding RowData.Row.IsEnabled}" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Estimation_DirectProgressType}}" NullValueButtonPlacement="Popup" />
+                                            <dxe:ComboBoxEdit x:Name="PART_Editor" ImmediatePopup="True" IsEnabled="{Binding RowData.Row.IsEnabled}" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:EstimateProgressType}}" NullValueButtonPlacement="Popup" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Estimation_DirectProgressType}}" />
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:EstimateProgressType}}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
@@ -186,10 +186,10 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Var Install Cost" FieldName="Variation_Install_Hours" HeaderToolTip="Total variation hours required to install this stock item" ReadOnly="True" AllowSearchPanel="False">
+                                <dxg:GridColumn Header="Var Install Hours" FieldName="Variation_Install_Hours" HeaderToolTip="Total variation hours required to install this stock item" ReadOnly="True" AllowSearchPanel="False">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:TextEdit Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            <dxe:TextEdit Name="PART_Editor" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
@@ -226,7 +226,7 @@
                                         <dxe:ComboBoxEditSettings AllowDrop="False" AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationAction}}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Cancel" FieldName="UNBOUND_CANCEL" HeaderToolTip="Cancel this deliverable. When deliverable has already earned some units it's variation hours will be (estimated hours - earned hours)" ReadOnly="True" AllowEditing="False" UnboundType="Boolean">
+                                <dxg:GridColumn Header="Cancel" FieldName="UNBOUND_CANCEL" HeaderToolTip="Cancel this deliverable. When deliverable has already earned some units it's variation hours will be (budgeted hours - earned hours)" ReadOnly="True" AllowEditing="False" UnboundType="Boolean">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Command="{Binding DataContext.CancelDeliverableCommand, ElementName=userControl}" Height="18" CommandParameter="{Binding RowData.Row}" IsEnabled="{Binding RowData.Row.IsCancellable}">

@@ -43,7 +43,6 @@ namespace BluePrints.ViewModels
         #region Database Operations
 
         private PROJECT loadPROJECT;
-        private StockCodeType loadCommodityCodeType;
         private DEPARTMENT defaultDepartment;
         private bool isProjectSpecific
         {
@@ -59,7 +58,6 @@ namespace BluePrints.ViewModels
             {
                 var projectCodeTypeParameter = (DualEntitiesParameter<PROJECT, StockCodeTypeClass>)parameter;
                 loadPROJECT = projectCodeTypeParameter.GetFirstEntity();
-                loadCommodityCodeType = projectCodeTypeParameter.GetSecondEntity().commodityCodeType;
             }
         }
 
@@ -95,9 +93,9 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> specifyMainViewModelProjection()
         {
             if (isProjectSpecific)
-                return query => query.Where(x => x.STOCK_CODE_TYPE == loadCommodityCodeType).Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.CODE);
+                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.CODE);
             else
-                return query => query.Where(x => x.STOCK_CODE_TYPE == loadCommodityCodeType).Where(x => x.GUID_PROJECT == null).OrderBy(x => x.CODE);
+                return query => query.Where(x => x.GUID_PROJECT == null).OrderBy(x => x.CODE);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<STOCK_CODE> entities)
@@ -118,7 +116,9 @@ namespace BluePrints.ViewModels
                 entity.GUID_PROJECT = loadPROJECT.GUID;
 
             entity.GUID_DEPARTMENT = defaultDepartment.GUID;
-            entity.STOCK_CODE_TYPE = loadCommodityCodeType;
+
+            //new item is not allowed, so stock code type will be whatever it was previously
+            //entity.STOCK_CODE_TYPE = loadCommodityCodeType;
             return true;
         }
 
@@ -134,25 +134,25 @@ namespace BluePrints.ViewModels
 
         private void create_estimation_direct_item_view_model_wrapper()
         {
-            ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper variation_itemsViewModelWrapper = ESTIMATION_DIRECT_ITEMCollectionViewModelWrapper.Create();
+            ESTIMATE_ITEMCollectionViewModelWrapper variation_itemsViewModelWrapper = ESTIMATE_ITEMCollectionViewModelWrapper.Create();
             variation_itemsViewModelWrapper.SetParentViewModel(this);
             variation_itemsViewModelWrapper.OnEntitiesLoadedCallBack = trim_unused_stock_code;
             var baselineSupportParameterObj = variation_itemsViewModelWrapper as ISupportParameter;
-            baselineSupportParameterObj.Parameter = new DualEntitiesParameter<PROJECT, IAmBaseline>(loadPROJECT, null);
+            baselineSupportParameterObj.Parameter = new TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>(loadPROJECT, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Both, EstimateViewMode.Budget));
         }
 
-        private void trim_unused_stock_code(IEnumerable<ESTIMATION_DIRECT_ITEMProgress> estimation_direct_items, object parentId)
+        private void trim_unused_stock_code(IEnumerable<ESTIMATE_ITEMProgress> estimation_direct_items, object parentId)
         {
             mainThreadDispatcher.BeginInvoke(new Action(() => main_thread_trim_unused_stock_code(estimation_direct_items, parentId)));
         }
 
-        private void main_thread_trim_unused_stock_code(IEnumerable<ESTIMATION_DIRECT_ITEMProgress> estimation_direct_items, object parentId)
+        private void main_thread_trim_unused_stock_code(IEnumerable<ESTIMATE_ITEMProgress> estimation_direct_items, object parentId)
         {
             List<STOCK_CODE> removeStockCodes = new List<STOCK_CODE>();
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
             foreach (STOCK_CODE projectStockCode in MainViewModel.Entities)
             {
-                if (!estimation_direct_items.Any(x => x.Entity.Entity.GUID_STOCK_CODE == projectStockCode.GUID))
+                if (!estimation_direct_items.Any(x => x.Entity.Entity.GUID_ESTIMATE_STOCK_CODE == projectStockCode.GUID || x.Entity.Entity.GUID_BUDGET_STOCK_CODE == projectStockCode.GUID))
                 {
                     removeStockCodes.Add(projectStockCode);
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(projectStockCode, null, null, null, EntityMessageType.Deleted);
@@ -160,6 +160,11 @@ namespace BluePrints.ViewModels
             }
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
             MainViewModel.BaseBulkDelete(removeStockCodes);
+        }
+
+        public override string UnifiedValueValidation(STOCK_CODE projection, string field_name, object new_value)
+        {
+            return string.Empty;
         }
         #endregion
 

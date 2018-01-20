@@ -33,7 +33,7 @@ namespace BluePrints.Common.ViewModel.Converters
                 var AllEntities = (IEnumerable<IReportable>)values[1];
 
                 IEnumerable<IReportable> allEntitiesExcludingCurrent = AllEntities.Where(x => x.EntityKey != projection.EntityKey);
-                decimal currentAssignedUnits = allEntitiesExcludingCurrent.Count() == 0 ? 0 : allEntitiesExcludingCurrent.Sum(x => x.Estimated_Units);
+                decimal currentAssignedUnits = allEntitiesExcludingCurrent.Count() == 0 ? 0 : allEntitiesExcludingCurrent.Sum(x => x.Budget_Units);
                 decimal spareUnits = totalAllowedUnits - currentAssignedUnits;
                 return spareUnits > 0 ? spareUnits : 0;
             }

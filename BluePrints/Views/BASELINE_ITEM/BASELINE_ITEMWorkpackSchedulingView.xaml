@@ -103,7 +103,7 @@
                                         <dxg:GridColumn Header="Type" FieldName="DisplayActivityType" FilterPopupMode="CheckedList" FixedWidth="True" IsSmart="True" />
                                         <dxg:GridColumn Header="Begin" FieldName="Start" Width="100" CellTemplate="{StaticResource TimeTemplate}" IsSmart="True" />
                                         <dxg:GridColumn Header="End" FieldName="End" Width="100" CellTemplate="{StaticResource TimeTemplate}" IsSmart="True" />
-                                        <dxg:GridColumn FieldName="Assigned Units" Width="100" IsSmart="True">
+                                        <dxg:GridColumn Header="Assigned Units" FieldName="Assigned_Units" Width="100" IsSmart="True">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings HorizontalContentAlignment="Left" DisplayFormat="n" />
                                             </dxg:GridColumn.EditSettings>
@@ -255,7 +255,7 @@
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn Header="WORKPACK" FieldName="P6AssignmentName" ReadOnly="True" Width="100" VisibleIndex="0" />
                                 <dxg:GridColumn Header="TITLE" FieldName="P6AssignmentDescription" ReadOnly="True" Width="100" VisibleIndex="0" />
-                                <dxg:GridColumn Header="ESTIMATED_HOURS" FieldName="Estimated_Units" ReadOnly="True">
+                                <dxg:GridColumn Header="BUDGET_HOURS" FieldName="Estimated_Units" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>

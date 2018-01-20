@@ -119,6 +119,11 @@ namespace BluePrints.ViewModels
                 CLIENT_PROJECTCollectionViewModel.BaseBulkDelete(remove_projects);
             }
         }
+
+        public override string UnifiedValueValidation(CLIENT projection, string field_name, object new_value)
+        {
+            return string.Empty;
+        }
         #endregion
 
         #region View Properties

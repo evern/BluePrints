@@ -13,7 +13,8 @@ namespace BluePrints.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public STOCK_CODE()
         {
-            ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
+            ESTIMATE_ITEM = new HashSet<ESTIMATE_ITEM>();
+            ESTIMATE_ITEM1 = new HashSet<ESTIMATE_ITEM>();
             RATE_SUPPLY = 0;
             HOURS_INSTALL = 0;
         }

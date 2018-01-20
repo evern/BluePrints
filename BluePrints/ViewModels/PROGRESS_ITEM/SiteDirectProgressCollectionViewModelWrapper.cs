@@ -23,7 +23,7 @@ namespace BluePrints.ViewModels
 {
     public class SiteDirectProgressCollectionViewModelWrapper :
         BluePrintsEntitiesProgressCollectionWrapper
-        <ESTIMATION_DIRECT_ITEM, ReportablesDisplay, Guid, IBluePrintsEntitiesUnitOfWork>
+        <ESTIMATE_ITEM, ReportablesDisplay, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of SiteDirectProgressCollectionViewModelWrapper as a POCO view model.
@@ -35,7 +35,7 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operations
-        private ESTIMATION_DIRECT loadESTIMATION_DIRECT;
+        private ESTIMATE loadESTIMATE;
         protected override void resolveParameters(object parameter)
         {
             delayedPROGRESSSavingDispatcher = new DispatcherTimer();
@@ -58,7 +58,7 @@ namespace BluePrints.ViewModels
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECTS, ESTIMATION_DIRECTProjectionFunc, x => assign_estimation_direct(x));
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc, x => assign_estimation_direct(x));
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS, STOCK_GROUPProjectionFunc);
             base.initializeEntitiesLoadersDescription();
         }
@@ -76,17 +76,17 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<ESTIMATION_DIRECT>, IQueryable<ESTIMATION_DIRECT>> ESTIMATION_DIRECTProjectionFunc()
+        private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
         }
 
-        private void assign_estimation_direct(ESTIMATION_DIRECT estimation_direct)
+        private void assign_estimation_direct(ESTIMATE estimation_direct)
         {
             if (estimation_direct == null && !SupressCompulsoryEntityNotFoundMessage)
                 mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live estimate not found")));
 
-            loadESTIMATION_DIRECT = estimation_direct;
+            loadESTIMATE = estimation_direct;
         }
 
         private Func<IRepositoryQuery<STOCK_GROUP>, IQueryable<STOCK_GROUP>> STOCK_GROUPProjectionFunc()
@@ -96,13 +96,13 @@ namespace BluePrints.ViewModels
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.ESTIMATION_DIRECT_ITEMS);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.ESTIMATE_ITEMS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<ESTIMATION_DIRECT_ITEM>, IQueryable<ReportablesDisplay>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<ReportablesDisplay>> specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.SiteDirectProgressItemTransformation(query.Where(x => x.GUID_ESTIMATION_DIRECT == loadESTIMATION_DIRECT.GUID && x.GUID_PHASE != null), loadPROJECT, loadPROGRESS, PROGRESS_ITEMCollection, STOCK_GROUPCollection, STOCK_CODECollection, RATECollection);
+            return query => ProgressQueries.SiteDirectProgressItemTransformation(query.Where(x => x.GUID_ESTIMATE == loadESTIMATE.GUID && x.GUID_PHASE != null), loadPROJECT, loadPROGRESS, PROGRESS_ITEMCollection, STOCK_GROUPCollection, STOCK_CODECollection, RATECollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ReportablesDisplay> entities)
@@ -200,7 +200,7 @@ namespace BluePrints.ViewModels
         {
             bool is_group = save_reportables_display(entity);
             //save progress is only used for saving standalone or group
-            if (entity.ProgressItem.Progress_Type == Estimation_DirectProgressType.Standalone || is_group)
+            if (entity.ProgressItem.Progress_Type == EstimateProgressType.Standalone || is_group)
             {
                 save_progress(entity);
                 //update must be here or else installed quantity will be cleared and progress will be saved with 0 units
@@ -291,26 +291,26 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMCollection
+        public IEnumerable<ESTIMATE_ITEM> ESTIMATE_ITEMCollection
         {
             get
             {
-                var collection = GetEntities<ESTIMATION_DIRECT_ITEM>();
+                var collection = GetEntities<ESTIMATE_ITEM>();
                 return collection;
             }
         }
 
         protected override CostGroup cost_group => CostGroup.Site;
 
-        protected override IEnumerable<IReportable> ReportableCollection => MainViewModel == null || MainViewModel.Entities == null ? new ObservableCollection<ESTIMATION_DIRECT_ITEMProgress>() : MainViewModel.Entities.Select(x => x.ProgressItem.Reportable);
+        protected override IEnumerable<IReportable> ReportableCollection => MainViewModel == null || MainViewModel.Entities == null ? new ObservableCollection<ESTIMATE_ITEMProgress>() : MainViewModel.Entities.Select(x => x.ProgressItem.Reportable);
 
-        private ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper estimation_direct_item_scheduling_view_model;
+        private ESTIMATE_ITEMSchedulingViewModelWrapper estimation_direct_item_scheduling_view_model;
         protected override IEntitiesSchedulingCollectionWrapper scheduling_view_model
         {
             get
             {
                 if (estimation_direct_item_scheduling_view_model == null)
-                    estimation_direct_item_scheduling_view_model = ESTIMATION_DIRECT_ITEMSchedulingViewModelWrapper.Create();
+                    estimation_direct_item_scheduling_view_model = ESTIMATE_ITEMSchedulingViewModelWrapper.Create();
 
                 return estimation_direct_item_scheduling_view_model;
             }

@@ -29,15 +29,15 @@ namespace BluePrints.Common.Projections
 
         public Guid? SubArea_Guid => Guid.Empty;
 
-        public decimal Estimated_Units => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Estimated_Units);
+        public decimal Budget_Units => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Budget_Units);
 
         public decimal Total_Units => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Total_Units);
 
         public decimal Variation_Units => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Variation_Units);
 
-        public decimal ItemRate => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.ItemRate);
+        public decimal Budget_ItemRate => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Budget_ItemRate);
 
-        public decimal Estimated_Costs => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Estimated_Costs);
+        public decimal Budget_Costs => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Budget_Costs);
 
         public decimal Variation_Costs => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Variation_Costs);
 

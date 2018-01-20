@@ -164,23 +164,23 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public interface ICanTrack
     {
-        Estimation_DirectProgressType Progress_Type { get; }
+        EstimateProgressType Progress_Type { get; }
     }
 
     public interface IHaveCosts
     {
-        decimal ItemRate { get; }
-        decimal Estimated_Costs { get; }
+        decimal Budget_ItemRate { get; }
+        decimal Budget_Costs { get; }
         decimal Variation_Costs { get; }
         decimal Total_Costs { get; }
     }
 
     public interface IHaveStockCode
     {
-        string UOM { get; }
-        string Stock_Code_Type { get; }
-        string Stock_Code_Spec { get; }
-        string Stock_Code_Description { get; }
+        string Estimate_UOM { get; }
+        string Estimate_Stock_Code_Type { get; }
+        string Estimate_Stock_Code_Spec { get; }
+        string Estimate_Stock_Code_Description { get; }
     }
 
     public interface IHaveDBProductivityOverride
@@ -217,33 +217,44 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public interface IHaveHours
     {
-        decimal Estimated_Units { get; }
+        decimal Budget_Units { get; }
         decimal Total_Units { get; }
         decimal Variation_Units { get; }
     }
 
     public interface IHaveQuantity
     {
-        decimal Stock_Code_Install_Hours { get; }
-        decimal Stock_Code_Supply_Rate { get; }
-        decimal Estimated_Quantity { get; }
+        decimal Estimate_Units { get; }
+        decimal Estimate_ItemRate { get; }
+        decimal Estimate_Stock_Code_Install_Hours { get; }
+        decimal Budget_Stock_Code_Install_Hours { get; }
+        decimal Estimate_Stock_Code_Supply_Rate { get; }
+        decimal Budget_Stock_Code_Supply_Rate { get; }
+        decimal Estimate_Quantity { get; }
+        decimal Budget_Quantity { get; }
         decimal Variation_Quantity { get; }
         decimal Total_Quantity { get; }
-        decimal Estimated_Install_Hours { get; }
+        decimal Estimate_Install_Hours { get; }
+        decimal Budget_Install_Hours { get; }
         decimal Variation_Install_Hours { get; }
-        decimal Total_Install_Hours { get; }
-        decimal Estimated_Install_Cost { get; }
+        decimal Estimate_Install_Cost { get; }
+        decimal Budget_Install_Cost { get; }
         decimal Variation_Install_Cost { get; }
-        decimal FreightRate { get; }
-        decimal Estimated_Freight_Cost { get; }
+        decimal Budget_FreightRate { get; }
+        decimal Estimate_FreightRate { get; }
+        decimal Estimate_Freight_Cost { get; }
+        decimal Budget_Freight_Cost { get; }
         decimal Variation_Freight_Cost { get; }
-        decimal Estimated_Supply_Cost { get; }
+        decimal Estimate_Supply_Cost { get; }
+        decimal Budget_Supply_Cost { get; }
         decimal Variation_Supply_Cost { get; }
-        decimal Total_Install_Cost { get; }
-        decimal Total_Freight_Cost { get; }
-        decimal Total_Supply_Cost { get; }
-        decimal Total_Cost { get; }
-        string UOM { get; }
+        decimal Total_Budget_Install_Cost { get; }
+        decimal Total_Budget_Freight_Cost { get; }
+        decimal Total_Budget_Supply_Cost { get; }
+        decimal Total_Estimate_Cost { get; }
+        decimal Total_Budget_Cost { get; }
+        string Estimate_UOM { get; }
+        string Budget_UOM { get; }
     }
 
     public interface IHaveProgresses

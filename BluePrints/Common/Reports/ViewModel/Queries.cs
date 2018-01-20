@@ -104,17 +104,17 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
 
         public static IQueryable<ReportablesDisplay> SiteDirectProgressItemTransformation(
-            IQueryable<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEMS, PROJECT PROJECT, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<STOCK_GROUP> STOCK_GROUPS, IEnumerable<STOCK_CODE> projectSTOCK_CODES, IEnumerable<RATE> projectRATES)
+            IQueryable<ESTIMATE_ITEM> ESTIMATE_ITEMS, PROJECT PROJECT, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<STOCK_GROUP> STOCK_GROUPS, IEnumerable<STOCK_CODE> projectSTOCK_CODES, IEnumerable<RATE> projectRATES)
         {
             IEnumerable<PROGRESS_ITEM> arrPROGRESS_ITEMS = PROGRESS_ITEMS.ToArray();
             List<ReportablesDisplay> display_items = new List<ReportablesDisplay>();
 
-            IEnumerable<ESTIMATION_DIRECT_ITEMProgress> estimation_direct_item_progresses =
-                ESTIMATION_DIRECT_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATION_DIRECT_ITEMS, PROJECT, projectRATES, PROGRESS, PROGRESS_ITEMS,
+            IEnumerable<ESTIMATE_ITEMProgress> estimation_direct_item_progresses =
+                ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATE_ITEMS, PROJECT, projectRATES, PROGRESS, PROGRESS_ITEMS,
                                                                                                 projectSTOCK_CODES,
                                                                                                 STOCK_GROUPS).AsEnumerable();
 
-            var estimation_direct_progress_by_stockgroupguid = estimation_direct_item_progresses.Where(x => x.Entity.Progress_Type != Estimation_DirectProgressType.Standalone)
+            var estimation_direct_progress_by_stockgroupguid = estimation_direct_item_progresses.Where(x => x.Entity.Progress_Type != EstimateProgressType.Standalone)
                 .GroupBy(x => x.Entity.Entity.GUID_STOCK_GROUP).Select(group => new { StockGroupGuid = group.Key, DeliverablesByStockGroup = group.ToList() });
 
 
@@ -144,7 +144,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 }
             }
 
-            display_items.AddRange(estimation_direct_item_progresses.Where(x => x.Progress_Type == Estimation_DirectProgressType.Standalone).Select(x => new ReportablesDisplay() { ProgressItem = new DisplayQuantityReportable(x, false) }));
+            display_items.AddRange(estimation_direct_item_progresses.Where(x => x.Progress_Type == EstimateProgressType.Standalone).Select(x => new ReportablesDisplay() { ProgressItem = new DisplayQuantityReportable(x, false) }));
 
             return display_items.AsQueryable();
         }

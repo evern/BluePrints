@@ -205,5 +205,10 @@ namespace BluePrints.ViewModels
             }
         }
         #endregion
+
+        public override string UnifiedValueValidation(WORKPACK projection, string field_name, object new_value)
+        {
+            return string.Empty;
+        }
     }
 }

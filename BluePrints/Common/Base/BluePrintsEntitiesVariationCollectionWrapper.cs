@@ -168,8 +168,6 @@ namespace BluePrints.Common.Base
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = OnBeforeEntityDeleted;
             MainViewModel.OnMappingAdditionalChangedEntitiesProperties = OnMappingAdditionalChangedEntitiesProperties;
-            MainViewModel.AdditionalValidateCellCallBack = AdditionalValidateCellCallBack;
-            MainViewModel.ValidateSetValueIsContinueCallBack = ValidateSetValueCallBack;
             collectionViewModelWrapper.GetEditableAllEntitiesCallBack = getEditableAllEntities;
             assign_additional_callbacks(MainViewModel, entities);
             MainViewModel.SetParentViewModel(this);
@@ -291,13 +289,14 @@ namespace BluePrints.Common.Base
             projectionEntity.Variation_Action = existingProjectionEntity.Variation_Action;
         }
 
-        public bool ValidateSetValueCallBack(TMainVariationEntity entity, string column_name, object newValue)
+        public override string UnifiedValueValidation(TMainVariationEntity entity, string field_name, object newValue)
         {
-            if (column_name == BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Units))
+            field_name = DataUtils.FormatColumnFieldname(field_name);
+            if (field_name == BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Units))
             {
                 decimal variation_units = (decimal)newValue;
                 if (variation_units < entity.MinNegativeUnits)
-                    return false;
+                    return "Variation units cannot be lower than " + entity.MinNegativeUnits;
                 else if (entity.Variation_Action != VariationAction.Add)
                 {
                     VariationAction old_action = entity.Variation_Action;
@@ -314,10 +313,10 @@ namespace BluePrints.Common.Base
             else
             {
                 if (entity.Variation_Action != VariationAction.Add)
-                    return false;
+                    return "Cannot change variation value on existing items";
             }
 
-            return true;
+            return string.Empty;
         }
 
         /// <summary>
@@ -429,58 +428,26 @@ namespace BluePrints.Common.Base
         #endregion
 
         #region View Events
-        protected virtual void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
+        public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, TMainVariationEntity projection, bool isNew)
         {
-            TMainVariationEntity current_row_item = (TMainVariationEntity)e.Row;
-            string fieldName = DataUtils.FormatColumnFieldname(e.Column.FieldName);
-            string error_message = collectionViewModelWrapper.Interface_AdditionalValidateCellCallBack(current_row_item.Entity, e.Value, fieldName);
-            if (error_message != string.Empty)
+            if (!isNew && field_name == BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Units))
             {
-                e.IsValid = false;
-                e.ErrorContent = error_message;
-                e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
-            }
-        }
-
-        /// <summary>
-        /// allow undo-redo behavior to be added for automated cell value changing. This behavior doesn't have to be applied on new row because AddUndo for EntityMessageType.Added is already handling this
-        /// </summary>
-        protected override void CellValueExistingRowChanging(CellValueChangedEventArgs e)
-        {
-            TMainVariationEntity current_row_item = (TMainVariationEntity)e.Row;
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Units))
-            {
-                if (current_row_item.Variation_Action != VariationAction.Add)
+                if (projection.Variation_Action != VariationAction.Add)
                 {
-                    VariationAction old_action = current_row_item.Variation_Action;
+                    VariationAction old_action = projection.Variation_Action;
 
-                    if ((decimal)e.Value == 0)
-                        current_row_item.Variation_Action = VariationAction.NoAction;
+                    if ((decimal)new_value == 0)
+                        projection.Variation_Action = VariationAction.NoAction;
                     else
-                        current_row_item.Variation_Action = VariationAction.Append;
+                        projection.Variation_Action = VariationAction.Append;
 
                     MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(current_row_item, BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Action), old_action, current_row_item.Variation_Action, EntityMessageType.Changed);
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Action), old_action, projection.Variation_Action, EntityMessageType.Changed);
                 }
             }
-            else
-                collectionViewModelWrapper.Interface_CellValueExistingRowChanging(e.Column.FieldName, e.Value, current_row_item.Entity);
 
-            base.CellValueExistingRowChanging(e);
-        }
-
-        protected override void CellValueNewRowChanging(CellValueChangedEventArgs e)
-        {
-            collectionViewModelWrapper.Interface_CellValueNewRowChanging(e.Column.FieldName, e.Value, ((TMainVariationEntity)e.Row).Entity);
-            base.CellValueNewRowChanging(e);
-        }
-
-        /// <summary>
-        /// Refresh all min max units for converter to do estimated hours validation
-        /// </summary>
-        public void CellValueChanged(CellValueChangedEventArgs e)
-        {
-            collectionViewModelWrapper.Interface_CellValueChanged(e.Column.FieldName, ((TMainVariationEntity)e.Row).Entity);
+            collectionViewModelWrapper.UnifiedCellValueChanging(field_name, old_value, new_value, projection.Entity, isNew);
+            base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
         }
         #endregion
 

@@ -308,7 +308,7 @@ namespace BluePrints.ViewModels
             if (LoginCredentials.hasPermission(PermissionResources.ManageStockCode))
             {
                 dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageStock_Group", dataCategoryId, "Global Stock Groups", "STOCK_GROUPCollectionView"));
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageStock_Direct", dataCategoryId, "Global Stock Codes", "STOCK_CODECollectionView", new DualEntitiesParameter<PROJECT, StockCodeTypeClass>(null, new StockCodeTypeClass(StockCodeType.Direct))));
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageStock_Direct", dataCategoryId, "Global Stock Codes", "STOCK_CODECollectionView", new DualEntitiesParameter<PROJECT, StockCodeTypeClass>(null, new StockCodeTypeClass(StockCodeType.Estimate))));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))
@@ -439,8 +439,14 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageEstimation))
             {
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectDirectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates [Direct]", "ESTIMATION_DIRECT_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, DeliverablesViewType.Direct), null, "Estimate [Direct]"));
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectIndirectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates [Indirect]", "ESTIMATION_DIRECT_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, DeliverablesViewType.Indirect), null, "Estimate [Indirect]"));
+                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectDirectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates [Direct]", "ESTIMATE_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Direct, EstimateViewMode.Estimate)), null, "Estimate [Direct]"));
+                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectIndirectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates [Indirect]", "ESTIMATE_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Indirect, EstimateViewMode.Estimate)), null, "Estimate [Indirect]"));
+            }
+
+            if (LoginCredentials.hasPermission(PermissionResources.ManageBudget))
+            {
+                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectDirectBudgets" + keyString, projectKey, childTitlePrefix + "Budgets [Direct]", "BUDGET_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Direct, EstimateViewMode.Budget)), null, "Budget [Direct]"));
+                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectIndirectBudgets" + keyString, projectKey, childTitlePrefix + "Budgets [Indirect]", "BUDGET_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Indirect, EstimateViewMode.Budget)), null, "Budget [Indirect]"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageProgress))
@@ -464,7 +470,7 @@ namespace BluePrints.ViewModels
             if (LoginCredentials.hasPermission(PermissionResources.ManageStockCode))
             {
                 construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectStock_Groups" + keyString, projectKey, childTitlePrefix + "Stock Groups", "STOCK_GROUPCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Stock Groups"));
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectStock_Codes" + keyString, projectKey, childTitlePrefix + "Stock Codes", "STOCK_CODECollectionView", new DualEntitiesParameter<PROJECT, StockCodeTypeClass>(entity, new StockCodeTypeClass(StockCodeType.Direct)), null, "Stock Codes"));
+                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectStock_Codes" + keyString, projectKey, childTitlePrefix + "Stock Codes", "STOCK_CODECollectionView", new DualEntitiesParameter<PROJECT, StockCodeTypeClass>(entity, new StockCodeTypeClass(StockCodeType.Estimate)), null, "Stock Codes"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageRegisters))

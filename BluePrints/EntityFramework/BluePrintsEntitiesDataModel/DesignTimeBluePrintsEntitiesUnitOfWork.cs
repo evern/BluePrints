@@ -72,14 +72,14 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((DataPoint x) => x.Guid_DataPoint); }
         }
 
-        IRepository<ESTIMATION_DIRECT, Guid> IBluePrintsEntitiesUnitOfWork.ESTIMATION_DIRECTS
+        IRepository<ESTIMATE, Guid> IBluePrintsEntitiesUnitOfWork.ESTIMATES
         {
-            get { return GetRepository((ESTIMATION_DIRECT x) => x.GUID); }
+            get { return GetRepository((ESTIMATE x) => x.GUID); }
         }
 
-        IRepository<ESTIMATION_DIRECT_ITEM, Guid> IBluePrintsEntitiesUnitOfWork.ESTIMATION_DIRECT_ITEMS
+        IRepository<ESTIMATE_ITEM, Guid> IBluePrintsEntitiesUnitOfWork.ESTIMATE_ITEMS
         {
-            get { return GetRepository((ESTIMATION_DIRECT_ITEM x) => x.GUID); }
+            get { return GetRepository((ESTIMATE_ITEM x) => x.GUID); }
         }
 
         IRepository<HOLIDAY, Guid> IBluePrintsEntitiesUnitOfWork.HOLIDAYS

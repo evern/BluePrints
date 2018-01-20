@@ -236,6 +236,11 @@ namespace BluePrints.ViewModels
             else
                 return "Global_DeliverablesStatus.xlsx";
         }
-        #endregion  
+
+        public override string UnifiedValueValidation(DELIVERABLES_STATUS projection, string field_name, object new_value)
+        {
+            return string.Empty;
+        }
+        #endregion
     }
 }

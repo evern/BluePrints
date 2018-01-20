@@ -223,10 +223,8 @@ namespace BluePrints.Common
 
     public enum StockCodeType
     {
-        Direct = 0,
-        Design = 1,
-        Indirect = 2,
-        Overhead = 3
+        Estimate = 0,
+        Budget = 1
     }
 
     public enum DialogAction
@@ -246,7 +244,7 @@ namespace BluePrints.Common
         Construct
     }
 
-    public enum Estimation_DirectProgressType
+    public enum EstimateProgressType
     {
         [Display(Name = "Standalone")]
         Standalone,
@@ -291,7 +289,6 @@ namespace BluePrints.Common
         [Display(Name = "Indirect")]
         Indirect = 1
     }
-
     public enum ProgressType
     {
         [Display(Name = "Design")]
@@ -502,6 +499,24 @@ namespace BluePrints.Common
         Direct = 1,
         [Display(Name = "Both")]
         Both = 2
+    }
+
+    public enum EstimateViewMode
+    {
+        [Display(Name = "Estimate")]
+        Estimate = 0,
+        [Display(Name = "Budget")]
+        Budget = 1
+    }
+
+    public enum EstimateLineType
+    {
+        [Display(Name = "Install")]
+        Install = 0,
+        [Display(Name = "Supply")]
+        Supply = 1,
+        [Display(Name = "Indirect")]
+        Indirect = 0
     }
 
     public class ReportingEnum

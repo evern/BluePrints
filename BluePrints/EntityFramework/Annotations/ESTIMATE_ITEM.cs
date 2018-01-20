@@ -11,9 +11,9 @@ using BluePrints.Common.Base;
 
 namespace BluePrints.Data
 {
-    public partial class ESTIMATION_DIRECT_ITEM : BluePrintsEntityBase, IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementSubjob
+    public partial class ESTIMATE_ITEM : BluePrintsEntityBase, IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementSubjob
     {
-        public ESTIMATION_DIRECT_ITEM()
+        public ESTIMATE_ITEM()
         {
             DISCIPLINE_NUM = 1;
             PROGRESS_TYPE = 0;
@@ -121,11 +121,11 @@ namespace BluePrints.Data
 
         public Guid? SubArea_Guid => GUID_SUBAREA;
 
-        public decimal Total_Units_IncludingByDuration => Estimated_Units;
+        public decimal Total_Units_IncludingByDuration => Budget_Units;
 
-        public decimal Estimated_Units => STOCK_CODE == null ? 0 : ESTIMATED_QUANTITY * STOCK_CODE.HOURS_INSTALL;
+        public decimal Budget_Units => STOCK_CODE == null ? 0 : BUDGET_QUANTITY == null ? 0 : (decimal)BUDGET_QUANTITY * STOCK_CODE.HOURS_INSTALL;
 
-        public decimal Total_Units => Estimated_Units + Variation_Units;
+        public decimal Total_Units => Budget_Units + Variation_Units;
 
         public decimal Variation_Units => STOCK_CODE == null ? 0 : DC_QUANTITY * STOCK_CODE.HOURS_INSTALL;
 
@@ -136,10 +136,10 @@ namespace BluePrints.Data
         public Guid? Variation_Guid { get => GUID_VARIATION; set => GUID_VARIATION = value; }
 
         [NotMapped]
-        public Guid? Baseline_Guid { get => GUID_ESTIMATION_DIRECT; set => GUID_ESTIMATION_DIRECT = value; }
+        public Guid? Baseline_Guid { get => GUID_ESTIMATE; set => GUID_ESTIMATE = value; }
 
         [NotMapped]
-        public decimal Estimated_Value { get => ESTIMATED_QUANTITY; set => ESTIMATED_QUANTITY = value; }
+        public decimal Estimated_Value { get => BUDGET_QUANTITY == null ? 0 : (decimal)BUDGET_QUANTITY; set => BUDGET_QUANTITY = value; }
 
         [NotMapped]
         public decimal DC_Value { get => DC_QUANTITY; set => DC_QUANTITY = value; }

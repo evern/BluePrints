@@ -59,7 +59,7 @@ namespace BluePrints.Data
         [StringLength(1000)]
         public string COMMENTS { get; set; }
 
-        public decimal ESTIMATED_HOURS { get; set; }
+        public decimal BUDGET_HOURS { get; set; }
 
         public decimal DC_HOURS { get; set; }
 

@@ -257,7 +257,7 @@ namespace BluePrints.ViewModels
         //public void OnCustomColumnSort(CustomColumnSortEventArgs e)
         //{
         //    string baseEntityString = "Entity.Entity.";
-        //    if (e.Column.FieldName == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.ESTIMATED_HOURS) ||
+        //    if (e.Column.FieldName == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.BUDGET_HOURS) ||
         //        e.Column.FieldName == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.DC_HOURS) ||
         //        e.Column.FieldName == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.Total_Units) ||
         //        e.Column.FieldName == "Entity." + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.ItemRate) || 

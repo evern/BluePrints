@@ -143,7 +143,7 @@ namespace BluePrints.ViewModels
             base.OnDisplaySelectedEntityChanged(entity);
         }
 
-        protected override void CellValueAnyRowChanging(CellValueChangedEventArgs e)
+        public void PermissionCellValueChanging(CellValueChangedEventArgs e)
         {
             RolePermissionAssignment editingRolePermissionAssignment = (RolePermissionAssignment)e.Row;
             //don't need to validate fieldname since only this field is changeable in role permission grid control
@@ -170,7 +170,8 @@ namespace BluePrints.ViewModels
             }
 
             refreshPermissions();
-            base.CellValueAnyRowChanging(e);
+
+            base.CellValueChanging(e);
         }
         #endregion
 
@@ -232,6 +233,11 @@ namespace BluePrints.ViewModels
 
             //DocumentInfo documentInfo = new DocumentInfo(loadProject.Guid.ToString() + DisplaySelectedEntity.Guid.ToString(), new EntitiesParameter<ROLE>(DisplaySelectedEntity), "CommodityCollectionView", "[" + DisplaySelectedEntity.Name + "] Commodities");
             //DocumentManagerService.ShowExistingEntityDocumentWithLogging(documentInfo, this);
+        }
+
+        public override string UnifiedValueValidation(ROLEProjection projection, string field_name, object new_value)
+        {
+            return string.Empty;
         }
 
         public CollectionViewModel<ROLE_PERMISSION, ROLE_PERMISSION, Guid, IBluePrintsEntitiesUnitOfWork> ROLE_PERMISSIONViewModel

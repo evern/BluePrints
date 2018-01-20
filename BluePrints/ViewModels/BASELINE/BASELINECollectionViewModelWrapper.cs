@@ -159,7 +159,7 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new DualEntitiesParameter<Data.PROJECT, IAmBaseline>(null, DisplaySelectedEntity), "BASELINE_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Baseline");
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>(null, DisplaySelectedEntity, DeliverablesViewType.Both), "BASELINE_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Baseline");
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
@@ -178,6 +178,11 @@ namespace BluePrints.ViewModels
 
             DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original, loadPROJECT }, viewName, DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping");
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
+        }
+
+        public override string UnifiedValueValidation(BASELINE projection, string field_name, object new_value)
+        {
+            return string.Empty;
         }
 
         //public bool CanP6MODBASELINE_ASSIGN()

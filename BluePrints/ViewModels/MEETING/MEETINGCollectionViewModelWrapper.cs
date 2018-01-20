@@ -104,8 +104,6 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<MEETING> entities)
         {
             MainViewModel.OnAfterEntitySavedCallBack = onAfterEntitySaved;
-            MainViewModel.AdditionalValidateCellCallBack = validateCellCallBack;
-            MainViewModel.ValidateSetValueIsContinueCallBack = validateSetValueCallBack;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -119,45 +117,26 @@ namespace BluePrints.ViewModels
             return base.onBeforeEntitySavedIsContinue(projection);
         }
 
-        private void validateCellCallBack(GridCellValidationEventArgs e)
+        public override string UnifiedValueValidation(MEETING projection, string field_name, object new_value)
         {
-            MEETING edit_meeting = (MEETING)e.Row;
-            if(e.Column.FieldName == BindableBase.GetPropertyName(() => new MEETING().MEETING_START))
+            if (field_name == BindableBase.GetPropertyName(() => new MEETING().MEETING_START))
             {
-                DateTime start_DateTime = (DateTime)e.Value;
-                if(start_DateTime > edit_meeting.MEETING_END)
+                DateTime start_DateTime = (DateTime)new_value;
+                if (start_DateTime > projection.MEETING_END)
                 {
-                    e.ErrorContent = "Start time cannot be later than end time";
-                    e.IsValid = false;
+                    return "Start time cannot be later than end time";
                 }
             }
-            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new MEETING().MEETING_END))
+            else if (field_name == BindableBase.GetPropertyName(() => new MEETING().MEETING_END))
             {
-                DateTime end_DateTime = (DateTime)e.Value;
-                if (end_DateTime < edit_meeting.MEETING_START)
+                DateTime end_DateTime = (DateTime)new_value;
+                if (end_DateTime < projection.MEETING_START)
                 {
-                    e.ErrorContent = "End time cannot be earlier than start time";
-                    e.IsValid = false;
+                    return "End time cannot be earlier than start time";
                 }
             }
-        }
 
-        public bool validateSetValueCallBack(MEETING entity, string column_name, object newValue)
-        {
-            string fieldName = DataUtils.FormatColumnFieldname(column_name);
-            //estimated hours field is disabled but just in case
-            if (fieldName == BindableBase.GetPropertyName(() => new MEETING().MEETING_START))
-            {
-                if (((DateTime)newValue) > entity.MEETING_END)
-                    return false;
-            }
-            else if (fieldName == BindableBase.GetPropertyName(() => new MEETING().MEETING_END))
-            {
-                if (((DateTime)newValue) < entity.MEETING_START)
-                    return false;
-            }
-
-            return true;
+            return string.Empty;
         }
         #endregion
 

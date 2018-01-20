@@ -59,15 +59,15 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid? SubArea_Guid => ((IReportable)ProgressItem).SubArea_Guid;
 
-        public decimal Estimated_Units => ((IReportable)ProgressItem).Estimated_Units;
+        public decimal Budget_Units => ((IReportable)ProgressItem).Budget_Units;
 
         public decimal Total_Units => ((IReportable)ProgressItem).Total_Units;
 
         public decimal Variation_Units => ((IReportable)ProgressItem).Variation_Units;
 
-        public decimal ItemRate => ((IReportable)ProgressItem).ItemRate;
+        public decimal Budget_ItemRate => ((IReportable)ProgressItem).Budget_ItemRate;
 
-        public decimal Estimated_Costs => ((IReportable)ProgressItem).Estimated_Costs;
+        public decimal Budget_Costs => ((IReportable)ProgressItem).Budget_Costs;
 
         public decimal Variation_Costs => ((IReportable)ProgressItem).Variation_Costs;
 
@@ -226,7 +226,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.Reportable = deliverable;
             if(is_nested)
             {
-                if (deliverable.Progress_Type == Estimation_DirectProgressType.Trackable)
+                if (deliverable.Progress_Type == EstimateProgressType.Trackable)
                     ColorIndex = 1;
                 else
                     ColorIndex = 2;
@@ -249,19 +249,19 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid? SubArea_Guid => Reportable.SubArea_Guid;
 
-        public decimal Estimated_Units => Reportable.Estimated_Units;
+        public decimal Budget_Units => Reportable.Budget_Units;
 
         public decimal Total_Units => Reportable.Total_Units;
 
-        public decimal ItemRate => Reportable.ItemRate;
+        public decimal Budget_ItemRate => Reportable.Budget_ItemRate;
 
-        public decimal Estimated_Costs => Reportable.Estimated_Costs;
+        public decimal Budget_Costs => Reportable.Budget_Costs;
 
         public decimal TotalCosts => Reportable.Total_Costs;
 
-        public Estimation_DirectProgressType Progress_Type => Reportable.Progress_Type;
+        public EstimateProgressType Progress_Type => Reportable.Progress_Type;
 
-        public decimal Estimated_Quantity => Reportable.Estimated_Quantity;
+        public decimal Budget_Quantity => Reportable.Budget_Quantity;
 
         public decimal Trackable_Total_Quantity
         {
@@ -277,7 +277,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Total_Quantity => Reportable.Total_Quantity;
 
-        public string UOM => Reportable.UOM;
+        public string Estimate_UOM => Reportable.Estimate_UOM;
 
         public Guid EntityKey { get => Reportable.EntityKey; set => Reportable.EntityKey = value; }
 
@@ -371,17 +371,11 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal? Override_Productivity { get => Reportable.Override_Productivity; set => Reportable.Override_Productivity = value; }
 
-        public decimal Stock_Code_Supply_Rate => Reportable.Stock_Code_Supply_Rate;
+        public decimal Estimate_Stock_Code_Supply_Rate => Reportable.Estimate_Stock_Code_Supply_Rate;
 
-        public decimal Stock_Code_Install_Hours => Reportable.Stock_Code_Install_Hours;
+        public decimal Estimate_Stock_Code_Install_Hours => Reportable.Estimate_Stock_Code_Install_Hours;
 
-        public decimal Total_Install_Hours => Reportable.Total_Install_Hours;
-
-        public decimal Total_Install_Cost => Reportable.Total_Install_Cost;
-
-        public decimal Total_Supply_Cost => Reportable.Total_Supply_Cost;
-
-        public decimal Total_Cost => Reportable.Total_Cost;
+        public decimal Total_Estimate_Cost => Reportable.Total_Estimate_Cost;
 
         public SingleObjectSummarizer StatSummarizer => Reportable.StatSummarizer;
 
@@ -395,23 +389,21 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal? Remaining_Productivity => Reportable.Remaining_Productivity;
 
-        public decimal FreightRate => Reportable.FreightRate;
+        public decimal Budget_FreightRate => Reportable.Budget_FreightRate;
 
-        public decimal Estimated_Install_Cost => Reportable.Estimated_Install_Cost;
+        public decimal Estimate_Install_Cost => Reportable.Estimate_Install_Cost;
 
         public decimal Variation_Install_Cost => Reportable.Variation_Install_Cost;
 
-        public decimal Estimated_Freight_Cost => Reportable.Estimated_Freight_Cost;
+        public decimal Estimate_Freight_Cost => Reportable.Estimate_Freight_Cost;
 
         public decimal Variation_Freight_Cost => Reportable.Variation_Freight_Cost;
 
-        public decimal Total_Freight_Cost => Reportable.Total_Freight_Cost;
-
-        public decimal Estimated_Install_Hours => Reportable.Estimated_Install_Hours;
+        public decimal Estimate_Install_Hours => Reportable.Estimate_Install_Hours;
 
         public decimal Variation_Install_Hours => Reportable.Variation_Install_Hours;
 
-        public decimal Estimated_Supply_Cost => Reportable.Estimated_Supply_Cost;
+        public decimal Estimate_Supply_Cost => Reportable.Estimate_Supply_Cost;
 
         public decimal Variation_Supply_Cost => Reportable.Variation_Supply_Cost;
 
@@ -434,6 +426,36 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Discipline_Number => Reportable.Discipline_Number;
 
         public Guid? Workpack_Guid { get => Reportable.Workpack_Guid; set => Reportable.Workpack_Guid = value; }
+
+        public decimal Estimate_Quantity => Reportable.Estimate_Quantity;
+
+        public decimal Budget_Install_Hours => Reportable.Budget_Install_Hours;
+
+        public decimal Budget_Install_Cost => Reportable.Budget_Install_Cost;
+
+        public decimal Total_Budget_Install_Cost => Reportable.Total_Budget_Install_Cost;
+
+        public decimal Total_Budget_Freight_Cost => Reportable.Total_Budget_Freight_Cost;
+
+        public decimal Total_Budget_Supply_Cost => Reportable.Total_Budget_Supply_Cost;
+
+        public decimal Total_Budget_Cost => Reportable.Total_Budget_Cost;
+
+        public decimal Budget_Freight_Cost => Reportable.Budget_Freight_Cost;
+
+        public decimal Estimate_Units => Reportable.Estimate_Units;
+
+        public decimal Estimate_ItemRate => Reportable.Estimate_ItemRate;
+
+        public decimal Estimate_FreightRate => Reportable.Estimate_FreightRate;
+
+        public decimal Budget_Stock_Code_Install_Hours => Reportable.Budget_Stock_Code_Install_Hours;
+
+        public decimal Budget_Stock_Code_Supply_Rate => Reportable.Budget_Stock_Code_Supply_Rate;
+
+        public decimal Budget_Supply_Cost => Reportable.Budget_Supply_Cost;
+
+        public string Budget_UOM => Reportable.Budget_UOM;
 
         public void SetReportingDataDate(DateTime dataDate)
         {

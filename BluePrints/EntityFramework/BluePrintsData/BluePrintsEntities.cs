@@ -2,6 +2,7 @@ namespace BluePrints.Data
 {
     using EntityFramework.Functions;
     using System.Data.Entity;
+    using System.Data.Entity.ModelConfiguration.Conventions;
 
     public partial class BluePrintsEntities : DbContext
     {
@@ -21,8 +22,8 @@ namespace BluePrints.Data
         public virtual DbSet<DEPARTMENT> DEPARTMENT { get; set; }
         public virtual DbSet<DISCIPLINE> DISCIPLINE { get; set; }
         public virtual DbSet<DOCTYPE> DOCTYPE { get; set; }
-        public virtual DbSet<ESTIMATION_DIRECT> ESTIMATION_DIRECT { get; set; }
-        public virtual DbSet<ESTIMATION_DIRECT_ITEM> ESTIMATION_DIRECT_ITEM { get; set; }
+        public virtual DbSet<ESTIMATE> ESTIMATE { get; set; }
+        public virtual DbSet<ESTIMATE_ITEM> ESTIMATE_ITEM { get; set; }
         public virtual DbSet<HOLIDAY> HOLIDAY { get; set; }
         public virtual DbSet<MEETING> MEETING { get; set; }
         public virtual DbSet<MEETING_USER> MEETING_USER { get; set; }
@@ -59,6 +60,8 @@ namespace BluePrints.Data
             Database.SetInitializer<BluePrintsEntities>(null);
             modelBuilder.Conventions.Add(new FunctionConvention<BluePrintsEntities>());
             modelBuilder.AddComplexTypesFromAssembly(typeof(BluePrintsEntities).Assembly);
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+            Database.CommandTimeout = 100000;
 
             modelBuilder.Entity<AREA>()
                 .HasMany(e => e.AREA1)
@@ -76,12 +79,12 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_SUBAREA);
 
             modelBuilder.Entity<AREA>()
-                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
+                .HasMany(e => e.ESTIMATE_ITEM)
                 .WithOptional(e => e.AREA)
                 .HasForeignKey(e => e.GUID_AREA);
 
             modelBuilder.Entity<AREA>()
-                .HasMany(e => e.ESTIMATION_DIRECT_ITEM1)
+                .HasMany(e => e.ESTIMATE_ITEM1)
                 .WithOptional(e => e.AREA1)
                 .HasForeignKey(e => e.GUID_SUBAREA);
 
@@ -153,7 +156,7 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<COMMODITY_CODE>()
-                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
+                .HasMany(e => e.ESTIMATE_ITEM)
                 .WithOptional(e => e.COMMODITY_CODE)
                 .HasForeignKey(e => e.GUID_COMMODITY_CODE);
 
@@ -214,7 +217,7 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_DISCIPLINE);
 
             modelBuilder.Entity<DISCIPLINE>()
-                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
+                .HasMany(e => e.ESTIMATE_ITEM)
                 .WithOptional(e => e.DISCIPLINE)
                 .HasForeignKey(e => e.GUID_DISCIPLINE);
 
@@ -265,10 +268,10 @@ namespace BluePrints.Data
                 .WithOptional(e => e.DOCTYPE)
                 .HasForeignKey(e => e.GUID_DOCTYPE);
 
-            modelBuilder.Entity<ESTIMATION_DIRECT>()
-                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
-                .WithOptional(e => e.ESTIMATION_DIRECT)
-                .HasForeignKey(e => e.GUID_ESTIMATION_DIRECT);
+            modelBuilder.Entity<ESTIMATE>()
+                .HasMany(e => e.ESTIMATE_ITEM)
+                .WithOptional(e => e.ESTIMATE)
+                .HasForeignKey(e => e.GUID_ESTIMATE);
 
             modelBuilder.Entity<MEETING>()
                 .HasMany(e => e.MEETING_USER)
@@ -322,7 +325,7 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_PHASE);
 
             modelBuilder.Entity<PHASE>()
-                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
+                .HasMany(e => e.ESTIMATE_ITEM)
                 .WithOptional(e => e.PHASE)
                 .HasForeignKey(e => e.GUID_PHASE);
 
@@ -383,7 +386,7 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_PROJECT);
 
             modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.ESTIMATION_DIRECT)
+                .HasMany(e => e.ESTIMATE)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
@@ -516,12 +519,17 @@ namespace BluePrints.Data
                 .HasPrecision(2, 0);
 
             modelBuilder.Entity<STOCK_CODE>()
-                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
+                .HasMany(e => e.ESTIMATE_ITEM)
                 .WithOptional(e => e.STOCK_CODE)
-                .HasForeignKey(e => e.GUID_STOCK_CODE);
+                .HasForeignKey(e => e.GUID_ESTIMATE_STOCK_CODE);
+
+            modelBuilder.Entity<STOCK_CODE>()
+                .HasMany(e => e.ESTIMATE_ITEM1)
+                .WithOptional(e => e.STOCK_CODE1)
+                .HasForeignKey(e => e.GUID_BUDGET_STOCK_CODE);
 
             modelBuilder.Entity<STOCK_GROUP>()
-                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
+                .HasMany(e => e.ESTIMATE_ITEM)
                 .WithOptional(e => e.STOCK_GROUP)
                 .HasForeignKey(e => e.GUID_STOCK_GROUP);
 
@@ -531,12 +539,12 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_SUBJOB);
 
             modelBuilder.Entity<SUBJOB>()
-                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
+                .HasMany(e => e.ESTIMATE_ITEM)
                 .WithOptional(e => e.SUBJOB)
                 .HasForeignKey(e => e.GUID_SUBJOB);
 
             modelBuilder.Entity<SUBJOB>()
-                .HasMany(e => e.ESTIMATION_DIRECT_ITEM1)
+                .HasMany(e => e.ESTIMATE_ITEM1)
                 .WithOptional(e => e.SUBJOB1)
                 .HasForeignKey(e => e.GUID_PSUBJOB);
 
@@ -587,7 +595,7 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_VARIATION);
 
             modelBuilder.Entity<VARIATION>()
-                .HasMany(e => e.ESTIMATION_DIRECT_ITEM)
+                .HasMany(e => e.ESTIMATE_ITEM)
                 .WithOptional(e => e.VARIATION)
                 .HasForeignKey(e => e.GUID_VARIATION);
 

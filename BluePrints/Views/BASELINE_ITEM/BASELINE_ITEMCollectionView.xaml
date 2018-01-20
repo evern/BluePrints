@@ -54,7 +54,7 @@
                                 <dxb:BarCheckItem Content="Manual" ToolTip="Only non-progressed internal number can be manually edited or populated by context menu option" IsChecked="{Binding DataContext.InternalNumManual, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=BORules_32x32.png}" Glyph="{dxc:DXImage Image=BORules_16x16.png}" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Tools">
-                                <dxb:BarCheckItem Content="Lock Baseline" ToolTip="Lock total estimated units, so that units assigned to all deliverables cannot exceed the current total units" IsChecked="{Binding DataContext.IsBASELINELocked, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=ProtectDocument_32x32.png}" Glyph="{dxc:DXImage Image=ProtectDocument_16x16.png}" />
+                                <dxb:BarCheckItem Content="Lock Baseline" ToolTip="Lock total budget units, so that units assigned to all deliverables cannot exceed the current total units" IsChecked="{Binding DataContext.IsBASELINELocked, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=ProtectDocument_32x32.png}" Glyph="{dxc:DXImage Image=ProtectDocument_16x16.png}" />
                                 <dxb:BarButtonItem Content="Import Client Numbers" ToolTip="Copy 2 columns from excel with the left being internal number and the right being client number, then paste it in here" Command="{Binding DataContext.MapClientNumberCommand, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" Glyph="{dx:DXImage Image=Wizard_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
@@ -155,7 +155,7 @@
                                 <dxe:CheckEditSettings />
                             </custom:GridColumnEx.EditSettings>
                         </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Estimated Hours" FieldName="Entity.Entity.ESTIMATED_HOURS" HeaderToolTip="Baseline hours" FilterPopupMode="CheckedList">
+                        <custom:GridColumnEx Header="Budget Hours" FieldName="Entity.Entity.BUDGET_HOURS" HeaderToolTip="Baseline hours" FilterPopupMode="CheckedList">
                             <custom:GridColumnEx.CellTemplate>
                                 <DataTemplate>
                                     <Grid>
@@ -244,13 +244,13 @@
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.GroupSummary>
                         <dxg:GridSummaryItem FieldName="Entity.Entity.COMMENTS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />
-                        <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" ShowInColumn="Entity.Entity.ESTIMATED_HOURS" SummaryType="Sum" />
+                        <dxg:GridSummaryItem FieldName="Entity.Entity.BUDGET_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
                         <dxg:GridSummaryItem FieldName="Entity.Total_Costs" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" ShowInColumn="Entity.Total_Costs" SummaryType="Sum" />
                         <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Entity.Entity.DC_HOURS" SummaryType="Sum" />
                     </dxg:GridControl.GroupSummary>
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem FieldName="Entity.Entity.COMMENTS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />
-                        <dxg:GridSummaryItem FieldName="Entity.Entity.ESTIMATED_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" ShowInColumn="Entity.Entity.ESTIMATED_HOURS" SummaryType="Sum" />
+                        <dxg:GridSummaryItem FieldName="Entity.Entity.BUDGET_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
                         <dxg:GridSummaryItem FieldName="Entity.Total_Costs" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" ShowInColumn="Entity.Total_Costs" SummaryType="Sum" />
                         <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Entity.Entity.DC_HOURS" SummaryType="Sum" />
                     </dxg:GridControl.TotalSummary>

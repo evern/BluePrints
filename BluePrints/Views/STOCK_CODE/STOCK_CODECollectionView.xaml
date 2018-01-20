@@ -33,6 +33,11 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSTOCK_CODECollectionView" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
+                            <dxg:GridColumn Header="Generate From" FieldName="STOCK_CODE_TYPE" HeaderToolTip="Indicate where stock code is generated from">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:StockCodeType}}" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn Header="Discipline" FieldName="GUID_DISCIPLINE" DataContext="{Binding DataContext, ElementName=userControl}">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
@@ -71,7 +76,7 @@
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
-                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                            <dxg:TableView x:Name="tableView" NewItemRowPosition="None" Style="{StaticResource DefaultTableViewTemplate}">
                                 <dxg:TableView.RowCellMenuCustomizations>
                                     <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                     <dxb:BarItemLinkSeparator />

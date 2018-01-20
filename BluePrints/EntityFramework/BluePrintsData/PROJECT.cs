@@ -79,7 +79,7 @@ namespace BluePrints.Data
         public virtual ICollection<DELIVERABLES_STATUS> DELIVERABLES_STATUS { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ESTIMATION_DIRECT> ESTIMATION_DIRECT { get; set; }
+        public virtual ICollection<ESTIMATE> ESTIMATE { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<HOLIDAY> HOLIDAY { get; set; }

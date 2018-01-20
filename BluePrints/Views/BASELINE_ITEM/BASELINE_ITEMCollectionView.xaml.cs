@@ -57,7 +57,7 @@ namespace BluePrints.Views
             //        contextMenuDuplicateMulti.IsEnabled = true;
             //    }
 
-            //    if (menuInfo.Column == colESTIMATED_HOURS)
+            //    if (menuInfo.Column == colBUDGET_HOURS)
             //    {
             //        contextMenuBulkEdit.IsVisible = !isBASELINELocked;
             //        contextMenuFillUp.IsVisible = !isBASELINELocked;

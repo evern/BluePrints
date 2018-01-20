@@ -91,6 +91,11 @@ namespace BluePrints.ViewModels
             return true;
         }
 
+        public override string UnifiedValueValidation(RATE projection, string field_name, object new_value)
+        {
+            return string.Empty;
+        }
+
         #endregion
 
         #endregion

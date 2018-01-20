@@ -56,7 +56,7 @@ namespace BluePrints.Common.Projections
 
         public Guid OriginalEntityKey { get => Entity.GUID; set { } }
 
-        public decimal Estimated_Units => Deliverables == null ? 0 : Deliverables.Count == 0 ? 0 : Deliverables.Sum(x => x.Estimated_Units);
+        public decimal Budget_Units => Deliverables == null ? 0 : Deliverables.Count == 0 ? 0 : Deliverables.Sum(x => x.Budget_Units);
 
         public decimal Total_Units => Deliverables == null ? 0 : Deliverables.Count == 0 ? 0 : Deliverables.Sum(x => x.Total_Units);
 

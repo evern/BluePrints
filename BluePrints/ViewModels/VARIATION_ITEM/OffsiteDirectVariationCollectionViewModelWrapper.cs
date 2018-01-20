@@ -91,80 +91,43 @@ namespace BluePrints.ViewModels
             FilterTreeViewModel = FiltersSettings.GetBASELINE_ITEMVariationFilterTree(this, entities);
         }
 
-        protected override void AdditionalValidateCellCallBack(GridCellValidationEventArgs e)
+        public override string UnifiedValueValidation(BASELINE_ITEMVariation projection, string field_name, object newValue)
         {
-            //estimated hours field is disabled but just in case
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Variation_Units))
+            //budgeted hours field is disabled but just in case
+            if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Variation_Units))
             {
-                BASELINE_ITEMVariation validateEntity = (BASELINE_ITEMVariation)e.Row;
-                if (validateEntity.Entity.Entity.Entity.BY_DURATION && ((decimal)e.Value) > 0)
-                {
-                    e.IsValid = false;
-                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
-                    e.ErrorContent = "Cannot set variation hours when deliverable is by duration";
-                }
+                if (projection.Entity.Entity.Entity.BY_DURATION && ((decimal)newValue) > 0)
+                    return "Cannot set variation hours when deliverable is by duration";
             }
             //this is not likely to happen, because variation isn't trackable yet but just in case
-            else if (e.Column.FieldName == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
+            else if (field_name == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
             {
-                BASELINE_ITEMVariation validateEntity = (BASELINE_ITEMVariation)e.Row;
-                if (validateEntity.Entity.Earned_Units_Total > 0)
-                {
-                    e.IsValid = false;
-                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
-                    e.ErrorContent = "Cannot change deliverable tracking type when percentage is already earned";
-                }
+                if (projection.Entity.Earned_Units_Total > 0)
+                    return "Cannot change deliverable tracking type when percentage is already earned";
             }
 
-            base.AdditionalValidateCellCallBack(e);
+            return base.UnifiedValueValidation(projection, field_name, newValue);
         }
 
-        protected override void CellValueNewRowChanging(CellValueChangedEventArgs e)
+        public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, BASELINE_ITEMVariation projection, bool isNew)
         {
-            if (e.Column.FieldName == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
+            if (field_name == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
             {
-                BASELINE_ITEMVariation current_row_item = (BASELINE_ITEMVariation)e.Row;
-                current_row_item.Variation_Units = 0;
-                current_row_item.Update();
-            }
-
-            base.CellValueNewRowChanging(e);
-        }
-
-        protected override void CellValueExistingRowChanging(CellValueChangedEventArgs e)
-        {
-            BASELINE_ITEMVariation current_row_item = (BASELINE_ITEMVariation)e.Row;
-            if (e.Column.FieldName == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
-            {
+                decimal oldValue = projection.Variation_Units;
                 decimal newValue = 0;
-                decimal oldValue = current_row_item.Variation_Units;
-
-                if (oldValue > 0)
+                projection.Variation_Units = newValue;
+                if(!isNew)
                 {
-                    current_row_item.Variation_Units = 0;
                     MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(current_row_item, BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Variation_Units), oldValue, newValue, EntityMessageType.Changed);
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Variation_Units), oldValue, newValue, EntityMessageType.Changed);
                 }
+                else
+                    projection.Update();
             }
 
-            base.CellValueExistingRowChanging(e);
+            collectionViewModelWrapper.UnifiedCellValueChanging(field_name, old_value, new_value, projection.Entity, isNew);
+            base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
         }
-
-        //public void OnCustomColumnSort(CustomColumnSortEventArgs e)
-        //{
-        //    if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Total_Units) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Total_Cost) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Variation_Units) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Forecast_Units) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMVariation().Variation_Cost))
-        //    {
-        //        decimal decimal_value1 = e.Value1 == null ? 0 : (decimal)e.Value1;
-        //        decimal decimal_value2 = e.Value2 == null ? 0 : (decimal)e.Value2;
-
-        //        e.Result = decimal_value1.CompareTo(decimal_value2);
-        //        e.Handled = true;
-        //    }
-        //}
 
         //when internal number is not unique, do not set internal number property
         protected override bool affixOtherFillDownAllowance(BASELINE_ITEMVariation fillDownEntity, string fieldName, object fillValue)

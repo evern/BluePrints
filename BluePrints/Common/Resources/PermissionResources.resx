@@ -183,4 +183,7 @@
   <data name="ManageWorkpack" xml:space="preserve">
     <value>Allow user to manage workpack</value>
   </data>
+  <data name="ManageBudget" xml:space="preserve">
+    <value>Allow user to manage budget</value>
+  </data>
 </root>

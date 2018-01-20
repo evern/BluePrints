@@ -9,12 +9,12 @@ using BluePrints.Common.Base;
 
 namespace BluePrints.Data
 {
-    public partial class ESTIMATION_DIRECT : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate, IHaveP6Baselines, IAmBaseline
+    public partial class ESTIMATE : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate, IHaveP6Baselines, IAmBaseline
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public ESTIMATION_DIRECT()
+        public ESTIMATE()
         {
-            ESTIMATION_DIRECT_ITEM = new HashSet<ESTIMATION_DIRECT_ITEM>();
+            ESTIMATE_ITEM = new HashSet<ESTIMATE_ITEM>();
             MARGIN = 0;
             CONTINGENCY = 0;
         }

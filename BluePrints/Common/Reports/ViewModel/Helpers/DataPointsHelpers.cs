@@ -75,8 +75,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                 decimal currentPeriodAdjustmentUnits = currentPeriodVariationAdjustments.Sum(adjustment => adjustment.AdjustmentUnits);
                 decimal currentPeriodAdjustmentCosts = currentPeriodVariationAdjustments.Sum(adjustment => adjustment.AdjustmentNativeCosts);
 
-                if (currentPeriodUnits > 0)
-                {
+                //if (currentPeriodUnits > 0)
+                //{
                     cumulativeUnits += currentPeriodUnits;
                     cumulativeCosts += currentPeriodCosts;
 
@@ -91,7 +91,6 @@ namespace BluePrints.Common.ViewModel.Reporting
                         Costs = cumulativeCosts,
                         ProgressDate = scanDate
                     });
-
 
                     if (currentPeriodAdjustmentUnits > 0)
                     {
@@ -117,7 +116,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                             //});
                         }
                     }
-                }
+                //}
                 
                 scanDate = scanDate.AddDays(progressInterval.Days);
             }
