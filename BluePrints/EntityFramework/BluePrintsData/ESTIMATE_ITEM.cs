@@ -41,6 +41,8 @@ namespace BluePrints.Data
         [Required]
         public int DISCIPLINE_NUM { get; set; }
 
+        public bool BY_DURATION { get; set; }
+
         [StringLength(1000)]
         public string NAME { get; set; }
 

@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class ESTIMATE_ITEMProjection : BluePrintsProjectionBase<ESTIMATE_ITEM>, IDeliverable_Quantity, IHaveStockCode, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementSubjob
+    public class ESTIMATE_ITEMProjection : BluePrintsProjectionBase<ESTIMATE_ITEM>, IDeliverable_Quantity, IHaveStockCode, IHaveDBProductivityOverride, ISupportVariation, ISupportByDuration, IHaveProcurementSubjob
     {
         public ESTIMATE_ITEMProjection()
             : base()
@@ -171,8 +171,23 @@ namespace BluePrints.Common.Projections
 
         public decimal Estimate_Units => Entity.STOCK_CODE == null ? ESTIMATE_STOCK_CODE == null ? 0 : ESTIMATE_STOCK_CODE.HOURS_INSTALL * Entity.ESTIMATE_QUANTITY : Entity.STOCK_CODE.HOURS_INSTALL * Entity.ESTIMATE_QUANTITY;
 
-        public decimal Budget_Units => Entity.STOCK_CODE1 == null ? BUDGET_STOCK_CODE == null ? 0 : Entity.BUDGET_QUANTITY == null ? 0 : BUDGET_STOCK_CODE.HOURS_INSTALL * (decimal)Entity.BUDGET_QUANTITY : Entity.STOCK_CODE1.HOURS_INSTALL * (decimal)Entity.BUDGET_QUANTITY;
+        public decimal Budget_Units
+        {
+            get
+            {
+                if (Entity.STOCK_CODE == null)
+                    return 0;
 
+                if (BUDGET_STOCK_CODE == null)
+                    return 0;
+
+                if (Entity.BUDGET_QUANTITY == null)
+                    return 0;
+
+                return BUDGET_STOCK_CODE.HOURS_INSTALL * (decimal)Entity.BUDGET_QUANTITY;
+            }
+        }
+            
         public decimal Total_Units => Entity.Total_Units;
 
         public Guid OriginalEntityKey { get => Entity.GUID_ORIGINAL; }
@@ -288,6 +303,8 @@ namespace BluePrints.Common.Projections
         public decimal Budget_Freight_Cost => Budget_Quantity * Budget_FreightRate;
 
         public PhaseType? Phase => Entity.Phase;
+
+        public bool IsByDuration => Entity.IsByDuration;
     }
 
     public static class ESTIMATE_ITEMProjectionQueries

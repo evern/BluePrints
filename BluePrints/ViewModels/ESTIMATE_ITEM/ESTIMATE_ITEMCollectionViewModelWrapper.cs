@@ -280,6 +280,9 @@ namespace BluePrints.ViewModels
             MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.ManualPasteAction = ManualPasteAction;
+            MainViewModel.CanBulkDeleteCallBack = this.CanBulkDelete;
+            MainViewModel.CanFillDownCallBack = this.CanFillDown;
+            MainViewModel.DisablePasting = !this.AllowEditingOnEstimate;
             MainViewModel.SetParentViewModel(this);
             mainThreadDispatcher.BeginInvoke(new Action(() => showViewReadOnlyMessage()));
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -528,6 +531,9 @@ namespace BluePrints.ViewModels
         /// </summary>
         public bool OnBeforeEntitySaved(ESTIMATE_ITEMProgress entity)
         {
+            if (viewType == DeliverablesViewType.Indirect)
+                entity.Entity.Entity.BY_DURATION = true;
+
             onBeforeSavedDualSubjobAssignment(entity);
             onBeforeSavedProjectStockCodeLogging(entity);
 
@@ -618,6 +624,16 @@ namespace BluePrints.ViewModels
         #region View Behavior
         #region Duplicate Behavior
         private bool _isProcessingMultiple;
+        public bool CanBulkDelete(IEnumerable<ESTIMATE_ITEMProgress> entities)
+        {
+            return AllowEditingOnEstimate;
+        }
+
+        public bool CanFillDown(IEnumerable<ESTIMATE_ITEMProgress> selectedEntities, GridMenuInfo info)
+        {
+            return AllowEditingOnEstimate;
+        }
+
         public bool CanDuplicateMultiple(BarEditItem barEdit)
         {
             if (MainViewModel == null || SelectedEntities.Count() == 0)

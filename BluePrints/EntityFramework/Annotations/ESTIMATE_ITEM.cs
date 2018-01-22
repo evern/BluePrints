@@ -12,7 +12,7 @@ using BluePrints.Common;
 
 namespace BluePrints.Data
 {
-    public partial class ESTIMATE_ITEM : BluePrintsEntityBase, IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementSubjob
+    public partial class ESTIMATE_ITEM : BluePrintsEntityBase, IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, ISupportByDuration, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementSubjob
     {
         public ESTIMATE_ITEM()
         {
@@ -124,9 +124,34 @@ namespace BluePrints.Data
 
         public decimal Total_Units_IncludingByDuration => Budget_Units;
 
-        public decimal Budget_Units => STOCK_CODE == null ? 0 : BUDGET_QUANTITY == null ? 0 : (decimal)BUDGET_QUANTITY * STOCK_CODE.HOURS_INSTALL;
+        public decimal Budget_Units
+        {
+            get
+            {
+                if (IsByDuration)
+                    return BluePrintsConstants.DurationBasedTotalUnits;
 
-        public decimal Total_Units => Budget_Units + Variation_Units;
+                if (STOCK_CODE == null)
+                    return 0;
+
+                if (BUDGET_QUANTITY == null)
+                    return 0;
+
+                return (decimal)BUDGET_QUANTITY * STOCK_CODE.HOURS_INSTALL;
+            }
+        }
+
+        [NotMapped]
+        public decimal Total_Units
+        {
+            get
+            {
+                if (IsByDuration)
+                    return BluePrintsConstants.DurationBasedTotalUnits;
+
+                return Budget_Units + Variation_Units;
+            }
+        }
 
         public decimal Variation_Units => STOCK_CODE == null ? 0 : DC_QUANTITY * STOCK_CODE.HOURS_INSTALL;
 
@@ -180,5 +205,8 @@ namespace BluePrints.Data
         public Guid? Workpack_Guid { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public PhaseType? Phase => PHASE == null ? null : PHASE.PHASE_TYPE;
+
+        [NotMapped]
+        public bool IsByDuration => BY_DURATION;
     }
 }

@@ -154,7 +154,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class ESTIMATE_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATE_ITEMProjection>, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementSubjob
+    public class ESTIMATE_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATE_ITEMProjection>, IHaveDBProductivityOverride, ISupportByDuration, ISupportVariation, IHaveProcurementSubjob
     {
         public ESTIMATE_ITEMProgress()
         {
@@ -194,6 +194,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Variance_FreightRate => Budget_FreightRate - Estimate_FreightRate;
 
         public decimal Variance_Freight_Cost => Budget_Freight_Cost - Estimate_Freight_Cost;
+
+        public bool IsByDuration => Entity.IsByDuration;
     }
 
     [BulkEditDisabledAttributes("DeliverableStatusProgressGuid, DeliverableStatusGuid")]

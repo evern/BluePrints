@@ -294,7 +294,9 @@ namespace BluePrints.Common
         [Display(Name = "Design")]
         Design = 0,
         [Display(Name = "Construct")]
-        Construct = 1
+        Construct = 1,
+        [Display(Name = "Procurement")]
+        Procurement = 2
     }
 
     public enum STOCK_GROUPProjectionType

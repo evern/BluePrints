@@ -142,8 +142,8 @@ namespace BluePrints.ViewModels
 
                     if (UserName != null && UserPassword != null)
                     {
-                        if(!isUsernameLoadedFromXML)
-                        {
+                        //if(!isUsernameLoadedFromXML)
+                        //{
                             IEnumerable<USER> activeDirectoryUSERS = null;
                             try
                             {
@@ -160,7 +160,7 @@ namespace BluePrints.ViewModels
                                 if (CaseSensitiveUser != null)
                                     UserName = CaseSensitiveUser.NAME;
                             }
-                        }
+                        //}
 
                         bool? result = ActiveDirectory.Authenticate(UserName, UserPassword);
                         if (result == null)
