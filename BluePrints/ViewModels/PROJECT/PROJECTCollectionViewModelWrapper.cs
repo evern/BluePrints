@@ -395,18 +395,18 @@ namespace BluePrints.ViewModels
                     projection.TENDER_CHANCE_OF_WIN = null;
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_DUE), projection.TENDER_DUE, null, EntityMessageType.Changed);
                     projection.TENDER_DUE = null;
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_CHANCE_OF_WIN), projection.TENDER_PROJECT_DURATION, null, EntityMessageType.Changed);
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_PROJECT_DURATION), projection.TENDER_PROJECT_DURATION, null, EntityMessageType.Changed);
                     projection.TENDER_PROJECT_DURATION = null;
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_CHANCE_OF_WIN), projection.TENDER_PROJECT_START, null, EntityMessageType.Changed);
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_PROJECT_START), projection.TENDER_PROJECT_START, null, EntityMessageType.Changed);
                     projection.TENDER_PROJECT_START = null;
                 }
                 else if ((oldStatus != ProjectStatus.Tender && oldStatus != ProjectStatus.TenderSubmitted) && (newStatus == ProjectStatus.Tender || newStatus == ProjectStatus.TenderSubmitted))
                 {
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_CHANCE_OF_WIN), projection.TENDER_PROJECT_START, 0, EntityMessageType.Changed);
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_CHANCE_OF_WIN), projection.TENDER_CHANCE_OF_WIN, 0, EntityMessageType.Changed);
                     projection.TENDER_CHANCE_OF_WIN = 0;
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_CHANCE_OF_WIN), projection.TENDER_PROJECT_START, DateTime.Now, EntityMessageType.Changed);
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_CHANCE_OF_WIN), projection.TENDER_DUE, DateTime.Now, EntityMessageType.Changed);
                     projection.TENDER_DUE = DateTime.Now;
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_CHANCE_OF_WIN), projection.TENDER_PROJECT_START, 0, EntityMessageType.Changed);
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_CHANCE_OF_WIN), projection.TENDER_PROJECT_DURATION, 0, EntityMessageType.Changed);
                     projection.TENDER_PROJECT_DURATION = 0;
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_CHANCE_OF_WIN), projection.TENDER_PROJECT_START, DateTime.Now, EntityMessageType.Changed);
                     projection.TENDER_PROJECT_START = DateTime.Now;

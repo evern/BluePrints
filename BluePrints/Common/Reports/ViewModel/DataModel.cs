@@ -682,7 +682,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             ISupportByDuration supportByDurationProjection = Entity as ISupportByDuration;
 
             if (supportByDurationProjection != null && supportByDurationProjection.IsByDuration)
-                return Earned_Units_ToDate / BluePrintsConstants.DurationBasedDisplayUnits;
+                return Earned_Units_ToDate / BluePrintsConstants.DurationBasedTotalUnits;
             else if (Total_Units > 0)
                 return Earned_Units_ToDate / Total_Units;
             else
