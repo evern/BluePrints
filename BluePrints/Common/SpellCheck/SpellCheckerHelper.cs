@@ -13,7 +13,7 @@ namespace BluePrints.Common
 {
     public static class SpellCheckerHelper
     {
-        public static readonly string PathToDemoData = @"\\Fileserver\General\BLUEPRINTS\";
+        public static readonly string PathToDemoData = @"\\fileserver\data3\General\BLUEPRINTS\";
         public static readonly string PathToDictionaries = PathToDemoData + @"Data\";
 
         public static readonly string PathToDemoDataDebug = @"D:\Sources\Repo\BluePrints\";
