@@ -337,6 +337,9 @@ namespace BluePrints.Common.Misc
 
         public static List<DashboardTreeStructure> ProjectDashboardHierarchicalBuilder(ProjectSummaryStats project_summary_stats)
         {
+            if (project_summary_stats == null)
+                return new List<DashboardTreeStructure>();
+
             DashboardTreeStructure project_dashboard = new DashboardTreeStructure();
             project_dashboard.Summary = project_summary_stats;
 
