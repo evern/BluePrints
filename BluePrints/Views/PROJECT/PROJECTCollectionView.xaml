@@ -88,7 +88,7 @@
                                 <dxg:GridColumn Header="Chance of Win" FieldName="TENDER_CHANCE_OF_WIN" HeaderToolTip="For tendering use only. Chance of winning in %">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:SpinEdit Name="PART_Editor" Increment="0.1" IsEnabled="{Binding RowData.Row.IsTender}" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                            <dxe:SpinEdit Name="PART_Editor" Increment="0.1" IsEnabled="{Binding RowData.Row.IsTender}" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
