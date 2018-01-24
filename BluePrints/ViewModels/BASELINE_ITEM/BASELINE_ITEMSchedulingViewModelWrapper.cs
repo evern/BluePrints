@@ -167,7 +167,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
         {
-            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
+            MainViewModel.OnAfterEntitySavedCallBack = OnEntitiesSavedCallBack;
             MainViewModel.PasteListener = this.PasteListener;
             MainViewModel.SetParentViewModel(this);
 
@@ -200,8 +200,7 @@ namespace BluePrints.ViewModels
             base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
         }
 
-        public void OnEntitiesSavedCallBack(Guid primaryKey, BASELINE_ITEMProgress projectionEntity,
-            BASELINE_ITEM entity, bool isNewEntity)
+        public void OnEntitiesSavedCallBack(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity, bool isNewEntity)
         {
             projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
         }

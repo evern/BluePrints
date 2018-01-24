@@ -153,7 +153,7 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Saving Behavior
-        private void onAfterEntitySaved(MEETING entity, bool isNewEntity)
+        private void onAfterEntitySaved(MEETING entity, MEETING projection, bool isNewEntity)
         {
             save_meeting_users(entity, MeetingUserSection.Attendees);
             save_meeting_users(entity, MeetingUserSection.Apologies);
@@ -181,7 +181,7 @@ namespace BluePrints.ViewModels
                 {
                     foreach (MEETING_USER assignment in MEETING_USERCollection.Where(x => x.GUID_MEETING == entity.GUID && x.TYPE == section))
                     {
-                        if (!section_users.Any(x => x.Guid == assignment.GUID))
+                        if (!section_users.Any(x => x.Guid == assignment.GUID_USER))
                             remove_meeting_users.Add(assignment);
                     }
 
@@ -190,7 +190,7 @@ namespace BluePrints.ViewModels
                     List<MEETING_USER> add_attendees = new List<MEETING_USER>();
                     foreach (MeetingUser user in section_users)
                     {
-                        if (!MEETING_USERCollection.Any(x => x.GUID == user.Guid && x.GUID_MEETING == entity.GUID && x.TYPE == Common.MeetingUserSection.Attendees))
+                        if (!MEETING_USERCollection.Any(x => x.GUID_USER == user.Guid && x.GUID_MEETING == entity.GUID && x.TYPE == section))
                             add_attendees.Add(new MEETING_USER() { GUID_USER = user.Guid, GUID_MEETING = entity.GUID, TYPE = section, USER_TYPE = user.User_Type });
                     }
 

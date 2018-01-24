@@ -277,7 +277,7 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATE_ITEMProgress> entities)
         {
             //MainViewModel.DisablePasting = true;
-            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitiesSavedCallBack;
+            MainViewModel.OnAfterEntitySavedCallBack = OnEntitiesSavedCallBack;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.ManualPasteAction = ManualPasteAction;
             MainViewModel.CanBulkDeleteCallBack = this.CanBulkDelete;
@@ -541,7 +541,7 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public void OnEntitiesSavedCallBack(Guid primaryKey, ESTIMATE_ITEMProgress projectionEntity, ESTIMATE_ITEM entity, bool isNewEntity)
+        public void OnEntitiesSavedCallBack(ESTIMATE_ITEMProgress projectionEntity, ESTIMATE_ITEM entity, bool isNewEntity)
         {
             projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
         }

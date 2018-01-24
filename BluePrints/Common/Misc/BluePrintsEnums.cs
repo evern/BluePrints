@@ -52,7 +52,8 @@ namespace BluePrints.Common
         [Display(Name = "Active")] Active = 0,
         [Display(Name = "On Hold")] OnHold = 1,
         [Display(Name = "Closed")] Closed = 2,
-        [Display(Name = "Tender")] Tender = 3
+        [Display(Name = "Tender WIP")] Tender = 3,
+        [Display(Name = "Tender Submitted")] TenderSubmitted = 4,
     }
 
     public enum BaselineStatus

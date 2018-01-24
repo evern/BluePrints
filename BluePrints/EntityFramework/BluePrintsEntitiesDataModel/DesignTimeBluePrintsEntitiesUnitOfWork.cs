@@ -112,6 +112,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((PROJECT x) => x.GUID); }
         }
 
+        IRepository<PROJECT_DISCIPLINE, Guid> IBluePrintsEntitiesUnitOfWork.PROJECT_DISCIPLINES
+        {
+            get { return GetRepository((PROJECT_DISCIPLINE x) => x.GUID); }
+        }
+
         IRepository<RATE, Guid> IBluePrintsEntitiesUnitOfWork.RATES
         {
             get { return GetRepository((RATE x) => x.GUID); }

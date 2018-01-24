@@ -140,7 +140,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<SUBJOBProjection> entities)
         {
-            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = OnEntitySavedCallBack;
+            MainViewModel.OnAfterEntitySavedCallBack = OnEntitySavedCallBack;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -152,8 +152,7 @@ namespace BluePrints.ViewModels
             base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
         }
 
-        public void OnEntitySavedCallBack(Guid primaryKey, SUBJOBProjection projectionEntity,
-            SUBJOB entity, bool isNewEntity)
+        public void OnEntitySavedCallBack(SUBJOBProjection projectionEntity, SUBJOB entity, bool isNewEntity)
         {
             projectionEntity.EntityKey = entity.GUID;
         }

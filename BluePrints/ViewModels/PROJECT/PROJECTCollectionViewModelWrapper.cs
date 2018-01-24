@@ -13,9 +13,11 @@ using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Editors;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BluePrints.ViewModels
@@ -77,6 +79,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
+            loaderCollection.AddLoaderDescription<PROJECT_DISCIPLINE, PROJECT_DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECT_DISCIPLINES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
@@ -91,7 +94,59 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> specifyMainViewModelProjection()
         {
-            return query => query.OrderBy(x => x.NUMBER);
+            return query => populate_project_discipline(query.OrderBy(x => x.NUMBER));
+        }
+
+        private IQueryable<PROJECT> populate_project_discipline(IQueryable<PROJECT> query)
+        {
+            List<PROJECT> projects = query.ToList();
+            //need to call ToList for tokenComboBoxEditSettings to work
+            projects.ForEach(x => populate_disciplines(x));
+            return projects.AsQueryable();
+        }
+
+        private void populate_disciplines(PROJECT project)
+        {
+            project.Disciplines = DISCIPLINECollection.Where(discipline => PROJECT_DISCIPLINECollection.Any(pd => pd.GUID_PROJECT == project.GUID && pd.GUID_DISCIPLINE == discipline.GUID)).ToList();
+        }
+
+        private void save_project_discipline(PROJECT entity)
+        {
+            List<PROJECT_DISCIPLINE> remove_project_disciplines = new List<PROJECT_DISCIPLINE>();
+
+            if (entity.Disciplines != null)
+            {
+                foreach (PROJECT_DISCIPLINE assignment in PROJECT_DISCIPLINECollection.Where(x => x.GUID_PROJECT == entity.GUID))
+                {
+                    if (!entity.Project_Disciplines.Any(x => x.GUID == assignment.GUID_DISCIPLINE))
+                        remove_project_disciplines.Add(assignment);
+                }
+
+                PROJECT_DISCIPLINECollectionViewModel.BaseBulkDelete(remove_project_disciplines);
+                List<PROJECT_DISCIPLINE> add_project_disciplines = new List<PROJECT_DISCIPLINE>();
+                foreach (DISCIPLINE project_discipline in entity.Project_Disciplines)
+                {
+                    if (!PROJECT_DISCIPLINECollection.Any(x => x.GUID_DISCIPLINE == project_discipline.GUID && x.GUID_PROJECT == entity.GUID))
+                        add_project_disciplines.Add(new PROJECT_DISCIPLINE() { GUID_DISCIPLINE = project_discipline.GUID, GUID_PROJECT = entity.GUID });
+                }
+
+                PROJECT_DISCIPLINECollectionViewModel.BulkSave(add_project_disciplines);
+            }
+            else
+            {
+                foreach (PROJECT_DISCIPLINE assignment in PROJECT_DISCIPLINECollection.Where(x => x.GUID_PROJECT == entity.GUID))
+                {
+                    remove_project_disciplines.Add(assignment);
+                }
+
+                PROJECT_DISCIPLINECollectionViewModel.BaseBulkDelete(remove_project_disciplines);
+            }
+        }
+
+        private void onAfterEntitySaved(PROJECT entity, PROJECT projection, bool isNewEntity)
+        {
+            save_project_discipline(entity);
+            PostSave(entity, projection, isNewEntity);
         }
 
         /// <summary>
@@ -144,7 +199,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECT> entities)
         {
-            MainViewModel.ApplyEntityPropertiesToProjectionCallBack = PostSave;
+            MainViewModel.OnAfterEntitySavedCallBack = onAfterEntitySaved;
             MainViewModel.CanFillDownCallBack = CanFillDownCallBack;
             MainViewModel.OnBeforeEntitiesDeleteCallBack = onBeforeEntitiesDeleted;
             MainViewModel.SetParentViewModel(this);
@@ -176,7 +231,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void PostSave(Guid key, PROJECT projectionEntity, PROJECT entity, bool isNewEntity)
+        private void PostSave(PROJECT projectionEntity, PROJECT entity, bool isNewEntity)
         {
             bool? isEntityNew = DataUtils.IsNewEntity<PROJECT>(projectionEntity);
 
@@ -277,9 +332,7 @@ namespace BluePrints.ViewModels
 
         public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, PROJECT projection, bool isNew)
         {
-            if (field_name == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF) ||
-                      field_name == BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT) ||
-                      field_name == BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT))
+            if (field_name == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF) || field_name == BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT) || field_name == BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT))
             {
                 MainViewModel.EntitiesUndoRedoManager.PauseActionId(); //Unpaused in existingRowAddUndoAndSave
                 if (new_value == null || ((ProjectDocumentStatus)new_value) != ProjectDocumentStatus.Yes)
@@ -333,6 +386,31 @@ namespace BluePrints.ViewModels
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(projection.NUMBER);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                ProjectStatus oldStatus = (ProjectStatus)old_value;
+                ProjectStatus newStatus = (ProjectStatus)new_value;
+                //switching between tender won't do anything
+                if ((oldStatus == ProjectStatus.Tender || oldStatus == ProjectStatus.TenderSubmitted) && (newStatus != ProjectStatus.Tender || newStatus != ProjectStatus.TenderSubmitted))
+                {
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_CHANCE_OF_WIN), projection.TENDER_CHANCE_OF_WIN, null, EntityMessageType.Changed);
+                    projection.TENDER_CHANCE_OF_WIN = null;
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_DUE), projection.TENDER_DUE, null, EntityMessageType.Changed);
+                    projection.TENDER_DUE = null;
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_CHANCE_OF_WIN), projection.TENDER_PROJECT_DURATION, null, EntityMessageType.Changed);
+                    projection.TENDER_PROJECT_DURATION = null;
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_CHANCE_OF_WIN), projection.TENDER_PROJECT_START, null, EntityMessageType.Changed);
+                    projection.TENDER_PROJECT_START = null;
+                }
+                else if ((oldStatus != ProjectStatus.Tender && oldStatus != ProjectStatus.TenderSubmitted) && (newStatus == ProjectStatus.Tender || newStatus == ProjectStatus.TenderSubmitted))
+                {
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_CHANCE_OF_WIN), projection.TENDER_PROJECT_START, 0, EntityMessageType.Changed);
+                    projection.TENDER_CHANCE_OF_WIN = 0;
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_CHANCE_OF_WIN), projection.TENDER_PROJECT_START, DateTime.Now, EntityMessageType.Changed);
+                    projection.TENDER_DUE = DateTime.Now;
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_CHANCE_OF_WIN), projection.TENDER_PROJECT_START, 0, EntityMessageType.Changed);
+                    projection.TENDER_PROJECT_DURATION = 0;
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_CHANCE_OF_WIN), projection.TENDER_PROJECT_START, DateTime.Now, EntityMessageType.Changed);
+                    projection.TENDER_PROJECT_START = DateTime.Now;
+                }
             }
 
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
@@ -358,6 +436,22 @@ namespace BluePrints.ViewModels
                 if (new_value != null && ((ProjectDocumentStatus)new_value) == ProjectDocumentStatus.Yes && projection.DOC_SIDREPORT_PATH == null)
                     isError = true;
             }
+            else if (field_name == BindableBase.GetPropertyName(() => new PROJECT().TENDER_DUE))
+            {
+                DateTime? tenderDue = (DateTime?)new_value;
+                if(tenderDue > projection.TENDER_PROJECT_START)
+                {
+                    return "Tender due date cannot be after project start date";
+                }
+            }
+            else if (field_name == BindableBase.GetPropertyName(() => new PROJECT().TENDER_PROJECT_START))
+            {
+                DateTime? tenderProjectStart = (DateTime?)new_value;
+                if (tenderProjectStart < projection.TENDER_DUE)
+                {
+                    return "Tender project start date cannot be before tender due date";
+                }
+            }
 
             if (isError)
                 return missingPathErrorString;
@@ -368,6 +462,21 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        public void CustomColumnDisplayText(CustomColumnDisplayTextEventArgs e)
+        {
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().Disciplines))
+            {
+                if(e.Value != null)
+                {
+                    IEnumerable<DISCIPLINE> selected_disciplines = ((PROJECT)e.Row).Project_Disciplines;
+                    if(DISCIPLINECollection.All(x => selected_disciplines.Any(selected => selected.GUID == x.GUID)))
+                    {
+                        e.DisplayText = "All Disciplines";
+                    }
+                }
+            }
+        }
+
         public IEnumerable<USER> MANAGERCollection
         {
             get
@@ -598,6 +707,43 @@ namespace BluePrints.ViewModels
                 "[" + DisplaySelectedEntity.NUMBER + "]");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
+        }
+
+
+        DISCIPLINE allDiscipline = new DISCIPLINE() { GUID = Guid.NewGuid(), NAME = "All" };
+        public IEnumerable<DISCIPLINE> DISCIPLINECollection
+        {
+            get
+            {
+                var collection = GetEntities<DISCIPLINE>();
+                if (collection != null)
+                {
+                    collection = collection.OrderBy(x => x.NAME);
+                }
+
+                return collection;
+            }
+        }
+
+        public IEnumerable<PROJECT_DISCIPLINE> PROJECT_DISCIPLINECollection
+        {
+            get
+            {
+                var collection = GetEntities<PROJECT_DISCIPLINE>();
+                return collection;
+            }
+        }
+
+
+        public CollectionViewModel<PROJECT_DISCIPLINE, PROJECT_DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork> PROJECT_DISCIPLINECollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<PROJECT_DISCIPLINE, PROJECT_DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROJECT_DISCIPLINE>();
+            }
         }
         #endregion
     }

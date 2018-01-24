@@ -521,6 +521,7 @@
     <Compile Include="Common\SpellCheck\SpellCheckerHelper.cs" />
     <Compile Include="Common\SpellCheck\SpellCheckerModule.cs" />
     <Compile Include="Common\Utils\BluePrintsStringFormatUtils.cs" />
+    <Compile Include="Common\ViewModel\Converters\WeeksToTextConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\MeetingMasterDetailNewRowTextConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\IReportableStatsMaximumUnitsConverter.cs" />
     <Compile Include="Common\ViewModel\BluePrintsInterfaces.cs" />
@@ -565,6 +566,7 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\PROJECT_DISCIPLINE.cs" />
     <Compile Include="EntityFramework\Annotations\CLIENT_PROJECT.cs" />
     <Compile Include="EntityFramework\Annotations\MEETING_ACTION.cs" />
     <Compile Include="EntityFramework\Annotations\MEETING_TYPE.cs" />
@@ -590,6 +592,7 @@
     <Compile Include="EntityFramework\Annotations\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
     <Compile Include="EntityFramework\BluePrintsData\CLIENT_PROJECT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\PROJECT_DISCIPLINE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\MEETING_ACTION.cs" />
     <Compile Include="EntityFramework\BluePrintsData\MEETING_TYPE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\MINUTE_TITLE.cs" />

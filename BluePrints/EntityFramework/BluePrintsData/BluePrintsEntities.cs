@@ -34,6 +34,7 @@ namespace BluePrints.Data
         public virtual DbSet<PROGRESS> PROGRESS { get; set; }
         public virtual DbSet<PROGRESS_ITEM> PROGRESS_ITEM { get; set; }
         public virtual DbSet<PROJECT> PROJECT { get; set; }
+        public virtual DbSet<PROJECT_DISCIPLINE> PROJECT_DISCIPLINE { get; set; }
         public virtual DbSet<PROJECT_REPORT> PROJECT_REPORT { get; set; }
         public virtual DbSet<RATE> RATE { get; set; }
         public virtual DbSet<REGISTER> REGISTER { get; set; }
@@ -222,6 +223,12 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_DISCIPLINE);
 
             modelBuilder.Entity<DISCIPLINE>()
+                .HasMany(e => e.PROJECT_DISCIPLINE)
+                .WithRequired(e => e.DISCIPLINE)
+                .HasForeignKey(e => e.GUID_DISCIPLINE)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<DISCIPLINE>()
                 .HasMany(e => e.RATE)
                 .WithOptional(e => e.DISCIPLINE)
                 .HasForeignKey(e => e.GUID_DISCIPLINE);
@@ -363,12 +370,6 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.HOLIDAY)
-                .WithRequired(e => e.PROJECT)
-                .HasForeignKey(e => e.GUID_PROJECT)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.BASELINE)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
@@ -387,6 +388,12 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.ESTIMATE)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.HOLIDAY)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
@@ -417,6 +424,12 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.PROGRESS)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.PROJECT_DISCIPLINE)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);

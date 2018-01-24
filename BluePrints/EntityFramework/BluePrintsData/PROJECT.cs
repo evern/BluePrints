@@ -54,6 +54,14 @@ namespace BluePrints.Data
         [StringLength(500)]
         public string DOC_CLOSEOUT_PATH { get; set; }
 
+        public DateTime? TENDER_DUE { get; set; }
+
+        public decimal? TENDER_CHANCE_OF_WIN { get; set; }
+
+        public DateTime? TENDER_PROJECT_START { get; set; }
+
+        public decimal? TENDER_PROJECT_DURATION { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }
@@ -98,6 +106,9 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PROGRESS> PROGRESS { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PROJECT_DISCIPLINE> PROJECT_DISCIPLINE { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<REGISTER> REGISTER { get; set; }

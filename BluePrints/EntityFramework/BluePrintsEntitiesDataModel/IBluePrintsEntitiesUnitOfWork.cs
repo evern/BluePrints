@@ -38,7 +38,7 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The DEPARTMENT entities repository.
         /// </summary>
         IRepository<DEPARTMENT, Guid> DEPARTMENTS { get; }
-
+        
         /// <summary>
         /// The DataPoint entities repository.
         /// </summary>
@@ -98,6 +98,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The PROJECT entities repository.
         /// </summary>
         IRepository<PROJECT, Guid> PROJECTS { get; }
+
+        /// <summary>
+        /// The PROJECT_DISCIPLINE entities repository.
+        /// </summary>
+        IRepository<PROJECT_DISCIPLINE, Guid> PROJECT_DISCIPLINES { get; }
 
         /// <summary>
         /// The RATE entities repository.

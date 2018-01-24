@@ -45,84 +45,132 @@
                                     <dx:EventArgsToDataRowConverter />
                                 </dxmvvm:EventToCommand.EventArgsConverter>
                             </dxmvvm:EventToCommand>
+                            <dxmvvm:EventToCommand Command="{Binding DataContext.CustomColumnDisplayTextCommand, ElementName=userControl}" EventName="CustomColumnDisplayText" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
                         </dxmvvm:Interaction.Behaviors>
-                        <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="Number" FieldName="NUMBER" />
-                            <dxg:GridColumn Header="Name" FieldName="NAME" />
-                            <dxg:GridColumn Header="Client" FieldName="CLIENT" />
-                            <dxg:GridColumn Header="Status" FieldName="STATUS" HeaderToolTip="Setting status as active/tender will allow project to be accessed through active/tender folder in the navigation menu. Other statuses will hide project navigation">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectStatus}}" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Contract Type" FieldName="CONTRACTTYPE">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ContractType}}" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Type" FieldName="TYPE">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectType}}" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Design Manager" FieldName="GUID_MANAGEUSER">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.MANAGERCollection, ElementName=userControl}" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Currency Conversion" FieldName="CURRENCYCONVERSION" HeaderToolTip="Rates in S-Curve will be adjusted based on conversion rate">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings x:Name="PART_Editor" Increment="0.01" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0.1" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Review %" FieldName="REVIEWPERCENTAGE">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Increment="0.1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Review Period" FieldName="REVIEWPERIOD" HeaderToolTip="Review period will affect dates for new subjob creation">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:SpinEdit x:Name="PART_Editor" Increment="1" Mask="{Binding EditValue, ConverterParameter=Day, Converter={StaticResource QuantityExpressionConverter}, RelativeSource={RelativeSource Self}}" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="0" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Use Workpacks" FieldName="USE_WORKPACKS" HeaderToolTip="Signifies whether mapping should be done by workpack instead of deliverables">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:CheckEditSettings />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Design Kick-Off Held" FieldName="DOC_KICKOFF">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectDocumentStatus}}" NullValueButtonPlacement="Popup" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Design Kick-Off Attachment" FieldName="DOC_KICKOFF_PATH">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:HyperlinkEditSettings AllowAutoNavigate="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="SID Report Complete" FieldName="DOC_SIDREPORT">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectDocumentStatus}}" NullValueButtonPlacement="Popup" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="SID Report Attachment" FieldName="DOC_SIDREPORT_PATH">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:HyperlinkEditSettings AllowAutoNavigate="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Project Close-Out Complete" FieldName="DOC_CLOSEOUT">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectDocumentStatus}}" NullValueButtonPlacement="Popup" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Project Close-Out Attachment" FieldName="DOC_CLOSEOUT_PATH">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:HyperlinkEditSettings AllowAutoNavigate="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                        </dxg:GridControl.Columns>
+                        <dxg:GridControl.Bands>
+                            <dxg:GridControlBand Header="General">
+                                <dxg:GridColumn Header="Number" FieldName="NUMBER" />
+                                <dxg:GridColumn Header="Name" FieldName="NAME" />
+                                <dxg:GridColumn Header="Client" FieldName="CLIENT" />
+                                <dxg:GridColumn Header="Status" FieldName="STATUS" HeaderToolTip="Setting status as active/tender will allow project to be accessed through active/tender folder in the navigation menu. Other statuses will hide project navigation">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectStatus}}" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Disciplines" FieldName="Disciplines">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings DisplayMember="NAME" IncrementalFiltering="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
+                                            <dxe:ComboBoxEditSettings.StyleSettings>
+                                                <dxe:CheckedComboBoxStyleSettings />
+                                            </dxe:ComboBoxEditSettings.StyleSettings>
+                                        </dxe:ComboBoxEditSettings>
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                            </dxg:GridControlBand>
+                            <dxg:GridControlBand Header="Category">
+                                <dxg:GridColumn Header="Contract Type" FieldName="CONTRACTTYPE">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ContractType}}" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Type" FieldName="TYPE">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectType}}" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Design Manager" FieldName="GUID_MANAGEUSER">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.MANAGERCollection, ElementName=userControl}" ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                            </dxg:GridControlBand>
+                            <dxg:GridControlBand Header="Tender">
+                                <dxg:GridColumn Header="Chance of Win" FieldName="TENDER_CHANCE_OF_WIN" HeaderToolTip="For tendering use only. Chance of winning in %">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:SpinEdit Name="PART_Editor" Increment="0.1" IsEnabled="{Binding RowData.Row.IsTender}" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Tender Due" FieldName="TENDER_DUE" HeaderToolTip="For tendering use only. Tender due date">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:DateEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsTender}" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Project Start" FieldName="TENDER_PROJECT_START" HeaderToolTip="For tendering use only. Tender project start date">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:DateEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsTender}" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Project Duration" FieldName="TENDER_PROJECT_DURATION" HeaderToolTip="For tendering use only. Tender project duration in weeks">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:SpinEdit Name="PART_Editor" DisplayTextConverter="{StaticResource WeeksToTextConverter}" Increment="1" IsEnabled="{Binding RowData.Row.IsTender}" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                            </dxg:GridControlBand>
+                            <dxg:GridControlBand Header="Settings">
+                                <dxg:GridColumn Header="Currency Conversion" FieldName="CURRENCYCONVERSION" HeaderToolTip="Rates in S-Curve will be adjusted based on conversion rate">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings x:Name="PART_Editor" Increment="0.01" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0.1" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Review %" FieldName="REVIEWPERCENTAGE">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Increment="0.1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Review Period" FieldName="REVIEWPERIOD" HeaderToolTip="Review period will affect dates for new subjob creation">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:SpinEdit x:Name="PART_Editor" Increment="1" Mask="{Binding EditValue, ConverterParameter=Day, Converter={StaticResource QuantityExpressionConverter}, RelativeSource={RelativeSource Self}}" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="0" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Use Workpacks" FieldName="USE_WORKPACKS" HeaderToolTip="Signifies whether mapping should be done by workpack instead of deliverables">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:CheckEditSettings />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                            </dxg:GridControlBand>
+                            <dxg:GridControlBand Header="Audit">
+                                <dxg:GridColumn Header="Design Kick-Off Held" FieldName="DOC_KICKOFF">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectDocumentStatus}}" NullValueButtonPlacement="Popup" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Design Kick-Off Attachment" FieldName="DOC_KICKOFF_PATH">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:HyperlinkEditSettings AllowAutoNavigate="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="SID Report Complete" FieldName="DOC_SIDREPORT">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectDocumentStatus}}" NullValueButtonPlacement="Popup" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="SID Report Attachment" FieldName="DOC_SIDREPORT_PATH">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:HyperlinkEditSettings AllowAutoNavigate="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Project Close-Out Complete" FieldName="DOC_CLOSEOUT">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectDocumentStatus}}" NullValueButtonPlacement="Popup" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Project Close-Out Attachment" FieldName="DOC_CLOSEOUT_PATH">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:HyperlinkEditSettings AllowAutoNavigate="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                            </dxg:GridControlBand>
+                        </dxg:GridControl.Bands>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
                         </dxg:GridControl.TotalSummary>

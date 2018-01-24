@@ -8,6 +8,7 @@ namespace BluePrints.Data
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Linq;
 
     [ConstraintAttributes("NUMBER")]
     public partial class PROJECT : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
@@ -70,6 +71,43 @@ namespace BluePrints.Data
             set
             {
                 CREATED = value;
+            }
+        }
+
+        [NotMapped]
+        private IEnumerable<object> disciplines;
+
+        [NotMapped]
+        public object Disciplines
+        {
+            get { return disciplines; }
+            set
+            {
+                if (value != disciplines)
+                {
+                    disciplines = value as IEnumerable<object>;
+                }
+            }
+        }
+
+        [NotMapped]
+        public IEnumerable<DISCIPLINE> Project_Disciplines
+        {
+            get
+            {
+                if (disciplines == null)
+                    return null;
+
+                return disciplines.Select(x => (DISCIPLINE)x);
+            }
+        }
+
+        [NotMapped]
+        public bool IsTender
+        {
+            get
+            {
+                return STATUS == ProjectStatus.Tender || STATUS == ProjectStatus.TenderSubmitted;
             }
         }
     }

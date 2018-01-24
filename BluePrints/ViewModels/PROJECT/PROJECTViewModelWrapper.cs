@@ -96,6 +96,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
         }
@@ -126,6 +127,11 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.NAME);
+        }
+
+        private Func<IRepositoryQuery<SUBJOB>, IQueryable<SUBJOB>> SUBJOBProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
@@ -207,7 +213,7 @@ namespace BluePrints.ViewModels
             {
                 project.BuildStats(false);
                 project.RecalculateStats(false);
-                project.Subjob_Dashboards = DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, loadPROJECT.SUBJOB);
+                project.Subjob_Dashboards = DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, SUBJOBCollection);
                 project.Update();
 
                 mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.SingleProjectDashboards)));
@@ -505,7 +511,7 @@ namespace BluePrints.ViewModels
                 if (SingleProjectDashboards == null)
                     return false;
 
-                return Selected_Dashboards.Count == SingleProjectDashboards.Count();
+                return Selected_Dashboards.Count >= SingleProjectDashboards.Count();
             }
         }
 
@@ -553,8 +559,8 @@ namespace BluePrints.ViewModels
             if (SingleProjectDashboards == null)
                 return false;
 
-            PhaseType? select_phase = button.Content.ToString() == PhaseType.Construct.ToString() ? PhaseType.Construct : button.Content.ToString() == PhaseType.Design.ToString() ? PhaseType.Design : (PhaseType?)null;
-            return SingleProjectDashboards.Where(x => x.Phase == select_phase).Count() > 0;
+            PhaseType? button_phase = button.Content.ToString() == PhaseType.Construct.ToString() ? PhaseType.Construct : button.Content.ToString() == PhaseType.Design.ToString() ? PhaseType.Design : (PhaseType?)null;
+            return SingleProjectDashboards.Any(x => x.Phase == button_phase);
         }
 
         public void SelectSubjob(BarCheckItem button)
@@ -858,6 +864,15 @@ namespace BluePrints.ViewModels
                     return livePROGRESS.DATA_DATE.ToString("dd-MMM-yy");
 
                 return "N/A";
+            }
+        }
+
+        public IEnumerable<SUBJOB> SUBJOBCollection
+        {
+            get
+            {
+                var collection = GetEntities<SUBJOB>();
+                return collection;
             }
         }
         #endregion
