@@ -213,6 +213,21 @@ namespace BluePrints.ViewModels
             //Is_Autofill_Internal_Number = true;
         }
 
+        public override void OnLoaded()
+        {
+            if (AppNotificationService == null || GlobalVariables.IsBaselineItemNotificationShown)
+            {
+                base.OnLoaded();
+                return;
+            }
+
+            INotification notification = AppNotificationService.CreatePredefinedNotification("Resource has been changed to allow multiple resources, please re-assign them if you use them, sorry for any inconvenience!", null, null, null);
+            GlobalVariables.IsBaselineItemNotificationShown = true;
+            notification.ShowAsync();
+
+            base.OnLoaded();
+        }
+
         protected override void initializeEntitiesLoadersDescription()
         {
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
