@@ -23,10 +23,6 @@ namespace BluePrints.Data
 
         public Guid CREATEDBY { get; set; }
 
-        public DateTime? CANCELLED { get; set; }
-
-        public Guid? CANCELLEDBY { get; set; }
-
         public DateTime? UPDATED { get; set; }
 
         public Guid? UPDATEDBY { get; set; }
