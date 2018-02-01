@@ -691,6 +691,7 @@
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\STOCK_GROUP\STOCK_GROUPCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\User_OffsiteDirectProgressCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\USER\PROJECT_USERDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\SiteDirectVariationCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\OffsiteDirectVariationCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\SUBJOB\SUBJOBDashboardViewModelWrapper.cs" />
@@ -1356,6 +1357,9 @@
     <Compile Include="Views\STOCK_GROUP\STOCK_GROUPCollectionView.xaml.cs">
       <DependentUpon>STOCK_GROUPCollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\USER\PROJECT_USERDashboardView.xaml.cs">
+      <DependentUpon>PROJECT_USERDashboardView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\USER\USERDashboardView.xaml.cs">
       <DependentUpon>USERDashboardView.xaml</DependentUpon>
     </Compile>
@@ -1631,6 +1635,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\STOCK_GROUP\STOCK_GROUPCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\USER\PROJECT_USERDashboardView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

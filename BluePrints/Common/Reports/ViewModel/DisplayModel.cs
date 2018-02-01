@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using BluePrints.Common.Projections;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
@@ -144,6 +145,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public Guid? Workpack_Guid { get => ((IReportable)ProgressItem).Workpack_Guid; set => ((IReportable)ProgressItem).Workpack_Guid = value; }
 
         public PhaseType? Phase => ((IReportable)ProgressItem).Phase;
+
+        public IEnumerable<User_Weight> AssignedUsers => ((IReportable)ProgressItem).AssignedUsers;
 
         public override void Update()
         {
@@ -460,6 +463,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string Budget_UOM => Reportable.Budget_UOM;
 
         public PhaseType? Phase => Reportable.Phase;
+
+        public IEnumerable<User_Weight> AssignedUsers => Reportable.AssignedUsers;
 
         public void SetReportingDataDate(DateTime dataDate)
         {

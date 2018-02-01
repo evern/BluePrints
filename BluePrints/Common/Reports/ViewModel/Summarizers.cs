@@ -6,12 +6,13 @@ using System.Linq;
 using static BluePrints.Data.BluePrintsEntities;
 using System;
 using System.Diagnostics;
+using BaseModel.Data.Helpers;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
     public interface IStatsSummarizer
     {
-        void Build(bool showLoadingScreen = true, bool isCosts = false);
+        void Build(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1);
         void Summarize();
     }
 
@@ -24,15 +25,15 @@ namespace BluePrints.Common.ViewModel.Reporting
             set { summaryObject = value; }
         }
 
-        public virtual void Build(bool showLoadingScreen = true, bool isCosts = false)
+        public virtual void Build(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1)
         {
             if(showLoadingScreen)
                 LoadingScreenManager.ShowLoadingScreen(GetAllMaxProgress());
 
-            SetBudgetDataPoints();
-            SetCurrentDataPoints();
-            SetEarnedDataPoints();
-            SetRemainingDataPoints();
+            SetBudgetDataPoints(weightingPortion);
+            SetCurrentDataPoints(weightingPortion);
+            SetEarnedDataPoints(weightingPortion);
+            SetRemainingDataPoints(weightingPortion);
             Summarize();
             LoadingScreenManager.CloseLoadingScreen();
         }
@@ -49,16 +50,16 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
         
         public abstract int SetBudgetDataPointsProgress();
-        public abstract void SetBudgetDataPoints();
+        public abstract void SetBudgetDataPoints(decimal weightingPortion = 1);
 
         public abstract int SetCurrentDataPointsProgress();
-        public abstract void SetCurrentDataPoints();
+        public abstract void SetCurrentDataPoints(decimal weightingPortion = 1);
 
         public abstract int SetEarnedDataPointsProgress();
-        public abstract void SetEarnedDataPoints();
+        public abstract void SetEarnedDataPoints(decimal weightingPortion = 1);
 
         public abstract int SetRemainingDataPointsProgress();
-        public abstract void SetRemainingDataPoints();
+        public abstract void SetRemainingDataPoints(decimal weightingPortion = 1);
 
         public virtual void Summarize()
         {
@@ -80,15 +81,15 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.projectNumber = projectNumber;
         }
 
-        public void BuildBudgetedOnly()
+        public void BuildBudgetedOnly(decimal weightingPortion = 1)
         {
-            SetBudgetDataPoints();
+            SetBudgetDataPoints(weightingPortion);
         }
 
-        public void BuildEarnedAndRemaining()
+        public void BuildEarnedAndRemaining(decimal weightingPortion = 1)
         {
-            SetEarnedDataPoints();
-            SetRemainingDataPoints();
+            SetEarnedDataPoints(weightingPortion);
+            SetRemainingDataPoints(weightingPortion);
             Summarize();
         }
 
@@ -97,7 +98,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return ((SummaryStats)this.SummaryStats).Reportables.Count();
         }
 
-        public override void SetBudgetDataPoints()
+        public override void SetBudgetDataPoints(decimal weightingPortion = 1)
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
@@ -130,7 +131,20 @@ namespace BluePrints.Common.ViewModel.Reporting
                     }
                     else
                     {
-                        reportableObject.Stats.Budgeted.SetPlannedData(plannedDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey));
+                        List<StoredProcedure_PlannedDataPoint> weightedPlannedDataPoints = new List<StoredProcedure_PlannedDataPoint>();
+                        foreach(StoredProcedure_PlannedDataPoint plannedDataPoint in plannedDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey))
+                        {
+                            foreach(User_Weight user in reportableObject.AssignedUsers)
+                            {
+                                StoredProcedure_PlannedDataPoint weightedPlannedDataPoint = new StoredProcedure_PlannedDataPoint();
+                                DataUtils.ShallowCopy(weightedPlannedDataPoint, plannedDataPoint);
+                                weightedPlannedDataPoint.PeriodPlannedUnits *= user.AggregateWeightDbl;
+                                weightedPlannedDataPoint.PeriodPlannedPrice *= user.AggregateWeightDbl;
+                                weightedPlannedDataPoints.Add(weightedPlannedDataPoint);
+                            }
+                        }
+
+                        reportableObject.Stats.Budgeted.SetPlannedData(weightedPlannedDataPoints);
                         reportableObject.Update();
                     }
 
@@ -144,7 +158,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return 0;
         }
 
-        public override void SetCurrentDataPoints()
+        public override void SetCurrentDataPoints(decimal weightingPortion = 1)
         {
         }
 
@@ -162,7 +176,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Calculates each baselineItem earned data point while populating aggregate non cumulative earned data points
         /// </summary>
         /// <returns>Non cumulative earned progress data points</returns>
-        public override void SetEarnedDataPoints()
+        public override void SetEarnedDataPoints(decimal weightingPortion = 1)
         {
             foreach (IReportable progressItemStat in ((SummaryStats)this.SummaryStats).Reportables)
             {
@@ -176,7 +190,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return ((SummaryStats)this.SummaryStats).Reportables.Count();
         }
 
-        public override void SetRemainingDataPoints()
+        public override void SetRemainingDataPoints(decimal weightingPortion = 1)
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
@@ -287,9 +301,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             return 1;
         }
 
-        public override void SetBudgetDataPoints()
+        public override void SetBudgetDataPoints(decimal weightingPortion = 1)
         {
-            PartialStatsBuilder.BuildPlannedDataPointsFromQuery(this.progressItem);
+            PartialStatsBuilder.BuildPlannedDataPointsFromQuery(this.progressItem, weightingPortion);
             LoadingScreenManager.Progress();
         }
 
@@ -298,7 +312,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return 0;
         }
 
-        public override void SetCurrentDataPoints()
+        public override void SetCurrentDataPoints(decimal weightingPortion = 1)
         {
 
         }
@@ -308,7 +322,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return 1;
         }
 
-        public override void SetEarnedDataPoints()
+        public override void SetEarnedDataPoints(decimal weightingPortion = 1)
         {
             PartialStatsBuilder.BuildEarnedDataPoints(progressItem);
             LoadingScreenManager.Progress();
@@ -319,9 +333,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             return 1;
         }
 
-        public override void SetRemainingDataPoints()
+        public override void SetRemainingDataPoints(decimal weightingPortion = 1)
         {
-            PartialStatsBuilder.BuildRemainingDataPointsFromQuery(progressItem);
+            PartialStatsBuilder.BuildRemainingDataPointsFromQuery(progressItem, weightingPortion);
             LoadingScreenManager.Progress();
         }
     }

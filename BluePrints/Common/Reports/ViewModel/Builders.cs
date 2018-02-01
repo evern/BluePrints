@@ -177,21 +177,35 @@ namespace BluePrints.Common.ViewModel.Reporting
             reportable.Stats.Earned.SetData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
         }
 
-        public void BuildPlannedDataPointsFromQuery(IReportable reportable)
+        public void BuildPlannedDataPointsFromQuery(IReportable reportable, decimal weightingPortion = 1)
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
                 List<StoredProcedure_PlannedDataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPoints(reportable.EntityKey);
+                Double weightingPortionDbl = Convert.ToDouble(weightingPortion);
+                foreach (StoredProcedure_PlannedDataPoint plannedDataPoint in plannedDataPoints)
+                {
+                    plannedDataPoint.PeriodPlannedUnits *= weightingPortionDbl;
+                    plannedDataPoint.PeriodPlannedPrice *= weightingPortionDbl;
+                }
+
                 reportable.Stats.Budgeted.SetPlannedData(plannedDataPoints);
                 reportable.Stats.Current.SetPlannedData(plannedDataPoints);
             }
         }
 
-        public void BuildRemainingDataPointsFromQuery(IReportable reportable)
+        public void BuildRemainingDataPointsFromQuery(IReportable reportable, decimal weightingPortion = 1)
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
                 List<StoredProcedure_RemainingDataPoint> RemainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPoints(reportable.EntityKey);
+                Double weightingPortionDbl = Convert.ToDouble(weightingPortion);
+                foreach (StoredProcedure_RemainingDataPoint remainingDataPoint in RemainingDataPoints)
+                {
+                    remainingDataPoint.PeriodRemainingUnits *= weightingPortionDbl;
+                    remainingDataPoint.PeriodRemainingPrice *= weightingPortionDbl;
+                }
+
                 reportable.Stats.Remaining.SetRemainingData(RemainingDataPoints, reportable.Stats.Earned.DataPoints);
             }
         }

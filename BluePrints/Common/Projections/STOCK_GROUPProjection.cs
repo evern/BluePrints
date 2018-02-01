@@ -134,6 +134,8 @@ namespace BluePrints.Common.Projections
 
         public PhaseType? Phase => null;
 
+        public IEnumerable<User_Weight> AssignedUsers => new List<User_Weight>();
+
         Guid? IDeliverable.Subjob_Guid { get; set; }
 
         public void SetOriginalEntityKey(Guid newGuid)

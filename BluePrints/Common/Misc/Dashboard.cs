@@ -77,6 +77,8 @@ namespace BluePrints.Common.Misc
 
     public class Dashboard_Export_Data_Point
     {
+        public string User { get; set; }
+        public string Role { get; set; }
         public string Subjob_Name { get; set; }
         public string Department_Name { get; set; }
         public string Discipline_Name { get; set; }
@@ -275,6 +277,8 @@ namespace BluePrints.Common.Misc
                 new_export_data.Discipline_Name = deliverable.Discipline_Code;
                 new_export_data.Department_Name = deliverable.Department_Code;
                 new_export_data.Subjob_Name = deliverable.Subjob_Name;
+                new_export_data.User = deliverable.User_Name;
+                new_export_data.Role = deliverable.User_Role;
 
                 if (actual_data_points != null)
                 {
@@ -378,8 +382,9 @@ namespace BluePrints.Common.Misc
             List<DashboardFlatStructure> flatDashboards = new List<DashboardFlatStructure>();
             hierarchicalDashboards = ProjectDashboardHierarchicalBuilder(project_summary_stats);
 
-            IEnumerable<SUBJOB> design_subjobs = SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Design);
-            IEnumerable<SUBJOB> construction_subjobs = SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Construct);
+            IEnumerable<SUBJOB> design_subjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Design);
+            IEnumerable<SUBJOB> construction_subjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Construct);
+            IEnumerable<SUBJOB> all_subjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.ToList();
 
             foreach (DashboardTreeStructure subjob_dashboard in hierarchicalDashboards.OrderBy(x => x.Code))
             {
@@ -398,7 +403,7 @@ namespace BluePrints.Common.Misc
                 {
                     foreach (DashboardTreeStructure department_dashboard in subjob_dashboard.Child_Dashboards.OrderBy(x => x.Code))
                     {
-                        SUBJOB subjob = SUBJOBCollection.FirstOrDefault(x => x.INTERNAL_NAME1 == subjob_dashboard.Code);
+                        SUBJOB subjob = all_subjobs.FirstOrDefault(x => x.INTERNAL_NAME1 == subjob_dashboard.Code);
                         string areaCode = string.Empty;
 
                         if (subjob != null)

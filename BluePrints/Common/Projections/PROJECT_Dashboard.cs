@@ -45,13 +45,13 @@ namespace BluePrints.Common.Projections
             set { SetProperty(() => Stats, value); }
         }
 
-        public void BuildStats(bool showLoadingScreen = true, bool isCosts = false)
+        public void BuildStats(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1)
         {
             if (projectSummarizer == null)
                 return;
 
             projectSummarizer.BuildBurnedDataPoints(ExoBurnedFilterType.All);
-            projectSummarizer.Build(showLoadingScreen, isCosts);
+            projectSummarizer.Build(showLoadingScreen, isCosts, weightingPortion);
             this.RaisePropertiesChanged();
         }
 
@@ -72,7 +72,7 @@ namespace BluePrints.Common.Projections
     public static class DashboardQueries
     {
         public static PROJECT_Dashboard Single_Project_DashboardTransformation(PROJECT PROJECT, BASELINE BASELINE, ESTIMATE ESTIMATE, IEnumerable<PROGRESS> PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES,
-            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false)
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null)
         {
             List<PROJECT> PROJECTS = new List<PROJECT>();
             List<BASELINE> BASELINES = new List<BASELINE>();
@@ -85,7 +85,7 @@ namespace BluePrints.Common.Projections
             if (ESTIMATE != null)
                 ESTIMATES.Add(ESTIMATE);
 
-            var project_dashboard = DashboardQueries.Multiple_Project_DashboardTransformation(PROJECTS.AsQueryable(), BASELINES, ESTIMATES, PROGRESS, PROGRESS_ITEMS, RATES, VARIATIONS, PROJECT.GUID, buildStats);
+            var project_dashboard = DashboardQueries.Multiple_Project_DashboardTransformation(PROJECTS.AsQueryable(), BASELINES, ESTIMATES, PROGRESS, PROGRESS_ITEMS, RATES, VARIATIONS, PROJECT.GUID, buildStats, USERCollection, BASELINE_ITEM_WORKCollection);
 
             if (project_dashboard.Count() == 0)
                 return null;
@@ -97,7 +97,7 @@ namespace BluePrints.Common.Projections
             IEnumerable<BASELINE> BASELINES, IEnumerable<ESTIMATE> ESTIMATES, IEnumerable<PROGRESS> PROGRESSES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES, 
             IEnumerable<VARIATION> VARIATIONS = null,
-            Guid? project_guid = null, bool buildStats = false)
+            Guid? project_guid = null, bool buildStats = false, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null)
         {
             IQueryable<PROJECT> project_single_or_active_selection;
             if (project_guid != null)
@@ -137,7 +137,7 @@ namespace BluePrints.Common.Projections
                     //IEnumerable<BASELINE_ITEM> live_baseline_items = live_baseline.BASELINE_ITEM.Where(x => !x.BY_DURATION);
                     IEnumerable<BASELINE_ITEM> live_baseline_items = live_baseline.BASELINE_ITEM;
                     IEnumerable<BASELINE_ITEMProgress> project_baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(
-                    live_baseline_items.AsQueryable(), current_project, live_baseline_progress, project_rates, live_baseline_progresses, approved_project_variations).ToArray().AsEnumerable();
+                    live_baseline_items.AsQueryable(), current_project, live_baseline_progress, project_rates, live_baseline_progresses, approved_project_variations, false, null, DeliverableInternalNumberMode.Default, null, USERCollection, BASELINE_ITEM_WORKCollection).ToArray().AsEnumerable();
                     reportables.AddRange(project_baseline_item_progresses);
                     current_project_progresses.Add(live_baseline_progress);
                 }

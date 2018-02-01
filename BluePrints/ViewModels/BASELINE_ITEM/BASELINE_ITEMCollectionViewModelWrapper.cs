@@ -231,6 +231,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, DELIVERABLES_STATUSProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEM_WORKS, BASELINE_ITEM_WORKProjectionFunc);
         }
 
         private void assign_baseline(BASELINE entity)
@@ -259,6 +260,11 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID == loadPROJECT.GUID);
             else
                 return query => query.Where(x => x.GUID == loadBASELINE.GUID_PROJECT);
+        }
+
+        private Func<IRepositoryQuery<BASELINE_ITEM_WORK>, IQueryable<BASELINE_ITEM_WORK>> BASELINE_ITEM_WORKProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
@@ -335,7 +341,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(base_entity_query(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, null, false, null, InternalNumberMode);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(base_entity_query(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, null, false, null, InternalNumberMode, null, USERCollection, BASELINE_ITEM_WORKCollection);
         }
 
         public Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BaseEntityQueryCallBack { get; set; }
@@ -373,6 +379,41 @@ namespace BluePrints.ViewModels
             SetViewSpecificProperties();
         }
 
+        private void save_deliverable_users(BASELINE_ITEMProgress entity)
+        {
+            List<BASELINE_ITEM_WORK> remove_baseline_item_work = new List<BASELINE_ITEM_WORK>();
+
+            if (entity.Entity.AssignUsers != null)
+            {
+                foreach (BASELINE_ITEM_WORK assignment in BASELINE_ITEM_WORKCollection.Where(x => x.GUID_BASELINE_ITEM_ORIGINAL == entity.OriginalEntityKey))
+                {
+                    if (!entity.Entity.AssignUsers.Any(x => x.GUID == assignment.GUID_USER))
+                        remove_baseline_item_work.Add(assignment);
+                }
+
+                BASELINE_ITEM_WORKCollectionViewModel.BaseBulkDelete(remove_baseline_item_work);
+                List<BASELINE_ITEM_WORK> add_project_disciplines = new List<BASELINE_ITEM_WORK>();
+                foreach (USER user in entity.Entity.AssignUsers)
+                {
+                    if (!BASELINE_ITEM_WORKCollection.Any(x => x.GUID_USER == user.GUID && x.GUID_BASELINE_ITEM_ORIGINAL == entity.OriginalEntityKey))
+                    {
+                        add_project_disciplines.Add(new BASELINE_ITEM_WORK() { GUID_USER = user.GUID, GUID_BASELINE_ITEM_ORIGINAL = entity.OriginalEntityKey, GUID_PROJECT = loadBASELINE.GUID_PROJECT, WEIGHTING = 1 });
+                    }
+
+                }
+
+                BASELINE_ITEM_WORKCollectionViewModel.BulkSave(add_project_disciplines);
+            }
+            else
+            {
+                foreach (BASELINE_ITEM_WORK assignment in BASELINE_ITEM_WORKCollection.Where(x => x.GUID_BASELINE_ITEM_ORIGINAL == entity.OriginalEntityKey))
+                {
+                    remove_baseline_item_work.Add(assignment);
+                }
+
+                BASELINE_ITEM_WORKCollectionViewModel.BaseBulkDelete(remove_baseline_item_work);
+            }
+        }
         //public void OnFillOrCellLevelPasting(IEnumerable<BASELINE_ITEMProgress> entities, string fieldName)
         //{
         //    if(fieldName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_AREA)) ||
@@ -481,6 +522,7 @@ namespace BluePrints.ViewModels
         public void OnEntitiesSavedCallBack(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity, bool isNewEntity)
         {
             projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
+            save_deliverable_users(projectionEntity);
         }
         #endregion
 
@@ -496,6 +538,10 @@ namespace BluePrints.ViewModels
 
         private string localizeColumnFieldName(string fieldName)
         {
+            //Technical debt, must move AssignUserObject to base entity
+            if (fieldName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.AssignUserObject)))
+                return fieldName;
+
             return Base_Entity_String + DataUtils.FormatColumnFieldname(fieldName);
         }
         #endregion
@@ -1306,6 +1352,15 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection
+        {
+            get
+            {
+                var collection = GetEntities<BASELINE_ITEM_WORK>();
+                return collection;
+            }
+        }
+
         public IEnumerable<WORKPACK> WORKPACKCollection
         {
             get
@@ -1407,6 +1462,17 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.CODE);
                 return collection;
+            }
+        }
+
+        public CollectionViewModel<BASELINE_ITEM_WORK, BASELINE_ITEM_WORK, Guid, IBluePrintsEntitiesUnitOfWork> BASELINE_ITEM_WORKCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<BASELINE_ITEM_WORK, BASELINE_ITEM_WORK, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<BASELINE_ITEM_WORK>();
             }
         }
 

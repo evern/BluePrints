@@ -1,4 +1,5 @@
 ﻿using BaseModel.Misc;
+using BluePrints.Common.Projections;
 using BluePrints.Data;
 using System;
 using System.Collections.Generic;
@@ -70,7 +71,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public interface IDeliverable_Rates : IDeliverable, IHaveCosts
     {
-
+        IEnumerable<User_Weight> AssignedUsers { get; }
     }
 
     public interface IDeliverable : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCommodity_Code, IHaveHours

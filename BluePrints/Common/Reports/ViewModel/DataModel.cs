@@ -312,10 +312,15 @@ namespace BluePrints.Common.ViewModel.Reporting
                 }
             }
         }
+
+        #region User Report
+        public string User_Name { get; set; }
+        public string User_Role { get; set; }
+        #endregion
     }
 
     public abstract class BluePrintsProgressableByQuantityProjectionBase<TEntity> : BluePrintsProgressableProjectionBase<TEntity>, IReportable_Quantity
-        where TEntity : class, IDeliverable, IHaveCosts, IHaveStock_Group, IHaveQuantity, new()
+        where TEntity : class, IDeliverable_Rates, IHaveCosts, IHaveStock_Group, IHaveQuantity, new()
     {
         public BluePrintsProgressableByQuantityProjectionBase()
         {
@@ -532,7 +537,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     }
 
     public abstract class BluePrintsProgressableProjectionBase<TEntity> : BluePrintsProjectionBase<TEntity>, IReportable, ICanSetProgresses, ICanAssignP6
-        where TEntity : class, IDeliverable, IHaveCosts, new()
+        where TEntity : class, IDeliverable_Rates, IHaveCosts, new()
     {
         #region Stats Parameters
         readonly SingleObjectSummarizer statsSummarizer;
@@ -558,20 +563,20 @@ namespace BluePrints.Common.ViewModel.Reporting
             statsSummarizer = new SingleObjectSummarizer(this, partialStatsBuilder);
         }
 
-        public void BuildStats()
+        public void BuildStats(decimal weightingPortion = 1)
         {
             if (StatSummarizer == null || Stats == null)
                 return;
 
-            StatSummarizer.Build(false);
+            StatSummarizer.Build(false, false, weightingPortion);
         }
 
-        public void BuildBudgetedStats()
+        public void BuildBudgetedStats(decimal weightingPortion = 1)
         {
             if (StatSummarizer == null || Stats == null)
                 return;
 
-            StatSummarizer.SetBudgetDataPoints();
+            StatSummarizer.SetBudgetDataPoints(weightingPortion);
         }
         #endregion
 
@@ -1048,5 +1053,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string P6AssignmentDescription => string.Empty;
 
         public PhaseType? Phase => Entity.Phase;
+
+        public IEnumerable<User_Weight> AssignedUsers => Entity.AssignedUsers;
     }
 }

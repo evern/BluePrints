@@ -18,6 +18,7 @@ namespace BluePrints.Data
         {
             AREA = new HashSet<AREA>();
             BASELINE = new HashSet<BASELINE>();
+            BASELINE_ITEM_WORK = new HashSet<BASELINE_ITEM_WORK>();
             CLIENT_PROJECT = new HashSet<CLIENT_PROJECT>();
             STOCK_GROUP = new HashSet<STOCK_GROUP>();
             DELIVERABLES_STATUS = new HashSet<DELIVERABLES_STATUS>();

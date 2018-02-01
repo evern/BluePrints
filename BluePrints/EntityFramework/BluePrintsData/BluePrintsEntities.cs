@@ -65,9 +65,9 @@ namespace BluePrints.Data
             Database.CommandTimeout = 100000;
 
             modelBuilder.Entity<AREA>()
-                .HasMany(e => e.AREA1)
-                .WithOptional(e => e.AREA2)
-                .HasForeignKey(e => e.GUID_PARENT);
+                            .HasMany(e => e.AREA1)
+                            .WithOptional(e => e.AREA2)
+                            .HasForeignKey(e => e.GUID_PARENT);
 
             modelBuilder.Entity<AREA>()
                 .HasMany(e => e.BASELINE_ITEM)
@@ -376,6 +376,12 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.BASELINE_ITEM_WORK)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.CLIENT_PROJECT)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
@@ -534,12 +540,12 @@ namespace BluePrints.Data
             modelBuilder.Entity<STOCK_CODE>()
                 .HasMany(e => e.ESTIMATE_ITEM)
                 .WithOptional(e => e.STOCK_CODE)
-                .HasForeignKey(e => e.GUID_ESTIMATE_STOCK_CODE);
+                .HasForeignKey(e => e.GUID_BUDGET_STOCK_CODE);
 
             modelBuilder.Entity<STOCK_CODE>()
                 .HasMany(e => e.ESTIMATE_ITEM1)
                 .WithOptional(e => e.STOCK_CODE1)
-                .HasForeignKey(e => e.GUID_BUDGET_STOCK_CODE);
+                .HasForeignKey(e => e.GUID_ESTIMATE_STOCK_CODE);
 
             modelBuilder.Entity<STOCK_GROUP>()
                 .HasMany(e => e.ESTIMATE_ITEM)

@@ -32,15 +32,35 @@ namespace BluePrints.ViewModels
             firstLoadProjectStatsSummarizers = new List<FullSummarizer>();
         }
 
+        protected override void initializeEntitiesLoadersDescription()
+        {
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEM_WORKS, BASELINE_ITEM_WORKProjectionFunc);
+            base.initializeEntitiesLoadersDescription();
+        }
+
+        private Func<IRepositoryQuery<BASELINE_ITEM_WORK>, IQueryable<BASELINE_ITEM_WORK>> BASELINE_ITEM_WORKProjectionFunc()
+        {
+            return query => query;
+        }
+
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>> specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.User_OffsiteDirectProgressItemTransformation(query, PROGRESS_ITEMCollection, _loadUSER);
+            return query => ProgressQueries.User_OffsiteDirectProgressItemTransformation(query, PROGRESS_ITEMCollection, USERCollection, BASELINE_ITEM_WORKCollection, _loadUSER);
         }
 
         protected override void onMainViewModelFirstLoaded(object sender, EventArgs e)
         {
             onMainViewModelFirstLoadedTimer.Stop();
         }
+
+        public IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection
+        {
+            get
+            {
+                return GetEntities<BASELINE_ITEM_WORK>();
+            }
+        }
+
 
         //protected override void InitializeSummarizer()
         //{

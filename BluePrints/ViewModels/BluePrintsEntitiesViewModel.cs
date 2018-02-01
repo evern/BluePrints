@@ -419,6 +419,8 @@ namespace BluePrints.ViewModels
             projectModuleDescription.ChildModules.Add(design_category_description);
             projectModuleDescription.ChildModules.Add(construct_category_description);
 
+            projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectUserDashboard", dashboardCategoryId, "Resourcing", "PROJECT_USERDashboardView", new EntitiesParameter<PROJECT>(entity)));
+
             if (LoginCredentials.hasPermission(PermissionResources.ManageArea))
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectAreas" + keyString, projectKey, childTitlePrefix + "Areas", "AREACollectionView", new EntitiesParameter<PROJECT>(entity), null, "Areas"));
 

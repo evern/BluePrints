@@ -6,6 +6,7 @@ using BluePrints.Data;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
 namespace BluePrints.Common.Projections
@@ -95,6 +96,74 @@ namespace BluePrints.Common.Projections
         public Guid? Workpack_Guid { get => Entity.GUID_WORKPACK; set => Entity.GUID_WORKPACK = value; }
 
         public PhaseType? Phase => Entity.Phase;
+
+        [NotMapped]
+        private IEnumerable<object> assignUserObject;
+
+        [NotMapped]
+        public object AssignUserObject
+        {
+            get { return assignUserObject; }
+            set
+            {
+                if (value != assignUserObject)
+                {
+                    assignUserObject = value as IEnumerable<object>;
+                }
+            }
+        }
+
+        [NotMapped]
+        public IEnumerable<USER> AssignUsers
+        {
+            get
+            {
+                if (assignUserObject == null)
+                    return null;
+
+                return assignUserObject.Select(x => (USER)x);
+            }
+        }
+
+        [NotMapped]
+        List<User_Weight> userweights { get; set; }
+        public List<User_Weight> UserWeights
+        {
+            get
+            {
+                if (userweights == null)
+                    userweights = new List<User_Weight>();
+
+                return userweights;
+            }
+            set
+            {
+                userweights = value;
+            }
+        }
+
+        public IEnumerable<User_Weight> AssignedUsers => UserWeights;
+    }
+
+    public class User_Weight
+    {
+        public USER User { get; set; }
+        public decimal Weight { get; set; }
+        public decimal AggregateWeight { get; set; }
+
+        public double AggregateWeightDbl
+        {
+            get
+            {
+                if (AggregateWeight == 0)
+                    return 0;
+
+                return Convert.ToDouble(AggregateWeight);
+            }
+        }
+
+        public string UserName => User == null ? string.Empty : User.Full_Name;
+        public string UserRole => User == null ? string.Empty : User.ROLE == null ? string.Empty : User.ROLE.NAME;
     }
 
     public static class BASELINE_ITEMProjectionQueries

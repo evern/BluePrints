@@ -46,7 +46,7 @@ namespace BluePrints.Data
         {
             GUID_ORIGINAL = newGuid;
         }
-       
+
         [NotMapped]
         public string Discipline_Code
         {

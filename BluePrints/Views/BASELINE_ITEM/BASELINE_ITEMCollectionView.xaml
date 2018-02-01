@@ -145,11 +145,20 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                             </custom:GridColumnEx.EditSettings>
                         </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Resource" FieldName="Entity.Entity.GUID_USER" FilterPopupMode="CheckedList">
+                        <!--<custom:GridColumnEx Header="Resource" FieldName="Entity.Entity.GUID_USER" FilterPopupMode="CheckedList">
                             <custom:GridColumnEx.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                             </custom:GridColumnEx.EditSettings>
-                        </custom:GridColumnEx>
+                        </custom:GridColumnEx>-->
+                        <dxg:GridColumn Header="Resources" FieldName="Entity.AssignUserObject">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings DisplayMember="Full_Name" IncrementalFiltering="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
+                                    <dxe:ComboBoxEditSettings.StyleSettings>
+                                        <dxe:CheckedComboBoxStyleSettings />
+                                    </dxe:ComboBoxEditSettings.StyleSettings>
+                                </dxe:ComboBoxEditSettings>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
                         <custom:GridColumnEx Header="By Duration" FieldName="Entity.Entity.BY_DURATION" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units" FilterPopupMode="CheckedList">
                             <custom:GridColumnEx.EditSettings>
                                 <dxe:CheckEditSettings />

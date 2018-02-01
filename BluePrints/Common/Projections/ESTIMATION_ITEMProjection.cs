@@ -305,6 +305,8 @@ namespace BluePrints.Common.Projections
         public PhaseType? Phase => Entity.Phase;
 
         public bool IsByDuration => Entity.IsByDuration;
+
+        public IEnumerable<User_Weight> AssignedUsers => new List<User_Weight>();
     }
 
     public static class ESTIMATE_ITEMProjectionQueries

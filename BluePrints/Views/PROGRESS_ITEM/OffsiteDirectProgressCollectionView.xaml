@@ -146,11 +146,11 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}" ValueMember="GUID" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Resource" FieldName="Entity.Entity.GUID_USER" FilterPopupMode="CheckedList">
+                            <!--<custom:GridColumnEx Header="Resource" FieldName="Entity.Entity.GUID_USER" FilterPopupMode="CheckedList">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
                                 </custom:GridColumnEx.EditSettings>
-                            </custom:GridColumnEx>
+                            </custom:GridColumnEx>-->
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Cumulative">
                             <custom:GridColumnEx Header="Baseline %" FieldName="Baseline_Percentage" HeaderToolTip="% as benchmarked with baseline. May exceed 100% if variation exists" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">

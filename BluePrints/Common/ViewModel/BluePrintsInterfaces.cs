@@ -4,7 +4,7 @@ namespace BluePrints.Common.ViewModel
 {
     public interface IHaveSummary : IHaveStats
     {
-        void BuildStats(bool showLoadingScreen = true, bool isCosts = false);
+        void BuildStats(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1);
         void RecalculateStats(bool isCosts);
     }
 
