@@ -4,6 +4,7 @@ using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -141,10 +142,10 @@ namespace BluePrints.Common.Misc
                         SummaryStats summaryDiscipline = (SummaryStats)discipline_dashboard.Stats;
                         if (summaryDiscipline.Burned != null)
                         {
+                            isProcessed = true;
                             List<Dashboard_Export_Data_Point> burned_data = buildExportBurnedDataByType(discipline_dashboard, discipline_dashboard.Parent_Dashboard.Parent_Dashboard.Code, discipline_dashboard.Parent_Dashboard.Code, discipline_dashboard.Code, summaryDiscipline.Burned.DataPoints, summaryDiscipline.Actual.DataPoints);
-                            if(burned_data.Count > 0)
+                            if (burned_data.Count > 0)
                             {
-                                isProcessed = true;
                                 export_data.AddRange(burned_data);
                             }
                         }
@@ -182,8 +183,8 @@ namespace BluePrints.Common.Misc
                     if (summary.Earned != null)
                         export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Earned, summary.Earned.DataPoints));
 
-                    if (summary.Burned != null)
-                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Burned, summary.Burned.DataPoints, summary.Actual.DataPoints));
+                    //if (summary.Burned != null)
+                    //    export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Burned, summary.Burned.DataPoints, summary.Actual.DataPoints));
 
                     //if (summary.Actual != null)
                     //    export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Actual, summary.Actual.DataPoints));

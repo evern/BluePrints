@@ -566,6 +566,7 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\BASELINE_ITEM_WORK.cs" />
     <Compile Include="EntityFramework\Annotations\PROJECT_DISCIPLINE.cs" />
     <Compile Include="EntityFramework\Annotations\CLIENT_PROJECT.cs" />
     <Compile Include="EntityFramework\Annotations\MEETING_ACTION.cs" />

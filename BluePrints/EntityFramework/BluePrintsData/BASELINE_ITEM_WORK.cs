@@ -18,5 +18,21 @@ namespace BluePrints.Data
         public decimal WEIGHTING { get; set; }
 
         public virtual USER USER { get; set; }
+
+        public DateTime CREATED { get; set; }
+
+        public Guid CREATEDBY { get; set; }
+
+        public DateTime? CANCELLED { get; set; }
+
+        public Guid? CANCELLEDBY { get; set; }
+
+        public DateTime? UPDATED { get; set; }
+
+        public Guid? UPDATEDBY { get; set; }
+
+        public DateTime? DELETED { get; set; }
+
+        public Guid? DELETEDBY { get; set; }
     }
 }
