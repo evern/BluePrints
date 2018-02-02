@@ -466,7 +466,7 @@ namespace BluePrints.ViewModels
         {
             if (e.Column.FieldName == BindableBase.GetPropertyName(() => new PROJECT().Disciplines))
             {
-                if(e.Value != null)
+                if(e.Value != null && DISCIPLINECollection != null)
                 {
                     IEnumerable<DISCIPLINE> selected_disciplines = ((PROJECT)e.Row).Project_Disciplines;
                     if(DISCIPLINECollection.All(x => selected_disciplines.Any(selected => selected.GUID == x.GUID)))

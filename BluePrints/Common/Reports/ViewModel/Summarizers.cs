@@ -134,12 +134,21 @@ namespace BluePrints.Common.ViewModel.Reporting
                         List<StoredProcedure_PlannedDataPoint> weightedPlannedDataPoints = new List<StoredProcedure_PlannedDataPoint>();
                         foreach(StoredProcedure_PlannedDataPoint plannedDataPoint in plannedDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey))
                         {
-                            foreach(User_Weight user in reportableObject.AssignedUsers)
+                            if(reportableObject.AssignedUsers.Count() > 0)
+                            {
+                                foreach (User_Weight user in reportableObject.AssignedUsers)
+                                {
+                                    StoredProcedure_PlannedDataPoint weightedPlannedDataPoint = new StoredProcedure_PlannedDataPoint();
+                                    DataUtils.ShallowCopy(weightedPlannedDataPoint, plannedDataPoint);
+                                    weightedPlannedDataPoint.PeriodPlannedUnits *= user.AggregateWeightDbl;
+                                    weightedPlannedDataPoint.PeriodPlannedPrice *= user.AggregateWeightDbl;
+                                    weightedPlannedDataPoints.Add(weightedPlannedDataPoint);
+                                }
+                            }
+                            else
                             {
                                 StoredProcedure_PlannedDataPoint weightedPlannedDataPoint = new StoredProcedure_PlannedDataPoint();
                                 DataUtils.ShallowCopy(weightedPlannedDataPoint, plannedDataPoint);
-                                weightedPlannedDataPoint.PeriodPlannedUnits *= user.AggregateWeightDbl;
-                                weightedPlannedDataPoint.PeriodPlannedPrice *= user.AggregateWeightDbl;
                                 weightedPlannedDataPoints.Add(weightedPlannedDataPoint);
                             }
                         }
