@@ -339,19 +339,21 @@ namespace BluePrints.Common.ViewModel.Reporting
                         periodUnits = CumulativeDataPointCollection[i].Units - CumulativeDataPointCollection[i - 1].Units;
                         periodCosts = CumulativeDataPointCollection[i].Costs - CumulativeDataPointCollection[i - 1].Costs;
 
-                        if (periodUnits < 0)
-                            periodUnits = 0;
+                        //if (periodUnits < 0)
+                        //    periodUnits = 0;
 
-                        if (periodCosts < 0)
-                            periodCosts = 0;
+                        //if (periodCosts < 0)
+                        //    periodCosts = 0;
                     }
 
                     PeriodDataPointCollection.Add(new DataPoint
                     {
                         BudgetedCosts = CumulativeDataPointCollection[i].BudgetedCosts,
                         BudgetedUnits = CumulativeDataPointCollection[i].BudgetedUnits,
-                        Costs = periodCosts < 0 ? 0 : periodCosts,
-                        Units = periodUnits < 0 ? 0 : periodUnits,
+                        Costs = periodCosts,
+                        Units = periodUnits,
+                        //Costs = periodCosts < 0 ? 0 : periodCosts,
+                        //Units = periodUnits < 0 ? 0 : periodUnits,
                         ProgressDate = CumulativeDataPointCollection[i].ProgressDate
                     });
                 }

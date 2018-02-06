@@ -151,10 +151,10 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public void RecalculateStats(bool isCost = false)
         {
-            if (Earned.CurrentPeriodDataPoint != null && Actual != null && Actual.CurrentPeriodDataPoint != null)
+            if (Earned.CurrentPeriodCumulativeDataPoint != null && Actual != null && Actual.CurrentPeriodCumulativeDataPoint != null)
             {
-                var totalEarnedCost = Earned.CurrentPeriodDataPoint.Costs;
-                var totalActualCost = Actual.CurrentPeriodDataPoint.Costs;
+                var totalEarnedCost = Earned.CurrentPeriodCumulativeDataPoint.Costs;
+                var totalActualCost = Actual.CurrentPeriodCumulativeDataPoint.Costs;
 
                 GrossProfit = totalEarnedCost == 0 || totalActualCost == 0
                     ? 0
@@ -167,27 +167,27 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             if (isCost)
             {
-                if (Earned.CurrentPeriodDataPoint != null)
-                    totalEarnedUOM = Earned.CurrentPeriodDataPoint.Costs;
+                if (Earned.CurrentPeriodCumulativeDataPoint != null)
+                    totalEarnedUOM = Earned.CurrentPeriodCumulativeDataPoint.Costs;
                 if (Burned.CurrentPeriodDataPoint != null)
-                    totalBurnedUOM = Burned.CurrentPeriodDataPoint.Costs;
+                    totalBurnedUOM = Burned.CurrentPeriodCumulativeDataPoint.Costs;
                 if (Budgeted.CurrentPeriodDataPoint != null)
-                    totalPlannedUOM = Budgeted.CurrentPeriodDataPoint.Costs;
+                    totalPlannedUOM = Budgeted.CurrentPeriodCumulativeDataPoint.Costs;
             }
             else
             {
                 if (Earned.CurrentPeriodDataPoint != null)
-                    totalEarnedUOM = Earned.CurrentPeriodDataPoint.Units;
+                    totalEarnedUOM = Earned.CurrentPeriodCumulativeDataPoint.Units;
                 if (Burned.CurrentPeriodDataPoint != null)
-                    totalBurnedUOM = Burned.CurrentPeriodDataPoint.Units;
+                    totalBurnedUOM = Burned.CurrentPeriodCumulativeDataPoint.Units;
                 if (Budgeted.CurrentPeriodDataPoint != null)
-                    totalPlannedUOM = Budgeted.CurrentPeriodDataPoint.Units;
+                    totalPlannedUOM = Budgeted.CurrentPeriodCumulativeDataPoint.Units;
             }
 
-            EfficiencyRatio = totalEarnedUOM == 0 || totalBurnedUOM == 0
+            EfficiencyRatio = totalBurnedUOM == 0
                 ? 0
                 : (totalEarnedUOM - totalBurnedUOM) / totalBurnedUOM;
-            ProgressRatio = totalEarnedUOM == 0 || totalPlannedUOM == 0
+            ProgressRatio = totalPlannedUOM == 0
                 ? 0
                 : (totalEarnedUOM - totalPlannedUOM) / totalPlannedUOM;
         }

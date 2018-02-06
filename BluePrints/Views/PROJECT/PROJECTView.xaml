@@ -86,7 +86,7 @@
                                     <dxg:GridControlBand Header="General">
                                         <dxg:GridColumn Header="Subjob" FieldName="SubjobCode" Width="150" />
                                         <dxg:GridColumn Header="Area" FieldName="AreaCode" />
-                                        <dxg:GridColumn Header="Department" FieldName="DepartmentCode" />
+                                        <!--<dxg:GridColumn Header="Department" FieldName="DepartmentCode" />-->
                                         <dxg:GridColumn Header="Discipline" FieldName="DisciplineCode" />
                                         <dxg:GridColumn Header="{Binding DataContext.Header_Total_Budgeted, ElementName=userControl}" FieldName="{Binding DataContext.Total_Budgeted, ElementName=userControl}" HeaderToolTip="Total units including variation">
                                             <dxg:GridColumn.EditSettings>
