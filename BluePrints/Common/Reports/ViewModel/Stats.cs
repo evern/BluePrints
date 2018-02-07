@@ -215,9 +215,19 @@ namespace BluePrints.Common.ViewModel.Reporting
             get
             {
                 if (currentPeriodCumulativeDataPoint == null && CumulativeDataPoints != null && CumulativeDataPoints.Count > 0 && reportingDataDate != null)
-                    currentPeriodCumulativeDataPoint = DataPointsHelpers.FindPeriodDataPointInDataPoints(CumulativeDataPoints,
-                            reportingDataDate.Date);
+                    currentPeriodCumulativeDataPoint = DataPointsHelpers.FindPeriodDataPointInDataPoints(CumulativeDataPoints, reportingDataDate.Date);
                 return currentPeriodCumulativeDataPoint;
+            }
+        }
+
+        public decimal Remaining_Units
+        {
+            get
+            {
+                if (CumulativeDataPoints != null && CumulativeDataPoints.Count > 0 && reportingDataDate != null)
+                    return DataPoints.Where(x => x.ProgressDate > reportingDataDate).Sum(x => x.Units);
+                else
+                    return 0;
             }
         }
 

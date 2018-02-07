@@ -287,24 +287,30 @@ namespace BluePrints.Common.ViewModel.Reporting
                 progressDataPoints.FirstOrDefault(obj => obj.ProgressDate.Date == dataPointDate.Date);
             if (CumulativeProgressOnDataDate != null)
             {
-                var CurrentPeriodIndex = progressDataPoints.IndexOf(CumulativeProgressOnDataDate);
-                if (CurrentPeriodIndex == 0)
+                if (!CumulativeProgressOnDataDate.DoNotPlot)
                 {
-                    return null;
+                    var CurrentPeriodIndex = progressDataPoints.IndexOf(CumulativeProgressOnDataDate);
+                    if (CurrentPeriodIndex == 0)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        var PreviousPeriodIndex = CurrentPeriodIndex - 1;
+                        var CumulativeProgressOnDataDatePrevious = progressDataPoints[PreviousPeriodIndex];
+                        return new DataPoint()
+                        {
+                            BudgetedUnits = CumulativeProgressOnDataDate.BudgetedUnits,
+                            BudgetedCosts = CumulativeProgressOnDataDate.BudgetedCosts,
+                            Units = CumulativeProgressOnDataDate.Units - CumulativeProgressOnDataDatePrevious.Units,
+                            Costs = CumulativeProgressOnDataDate.Costs - CumulativeProgressOnDataDatePrevious.Costs,
+                            ProgressDate = CumulativeProgressOnDataDate.ProgressDate
+                        };
+                    }
                 }
                 else
-                {
-                    var PreviousPeriodIndex = CurrentPeriodIndex - 1;
-                    var CumulativeProgressOnDataDatePrevious = progressDataPoints[PreviousPeriodIndex];
-                    return new DataPoint()
-                    {
-                        BudgetedUnits = CumulativeProgressOnDataDate.BudgetedUnits,
-                        BudgetedCosts = CumulativeProgressOnDataDate.BudgetedCosts,
-                        Units = CumulativeProgressOnDataDate.Units - CumulativeProgressOnDataDatePrevious.Units,
-                        Costs = CumulativeProgressOnDataDate.Costs - CumulativeProgressOnDataDatePrevious.Costs,
-                        ProgressDate = CumulativeProgressOnDataDate.ProgressDate
-                    };
-                }
+                    return nullProgressDataPoint;
+
             }
             else
             {

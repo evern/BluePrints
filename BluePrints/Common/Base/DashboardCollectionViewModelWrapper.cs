@@ -280,6 +280,7 @@ namespace BluePrints.Common.ViewModel
         public string Cumulative_Earned_Units { get; set; }
         public string Cumulative_Burned_Units { get; set; }
         public string Cumulative_Actual_Units { get; set; }
+        public string Cumulative_Remaining_Units { get; set; }
         public string Period_Earned_Percentage { get; set; }
         public string Period_Planned_Units { get; set; }
         public string Period_Earned_Units { get; set; }
@@ -316,6 +317,7 @@ namespace BluePrints.Common.ViewModel
             this.RaisePropertyChanged(x => x.Cumulative_Earned_Units);
             this.RaisePropertyChanged(x => x.Cumulative_Burned_Units);
             this.RaisePropertyChanged(x => x.Cumulative_Actual_Units);
+            this.RaisePropertyChanged(x => x.Cumulative_Remaining_Units);
             this.RaisePropertyChanged(x => x.Period_Earned_Percentage);
             this.RaisePropertyChanged(x => x.Period_Planned_Units);
             this.RaisePropertyChanged(x => x.Period_Earned_Units);
@@ -355,6 +357,7 @@ namespace BluePrints.Common.ViewModel
         string Cumulative_Earned_Units { get; set; }
         string Cumulative_Burned_Units { get; set; }
         string Cumulative_Actual_Units { get; set; }
+        string Cumulative_Remaining_Units { get; set; }
         string Period_Earned_Percentage { get; set; }
         string Period_Planned_Units { get; set; }
         string Period_Earned_Units { get; set; }
@@ -419,6 +422,7 @@ namespace BluePrints.Common.ViewModel
             stats_switch.Cumulative_Earned_Units = String.Format(current_period_cumulative_string, earned_string) + field_selection_string;
             stats_switch.Cumulative_Burned_Units = String.Format(current_period_cumulative_string, burned_string) + field_selection_string;
             stats_switch.Cumulative_Actual_Units = String.Format(current_period_cumulative_string, actual_string) + field_selection_string;
+            stats_switch.Cumulative_Remaining_Units = "Stats.Remaining.Remaining_Units";
 
             stats_switch.Period_Earned_Percentage = String.Format(current_period_string, earned_string) + field_percentage_selection_string;
             stats_switch.Period_Planned_Units = String.Format(current_period_string, budgeted_string) + field_selection_string;
@@ -439,6 +443,7 @@ namespace BluePrints.Common.ViewModel
             gridControlService.AddSummary(stats_switch.Cumulative_Earned_Units, SummaryItemType.Sum, summaryDecimalString);
             gridControlService.AddSummary(stats_switch.Cumulative_Burned_Units, SummaryItemType.Sum, summaryDecimalString);
             gridControlService.AddSummary(stats_switch.Cumulative_Actual_Units, SummaryItemType.Sum, summaryDecimalString);
+            gridControlService.AddSummary(stats_switch.Cumulative_Remaining_Units, SummaryItemType.Sum, summaryDecimalString);
 
             gridControlService.AddSummary(stats_switch.Period_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
             gridControlService.AddSummary(stats_switch.Period_Planned_Units, SummaryItemType.Sum, summaryDecimalString);

@@ -40,7 +40,7 @@
                                     <!--<dxb:BarCheckItem Content="Auto Refresh" IsChecked="{Binding DataContext.DoNotAutoRefresh, ElementName=userControl, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />-->
                                     <dxb:BarButtonItem Content="P6 Issues" ToolTip="Shows any invalid mappings because activity isn't found on P6" Command="{Binding DataContext.ShowP6ErrorsCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" />
                                     <dxb:BarButtonItem Content="Exo Issues" ToolTip="Shows any subjobs in exo that isn't available in blueprints" Command="{Binding DataContext.ShowExoErrorsCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Export" ToolTip="Export all datapoints to excel" Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
+                                    <!--<dxb:BarButtonItem Content="Export" ToolTip="Export all datapoints to excel" Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />-->
                                     <dxb:BarButtonItem Content="Export" ToolTip="Export selected rows S-Curve to PDF" Command="{Binding DataContext.ExportToPDFCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=ExportToPDF_32x32.png}" Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" />
                                 </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup Caption="Data">
@@ -116,6 +116,11 @@
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn Header="{Binding DataContext.Header_Actual, ElementName=userControl}" FieldName="{Binding DataContext.Cumulative_Actual_Units, ElementName=userControl}" HeaderToolTip="Actual costs to date" ReadOnly="True" AllowEditing="False" Visible="{Binding DataContext.IsActualVisible, ElementName=userControl}" VisibleIndex="120">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn Header="{Binding DataContext.Header_Remaining, ElementName=userControl}" FieldName="{Binding DataContext.Cumulative_Remaining_Units, ElementName=userControl}" HeaderToolTip="Remaining to date" ReadOnly="True" AllowEditing="False" VisibleIndex="125">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>

@@ -255,7 +255,7 @@
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn Header="WORKPACK" FieldName="P6AssignmentName" ReadOnly="True" Width="100" VisibleIndex="0" />
                                 <dxg:GridColumn Header="TITLE" FieldName="P6AssignmentDescription" ReadOnly="True" Width="100" VisibleIndex="0" />
-                                <dxg:GridColumn Header="BUDGET_HOURS" FieldName="Estimated_Units" ReadOnly="True">
+                                <dxg:GridColumn Header="BUDGET_HOURS" FieldName="Budget_Units" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>

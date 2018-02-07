@@ -185,8 +185,6 @@ namespace BluePrints.Common.Misc
                         isDisciplineDataPointsGathered = true;
                         isSubjobDataPointsGathered = true;
 
-
-
                         List<Dashboard_Export_Data_Point> burned_data = buildExportDataByType2(discipline_dashboard, discipline_dashboard.Parent_Dashboard.Code, discipline_dashboard.Code, summaryDiscipline.Burned.DataPoints, StatsType.Burned, summaryDiscipline.Actual.DataPoints);
                         if (burned_data.Count > 0)
                         {
