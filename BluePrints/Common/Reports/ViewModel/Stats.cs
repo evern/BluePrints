@@ -231,6 +231,17 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public decimal Remaining_Costs
+        {
+            get
+            {
+                if (CumulativeDataPoints != null && CumulativeDataPoints.Count > 0 && reportingDataDate != null)
+                    return DataPoints.Where(x => x.ProgressDate > reportingDataDate).Sum(x => x.Costs);
+                else
+                    return 0;
+            }
+        }
+
         public DateTime StartDate
         {
             get

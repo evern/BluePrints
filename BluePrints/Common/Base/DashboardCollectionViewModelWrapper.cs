@@ -422,7 +422,7 @@ namespace BluePrints.Common.ViewModel
             stats_switch.Cumulative_Earned_Units = String.Format(current_period_cumulative_string, earned_string) + field_selection_string;
             stats_switch.Cumulative_Burned_Units = String.Format(current_period_cumulative_string, burned_string) + field_selection_string;
             stats_switch.Cumulative_Actual_Units = String.Format(current_period_cumulative_string, actual_string) + field_selection_string;
-            stats_switch.Cumulative_Remaining_Units = "Stats.Remaining.Remaining_Units";
+            stats_switch.Cumulative_Remaining_Units = is_cost ? "Stats.Remaining.Remaining_Costs": "Stats.Remaining.Remaining_Units";
 
             stats_switch.Period_Earned_Percentage = String.Format(current_period_string, earned_string) + field_percentage_selection_string;
             stats_switch.Period_Planned_Units = String.Format(current_period_string, budgeted_string) + field_selection_string;
