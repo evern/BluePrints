@@ -172,7 +172,11 @@
                                     </dxg:GridControlBand>
                                 </dxg:GridControl.Bands>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView custom:GroupChildSelector.Mode="Hierarchical" AllowEditing="False" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}" />
+                                    <dxg:TableView custom:GroupChildSelector.Mode="Hierarchical" AllowEditing="False" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}">
+                                        <dxg:TableView.RowCellMenuCustomizations>
+                                            <dxb:BarButtonItem Content="Copy With Headers" ToolTip="Copy selected rows along with header" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" Name="contextMenuCopyWithHeader" />
+                                        </dxg:TableView.RowCellMenuCustomizations>
+                                    </dxg:TableView>
                                 </dxg:GridControl.View>
                             </custom:GridControlEx>
                         </dxlc:LayoutGroup>

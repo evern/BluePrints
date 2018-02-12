@@ -153,17 +153,17 @@
                             </custom:GridColumnEx>-->
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Cumulative">
-                            <custom:GridColumnEx Header="Baseline %" FieldName="Baseline_Percentage" HeaderToolTip="% as benchmarked with baseline. May exceed 100% if variation exists" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
+                            <custom:GridColumnEx Header="Baseline %" FieldName="Baseline_Percentage" HeaderToolTip="% as benchmarked against budget. May exceed 100% if variation exists" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Total %" FieldName="Total_Percentage_ToDate" HeaderToolTip="% as benchmarked with baseline + variation" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" Visible="False">
+                            <custom:GridColumnEx Header="Total %" FieldName="Total_Percentage_ToDate" HeaderToolTip="% as benchmarked against budget + variation" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" Visible="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Schedule %" FieldName="SchedulePercentage" HeaderToolTip="Required % as obtained from P6 or subjob dates" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
+                            <custom:GridColumnEx Header="Schedule %" FieldName="SchedulePercentage" HeaderToolTip="Required % as obtained from P6 or subjob dates. % as benchmarked against budget. May exceed 100% if variation exists" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False">
                                 <custom:GridColumnEx.EditSettings>
                                     <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </custom:GridColumnEx.EditSettings>
@@ -188,7 +188,7 @@
                                     <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
-                            <custom:GridColumnEx Header="Current %" FieldName="Total_Earned_Percentage" HeaderToolTip="Cumulative % earned since the start of the project. Update this to earn units for this period" AllowEditing="True" FilterPopupMode="CheckedList">
+                            <custom:GridColumnEx Header="Current %" FieldName="Total_Earned_Percentage" HeaderToolTip="Cumulative % earned since the start of the project. % as benchmarked against baseline + variation. Update this to earn units for this period" AllowEditing="True" FilterPopupMode="CheckedList">
                                 <custom:GridColumnEx.CellTemplate>
                                     <DataTemplate>
                                         <Grid>
