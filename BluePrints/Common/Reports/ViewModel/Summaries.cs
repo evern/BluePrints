@@ -144,9 +144,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         public void GenerateSummary()
         {
             this.Budgeted.SetData(Reportables.SelectMany(x => x.Stats.Budgeted.GetData()));
+            this.BudgetedLate.SetData(Reportables.SelectMany(x => x.Stats.BudgetedLate.GetData()));
             this.Current.SetData(Reportables.SelectMany(x => x.Stats.Current.GetData()));
             this.Earned.SetData(Reportables.SelectMany(x => x.Stats.Earned.GetData()));
             this.Remaining.SetData(Reportables.SelectMany(x => x.Stats.Remaining.GetData()));
+            this.RemainingLate.SetData(Reportables.SelectMany(x => x.Stats.RemainingLate.GetData()));
         }
 
         public void RecalculateStats(bool isCost = false)
@@ -205,6 +207,12 @@ namespace BluePrints.Common.ViewModel.Reporting
             set { SetProperty(() => Budgeted, value); }
         }
 
+        public Stats BudgetedLate
+        {
+            get { return GetProperty(() => BudgetedLate); }
+            set { SetProperty(() => BudgetedLate, value); }
+        }
+
         public Stats Current
         {
             get { return GetProperty(() => Current); }
@@ -221,6 +229,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get { return GetProperty(() => Remaining); }
             set { SetProperty(() => Remaining, value); }
+        }
+
+        public Stats RemainingLate
+        {
+            get { return GetProperty(() => RemainingLate); }
+            set { SetProperty(() => RemainingLate, value); }
         }
 
         readonly decimal budgetedUnits;
@@ -297,9 +311,11 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             //Budgeted = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, true);
             Budgeted = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, true);
+            BudgetedLate = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, true);
             Current = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments);
             Earned = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments);
             Remaining = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, true);
+            RemainingLate = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, true);
         }
 
         public ProgressStats(IEnumerable<ProgressStats> progressStats)
@@ -322,6 +338,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             Budgeted = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, false, true);
             Budgeted.SetData(cleanProgressStats.Where(x => x.Budgeted != null && x.Budgeted.DataPoints != null).SelectMany(x => x.Budgeted.GetData()).ToList());
 
+            BudgetedLate = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, false, true);
+            BudgetedLate.SetData(cleanProgressStats.Where(x => x.BudgetedLate != null && x.BudgetedLate.DataPoints != null).SelectMany(x => x.BudgetedLate.GetData()).ToList());
+
             Current = new Stats(ReportingDataDate, budgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             Current.SetData(cleanProgressStats.Where(x => x.Current != null && x.Current.DataPoints != null).SelectMany(x => x.Current.GetData()).ToList());
 
@@ -330,6 +349,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             Remaining = new Stats(ReportingDataDate, budgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, true);
             Remaining.SetData(cleanProgressStats.Where(x => x.Remaining != null && x.Remaining.DataPoints != null).SelectMany(x => x.Remaining.GetData()).ToList());
+
+            RemainingLate = new Stats(ReportingDataDate, budgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, true);
+            RemainingLate.SetData(cleanProgressStats.Where(x => x.RemainingLate != null && x.RemainingLate.DataPoints != null).SelectMany(x => x.RemainingLate.GetData()).ToList());
         }
     }
 }

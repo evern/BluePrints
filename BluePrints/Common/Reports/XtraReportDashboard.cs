@@ -20,6 +20,8 @@ namespace BluePrints.Reports
         {
             var replaceTo = "Units";
             bool showBurned = true;
+            bool useLate = false;
+
             foreach (var info in e.ParametersInformation)
             {
                 if (info.Parameter.Name == "reportBy")
@@ -27,6 +29,9 @@ namespace BluePrints.Reports
 
                 if (info.Parameter.Name == "showBurn")
                     showBurned = (bool)info.Parameter.Value;
+
+                if (info.Parameter.Name == "useLate")
+                    useLate = (bool)info.Parameter.Value;
             }
 
             if (showBurned)
@@ -50,6 +55,7 @@ namespace BluePrints.Reports
 
             string strReplaceFrom;
             string strReplaceTo;
+
             //string formatString;
             if (replaceTo == "Costs")
             {
@@ -64,23 +70,44 @@ namespace BluePrints.Reports
                 //formatString = "{0:n1}";
             }
 
+            string strBudgetReplaceFrom;
+            string strBudgetReplaceTo;
+
+            //string formatString;
+            if (useLate)
+            {
+                strBudgetReplaceFrom = "Budgeted.";
+                strBudgetReplaceTo = "BudgetedLate.";
+                //formatString = "{0:c}";
+            }
+            else
+            {
+                strBudgetReplaceFrom = "BudgetedLate.";
+                strBudgetReplaceTo = "Budgeted.";
+                //formatString = "{0:n1}";
+            }
+
             string percentageFormatString = "{0:0.00%}";
 
             replaceDataMember(xrDataSummaryCumulativeEarnedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
             replaceDataMember(xrDataSummaryCumulativePlannedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
+            replaceDataMember(xrDataSummaryCumulativePlannedPercent, strBudgetReplaceFrom, strBudgetReplaceTo, percentageFormatString);
             replaceDataMember(xrDataSummaryCumulativeBurnedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
 
             replaceDataMember(xrDataSummaryPeriodEarnedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
             replaceDataMember(xrDataSummaryPeriodPlannedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
+            replaceDataMember(xrDataSummaryPeriodPlannedPercent, strBudgetReplaceFrom, strBudgetReplaceTo, percentageFormatString);
             replaceDataMember(xrDataSummaryPeriodBurnedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
 
 
             xrChart1.Series["Planned"].ValueDataMembersSerializable = xrChart1.Series["Planned"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
+            //xrChart1.Series["Late Planned"].ValueDataMembersSerializable = xrChart1.Series["Late Planned"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
             xrChart1.Series["Earned"].ValueDataMembersSerializable = xrChart1.Series["Earned"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
             xrChart1.Series["Burned"].ValueDataMembersSerializable = xrChart1.Series["Burned"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
             xrChart1.Series["Remaining"].ValueDataMembersSerializable = xrChart1.Series["Remaining"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
 
             xrChart1.Series["Period Planned"].ValueDataMembersSerializable = xrChart1.Series["Period Planned"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
+            //xrChart1.Series["Period Late Planned"].ValueDataMembersSerializable = xrChart1.Series["Period Late Planned"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
             xrChart1.Series["Period Earned"].ValueDataMembersSerializable = xrChart1.Series["Period Earned"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
             xrChart1.Series["Period Burned"].ValueDataMembersSerializable = xrChart1.Series["Period Burned"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
             xrChart1.Series["Period Remaining"].ValueDataMembersSerializable = xrChart1.Series["Period Remaining"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);

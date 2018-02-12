@@ -439,19 +439,19 @@ namespace BluePrints.Common.Misc
                         if (subjob != null)
                             areaCode = subjob.AREA == null ? string.Empty : subjob.AREA.INTERNAL_NUM;
 
-                        string s;
-                        if (subjob_dashboard.Code == "15119-100-00-D1" && discipline_dashboard.Code == "PR01")
-                        {
-                            s = string.Empty;
-                            SummaryStats summaryDiscipline = (SummaryStats)discipline_dashboard.Stats;
-                            if(summaryDiscipline.Burned != null)
-                            {
-                                foreach(ViewModel.Reporting.DataPoint burn in summaryDiscipline.Burned.DataPoints)
-                                {
-                                    Debug.Print(burn.ProgressDate.ToString() + "-" + burn.Units.ToString());
-                                }
-                            }
-                        }
+                        //string s;
+                        //if (subjob_dashboard.Code == "15119-100-00-D1" && discipline_dashboard.Code == "PR01")
+                        //{
+                        //    s = string.Empty;
+                        //    SummaryStats summaryDiscipline = (SummaryStats)discipline_dashboard.Stats;
+                        //    if(summaryDiscipline.Burned != null && summaryDiscipline.Burned.DataPoints != null)
+                        //    {
+                        //        foreach(ViewModel.Reporting.DataPoint burn in summaryDiscipline.Burned.DataPoints)
+                        //        {
+                        //            Debug.Print(burn.ProgressDate.ToString() + "-" + burn.Units.ToString());
+                        //        }
+                        //    }
+                        //}
 
 
                         DashboardFlatStructure disciplineLevelDashboard = new DashboardFlatStructure();

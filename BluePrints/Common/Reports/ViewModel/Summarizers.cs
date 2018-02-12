@@ -103,6 +103,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
                 List<StoredProcedure_PlannedDataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPointsByProject(this.projectNumber);
+                List<StoredProcedure_PlannedDataPoint> plannedLateDataPoints = bluePrintDataContext.QueryDeliverablePlannedLateDataPointsByProject(this.projectNumber);
+
                 foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
                 {
                     ReportablesDisplay reportablesDisplay = reportableObject as ReportablesDisplay;
@@ -112,27 +114,32 @@ namespace BluePrints.Common.ViewModel.Reporting
                         if(reportable_Group != null)
                         {
                             List<StoredProcedure_PlannedDataPoint> currentGroupDeliverableDataPoints = new List<StoredProcedure_PlannedDataPoint>();
+                            List<StoredProcedure_PlannedDataPoint> currentGroupLateDeliverableDataPoints = new List<StoredProcedure_PlannedDataPoint>();
                             foreach (IReportable reportable in reportable_Group.Reportables)
                             {
                                 reportable.Stats.Budgeted.SetPlannedData(plannedDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
+                                reportable.Stats.BudgetedLate.SetPlannedData(plannedLateDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
                                 reportable.Update();
                                 currentGroupDeliverableDataPoints.AddRange(plannedDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
+                                currentGroupLateDeliverableDataPoints.AddRange(plannedLateDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
                             }
 
                             reportable_Group.Stats.Budgeted.SetPlannedData(currentGroupDeliverableDataPoints);
+                            reportable_Group.Stats.BudgetedLate.SetPlannedData(currentGroupLateDeliverableDataPoints);
                             reportable_Group.Update();
                             continue;
                         }
                         else
                         {
                             reportablesDisplay.Stats.Budgeted.SetPlannedData(plannedDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey));
+                            reportablesDisplay.Stats.BudgetedLate.SetPlannedData(plannedLateDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey));
                             reportablesDisplay.Update();
                         }
                     }
                     else
                     {
                         List<StoredProcedure_PlannedDataPoint> weightedPlannedDataPoints = new List<StoredProcedure_PlannedDataPoint>();
-                        foreach(StoredProcedure_PlannedDataPoint plannedDataPoint in plannedDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey))
+                        foreach (StoredProcedure_PlannedDataPoint plannedDataPoint in plannedDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey))
                         {
                             if(reportableObject.AssignedUsers.Count() > 0)
                             {
@@ -154,6 +161,31 @@ namespace BluePrints.Common.ViewModel.Reporting
                         }
 
                         reportableObject.Stats.Budgeted.SetPlannedData(weightedPlannedDataPoints);
+
+                        List<StoredProcedure_PlannedDataPoint> weightedPlannedLateDataPoints = new List<StoredProcedure_PlannedDataPoint>();
+                        foreach (StoredProcedure_PlannedDataPoint plannedLateDataPoint in plannedLateDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey))
+                        {
+                            if (reportableObject.AssignedUsers.Count() > 0)
+                            {
+                                foreach (User_Weight user in reportableObject.AssignedUsers)
+                                {
+                                    StoredProcedure_PlannedDataPoint weightedPlannedLateDataPoint = new StoredProcedure_PlannedDataPoint();
+                                    DataUtils.ShallowCopy(weightedPlannedLateDataPoint, plannedLateDataPoint);
+                                    weightedPlannedLateDataPoint.PeriodPlannedUnits *= user.AggregateWeightDbl;
+                                    weightedPlannedLateDataPoint.PeriodPlannedPrice *= user.AggregateWeightDbl;
+                                    weightedPlannedLateDataPoints.Add(weightedPlannedLateDataPoint);
+                                }
+                            }
+                            else
+                            {
+                                StoredProcedure_PlannedDataPoint weightedPlannedLateDataPoint = new StoredProcedure_PlannedDataPoint();
+                                DataUtils.ShallowCopy(weightedPlannedLateDataPoint, plannedLateDataPoint);
+                                weightedPlannedLateDataPoints.Add(weightedPlannedLateDataPoint);
+                            }
+                        }
+
+                        reportableObject.Stats.BudgetedLate.SetPlannedData(weightedPlannedLateDataPoints);
+
                         reportableObject.Update();
                     }
 
@@ -204,6 +236,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
                 List<StoredProcedure_RemainingDataPoint> remainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPointsByProject(this.projectNumber);
+                List<StoredProcedure_RemainingDataPoint> remainingLateDataPoints = bluePrintDataContext.QueryDeliverableRemainingLateDataPointsByProject(this.projectNumber);
                 //double sumRemaining = remainingDataPoints.Sum(x => x.PeriodRemainingUnits);
                 //string s = sumRemaining.ToString();
 
@@ -225,26 +258,32 @@ namespace BluePrints.Common.ViewModel.Reporting
                         if (reportable_Group != null)
                         {
                             List<StoredProcedure_RemainingDataPoint> currentGroupDeliverableDataPoints = new List<StoredProcedure_RemainingDataPoint>();
+                            List<StoredProcedure_RemainingDataPoint> currentGroupDeliverableLateDataPoints = new List<StoredProcedure_RemainingDataPoint>();
                             foreach (IReportable reportable in reportable_Group.Reportables)
                             {
                                 reportable.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey), reportable.Stats.Earned.DataPoints);
+                                reportable.Stats.RemainingLate.SetRemainingData(remainingLateDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey), reportable.Stats.Earned.DataPoints);
                                 reportable.Update();
                                 currentGroupDeliverableDataPoints.AddRange(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
+                                currentGroupDeliverableLateDataPoints.AddRange(remainingLateDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
                             }
 
                             reportable_Group.Stats.Remaining.SetRemainingData(currentGroupDeliverableDataPoints, reportable_Group.Stats.Earned.DataPoints);
+                            reportable_Group.Stats.RemainingLate.SetRemainingData(currentGroupDeliverableLateDataPoints, reportable_Group.Stats.Earned.DataPoints);
                             reportable_Group.Update();
                             continue;
                         }
                         else
                         {
                             reportablesDisplay.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), reportableObject.Stats.Earned.DataPoints);
+                            reportablesDisplay.Stats.RemainingLate.SetRemainingData(remainingLateDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), reportableObject.Stats.Earned.DataPoints);
                             reportablesDisplay.Update();
                         }
                     }
                     else
                     {
                         reportableObject.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), reportableObject.Stats.Earned.DataPoints);
+                        reportableObject.Stats.RemainingLate.SetRemainingData(remainingLateDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), reportableObject.Stats.Earned.DataPoints);
                         //if (reportableObject.Stats.Remaining.DataPoints != null)
                         //    Debug.Print(reportableObject.Stats.Remaining.DataPoints.Sum(x => x.Units).ToString());
                         //else

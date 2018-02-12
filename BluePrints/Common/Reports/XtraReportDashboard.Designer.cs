@@ -48,6 +48,14 @@
             DevExpress.XtraCharts.LineSeriesView lineSeriesView3 = new DevExpress.XtraCharts.LineSeriesView();
             DevExpress.XtraCharts.Series series8 = new DevExpress.XtraCharts.Series();
             DevExpress.XtraCharts.LineSeriesView lineSeriesView4 = new DevExpress.XtraCharts.LineSeriesView();
+            DevExpress.XtraCharts.Series series9 = new DevExpress.XtraCharts.Series();
+            DevExpress.XtraCharts.LineSeriesView lineSeriesView5 = new DevExpress.XtraCharts.LineSeriesView();
+            DevExpress.XtraCharts.Series series10 = new DevExpress.XtraCharts.Series();
+            DevExpress.XtraCharts.SideBySideBarSeriesView sideBySideBarSeriesView5 = new DevExpress.XtraCharts.SideBySideBarSeriesView();
+            DevExpress.XtraCharts.Series series11 = new DevExpress.XtraCharts.Series();
+            DevExpress.XtraCharts.LineSeriesView lineSeriesView6 = new DevExpress.XtraCharts.LineSeriesView();
+            DevExpress.XtraCharts.Series series12 = new DevExpress.XtraCharts.Series();
+            DevExpress.XtraCharts.SideBySideBarSeriesView sideBySideBarSeriesView6 = new DevExpress.XtraCharts.SideBySideBarSeriesView();
             DevExpress.XtraReports.Parameters.StaticListLookUpSettings staticListLookUpSettings1 = new DevExpress.XtraReports.Parameters.StaticListLookUpSettings();
             this.Detail = new DevExpress.XtraReports.UI.DetailBand();
             this.TopMargin = new DevExpress.XtraReports.UI.TopMarginBand();
@@ -95,9 +103,10 @@
             this.xrLabelPeriod = new DevExpress.XtraReports.UI.XRLabel();
             this.SubBand1 = new DevExpress.XtraReports.UI.SubBand();
             this.xrChart1 = new DevExpress.XtraReports.UI.XRChart();
-            this.objectDataSource1 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
             this.reportBy = new DevExpress.XtraReports.Parameters.Parameter();
             this.showBurn = new DevExpress.XtraReports.Parameters.Parameter();
+            this.useLate = new DevExpress.XtraReports.Parameters.Parameter();
+            this.objectDataSource1 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.xrChart1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(xyDiagram1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(secondaryAxisY1)).BeginInit();
@@ -117,6 +126,14 @@
             ((System.ComponentModel.ISupportInitialize)(lineSeriesView3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(series8)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(lineSeriesView4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(series9)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(lineSeriesView5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(series10)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(sideBySideBarSeriesView5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(series11)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(lineSeriesView6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(series12)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(sideBySideBarSeriesView6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -241,7 +258,6 @@
             // xrPageInfo2
             // 
             this.xrPageInfo2.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.xrPageInfo2.Format = "Page {0} of {1}";
             this.xrPageInfo2.LocationFloat = new DevExpress.Utils.PointFloat(1167F, 0F);
             this.xrPageInfo2.Name = "xrPageInfo2";
             this.xrPageInfo2.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -249,6 +265,7 @@
             this.xrPageInfo2.StyleName = "PageInfo";
             this.xrPageInfo2.StylePriority.UseFont = false;
             this.xrPageInfo2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopRight;
+            this.xrPageInfo2.TextFormatString = "Page {0} of {1}";
             // 
             // Title
             // 
@@ -768,6 +785,45 @@
             lineSeriesView4.LineMarkerOptions.Size = 5;
             lineSeriesView4.MarkerVisibility = DevExpress.Utils.DefaultBoolean.True;
             series8.View = lineSeriesView4;
+            series9.ArgumentDataMember = "BudgetedLate.CumulativeDataPoints.ProgressDate";
+            series9.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
+            series9.Name = "Late Planned";
+            series9.ValueDataMembersSerializable = "BudgetedLate.CumulativeDataPoints.UnitsPercentage";
+            lineSeriesView5.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(112)))), ((int)(((byte)(192)))));
+            lineSeriesView5.MarkerVisibility = DevExpress.Utils.DefaultBoolean.False;
+            series9.View = lineSeriesView5;
+            series9.Visible = false;
+            series10.ArgumentDataMember = "BudgetedLate.DataPoints.ProgressDate";
+            series10.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
+            series10.Name = "Period Late Planned";
+            series10.ShowInLegend = false;
+            series10.ValueDataMembersSerializable = "BudgetedLate.DataPoints.Units";
+            sideBySideBarSeriesView5.BarWidth = 3D;
+            sideBySideBarSeriesView5.Border.Color = System.Drawing.Color.FromArgb(((int)(((byte)(54)))), ((int)(((byte)(96)))), ((int)(((byte)(146)))));
+            sideBySideBarSeriesView5.Border.Thickness = 3;
+            sideBySideBarSeriesView5.Border.Visibility = DevExpress.Utils.DefaultBoolean.False;
+            sideBySideBarSeriesView5.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(112)))), ((int)(((byte)(192)))));
+            sideBySideBarSeriesView5.FillStyle.FillMode = DevExpress.XtraCharts.FillMode.Solid;
+            series10.View = sideBySideBarSeriesView5;
+            series11.ArgumentDataMember = "RemainingLate.CumulativeDataPoints.ProgressDate";
+            series11.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
+            series11.Name = "Late Remaining";
+            series11.ValueDataMembersSerializable = "RemainingLate.CumulativeDataPoints.UnitsPercentage";
+            lineSeriesView6.Color = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(165)))), ((int)(((byte)(165)))));
+            lineSeriesView6.MarkerVisibility = DevExpress.Utils.DefaultBoolean.False;
+            series11.View = lineSeriesView6;
+            series11.Visible = false;
+            series12.ArgumentDataMember = "RemainingLate.DataPoints.ProgressDate";
+            series12.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
+            series12.Name = "Period Late Remaining";
+            series12.ShowInLegend = false;
+            series12.ValueDataMembersSerializable = "RemainingLate.DataPoints.Units";
+            sideBySideBarSeriesView6.BarWidth = 3D;
+            sideBySideBarSeriesView6.Border.Visibility = DevExpress.Utils.DefaultBoolean.False;
+            sideBySideBarSeriesView6.Color = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(127)))), ((int)(((byte)(127)))));
+            sideBySideBarSeriesView6.FillStyle.FillMode = DevExpress.XtraCharts.FillMode.Solid;
+            series12.View = sideBySideBarSeriesView6;
+            series12.Visible = false;
             this.xrChart1.SeriesSerializable = new DevExpress.XtraCharts.Series[] {
         series1,
         series2,
@@ -776,13 +832,12 @@
         series5,
         series6,
         series7,
-        series8};
+        series8,
+        series9,
+        series10,
+        series11,
+        series12};
             this.xrChart1.SizeF = new System.Drawing.SizeF(1605F, 846.736F);
-            // 
-            // objectDataSource1
-            // 
-            this.objectDataSource1.DataSource = typeof(BluePrints.Common.ViewModel.Reporting.DeliverableSummaryStats);
-            this.objectDataSource1.Name = "objectDataSource1";
             // 
             // reportBy
             // 
@@ -799,6 +854,18 @@
             this.showBurn.Name = "showBurn";
             this.showBurn.Type = typeof(bool);
             this.showBurn.ValueInfo = "True";
+            // 
+            // useLate
+            // 
+            this.useLate.Description = "Use Late Planned";
+            this.useLate.Name = "useLate";
+            this.useLate.Type = typeof(bool);
+            this.useLate.ValueInfo = "False";
+            // 
+            // objectDataSource1
+            // 
+            this.objectDataSource1.DataSource = typeof(BluePrints.Common.ViewModel.Reporting.DeliverableSummaryStats);
+            this.objectDataSource1.Name = "objectDataSource1";
             // 
             // XtraReportDashboard
             // 
@@ -833,13 +900,14 @@
             this.title1,
             this.datadate1,
             this.reportBy,
-            this.showBurn});
+            this.showBurn,
+            this.useLate});
             this.StyleSheet.AddRange(new DevExpress.XtraReports.UI.XRControlStyle[] {
             this.Title,
             this.FieldCaption,
             this.PageInfo,
             this.DataField});
-            this.Version = "17.1";
+            this.Version = "17.2";
             this.BeforePrint += new System.Drawing.Printing.PrintEventHandler(this.rptProgressItem_BeforePrint);
             ((System.ComponentModel.ISupportInitialize)(secondaryAxisY1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(xyDiagram1)).EndInit();
@@ -859,6 +927,14 @@
             ((System.ComponentModel.ISupportInitialize)(series7)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(lineSeriesView4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(series8)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(lineSeriesView5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(series9)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(sideBySideBarSeriesView5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(series10)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(lineSeriesView6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(series11)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(sideBySideBarSeriesView6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(series12)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrChart1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
@@ -916,5 +992,6 @@
         private DevExpress.XtraReports.UI.FormattingRule ItemPeriodEarnedEfficiency_Good;
         private DevExpress.DataAccess.ObjectBinding.ObjectDataSource objectDataSource1;
         private DevExpress.XtraReports.Parameters.Parameter showBurn;
+        private DevExpress.XtraReports.Parameters.Parameter useLate;
     }
 }

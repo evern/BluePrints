@@ -70,7 +70,7 @@ namespace BluePrints.Data
 
         public List<StoredProcedure_PlannedDataPoint> QueryDeliverablePlannedDataPoints(Guid deliverable_guid)
         {
-            return this.DataPoint.Where(x => x.Deliverable_Guid == deliverable_guid && x.IsPlanned == true).ToList()
+            return this.DataPoint.Where(x => x.Deliverable_Guid == deliverable_guid && x.IsPlanned == true && x.IsLate == false).ToList()
                 .Select(x => new StoredProcedure_PlannedDataPoint()
                 {
                     Deliverable_Guid = x.Deliverable_Guid,
@@ -86,7 +86,7 @@ namespace BluePrints.Data
 
         public List<StoredProcedure_RemainingDataPoint> QueryDeliverableRemainingDataPoints(Guid deliverable_guid)
         {
-            return this.DataPoint.Where(x => x.Deliverable_Guid == deliverable_guid && x.IsPlanned == true).ToList()
+            return this.DataPoint.Where(x => x.Deliverable_Guid == deliverable_guid && x.IsPlanned == true && x.IsLate == false).ToList()
                 .Select(x => new StoredProcedure_RemainingDataPoint()
                 {
                     Deliverable_Guid = x.Deliverable_Guid,
@@ -102,7 +102,7 @@ namespace BluePrints.Data
 
         public List<StoredProcedure_PlannedDataPoint> QueryDeliverablePlannedDataPointsByProject(string projectNumber)
         {
-            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == true).ToList()
+            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == true && x.IsLate == false).ToList()
                 .Select(x => new StoredProcedure_PlannedDataPoint()
                 {
                     Deliverable_Guid = x.Deliverable_Guid,
@@ -116,9 +116,41 @@ namespace BluePrints.Data
                 }).ToList();
         }
 
+        public List<StoredProcedure_PlannedDataPoint> QueryDeliverablePlannedLateDataPointsByProject(string projectNumber)
+        {
+            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == true && x.IsLate == true).ToList()
+                .Select(x => new StoredProcedure_PlannedDataPoint()
+                {
+                    Deliverable_Guid = x.Deliverable_Guid,
+                    IsFromP6 = x.IsFromP6,
+                    Original_Guid = x.Original_Guid,
+                    PeriodPlannedPrice = x.PeriodPrice,
+                    PeriodPlannedUnits = x.PeriodUnits,
+                    UniversalPeriodEndDate = x.UniversalPeriodEndDate,
+                    UniversalPeriodStartDate = x.UniversalPeriodStartDate,
+                    RemainingDuration = x.RemainingDuration
+                }).ToList();
+        }
+
         public List<StoredProcedure_RemainingDataPoint> QueryDeliverableRemainingDataPointsByProject(string projectNumber)
         {
-            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == false).ToList()
+            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == false && x.IsLate == false).ToList()
+                .Select(x => new StoredProcedure_RemainingDataPoint()
+                {
+                    Deliverable_Guid = x.Deliverable_Guid,
+                    IsFromP6 = x.IsFromP6,
+                    Original_Guid = x.Original_Guid,
+                    PeriodRemainingPrice = x.PeriodPrice,
+                    PeriodRemainingUnits = x.PeriodUnits,
+                    UniversalPeriodEndDate = x.UniversalPeriodEndDate,
+                    UniversalPeriodStartDate = x.UniversalPeriodStartDate,
+                    RemainingDuration = x.RemainingDuration
+                }).ToList();
+        }
+
+        public List<StoredProcedure_RemainingDataPoint> QueryDeliverableRemainingLateDataPointsByProject(string projectNumber)
+        {
+            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == false && x.IsLate == true).ToList()
                 .Select(x => new StoredProcedure_RemainingDataPoint()
                 {
                     Deliverable_Guid = x.Deliverable_Guid,

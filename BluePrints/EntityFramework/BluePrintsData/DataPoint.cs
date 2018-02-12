@@ -33,5 +33,7 @@ namespace BluePrints.Data
         public bool IsFromP6 { get; set; }
 
         public double? RemainingDuration { get; set; }
+
+        public bool IsLate { get; set; }
     }
 }
