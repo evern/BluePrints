@@ -1055,5 +1055,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public PhaseType? Phase => Entity.Phase;
 
         public IEnumerable<User_Weight> AssignedUsers => Entity.AssignedUsers;
+
+        public Guid DeliverableKey => Entity.EntityKey;
     }
 }

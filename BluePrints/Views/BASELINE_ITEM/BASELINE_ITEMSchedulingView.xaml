@@ -92,6 +92,34 @@
                         <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0" />
+                    </Grid.RowDefinitions>
+                    <custom:GridControlEx x:Name="GridControlExcelExport" Grid.Row="0" dxc:DXSerializer.Enabled="False" ItemsSource="{Binding DataContext.ExcelExportData, ElementName=userControl}" Visibility="Collapsed">
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn Header="Deliverable Id" FieldName="INTERNAL_NUM" ReadOnly="True" />
+                            <dxg:GridColumn Header="Deliverable Description" FieldName="Deliverable_Description" ReadOnly="True" />
+                            <dxg:GridColumn Header="P6 Id" FieldName="P6_ACTIVITY" ReadOnly="True" />
+                            <dxg:GridColumn Header="P6 Description" FieldName="P6_Description" ReadOnly="True" />
+                            <dxg:GridColumn Header="Current Assignment Units" FieldName="UNITS" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="FromPercentage" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="ToPercentage" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                        </dxg:GridControl.Columns>
+                        <dxg:GridControl.View>
+                            <!--  need to set tableView name here for export to work  -->
+                            <dxg:TableView Name="tableView" />
+                        </dxg:GridControl.View>
+                    </custom:GridControlEx>
+                </Grid>
                 <dxlc:LayoutControl Orientation="Vertical">
                     <dxlc:LayoutGroup Header="Edit Value" Name="LayoutGroupGrid" Height="500" dxlc:LayoutControl.AllowVerticalSizing="True" Orientation="Vertical" View="Group">
                         <dxlc:LayoutGroup HorizontalAlignment="Stretch" Orientation="Horizontal">
@@ -363,7 +391,7 @@
                                 <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Entity.Entity.DC_HOURS" SummaryType="Sum" />
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" NewItemRowPosition="None" RowStyle="{StaticResource SelectedRowStyle}" Style="{StaticResource DefaultTableViewTemplate}">
+                                <dxg:TableView x:Name="tableViewAssignments" NewItemRowPosition="None" RowStyle="{StaticResource SelectedRowStyle}" Style="{StaticResource DefaultTableViewTemplate}">
                                     <dxg:TableView.FormatConditions>
                                         <dxg:DataBarFormatCondition FieldName="Assigned_Percentage" MaxValue="1" MinValue="0">
                                             <dxc:DataBarFormat BorderBrush="#FF63C384" BorderBrushNegative="#FFFF555A">

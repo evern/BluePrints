@@ -66,6 +66,8 @@ namespace BluePrints.Common.Projections
 
         public string P6AssignmentDescription => Entity.TITLE;
 
+        public Guid DeliverableKey => Entity.EntityKey;
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
         }

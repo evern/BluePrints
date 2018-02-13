@@ -593,6 +593,7 @@ namespace BluePrints.ViewModels
 
             return internalNum;
         }
+
         #endregion
 
         #region View Properties

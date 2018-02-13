@@ -606,6 +606,34 @@ namespace BluePrints.Common.Base
             raiseQuantityAssignmentPropertiesChanged();
         }
 
+        public bool CanExportToExcel()
+        {
+            return DisplayEntities != null && DisplayEntities.Count > 0;
+        }
+
+        List<P6_AssignmentProjection> excelExportData;
+        public List<P6_AssignmentProjection> ExcelExportData => excelExportData;
+        public override void ExportToExcel()
+        {
+            LoadingScreenManager.ShowLoadingScreen(1);
+            excelExportData = new List<P6_AssignmentProjection>();
+            foreach(ICanAssignP6 entity in DisplayEntities.OrderBy(x => x.P6AssignmentName))
+            {
+                foreach(P6_ASSIGNMENT assignment in entity.P6_Assignments.OrderBy(x => x.LOW_VALUE))
+                {
+                    P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection(entity, assignment);
+                    p6_assignment.Deliverable_Description = entity.P6AssignmentDescription;
+                    P6_Activity p6_Activity = activities_source.FirstOrDefault(x => x.P6_ActivityId == assignment.P6_ACTIVITYID);
+                    p6_assignment.P6_Description = p6_Activity == null ? string.Empty : p6_Activity.Description;
+                    excelExportData.Add(p6_assignment);
+                }
+            }
+
+            this.RaisePropertyChanged(x => x.ExcelExportData);
+            LoadingScreenManager.CloseLoadingScreen();
+            base.ExportToExcel();
+        }
+
         public bool CanAdd_Assignments()
         {
             if (Selected_Deliverables == null || Selected_Deliverables.Count == 0)

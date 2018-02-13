@@ -1,6 +1,7 @@
 ﻿using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace BluePrints.Common
@@ -594,6 +595,25 @@ namespace BluePrints.Common
         public decimal UNITS
         {
             get { return ((deliverable_assignment.HIGH_VALUE - deliverable_assignment.LOW_VALUE) + 0.01m) * deliverableProjection.Total_Units; }
+        }
+
+        public Guid DeliverableKey
+        {
+            get { return deliverableProjection.DeliverableKey; }
+        }
+
+        public string Deliverable_Description { get; set; }
+
+        public string P6_Description { get; set; }
+
+        public decimal FromPercentage
+        {
+            get { return deliverable_assignment.LOW_VALUE; }
+        }
+
+        public decimal ToPercentage
+        {
+            get { return deliverable_assignment.HIGH_VALUE; }
         }
 
         public void Reassign(string p6NewActivity)
