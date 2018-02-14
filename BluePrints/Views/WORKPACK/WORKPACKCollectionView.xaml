@@ -48,7 +48,7 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Name" FieldName="NAME" ReadOnly="True" MinWidth="150" />
-                            <dxg:GridColumn FieldName="Title" />
+                            <dxg:GridColumn Header="Title" FieldName="TITLE" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />

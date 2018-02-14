@@ -563,6 +563,8 @@ namespace BluePrints.ViewModels
 
             lastVariation.Entity.APPROVED = null;
             lastVariation.Entity.APPROVEDBY = null;
+            lastVariation.Entity.SUBMITTED = null;
+            lastVariation.Entity.SUBMITTEDBY = null;
             MainViewModel.Save(lastVariation);
 
             Refresh();

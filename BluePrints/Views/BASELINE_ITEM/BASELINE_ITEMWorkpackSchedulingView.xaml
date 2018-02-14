@@ -297,12 +297,12 @@
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.GroupSummary>
                                 <dxg:GridSummaryItem FieldName="GroupName" dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" ShowInColumn="GroupName" SummaryType="Count" />
-                                <dxg:GridSummaryItem FieldName="Estimated_Units" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" ShowInColumn="Estimated_Units" SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="Budget_Units" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" ShowInColumn="Budget_Units" SummaryType="Sum" />
                                 <dxg:GridSummaryItem FieldName="Variation_Units" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Variation_Units" SummaryType="Sum" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.TotalSummary>
                                 <dxg:GridSummaryItem FieldName="GroupName" dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" ShowInColumn="GroupName" SummaryType="Count" />
-                                <dxg:GridSummaryItem FieldName="Estimated_Units" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" ShowInColumn="Estimated_Units" SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="Budget_Units" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" ShowInColumn="Budget_Units" SummaryType="Sum" />
                                 <dxg:GridSummaryItem FieldName="Variation_Units" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Variation_Units" SummaryType="Sum" />
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>

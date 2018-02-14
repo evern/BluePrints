@@ -248,13 +248,19 @@ namespace BluePrints.Common.ViewModel
             IssuesDialogService.ShowDialog(MessageButton.OK, "Exo Affinity Report", "ExoAffinityReport", viewModel);
         }
 
-        public void ExportToPDF()
+        public bool CanViewReport()
+        {
+            return SummaryEntity != null && SummaryEntity.Stats != null;
+        }
+
+        public void ViewReport()
         {
             SummaryStats displaySummary = SummaryEntity.Stats as SummaryStats;
             if (displaySummary == null)
                 return;
 
             var progressReport = new XtraReportDashboard();
+            loadReportLayoutFromDatabase(progressReport);
 
             string title = string.Empty;
             PROJECT_Dashboard project_dashboard = DisplaySelectedEntity as PROJECT_Dashboard;
@@ -269,6 +275,11 @@ namespace BluePrints.Common.ViewModel
             progressReport.RequestParameters = false;
             progressReport.CreateDocument(true);
             previewWindow.Show();
+        }
+
+        protected virtual void loadReportLayoutFromDatabase(XtraReportDashboard xtraReport)
+        {
+
         }
         #endregion
 

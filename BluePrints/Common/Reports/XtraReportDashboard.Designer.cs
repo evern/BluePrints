@@ -103,10 +103,12 @@
             this.xrLabelPeriod = new DevExpress.XtraReports.UI.XRLabel();
             this.SubBand1 = new DevExpress.XtraReports.UI.SubBand();
             this.xrChart1 = new DevExpress.XtraReports.UI.XRChart();
-            this.objectDataSource1 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
             this.reportBy = new DevExpress.XtraReports.Parameters.Parameter();
             this.showBurn = new DevExpress.XtraReports.Parameters.Parameter();
             this.useLate = new DevExpress.XtraReports.Parameters.Parameter();
+            this.objectDataSource1 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
+            this.xrLabel1 = new DevExpress.XtraReports.UI.XRLabel();
+            this.xrLabel2 = new DevExpress.XtraReports.UI.XRLabel();
             ((System.ComponentModel.ISupportInitialize)(this.xrChart1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(xyDiagram1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(secondaryAxisY1)).BeginInit();
@@ -343,6 +345,8 @@
             // reportHeaderBand1
             // 
             this.reportHeaderBand1.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
+            this.xrLabel1,
+            this.xrLabel2,
             this.xrLabelPeriodBurnedPercentage,
             this.xrDataSummaryPeriodBurnedPercent,
             this.xrDataSummaryCumulativeBurnedPercent,
@@ -376,7 +380,7 @@
             this.xrLabelPeriodBurnedPercentage.StylePriority.UseFont = false;
             this.xrLabelPeriodBurnedPercentage.StylePriority.UseForeColor = false;
             this.xrLabelPeriodBurnedPercentage.StylePriority.UseTextAlignment = false;
-            this.xrLabelPeriodBurnedPercentage.Text = "Total Burned Percentage:";
+            this.xrLabelPeriodBurnedPercentage.Text = "Total Burned %";
             this.xrLabelPeriodBurnedPercentage.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
             // 
             // xrDataSummaryPeriodBurnedPercent
@@ -455,7 +459,7 @@
             this.xrLabelCumulativeBurnedPercentage.StylePriority.UseFont = false;
             this.xrLabelCumulativeBurnedPercentage.StylePriority.UseForeColor = false;
             this.xrLabelCumulativeBurnedPercentage.StylePriority.UseTextAlignment = false;
-            this.xrLabelCumulativeBurnedPercentage.Text = "Total Burned Percentage:";
+            this.xrLabelCumulativeBurnedPercentage.Text = "Total Burned %";
             this.xrLabelCumulativeBurnedPercentage.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
             // 
             // xrLabelCumulativePlannedPercentage
@@ -464,7 +468,7 @@
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabelCumulativePlannedPercentage.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrLabelCumulativePlannedPercentage.ForeColor = System.Drawing.Color.Black;
-            this.xrLabelCumulativePlannedPercentage.LocationFloat = new DevExpress.Utils.PointFloat(380.2397F, 18.75003F);
+            this.xrLabelCumulativePlannedPercentage.LocationFloat = new DevExpress.Utils.PointFloat(144.4584F, 18.75003F);
             this.xrLabelCumulativePlannedPercentage.Name = "xrLabelCumulativePlannedPercentage";
             this.xrLabelCumulativePlannedPercentage.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
             this.xrLabelCumulativePlannedPercentage.SizeF = new System.Drawing.SizeF(142.0001F, 23.00002F);
@@ -473,7 +477,7 @@
             this.xrLabelCumulativePlannedPercentage.StylePriority.UseFont = false;
             this.xrLabelCumulativePlannedPercentage.StylePriority.UseForeColor = false;
             this.xrLabelCumulativePlannedPercentage.StylePriority.UseTextAlignment = false;
-            this.xrLabelCumulativePlannedPercentage.Text = "Total Planned Percentage:";
+            this.xrLabelCumulativePlannedPercentage.Text = "Total Planned %";
             this.xrLabelCumulativePlannedPercentage.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
             // 
             // xrDataSummaryCumulativePlannedPercent
@@ -483,7 +487,7 @@
             this.xrDataSummaryCumulativePlannedPercent.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "Budgeted.CurrentPeriodCumulativeDataPoint.UnitsPercentage", "{0:0.00%}")});
             this.xrDataSummaryCumulativePlannedPercent.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.xrDataSummaryCumulativePlannedPercent.LocationFloat = new DevExpress.Utils.PointFloat(380.2397F, 41.75002F);
+            this.xrDataSummaryCumulativePlannedPercent.LocationFloat = new DevExpress.Utils.PointFloat(144.4584F, 41.75002F);
             this.xrDataSummaryCumulativePlannedPercent.Name = "xrDataSummaryCumulativePlannedPercent";
             this.xrDataSummaryCumulativePlannedPercent.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
             this.xrDataSummaryCumulativePlannedPercent.SizeF = new System.Drawing.SizeF(141.9999F, 23F);
@@ -506,7 +510,7 @@
             this.xrLabelCumulativeEarnedPercentage.StylePriority.UseFont = false;
             this.xrLabelCumulativeEarnedPercentage.StylePriority.UseForeColor = false;
             this.xrLabelCumulativeEarnedPercentage.StylePriority.UseTextAlignment = false;
-            this.xrLabelCumulativeEarnedPercentage.Text = "Total Earned Percentage:";
+            this.xrLabelCumulativeEarnedPercentage.Text = "Total Earned %";
             this.xrLabelCumulativeEarnedPercentage.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
             // 
             // xrDataSummaryCumulativeEarnedPercent
@@ -554,7 +558,7 @@
             this.xrLabelPeriodEarnedPercentage.StylePriority.UseFont = false;
             this.xrLabelPeriodEarnedPercentage.StylePriority.UseForeColor = false;
             this.xrLabelPeriodEarnedPercentage.StylePriority.UseTextAlignment = false;
-            this.xrLabelPeriodEarnedPercentage.Text = "Total Earned Percentage:";
+            this.xrLabelPeriodEarnedPercentage.Text = "Total Earned %";
             this.xrLabelPeriodEarnedPercentage.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
             // 
             // xrLabelPeriodPlannedPercentage
@@ -572,7 +576,7 @@
             this.xrLabelPeriodPlannedPercentage.StylePriority.UseFont = false;
             this.xrLabelPeriodPlannedPercentage.StylePriority.UseForeColor = false;
             this.xrLabelPeriodPlannedPercentage.StylePriority.UseTextAlignment = false;
-            this.xrLabelPeriodPlannedPercentage.Text = "Total Planned Percentage:";
+            this.xrLabelPeriodPlannedPercentage.Text = "Total Planned %";
             this.xrLabelPeriodPlannedPercentage.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
             // 
             // xrDataSummaryPeriodPlannedPercent
@@ -789,8 +793,11 @@
             series9.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series9.Name = "Late Planned";
             series9.ValueDataMembersSerializable = "BudgetedLate.CumulativeDataPoints.UnitsPercentage";
+            lineSeriesView5.AxisYName = "Secondary AxisY Units";
             lineSeriesView5.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(112)))), ((int)(((byte)(192)))));
-            lineSeriesView5.MarkerVisibility = DevExpress.Utils.DefaultBoolean.False;
+            lineSeriesView5.LineMarkerOptions.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(112)))), ((int)(((byte)(192)))));
+            lineSeriesView5.LineMarkerOptions.Size = 5;
+            lineSeriesView5.MarkerVisibility = DevExpress.Utils.DefaultBoolean.True;
             series9.View = lineSeriesView5;
             series9.Visible = false;
             series10.ArgumentDataMember = "BudgetedLate.DataPoints.ProgressDate";
@@ -810,8 +817,11 @@
             series11.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series11.Name = "Late Remaining";
             series11.ValueDataMembersSerializable = "RemainingLate.CumulativeDataPoints.UnitsPercentage";
+            lineSeriesView6.AxisYName = "Secondary AxisY Units";
             lineSeriesView6.Color = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(165)))), ((int)(((byte)(165)))));
-            lineSeriesView6.MarkerVisibility = DevExpress.Utils.DefaultBoolean.False;
+            lineSeriesView6.LineMarkerOptions.Color = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(127)))), ((int)(((byte)(127)))));
+            lineSeriesView6.LineMarkerOptions.Size = 6;
+            lineSeriesView6.MarkerVisibility = DevExpress.Utils.DefaultBoolean.True;
             series11.View = lineSeriesView6;
             series11.Visible = false;
             series12.ArgumentDataMember = "RemainingLate.DataPoints.ProgressDate";
@@ -840,11 +850,6 @@
         series12};
             this.xrChart1.SizeF = new System.Drawing.SizeF(1605F, 846.736F);
             // 
-            // objectDataSource1
-            // 
-            this.objectDataSource1.DataSource = typeof(BluePrints.Common.ViewModel.Reporting.DeliverableSummaryStats);
-            this.objectDataSource1.Name = "objectDataSource1";
-            // 
             // reportBy
             // 
             this.reportBy.Description = "Report By";
@@ -867,6 +872,45 @@
             this.useLate.Name = "useLate";
             this.useLate.Type = typeof(bool);
             this.useLate.ValueInfo = "False";
+            // 
+            // objectDataSource1
+            // 
+            this.objectDataSource1.DataSource = typeof(BluePrints.Common.ViewModel.Reporting.DeliverableSummaryStats);
+            this.objectDataSource1.Name = "objectDataSource1";
+            // 
+            // xrLabel1
+            // 
+            this.xrLabel1.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
+            | DevExpress.XtraPrinting.BorderSide.Bottom)));
+            this.xrLabel1.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Budgeted.CurrentPeriodCumulativeDataPoint.UnitsPercentage", "{0:0.00%}")});
+            this.xrLabel1.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.xrLabel1.LocationFloat = new DevExpress.Utils.PointFloat(306.0418F, 41.75002F);
+            this.xrLabel1.Name = "xrLabel1";
+            this.xrLabel1.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
+            this.xrLabel1.SizeF = new System.Drawing.SizeF(141.9999F, 23F);
+            this.xrLabel1.StylePriority.UseBorders = false;
+            this.xrLabel1.StylePriority.UseFont = false;
+            this.xrLabel1.StylePriority.UseTextAlignment = false;
+            this.xrLabel1.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
+            // 
+            // xrLabel2
+            // 
+            this.xrLabel2.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
+            | DevExpress.XtraPrinting.BorderSide.Bottom)));
+            this.xrLabel2.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.xrLabel2.ForeColor = System.Drawing.Color.Black;
+            this.xrLabel2.LocationFloat = new DevExpress.Utils.PointFloat(306.0418F, 18.75003F);
+            this.xrLabel2.Name = "xrLabel2";
+            this.xrLabel2.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
+            this.xrLabel2.SizeF = new System.Drawing.SizeF(142.0001F, 23.00002F);
+            this.xrLabel2.StyleName = "FieldCaption";
+            this.xrLabel2.StylePriority.UseBorders = false;
+            this.xrLabel2.StylePriority.UseFont = false;
+            this.xrLabel2.StylePriority.UseForeColor = false;
+            this.xrLabel2.StylePriority.UseTextAlignment = false;
+            this.xrLabel2.Text = "Total Planned %";
+            this.xrLabel2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
             // 
             // XtraReportDashboard
             // 
@@ -994,5 +1038,7 @@
         private DevExpress.DataAccess.ObjectBinding.ObjectDataSource objectDataSource1;
         private DevExpress.XtraReports.Parameters.Parameter showBurn;
         private DevExpress.XtraReports.Parameters.Parameter useLate;
+        private DevExpress.XtraReports.UI.XRLabel xrLabel1;
+        private DevExpress.XtraReports.UI.XRLabel xrLabel2;
     }
 }
