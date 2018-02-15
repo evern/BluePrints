@@ -35,14 +35,14 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:CostGroup}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Department" FieldName="GUID_DEPARTMENT" HeaderToolTip="Which department the current rate will be applied to" DataContext="{Binding DataContext, ElementName=userControl}">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
                             <dxg:GridColumn Header="Discipline" FieldName="GUID_DISCIPLINE" HeaderToolTip="Which discipline the current rate will be applied to" DataContext="{Binding DataContext, ElementName=userControl}">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Department" FieldName="GUID_DEPARTMENT" HeaderToolTip="Which department the current rate will be applied to" DataContext="{Binding DataContext, ElementName=userControl}">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Charge Rate" FieldName="RATE1" HeaderToolTip="Charge rate per hour">

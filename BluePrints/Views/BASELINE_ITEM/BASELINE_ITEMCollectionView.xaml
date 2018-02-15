@@ -96,11 +96,6 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                             </custom:GridColumnEx.EditSettings>
                         </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Document Type" FieldName="Entity.Entity.GUID_DOCTYPE" HeaderToolTip="Changing  this fieldmay affect subjob and workpack name, see internal number mode default, editable, manual on the ribbon" FilterPopupMode="CheckedList">
-                            <custom:GridColumnEx.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" ValueMember="GUID" />
-                            </custom:GridColumnEx.EditSettings>
-                        </custom:GridColumnEx>
                         <custom:GridColumnEx Header="Discipline" FieldName="Entity.Entity.GUID_DISCIPLINE" FilterPopupMode="CheckedList">
                             <custom:GridColumnEx.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
@@ -109,6 +104,11 @@
                         <custom:GridColumnEx Header="Discipline Number" FieldName="Entity.Entity.DISCIPLINE_NUM" HeaderToolTip="Changing  this fieldmay affect workpack name, see internal number mode default, editable, manual on the ribbon" FilterPopupMode="CheckedList">
                             <custom:GridColumnEx.EditSettings>
                                 <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
+                            </custom:GridColumnEx.EditSettings>
+                        </custom:GridColumnEx>
+                        <custom:GridColumnEx Header="Document Type" FieldName="Entity.Entity.GUID_DOCTYPE" HeaderToolTip="Changing  this fieldmay affect subjob and workpack name, see internal number mode default, editable, manual on the ribbon" FilterPopupMode="CheckedList">
+                            <custom:GridColumnEx.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" ValueMember="GUID" />
                             </custom:GridColumnEx.EditSettings>
                         </custom:GridColumnEx>
                         <custom:GridColumnEx Header="Department" FieldName="Entity.Entity.GUID_DEPARTMENT" HeaderToolTip="Default value can be populated by document type selection" FilterPopupMode="CheckedList">
