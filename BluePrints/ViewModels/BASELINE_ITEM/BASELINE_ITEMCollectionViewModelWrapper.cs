@@ -1326,7 +1326,7 @@ namespace BluePrints.ViewModels
             get
             {
                 //return "BASELINE_ITEMSViewModelWrapper" + view_project_specific_affix;
-                return "BASELINE_ITEMSViewModelWrapper_v3";
+                return "BASELINE_ITEMSViewModelWrapper_v4";
             }
         }
 
