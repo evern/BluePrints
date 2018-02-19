@@ -787,7 +787,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "PROJECTViewModelWrapper_v1.00"; }
+            get { return "PROJECTViewModelWrapper_v1.01"; }
         }
 
         public void EditArea()

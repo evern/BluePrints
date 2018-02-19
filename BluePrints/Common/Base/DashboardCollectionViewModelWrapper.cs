@@ -99,7 +99,7 @@ namespace BluePrints.Common.ViewModel
 
             if (MainViewModel.Entities.Count > 0)
             {
-                this.SwitchBinding(false, GridControlService);
+                this.SwitchBinding(false, null, GridControlService);
                 SummaryEntity = MainViewModel.Entities.First();
                 this.RaisePropertyChanged(x => x.SummaryEntity);
             }
@@ -173,12 +173,20 @@ namespace BluePrints.Common.ViewModel
             var calculationType = button.Name.ToUpper().Contains("COSTS")
                 ? DashboardViewType.Costs
                 : DashboardViewType.Units;
-            this.SwitchBinding(calculationType == DashboardViewType.Costs, GridControlService);
+            this.SwitchBinding(calculationType == DashboardViewType.Costs, null, GridControlService);
             ChangeViewMemberFieldNames?.Invoke(calculationType);
 
             IHaveSummary IHaveSummary = SummaryEntity as IHaveSummary;
             if (IHaveSummary != null)
                 IHaveSummary.RecalculateStats(calculationType == DashboardViewType.Costs);
+        }
+
+        public virtual void ChangeStatsPercentageType(object checkButton)
+        {
+            var button = (BarCheckItem)checkButton;
+            bool usePercentage = button.Name.ToUpper().Contains("PERCENT");
+            //pass in cost as true by default but when percentage is used isCost will be determine by what is currently used
+            this.SwitchBinding(true, usePercentage, GridControlService);
         }
 
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
@@ -322,6 +330,7 @@ namespace BluePrints.Common.ViewModel
         public string BarSeriesCrosshairPattern { get; set; }
         public string AxisYPrimaryLabel { get; set; }
         public string AxisYSecondaryLabel { get; set; }
+        public string AxisYSecondaryTextPattern { get; set; }
 
         public void StatsUpdate()
         {
@@ -363,6 +372,7 @@ namespace BluePrints.Common.ViewModel
             this.RaisePropertyChanged(x => x.BarSeriesCrosshairPattern);
             this.RaisePropertyChanged(x => x.AxisYPrimaryLabel);
             this.RaisePropertyChanged(x => x.AxisYSecondaryLabel);
+            this.RaisePropertyChanged(x => x.AxisYSecondaryTextPattern);
         }
         #endregion
     }
@@ -407,24 +417,40 @@ namespace BluePrints.Common.ViewModel
         string BarSeriesCrosshairPattern { get; set; }
         string AxisYPrimaryLabel { get; set; }
         string AxisYSecondaryLabel { get; set; }
+        string AxisYSecondaryTextPattern { get; set; }
         void StatsUpdate();
     }
 
     public static class ISupportStatsSwitchingExtension
     {
-        public static void SwitchBinding(this ISupportStatsSwitching stats_switch, bool is_cost, IGridControlService gridControlService)
+        public static void SwitchBinding(this ISupportStatsSwitching stats_switch, bool isCost, bool? isPercentage, IGridControlService gridControlService)
         {
-            stats_switch.IsActualVisible = is_cost ? true : false;
-            stats_switch.Field_Mask = is_cost ? "c" : "n";
-            stats_switch.Summary_Display_Format = is_cost ? "{}{0:c}" : "{}{0:n}";
+            if (isPercentage != null)
+                isCost = stats_switch.Cumulative_Earned_Percentage.ToUpper().Contains("COST");
+
+            bool usePercentage = isPercentage == null ? true : isPercentage == false ? false : true;
+
+            stats_switch.IsActualVisible = isCost ? true : false;
+            stats_switch.Field_Mask = isCost ? "c" : "n";
+            stats_switch.Summary_Display_Format = isCost ? "{}{0:c}" : "{}{0:n}";
             string current_period_cumulative_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats) + ".{0}." + BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint) + ".";
             string current_period_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats) + ".{0}." + BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodDataPoint) + ".";
 
-            string units_percentage_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage);
             string units_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.Units);
-
-            string cost_percentage_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.CostsPercentage);
             string cost_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.Costs);
+
+            string units_percentage_string;
+            string cost_percentage_string;
+            if (usePercentage)
+            {
+                units_percentage_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage);
+                cost_percentage_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.CostsPercentage);
+            }
+            else
+            {
+                units_percentage_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.Units);
+                cost_percentage_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.Costs);
+            }
 
             PROJECT_Dashboard dashboard = new PROJECT_Dashboard();
             string planned_string = "Planned";
@@ -437,36 +463,43 @@ namespace BluePrints.Common.ViewModel
             string remaining_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Remaining);
             string remaining_late_string = "Late " + BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Remaining);
 
-            string field_selection_string = is_cost ? cost_string : units_string;
-            string field_percentage_selection_string = is_cost ? cost_percentage_string : units_percentage_string;
+            string field_selection_string = isCost ? cost_string : units_string;
+            string field_percentage_selection_string = isCost ? cost_percentage_string : units_percentage_string;
 
             string total_budgeted_convention = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats) + ".{0}";
-            stats_switch.Total_Budgeted = is_cost ? String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.TotalCosts)) : String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.TotalUnits));
+            stats_switch.Total_Budgeted = isCost ? String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.TotalCosts)) : String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.TotalUnits));
 
-            stats_switch.Cumulative_Earned_Percentage = String.Format(current_period_cumulative_string, earned_string) + field_percentage_selection_string;
+            if(isPercentage == null)
+            {
+                stats_switch.Cumulative_Earned_Percentage = String.Format(current_period_cumulative_string, earned_string) + field_percentage_selection_string;
+                stats_switch.Period_Earned_Percentage = String.Format(current_period_string, earned_string) + field_percentage_selection_string;
+            }
+
             stats_switch.Cumulative_Planned_Units = String.Format(current_period_cumulative_string, budgeted_string) + field_selection_string;
             stats_switch.Cumulative_PlannedLate_Units = String.Format(current_period_cumulative_string, budgeted_late_string) + field_selection_string;
             stats_switch.Cumulative_Earned_Units = String.Format(current_period_cumulative_string, earned_string) + field_selection_string;
             stats_switch.Cumulative_Burned_Units = String.Format(current_period_cumulative_string, burned_string) + field_selection_string;
             stats_switch.Cumulative_Actual_Units = String.Format(current_period_cumulative_string, actual_string) + field_selection_string;
-            stats_switch.Cumulative_Remaining_Units = is_cost ? "Stats.Remaining.Remaining_Costs": "Stats.Remaining.Remaining_Units";
+            stats_switch.Cumulative_Remaining_Units = isCost ? "Stats.Remaining.Remaining_Costs": "Stats.Remaining.Remaining_Units";
 
-            stats_switch.Period_Earned_Percentage = String.Format(current_period_string, earned_string) + field_percentage_selection_string;
             stats_switch.Period_Planned_Units = String.Format(current_period_string, budgeted_string) + field_selection_string;
             stats_switch.Period_PlannedLate_Units = String.Format(current_period_string, budgeted_late_string) + field_selection_string;
             stats_switch.Period_Earned_Units = String.Format(current_period_string, earned_string) + field_selection_string;
             stats_switch.Period_Burned_Units = String.Format(current_period_string, burned_string) + field_selection_string;
             stats_switch.Period_Actual_Units = String.Format(current_period_string, actual_string) + field_selection_string;
 
+            gridControlService.ClearSummary();
             string summaryPercentageString = "{0:p2}";
+            gridControlService.AddSummary(stats_switch.Cumulative_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
+            gridControlService.AddSummary(stats_switch.Period_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
+
             string summaryDecimalString = "{0:0.00}";
-            if (is_cost)
+            if (isCost)
                 summaryDecimalString = "{0:c2}";
 
-            gridControlService.ClearSummary();
             gridControlService.AddSummary("SubjobCode", SummaryItemType.Count, "Total {0} Records");
             gridControlService.AddSummary(stats_switch.Total_Budgeted, SummaryItemType.Sum, summaryDecimalString);
-            gridControlService.AddSummary(stats_switch.Cumulative_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
+
             gridControlService.AddSummary(stats_switch.Cumulative_Planned_Units, SummaryItemType.Sum, summaryDecimalString);
             gridControlService.AddSummary(stats_switch.Cumulative_PlannedLate_Units, SummaryItemType.Sum, summaryDecimalString);
             gridControlService.AddSummary(stats_switch.Cumulative_Earned_Units, SummaryItemType.Sum, summaryDecimalString);
@@ -474,7 +507,6 @@ namespace BluePrints.Common.ViewModel
             gridControlService.AddSummary(stats_switch.Cumulative_Actual_Units, SummaryItemType.Sum, summaryDecimalString);
             gridControlService.AddSummary(stats_switch.Cumulative_Remaining_Units, SummaryItemType.Sum, summaryDecimalString);
 
-            gridControlService.AddSummary(stats_switch.Period_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
             gridControlService.AddSummary(stats_switch.Period_Planned_Units, SummaryItemType.Sum, summaryDecimalString);
             gridControlService.AddSummary(stats_switch.Period_PlannedLate_Units, SummaryItemType.Sum, summaryDecimalString);
             gridControlService.AddSummary(stats_switch.Period_Earned_Units, SummaryItemType.Sum, summaryDecimalString);
@@ -484,7 +516,7 @@ namespace BluePrints.Common.ViewModel
             string header_convention = "{0} {1}";
             string units_display_string = "Units";
             string cost_display_string = "$";
-            string display_selection_string = is_cost ? cost_display_string : units_display_string;
+            string display_selection_string = isCost ? cost_display_string : units_display_string;
 
             stats_switch.Header_Total_Budgeted = String.Format(header_convention, "Total", display_selection_string);
             stats_switch.Header_Budgeted = String.Format(header_convention, planned_string, display_selection_string);
@@ -495,12 +527,22 @@ namespace BluePrints.Common.ViewModel
             stats_switch.Header_Remaining = String.Format(header_convention, remaining_string, display_selection_string);
             stats_switch.Header_RemainingLate = String.Format(header_convention, remaining_late_string, display_selection_string);
 
-            stats_switch.BarSeriesValueDataMember = is_cost ? "Costs" : "Units";
-            stats_switch.LineSeriesValueDataMember = is_cost ? "CostsPercentage" : "UnitsPercentage";
-            stats_switch.BarSeriesCrosshairPattern = is_cost ? "{S} - [{V:c}]" : "{S} - [{V:n}]";
+            stats_switch.BarSeriesValueDataMember = isCost ? "Costs" : "Units";
+            if(usePercentage)
+            {
+                stats_switch.LineSeriesValueDataMember = isCost ? "CostsPercentage" : "UnitsPercentage";
+                stats_switch.AxisYSecondaryLabel = isCost ? "Costs % Complete" : "Units % Complete";
+                stats_switch.AxisYSecondaryTextPattern = "{V:0%}";
+            }
+            else
+            {
+                stats_switch.LineSeriesValueDataMember = isCost ? "Costs" : "Units";
+                stats_switch.AxisYSecondaryLabel = isCost ? "Costs" : "Units";
+                stats_switch.AxisYSecondaryTextPattern = "{V:0}";
+            }
 
-            stats_switch.AxisYPrimaryLabel = is_cost ? "Total Costs" : "Total Units";
-            stats_switch.AxisYSecondaryLabel = is_cost ? "Costs % Complete" : "Units % Complete";
+            stats_switch.BarSeriesCrosshairPattern = isCost ? "{S} - [{V:c}]" : "{S} - [{V:n}]";
+            stats_switch.AxisYPrimaryLabel = isCost ? "Total Costs" : "Total Units";
 
             stats_switch.StatsUpdate();
         }
