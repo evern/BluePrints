@@ -425,10 +425,14 @@ namespace BluePrints.Common.ViewModel
     {
         public static void SwitchBinding(this ISupportStatsSwitching stats_switch, bool isCost, bool? isPercentage, IGridControlService gridControlService)
         {
-            if (isPercentage != null)
+            bool usePercentage;
+            if(isPercentage == null)
+                usePercentage = stats_switch.LineSeriesValueDataMember.ToUpper().Contains("PERCENTAGE");
+            else
+            {
                 isCost = stats_switch.Cumulative_Earned_Percentage.ToUpper().Contains("COST");
-
-            bool usePercentage = isPercentage == null ? true : isPercentage == false ? false : true;
+                usePercentage = (bool)isPercentage;
+            }
 
             stats_switch.IsActualVisible = isCost ? true : false;
             stats_switch.Field_Mask = isCost ? "c" : "n";
