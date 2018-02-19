@@ -427,7 +427,10 @@ namespace BluePrints.Common.ViewModel
         {
             bool usePercentage;
             if(isPercentage == null)
-                usePercentage = stats_switch.LineSeriesValueDataMember.ToUpper().Contains("PERCENTAGE");
+            {
+                usePercentage = stats_switch.LineSeriesValueDataMember == null ? true : stats_switch.LineSeriesValueDataMember.ToUpper().Contains("PERCENTAGE");
+            }
+
             else
             {
                 isCost = stats_switch.Cumulative_Earned_Percentage.ToUpper().Contains("COST");
