@@ -265,8 +265,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             //use last of default because during Earned list generation the current earned is added to the end of the list
             //this is necessary for the first period when earned contains a zero value data point and an actual value data point
-            var specificDateDataPoint =
-                progressDataPoints.LastOrDefault(obj => obj.ProgressDate.Date <= dataPointDate.Date);
+            var specificDateDataPoint = progressDataPoints.OrderBy(x => x.ProgressDate).LastOrDefault(obj => obj.ProgressDate.Date <= dataPointDate.Date);
 
             return specificDateDataPoint;
         }
@@ -283,8 +282,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (progressDataPoints == null || progressDataPoints.Count == 0)
                 return nullProgressDataPoint;
 
-            var CumulativeProgressOnDataDate =
-                progressDataPoints.FirstOrDefault(obj => obj.ProgressDate.Date == dataPointDate.Date);
+            //use last or default because there will be an extra data point added after data date for variation adjustments
+            var CumulativeProgressOnDataDate = progressDataPoints.LastOrDefault(obj => obj.ProgressDate.Date == dataPointDate.Date);
+
             if (CumulativeProgressOnDataDate != null)
             {
                 if (!CumulativeProgressOnDataDate.DoNotPlot)

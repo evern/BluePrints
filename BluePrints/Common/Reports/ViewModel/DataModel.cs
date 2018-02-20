@@ -944,10 +944,29 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
+                //overdue will override current color
+                if (IAmOverdue)
+                    return false;
+
                 if (Milestones == null || Milestones.Count() == 0)
                     return false;
 
                 Deliverable_Milestone nextCriticalMilestone = deliverable_milestones.FirstOrDefault(x => x.DueDate <= ReportingDataDate.AddDays(7));
+                if (nextCriticalMilestone != null)
+                    return true;
+
+                return false;
+            }
+        }
+
+        public bool IAmOverdue
+        {
+            get
+            {
+                if (Milestones == null || Milestones.Count() == 0)
+                    return false;
+
+                Deliverable_Milestone nextCriticalMilestone = deliverable_milestones.FirstOrDefault(x => x.DueDate <= ReportingDataDate);
                 if (nextCriticalMilestone != null)
                     return true;
 

@@ -280,6 +280,7 @@
                                 </custom:GridColumnEx.EditSettings>
                             </custom:GridColumnEx>
                             <custom:GridColumnEx Header="Critical" FieldName="IAmCritical" HeaderToolTip="Deliverable is required to hit a milestone in the next interval. Expand this row to view required milestone" ReadOnly="True" FilterPopupMode="CheckedList" />
+                            <custom:GridColumnEx Header="Overdue" FieldName="IAmOverdue" HeaderToolTip="Deliverable is overdue. Expand this row to view required milestone" ReadOnly="True" FilterPopupMode="CheckedList" />
                         </dxg:GridControlBand>
                     </dxg:GridControl.Bands>
                     <dxg:GridControl.DetailDescriptor>
@@ -373,6 +374,9 @@
                             <dxg:TableView.FormatConditions>
                                 <dxg:FormatCondition FieldName="IAmCritical" ApplyToRow="True" Expression="[IAmCritical] = 'True'">
                                     <dxc:Format Background="LightBlue" />
+                                </dxg:FormatCondition>
+                                <dxg:FormatCondition FieldName="IAmOverdue" ApplyToRow="True" Expression="[IAmOverdue] = 'True'">
+                                    <dxc:Format Background="Salmon" />
                                 </dxg:FormatCondition>
                             </dxg:TableView.FormatConditions>
                             <dxg:TableView.RowCellMenuCustomizations>

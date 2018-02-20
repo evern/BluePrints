@@ -203,8 +203,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             get
             {
                 if (currentPeriodDataPoint == null && reportingDataDate != null && CumulativeDataPoints != null && CumulativeDataPoints.Count() > 0 && reportingDataDate != null)
-                    currentPeriodDataPoint = DataPointsHelpers.FindPeriodDataPointInCumulativeDataPoints(
-                            CumulativeDataPoints, reportingDataDate.Date);
+                    currentPeriodDataPoint = DataPointsHelpers.FindPeriodDataPointInCumulativeDataPoints(CumulativeDataPoints, reportingDataDate.Date);
 
                 return currentPeriodDataPoint;
             }
