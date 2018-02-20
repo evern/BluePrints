@@ -331,6 +331,13 @@ namespace BluePrints.Common.ViewModel
         public string AxisYPrimaryLabel { get; set; }
         public string AxisYSecondaryLabel { get; set; }
         public string AxisYSecondaryTextPattern { get; set; }
+        public string LineSeriesBudgetDisplayName { get; set; }
+        public string LineSeriesBudgetLateDisplayName { get; set; }
+        public string LineSeriesRemainingDisplayName { get; set; }
+        public string LineSeriesEarnedDisplayName { get; set; }
+        public string LineSeriesBurnedDisplayName { get; set; }
+        public string LineSeriesActualDisplayName { get; set; }
+        public string LineSeriesLabelPattern { get; set; }
 
         public void StatsUpdate()
         {
@@ -373,6 +380,13 @@ namespace BluePrints.Common.ViewModel
             this.RaisePropertyChanged(x => x.AxisYPrimaryLabel);
             this.RaisePropertyChanged(x => x.AxisYSecondaryLabel);
             this.RaisePropertyChanged(x => x.AxisYSecondaryTextPattern);
+            this.RaisePropertyChanged(x => x.LineSeriesBudgetDisplayName);
+            this.RaisePropertyChanged(x => x.LineSeriesBudgetLateDisplayName);
+            this.RaisePropertyChanged(x => x.LineSeriesRemainingDisplayName);
+            this.RaisePropertyChanged(x => x.LineSeriesEarnedDisplayName);
+            this.RaisePropertyChanged(x => x.LineSeriesBurnedDisplayName);
+            this.RaisePropertyChanged(x => x.LineSeriesActualDisplayName);
+            this.RaisePropertyChanged(x => x.LineSeriesLabelPattern);
         }
         #endregion
     }
@@ -418,6 +432,13 @@ namespace BluePrints.Common.ViewModel
         string AxisYPrimaryLabel { get; set; }
         string AxisYSecondaryLabel { get; set; }
         string AxisYSecondaryTextPattern { get; set; }
+        string LineSeriesBudgetDisplayName { get; set; }
+        string LineSeriesBudgetLateDisplayName { get; set; }
+        string LineSeriesRemainingDisplayName { get; set; }
+        string LineSeriesEarnedDisplayName { get; set; }
+        string LineSeriesBurnedDisplayName { get; set; }
+        string LineSeriesActualDisplayName { get; set; }
+        string LineSeriesLabelPattern { get; set; }
         void StatsUpdate();
     }
 
@@ -524,16 +545,30 @@ namespace BluePrints.Common.ViewModel
                 stats_switch.LineSeriesValueDataMember = isCost ? "CostsPercentage" : "UnitsPercentage";
                 stats_switch.AxisYSecondaryLabel = isCost ? "Costs % Complete" : "Units % Complete";
                 stats_switch.AxisYSecondaryTextPattern = "{V:0%}";
+                stats_switch.LineSeriesBudgetDisplayName = "Budgeted %";
+                stats_switch.LineSeriesBudgetLateDisplayName = "Budgeted Late %";
+                stats_switch.LineSeriesRemainingDisplayName = "Remaining %";
+                stats_switch.LineSeriesEarnedDisplayName = "Earned %";
+                stats_switch.LineSeriesBurnedDisplayName = "Burned %";
+                stats_switch.LineSeriesActualDisplayName = "Actual %";
+                stats_switch.LineSeriesLabelPattern = "{S} - [{V:p2}]";
             }
             else
             {
                 stats_switch.LineSeriesValueDataMember = isCost ? "Costs" : "Units";
-                stats_switch.AxisYSecondaryLabel = isCost ? "Costs" : "Units";
-                stats_switch.AxisYSecondaryTextPattern = "{V:0}";
+                stats_switch.AxisYSecondaryLabel = isCost ? "Cumulative Costs" : "Cumulative Units";
+                stats_switch.AxisYSecondaryTextPattern = isCost? "{V:$0}" : "{V:0}";
+                stats_switch.LineSeriesBudgetDisplayName = isCost ? "Budgeted Costs" : "Budgeted Units";
+                stats_switch.LineSeriesBudgetLateDisplayName = isCost ? "Budgeted Late Costs" : "Budgeted Late Units";
+                stats_switch.LineSeriesRemainingDisplayName = isCost ? "Remaining Costs" : "Remaining Units";
+                stats_switch.LineSeriesEarnedDisplayName = isCost ? "Earned Costs" : "Earned Units";
+                stats_switch.LineSeriesBurnedDisplayName = isCost ? "Burned Costs" : "Burned Units";
+                stats_switch.LineSeriesActualDisplayName = isCost ? "Actual Costs" : "Actual Units";
+                stats_switch.LineSeriesLabelPattern = "{S} - [{V:n2}]";
             }
 
             stats_switch.BarSeriesCrosshairPattern = isCost ? "{S} - [{V:c}]" : "{S} - [{V:n}]";
-            stats_switch.AxisYPrimaryLabel = isCost ? "Total Costs" : "Total Units";
+            stats_switch.AxisYPrimaryLabel = isCost ? "Costs" : "Units";
 
             stats_switch.StatsUpdate();
         }

@@ -123,12 +123,12 @@ namespace BluePrints.Reports
             if (showAbsolutes)
             {
                 xyDiagram.AxisY.Label.TextPattern = "{V:0}";
-                xyDiagram.AxisY.Title.Text = isCost ? "Costs" : "Units";
+                xyDiagram.AxisY.Title.Text = isCost ? "Cumulative Costs" : "Cumulative Units";
             }
             else
             {
                 xyDiagram.AxisY.Label.TextPattern = "{V:0.00%}";
-                xyDiagram.AxisY.Title.Text = "Percentages";
+                xyDiagram.AxisY.Title.Text = isCost ? "Cost % Complete" : "Units % Complete";
             }
 
             //conditional formatting
