@@ -80,76 +80,76 @@
                 </dxlc:LayoutControl>
                 <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlBASELINE_ITEM" dxc:DXSerializer.StoreLayoutMode="All" DockPanel.Dock="Right" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxg:GridControl.Columns>
-                        <custom:GridColumnEx Header="Area" FieldName="Entity.Entity.GUID_AREA" HeaderToolTip="Changing this field may affect subjob and workpack name, see internal number mode default, editable, manual on the ribbon" FilterPopupMode="CheckedList" Tag="True;True;Autofill subjob">
-                            <custom:GridColumnEx.EditSettings>
+                        <dxg:GridColumn Header="Area" FieldName="Entity.Entity.GUID_AREA" HeaderToolTip="Changing this field may affect subjob and workpack name, see internal number mode default, editable, manual on the ribbon" FilterPopupMode="CheckedList" Tag="True;True;Autofill subjob">
+                            <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" ValueMember="GUID" />
-                            </custom:GridColumnEx.EditSettings>
-                        </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Sub-Area" FieldName="Entity.Entity.SubAreaGuid" HeaderToolTip="Changing this field may affect subjob and workpack name, see internal number mode default, editable, manual on the ribbon" ColumnFilterMode="DisplayText" FilterPopupMode="CheckedList" Tag="True;True;Autofill from subjob">
-                            <custom:GridColumnEx.CellTemplate>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Sub-Area" FieldName="Entity.Entity.SubAreaGuid" HeaderToolTip="Changing this field may affect subjob and workpack name, see internal number mode default, editable, manual on the ribbon" ColumnFilterMode="DisplayText" FilterPopupMode="CheckedList" Tag="True;True;Autofill from subjob">
+                            <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
                                 </DataTemplate>
-                            </custom:GridColumnEx.CellTemplate>
+                            </dxg:GridColumn.CellTemplate>
                             <!--  For Filtering  -->
-                            <custom:GridColumnEx.EditSettings>
+                            <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
-                            </custom:GridColumnEx.EditSettings>
-                        </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Discipline" FieldName="Entity.Entity.GUID_DISCIPLINE" FilterPopupMode="CheckedList">
-                            <custom:GridColumnEx.EditSettings>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Discipline" FieldName="Entity.Entity.GUID_DISCIPLINE" FilterPopupMode="CheckedList">
+                            <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
-                            </custom:GridColumnEx.EditSettings>
-                        </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Discipline Number" FieldName="Entity.Entity.DISCIPLINE_NUM" HeaderToolTip="Changing  this fieldmay affect workpack name, see internal number mode default, editable, manual on the ribbon" FilterPopupMode="CheckedList">
-                            <custom:GridColumnEx.EditSettings>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Discipline Number" FieldName="Entity.Entity.DISCIPLINE_NUM" HeaderToolTip="Changing  this fieldmay affect workpack name, see internal number mode default, editable, manual on the ribbon" FilterPopupMode="CheckedList">
+                            <dxg:GridColumn.EditSettings>
                                 <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
-                            </custom:GridColumnEx.EditSettings>
-                        </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Document Type" FieldName="Entity.Entity.GUID_DOCTYPE" HeaderToolTip="Changing  this fieldmay affect subjob and workpack name, see internal number mode default, editable, manual on the ribbon" FilterPopupMode="CheckedList">
-                            <custom:GridColumnEx.EditSettings>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Document Type" FieldName="Entity.Entity.GUID_DOCTYPE" HeaderToolTip="Changing  this fieldmay affect subjob and workpack name, see internal number mode default, editable, manual on the ribbon" FilterPopupMode="CheckedList">
+                            <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" ValueMember="GUID" />
-                            </custom:GridColumnEx.EditSettings>
-                        </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Department" FieldName="Entity.Entity.GUID_DEPARTMENT" HeaderToolTip="Default value can be populated by document type selection" FilterPopupMode="CheckedList">
-                            <custom:GridColumnEx.EditSettings>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Department" FieldName="Entity.Entity.GUID_DEPARTMENT" HeaderToolTip="Default value can be populated by document type selection" FilterPopupMode="CheckedList">
+                            <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" ValueMember="GUID" />
-                            </custom:GridColumnEx.EditSettings>
-                        </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Internal Number" FieldName="Entity.Entity.INTERNAL_NUM" HeaderToolTip="Must be unique" FilterPopupMode="CheckedList" Tag="True;False;Autofill from area, department, discipline and doc-type">
-                            <custom:GridColumnEx.CellTemplate>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Internal Number" FieldName="Entity.Entity.INTERNAL_NUM" HeaderToolTip="Must be unique" FilterPopupMode="CheckedList" Tag="True;False;Autofill from area, department, discipline and doc-type">
+                            <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <!--  Use IsEnabled because when textEdit is invoked the 2nd time IsReadOnly didn't get picked up in the binding  -->
                                     <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsInternalNumberEditable}" />
                                 </DataTemplate>
-                            </custom:GridColumnEx.CellTemplate>
-                        </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Client Number" FieldName="Entity.Entity.CLIENT_NUM" FilterPopupMode="CheckedList" />
-                        <custom:GridColumnEx Header="Revision Number" FieldName="Entity.Entity.REVISION_NUMBER" FilterPopupMode="CheckedList" />
-                        <custom:GridColumnEx Header="Deliverable Type" FieldName="Entity.Entity.DELIVERABLE_TYPE" FilterPopupMode="CheckedList">
-                            <custom:GridColumnEx.EditSettings>
+                            </dxg:GridColumn.CellTemplate>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Client Number" FieldName="Entity.Entity.CLIENT_NUM" FilterPopupMode="CheckedList" />
+                        <dxg:GridColumn Header="Revision Number" FieldName="Entity.Entity.REVISION_NUMBER" FilterPopupMode="CheckedList" />
+                        <dxg:GridColumn Header="Deliverable Type" FieldName="Entity.Entity.DELIVERABLE_TYPE" FilterPopupMode="CheckedList">
+                            <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DeliverableType}}" />
-                            </custom:GridColumnEx.EditSettings>
-                        </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Primary Title" FieldName="Entity.Entity.PRIMARY_TITLE" FilterPopupMode="CheckedList" />
-                        <custom:GridColumnEx Header="Secondary Title" FieldName="Entity.Entity.SECONDARY_TITLE" FilterPopupMode="CheckedList" />
-                        <custom:GridColumnEx Header="Comments" FieldName="Entity.Entity.COMMENTS" FilterPopupMode="CheckedList" />
-                        <custom:GridColumnEx Header="Status" FieldName="Entity.Entity.DeliverableStatusGuid" HeaderToolTip="Changing this field may affect progress if [Update % by Status] button is click in progress" ColumnFilterMode="DisplayText" FilterPopupMode="Custom">
-                            <custom:GridColumnEx.CellTemplate>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Primary Title" FieldName="Entity.Entity.PRIMARY_TITLE" FilterPopupMode="CheckedList" />
+                        <dxg:GridColumn Header="Secondary Title" FieldName="Entity.Entity.SECONDARY_TITLE" FilterPopupMode="CheckedList" />
+                        <dxg:GridColumn Header="Comments" FieldName="Entity.Entity.COMMENTS" FilterPopupMode="CheckedList" />
+                        <dxg:GridColumn Header="Status" FieldName="Entity.Entity.DeliverableStatusGuid" HeaderToolTip="Changing this field may affect progress if [Update % by Status] button is click in progress" ColumnFilterMode="DisplayText" FilterPopupMode="Custom">
+                            <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="NAME" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.DeliverableStatusCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
                                 </DataTemplate>
-                            </custom:GridColumnEx.CellTemplate>
+                            </dxg:GridColumn.CellTemplate>
                             <!--  For Filtering  -->
-                            <custom:GridColumnEx.EditSettings>
+                            <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
-                            </custom:GridColumnEx.EditSettings>
-                        </custom:GridColumnEx>
-                        <!--<custom:GridColumnEx Header="Resource" FieldName="Entity.Entity.GUID_USER" FilterPopupMode="CheckedList">
-                            <custom:GridColumnEx.EditSettings>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <!--<dxg:GridColumn Header="Resource" FieldName="Entity.Entity.GUID_USER" FilterPopupMode="CheckedList">
+                            <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
-                            </custom:GridColumnEx.EditSettings>
-                        </custom:GridColumnEx>-->
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>-->
                         <dxg:GridColumn Header="Resources" FieldName="Entity.AssignUserObject">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings DisplayMember="Full_Name" IncrementalFiltering="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
@@ -159,13 +159,13 @@
                                 </dxe:ComboBoxEditSettings>
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <custom:GridColumnEx Header="By Duration" FieldName="Entity.Entity.BY_DURATION" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units" FilterPopupMode="CheckedList">
-                            <custom:GridColumnEx.EditSettings>
+                        <dxg:GridColumn Header="By Duration" FieldName="Entity.Entity.BY_DURATION" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units" FilterPopupMode="CheckedList">
+                            <dxg:GridColumn.EditSettings>
                                 <dxe:CheckEditSettings />
-                            </custom:GridColumnEx.EditSettings>
-                        </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Budget Hours" FieldName="Entity.Entity.BUDGET_HOURS" HeaderToolTip="Baseline hours" FilterPopupMode="CheckedList">
-                            <custom:GridColumnEx.CellTemplate>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Budget Hours" FieldName="Entity.Entity.BUDGET_HOURS" HeaderToolTip="Baseline hours" FilterPopupMode="CheckedList">
+                            <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -206,50 +206,50 @@
                                         </dxe:SpinEdit>
                                     </Grid>
                                 </DataTemplate>
-                            </custom:GridColumnEx.CellTemplate>
-                        </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Target Date" FieldName="Entity.Entity.TARGET_DATE" HeaderToolTip="Due date" FilterPopupMode="CheckedList">
-                            <custom:GridColumnEx.EditSettings>
+                            </dxg:GridColumn.CellTemplate>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Target Date" FieldName="Entity.Entity.TARGET_DATE" HeaderToolTip="Due date" FilterPopupMode="CheckedList">
+                            <dxg:GridColumn.EditSettings>
                                 <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
-                            </custom:GridColumnEx.EditSettings>
-                        </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Variation Hours" FieldName="Entity.Entity.DC_HOURS" HeaderToolTip="Variation hours have to be added from the variation page and approved to be shown here" ReadOnly="True" FilterPopupMode="CheckedList" />
-                        <custom:GridColumnEx Header="Total Hours" FieldName="Entity.Entity.Total_Units" HeaderToolTip="Estimated Hours + Variation Hours" ReadOnly="True" FilterPopupMode="CheckedList" />
-                        <custom:GridColumnEx Header="Total Costs" FieldName="Entity.Total_Costs" HeaderToolTip="Rate * (Estimated Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList">
-                            <custom:GridColumnEx.CellTemplate>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Variation Hours" FieldName="Entity.Entity.DC_HOURS" HeaderToolTip="Variation hours have to be added from the variation page and approved to be shown here" ReadOnly="True" FilterPopupMode="CheckedList" />
+                        <dxg:GridColumn Header="Total Hours" FieldName="Entity.Entity.Total_Units" HeaderToolTip="Estimated Hours + Variation Hours" ReadOnly="True" FilterPopupMode="CheckedList" />
+                        <dxg:GridColumn Header="Total Costs" FieldName="Entity.Total_Costs" HeaderToolTip="Rate * (Estimated Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList">
+                            <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <dxe:TextEdit Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </DataTemplate>
-                            </custom:GridColumnEx.CellTemplate>
-                        </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Phase" FieldName="Entity.Entity.GUID_PHASE" HeaderToolTip="Automatically assigned field. Changing this will affect subjob and workpack name" FilterPopupMode="CheckedList">
-                            <custom:GridColumnEx.EditSettings>
+                            </dxg:GridColumn.CellTemplate>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Phase" FieldName="Entity.Entity.GUID_PHASE" HeaderToolTip="Automatically assigned field. Changing this will affect subjob and workpack name" FilterPopupMode="CheckedList">
+                            <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" ValueMember="GUID" />
-                            </custom:GridColumnEx.EditSettings>
-                        </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Subjob" FieldName="Entity.Entity.GUID_SUBJOB" HeaderToolTip="Automatically assigned field. Changing this will affect workpack name" FilterPopupMode="CheckedList" Tag="True;True;Autofill from area and sub-area" Visible="true">
-                            <custom:GridColumnEx.EditSettings>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Subjob" FieldName="Entity.Entity.GUID_SUBJOB" HeaderToolTip="Automatically assigned field. Changing this will affect workpack name" FilterPopupMode="CheckedList" Tag="True;True;Autofill from area and sub-area" Visible="true">
+                            <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1" AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" ValueMember="GUID" />
-                            </custom:GridColumnEx.EditSettings>
-                        </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Workpack" FieldName="Entity.Entity.GUID_WORKPACK" HeaderToolTip="Automatically assigned field. Must match Exo subjob to produce a summary of burned" FilterPopupMode="CheckedList" Tag="True;True;Autofill from workpack, discipline and discipline number" Visible="true">
-                            <custom:GridColumnEx.EditSettings>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Workpack" FieldName="Entity.Entity.GUID_WORKPACK" HeaderToolTip="Automatically assigned field. Must match Exo subjob to produce a summary of burned" FilterPopupMode="CheckedList" Tag="True;True;Autofill from workpack, discipline and discipline number" Visible="true">
+                            <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" ValueMember="GUID" />
-                            </custom:GridColumnEx.EditSettings>
-                        </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Created" FieldName="Entity.Entity.CREATED" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList" Visible="False" />
-                        <custom:GridColumnEx Header="Created By" FieldName="Entity.Entity.CREATEDBY" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList" Visible="False">
-                            <custom:GridColumnEx.EditSettings>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Created" FieldName="Entity.Entity.CREATED" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList" Visible="False" />
+                        <dxg:GridColumn Header="Created By" FieldName="Entity.Entity.CREATEDBY" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList" Visible="False">
+                            <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
-                            </custom:GridColumnEx.EditSettings>
-                        </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Updated" FieldName="Entity.Entity.UPDATED" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList" Visible="False" />
-                        <custom:GridColumnEx Header="Updated By" FieldName="Entity.Entity.UPDATEDBY" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList" Visible="False">
-                            <custom:GridColumnEx.EditSettings>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Updated" FieldName="Entity.Entity.UPDATED" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList" Visible="False" />
+                        <dxg:GridColumn Header="Updated By" FieldName="Entity.Entity.UPDATEDBY" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList" Visible="False">
+                            <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
-                            </custom:GridColumnEx.EditSettings>
-                        </custom:GridColumnEx>
-                        <custom:GridColumnEx Header="Key" FieldName="Entity.Entity.GUID_ORIGINAL" HeaderToolTip="Key to match progress. Can be used to trace original record from previous baseline revisions" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList" Visible="False" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Key" FieldName="Entity.Entity.GUID_ORIGINAL" HeaderToolTip="Key to match progress. Can be used to trace original record from previous baseline revisions" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList" Visible="False" />
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.GroupSummary>
                         <dxg:GridSummaryItem FieldName="Entity.Entity.COMMENTS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />

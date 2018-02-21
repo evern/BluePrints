@@ -28,7 +28,7 @@
         <Setter Property="ArgumentScaleType" Value="DateTime" />
         <Setter Property="ValueDataMember" Value="{Binding DataContext.LineSeriesValueDataMember, ElementName=userControl}" />
         <Setter Property="dxc:XYDiagram2D.SeriesAxisY" Value="{Binding ElementName=secondaryAxisY}" />
-        <Setter Property="dxc:XYDiagram2D.AllowSeriesBitmapCaching" Value="False" />
+        <!--<Setter Property="dxc:XYDiagram2D.AllowSeriesBitmapCaching" Value="False" />-->
         <Setter Property="ValueScaleType" Value="Numerical" />
         <Setter Property="LineStyle">
             <Setter.Value>

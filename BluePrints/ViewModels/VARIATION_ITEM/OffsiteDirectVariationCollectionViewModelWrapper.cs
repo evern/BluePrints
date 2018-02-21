@@ -67,7 +67,7 @@ namespace BluePrints.ViewModels
 
         public FilterTreeViewModel<BASELINE_ITEMVariation, Guid> FilterTreeViewModel { get; set; }
 
-        protected override string ViewName => "DESIGN_VARIATION_ITEMSViewModelWrapper_v1" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString();
+        protected override string ViewName => "DESIGN_VARIATION_ITEMSViewModelWrapper_v2" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString();
 
         protected override void StartCreatingMainViewModel()
         {

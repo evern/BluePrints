@@ -20,7 +20,7 @@ namespace BluePrints
         static void SignalRExceptionLogging(object sender, UnhandledExceptionEventArgs args)
         {
             Exception e = (Exception)args.ExceptionObject;
-            SignalR.HubLogMessage(LoginCredentials.CurrentUser.NAME + " app crashed: " + e.Message);
+            //SignalR.HubLogMessage(LoginCredentials.CurrentUser.NAME + " app crashed: " + e.Message);
         }
     }
 }

@@ -40,27 +40,27 @@
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlVARIATION_ITEM" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Bands>
                             <dxg:GridControlBand Header="General">
-                                <custom:GridColumnEx Header="Area" FieldName="Entity.Entity.Entity.GUID_AREA" HeaderToolTip="Only editable on newly added variation deliverable" Tag="True;True;Autofill subjob">
-                                    <custom:GridColumnEx.EditSettings>
+                                <dxg:GridColumn Header="Area" FieldName="Entity.Entity.Entity.GUID_AREA" HeaderToolTip="Only editable on newly added variation deliverable" Tag="True;True;Autofill subjob">
+                                    <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" ValueMember="GUID" />
-                                    </custom:GridColumnEx.EditSettings>
-                                    <custom:GridColumnEx.CellTemplate>
+                                    </dxg:GridColumn.EditSettings>
+                                    <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:ComboBoxEdit Name="PART_Editor" AutoComplete="True" DisplayMember="INTERNAL_NUM" IsEnabled="{Binding RowData.Row.IsReadOnly, Converter={StaticResource BooleanNegationConverter}}" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" ValueMember="GUID" />
                                         </DataTemplate>
-                                    </custom:GridColumnEx.CellTemplate>
-                                </custom:GridColumnEx>
-                                <custom:GridColumnEx Header="Sub-Area" FieldName="Entity.Entity.Entity.SubAreaGuid" HeaderToolTip="Only editable on newly added variation deliverable" ColumnFilterMode="DisplayText" Tag="True;True;Autofill from subjob">
-                                    <custom:GridColumnEx.CellTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Sub-Area" FieldName="Entity.Entity.Entity.SubAreaGuid" HeaderToolTip="Only editable on newly added variation deliverable" ColumnFilterMode="DisplayText" Tag="True;True;Autofill from subjob">
+                                    <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" IsEnabled="{Binding RowData.Row.IsReadOnly, Converter={StaticResource BooleanNegationConverter}}" ItemsSource="{Binding RowData.Row.Entity.Entity.Entity.SubAreaCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
                                         </DataTemplate>
-                                    </custom:GridColumnEx.CellTemplate>
+                                    </dxg:GridColumn.CellTemplate>
                                     <!--  For Filtering  -->
-                                    <custom:GridColumnEx.EditSettings>
+                                    <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
-                                    </custom:GridColumnEx.EditSettings>
-                                </custom:GridColumnEx>
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn Header="Stock Code" FieldName="Entity.Entity.StockCodeGuid" HeaderToolTip="Only editable on newly added variation deliverable">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding DataContext.STOCK_CODECollection, ElementName=userControl}" ValueMember="GUID" />

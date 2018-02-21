@@ -5,9 +5,7 @@ using DevExpress.Mvvm;
 
 namespace BluePrints.Common.Base
 {
-    public abstract class BluePrintsEntitiesCollectionWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
-        TMainEntityUnitOfWork> : CollectionViewModelsWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
-        TMainEntityUnitOfWork>
+    public abstract class BluePrintsEntitiesCollectionWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork> : CollectionViewModelsWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork>
         where TMainEntity : class, IGuidEntityKey, new()
         where TMainProjectionEntity : class, IGuidEntityKey, ICanUpdate, new()
         where TMainEntityUnitOfWork : IUnitOfWork
@@ -26,12 +24,12 @@ namespace BluePrints.Common.Base
 
         public override void OnAfterDeletedSendMessage(string entityName, string key, string messageType, string sender)
         {
-            SignalR.HubSendMessage(entityName, key, messageType, sender, LoginCredentials.CurrentHWID);
+            //SignalR.HubSendMessage(entityName, key, messageType, sender, LoginCredentials.CurrentHWID);
         }
 
         public override void OnAfterSavedSendMessage(string entityName, string key, string messageType, string sender)
         {
-            SignalR.HubSendMessage(entityName, key, messageType, sender, LoginCredentials.CurrentHWID);
+            //SignalR.HubSendMessage(entityName, key, messageType, sender, LoginCredentials.CurrentHWID);
         }
 
         public void ShowNotification()

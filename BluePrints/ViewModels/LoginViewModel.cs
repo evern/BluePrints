@@ -70,7 +70,7 @@ namespace BluePrints.ViewModels
         {
             delayedConnectDispatcher.Stop();
 
-            SignalR.ConnectAsync(UserName);
+            //SignalR.ConnectAsync(UserName);
         }
 
         public void OnLoaded()

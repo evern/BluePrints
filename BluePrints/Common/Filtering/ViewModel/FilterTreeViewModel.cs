@@ -230,7 +230,7 @@ namespace BluePrints.Common.Filtering
 
         CriteriaOperator nullOrEmptyConversion(CriteriaOperator criteria)
         {
-            string currentCriteria = criteria.ToString();
+            string currentCriteria = ReferenceEquals(null, criteria) ? string.Empty : criteria.ToString();
             if (!currentCriteria.ToUpper().Contains("NULL"))
                 return criteria;
             else

@@ -16,8 +16,8 @@ namespace BluePrints.Common.Base
         public static IDocument ShowExistingEntityDocumentWithLogging(
             this IDocumentManagerService documentManagerService, DocumentInfo documentInfo, object parentViewModel)
         {
-            if(documentInfo != null && documentInfo.Title != null && documentInfo.DocumentType != null)
-                SignalR.HubLogMessage(LoginCredentials.CurrentUser.NAME + " opened " + documentInfo.Title + " - " + documentInfo.DocumentType);
+            //if(documentInfo != null && documentInfo.Title != null && documentInfo.DocumentType != null)
+            //    SignalR.HubLogMessage(LoginCredentials.CurrentUser.NAME + " opened " + documentInfo.Title + " - " + documentInfo.DocumentType);
 
             return documentManagerService.ShowExistingEntityDocument(documentInfo, parentViewModel);
         }
