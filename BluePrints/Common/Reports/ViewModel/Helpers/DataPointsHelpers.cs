@@ -402,7 +402,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                     Units = Convert.ToDecimal(deliverablesDataPoint.PeriodRemainingUnits),
                     ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate,
                     IsFromP6 = deliverablesDataPoint.IsFromP6,
-                    RemainingDuration = deliverablesDataPoint.RemainingDuration == null ? (decimal?)null : Convert.ToDecimal(deliverablesDataPoint.RemainingDuration)
+                    RemainingDuration = deliverablesDataPoint.RemainingDuration == null ? (decimal?)null : Convert.ToDecimal(deliverablesDataPoint.RemainingDuration),
+                    IsRemaining = true
                 });
             }
 

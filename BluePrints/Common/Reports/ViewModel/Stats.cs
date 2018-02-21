@@ -224,8 +224,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (CumulativeDataPoints != null && CumulativeDataPoints.Count > 0 && reportingDataDate != null)
-                    return DataPoints.Where(x => x.ProgressDate > reportingDataDate).Sum(x => x.Units);
+                if (rawDataPoints != null && rawDataPoints.Count() > 0)
+                    return rawDataPoints.Where(x => x.IsRemaining).Sum(x => x.Units);
                 else
                     return 0;
             }
@@ -235,8 +235,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (CumulativeDataPoints != null && CumulativeDataPoints.Count > 0 && reportingDataDate != null)
-                    return DataPoints.Where(x => x.ProgressDate > reportingDataDate).Sum(x => x.Costs);
+                if (rawDataPoints != null && rawDataPoints.Count() > 0)
+                    return rawDataPoints.Where(x => x.IsRemaining).Sum(x => x.Costs);
                 else
                     return 0;
             }
@@ -366,6 +366,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid DeliverableGuid { get; set; }
         public bool IsFromP6 { get; set; }
+        public bool IsRemaining { get; set; }
 
         public bool DoNotPlot { get; set; }
 
