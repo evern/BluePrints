@@ -77,6 +77,9 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
+            loaderCollection.AddLoaderDescription<PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PHASES);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription<PROJECT_DISCIPLINE, PROJECT_DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECT_DISCIPLINES);
@@ -182,6 +185,22 @@ namespace BluePrints.ViewModels
         }
 
         /// <summary>
+        /// WORKPACK is used for write only so just load a single entry for repository to be initialized
+        /// </summary>
+        private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        {
+            return query => query.Take(1);
+        }
+
+        /// <summary>
+        /// RATE is used for write only so just load a single entry for repository to be initialized
+        /// </summary>
+        private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
+        {
+            return query => query.Take(1);
+        }
+
+        /// <summary>
         /// AREA is used for write only so just load a single entry for repository to be initialized
         /// </summary>
         private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
@@ -274,18 +293,31 @@ namespace BluePrints.ViewModels
                 newConstructionPROGRESS.TYPE = ProgressType.Construct;
                 PROGRESSViewModel.Save(newConstructionPROGRESS);
 
-                var newAREA = new AREA();
-                newAREA.GUID_PROJECT = entity.GUID;
-                newAREA.INTERNAL_NUM = "000";
-                newAREA.CLIENT_NUM = "000";
-                newAREA.TITLE = "General";
-                AREAViewModel.Save(newAREA);
+                AREA defaultArea = new AREA();
+                defaultArea.GUID_PROJECT = entity.GUID;
+                defaultArea.INTERNAL_NUM = "000";
+                defaultArea.CLIENT_NUM = "000";
+                defaultArea.TITLE = "General";
+                AREAViewModel.Save(defaultArea);
 
+                PHASE defaultDirectPhase = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM == "D1");
                 DEPARTMENT defaultDepartment = DEPARTMENTViewModel.Entities.FirstOrDefault(x => x.NAME == BluePrintsResources.Default_New_Project_Department);
                 DISCIPLINE defaultDiscipline = DISCIPLINEViewModel.Entities.FirstOrDefault(x => x.NAME == BluePrintsResources.Default_New_Project_Discipline);
                 DOCTYPE defaultDocType = DOCTYPEViewModel.Entities.FirstOrDefault(x => x.NAME == BluePrintsResources.Default_New_Project_DocType);
+                PROJECT defaultRATESProject = MainViewModel.Entities.FirstOrDefault(x => x.NUMBER == "00000");
+                if(defaultRATESProject != null)
+                {
+                    foreach(RATE rate in defaultRATESProject.RATE)
+                    {
+                        RATE newRATE = new RATE();
+                        DataUtils.ShallowCopy(newRATE, rate);
+                        newRATE.GUID = Guid.Empty;
+                        newRATE.GUID_PROJECT = entity.GUID;
+                        RATEViewModel.Save(newRATE);
+                    }
+                }
 
-                if(defaultDepartment != null && defaultDiscipline != null)
+                if(defaultDirectPhase != null)
                 {
                     SUBJOB newSUBJOB = new SUBJOB();
                     newSUBJOB.GUID_PROJECT = entity.GUID;
@@ -294,22 +326,111 @@ namespace BluePrints.ViewModels
                     newSUBJOB.ENDDATE = ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1);
                     newSUBJOB.REVIEWSTARTDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
                     newSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
-                    newSUBJOB.GUID_DAREA = newAREA.GUID;
+                    newSUBJOB.GUID_DAREA = defaultArea.GUID;
+                    newSUBJOB.GUID_DPHASE = defaultDirectPhase.GUID;
                     SUBJOBViewModel.Save(newSUBJOB);
 
-                    BASELINE_ITEM newBASELINE_ITEM = new BASELINE_ITEM();
-                    newBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
-                    newBASELINE_ITEM.GUID_SUBJOB = newSUBJOB.GUID;
-                    newBASELINE_ITEM.GUID_DEPARTMENT = defaultDepartment.GUID;
-                    newBASELINE_ITEM.GUID_DISCIPLINE = defaultDiscipline.GUID;
-                    newBASELINE_ITEM.GUID_DOCTYPE = defaultDocType.GUID;
-                    newBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-000-REP-GE-001";
-                    BASELINE_ITEMViewModel.Save(newBASELINE_ITEM);
+                    if (defaultDepartment != null && defaultDiscipline != null)
+                    {
+                        BASELINE_ITEM newBASELINE_ITEM = new BASELINE_ITEM();
+                        newBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
+                        newBASELINE_ITEM.GUID_SUBJOB = newSUBJOB.GUID;
+                        newBASELINE_ITEM.GUID_DEPARTMENT = defaultDepartment.GUID;
+                        newBASELINE_ITEM.GUID_DISCIPLINE = defaultDiscipline.GUID;
+                        newBASELINE_ITEM.GUID_DOCTYPE = defaultDocType.GUID;
+                        newBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-000-REP-GE-001";
+                        newBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
+                        newBASELINE_ITEM.GUID_PHASE = defaultDirectPhase.GUID;
+                        BASELINE_ITEMViewModel.Save(newBASELINE_ITEM);
+                    }
 
+                    SUBJOB defaultDesignSUBJOB = new SUBJOB();
+                    defaultDesignSUBJOB.GUID_PROJECT = entity.GUID;
+                    defaultDesignSUBJOB.INTERNAL_NAME1 = entity.NUMBER + "-000-00-D1";
+                    defaultDesignSUBJOB.STARTDATE = CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday);
+                    defaultDesignSUBJOB.ENDDATE = ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1);
+                    defaultDesignSUBJOB.REVIEWSTARTDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
+                    defaultDesignSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
+                    defaultDesignSUBJOB.GUID_DAREA = defaultArea.GUID;
+                    defaultDesignSUBJOB.GUID_DPHASE = defaultDirectPhase.GUID;
+                    SUBJOBViewModel.Save(defaultDesignSUBJOB);
+
+                    DISCIPLINE PMDiscipline = DISCIPLINEViewModel.Entities.FirstOrDefault(x => x.CODE == "PM");
+                    if (PMDiscipline != null)
+                    {
+                        WORKPACK pmWORKPACK = new WORKPACK();
+                        pmWORKPACK.GUID_SUBJOB = defaultDesignSUBJOB.GUID;
+                        pmWORKPACK.GUID_DISCIPLINE = PMDiscipline.GUID;
+                        pmWORKPACK.NAME = entity.NUMBER + "-000-00-D1-PM01";
+                        WORKPACKViewModel.Save(pmWORKPACK);
+
+                        DOCTYPE manDOCTYPE = DOCTYPEViewModel.Entities.FirstOrDefault(x => x.CODE == "MAN");
+                        DEPARTMENT emDEPARTMENT = DEPARTMENTViewModel.Entities.FirstOrDefault(x => x.CODE == "EM");
+                        if (manDOCTYPE != null && emDEPARTMENT != null)
+                        {
+                            BASELINE_ITEM dmBASELINE_ITEM = new BASELINE_ITEM();
+                            dmBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
+                            dmBASELINE_ITEM.GUID_SUBJOB = defaultDesignSUBJOB.GUID;
+                            dmBASELINE_ITEM.GUID_DEPARTMENT = emDEPARTMENT.GUID;
+                            dmBASELINE_ITEM.GUID_DISCIPLINE = PMDiscipline.GUID;
+                            dmBASELINE_ITEM.GUID_DOCTYPE = manDOCTYPE.GUID;
+                            dmBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-000-MAN-PM-001";
+                            dmBASELINE_ITEM.PRIMARY_TITLE = "Design Management";
+                            dmBASELINE_ITEM.GUID_WORKPACK = pmWORKPACK.GUID;
+                            dmBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
+                            dmBASELINE_ITEM.GUID_PHASE = defaultDirectPhase.GUID;
+                            BASELINE_ITEMViewModel.Save(dmBASELINE_ITEM);
+                        }
+
+                        DOCTYPE g02DOCTYPE = DOCTYPEViewModel.Entities.FirstOrDefault(x => x.CODE == "G02");
+                        DEPARTMENT adDEPARTMENT = DEPARTMENTViewModel.Entities.FirstOrDefault(x => x.CODE == "AD");
+                        if (g02DOCTYPE != null && adDEPARTMENT != null)
+                        {
+                            BASELINE_ITEM dcBASELINE_ITEM = new BASELINE_ITEM();
+                            dcBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
+                            dcBASELINE_ITEM.GUID_SUBJOB = defaultDesignSUBJOB.GUID;
+                            dcBASELINE_ITEM.GUID_DEPARTMENT = adDEPARTMENT.GUID;
+                            dcBASELINE_ITEM.GUID_DISCIPLINE = PMDiscipline.GUID;
+                            dcBASELINE_ITEM.GUID_DOCTYPE = g02DOCTYPE.GUID;
+                            dcBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-G02-PM-001";
+                            dcBASELINE_ITEM.PRIMARY_TITLE = "Document Control";
+                            dcBASELINE_ITEM.GUID_WORKPACK = pmWORKPACK.GUID;
+                            dcBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
+                            dcBASELINE_ITEM.GUID_PHASE = defaultDirectPhase.GUID;
+                            BASELINE_ITEMViewModel.Save(dcBASELINE_ITEM);
+                        }
+                    }
+
+                    DISCIPLINE GEDiscipline = DISCIPLINEViewModel.Entities.FirstOrDefault(x => x.CODE == "GE");
+                    if (GEDiscipline != null)
+                    {
+                        WORKPACK geWORKPACK = new WORKPACK();
+                        geWORKPACK.GUID_SUBJOB = defaultDesignSUBJOB.GUID;
+                        geWORKPACK.GUID_DISCIPLINE = PMDiscipline.GUID;
+                        geWORKPACK.NAME = entity.NUMBER + "-000-00-D1-GE01";
+                        WORKPACKViewModel.Save(geWORKPACK);
+
+                        DOCTYPE mtgDOCTYPE = DOCTYPEViewModel.Entities.FirstOrDefault(x => x.CODE == "MTG");
+                        DEPARTMENT enDEPARTMENT = DEPARTMENTViewModel.Entities.FirstOrDefault(x => x.CODE == "EN");
+                        if (mtgDOCTYPE != null && enDEPARTMENT != null)
+                        {
+                            BASELINE_ITEM meetBASELINE_ITEM = new BASELINE_ITEM();
+                            meetBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
+                            meetBASELINE_ITEM.GUID_SUBJOB = defaultDesignSUBJOB.GUID;
+                            meetBASELINE_ITEM.GUID_DEPARTMENT = enDEPARTMENT.GUID;
+                            meetBASELINE_ITEM.GUID_DISCIPLINE = PMDiscipline.GUID;
+                            meetBASELINE_ITEM.GUID_DOCTYPE = mtgDOCTYPE.GUID;
+                            meetBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-000-MTG-GE-001";
+                            meetBASELINE_ITEM.PRIMARY_TITLE = "Meetings";
+                            meetBASELINE_ITEM.GUID_WORKPACK = geWORKPACK.GUID;
+                            meetBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
+                            meetBASELINE_ITEM.GUID_PHASE = defaultDirectPhase.GUID;
+                            BASELINE_ITEMViewModel.Save(meetBASELINE_ITEM);
+                        }
+                    }
                 }
             }
         }
-
         #endregion
 
         #endregion
@@ -527,6 +648,18 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public CollectionViewModel<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork> RATEViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<RATE>();
+            }
+        }
 
         public CollectionViewModel<SUBJOB, SUBJOB, Guid, IBluePrintsEntitiesUnitOfWork> SUBJOBViewModel
         {
@@ -538,6 +671,19 @@ namespace BluePrints.ViewModels
                 return
                     (CollectionViewModel<SUBJOB, SUBJOB, Guid, IBluePrintsEntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<SUBJOB>();
+            }
+        }
+
+        public CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACKViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<WORKPACK>();
             }
         }
 
@@ -722,6 +868,14 @@ namespace BluePrints.ViewModels
                 }
 
                 return collection;
+            }
+        }
+
+        public IEnumerable<PHASE> PHASECollection
+        {
+            get
+            {
+                return GetEntities<PHASE>();
             }
         }
 
