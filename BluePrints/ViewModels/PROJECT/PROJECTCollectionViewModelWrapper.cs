@@ -332,16 +332,17 @@ namespace BluePrints.ViewModels
 
                     if (defaultDepartment != null && defaultDiscipline != null)
                     {
-                        BASELINE_ITEM newBASELINE_ITEM = new BASELINE_ITEM();
-                        newBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
-                        newBASELINE_ITEM.GUID_SUBJOB = newSUBJOB.GUID;
-                        newBASELINE_ITEM.GUID_DEPARTMENT = defaultDepartment.GUID;
-                        newBASELINE_ITEM.GUID_DISCIPLINE = defaultDiscipline.GUID;
-                        newBASELINE_ITEM.GUID_DOCTYPE = defaultDocType.GUID;
-                        newBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-000-REP-GE-001";
-                        newBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
-                        newBASELINE_ITEM.GUID_PHASE = defaultDirectPhase.GUID;
-                        BASELINE_ITEMViewModel.Save(newBASELINE_ITEM);
+                        BASELINE_ITEM rptBASELINE_ITEM = new BASELINE_ITEM();
+                        rptBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
+                        rptBASELINE_ITEM.GUID_SUBJOB = newSUBJOB.GUID;
+                        rptBASELINE_ITEM.GUID_DEPARTMENT = defaultDepartment.GUID;
+                        rptBASELINE_ITEM.GUID_DISCIPLINE = defaultDiscipline.GUID;
+                        rptBASELINE_ITEM.GUID_DOCTYPE = defaultDocType.GUID;
+                        rptBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-000-REP-GE-001";
+                        rptBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
+                        rptBASELINE_ITEM.GUID_PHASE = defaultDirectPhase.GUID;
+                        rptBASELINE_ITEM.PRIMARY_TITLE = "Report";
+                        BASELINE_ITEMViewModel.Save(rptBASELINE_ITEM);
                     }
 
                     SUBJOB defaultDesignSUBJOB = new SUBJOB();
