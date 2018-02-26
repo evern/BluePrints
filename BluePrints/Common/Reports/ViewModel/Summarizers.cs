@@ -236,7 +236,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
                 List<StoredProcedure_RemainingDataPoint> remainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPointsByProject(this.projectNumber);
-                List<StoredProcedure_RemainingDataPoint> remainingLateDataPoints = bluePrintDataContext.QueryDeliverableRemainingLateDataPointsByProject(this.projectNumber);
+                //List<StoredProcedure_RemainingDataPoint> remainingLateDataPoints = bluePrintDataContext.QueryDeliverableRemainingLateDataPointsByProject(this.projectNumber);
                 //double sumRemaining = remainingDataPoints.Sum(x => x.PeriodRemainingUnits);
                 //string s = sumRemaining.ToString();
 
@@ -262,32 +262,39 @@ namespace BluePrints.Common.ViewModel.Reporting
                             foreach (IReportable reportable in reportable_Group.Reportables)
                             {
                                 reportable.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey), reportable.Stats.Earned.DataPoints);
-                                reportable.Stats.RemainingLate.SetRemainingData(remainingLateDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey), reportable.Stats.Earned.DataPoints);
+                                //SummaryStats summaryStats = reportable.Stats as SummaryStats;
+                                //if(summaryStats != null)
+                                //    reportable.Stats.RemainingActual.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey), summaryStats.Burned.DataPoints);
+
                                 reportable.Update();
                                 currentGroupDeliverableDataPoints.AddRange(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
-                                currentGroupDeliverableLateDataPoints.AddRange(remainingLateDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
+                                currentGroupDeliverableLateDataPoints.AddRange(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
                             }
 
                             reportable_Group.Stats.Remaining.SetRemainingData(currentGroupDeliverableDataPoints, reportable_Group.Stats.Earned.DataPoints);
-                            reportable_Group.Stats.RemainingLate.SetRemainingData(currentGroupDeliverableLateDataPoints, reportable_Group.Stats.Earned.DataPoints);
+                            //SummaryStats groupSummaryStats = reportable_Group.Stats as SummaryStats;
+                            //if (groupSummaryStats != null)
+                            //    reportable_Group.Stats.RemainingActual.SetRemainingData(currentGroupDeliverableLateDataPoints, groupSummaryStats.Burned.DataPoints);
+
                             reportable_Group.Update();
                             continue;
                         }
                         else
                         {
                             reportablesDisplay.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), reportableObject.Stats.Earned.DataPoints);
-                            reportablesDisplay.Stats.RemainingLate.SetRemainingData(remainingLateDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), reportableObject.Stats.Earned.DataPoints);
+                            //SummaryStats summaryStats = reportablesDisplay.Stats as SummaryStats;
+                            //if (summaryStats != null)
+                            //    reportablesDisplay.Stats.RemainingActual.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), summaryStats.Burned.DataPoints);
+
                             reportablesDisplay.Update();
                         }
                     }
                     else
                     {
                         reportableObject.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), reportableObject.Stats.Earned.DataPoints);
-                        reportableObject.Stats.RemainingLate.SetRemainingData(remainingLateDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), reportableObject.Stats.Earned.DataPoints);
-                        //if (reportableObject.Stats.Remaining.DataPoints != null)
-                        //    Debug.Print(reportableObject.Stats.Remaining.DataPoints.Sum(x => x.Units).ToString());
-                        //else
-                        //    Debug.Print(reportableObject.OriginalEntityKey.ToString());
+                        //SummaryStats summaryStats = reportableObject.Stats as SummaryStats;
+                        //if (summaryStats != null)
+                        //    reportableObject.Stats.RemainingActual.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), summaryStats.Burned.DataPoints);
 
                         reportableObject.Update();
                     }

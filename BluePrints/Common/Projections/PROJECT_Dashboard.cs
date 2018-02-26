@@ -50,8 +50,10 @@ namespace BluePrints.Common.Projections
             if (projectSummarizer == null)
                 return;
 
-            projectSummarizer.BuildBurnedDataPoints(ExoBurnedFilterType.All);
             projectSummarizer.Build(showLoadingScreen, isCosts, weightingPortion);
+            //Build burned must come after build so that remaining can be retrieved for remaining actual
+            projectSummarizer.BuildBurnedDataPoints(ExoBurnedFilterType.All);
+
             this.RaisePropertiesChanged();
         }
 

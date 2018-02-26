@@ -144,9 +144,11 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 projectSummaryStats.Burned = new Stats(summaryObject);
                 projectSummaryStats.Actual = new Stats(summaryObject);
+                projectSummaryStats.RemainingActual = new Stats(summaryObject);
 
                 projectSummaryStats.Burned.SetData(burnedDataPoints);
                 projectSummaryStats.Actual.SetData(actualDataPoints);
+                projectSummaryStats.RemainingActual.SetRemainingActualData(projectSummaryStats.Remaining.GetData().Where(x => x.IsRemaining), projectSummaryStats.Burned.GetData());
                 //LoadingScreenManager.Progress();
             }
             catch(Exception e)

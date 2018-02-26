@@ -76,10 +76,16 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             IEnumerable<ExoDataPoint> burned_data_points = summary_stats.Burned.GetData().Select(x => (ExoDataPoint)x);
             IEnumerable<ExoDataPoint> actual_data_points = summary_stats.Actual.GetData().Select(x => (ExoDataPoint)x);
+            //IEnumerable<DataPoint> remaining_actual_data_points = summary_stats.RemainingActual.GetData();
+
             List<ExoDataPoint> burnedRawDataPoints = burned_data_points.Where(predicate).ToList();
             grouped_summary_stats.Burned.SetData(burnedRawDataPoints);
             List<ExoDataPoint> actualRawDataPoints = actual_data_points.Where(predicate).ToList();
             grouped_summary_stats.Actual.SetData(actualRawDataPoints);
+
+            //Cannot uset setdata on remaining actual because there's no Func<DataPoint, bool> predicate to apply filter on data
+            //grouped_summary_stats.RemainingActual.SetData(remaining_actual_data_points);
+            grouped_summary_stats.RemainingActual.SetRemainingActualData(grouped_summary_stats.Remaining.GetData(), grouped_summary_stats.Burned.GetData());
             grouped_summary_stats.RecalculateStats(false);
 
             if (grouped_reportables.Count() == 0 && burnedRawDataPoints.Count() == 0 && actualRawDataPoints.Count() == 0)
@@ -122,6 +128,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             ProjectionHelpers.Initialize_Stats(progressItem, projectVariationAdjustments, reporting_data_date, reporting_interval, first_aligned_data_date, true);
             Burned = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             Actual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
+            RemainingActual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
         }
 
         /// <summary>
@@ -139,6 +146,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             Actual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             Actual.SetData(cleanSummaryStats.Where(x => x.Actual != null && x.Actual.DataPoints != null).SelectMany(x => x.Actual.DataPoints).ToList());
+
+            RemainingActual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
+            RemainingActual.SetData(cleanSummaryStats.Where(x => x.RemainingActual != null && x.RemainingActual.DataPoints != null).SelectMany(x => x.RemainingActual.DataPoints).ToList());
         }
 
         public void GenerateSummary()
@@ -148,7 +158,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.Current.SetData(Reportables.SelectMany(x => x.Stats.Current.GetData()));
             this.Earned.SetData(Reportables.SelectMany(x => x.Stats.Earned.GetData()));
             this.Remaining.SetData(Reportables.SelectMany(x => x.Stats.Remaining.GetData()));
-            this.RemainingLate.SetData(Reportables.SelectMany(x => x.Stats.RemainingLate.GetData()));
+            //Remaining actual canno be summarize here because it contains elements from actuals
+            //this.RemainingActual.SetData(Reportables.SelectMany(x => x.Stats.RemainingActual.GetData()));
         }
 
         public void RecalculateStats(bool isCost = false)
@@ -231,10 +242,10 @@ namespace BluePrints.Common.ViewModel.Reporting
             set { SetProperty(() => Remaining, value); }
         }
 
-        public Stats RemainingLate
+        public Stats RemainingActual
         {
-            get { return GetProperty(() => RemainingLate); }
-            set { SetProperty(() => RemainingLate, value); }
+            get { return GetProperty(() => RemainingActual); }
+            set { SetProperty(() => RemainingActual, value); }
         }
 
         readonly decimal budgetedUnits;
@@ -315,7 +326,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             Current = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments);
             Earned = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments);
             Remaining = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, true);
-            RemainingLate = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, true);
+            //RemainingActual = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, true);
         }
 
         public ProgressStats(IEnumerable<ProgressStats> progressStats)
@@ -350,8 +361,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             Remaining = new Stats(ReportingDataDate, budgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, true);
             Remaining.SetData(cleanProgressStats.Where(x => x.Remaining != null && x.Remaining.DataPoints != null).SelectMany(x => x.Remaining.GetData()).ToList());
 
-            RemainingLate = new Stats(ReportingDataDate, budgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, true);
-            RemainingLate.SetData(cleanProgressStats.Where(x => x.RemainingLate != null && x.RemainingLate.DataPoints != null).SelectMany(x => x.RemainingLate.GetData()).ToList());
+            //RemainingActual = new Stats(ReportingDataDate, budgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, true);
+            //RemainingActual.SetData(cleanProgressStats.Where(x => x.RemainingActual != null && x.RemainingActual.DataPoints != null).SelectMany(x => x.RemainingActual.GetData()).ToList());
         }
     }
 }

@@ -330,20 +330,10 @@ namespace BluePrints.ViewModels
                     newSUBJOB.GUID_DPHASE = defaultDirectPhase.GUID;
                     SUBJOBViewModel.Save(newSUBJOB);
 
-                    if (defaultDepartment != null && defaultDiscipline != null)
-                    {
-                        BASELINE_ITEM rptBASELINE_ITEM = new BASELINE_ITEM();
-                        rptBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
-                        rptBASELINE_ITEM.GUID_SUBJOB = newSUBJOB.GUID;
-                        rptBASELINE_ITEM.GUID_DEPARTMENT = defaultDepartment.GUID;
-                        rptBASELINE_ITEM.GUID_DISCIPLINE = defaultDiscipline.GUID;
-                        rptBASELINE_ITEM.GUID_DOCTYPE = defaultDocType.GUID;
-                        rptBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-000-REP-GE-001";
-                        rptBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
-                        rptBASELINE_ITEM.GUID_PHASE = defaultDirectPhase.GUID;
-                        rptBASELINE_ITEM.PRIMARY_TITLE = "Report";
-                        BASELINE_ITEMViewModel.Save(rptBASELINE_ITEM);
-                    }
+                    //if (defaultDepartment != null && defaultDiscipline != null)
+                    //{
+
+                    //}
 
                     SUBJOB defaultDesignSUBJOB = new SUBJOB();
                     defaultDesignSUBJOB.GUID_PROJECT = entity.GUID;
@@ -393,7 +383,7 @@ namespace BluePrints.ViewModels
                             dcBASELINE_ITEM.GUID_DEPARTMENT = adDEPARTMENT.GUID;
                             dcBASELINE_ITEM.GUID_DISCIPLINE = PMDiscipline.GUID;
                             dcBASELINE_ITEM.GUID_DOCTYPE = g02DOCTYPE.GUID;
-                            dcBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-G02-PM-001";
+                            dcBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-000-G02-PM-001";
                             dcBASELINE_ITEM.PRIMARY_TITLE = "Document Control";
                             dcBASELINE_ITEM.GUID_WORKPACK = pmWORKPACK.GUID;
                             dcBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
@@ -407,11 +397,12 @@ namespace BluePrints.ViewModels
                     {
                         WORKPACK geWORKPACK = new WORKPACK();
                         geWORKPACK.GUID_SUBJOB = defaultDesignSUBJOB.GUID;
-                        geWORKPACK.GUID_DISCIPLINE = PMDiscipline.GUID;
+                        geWORKPACK.GUID_DISCIPLINE = GEDiscipline.GUID;
                         geWORKPACK.NAME = entity.NUMBER + "-000-00-D1-GE01";
                         WORKPACKViewModel.Save(geWORKPACK);
 
                         DOCTYPE mtgDOCTYPE = DOCTYPEViewModel.Entities.FirstOrDefault(x => x.CODE == "MTG");
+                        DOCTYPE repDOCTYPE = DOCTYPEViewModel.Entities.FirstOrDefault(x => x.CODE == "REP");
                         DEPARTMENT enDEPARTMENT = DEPARTMENTViewModel.Entities.FirstOrDefault(x => x.CODE == "EN");
                         if (mtgDOCTYPE != null && enDEPARTMENT != null)
                         {
@@ -419,7 +410,7 @@ namespace BluePrints.ViewModels
                             meetBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
                             meetBASELINE_ITEM.GUID_SUBJOB = defaultDesignSUBJOB.GUID;
                             meetBASELINE_ITEM.GUID_DEPARTMENT = enDEPARTMENT.GUID;
-                            meetBASELINE_ITEM.GUID_DISCIPLINE = PMDiscipline.GUID;
+                            meetBASELINE_ITEM.GUID_DISCIPLINE = GEDiscipline.GUID;
                             meetBASELINE_ITEM.GUID_DOCTYPE = mtgDOCTYPE.GUID;
                             meetBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-000-MTG-GE-001";
                             meetBASELINE_ITEM.PRIMARY_TITLE = "Meetings";
@@ -427,6 +418,22 @@ namespace BluePrints.ViewModels
                             meetBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
                             meetBASELINE_ITEM.GUID_PHASE = defaultDirectPhase.GUID;
                             BASELINE_ITEMViewModel.Save(meetBASELINE_ITEM);
+                        }
+
+                        if(repDOCTYPE != null && enDEPARTMENT != null)
+                        {
+                            BASELINE_ITEM rptBASELINE_ITEM = new BASELINE_ITEM();
+                            rptBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
+                            rptBASELINE_ITEM.GUID_SUBJOB = defaultDesignSUBJOB.GUID;
+                            rptBASELINE_ITEM.GUID_DEPARTMENT = enDEPARTMENT.GUID;
+                            rptBASELINE_ITEM.GUID_DISCIPLINE = GEDiscipline.GUID;
+                            rptBASELINE_ITEM.GUID_DOCTYPE = repDOCTYPE.GUID;
+                            rptBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-000-REP-GE-001";
+                            rptBASELINE_ITEM.GUID_WORKPACK = geWORKPACK.GUID;
+                            rptBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
+                            rptBASELINE_ITEM.GUID_PHASE = defaultDirectPhase.GUID;
+                            rptBASELINE_ITEM.PRIMARY_TITLE = "Report";
+                            BASELINE_ITEMViewModel.Save(rptBASELINE_ITEM);
                         }
                     }
                 }

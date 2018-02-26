@@ -884,28 +884,26 @@
             sideBySideBarSeriesView5.Color = System.Drawing.Color.OrangeRed;
             sideBySideBarSeriesView5.FillStyle.FillMode = DevExpress.XtraCharts.FillMode.Solid;
             series10.View = sideBySideBarSeriesView5;
-            series11.ArgumentDataMember = "RemainingLate.CumulativeDataPoints.ProgressDate";
+            series11.ArgumentDataMember = "RemainingActual.CumulativeDataPoints.ProgressDate";
             series11.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
-            series11.Name = "Late Remaining";
-            series11.ValueDataMembersSerializable = "RemainingLate.CumulativeDataPoints.UnitsPercentage";
-            lineSeriesView6.Color = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(165)))), ((int)(((byte)(165)))));
-            lineSeriesView6.LineMarkerOptions.Color = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(127)))), ((int)(((byte)(127)))));
+            series11.Name = "Remaining Actual";
+            series11.ValueDataMembersSerializable = "RemainingActual.CumulativeDataPoints.UnitsPercentage";
+            lineSeriesView6.Color = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            lineSeriesView6.LineMarkerOptions.Color = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             lineSeriesView6.LineMarkerOptions.Size = 6;
             lineSeriesView6.MarkerVisibility = DevExpress.Utils.DefaultBoolean.True;
             series11.View = lineSeriesView6;
-            series11.Visible = false;
-            series12.ArgumentDataMember = "RemainingLate.DataPoints.ProgressDate";
+            series12.ArgumentDataMember = "RemainingActual.DataPoints.ProgressDate";
             series12.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
-            series12.Name = "Period Late Remaining";
+            series12.Name = "Period Remaining Actual";
             series12.ShowInLegend = false;
-            series12.ValueDataMembersSerializable = "RemainingLate.DataPoints.Units";
+            series12.ValueDataMembersSerializable = "RemainingActual.DataPoints.Units";
             sideBySideBarSeriesView6.AxisYName = "Secondary AxisY Units";
             sideBySideBarSeriesView6.BarWidth = 3D;
             sideBySideBarSeriesView6.Border.Visibility = DevExpress.Utils.DefaultBoolean.False;
-            sideBySideBarSeriesView6.Color = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(127)))), ((int)(((byte)(127)))));
+            sideBySideBarSeriesView6.Color = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             sideBySideBarSeriesView6.FillStyle.FillMode = DevExpress.XtraCharts.FillMode.Solid;
             series12.View = sideBySideBarSeriesView6;
-            series12.Visible = false;
             this.xrChart1.SeriesSerializable = new DevExpress.XtraCharts.Series[] {
         series1,
         series2,

@@ -324,7 +324,7 @@ namespace BluePrints.Common.ViewModel
         public string Periodic_Actual_DisplayName { get; set; }
         public string Summary_Display_Format { get; set; }
         public string Header_Remaining { get; set; }
-        public string Header_RemainingLate { get; set; }
+        public string Header_RemainingActual { get; set; }
         public string BarSeriesValueDataMember { get; set; }
         public string LineSeriesValueDataMember { get; set; }
         public string BarSeriesCrosshairPattern { get; set; }
@@ -364,7 +364,7 @@ namespace BluePrints.Common.ViewModel
             this.RaisePropertyChanged(x => x.Header_Burned);
             this.RaisePropertyChanged(x => x.Header_Actual);
             this.RaisePropertyChanged(x => x.Header_Remaining);
-            this.RaisePropertyChanged(x => x.Header_RemainingLate);
+            this.RaisePropertyChanged(x => x.Header_RemainingActual);
             this.RaisePropertyChanged(x => x.Cumulative_Planned_DisplayName);
             this.RaisePropertyChanged(x => x.Cumulative_Earned_DisplayName);
             this.RaisePropertyChanged(x => x.Cumulative_Burned_DisplayName);
@@ -415,7 +415,7 @@ namespace BluePrints.Common.ViewModel
         string Header_Burned { get; set; }
         string Header_Actual { get; set; }
         string Header_Remaining { get; set; }
-        string Header_RemainingLate { get; set; }
+        string Header_RemainingActual { get; set; }
         bool IsActualVisible { get; set; }
         string Cumulative_Planned_DisplayName { get; set; }
         string Cumulative_Earned_DisplayName { get; set; }
@@ -479,7 +479,7 @@ namespace BluePrints.Common.ViewModel
             string burned_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Burned);
             string actual_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Actual);
             string remaining_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Remaining);
-            string remaining_late_string = "Late " + BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Remaining);
+            string remaining_actual_string = "Actual " + BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Remaining);
 
             string field_selection_string = isCost ? cost_string : units_string;
             string field_percentage_selection_string = isCost ? cost_percentage_string : units_percentage_string;
@@ -537,7 +537,7 @@ namespace BluePrints.Common.ViewModel
             stats_switch.Header_Burned = String.Format(header_convention, burned_string, display_selection_string);
             stats_switch.Header_Actual = String.Format(header_convention, actual_string, display_selection_string);
             stats_switch.Header_Remaining = String.Format(header_convention, remaining_string, display_selection_string);
-            stats_switch.Header_RemainingLate = String.Format(header_convention, remaining_late_string, display_selection_string);
+            stats_switch.Header_RemainingActual = String.Format(header_convention, remaining_actual_string, display_selection_string);
 
             stats_switch.BarSeriesValueDataMember = isCost ? "Costs" : "Units";
             if(usePercentage)

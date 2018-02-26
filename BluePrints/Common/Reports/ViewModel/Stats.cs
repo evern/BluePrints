@@ -135,6 +135,19 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.rawDataPoints = convertedDataPoints;
         }
 
+        public void SetRemainingActualData(IEnumerable<DataPoint> remainingDataPoints, IEnumerable<DataPoint> burnedDataPoints)
+        {
+            List<DataPoint> convertedDataPoints = remainingDataPoints.Where(x => x.IsRemaining).ToList();
+
+            if (burnedDataPoints != null)
+                convertedDataPoints.AddRange(burnedDataPoints.ToList());
+
+            if (convertedDataPoints.All(x => x.IsFromP6))
+                SetFromP6();
+
+            this.rawDataPoints = convertedDataPoints;
+        }
+
         public IEnumerable<ExoDataPoint> ExoDataPoints
         {
             get
