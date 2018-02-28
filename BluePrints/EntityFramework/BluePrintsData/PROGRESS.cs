@@ -37,6 +37,10 @@ namespace BluePrints.Data
         [StringLength(20)]
         public string P6PROGRESS_NAME { get; set; }
 
+        public DateTime? PREVIOUS_REPORT_DATE { get; set; }
+
+        public DateTime? REPORT_DATE { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

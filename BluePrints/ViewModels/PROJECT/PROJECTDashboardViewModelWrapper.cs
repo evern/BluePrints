@@ -269,7 +269,7 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public bool CanViewReport()
+        public override bool CanViewReport()
         {
             if (DisplaySelectedEntities.Count > 0)
                 return false;

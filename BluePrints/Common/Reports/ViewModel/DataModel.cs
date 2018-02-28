@@ -552,7 +552,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public BluePrintsProgressableProjectionBase(PROJECT PROJECT, PROGRESS Live_PROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> variation_adjustments)
         {
             this.Live_PROGRESS = Live_PROGRESS;
-            DateTime reporting_data_date = Live_PROGRESS.DATA_DATE;
+            //DateTime reporting_data_date = Live_PROGRESS.DATA_DATE;
+            DateTime reporting_data_date = Live_PROGRESS.REPORT_DATE == null ? Live_PROGRESS.DATA_DATE : (DateTime)Live_PROGRESS.REPORT_DATE;
             TimeSpan reporting_interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(Live_PROGRESS);
             DateTime first_aligned_data_date = ChronologicalHelpers.GenerateFirstAlignedDataDate(Live_PROGRESS);
             SetReportingDataDate(reporting_data_date);
@@ -650,6 +651,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
         #endregion
 
+        public IEnumerable<PROGRESS_ITEM> Progresses => PROGRESS_ITEMS;
         private decimal? set_total_earned_percentage;
         public decimal Total_Earned_Percentage
         {

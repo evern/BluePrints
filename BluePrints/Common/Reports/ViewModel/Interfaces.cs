@@ -112,6 +112,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     public interface ICanAssignP6 : ICanUpdate, IGuidEntityKey, IOriginalGuidEntityKey, IHaveHours
     {
         List<P6_ASSIGNMENT> P6_Assignments { get; }
+        IEnumerable<PROGRESS_ITEM> Progresses { get; }
         Guid DeliverableKey { get; }
         string P6AssignmentName { get; }
         string P6AssignmentDescription { get; }

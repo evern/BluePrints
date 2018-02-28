@@ -256,7 +256,7 @@ namespace BluePrints.Common.ViewModel
             IssuesDialogService.ShowDialog(MessageButton.OK, "Exo Affinity Report", "ExoAffinityReport", viewModel);
         }
 
-        public bool CanViewReport()
+        public virtual bool CanViewReport()
         {
             return SummaryEntity != null && SummaryEntity.Stats != null;
         }

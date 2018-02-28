@@ -58,7 +58,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <summary>
         /// Calculates the aligned data date for subjob start date, used for remaining datapoints calculation
         /// </summary>
-        public static DateTime GenerateSubjobAlignedDataDate(DateTime firstAlignedDataDate, DateTime subjobStartDate,
+        public static DateTime GenerateAlignedDataDate(DateTime firstAlignedDataDate, DateTime arbitraryStartDate,
             TimeSpan intervalPeriod)
         {
             var weekEndingAlignedDataDate = firstAlignedDataDate;
@@ -66,7 +66,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             do
             {
                 weekEndingAlignedDataDate = weekEndingAlignedDataDate.AddDays(intervalPeriod.Days);
-            } while (weekEndingAlignedDataDate <= subjobStartDate);
+            } while (weekEndingAlignedDataDate <= arbitraryStartDate);
 
             return weekEndingAlignedDataDate;
         }

@@ -228,7 +228,6 @@ namespace BluePrints.ViewModels
 
         //    base.CellValueExistingRowChanging(e);
         //}
-
         #region Collection Call Backs
 
         public bool ValidateFillDownCallBack(BASELINE_ITEMProgress fillDownEntity, string fieldName, object fillValue)

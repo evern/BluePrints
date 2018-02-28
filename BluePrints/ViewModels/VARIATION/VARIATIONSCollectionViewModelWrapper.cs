@@ -49,9 +49,7 @@ namespace BluePrints.ViewModels
 
         private PROJECT loadPROJECT;
         private ProgressType phaseType;
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void resolveParameters(object parameter)
         {
             var project_phasetype_parameter = (DualEntitiesParameter<PROJECT, ProgressTypeClass>) parameter;
