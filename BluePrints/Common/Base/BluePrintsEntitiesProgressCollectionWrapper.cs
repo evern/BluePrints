@@ -639,6 +639,7 @@ namespace BluePrints.Common.Base
             p6UOW.SaveChanges();
 
             LoadingScreenManager.CloseLoadingScreen();
+            MessageBoxService.ShowMessage("Progress from P6 is completed");
         }
 
         private void removeOrReduceDataPointsForTasks(ICanAssignP6 deliverable, decimal reduceUnits)
