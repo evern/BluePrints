@@ -57,8 +57,6 @@ namespace BluePrints.Common.Base
         protected bool is_load_p6_task = false;
         public BluePrintsEntitiesProgressCollectionWrapper()
         {
-            bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
-            p6UOW = p6UnitOfWorkFactory.CreateUnitOfWork();
             onMainViewModelFirstLoadedTimer = new DispatcherTimer();
             onMainViewModelFirstLoadedTimer.Interval = new TimeSpan(0, 0, 0, 1);
             onMainViewModelFirstLoadedTimer.Tick += onMainViewModelFirstLoaded;
@@ -84,6 +82,9 @@ namespace BluePrints.Common.Base
 
         protected override void initializeEntitiesLoadersDescription()
         {
+            bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            p6UOW = p6UnitOfWorkFactory.CreateUnitOfWork();
+
             if (is_single_project_mode)
             {
                 loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, SetPROGRESStoCurrentDateOnLoaded);
@@ -501,30 +502,31 @@ namespace BluePrints.Common.Base
             PROGRESS backupPROGRESS = new PROGRESS();
             DataUtils.ShallowCopy(backupPROGRESS, loadPROGRESS);
             backupPROGRESS.GUID = Guid.Empty;
+            backupPROGRESS.NAME = "BACKUP " + DateTime.Now.ToShortDateString() + " - " + DateTime.Now.ToShortTimeString();
             backupPROGRESS.STATUS = ProgressStatus.Superseded;
             bluePrintsUOW.PROGRESSES.Add(backupPROGRESS);
             //need to save progress to get GUID
             bluePrintsUOW.SaveChanges();
 
             LoadingScreenManager.ShowLoadingScreen(loadPROGRESS.PROGRESS_ITEM.Count());
-            //foreach (PROGRESS_ITEM progress_item in loadPROGRESS.PROGRESS_ITEM)
-            //{
-            //    PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
-            //    DataUtils.ShallowCopy(newPROGRESS_ITEM, progress_item);
-            //    newPROGRESS_ITEM.GUID = Guid.Empty;
-            //    newPROGRESS_ITEM.GUID_PROGRESS = backupPROGRESS.GUID;
-            //    bluePrintsUOW.PROGRESS_ITEMS.Add(newPROGRESS_ITEM);
-            //    LoadingScreenManager.Progress();
-            //}
+            foreach (PROGRESS_ITEM progress_item in loadPROGRESS.PROGRESS_ITEM)
+            {
+                PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
+                DataUtils.ShallowCopy(newPROGRESS_ITEM, progress_item);
+                newPROGRESS_ITEM.GUID = Guid.Empty;
+                newPROGRESS_ITEM.GUID_PROGRESS = backupPROGRESS.GUID;
+                bluePrintsUOW.PROGRESS_ITEMS.Add(newPROGRESS_ITEM);
+                LoadingScreenManager.Progress();
+            }
 
-            //bluePrintsUOW.SaveChanges();
+            bluePrintsUOW.SaveChanges();
             LoadingScreenManager.CloseLoadingScreen();
             MessageBoxService.ShowMessage("Progress backup completed");
 
             isReversingFromP6 = true;
             //Stats will be built in SummarizeSinglePROJECTDashboard within SummarizeBASELINE_ITEMDashboard in ConstructMainViewModelProjection
             MainViewModel.Refresh();
-            scheduling_view_model.OnViewModelLoaded = ReverseProgressFromP6_ModelLoaded;
+            scheduling_view_model.OnViewModelLoaded = ReverseProgressP6_Loaded;
             scheduling_view_model.OnViewModelLoadFailed = onSchedulingViewModelLoadFailed;
             var ParameterObj = scheduling_view_model as ISupportParameter;
             ParameterObj.Parameter = new object[] { loadPROGRESS, BaselineMappingSelectionType.Original, loadPROJECT };
@@ -532,9 +534,204 @@ namespace BluePrints.Common.Base
 
         public void ReverseProgressP6_Loaded(IEnumerable<ICanAssignP6> entities)
         {
-            foreach(ICanAssignP6 deliverable in entities)
-            {
+            List<P6_ASSIGNMENT> allCompletedAssignments = new List<P6_ASSIGNMENT>();
+            IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;
+            DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
 
+            //specify the oldest date data points can edit to
+            DateTime progressLimitDate = loadPROGRESS.PREVIOUS_REPORT_DATE == null ? loadPROGRESS.REPORT_DATE == null ? loadPROGRESS.PROGRESS_START : (DateTime)loadPROGRESS.REPORT_DATE : (DateTime)loadPROGRESS.PREVIOUS_REPORT_DATE;
+
+            LoadingScreenManager.ShowLoadingScreen(entities.Count());
+            foreach (ICanAssignP6 deliverable in entities)
+            {
+                foreach(P6_ASSIGNMENT assignment in deliverable.P6_Assignments.OrderByDescending(x => x.HIGH_VALUE))
+                {
+                    TASK task = PROJECTTASK.FirstOrDefault(x => x.task_code == assignment.P6_ACTIVITYID);
+                    if(task != null && task.target_work_qty != null)
+                    {
+                        if(task.act_work_qty > 0)
+                        {
+                            //assuming previous assignment is completed what the units on this deliverable should at least be
+                            decimal supposedUnitsForPreviousAssignment = deliverable.Total_Units * (assignment.LOW_VALUE - 0.01m);
+                            decimal supposedUnitsForCurrentAssignment = deliverable.Total_Units * ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m);
+
+                            //because current task can be assigned to multiple deliverable, actual earned units needs to be pro-rated
+                            decimal proRateValue = supposedUnitsForCurrentAssignment / (decimal)task.target_work_qty;
+                            decimal proRateUnits = (decimal)task.act_work_qty * proRateValue;
+
+                            decimal totalSupposedUnits = supposedUnitsForPreviousAssignment + proRateUnits;
+
+                            decimal totalUnitsEarned = deliverable.Progresses.Sum(x => x.EARNED_UNITS);
+                            decimal unitsParity = totalSupposedUnits - totalUnitsEarned;
+                            if (unitsParity > 0.001m)
+                            {
+                                //Add units for previous task assignments
+                                IEnumerable<P6_ASSIGNMENT> completedAssignments = deliverable.P6_Assignments.Where(x => x.HIGH_VALUE < assignment.LOW_VALUE);
+                                addOrIncreaseDataPointsForTasks(completedAssignments, deliverable, firstAlignedDataDate, progressLimitDate);
+                                allCompletedAssignments.AddRange(completedAssignments);
+
+                                //Add units for current task assignment
+                                List<P6_ASSIGNMENT> currentAssignment = new List<P6_ASSIGNMENT>();
+                                currentAssignment.Add(assignment);
+                                addOrIncreaseDataPointsForTasks(currentAssignment, deliverable, firstAlignedDataDate, progressLimitDate, unitsParity);
+                            }
+                            else if (unitsParity < -0.001m)
+                            {
+                                removeOrReduceDataPointsForTasks(deliverable, unitsParity);
+                                bluePrintsUOW.SaveChanges();
+                            }
+
+                            break;
+                        }
+                        //Unfinished : Support for reverse for above - mark activity as TK_NotStart for all forward assignments is first assignment has 0 units
+                        //else
+                        //{
+                        //    //assuming previous assignment is completed what the units on this deliverable should at least be
+                        //    decimal supposedUnitsForCurrentAssignment = deliverable.Total_Units * ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m);
+
+                        //    decimal totalUnitsEarned = deliverable.Progresses.Sum(x => x.EARNED_UNITS);
+                        //    decimal unitsParity = 0 - totalUnitsEarned;
+                        //    if (unitsParity < 0)
+                        //    {
+                        //        removeOrReduceDataPointsForTasks(deliverable, unitsParity);
+                        //        bluePrintsUOW.SaveChanges();
+
+                        //        break;
+                        //    }
+                        //}
+                    }
+                }
+
+                LoadingScreenManager.Progress();
+            }
+
+            List<string> processedTasks = new List<string>();
+            //Fix p6 for task that should be completed
+            foreach(P6_ASSIGNMENT assignment in allCompletedAssignments)
+            {
+                if(!processedTasks.Any(x => x == assignment.P6_ACTIVITYID))
+                {
+                    TASK p6Task = PROJECTTASK.FirstOrDefault(x => x.task_code == assignment.P6_ACTIVITYID);
+                    if(p6Task != null)
+                    {
+                        TASK repositoryTASK = p6UOW.TASK.FirstOrDefault(x => x.task_id == p6Task.task_id);
+                        //DataUtils.ShallowCopy(repositoryTASK, p6Task);
+                        if(repositoryTASK != null)
+                        {
+                            repositoryTASK.status_code = P6TASKSTATUS.TK_Complete.ToString();
+                            repositoryTASK.act_work_qty = repositoryTASK.target_work_qty;
+
+                            if (repositoryTASK.act_start_date == null)
+                                repositoryTASK.act_start_date = repositoryTASK.target_start_date;
+
+                            if (repositoryTASK.act_end_date == null)
+                                repositoryTASK.act_end_date = repositoryTASK.target_end_date;
+
+                            repositoryTASK.target_drtn_hr_cnt += repositoryTASK.remain_drtn_hr_cnt;
+                            repositoryTASK.remain_drtn_hr_cnt = 0;
+                        }
+                    }
+
+                    processedTasks.Add(assignment.P6_ACTIVITYID);
+                }
+            }
+
+            p6UOW.SaveChanges();
+
+            LoadingScreenManager.CloseLoadingScreen();
+        }
+
+        private void removeOrReduceDataPointsForTasks(ICanAssignP6 deliverable, decimal reduceUnits)
+        {
+            reduceUnits *= -1;
+            foreach(PROGRESS_ITEM progress in deliverable.Progresses.OrderByDescending(x => x.EARNED_DATE))
+            {
+                PROGRESS_ITEM currentDateProgress = bluePrintsUOW.PROGRESS_ITEMS.FirstOrDefault(x => x.GUID == progress.GUID);
+                if(reduceUnits > 0)
+                {
+                    if (currentDateProgress.EARNED_UNITS < reduceUnits)
+                    {
+                        reduceUnits -= currentDateProgress.EARNED_UNITS;
+                        currentDateProgress.EARNED_UNITS = 0;
+                    }
+                    else if(currentDateProgress.EARNED_UNITS >= reduceUnits)
+                    {
+                        currentDateProgress.EARNED_UNITS -= reduceUnits;
+                    }
+                }
+            }
+        }
+
+        private void addOrIncreaseDataPointsForTasks(IEnumerable<P6_ASSIGNMENT> completedAssignments, ICanAssignP6 deliverable, DateTime firstAlignedDataDate, DateTime progressLimitDate, decimal? manualParity = null)
+        {
+            IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;
+            foreach (P6_ASSIGNMENT completedAssignment in completedAssignments.OrderBy(x => x.HIGH_VALUE))
+            {
+                TASK task = PROJECTTASK.FirstOrDefault(x => x.task_code == completedAssignment.P6_ACTIVITYID);
+                DateTime taskStartDate;
+                DateTime taskEndDate;
+
+                 if(task != null)
+                {
+                    if (task.act_start_date != null)
+                        taskStartDate = (DateTime)task.act_start_date;
+                    else if (task.target_start_date != null)
+                        taskStartDate = (DateTime)task.target_start_date;
+                    else
+                        taskStartDate = progressLimitDate;
+
+                    if (task.act_end_date != null)
+                        taskEndDate = (DateTime)task.act_end_date;
+                    else if (task.target_end_date != null)
+                        taskEndDate = (DateTime)task.target_end_date;
+                    else
+                        taskEndDate = progressLimitDate.AddDays(1);
+
+                    if (taskStartDate < progressLimitDate)
+                        taskStartDate = progressLimitDate;
+
+                    if (taskEndDate < progressLimitDate)
+                        taskEndDate = progressLimitDate.AddDays(1);
+
+                    decimal totalUnitsToAddToDeliverable;
+                    if (manualParity == null)
+                    {
+                        //assuming previous assignment is completed what the units on this deliverable should at least be
+                        decimal supposedUnitsForAssignments = deliverable.Total_Units * completedAssignment.HIGH_VALUE;
+                        IQueryable<PROGRESS_ITEM> repositoryProgress = bluePrintsUOW.PROGRESS_ITEMS.Where(x => x.PROGRESS.STATUS == ProgressStatus.Live && x.GUID_ORIBASEITEM == deliverable.OriginalEntityKey);
+                        decimal earnedUnits = repositoryProgress.Sum(x => x.EARNED_UNITS);
+                        if (earnedUnits >= supposedUnitsForAssignments)
+                            continue;
+
+                        totalUnitsToAddToDeliverable = deliverable.Total_Units * ((completedAssignment.HIGH_VALUE - completedAssignment.LOW_VALUE) + 0.01m);
+                    }
+                    else
+                        totalUnitsToAddToDeliverable = (decimal)manualParity;
+
+                    IEnumerable<DateTime> interpolatedDates = getInterpolationDataDate(taskStartDate, taskEndDate, firstAlignedDataDate);
+                    if(interpolatedDates.Count() > 0)
+                    {
+                        decimal totalUnitsToAddPerPeriod = totalUnitsToAddToDeliverable / interpolatedDates.Count();
+                        foreach(DateTime interpolatedDate in interpolatedDates)
+                        {
+                            DateTime interpolationDateFormat = interpolatedDate.Date.AddDays(1).AddSeconds(-1);
+                            PROGRESS_ITEM currentDateProgress = bluePrintsUOW.PROGRESS_ITEMS.FirstOrDefault(x => x.PROGRESS.STATUS == ProgressStatus.Live && x.GUID_ORIBASEITEM == deliverable.OriginalEntityKey && x.EARNED_DATE == interpolationDateFormat);
+                            if (currentDateProgress != null)
+                                currentDateProgress.EARNED_UNITS += totalUnitsToAddPerPeriod;
+                            else
+                            {
+                                PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
+                                newPROGRESS_ITEM.EARNED_UNITS = totalUnitsToAddPerPeriod;
+                                newPROGRESS_ITEM.EARNED_DATE = interpolationDateFormat;
+                                newPROGRESS_ITEM.GUID_ORIBASEITEM = deliverable.OriginalEntityKey;
+                                newPROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
+                                bluePrintsUOW.PROGRESS_ITEMS.Add(newPROGRESS_ITEM);
+                            }
+
+                            bluePrintsUOW.SaveChanges();
+                        }
+                    }
+                }
             }
         }
 
@@ -631,7 +828,7 @@ namespace BluePrints.Common.Base
 
                             if (unitsDifferences > 0)
                             {
-                                List<DateTime> interpolationDataDate = getInterpolationDataDate((DateTime)startDate, (DateTime)endDate, firstAlignedDataDate, taskWithoutStartDate);
+                                List<DateTime> interpolationDataDate = getInterpolationDataDate((DateTime)startDate, (DateTime)endDate, firstAlignedDataDate);
                                 if (interpolationDataDate.Count > 0)
                                 {
                                     decimal unitsInflationPerPeriod = (unitsDifferences / interpolationDataDate.Count);
@@ -715,30 +912,30 @@ namespace BluePrints.Common.Base
             MessageBoxService.ShowMessage("Progress from P6 completed");
         }
 
-        public List<DateTime> getInterpolationDataDate(DateTime startDate, DateTime endDate, DateTime firstAlignedDataDate, List<string> taskWithoutStartDate)
+        public List<DateTime> getInterpolationDataDate(DateTime startDate, DateTime endDate, DateTime firstAlignedDataDate)
         {
             List<DateTime> interpolationDate = new List<DateTime>();
             TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime startLimitInterpolationDate = ChronologicalHelpers.GenerateAlignedDataDate(firstAlignedDataDate, startDate, interval);
-            decimal periodToLoop = 0;
+            double periodToLoop = 0;
             TimeSpan taskInterval;
-            taskInterval = startDate - endDate;
+            taskInterval = endDate - startDate;
 
-            periodToLoop = taskInterval.Days / interval.Days;
-            if (periodToLoop < 1)
-                periodToLoop = 1;
+            periodToLoop = Convert.ToDouble(taskInterval.Days) / Convert.ToDouble(interval.Days);
+            periodToLoop = Math.Ceiling(periodToLoop);
 
             //DateTime endDateToLoop = task.act_end_date == null ? loadPROGRESS.DATA_DATE : task.status_code == P6TASKSTATUS.TK_Complete.ToString() ? (DateTime)task.act_end_date : loadPROGRESS.DATA_DATE;
             //if (loadPROGRESS.PREVIOUS_REPORT_DATE != null && (DateTime)loadPROGRESS.PREVIOUS_REPORT_DATE > startLimitInterpolationDate)
             //    startLimitInterpolationDate = (DateTime)loadPROGRESS.PREVIOUS_REPORT_DATE;
 
             DateTime loopStartDate = startLimitInterpolationDate;
-            decimal loopCounter = 1;
+            double loopCounter = 1;
             do
             {
                 interpolationDate.Add(loopStartDate);
                 loopStartDate = loopStartDate.AddDays(interval.Days);
-            } while (loopCounter < periodToLoop);
+                loopCounter += 1;
+            } while (loopCounter <= periodToLoop);
 
             return interpolationDate.OrderBy(x => x.Date).ToList();
         }
