@@ -4,6 +4,8 @@
         <dxb:BarButtonItem Content="Refresh" ToolTip="Refresh table with updated data. Also clears any undo redo entries" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
         <dxb:BarButtonItem Content="Undo" ToolTip="Undo last action" Command="{Binding UndoCommand}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
         <dxb:BarButtonItem Content="Redo" ToolTip="Redo undone action" Command="{Binding RedoCommand}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
+        <dxb:BarButtonItem Content="Copy" ToolTip="Ctrl + C" Command="{Binding KeyboardCopyCommand}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" Glyph="{dx:DXImage Image=Copy_16x16.png}" />
+        <dxb:BarButtonItem Content="Paste" ToolTip="Ctrl + V" Command="{Binding KeyboardPasteCommand}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" Glyph="{dx:DXImage Image=Paste_16x16.png}" />
         <dxb:BarCheckItem Content="Cell Selection" ToolTip="Change selection to cells instead of row" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" LargeGlyph="{dxc:DXImage Image=SplitTableCells_32x32.png}" Glyph="{dxc:DXImage Image=SplitTableCells_16x16.png}" />
         <dxb:BarButtonItem Content="Export" ToolTip="Export current view to excel.Includes grouping, sorting and column visibility preferences" Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
     </collections:ArrayList>
@@ -17,6 +19,8 @@
     </collections:ArrayList>
     <collections:ArrayList x:Key="ContextMenuDefaultHeaderButtons">
         <dxb:BarButtonItem Content="Copy With Headers" ToolTip="Copy selected rows along with header" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" Name="contextMenuCopyWithHeader" />
+        <dxb:BarButtonItem Content="Copy" ToolTip="Ctrl + C" Command="{Binding KeyboardCopyCommand}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" Glyph="{dx:DXImage Image=Copy_16x16.png}" />
+        <dxb:BarButtonItem Content="Paste" ToolTip="Ctrl + V" Command="{Binding KeyboardPasteCommand}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" Glyph="{dx:DXImage Image=Paste_16x16.png}" />
         <dxb:BarButtonItem Content="Bulk Edit" ToolTip="Change column values for selected rows" Command="{Binding View.DataContext.BulkColumnEditCommand}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" Name="contextMenuBulkEdit" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
         <dxb:BarButtonItem Content="Fill Up" ToolTip="Replicate column values for selected rows starting from last selection" Command="{Binding View.DataContext.FillUpCommand}" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" Name="contextMenuFillUp" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
         <dxb:BarButtonItem Content="Fill Down" ToolTip="Replicate column values for selected rows starting from first selection" Command="{Binding View.DataContext.FillDownCommand}" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" Name="contextMenuFillDown" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />

@@ -530,6 +530,14 @@ namespace BluePrints.Common.Base
             ParameterObj.Parameter = new object[] { loadPROGRESS, BaselineMappingSelectionType.Original, loadPROJECT };
         }
 
+        public void ReverseProgressP6_Loaded(IEnumerable<ICanAssignP6> entities)
+        {
+            foreach(ICanAssignP6 deliverable in entities)
+            {
+
+            }
+        }
+
         public void ReverseProgressFromP6_ModelLoaded(IEnumerable<ICanAssignP6> entities)
         {
             IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;
@@ -590,28 +598,40 @@ namespace BluePrints.Common.Base
                     {
                         if(assignment.P6_ACTIVITYID == task.task_code && (assignment.LOW_VALUE <= assignmentLookupPercentage && assignmentLookupPercentage <= assignment.HIGH_VALUE))
                         {
-                            decimal deliverableUnits = deliverable.Progresses == null || deliverable.Progresses.Count() == 0 ? 0 : deliverable.Progresses.Sum(x => x.EARNED_UNITS);
+                            decimal earnedUnits = deliverable.Progresses == null || deliverable.Progresses.Count() == 0 ? 0 : deliverable.Progresses.Sum(x => x.EARNED_UNITS);
                             //full assignment percentage used to calculate remaining units
                             decimal full_assignment_percentage = ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m);
-                            //decimal full_assignment_percentage = ((assignment.HIGH_VALUE));
                             //current activity full assignment units to calculate remaining units
                             decimal full_assignment_units = full_assignment_percentage * deliverable.Total_Units;
                             decimal proRateFactor = full_assignment_units / P6Budget;
-                            decimal P6UnitsForCurrentAssignment = P6Units * proRateFactor;
-                            decimal unitsDifferences = P6UnitsForCurrentAssignment - deliverableUnits;
 
-                            //IEnumerable<P6_ASSIGNMENT> previousAssignments = deliverable.P6_Assignments.Where(x => x.HIGH_VALUE < full_assignment_percentage);
-                            //foreach(P6_ASSIGNMENT previousAssignment in previousAssignments)
-                            //{
-                            //    TASK previousTASK = PROJECTTASK.FirstOrDefault(x => x.task_code == previousAssignment.P6_ACTIVITYID);
-                            //    if (previousTASK != null && !taskAsFinished.Any(x => x.task_code == previousAssignment.P6_ACTIVITYID))
-                            //        taskAsFinished.Add(previousTASK);
-                            //}
+                            //units supposedly earned for this deliverable
+                            decimal supposedlyEarned = deliverable.Total_Units * (assignment.LOW_VALUE - 0.01m);
+
+                            decimal P6UnitsUntilCurrent = (P6Units * proRateFactor) + supposedlyEarned;
+                            decimal unitsDifferences = P6UnitsUntilCurrent - earnedUnits;
+
+                            IEnumerable<P6_ASSIGNMENT> previousAssignments = deliverable.P6_Assignments.Where(x => x.HIGH_VALUE < full_assignment_percentage);
+                            DateTime? startDate = null;
+                            DateTime? endDate = null;
+                            foreach (P6_ASSIGNMENT previousAssignment in previousAssignments)
+                            {
+                                TASK previousTASK = PROJECTTASK.FirstOrDefault(x => x.task_code == previousAssignment.P6_ACTIVITYID);
+                                if(startDate == null)
+                                    startDate = previousTASK.act_start_date != null ? (DateTime)previousTASK.act_start_date : (DateTime)previousTASK.target_start_date;
+
+                                DateTime endDateToUse = previousTASK.act_end_date != null ? (DateTime)previousTASK.act_end_date : (DateTime)previousTASK.target_end_date;
+
+                                if (endDate == null || endDate < endDateToUse)
+                                    endDate = endDateToUse;
+
+                                if (previousTASK != null && !taskAsFinished.Any(x => x.task_code == previousAssignment.P6_ACTIVITYID))
+                                    taskAsFinished.Add(previousTASK);
+                            }
 
                             if (unitsDifferences > 0)
                             {
-                                //activity should earn the assignment units
-                                List<DateTime> interpolationDataDate = getInterpolationDataDate(task, firstAlignedDataDate, taskWithoutStartDate);
+                                List<DateTime> interpolationDataDate = getInterpolationDataDate((DateTime)startDate, (DateTime)endDate, firstAlignedDataDate, taskWithoutStartDate);
                                 if (interpolationDataDate.Count > 0)
                                 {
                                     decimal unitsInflationPerPeriod = (unitsDifferences / interpolationDataDate.Count);
@@ -669,23 +689,23 @@ namespace BluePrints.Common.Base
                 LoadingScreenManager.Progress();
             }
 
-            //foreach(TASK incompleteTASK in taskAsFinished)
-            //{
-            //    TASK repositoryTASK = p6UOW.TASK.FirstOrDefault(x => x.task_id == incompleteTASK.task_id);
-            //    DataUtils.ShallowCopy(repositoryTASK, incompleteTASK);
+            foreach (TASK incompleteTASK in taskAsFinished)
+            {
+                TASK repositoryTASK = p6UOW.TASK.FirstOrDefault(x => x.task_id == incompleteTASK.task_id);
+                DataUtils.ShallowCopy(repositoryTASK, incompleteTASK);
 
-            //    repositoryTASK.status_code = P6TASKSTATUS.TK_Complete.ToString();
-            //    repositoryTASK.act_work_qty = incompleteTASK.target_work_qty;
+                repositoryTASK.status_code = P6TASKSTATUS.TK_Complete.ToString();
+                repositoryTASK.act_work_qty = incompleteTASK.target_work_qty;
 
-            //    if (repositoryTASK.act_start_date == null)
-            //        repositoryTASK.act_start_date = incompleteTASK.target_start_date;
-                
-            //    if (repositoryTASK.act_end_date == null)
-            //        repositoryTASK.act_end_date = incompleteTASK.target_end_date;
+                if (repositoryTASK.act_start_date == null)
+                    repositoryTASK.act_start_date = incompleteTASK.target_start_date;
 
-            //    repositoryTASK.target_drtn_hr_cnt += repositoryTASK.remain_drtn_hr_cnt;
-            //    repositoryTASK.remain_drtn_hr_cnt = 0;
-            //}
+                if (repositoryTASK.act_end_date == null)
+                    repositoryTASK.act_end_date = incompleteTASK.target_end_date;
+
+                repositoryTASK.target_drtn_hr_cnt += repositoryTASK.remain_drtn_hr_cnt;
+                repositoryTASK.remain_drtn_hr_cnt = 0;
+            }
 
             p6UOW.SaveChanges();
             bluePrintsUOW.SaveChanges();
@@ -695,44 +715,32 @@ namespace BluePrints.Common.Base
             MessageBoxService.ShowMessage("Progress from P6 completed");
         }
 
-        public List<DateTime> getInterpolationDataDate(TASK task, DateTime firstAlignedDataDate, List<string> taskWithoutStartDate)
+        public List<DateTime> getInterpolationDataDate(DateTime startDate, DateTime endDate, DateTime firstAlignedDataDate, List<string> taskWithoutStartDate)
         {
-            //unlikely to happen because task which have qty will have a start date
-            if (task.act_start_date == null)
+            List<DateTime> interpolationDate = new List<DateTime>();
+            TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
+            DateTime startLimitInterpolationDate = ChronologicalHelpers.GenerateAlignedDataDate(firstAlignedDataDate, startDate, interval);
+            decimal periodToLoop = 0;
+            TimeSpan taskInterval;
+            taskInterval = startDate - endDate;
+
+            periodToLoop = taskInterval.Days / interval.Days;
+            if (periodToLoop < 1)
+                periodToLoop = 1;
+
+            //DateTime endDateToLoop = task.act_end_date == null ? loadPROGRESS.DATA_DATE : task.status_code == P6TASKSTATUS.TK_Complete.ToString() ? (DateTime)task.act_end_date : loadPROGRESS.DATA_DATE;
+            //if (loadPROGRESS.PREVIOUS_REPORT_DATE != null && (DateTime)loadPROGRESS.PREVIOUS_REPORT_DATE > startLimitInterpolationDate)
+            //    startLimitInterpolationDate = (DateTime)loadPROGRESS.PREVIOUS_REPORT_DATE;
+
+            DateTime loopStartDate = startLimitInterpolationDate;
+            decimal loopCounter = 1;
+            do
             {
-                taskWithoutStartDate.Add(task.task_code);
-                return new List<DateTime>();
-            }
-            else
-            {
-                List<DateTime> interpolationDate = new List<DateTime>();
-                TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
-                DateTime startLimitInterpolationDate = ChronologicalHelpers.GenerateAlignedDataDate(firstAlignedDataDate, (DateTime)task.act_start_date, interval);
-                decimal periodToLoop = 0;
-                TimeSpan taskInterval;
-                if(task.status_code == P6TASKSTATUS.TK_Complete.ToString())
-                    taskInterval = (DateTime)task.act_end_date - (DateTime)task.act_start_date;
-                else
-                    taskInterval = loadPROGRESS.DATA_DATE - (DateTime)task.act_start_date;
+                interpolationDate.Add(loopStartDate);
+                loopStartDate = loopStartDate.AddDays(interval.Days);
+            } while (loopCounter < periodToLoop);
 
-                periodToLoop = taskInterval.Days / interval.Days;
-                if (periodToLoop < 1)
-                    periodToLoop = 1;
-
-                //DateTime endDateToLoop = task.act_end_date == null ? loadPROGRESS.DATA_DATE : task.status_code == P6TASKSTATUS.TK_Complete.ToString() ? (DateTime)task.act_end_date : loadPROGRESS.DATA_DATE;
-                //if (loadPROGRESS.PREVIOUS_REPORT_DATE != null && (DateTime)loadPROGRESS.PREVIOUS_REPORT_DATE > startLimitInterpolationDate)
-                //    startLimitInterpolationDate = (DateTime)loadPROGRESS.PREVIOUS_REPORT_DATE;
-
-                DateTime loopStartDate = startLimitInterpolationDate;
-                decimal loopCounter = 1;
-                do
-                {
-                    interpolationDate.Add(loopStartDate);
-                    loopStartDate = loopStartDate.AddDays(interval.Days);
-                } while (loopCounter < periodToLoop);
-
-                return interpolationDate.OrderBy(x => x.Date).ToList();
-            }
+            return interpolationDate.OrderBy(x => x.Date).ToList();
         }
 
         bool isPushingToP6;

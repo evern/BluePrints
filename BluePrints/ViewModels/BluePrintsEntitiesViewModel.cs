@@ -119,12 +119,15 @@ namespace BluePrints.ViewModels
             if (entities.Any(x => x.STATUS == ProjectStatus.Active))
                 projectCategoryHeader.ChildModules.Add(projectActiveCategoryDescription);
 
+            if (entities.Any(x => x.STATUS == ProjectStatus.TenderSubmitted))
+                projectCategoryHeader.ChildModules.Add(projectSubmittedTenderCategoryDescription);
+
             if (entities.Any(x => x.STATUS == ProjectStatus.Tender))
-                projectCategoryHeader.ChildModules.Add(projectTenderCategoryDescription);
+                projectCategoryHeader.ChildModules.Add(projectWIPTenderCategoryDescription);
 
             newModules.AddRange(CreateDataModules());
             var projects =
-            entities.Where(x => x.STATUS == ProjectStatus.Active || x.STATUS == ProjectStatus.Tender)
+            entities.Where(x => x.STATUS == ProjectStatus.Active || x.STATUS == ProjectStatus.TenderSubmitted || x.STATUS == ProjectStatus.Tender)
                 .OrderBy(x => x.NUMBER)
                 .ToArray()
                 .AsEnumerable();
@@ -208,7 +211,7 @@ namespace BluePrints.ViewModels
             string projectPrimaryKey = primaryKey.ToString();
 
             var projectCategoryModules = Modules.SelectMany(x => x.ChildModules)
-            .Where(x => x.Id.ToString() == tenderCategoryId || x.Id.ToString() == activeCategoryId || x.Id.ToString() == myProjectCategoryId || x.Id.ToString() == myTenderCategoryId);
+            .Where(x => x.Id.ToString() == tenderSubmittedCategoryId || x.Id.ToString() == activeCategoryId || x.Id.ToString() == myProjectCategoryId || x.Id.ToString() == myTenderCategoryId);
             var projectModules = projectCategoryModules.SelectMany(x => x.ChildModules);
             var projectModule = projectModules.FirstOrDefault(x => x.Id.ToString() == projectViewId || (x.ParentId != null && x.ParentId.ToString().Contains(projectPrimaryKey)));
 
@@ -223,7 +226,8 @@ namespace BluePrints.ViewModels
         const string projectCategoryId = "View_Projects";
         const string dataCategoryId = "Category_Data";
         const string activeCategoryId = "Category_Active";
-        const string tenderCategoryId = "Category_Tender";
+        const string tenderSubmittedCategoryId = "Category_Tender_Submitted";
+        const string tenderWIPCategoryId = "Category_Tender_WIP";
         const string myProjectCategoryId = "Category_MyProject";
         const string myTenderCategoryId = "Category_MyTender";
         const string stockGroupCategoryId = "Category_StockGroup";
@@ -233,7 +237,8 @@ namespace BluePrints.ViewModels
         BluePrintsEntitiesModuleDescription myProjectsCategoryDescription;
         BluePrintsEntitiesModuleDescription myTendersCategoryDescription;
         BluePrintsEntitiesModuleDescription projectActiveCategoryDescription;
-        BluePrintsEntitiesModuleDescription projectTenderCategoryDescription;
+        BluePrintsEntitiesModuleDescription projectSubmittedTenderCategoryDescription;
+        BluePrintsEntitiesModuleDescription projectWIPTenderCategoryDescription;
         BluePrintsEntitiesModuleDescription dataCategoryDescription;
         BluePrintsEntitiesModuleDescription stockGroupCategoryDescription;
 
@@ -244,7 +249,8 @@ namespace BluePrints.ViewModels
             myProjectsCategoryDescription = new BluePrintsEntitiesModuleDescription(myProjectCategoryId, projectCategoryId, "My Projects", null, null, null, null, true, false);
             myTendersCategoryDescription = new BluePrintsEntitiesModuleDescription(myTenderCategoryId, projectCategoryId, "My Tenders", null, null, null, null, true, false);
             projectActiveCategoryDescription = new BluePrintsEntitiesModuleDescription(activeCategoryId, projectCategoryId, "Active", null, null, null, null, true, false);
-            projectTenderCategoryDescription = new BluePrintsEntitiesModuleDescription(tenderCategoryId, projectCategoryId, "Tender", null, null, null, null, false, false);
+            projectSubmittedTenderCategoryDescription = new BluePrintsEntitiesModuleDescription(tenderSubmittedCategoryId, projectCategoryId, "Submitted Tender", null, null, null, null, false, false);
+            projectWIPTenderCategoryDescription = new BluePrintsEntitiesModuleDescription(tenderWIPCategoryId, projectCategoryId, "WIP Tender", null, null, null, null, false, false);
             dataCategoryDescription = new BluePrintsEntitiesModuleDescription(dataCategoryId, null, "Data", null, null, null, null, false, true);
             stockGroupCategoryDescription = new BluePrintsEntitiesModuleDescription(stockGroupCategoryId, null, "Stock Group", null, null, null, null, false, false);
         }
@@ -404,10 +410,15 @@ namespace BluePrints.ViewModels
                 projectStatusDescription = projectActiveCategoryDescription;
                 parentId = activeCategoryId;
             }
+            else if (entity.STATUS == ProjectStatus.TenderSubmitted)
+            {
+                projectStatusDescription = projectSubmittedTenderCategoryDescription;
+                parentId = tenderSubmittedCategoryId;
+            }
             else
             {
-                projectStatusDescription = projectTenderCategoryDescription;
-                parentId = tenderCategoryId;
+                projectStatusDescription = projectWIPTenderCategoryDescription;
+                parentId = tenderWIPCategoryId;
             }
 
             BluePrintsEntitiesModuleDescription projectModuleDescription = new BluePrintsEntitiesModuleDescription(projectKey, parentId, projectTitle, "PROJECTView", new EntitiesParameter<PROJECT>(entity), null, null, false);
