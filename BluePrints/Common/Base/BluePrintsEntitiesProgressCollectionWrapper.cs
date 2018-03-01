@@ -479,7 +479,7 @@ namespace BluePrints.Common.Base
             PushToP6(BaselineMappingSelectionType.Modified);
         }
 
-        private bool CanPullFromP6()
+        public bool CanPullFromP6()
         {
             if (isPullingFromP6 || loadPROGRESS == null || loadPROGRESS.P6PROGRESS_NAME == string.Empty)
                 return false;
@@ -661,6 +661,7 @@ namespace BluePrints.Common.Base
             p6UOW.SaveChanges();
 
             LoadingScreenManager.CloseLoadingScreen();
+            destroy_scheduling_view_model();
             MessageBoxService.ShowMessage("Progress from P6 is completed");
         }
 
@@ -1087,6 +1088,7 @@ namespace BluePrints.Common.Base
             dispose_scheduling_view_model();
 
             isPushingToP6 = false;
+            isPullingFromP6 = false;
             //Need to perform full refresh because MainViewModel repository entity state is messed from scheduling view model, i.e. productivity doesn't update anymore after pushing to P6
             FullRefresh();
         }
