@@ -544,61 +544,83 @@ namespace BluePrints.Common.Base
             LoadingScreenManager.ShowLoadingScreen(entities.Count());
             foreach (ICanAssignP6 deliverable in entities)
             {
-                foreach(P6_ASSIGNMENT assignment in deliverable.P6_Assignments.OrderByDescending(x => x.HIGH_VALUE))
+                //check if all deliverables tasks is mark as not started
+                List<TASK> allAssignmentTasks = new List<TASK>();
+                foreach (P6_ASSIGNMENT assignment in deliverable.P6_Assignments.OrderByDescending(x => x.HIGH_VALUE))
                 {
                     TASK task = PROJECTTASK.FirstOrDefault(x => x.task_code == assignment.P6_ACTIVITYID);
-                    if(task != null && task.target_work_qty != null)
+                    if (task != null)
+                        allAssignmentTasks.Add(task);
+                }
+
+                if(allAssignmentTasks.All(x => x.act_work_qty == 0))
+                {
+                    decimal allEarnedUnits = deliverable.Progresses.Sum(x => x.EARNED_UNITS);
+                    allEarnedUnits *= -1;
+                    removeOrReduceDataPointsForTasks(deliverable, allEarnedUnits);
+                    bluePrintsUOW.SaveChanges();
+                }
+                else
+                {
+                    foreach (P6_ASSIGNMENT assignment in deliverable.P6_Assignments.OrderByDescending(x => x.HIGH_VALUE))
                     {
-                        if(task.act_work_qty > 0)
+                        TASK task = PROJECTTASK.FirstOrDefault(x => x.task_code == assignment.P6_ACTIVITYID);
+                        if (task != null && task.target_work_qty != null)
                         {
-                            //assuming previous assignment is completed what the units on this deliverable should at least be
-                            decimal supposedUnitsForPreviousAssignment = deliverable.Total_Units * (assignment.LOW_VALUE - 0.01m);
-                            decimal supposedUnitsForCurrentAssignment = deliverable.Total_Units * ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m);
-
-                            //because current task can be assigned to multiple deliverable, actual earned units needs to be pro-rated
-                            decimal proRateValue = supposedUnitsForCurrentAssignment / (decimal)task.target_work_qty;
-                            decimal proRateUnits = (decimal)task.act_work_qty * proRateValue;
-
-                            decimal totalSupposedUnits = supposedUnitsForPreviousAssignment + proRateUnits;
-
-                            decimal totalUnitsEarned = deliverable.Progresses.Sum(x => x.EARNED_UNITS);
-                            decimal unitsParity = totalSupposedUnits - totalUnitsEarned;
-                            if (unitsParity > 0.001m)
+                            if (task.act_work_qty > 0)
                             {
+                                //assuming previous assignment is completed what the units on this deliverable should at least be
+                                decimal supposedUnitsForPreviousAssignment = deliverable.Total_Units * (assignment.LOW_VALUE - 0.01m);
+                                decimal supposedUnitsForCurrentAssignment = deliverable.Total_Units * ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m);
+
+                                //because current task can be assigned to multiple deliverable, actual earned units needs to be pro-rated
+                                decimal proRateValue = supposedUnitsForCurrentAssignment / (decimal)task.target_work_qty;
+                                decimal proRateUnits = (decimal)task.act_work_qty * proRateValue;
+
+                                decimal totalSupposedUnits = supposedUnitsForPreviousAssignment + proRateUnits;
+
+                                decimal totalUnitsEarned = deliverable.Progresses.Sum(x => x.EARNED_UNITS);
+                                decimal unitsParity = totalSupposedUnits - totalUnitsEarned;
+
                                 //Add units for previous task assignments
                                 IEnumerable<P6_ASSIGNMENT> completedAssignments = deliverable.P6_Assignments.Where(x => x.HIGH_VALUE < assignment.LOW_VALUE);
-                                addOrIncreaseDataPointsForTasks(completedAssignments, deliverable, firstAlignedDataDate, progressLimitDate);
-                                allCompletedAssignments.AddRange(completedAssignments);
+                                if (unitsParity > 0.001m)
+                                {
+                                    addOrIncreaseDataPointsForTasks(completedAssignments, deliverable, firstAlignedDataDate, progressLimitDate);
+                                    allCompletedAssignments.AddRange(completedAssignments);
 
-                                //Add units for current task assignment
-                                List<P6_ASSIGNMENT> currentAssignment = new List<P6_ASSIGNMENT>();
-                                currentAssignment.Add(assignment);
-                                addOrIncreaseDataPointsForTasks(currentAssignment, deliverable, firstAlignedDataDate, progressLimitDate, unitsParity);
-                            }
-                            else if (unitsParity < -0.001m)
-                            {
-                                removeOrReduceDataPointsForTasks(deliverable, unitsParity);
-                                bluePrintsUOW.SaveChanges();
-                            }
+                                    //Add units for current task assignment
+                                    List<P6_ASSIGNMENT> currentAssignment = new List<P6_ASSIGNMENT>();
+                                    currentAssignment.Add(assignment);
+                                    addOrIncreaseDataPointsForTasks(currentAssignment, deliverable, firstAlignedDataDate, progressLimitDate, supposedUnitsForCurrentAssignment);
+                                }
+                                else if (unitsParity < -0.001m)
+                                {
+                                    removeOrReduceDataPointsForTasks(deliverable, unitsParity);
+                                    bluePrintsUOW.SaveChanges();
+                                }
+                                else
+                                    allCompletedAssignments.AddRange(completedAssignments);
 
-                            break;
+                                break;
+                            }
+                            //Unfinished : Support for reverse for above - mark activity as TK_NotStart for all forward assignments is first assignment has 0 units
+                            //else
+                            //{
+                            //    //assuming previous assignment is completed what the units on this deliverable should at least be
+                            //    decimal supposedUnitsForCurrentAssignment = deliverable.Total_Units * ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m);
+
+                            //    decimal totalUnitsEarned = deliverable.Progresses.Sum(x => x.EARNED_UNITS);
+                            //    decimal unitsParity = 0 - totalUnitsEarned;
+                            //    if (unitsParity < 0)
+                            //    {
+                            //        removeOrReduceDataPointsForTasks(deliverable, unitsParity);
+                            //        bluePrintsUOW.SaveChanges();
+
+                            //        break;
+                            //    }
+                            //}
                         }
-                        //Unfinished : Support for reverse for above - mark activity as TK_NotStart for all forward assignments is first assignment has 0 units
-                        //else
-                        //{
-                        //    //assuming previous assignment is completed what the units on this deliverable should at least be
-                        //    decimal supposedUnitsForCurrentAssignment = deliverable.Total_Units * ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m);
-
-                        //    decimal totalUnitsEarned = deliverable.Progresses.Sum(x => x.EARNED_UNITS);
-                        //    decimal unitsParity = 0 - totalUnitsEarned;
-                        //    if (unitsParity < 0)
-                        //    {
-                        //        removeOrReduceDataPointsForTasks(deliverable, unitsParity);
-                        //        bluePrintsUOW.SaveChanges();
-
-                        //        break;
-                        //    }
-                        //}
                     }
                 }
 
@@ -612,7 +634,7 @@ namespace BluePrints.Common.Base
                 if(!processedTasks.Any(x => x == assignment.P6_ACTIVITYID))
                 {
                     TASK p6Task = PROJECTTASK.FirstOrDefault(x => x.task_code == assignment.P6_ACTIVITYID);
-                    if(p6Task != null)
+                    if(p6Task != null && p6Task.status_code != P6TASKSTATUS.TK_Complete.ToString())
                     {
                         TASK repositoryTASK = p6UOW.TASK.FirstOrDefault(x => x.task_id == p6Task.task_id);
                         //DataUtils.ShallowCopy(repositoryTASK, p6Task);
@@ -658,6 +680,7 @@ namespace BluePrints.Common.Base
                     else if(currentDateProgress.EARNED_UNITS >= reduceUnits)
                     {
                         currentDateProgress.EARNED_UNITS -= reduceUnits;
+                        reduceUnits = 0;
                     }
                 }
             }
@@ -700,7 +723,12 @@ namespace BluePrints.Common.Base
                         //assuming previous assignment is completed what the units on this deliverable should at least be
                         decimal supposedUnitsForAssignments = deliverable.Total_Units * completedAssignment.HIGH_VALUE;
                         IQueryable<PROGRESS_ITEM> repositoryProgress = bluePrintsUOW.PROGRESS_ITEMS.Where(x => x.PROGRESS.STATUS == ProgressStatus.Live && x.GUID_ORIBASEITEM == deliverable.OriginalEntityKey);
-                        decimal earnedUnits = repositoryProgress.Sum(x => x.EARNED_UNITS);
+                        decimal earnedUnits = 0;
+                        if (repositoryProgress.Count() == 0)
+                            earnedUnits = 0;
+                        else
+                            repositoryProgress.Sum(x => x.EARNED_UNITS);
+
                         if (earnedUnits >= supposedUnitsForAssignments)
                             continue;
 
