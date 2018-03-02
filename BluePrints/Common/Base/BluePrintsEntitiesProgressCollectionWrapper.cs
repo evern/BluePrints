@@ -463,7 +463,7 @@ namespace BluePrints.Common.Base
 
         private bool CanPushToP6()
         {
-            if (isPushingToP6 || loadPROGRESS == null || loadPROGRESS.P6PROGRESS_NAME == string.Empty)
+            if (isPushingToP6 || loadPROGRESS == null || loadPROGRESS.P6PROGRESS_NAME == null || loadPROGRESS.P6PROGRESS_NAME == string.Empty)
                 return false;
 
             return true;
@@ -489,7 +489,7 @@ namespace BluePrints.Common.Base
 
         public bool CanPullFromP6()
         {
-            if (isPullingFromP6 || loadPROGRESS == null || loadPROGRESS.P6PROGRESS_NAME == string.Empty)
+            if (isPullingFromP6 || loadPROGRESS == null || loadPROGRESS.P6PROGRESS_NAME == null || loadPROGRESS.P6PROGRESS_NAME == string.Empty)
                 return false;
 
             return true;
@@ -517,6 +517,7 @@ namespace BluePrints.Common.Base
             bluePrintsUOW.SaveChanges();
 
             LoadingScreenManager.ShowLoadingScreen(loadPROGRESS.PROGRESS_ITEM.Count());
+            LoadingScreenManager.SetMessage("Phase 1 of 2: Creating Backup of Progress");
             foreach (PROGRESS_ITEM progress_item in loadPROGRESS.PROGRESS_ITEM)
             {
                 PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
@@ -529,7 +530,7 @@ namespace BluePrints.Common.Base
 
             bluePrintsUOW.SaveChanges();
             LoadingScreenManager.CloseLoadingScreen();
-            MessageBoxService.ShowMessage("Progress backup completed");
+            //MessageBoxService.ShowMessage("Progress backup completed");
 
             isPullingFromP6 = true;
             //Stats will be built in SummarizeSinglePROJECTDashboard within SummarizeBASELINE_ITEMDashboard in ConstructMainViewModelProjection
@@ -542,16 +543,30 @@ namespace BluePrints.Common.Base
 
         public void ReverseProgressP6_Loaded(IEnumerable<ICanAssignP6> entities)
         {
-            List<P6_ASSIGNMENT> allCompletedAssignments = new List<P6_ASSIGNMENT>();
             IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
 
             //specify the oldest date data points can edit to
-            DateTime progressLimitDate = loadPROGRESS.PREVIOUS_REPORT_DATE == null ? loadPROGRESS.REPORT_DATE == null ? loadPROGRESS.PROGRESS_START : (DateTime)loadPROGRESS.REPORT_DATE : (DateTime)loadPROGRESS.PREVIOUS_REPORT_DATE;
+            DateTime progressLowerLimitDate = loadPROGRESS.PREVIOUS_REPORT_DATE == null ? loadPROGRESS.REPORT_DATE == null ? loadPROGRESS.PROGRESS_START : (DateTime)loadPROGRESS.REPORT_DATE : (DateTime)loadPROGRESS.PREVIOUS_REPORT_DATE;
 
-            decimal totalSupposed = 0;
+            foreach(ICanAssignP6 deliverable in entities)
+            {
+                foreach(P6_ASSIGNMENT assignment in deliverable.P6_Assignments)
+                {
+                    TASK task = PROJECTTASK.FirstOrDefault(x => x.task_code == assignment.P6_ACTIVITYID);
+                    DateTime? startDateToUse = task.act_start_date == null ? task.target_start_date : task.act_start_date;
+
+                    if (deliverable.TaskAssignmentStartDate == null)
+                        deliverable.TaskAssignmentStartDate = startDateToUse;
+                    else if(deliverable.TaskAssignmentStartDate < startDateToUse)
+                        deliverable.TaskAssignmentStartDate = startDateToUse;
+                }
+            }
+
+            List<string> processedTasks = new List<string>();
             LoadingScreenManager.ShowLoadingScreen(entities.Count());
-            foreach (ICanAssignP6 deliverable in entities)
+            LoadingScreenManager.SetMessage("Phase 2 of 2: Cross syncing progress with P6");
+            foreach (ICanAssignP6 deliverable in entities.OrderByDescending(x => x.TaskAssignmentStartDate))
             {
                 //check if all deliverables tasks is mark as not started
                 List<TASK> allAssignmentTasks = new List<TASK>();
@@ -573,25 +588,28 @@ namespace BluePrints.Common.Base
                 {
                     foreach (P6_ASSIGNMENT assignment in deliverable.P6_Assignments.OrderByDescending(x => x.HIGH_VALUE))
                     {
+                        List<P6_ASSIGNMENT> allCompletedAssignments = new List<P6_ASSIGNMENT>();
                         TASK task = PROJECTTASK.FirstOrDefault(x => x.task_code == assignment.P6_ACTIVITYID);
-                        if (task != null && task.target_work_qty != null)
+
+                        //use repository task because iterations has been updating it
+                        TASK repositoryTASK = p6UOW.TASK.First(x => x.task_id == task.task_id);
+                        if (repositoryTASK != null && repositoryTASK.target_work_qty != null)
                         {
-                            if (task.act_work_qty > 0)
+                            if (repositoryTASK.act_work_qty > 0)
                             {
                                 //assuming previous assignment is completed what the units on this deliverable should at least be
                                 decimal supposedUnitsForPreviousAssignment = deliverable.Total_Units * (assignment.LOW_VALUE - 0.01m);
                                 decimal supposedUnitsForCurrentAssignment = deliverable.Total_Units * ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m);
 
                                 //because current task can be assigned to multiple deliverable, actual earned units needs to be pro-rated
-                                decimal proRateValue = supposedUnitsForCurrentAssignment / (decimal)task.target_work_qty;
-                                decimal proRateUnitsForCurrentAssignment = (decimal)task.act_work_qty * proRateValue;
+                                decimal proRateValue = supposedUnitsForCurrentAssignment / (decimal)repositoryTASK.target_work_qty;
+                                decimal proRateUnitsForCurrentAssignment = (decimal)repositoryTASK.act_work_qty * proRateValue;
 
                                 decimal totalSupposedUnits = supposedUnitsForPreviousAssignment + proRateUnitsForCurrentAssignment;
                                 
                                 decimal totalUnitsEarned = deliverable.Progresses.Sum(x => x.EARNED_UNITS);
                                 decimal unitsParity = totalSupposedUnits - totalUnitsEarned;
                                 
-                                totalSupposed += unitsParity;
                                 //Add units for previous task assignments
                                 IEnumerable<P6_ASSIGNMENT> completedAssignments = deliverable.P6_Assignments.Where(x => x.HIGH_VALUE < assignment.LOW_VALUE);
 
@@ -602,13 +620,13 @@ namespace BluePrints.Common.Base
 
                                 if (unitsParity > 0.001m)
                                 {
-                                    addOrIncreaseDataPointsForTasks(completedAssignments, deliverable, firstAlignedDataDate, progressLimitDate, individualPeriodFactor);
+                                    addOrIncreaseDataPointsForTasks(completedAssignments, deliverable, firstAlignedDataDate, progressLowerLimitDate, individualPeriodFactor);
                                     allCompletedAssignments.AddRange(completedAssignments);
-
+                                    markP6TaskAsCompleted(allCompletedAssignments, processedTasks);
                                     //Add units for current task assignment
                                     List<P6_ASSIGNMENT> currentAssignment = new List<P6_ASSIGNMENT>();
                                     currentAssignment.Add(assignment);
-                                    addOrIncreaseDataPointsForTasks(currentAssignment, deliverable, firstAlignedDataDate, progressLimitDate, individualPeriodFactor, proRateUnitsForCurrentAssignment);
+                                    addOrIncreaseDataPointsForTasks(currentAssignment, deliverable, firstAlignedDataDate, progressLowerLimitDate, individualPeriodFactor, proRateUnitsForCurrentAssignment);
                                 }
                                 else if (unitsParity < -0.001m)
                                 {
@@ -616,7 +634,10 @@ namespace BluePrints.Common.Base
                                     bluePrintsUOW.SaveChanges();
                                 }
                                 else
+                                {
                                     allCompletedAssignments.AddRange(completedAssignments);
+                                    markP6TaskAsCompleted(allCompletedAssignments, processedTasks);
+                                }
 
                                 break;
                             }
@@ -627,19 +648,25 @@ namespace BluePrints.Common.Base
                 LoadingScreenManager.Progress();
             }
 
-            string s = totalSupposed.ToString();
-            List<string> processedTasks = new List<string>();
+            LoadingScreenManager.CloseLoadingScreen();
+            destroy_scheduling_view_model();
+            MessageBoxService.ShowMessage("Progress from P6 is completely synced both ways");
+        }
+
+        private void markP6TaskAsCompleted(IEnumerable<P6_ASSIGNMENT> allCompletedAssignments, List<string> processedTasks)
+        {
+            IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;
             //Fix p6 for task that should be completed
-            foreach(P6_ASSIGNMENT assignment in allCompletedAssignments)
+            foreach (P6_ASSIGNMENT assignment in allCompletedAssignments)
             {
-                if(!processedTasks.Any(x => x == assignment.P6_ACTIVITYID))
+                if (!processedTasks.Any(x => x == assignment.P6_ACTIVITYID))
                 {
                     TASK p6Task = PROJECTTASK.FirstOrDefault(x => x.task_code == assignment.P6_ACTIVITYID);
-                    if(p6Task != null && p6Task.status_code != P6TASKSTATUS.TK_Complete.ToString())
+                    if (p6Task != null && p6Task.status_code != P6TASKSTATUS.TK_Complete.ToString())
                     {
                         TASK repositoryTASK = p6UOW.TASK.FirstOrDefault(x => x.task_id == p6Task.task_id);
                         //DataUtils.ShallowCopy(repositoryTASK, p6Task);
-                        if(repositoryTASK != null)
+                        if (repositoryTASK != null)
                         {
                             repositoryTASK.status_code = P6TASKSTATUS.TK_Complete.ToString();
                             repositoryTASK.act_work_qty = repositoryTASK.target_work_qty;
@@ -660,10 +687,6 @@ namespace BluePrints.Common.Base
             }
 
             p6UOW.SaveChanges();
-
-            LoadingScreenManager.CloseLoadingScreen();
-            destroy_scheduling_view_model();
-            MessageBoxService.ShowMessage("Progress from P6 is completed");
         }
 
         private void removeOrReduceDataPointsForTasks(ICanAssignP6 deliverable, decimal reduceUnits)
@@ -688,7 +711,7 @@ namespace BluePrints.Common.Base
             }
         }
 
-        private void addOrIncreaseDataPointsForTasks(IEnumerable<P6_ASSIGNMENT> completedAssignments, ICanAssignP6 deliverable, DateTime firstAlignedDataDate, DateTime progressLimitDate, decimal individualPeriodFactor, decimal? manualParity = null)
+        private void addOrIncreaseDataPointsForTasks(IEnumerable<P6_ASSIGNMENT> completedAssignments, ICanAssignP6 deliverable, DateTime firstAlignedDataDate, DateTime progressLowerLimitDate, decimal individualPeriodFactor, decimal? manualParity = null)
         {
             IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;
             foreach (P6_ASSIGNMENT completedAssignment in completedAssignments.OrderBy(x => x.HIGH_VALUE))
@@ -704,20 +727,20 @@ namespace BluePrints.Common.Base
                     else if (task.target_start_date != null)
                         taskStartDate = (DateTime)task.target_start_date;
                     else
-                        taskStartDate = progressLimitDate;
+                        taskStartDate = progressLowerLimitDate;
 
                     if (task.act_end_date != null)
                         taskEndDate = (DateTime)task.act_end_date;
                     else if (task.target_end_date != null)
                         taskEndDate = (DateTime)task.target_end_date;
                     else
-                        taskEndDate = progressLimitDate.AddDays(1);
+                        taskEndDate = loadPROGRESS.DATA_DATE;
 
-                    if (taskStartDate < progressLimitDate)
-                        taskStartDate = progressLimitDate;
+                    if (taskStartDate < progressLowerLimitDate)
+                        taskStartDate = progressLowerLimitDate;
 
-                    if (taskEndDate < progressLimitDate)
-                        taskEndDate = progressLimitDate.AddDays(1);
+                    if (taskEndDate > loadPROGRESS.DATA_DATE)
+                        taskEndDate = loadPROGRESS.DATA_DATE;
 
                     decimal totalUnitsToAddToDeliverable;
                     if (manualParity == null)
