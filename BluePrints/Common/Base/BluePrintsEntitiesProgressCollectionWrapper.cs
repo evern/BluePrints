@@ -832,6 +832,7 @@ namespace BluePrints.Common.Base
                 task.complete_pct_type = P6COMPLETE_TYPE.CP_Units.ToString();
             }
 
+            decimal totalAssignedWorkQty = 0;
             foreach (ICanAssignP6 deliverable in deliverables)
             {
                 IEnumerable<P6_ASSIGNMENT> deliverable_assignments = deliverable.P6_Assignments;
@@ -842,11 +843,17 @@ namespace BluePrints.Common.Base
 
                     if (actual_context_task != null && actual_context_task.delete_date == null)
                     {
+                        totalAssignedWorkQty += p6_assignment.UNITS;
                         actual_context_task.target_work_qty += p6_assignment.UNITS;
                         actual_context_task.remain_work_qty += p6_assignment.UNITS;
                     }
+
+                    TASK repositoryTASK = p6UOW.TASK.FirstOrDefault(x => x.task_id == actual_context_task.task_id);
+                    DataUtils.ShallowCopy(repositoryTASK, actual_context_task);
                 }
             }
+
+            string s = totalAssignedWorkQty.ToString();
             #endregion
 
             List<string> processedP6Task = new List<string>();
