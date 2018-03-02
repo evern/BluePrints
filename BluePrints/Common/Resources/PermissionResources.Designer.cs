@@ -259,6 +259,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to pull progress from P6.
+        /// </summary>
+        internal static string PullFromP6 {
+            get {
+                return ResourceManager.GetString("PullFromP6", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to view dashboard.
         /// </summary>
         internal static string ViewDashboard {

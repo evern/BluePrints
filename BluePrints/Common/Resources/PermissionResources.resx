@@ -186,4 +186,7 @@
   <data name="ManageBudget" xml:space="preserve">
     <value>Allow user to manage budget</value>
   </data>
+  <data name="PullFromP6" xml:space="preserve">
+    <value>Allow user to pull progress from P6</value>
+  </data>
 </root>

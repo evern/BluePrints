@@ -479,6 +479,14 @@ namespace BluePrints.Common.Base
             PushToP6(BaselineMappingSelectionType.Modified);
         }
 
+        public bool IsPullFromP6Visible
+        {
+            get
+            {
+                return LoginCredentials.hasPermission(PermissionResources.PullFromP6);
+            }
+        }
+
         public bool CanPullFromP6()
         {
             if (isPullingFromP6 || loadPROGRESS == null || loadPROGRESS.P6PROGRESS_NAME == string.Empty)
@@ -541,6 +549,7 @@ namespace BluePrints.Common.Base
             //specify the oldest date data points can edit to
             DateTime progressLimitDate = loadPROGRESS.PREVIOUS_REPORT_DATE == null ? loadPROGRESS.REPORT_DATE == null ? loadPROGRESS.PROGRESS_START : (DateTime)loadPROGRESS.REPORT_DATE : (DateTime)loadPROGRESS.PREVIOUS_REPORT_DATE;
 
+            decimal totalSupposed = 0;
             LoadingScreenManager.ShowLoadingScreen(entities.Count());
             foreach (ICanAssignP6 deliverable in entities)
             {
@@ -553,7 +562,7 @@ namespace BluePrints.Common.Base
                         allAssignmentTasks.Add(task);
                 }
 
-                if(allAssignmentTasks.All(x => x.act_work_qty == 0))
+                if (allAssignmentTasks.All(x => x.act_work_qty == 0))
                 {
                     decimal allEarnedUnits = deliverable.Progresses.Sum(x => x.EARNED_UNITS);
                     allEarnedUnits *= -1;
@@ -575,24 +584,31 @@ namespace BluePrints.Common.Base
 
                                 //because current task can be assigned to multiple deliverable, actual earned units needs to be pro-rated
                                 decimal proRateValue = supposedUnitsForCurrentAssignment / (decimal)task.target_work_qty;
-                                decimal proRateUnits = (decimal)task.act_work_qty * proRateValue;
+                                decimal proRateUnitsForCurrentAssignment = (decimal)task.act_work_qty * proRateValue;
 
-                                decimal totalSupposedUnits = supposedUnitsForPreviousAssignment + proRateUnits;
-
+                                decimal totalSupposedUnits = supposedUnitsForPreviousAssignment + proRateUnitsForCurrentAssignment;
+                                
                                 decimal totalUnitsEarned = deliverable.Progresses.Sum(x => x.EARNED_UNITS);
                                 decimal unitsParity = totalSupposedUnits - totalUnitsEarned;
-
+                                
+                                totalSupposed += unitsParity;
                                 //Add units for previous task assignments
                                 IEnumerable<P6_ASSIGNMENT> completedAssignments = deliverable.P6_Assignments.Where(x => x.HIGH_VALUE < assignment.LOW_VALUE);
+
+                                //Each period got to give up some units to compensate for those already earned
+                                decimal individualPeriodFactor = 1;
+                                if(totalUnitsEarned != 0)
+                                    individualPeriodFactor = (totalSupposedUnits - totalUnitsEarned) / totalSupposedUnits;
+
                                 if (unitsParity > 0.001m)
                                 {
-                                    addOrIncreaseDataPointsForTasks(completedAssignments, deliverable, firstAlignedDataDate, progressLimitDate);
+                                    addOrIncreaseDataPointsForTasks(completedAssignments, deliverable, firstAlignedDataDate, progressLimitDate, individualPeriodFactor);
                                     allCompletedAssignments.AddRange(completedAssignments);
 
                                     //Add units for current task assignment
                                     List<P6_ASSIGNMENT> currentAssignment = new List<P6_ASSIGNMENT>();
                                     currentAssignment.Add(assignment);
-                                    addOrIncreaseDataPointsForTasks(currentAssignment, deliverable, firstAlignedDataDate, progressLimitDate, supposedUnitsForCurrentAssignment);
+                                    addOrIncreaseDataPointsForTasks(currentAssignment, deliverable, firstAlignedDataDate, progressLimitDate, individualPeriodFactor, proRateUnitsForCurrentAssignment);
                                 }
                                 else if (unitsParity < -0.001m)
                                 {
@@ -604,22 +620,6 @@ namespace BluePrints.Common.Base
 
                                 break;
                             }
-                            //Unfinished : Support for reverse for above - mark activity as TK_NotStart for all forward assignments is first assignment has 0 units
-                            //else
-                            //{
-                            //    //assuming previous assignment is completed what the units on this deliverable should at least be
-                            //    decimal supposedUnitsForCurrentAssignment = deliverable.Total_Units * ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m);
-
-                            //    decimal totalUnitsEarned = deliverable.Progresses.Sum(x => x.EARNED_UNITS);
-                            //    decimal unitsParity = 0 - totalUnitsEarned;
-                            //    if (unitsParity < 0)
-                            //    {
-                            //        removeOrReduceDataPointsForTasks(deliverable, unitsParity);
-                            //        bluePrintsUOW.SaveChanges();
-
-                            //        break;
-                            //    }
-                            //}
                         }
                     }
                 }
@@ -627,6 +627,7 @@ namespace BluePrints.Common.Base
                 LoadingScreenManager.Progress();
             }
 
+            string s = totalSupposed.ToString();
             List<string> processedTasks = new List<string>();
             //Fix p6 for task that should be completed
             foreach(P6_ASSIGNMENT assignment in allCompletedAssignments)
@@ -687,7 +688,7 @@ namespace BluePrints.Common.Base
             }
         }
 
-        private void addOrIncreaseDataPointsForTasks(IEnumerable<P6_ASSIGNMENT> completedAssignments, ICanAssignP6 deliverable, DateTime firstAlignedDataDate, DateTime progressLimitDate, decimal? manualParity = null)
+        private void addOrIncreaseDataPointsForTasks(IEnumerable<P6_ASSIGNMENT> completedAssignments, ICanAssignP6 deliverable, DateTime firstAlignedDataDate, DateTime progressLimitDate, decimal individualPeriodFactor, decimal? manualParity = null)
         {
             IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;
             foreach (P6_ASSIGNMENT completedAssignment in completedAssignments.OrderBy(x => x.HIGH_VALUE))
@@ -741,7 +742,7 @@ namespace BluePrints.Common.Base
                     IEnumerable<DateTime> interpolatedDates = getInterpolationDataDate(taskStartDate, taskEndDate, firstAlignedDataDate);
                     if(interpolatedDates.Count() > 0)
                     {
-                        decimal totalUnitsToAddPerPeriod = totalUnitsToAddToDeliverable / interpolatedDates.Count();
+                        decimal totalUnitsToAddPerPeriod = (totalUnitsToAddToDeliverable * individualPeriodFactor) / interpolatedDates.Count();
                         foreach(DateTime interpolatedDate in interpolatedDates)
                         {
                             DateTime interpolationDateFormat = interpolatedDate.Date.AddDays(1).AddSeconds(-1);
