@@ -581,6 +581,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
         #endregion
 
+        //For pulling from P6
+        public DateTime? TaskAssignmentStartDate { get; set; }
+
         #region For User Dashboard and Deliverables
         public PROGRESS Live_PROGRESS { get; set; }
         #endregion

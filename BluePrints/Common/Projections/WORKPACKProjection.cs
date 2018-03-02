@@ -14,7 +14,7 @@ namespace BluePrints.Common.Projections
     {
         public string Name => Entity.NAME;
         public List<ICanAssignP6> Deliverables { get; set; }
-
+        public DateTime? TaskAssignmentStartDate { get; set; }
         public IEnumerable<PROGRESS_ITEM> Progresses => throw new NotImplementedException();
 
         private List<P6_ASSIGNMENT> p6_assignments;

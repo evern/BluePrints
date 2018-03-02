@@ -677,6 +677,7 @@
     <Compile Include="ViewModels\MEETING_TYPE\MEETING_TYPECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MINUTE_AGENDA\MINUTE_AGENDACollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MINUTE_TITLE\MINUTE_TITLECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectDistributionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\STOCK_CODE\STOCK_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATE_ITEM\ESTIMATE_ITEMSchedulingViewModelWrapper.cs" />
@@ -725,6 +726,9 @@
     </Compile>
     <Compile Include="Views\MINUTE_TITLE\MINUTE_TITLECollectionView.xaml.cs">
       <DependentUpon>MINUTE_TITLECollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROGRESS_ITEM\OffsiteDirectDistributionCollectionView.xaml.cs">
+      <DependentUpon>OffsiteDirectDistributionCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTViewWindow.xaml.cs">
       <DependentUpon>PROJECTViewWindow.xaml</DependentUpon>
@@ -1539,6 +1543,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\MINUTE_TITLE\MINUTE_TITLECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PROGRESS_ITEM\OffsiteDirectDistributionCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
