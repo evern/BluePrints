@@ -581,7 +581,7 @@ namespace BluePrints.Common.Base
 
             List<string> processedTasks = new List<string>();
             LoadingScreenManager.ShowLoadingScreen(entities.Count());
-            LoadingScreenManager.SetMessage("Phase 2 of 2: Cross syncing progress with P6");
+            LoadingScreenManager.SetMessage("Phase 2 of 2: Fixing P6 progress and sync");
             foreach (ICanAssignP6 deliverable in entities.OrderByDescending(x => x.TaskAssignmentStartDate))
             {
                 //check if all deliverables tasks is mark as not started
@@ -666,7 +666,7 @@ namespace BluePrints.Common.Base
 
             LoadingScreenManager.CloseLoadingScreen();
             destroy_scheduling_view_model();
-            MessageBoxService.ShowMessage("Progress from P6 is completely synced both ways");
+            MessageBoxService.ShowMessage("P6 activities fixed and progress synced");
         }
 
 
