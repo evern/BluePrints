@@ -36,7 +36,8 @@
                             <dxr:RibbonPageGroup Caption="Tools">
                                 <!--<dxb:BarButtonItem Content="Fix Status" Command="{Binding DataContext.FixDeliverablesStatusCommand, ElementName=userControl}" LargeGlyph="{dx:DXImageOffice2013 Image=Replace_32x32.png}" Glyph="{dx:DXImage Image=Replace_16x16.png}" />-->
                                 <dxb:BarButtonItem Content="Update % by Status" ToolTip="Bulk update all deliverables progress by it's status. Deliverables without statuses will be ignored. When deliverables status % is lower than current %, previous progresses will be reduced starting from previous interval." Command="{Binding DataContext.UpdateAllPercentagesByStatusCommand, ElementName=userControl}" LargeGlyph="{dx:DXImageOffice2013 Image=ClearFormatting_32x32.png}" Glyph="{dx:DXImage Image=ClearFormatting_16x16.png}" />
-                                <dxb:BarButtonItem Content="Pull From P6" ToolTip="WARNING: DO NOT USE IF YOU ARE NOT HARRY! Updates deliverables progress based on activity % in P6." Command="{Binding DataContext.PullFromP6Command, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=DoublePrev_32x32.png}" Glyph="{dxc:DXImage Image=DoublePrev_16x16.png}" IsVisible="{Binding DataContext.IsPullFromP6Visible, ElementName=userControl}" />
+                                <dxb:BarButtonItem Content="Pull From P6" ToolTip="WARNING: DO NOT USE IF YOU ARE NOT HARRY! Updates deliverables progress based on activity % in P6." Command="{Binding DataContext.InteractWithP6Command, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=DoublePrev_32x32.png}" Glyph="{dxc:DXImage Image=DoublePrev_16x16.png}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" IsVisible="{Binding DataContext.IsInteractWithP6Visible, ElementName=userControl}" />
+                                <dxb:BarButtonItem Content="Sync With P6" ToolTip="WARNING: DO NOT USE IF YOU ARE NOT HARRY! Updates deliverables progress based on activity % in P6. Also completes P6 activity that have successors that is started" Command="{Binding DataContext.InteractWithP6Command, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dxc:DXImage Image=Refresh_16x16.png}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" IsVisible="{Binding DataContext.IsInteractWithP6Visible, ElementName=userControl}" />
                                 <dxb:BarButtonItem Content="Progress To P6" ToolTip="Update P6 earned units to current deliverables earned units." Command="{Binding DataContext.PushToP6OriginalCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}" Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
@@ -190,6 +191,11 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Current %" FieldName="Total_Earned_Percentage" HeaderToolTip="Cumulative % earned since the start of the project. % as benchmarked against baseline + variation. Update this to earn units for this period" AllowEditing="True" FilterPopupMode="CheckedList">
+                                <dxg:GridColumn.HeaderStyle>
+                                    <Style TargetType="Control">
+                                        <Setter Property="Background" Value="LightCyan" />
+                                    </Style>
+                                </dxg:GridColumn.HeaderStyle>
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid>

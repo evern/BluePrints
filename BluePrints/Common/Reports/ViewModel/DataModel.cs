@@ -581,12 +581,13 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
         #endregion
 
-        //For pulling from P6
-        public DateTime? TaskAssignmentStartDate { get; set; }
-
         #region For User Dashboard and Deliverables
         public PROGRESS Live_PROGRESS { get; set; }
         #endregion
+
+        public DateTime? TaskAssignmentStartDate { get; set; }
+
+        public decimal EarnedUnitsAccountedFor { get; set; }
 
         public string Phase_Code => Entity.Phase_Code;
 

@@ -250,20 +250,20 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to pull progresses or sync progresses with P6.
+        /// </summary>
+        internal static string ProgressInteractionWithP6 {
+            get {
+                return ResourceManager.GetString("ProgressInteractionWithP6", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to update progress percentage by deliverable status.
         /// </summary>
         internal static string ProgressUpdatePercentageByStatus {
             get {
                 return ResourceManager.GetString("ProgressUpdatePercentageByStatus", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Allow user to pull progress from P6.
-        /// </summary>
-        internal static string PullFromP6 {
-            get {
-                return ResourceManager.GetString("PullFromP6", resourceCulture);
             }
         }
         

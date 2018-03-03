@@ -537,6 +537,7 @@
     <Compile Include="Common\ViewModel\Misc\DateFromToDialogViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\MapDeliverablesClientNumberDialogViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\P6ActivityAssignmentDialogViewModel.cs" />
+    <Compile Include="Common\ViewModel\Misc\P6Simulation.cs" />
     <Compile Include="Common\ViewModel\Misc\XMLSettings.cs" />
     <Compile Include="Common\View\BasicMessageBox.xaml.cs">
       <DependentUpon>BasicMessageBox.xaml</DependentUpon>

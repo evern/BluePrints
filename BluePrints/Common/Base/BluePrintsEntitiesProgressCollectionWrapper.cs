@@ -6,6 +6,7 @@ using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Misc;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.P6Data;
@@ -15,6 +16,7 @@ using BluePrints.Reports;
 using DevExpress.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Bars;
 using DevExpress.Xpf.Grid;
 using DevExpress.Xpf.Printing;
 using System;
@@ -479,26 +481,33 @@ namespace BluePrints.Common.Base
             PushToP6(BaselineMappingSelectionType.Modified);
         }
 
-        public bool IsPullFromP6Visible
+        public bool IsInteractWithP6Visible
         {
             get
             {
-                return LoginCredentials.hasPermission(PermissionResources.PullFromP6);
+                return LoginCredentials.hasPermission(PermissionResources.ProgressInteractionWithP6);
             }
         }
 
-        public bool CanPullFromP6()
+        public bool CanInteractWithP6(object button)
         {
-            if (isPullingFromP6 || loadPROGRESS == null || loadPROGRESS.P6PROGRESS_NAME == null || loadPROGRESS.P6PROGRESS_NAME == string.Empty)
+            if (isInteractingWithP6 || loadPROGRESS == null || loadPROGRESS.P6PROGRESS_NAME == null || loadPROGRESS.P6PROGRESS_NAME == string.Empty)
                 return false;
 
             return true;
         }
 
-        bool isPullingFromP6;
-        public void PullFromP6()
+        bool isInteractingWithP6;
+        public void InteractWithP6(object button)
         {
-            if (MessageBoxService.ShowMessage("Warning\nThis action will update progresses based on p6 and is not reversible\nDo you wish to continue?", BluePrintsResources.Warning_Caption, MessageButton.YesNo) == MessageResult.No)
+            BarButtonItem contextButton = button as BarButtonItem;
+            if (contextButton == null)
+                return;
+
+            isInteractingWithP6 = true;
+            bool isSync = contextButton.Content.ToString().ToUpper().Contains("SYNC");
+            DateTime dateToFreeze = loadPROGRESS.PREVIOUS_REPORT_DATE == null ? loadPROGRESS.REPORT_DATE == null ? loadPROGRESS.PROGRESS_START : (DateTime)loadPROGRESS.REPORT_DATE : (DateTime)loadPROGRESS.PREVIOUS_REPORT_DATE;
+            if (MessageBoxService.ShowMessage("Datapoints between " + dateToFreeze.ToShortDateString() + " and " + loadPROGRESS.DATA_DATE.ToShortDateString() + " will be edited, do you wish to continue?", BluePrintsResources.Warning_Caption, MessageButton.YesNo) == MessageResult.No)
                 return;
 
             if (loadPROGRESS.P6PROGRESS_NAME == string.Empty)
@@ -517,7 +526,11 @@ namespace BluePrints.Common.Base
             bluePrintsUOW.SaveChanges();
 
             LoadingScreenManager.ShowLoadingScreen(loadPROGRESS.PROGRESS_ITEM.Count());
-            LoadingScreenManager.SetMessage("Phase 1 of 2: Creating Backup of Progress");
+            if(isSync)
+                LoadingScreenManager.SetMessage("Phase 1 of 2: Creating Backup of Progress");
+            else
+                LoadingScreenManager.SetMessage("Phase 1 of 3: Creating Backup of Progress");
+
             foreach (PROGRESS_ITEM progress_item in loadPROGRESS.PROGRESS_ITEM)
             {
                 PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
@@ -532,16 +545,19 @@ namespace BluePrints.Common.Base
             LoadingScreenManager.CloseLoadingScreen();
             //MessageBoxService.ShowMessage("Progress backup completed");
 
-            isPullingFromP6 = true;
             //Stats will be built in SummarizeSinglePROJECTDashboard within SummarizeBASELINE_ITEMDashboard in ConstructMainViewModelProjection
             MainViewModel.Refresh();
-            scheduling_view_model.OnViewModelLoaded = ReverseProgressP6_Loaded;
+            if (isSync)
+                scheduling_view_model.OnViewModelLoaded = SyncProgressP6_Loaded;
+            else
+                scheduling_view_model.OnViewModelLoaded = ReverseProgressP6_Loaded;
+
             scheduling_view_model.OnViewModelLoadFailed = onSchedulingViewModelLoadFailed;
             var ParameterObj = scheduling_view_model as ISupportParameter;
             ParameterObj.Parameter = new object[] { loadPROGRESS, BaselineMappingSelectionType.Original, loadPROJECT };
         }
 
-        public void ReverseProgressP6_Loaded(IEnumerable<ICanAssignP6> entities)
+        public void SyncProgressP6_Loaded(IEnumerable<ICanAssignP6> entities)
         {
             IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
@@ -549,16 +565,16 @@ namespace BluePrints.Common.Base
             //specify the oldest date data points can edit to
             DateTime progressLowerLimitDate = loadPROGRESS.PREVIOUS_REPORT_DATE == null ? loadPROGRESS.REPORT_DATE == null ? loadPROGRESS.PROGRESS_START : (DateTime)loadPROGRESS.REPORT_DATE : (DateTime)loadPROGRESS.PREVIOUS_REPORT_DATE;
 
-            foreach(ICanAssignP6 deliverable in entities)
+            foreach (ICanAssignP6 deliverable in entities)
             {
-                foreach(P6_ASSIGNMENT assignment in deliverable.P6_Assignments)
+                foreach (P6_ASSIGNMENT assignment in deliverable.P6_Assignments)
                 {
                     TASK task = PROJECTTASK.FirstOrDefault(x => x.task_code == assignment.P6_ACTIVITYID);
                     DateTime? startDateToUse = task.act_start_date == null ? task.target_start_date : task.act_start_date;
 
                     if (deliverable.TaskAssignmentStartDate == null)
                         deliverable.TaskAssignmentStartDate = startDateToUse;
-                    else if(deliverable.TaskAssignmentStartDate < startDateToUse)
+                    else if (deliverable.TaskAssignmentStartDate < startDateToUse)
                         deliverable.TaskAssignmentStartDate = startDateToUse;
                 }
             }
@@ -606,16 +622,16 @@ namespace BluePrints.Common.Base
                                 decimal proRateUnitsForCurrentAssignment = (decimal)repositoryTASK.act_work_qty * proRateValue;
 
                                 decimal totalSupposedUnits = supposedUnitsForPreviousAssignment + proRateUnitsForCurrentAssignment;
-                                
+
                                 decimal totalUnitsEarned = deliverable.Progresses.Sum(x => x.EARNED_UNITS);
                                 decimal unitsParity = totalSupposedUnits - totalUnitsEarned;
-                                
+
                                 //Add units for previous task assignments
                                 IEnumerable<P6_ASSIGNMENT> completedAssignments = deliverable.P6_Assignments.Where(x => x.HIGH_VALUE < assignment.LOW_VALUE);
 
                                 //Each period got to give up some units to compensate for those already earned
                                 decimal individualPeriodFactor = 1;
-                                if(totalUnitsEarned != 0)
+                                if (totalUnitsEarned != 0)
                                     individualPeriodFactor = (totalSupposedUnits - totalUnitsEarned) / totalSupposedUnits;
 
                                 if (unitsParity > 0.001m)
@@ -652,6 +668,7 @@ namespace BluePrints.Common.Base
             destroy_scheduling_view_model();
             MessageBoxService.ShowMessage("Progress from P6 is completely synced both ways");
         }
+
 
         private void markP6TaskAsCompleted(IEnumerable<P6_ASSIGNMENT> allCompletedAssignments, List<string> processedTasks)
         {
@@ -692,17 +709,17 @@ namespace BluePrints.Common.Base
         private void removeOrReduceDataPointsForTasks(ICanAssignP6 deliverable, decimal reduceUnits)
         {
             reduceUnits *= -1;
-            foreach(PROGRESS_ITEM progress in deliverable.Progresses.OrderByDescending(x => x.EARNED_DATE))
+            foreach (PROGRESS_ITEM progress in deliverable.Progresses.OrderByDescending(x => x.EARNED_DATE))
             {
                 PROGRESS_ITEM currentDateProgress = bluePrintsUOW.PROGRESS_ITEMS.FirstOrDefault(x => x.GUID == progress.GUID);
-                if(reduceUnits > 0)
+                if (reduceUnits > 0)
                 {
                     if (currentDateProgress.EARNED_UNITS < reduceUnits)
                     {
                         reduceUnits -= currentDateProgress.EARNED_UNITS;
                         currentDateProgress.EARNED_UNITS = 0;
                     }
-                    else if(currentDateProgress.EARNED_UNITS >= reduceUnits)
+                    else if (currentDateProgress.EARNED_UNITS >= reduceUnits)
                     {
                         currentDateProgress.EARNED_UNITS -= reduceUnits;
                         reduceUnits = 0;
@@ -720,7 +737,7 @@ namespace BluePrints.Common.Base
                 DateTime taskStartDate;
                 DateTime taskEndDate;
 
-                 if(task != null)
+                if (task != null)
                 {
                     if (task.act_start_date != null)
                         taskStartDate = (DateTime)task.act_start_date;
@@ -763,10 +780,10 @@ namespace BluePrints.Common.Base
                         totalUnitsToAddToDeliverable = (decimal)manualParity;
 
                     IEnumerable<DateTime> interpolatedDates = getInterpolationDataDate(taskStartDate, taskEndDate, firstAlignedDataDate);
-                    if(interpolatedDates.Count() > 0)
+                    if (interpolatedDates.Count() > 0)
                     {
                         decimal totalUnitsToAddPerPeriod = (totalUnitsToAddToDeliverable * individualPeriodFactor) / interpolatedDates.Count();
-                        foreach(DateTime interpolatedDate in interpolatedDates)
+                        foreach (DateTime interpolatedDate in interpolatedDates)
                         {
                             DateTime interpolationDateFormat = interpolatedDate.Date.AddDays(1).AddSeconds(-1);
                             PROGRESS_ITEM currentDateProgress = bluePrintsUOW.PROGRESS_ITEMS.FirstOrDefault(x => x.PROGRESS.STATUS == ProgressStatus.Live && x.GUID_ORIBASEITEM == deliverable.OriginalEntityKey && x.EARNED_DATE == interpolationDateFormat);
@@ -784,6 +801,200 @@ namespace BluePrints.Common.Base
 
                             bluePrintsUOW.SaveChanges();
                         }
+                    }
+                }
+            }
+        }
+
+        public void ReverseProgressP6_Loaded(IEnumerable<ICanAssignP6> entities)
+        {
+            //need to change all of this to foreach task and lookup task table to see total pushed hours and delta current hours
+            //then distribute those delta hours + or - into each period datapoints
+
+            IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;
+            DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
+
+            //specify the oldest date data points can edit to
+            DateTime progressLowerLimitDate = loadPROGRESS.PREVIOUS_REPORT_DATE == null ? loadPROGRESS.REPORT_DATE == null ? loadPROGRESS.PROGRESS_START : (DateTime)loadPROGRESS.REPORT_DATE : (DateTime)loadPROGRESS.PREVIOUS_REPORT_DATE;
+
+            string errorMessage = string.Empty;
+            List<P6Simulation> simulations = push_units_to_p6(entities, true, errorMessage);
+
+            List<string> processedTasks = new List<string>();
+            LoadingScreenManager.ShowLoadingScreen(PROJECTTASK.Count());
+            LoadingScreenManager.SetMessage("Phase 3 of 3: Syncing progress from P6");
+
+            foreach(TASK task in PROJECTTASK)
+            {
+                if (task.target_work_qty == 0)
+                    continue;
+
+                IEnumerable<P6Simulation> allTaskSimulation = simulations.Where(x => x.Assignment.P6_ACTIVITYID == task.task_code);
+                decimal totalPushUnits = allTaskSimulation.Sum(x => x.PushUnits);
+                decimal totalP6Units = task.act_work_qty == null ? 0 : (decimal)task.act_work_qty;
+
+                decimal totalParity = totalP6Units - totalPushUnits;
+                decimal remainingParity = totalParity;
+                totalParity = Math.Round(totalParity, 2);
+                if(totalParity != 0)
+                {
+                    do
+                    {
+                        remainingParity = doParityAdjustments(allTaskSimulation, remainingParity, firstAlignedDataDate, progressLowerLimitDate);
+                    } while (Math.Round(remainingParity, 2) != 0);
+
+                    //foreach (P6Simulation currentTaskSimulation in allTaskSimulation)
+                    //{
+                    //    //pro-rate by pushed units for any addition or reduction
+                    //    decimal proRate = currentTaskSimulation.PushUnits / allTaskSimulation.Sum(x => x.PushUnits);
+                    //    decimal proratedParity = (totalParity * proRate);
+                    //    decimal postAdjustmentUnits = currentTaskSimulation.PushUnits + proratedParity;
+                    //    if(postAdjustmentUnits >= 0 && postAdjustmentUnits <= currentTaskSimulation.MaxUnits)
+                    //    {
+                    //        remainingParity -= proratedParity;
+                    //        parityAdjustment(currentTaskSimulation, firstAlignedDataDate, progressLowerLimitDate, proratedParity);
+                    //        currentTaskSimulation.PushUnits = postAdjustmentUnits;
+                    //    }
+                    //}
+
+                    //if(remainingParity != 0)
+                    //{
+                    //    if(remainingParity > 0)
+                    //    {
+                    //        IEnumerable<P6Simulation> simulationContainingSpareUnits = allTaskSimulation.Where(x => x.PushUnits < x.MaxUnits).OrderByDescending(x => x.MaxUnits - x.PushUnits);
+                    //        foreach(P6Simulation simulation in simulationContainingSpareUnits)
+                    //        {
+                    //            //pro-rate by pushed units for any addition or reduction
+                    //            decimal proRate = simulation.PushUnits / allTaskSimulation.Sum(x => x.PushUnits);
+                    //            decimal proratedParity = (remainingParity * proRate);
+                    //            decimal postAdjustmentUnits = simulation.PushUnits + proratedParity;
+                    //            if (postAdjustmentUnits >= 0 && postAdjustmentUnits <= simulation.MaxUnits)
+                    //            {
+                    //                remainingParity -= proratedParity;
+                    //                parityAdjustment(simulation, firstAlignedDataDate, progressLowerLimitDate, proratedParity);
+                    //                simulation.PushUnits = postAdjustmentUnits;
+                    //            }
+                    //        }
+                    //    }
+                    //}
+                }
+
+                LoadingScreenManager.Progress();
+            }
+
+            LoadingScreenManager.CloseLoadingScreen();
+
+            destroy_scheduling_view_model();
+            MessageBoxService.ShowMessage("Progress from P6 is synced");
+        }
+
+        private decimal doParityAdjustments(IEnumerable<P6Simulation> simulations, decimal totalParity, DateTime firstAlignedDataDate, DateTime progressLowerLimitDate)
+        {
+            decimal remainingParity = totalParity;
+            IEnumerable<P6Simulation> spareSimulations = simulations.Where(x => (x.MaxUnits - x.PostPushUnits) > 0);
+            if (totalParity < 0)
+                spareSimulations = simulations.Where(x => x.PostPushUnits > 0);
+            else
+                spareSimulations = simulations.Where(x => (x.MaxUnits - x.PostPushUnits) > 0);
+
+            foreach (P6Simulation simulation in spareSimulations)
+            {
+                //pro-rate by pushed units for any addition or reduction
+                decimal proRate = simulation.MaxUnits / spareSimulations.Sum(x => x.MaxUnits);
+                decimal proratedParity = (totalParity * proRate);
+                decimal postAdjustmentUnits = simulation.PostPushUnits + proratedParity;
+                if(proratedParity < 0)
+                {
+                    if (postAdjustmentUnits < 0)
+                    {
+                        proratedParity = -1 * simulation.PostPushUnits;
+                        postAdjustmentUnits = 0;
+                    }
+                }
+                else
+                {
+                    if(postAdjustmentUnits > simulation.MaxUnits)
+                    {
+                        proratedParity = (simulation.MaxUnits - simulation.PostPushUnits);
+                        postAdjustmentUnits = simulation.MaxUnits;
+                    }
+                }
+
+                if ((postAdjustmentUnits >= 0 && postAdjustmentUnits <= simulation.MaxUnits))
+                {
+                    remainingParity -= proratedParity;
+                    parityAdjustment(simulation, firstAlignedDataDate, progressLowerLimitDate, proratedParity);
+                    simulation.PostPushUnits = postAdjustmentUnits;
+                }
+            }
+
+            return remainingParity;
+        }
+
+        private void parityAdjustment(P6Simulation simulation, DateTime firstAlignedDataDate, DateTime progressLowerLimitDate, decimal proRateParity)
+        {
+            if (simulation.TaskStartDate == null || simulation.TaskEndDate == null)
+                return;
+
+            DateTime taskStartDate = (DateTime)simulation.TaskStartDate;
+            DateTime taskEndDate = (DateTime)simulation.TaskEndDate;
+
+            if (simulation.TaskStartDate < progressLowerLimitDate)
+                taskStartDate = progressLowerLimitDate;
+
+            if (simulation.TaskEndDate > loadPROGRESS.DATA_DATE)
+                taskEndDate = loadPROGRESS.DATA_DATE;
+
+            if (proRateParity < 0)
+            {
+                IEnumerable<PROGRESS_ITEM> currentDeliverableProgresses = bluePrintsUOW.PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID && x.GUID_ORIBASEITEM == simulation.DeliverableOriginalEntityKey);
+                removeOrReduceDataPointsForTasks(currentDeliverableProgresses, proRateParity);
+                bluePrintsUOW.SaveChanges();
+            }
+            else
+            {
+                IEnumerable<DateTime> interpolatedDates = getInterpolationDataDate(taskStartDate, taskEndDate, firstAlignedDataDate);
+                if (interpolatedDates.Count() > 0)
+                {
+                    decimal proratedParityPerPeriod = proRateParity / interpolatedDates.Count();
+                    foreach (DateTime interpolatedDate in interpolatedDates)
+                    {
+                        DateTime interpolationDateFormat = interpolatedDate.Date.AddDays(1).AddSeconds(-1);
+                        PROGRESS_ITEM currentDateProgress = bluePrintsUOW.PROGRESS_ITEMS.FirstOrDefault(x => x.GUID_PROGRESS == loadPROGRESS.GUID && x.GUID_ORIBASEITEM == simulation.Assignment.GUID_ORIGINAL && x.EARNED_DATE == interpolationDateFormat);
+                        if (currentDateProgress != null)
+                            currentDateProgress.EARNED_UNITS += proratedParityPerPeriod;
+                        else
+                        {
+                            PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
+                            newPROGRESS_ITEM.EARNED_UNITS = proratedParityPerPeriod;
+                            newPROGRESS_ITEM.EARNED_DATE = interpolationDateFormat;
+                            newPROGRESS_ITEM.GUID_ORIBASEITEM = simulation.DeliverableOriginalEntityKey;
+                            newPROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
+                            bluePrintsUOW.PROGRESS_ITEMS.Add(newPROGRESS_ITEM);
+                        }
+
+                        bluePrintsUOW.SaveChanges();
+                    }
+                }
+            }
+        }
+
+        private void removeOrReduceDataPointsForTasks(IEnumerable<PROGRESS_ITEM> progresses, decimal reduceUnits)
+        {
+            reduceUnits *= -1;
+            foreach(PROGRESS_ITEM progress in progresses.OrderByDescending(x => x.EARNED_DATE))
+            { 
+                if(reduceUnits > 0)
+                {
+                    if (progress.EARNED_UNITS < reduceUnits)
+                    {
+                        reduceUnits -= progress.EARNED_UNITS;
+                        progress.EARNED_UNITS = 0;
+                    }
+                    else if(progress.EARNED_UNITS >= reduceUnits)
+                    {
+                        progress.EARNED_UNITS -= reduceUnits;
+                        reduceUnits = 0;
                     }
                 }
             }
@@ -833,61 +1044,24 @@ namespace BluePrints.Common.Base
             ParameterObj.Parameter = new object[] { loadPROGRESS, mappingSelectionType, loadPROJECT };
         }
 
-        protected void onSchedulingViewModelLoaded(IEnumerable<ICanAssignP6> entities)
+        private List<P6Simulation> push_units_to_p6(IEnumerable<ICanAssignP6> deliverables, bool isSimulation, string errorMessage)
         {
-            IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;
-            if (PROJECTTASK.Count() == 0)
-            {
-                onSchedulingViewModelLoadFailed("No activities found, please check if activity code is marked as " + progress_type);
-                return;
-            }
-
-            IEnumerable<ICanAssignP6> deliverables = entities.Where(x => x.Total_Units > 0);
-            #region reset budgeted on progress
-            IEnumerable<TASK> task_source = scheduling_view_model.TASK_Source;
-
-            //reset all tasks target to 0
-            foreach(TASK task in task_source)
-            {
-                task.act_work_qty = 0;
-                task.target_work_qty = 0;
-                task.remain_work_qty = 0;
-                task.duration_type = P6DURATION_TYPE.DT_FixedQty.ToString();
-                task.complete_pct_type = P6COMPLETE_TYPE.CP_Units.ToString();
-            }
-
-            decimal totalAssignedWorkQty = 0;
-            foreach (ICanAssignP6 deliverable in deliverables)
-            {
-                IEnumerable<P6_ASSIGNMENT> deliverable_assignments = deliverable.P6_Assignments;
-                foreach (P6_ASSIGNMENT deliverable_assignment in deliverable_assignments)
-                {
-                    TASK actual_context_task = task_source.FirstOrDefault(x => x.task_code == deliverable_assignment.P6_ACTIVITYID);
-                    P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection(deliverable, deliverable_assignment);
-
-                    if (actual_context_task != null && actual_context_task.delete_date == null)
-                    {
-                        totalAssignedWorkQty += p6_assignment.UNITS;
-                        actual_context_task.target_work_qty += p6_assignment.UNITS;
-                        actual_context_task.remain_work_qty += p6_assignment.UNITS;
-                    }
-
-                    TASK repositoryTASK = p6UOW.TASK.FirstOrDefault(x => x.task_id == actual_context_task.task_id);
-                    DataUtils.ShallowCopy(repositoryTASK, actual_context_task);
-                }
-            }
-
-            string s = totalAssignedWorkQty.ToString();
-            #endregion
-
             List<string> processedP6Task = new List<string>();
             TimeSpan intervalTimeSpan = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             LoadingScreenManager.ShowLoadingScreen(deliverables.Count());
-            string errorMessage = string.Empty;
+            if (isSimulation)
+                LoadingScreenManager.SetMessage("Phase 2 of 3: Simulating progress to P6");
+            else
+                LoadingScreenManager.SetMessage("Pushing to P6");
 
+            IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;
+            List<P6Simulation> simulationResults = new List<P6Simulation>();
             foreach (ICanAssignP6 deliverable in deliverables)
             {
                 LoadingScreenManager.Progress();
+                if (deliverable.Total_Units == 0)
+                    continue;
+
                 IReportable current_progress_deliverable = deliverable as IReportable;
                 if (current_progress_deliverable == null)
                     continue;
@@ -899,32 +1073,37 @@ namespace BluePrints.Common.Base
 
                 DateTime? first_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Min(x => x.EARNED_DATE);
                 DateTime? last_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Max(x => x.EARNED_DATE);
-                decimal total_percentage_to_date = current_progress_deliverable.Total_Percentage_ToDate;
+                decimal total_percentage_to_date;
+                //if(isSimulation)
+                //{
+                //    IQueryable<PROGRESS_ITEM> currentDeliverableProgresses = bluePrintsUOW.PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID && x.GUID_ORIBASEITEM == deliverable.OriginalEntityKey);
+                //    decimal totalEarnedUnits = 0;
+                //    if (currentDeliverableProgresses.Count() > 0)
+                //        totalEarnedUnits = currentDeliverableProgresses.Sum(x => x.EARNED_UNITS);
+
+                //    total_percentage_to_date = totalEarnedUnits / deliverable.Total_Units;
+                //}
+                //else
+                //{
+                    total_percentage_to_date = current_progress_deliverable.Total_Percentage_ToDate;
+                //}
                 if (deliverable.P6_Assignments.Count == 0)
                     continue;
 
                 //only process applicable assignments
-                List<P6_ASSIGNMENT> p6_assignments = deliverable.P6_Assignments.Where(assignment => assignment.LOW_VALUE <= (total_percentage_to_date + 0.01m)).OrderBy(assignment => assignment.LOW_VALUE).ToList();
-
-                for (int i = 0; i < p6_assignments.Count; i++)
+                //List<P6_ASSIGNMENT> p6_assignments = deliverable.P6_Assignments.Where(assignment => assignment.LOW_VALUE <= (total_percentage_to_date + 0.01m)).OrderBy(assignment => assignment.LOW_VALUE).ToList();
+                List<P6_ASSIGNMENT> all_assignments = deliverable.P6_Assignments.OrderBy(assignment => assignment.LOW_VALUE).ToList();
+                for (int i = 0; i < all_assignments.Count; i++)
                 {
-                    P6_ASSIGNMENT p6_assignment = p6_assignments[i];
+                    P6_ASSIGNMENT p6_assignment = all_assignments[i];
                     TASK P6TASK = PROJECTTASK.FirstOrDefault(P6Task => P6Task.task_code == p6_assignment.P6_ACTIVITYID);
                     if (P6TASK != null && P6TASK.delete_date == null)
                     {
-                        //set activity start date
-                        DateTime? first_earned_week_start_date = isNullProgress ? (DateTime?)null : ((DateTime)first_progress_date).AddDays(-1 * intervalTimeSpan.Days).AddSeconds(1);
-                        bool any_write_exclusions = P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.NONE.ToString()) || P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.FINISH.ToString());
-
-                        if ((P6TASK.act_start_date == null || !any_write_exclusions))
-                            if(!isNullProgress)
-                                P6TASK.act_start_date = ((DateTime)first_earned_week_start_date).Date.AddHours(6);
-
                         //current activity assignment value must be limited to total earned percentage
                         decimal high_percentage_to_use = p6_assignment.HIGH_VALUE > total_percentage_to_date ? total_percentage_to_date : p6_assignment.HIGH_VALUE;
 
                         //current percentage pro-rate
-                        decimal current_percentage = ((high_percentage_to_use - p6_assignment.LOW_VALUE) + 0.01m);
+                        decimal current_percentage = p6_assignment.LOW_VALUE <= (total_percentage_to_date + 0.01m) ? ((high_percentage_to_use - p6_assignment.LOW_VALUE) + 0.01m) : 0;
 
                         //full assignment percentage used to calculate remaining units
                         decimal full_assignment_percentage = ((p6_assignment.HIGH_VALUE - p6_assignment.LOW_VALUE) + 0.01m);
@@ -934,6 +1113,30 @@ namespace BluePrints.Common.Base
 
                         //current activity full assignment units to calculate remaining units
                         decimal full_assignment_units = full_assignment_percentage * deliverable.Total_Units;
+
+                        //defines how much percentage of units this assignment will take up when it is fully assigned, so that we can estimate the total duration to apply productivity to
+                        decimal current_task_to_activity_percentage = full_assignment_units / (decimal)P6TASK.target_work_qty;
+
+                        P6Simulation simulation = new P6Simulation(p6_assignment);
+                        simulation.PushUnits = current_assignment_units;
+                        simulation.PostPushUnits = current_assignment_units;
+                        simulation.MaxUnits = full_assignment_units;
+                        simulation.CurrentTaskAssignmentPct = current_task_to_activity_percentage;
+                        simulation.TaskStartDate = P6TASK.act_start_date == null ? P6TASK.target_start_date : P6TASK.act_start_date;
+                        simulation.TaskEndDate = P6TASK.act_end_date == null ? P6TASK.target_end_date : P6TASK.act_end_date;
+                        simulation.DeliverableOriginalEntityKey = deliverable.OriginalEntityKey;
+                        simulationResults.Add(simulation);
+
+                        if (isSimulation)
+                            continue;
+
+                        //set activity start date
+                        DateTime? first_earned_week_start_date = isNullProgress ? (DateTime?)null : ((DateTime)first_progress_date).AddDays(-1 * intervalTimeSpan.Days).AddSeconds(1);
+                        bool any_write_exclusions = P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.NONE.ToString()) || P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.FINISH.ToString());
+
+                        if ((P6TASK.act_start_date == null || !any_write_exclusions))
+                            if (!isNullProgress)
+                                P6TASK.act_start_date = ((DateTime)first_earned_week_start_date).Date.AddHours(6);
 
                         //if this is the first time processing the task
                         //another way of doing this is to reset everything to zero and not started, but we do not want to override user changes on the p6 schedule
@@ -952,7 +1155,7 @@ namespace BluePrints.Common.Base
 
                         if (P6TASK.target_work_qty <= 0)
                         {
-                            errorMessage = P6TASK.task_code +  " doesn't have budgeted units, please re-populate budgeted units on baseline";
+                            errorMessage = P6TASK.task_code + " doesn't have budgeted units, please re-populate budgeted units on baseline";
                             break;
                         }
 
@@ -970,23 +1173,28 @@ namespace BluePrints.Common.Base
                             P6TASK.status_code = P6TASKSTATUS.TK_Complete.ToString();
                             //when user select none or user select start only, don't update finish
                             any_write_exclusions = P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.NONE.ToString()) || P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.START.ToString());
-                            if(P6TASK.act_end_date == null || !any_write_exclusions)
-                                if(!isNullProgress)
-                                P6TASK.act_end_date = ((DateTime)last_progress_date).Date.AddHours(18);
+                            if (P6TASK.act_end_date == null || !any_write_exclusions)
+                                if (!isNullProgress)
+                                {
+                                    P6TASK.act_end_date = ((DateTime)last_progress_date).Date.AddHours(18);
+                                    P6TASK.late_start_date = null;
+                                    P6TASK.late_end_date = null;
+                                    P6TASK.early_start_date = null;
+                                    P6TASK.early_end_date = null;
+                                }
                         }
                         else if (P6TASK.remain_work_qty > 0)
                         {
                             P6TASK.status_code = P6TASKSTATUS.TK_Active.ToString();
                             //when user select none or user select finish only, don't update start
                             any_write_exclusions = P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.NONE.ToString()) || P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.FINISH.ToString());
-                            if(P6TASK.act_start_date == null || !any_write_exclusions)
+                            if (P6TASK.act_start_date == null || !any_write_exclusions)
                                 if (!isNullProgress)
                                     P6TASK.act_start_date = ((DateTime)first_progress_date).Date.AddHours(6);
 
                             P6TASK.act_end_date = null;
 
-                            //defines how much percentage of units this assignment will take up when it is fully assigned, so that we can estimate the total duration to apply productivity to
-                            decimal current_task_to_activity_percentage = full_assignment_units / (decimal)P6TASK.target_work_qty;
+
                             decimal current_full_remaining_duration = (decimal)P6TASK.target_drtn_hr_cnt * current_task_to_activity_percentage;
 
                             decimal current_assignment_remaining_units = full_assignment_units - current_assignment_units;
@@ -1046,19 +1254,60 @@ namespace BluePrints.Common.Base
             p6UOW.SaveChanges();
             LoadingScreenManager.CloseLoadingScreen();
 
-            //if(errorMessage == string.Empty)
-            //{
-            //    IEnumerable<TASK> progressed_milestones = getProgressedMilestones(scheduling_view_model.TASK_Source, scheduling_view_model.TASKPRED_Source);
-            //    LoadingScreenManager.ShowLoadingScreen(progressed_milestones.Count());
-            //    foreach (TASK progressed_milestone in progressed_milestones)
-            //    {
-            //        scheduling_view_model.Save_Task(progressed_milestone);
-            //        LoadingScreenManager.Progress();
-            //    }
+            return simulationResults;
+        }
 
-            //    LoadingScreenManager.CloseLoadingScreen();
-            //}
+        protected void onSchedulingViewModelLoaded(IEnumerable<ICanAssignP6> entities)
+        {
+            IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;
+            if (PROJECTTASK.Count() == 0)
+            {
+                onSchedulingViewModelLoadFailed("No activities found, please check if activity code is marked as " + progress_type);
+                return;
+            }
 
+            IEnumerable<ICanAssignP6> deliverables = entities.Where(x => x.Total_Units > 0);
+            #region reset budgeted on progress
+            IEnumerable<TASK> task_source = scheduling_view_model.TASK_Source;
+
+            //reset all tasks target to 0
+            foreach(TASK task in task_source)
+            {
+                task.act_work_qty = 0;
+                task.target_work_qty = 0;
+                task.remain_work_qty = 0;
+                task.status_code = P6TASKSTATUS.TK_NotStart.ToString();
+                task.act_start_date = null;
+                task.act_end_date = null;
+                task.duration_type = P6DURATION_TYPE.DT_FixedQty.ToString();
+                task.complete_pct_type = P6COMPLETE_TYPE.CP_Units.ToString();
+            }
+            
+            foreach (ICanAssignP6 deliverable in deliverables)
+            {
+                IEnumerable<P6_ASSIGNMENT> deliverable_assignments = deliverable.P6_Assignments;
+                foreach (P6_ASSIGNMENT deliverable_assignment in deliverable_assignments)
+                {
+                    TASK actual_context_task = task_source.FirstOrDefault(x => x.task_code == deliverable_assignment.P6_ACTIVITYID);
+                    P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection(deliverable, deliverable_assignment);
+
+                    if (actual_context_task != null && actual_context_task.delete_date == null)
+                    {
+                        actual_context_task.target_work_qty += p6_assignment.UNITS;
+                        actual_context_task.remain_work_qty += p6_assignment.UNITS;
+                    }
+
+                    TASK repositoryTASK = p6UOW.TASK.FirstOrDefault(x => x.task_id == actual_context_task.task_id);
+                    DataUtils.ShallowCopy(repositoryTASK, actual_context_task);
+                }
+            }
+            #endregion
+
+            List<string> processedP6Task = new List<string>();
+            TimeSpan intervalTimeSpan = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
+            string errorMessage = string.Empty;
+
+            push_units_to_p6(deliverables, false, errorMessage);
             destroy_scheduling_view_model();
 
             if (errorMessage == string.Empty)
@@ -1119,7 +1368,7 @@ namespace BluePrints.Common.Base
             dispose_scheduling_view_model();
 
             isPushingToP6 = false;
-            isPullingFromP6 = false;
+            isInteractingWithP6 = false;
             //Need to perform full refresh because MainViewModel repository entity state is messed from scheduling view model, i.e. productivity doesn't update anymore after pushing to P6
             FullRefresh();
         }
