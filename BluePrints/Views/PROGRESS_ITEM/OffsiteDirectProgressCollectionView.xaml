@@ -280,6 +280,13 @@
                                     <dxe:SpinEditSettings Increment="0.1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" NullValueButtonPlacement="EditBox" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn Header="Guid" FieldName="GuidCurrent" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" />
+                            <dxg:GridColumn Header="Created" FieldName="Last_Created" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList" Visible="False" />
+                            <dxg:GridColumn Header="Created By" FieldName="Last_CreatedBy" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList" Visible="False">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn Header="Updated" FieldName="Last_Updated" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList" Visible="False" />
                             <dxg:GridColumn Header="Updated By" FieldName="Last_UpdatedBy" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList" Visible="False">
                                 <dxg:GridColumn.EditSettings>

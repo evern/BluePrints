@@ -526,10 +526,7 @@ namespace BluePrints.Common.Base
             bluePrintsUOW.SaveChanges();
 
             LoadingScreenManager.ShowLoadingScreen(loadPROGRESS.PROGRESS_ITEM.Count());
-            if(isSync)
                 LoadingScreenManager.SetMessage("Phase 1 of 2: Creating Backup of Progress");
-            else
-                LoadingScreenManager.SetMessage("Phase 1 of 3: Creating Backup of Progress");
 
             foreach (PROGRESS_ITEM progress_item in loadPROGRESS.PROGRESS_ITEM)
             {
@@ -564,6 +561,8 @@ namespace BluePrints.Common.Base
 
             //specify the oldest date data points can edit to
             DateTime progressLowerLimitDate = loadPROGRESS.PREVIOUS_REPORT_DATE == null ? loadPROGRESS.REPORT_DATE == null ? loadPROGRESS.PROGRESS_START : (DateTime)loadPROGRESS.REPORT_DATE : (DateTime)loadPROGRESS.PREVIOUS_REPORT_DATE;
+            TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
+            progressLowerLimitDate.AddDays(interval.Days);
 
             foreach (ICanAssignP6 deliverable in entities)
             {
@@ -736,6 +735,8 @@ namespace BluePrints.Common.Base
                 TASK task = PROJECTTASK.FirstOrDefault(x => x.task_code == completedAssignment.P6_ACTIVITYID);
                 DateTime taskStartDate;
                 DateTime taskEndDate;
+                TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
+                DateTime progressUpperLimitDate = loadPROGRESS.DATA_DATE.AddDays(-1 *interval.Days);
 
                 if (task != null)
                 {
@@ -755,9 +756,13 @@ namespace BluePrints.Common.Base
 
                     if (taskStartDate < progressLowerLimitDate)
                         taskStartDate = progressLowerLimitDate;
+                    else if (taskStartDate > progressUpperLimitDate)
+                        taskStartDate = progressUpperLimitDate;
 
-                    if (taskEndDate > loadPROGRESS.DATA_DATE)
-                        taskEndDate = loadPROGRESS.DATA_DATE;
+                    if (taskEndDate > progressUpperLimitDate)
+                        taskEndDate = progressUpperLimitDate;
+                    else if (taskEndDate < progressLowerLimitDate)
+                        taskEndDate = progressLowerLimitDate;
 
                     decimal totalUnitsToAddToDeliverable;
                     if (manualParity == null)
@@ -812,19 +817,36 @@ namespace BluePrints.Common.Base
             //then distribute those delta hours + or - into each period datapoints
 
             IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;
-            DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
 
-            //specify the oldest date data points can edit to
-            DateTime progressLowerLimitDate = loadPROGRESS.PREVIOUS_REPORT_DATE == null ? loadPROGRESS.REPORT_DATE == null ? loadPROGRESS.PROGRESS_START : (DateTime)loadPROGRESS.REPORT_DATE : (DateTime)loadPROGRESS.PREVIOUS_REPORT_DATE;
 
             string errorMessage = string.Empty;
             List<P6Simulation> simulations = push_units_to_p6(entities, true, errorMessage);
 
             List<string> processedTasks = new List<string>();
-            LoadingScreenManager.ShowLoadingScreen(PROJECTTASK.Count());
-            LoadingScreenManager.SetMessage("Phase 3 of 3: Syncing progress from P6");
+            LoadingScreenManager.ShowLoadingScreen(PROJECTTASK.Count() * 2);
+            LoadingScreenManager.SetMessage("Phase 2 of 2: Syncing progress from P6");
 
-            foreach(TASK task in PROJECTTASK)
+            taskParityAdjustment(simulations, true);
+            //simulations = push_units_to_p6(entities, true, errorMessage);
+            taskParityAdjustment(simulations, false);
+
+            LoadingScreenManager.CloseLoadingScreen();
+
+            destroy_scheduling_view_model();
+            MessageBoxService.ShowMessage("Progress from P6 is synced");
+        }
+
+        private void taskParityAdjustment(IEnumerable<P6Simulation> simulations, bool isPositiveAdjustment)
+        {
+            DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
+
+            //specify the oldest date data points can edit to
+            DateTime progressLowerLimitDate = loadPROGRESS.PREVIOUS_REPORT_DATE == null ? loadPROGRESS.REPORT_DATE == null ? loadPROGRESS.PROGRESS_START : (DateTime)loadPROGRESS.REPORT_DATE : (DateTime)loadPROGRESS.PREVIOUS_REPORT_DATE;
+            TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
+            progressLowerLimitDate.AddDays(interval.Days);
+
+            IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;
+            foreach (TASK task in PROJECTTASK)
             {
                 if (task.target_work_qty == 0)
                     continue;
@@ -836,56 +858,16 @@ namespace BluePrints.Common.Base
                 decimal totalParity = totalP6Units - totalPushUnits;
                 decimal remainingParity = totalParity;
                 totalParity = Math.Round(totalParity, 2);
-                if(totalParity != 0)
+                if ((!isPositiveAdjustment && totalParity < 0) || (isPositiveAdjustment && totalParity > 0))
                 {
                     do
                     {
                         remainingParity = doParityAdjustments(allTaskSimulation, remainingParity, firstAlignedDataDate, progressLowerLimitDate);
                     } while (Math.Round(remainingParity, 2) != 0);
-
-                    //foreach (P6Simulation currentTaskSimulation in allTaskSimulation)
-                    //{
-                    //    //pro-rate by pushed units for any addition or reduction
-                    //    decimal proRate = currentTaskSimulation.PushUnits / allTaskSimulation.Sum(x => x.PushUnits);
-                    //    decimal proratedParity = (totalParity * proRate);
-                    //    decimal postAdjustmentUnits = currentTaskSimulation.PushUnits + proratedParity;
-                    //    if(postAdjustmentUnits >= 0 && postAdjustmentUnits <= currentTaskSimulation.MaxUnits)
-                    //    {
-                    //        remainingParity -= proratedParity;
-                    //        parityAdjustment(currentTaskSimulation, firstAlignedDataDate, progressLowerLimitDate, proratedParity);
-                    //        currentTaskSimulation.PushUnits = postAdjustmentUnits;
-                    //    }
-                    //}
-
-                    //if(remainingParity != 0)
-                    //{
-                    //    if(remainingParity > 0)
-                    //    {
-                    //        IEnumerable<P6Simulation> simulationContainingSpareUnits = allTaskSimulation.Where(x => x.PushUnits < x.MaxUnits).OrderByDescending(x => x.MaxUnits - x.PushUnits);
-                    //        foreach(P6Simulation simulation in simulationContainingSpareUnits)
-                    //        {
-                    //            //pro-rate by pushed units for any addition or reduction
-                    //            decimal proRate = simulation.PushUnits / allTaskSimulation.Sum(x => x.PushUnits);
-                    //            decimal proratedParity = (remainingParity * proRate);
-                    //            decimal postAdjustmentUnits = simulation.PushUnits + proratedParity;
-                    //            if (postAdjustmentUnits >= 0 && postAdjustmentUnits <= simulation.MaxUnits)
-                    //            {
-                    //                remainingParity -= proratedParity;
-                    //                parityAdjustment(simulation, firstAlignedDataDate, progressLowerLimitDate, proratedParity);
-                    //                simulation.PushUnits = postAdjustmentUnits;
-                    //            }
-                    //        }
-                    //    }
-                    //}
                 }
 
                 LoadingScreenManager.Progress();
             }
-
-            LoadingScreenManager.CloseLoadingScreen();
-
-            destroy_scheduling_view_model();
-            MessageBoxService.ShowMessage("Progress from P6 is synced");
         }
 
         private decimal doParityAdjustments(IEnumerable<P6Simulation> simulations, decimal totalParity, DateTime firstAlignedDataDate, DateTime progressLowerLimitDate)
@@ -938,12 +920,18 @@ namespace BluePrints.Common.Base
 
             DateTime taskStartDate = (DateTime)simulation.TaskStartDate;
             DateTime taskEndDate = (DateTime)simulation.TaskEndDate;
+            TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
+            DateTime progressUpperLimitDate = loadPROGRESS.DATA_DATE.AddDays(-1 * interval.Days);
 
             if (simulation.TaskStartDate < progressLowerLimitDate)
                 taskStartDate = progressLowerLimitDate;
+            else if (simulation.TaskStartDate > progressUpperLimitDate)
+                taskStartDate = progressUpperLimitDate;
 
-            if (simulation.TaskEndDate > loadPROGRESS.DATA_DATE)
-                taskEndDate = loadPROGRESS.DATA_DATE;
+            if (simulation.TaskEndDate > progressUpperLimitDate)
+                taskEndDate = progressUpperLimitDate;
+            else if (simulation.TaskEndDate < progressLowerLimitDate)
+                taskEndDate = progressLowerLimitDate;
 
             if (proRateParity < 0)
             {
@@ -960,9 +948,12 @@ namespace BluePrints.Common.Base
                     foreach (DateTime interpolatedDate in interpolatedDates)
                     {
                         DateTime interpolationDateFormat = interpolatedDate.Date.AddDays(1).AddSeconds(-1);
-                        PROGRESS_ITEM currentDateProgress = bluePrintsUOW.PROGRESS_ITEMS.FirstOrDefault(x => x.GUID_PROGRESS == loadPROGRESS.GUID && x.GUID_ORIBASEITEM == simulation.Assignment.GUID_ORIGINAL && x.EARNED_DATE == interpolationDateFormat);
+                        PROGRESS_ITEM currentDateProgress = bluePrintsUOW.PROGRESS_ITEMS.FirstOrDefault(x => x.GUID_PROGRESS == loadPROGRESS.GUID && x.GUID_ORIBASEITEM == simulation.DeliverableOriginalEntityKey && x.EARNED_DATE == interpolationDateFormat);
                         if (currentDateProgress != null)
+                        {
                             currentDateProgress.EARNED_UNITS += proratedParityPerPeriod;
+                            //simulation.PostPushUnits += proratedParityPerPeriod;
+                        }
                         else
                         {
                             PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
@@ -971,6 +962,8 @@ namespace BluePrints.Common.Base
                             newPROGRESS_ITEM.GUID_ORIBASEITEM = simulation.DeliverableOriginalEntityKey;
                             newPROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
                             bluePrintsUOW.PROGRESS_ITEMS.Add(newPROGRESS_ITEM);
+
+                            //simulation.PostPushUnits += proratedParityPerPeriod;
                         }
 
                         bluePrintsUOW.SaveChanges();
@@ -1050,7 +1043,7 @@ namespace BluePrints.Common.Base
             TimeSpan intervalTimeSpan = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             LoadingScreenManager.ShowLoadingScreen(deliverables.Count());
             if (isSimulation)
-                LoadingScreenManager.SetMessage("Phase 2 of 3: Simulating progress to P6");
+                LoadingScreenManager.SetMessage("Simulating progress to P6");
             else
                 LoadingScreenManager.SetMessage("Pushing to P6");
 

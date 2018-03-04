@@ -616,6 +616,20 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Total_Percentage => Total_Units == 0 ? 0 : (Earned_Units_Total / Total_Units);
 
         #region local non-interface variables
+        public Guid? GuidCurrent
+        {
+            get
+            {
+                if (PROGRESS_ITEMS.Count == 0)
+                    return null;
+
+                if (PROGRESS_ITEM_Current == null)
+                    return null;
+
+                return PROGRESS_ITEM_Current.GUID;
+            }
+        }
+
         public DateTime? Last_Updated
         {
             get
@@ -623,15 +637,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (PROGRESS_ITEMS.Count == 0)
                     return null;
 
-                IEnumerable<PROGRESS_ITEM> progress_itemSortedByDate = PROGRESS_ITEMS.OrderBy(x => x.CREATED).ThenBy(x => x.UPDATED);
-                var lastProgressItem = progress_itemSortedByDate.Last();
-                if (lastProgressItem.UPDATED != null)
-                    return lastProgressItem.UPDATED;
+                if (PROGRESS_ITEM_Current == null)
+                    return null;
 
-                if(lastProgressItem.CREATED != null)
-                    return lastProgressItem.CREATED;
-
-                return null;
+                return PROGRESS_ITEM_Current.UPDATED;
             }
         }
 
@@ -642,15 +651,38 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (PROGRESS_ITEMS.Count == 0)
                     return null;
 
-                IEnumerable<PROGRESS_ITEM> progress_itemSortedByDate = PROGRESS_ITEMS.OrderBy(x => x.CREATED).ThenBy(x => x.UPDATED);
-                var lastProgressItem = progress_itemSortedByDate.Last();
-                if (lastProgressItem.UPDATEDBY != null)
-                    return lastProgressItem.UPDATEDBY;
+                if (PROGRESS_ITEM_Current == null)
+                    return null;
 
-                if (lastProgressItem.CREATEDBY != null)
-                    return lastProgressItem.CREATEDBY;
+                return PROGRESS_ITEM_Current.UPDATEDBY;
+            }
+        }
 
-                return null;
+        public DateTime? Last_Created
+        {
+            get
+            {
+                if (PROGRESS_ITEMS.Count == 0)
+                    return null;
+
+                if (PROGRESS_ITEM_Current == null)
+                    return null;
+
+                return PROGRESS_ITEM_Current.CREATED;
+            }
+        }
+
+        public Guid? Last_CreatedBy
+        {
+            get
+            {
+                if (PROGRESS_ITEMS.Count == 0)
+                    return null;
+
+                if (PROGRESS_ITEM_Current == null)
+                    return null;
+
+                return PROGRESS_ITEM_Current.CREATEDBY;
             }
         }
         #endregion
