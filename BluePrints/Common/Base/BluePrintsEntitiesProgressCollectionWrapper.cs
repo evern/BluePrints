@@ -668,7 +668,6 @@ namespace BluePrints.Common.Base
             MessageBoxService.ShowMessage("P6 activities fixed and progress synced");
         }
 
-
         private void markP6TaskAsCompleted(IEnumerable<P6_ASSIGNMENT> allCompletedAssignments, List<string> processedTasks)
         {
             IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;

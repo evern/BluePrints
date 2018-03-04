@@ -877,7 +877,15 @@ namespace BluePrints.ViewModels
                     livePROGRESS = collection.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == ProgressType.Design);
 
                 if(livePROGRESS != null)
-                    return livePROGRESS.DATA_DATE.ToString("dd-MMM-yy");
+                {
+                    DateTime dateToUse;
+                    if (livePROGRESS.REPORT_DATE != null)
+                        dateToUse = (DateTime)livePROGRESS.REPORT_DATE;
+                    else
+                        dateToUse = livePROGRESS.DATA_DATE;
+
+                    return dateToUse.ToString("dd-MMM-yy");
+                }
 
                 return "N/A";
             }
@@ -894,7 +902,15 @@ namespace BluePrints.ViewModels
                     livePROGRESS = collection.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == ProgressType.Construct);
 
                 if (livePROGRESS != null)
-                    return livePROGRESS.DATA_DATE.ToString("dd-MMM-yy");
+                {
+                    DateTime dateToUse;
+                    if (livePROGRESS.REPORT_DATE != null)
+                        dateToUse = (DateTime)livePROGRESS.REPORT_DATE;
+                    else
+                        dateToUse = livePROGRESS.DATA_DATE;
+
+                    return dateToUse.ToString("dd-MMM-yy");
+                }
 
                 return "N/A";
             }

@@ -23,7 +23,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             //need to use external PROGRESS_ITEMS because live_progress.PROGRESS_ITEM is cached and will not update OnMessage
             IEnumerable<PROGRESS_ITEM> progresses = PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == live_progress.GUID);
             IEnumerable<RATE> rates = project.RATE;
-            List<BASELINE_ITEMProgress> project_baseline_item_progress = OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == live_baseline.GUID), project, live_progress, rates, progresses, approved_variations, false, null, DeliverableInternalNumberMode.Default, null, USERCollection, BASELINE_ITEM_WORKSCollection).ToList();
+            List<BASELINE_ITEMProgress> project_baseline_item_progress = OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == live_baseline.GUID), project, live_progress, rates, progresses, approved_variations, false, null, DeliverableInternalNumberMode.Default, false, null, USERCollection, BASELINE_ITEM_WORKSCollection).ToList();
 
             foreach (BASELINE_ITEMProgress baseline_item in project_baseline_item_progress)
             {
@@ -31,7 +31,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 {
                     foreach (User_Weight userWeight in baseline_item.AssignedUsers)
                     {
-                        BASELINE_ITEMProgress user_baseline_item = new BASELINE_ITEMProgress(project, live_progress, baseline_item.Entity, new List<VariationAdjustment>());
+                        BASELINE_ITEMProgress user_baseline_item = new BASELINE_ITEMProgress(project, live_progress, baseline_item.Entity, new List<VariationAdjustment>(), false);
                         user_baseline_item.Stats = new ProgressStats(baseline_item.Stats.ReportingDataDate, baseline_item.Stats.ReportingInterval, baseline_item.Stats.FirstAlignedDataDate, baseline_item.Stats.BudgetedUnits * userWeight.AggregateWeight, baseline_item.Stats.TotalUnits * userWeight.AggregateWeight, baseline_item.Stats.BudgetedCosts * userWeight.AggregateWeight, baseline_item.Stats.TotalCosts * userWeight.AggregateWeight, new List<VariationAdjustment>());
                         DataUtils.ShallowCopy(user_baseline_item, baseline_item);
                         user_baseline_item.Entity = baseline_item.Entity;
@@ -51,7 +51,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return user_baseline_item_progresses.AsQueryable();
         }
 
-        public static IQueryable<BASELINE_ITEMProgress> User_OffsiteDirectProgressItemTransformation(IQueryable<BASELINE_ITEM> query, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<USER> USERCollection, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKSCollection, USER user, bool buildStats = true)
+        public static IQueryable<BASELINE_ITEMProgress> User_OffsiteDirectProgressItemTransformation(IQueryable<BASELINE_ITEM> query, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<USER> USERCollection, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKSCollection, USER user, bool buildStats = true, bool useReportDate = false)
         {
             //IQueryable<BASELINE_ITEM> user_baseline_item = query.Where(x => x.GUID_USER == user.GUID && x.BASELINE.STATUS == BaselineStatus.Live && x.BASELINE.PROJECT.STATUS == ProjectStatus.Active);
             List<BASELINE_ITEM_WORK> current_user_works = BASELINE_ITEM_WORKSCollection.Where(x => x.GUID_USER == user.GUID).ToList();
@@ -84,7 +84,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 IEnumerable<PROGRESS_ITEM> progresses = PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == live_progress.GUID);
                 IEnumerable<RATE> rates = project.RATE;
 
-                List<BASELINE_ITEMProgress> user_project_baseline_item_progress = OffsiteDirectProgressItemTransformation(user_project_baseline_item.AsQueryable(), project, live_progress, rates, progresses, approved_variations, false, null, DeliverableInternalNumberMode.Default, null, USERCollection, BASELINE_ITEM_WORKSCollection).ToList();
+                List<BASELINE_ITEMProgress> user_project_baseline_item_progress = OffsiteDirectProgressItemTransformation(user_project_baseline_item.AsQueryable(), project, live_progress, rates, progresses, approved_variations, false, null, DeliverableInternalNumberMode.Default, useReportDate, null, USERCollection, BASELINE_ITEM_WORKSCollection).ToList();
                 if (buildStats)
                 {
                     foreach (BASELINE_ITEMProgress user_deliverable in user_project_baseline_item_progress)
@@ -114,7 +114,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null)
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null)
         {
             IQueryable<BASELINE_ITEMProjection> baseline_item_queryable;
 
@@ -159,7 +159,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             else
                 projectVariationAdjustments = new List<VariationAdjustment>();
 
-            List<BASELINE_ITEMProgress> baseline_item_progresses = baseline_item_projection.Select(x => new BASELINE_ITEMProgress(PROJECT, PROGRESS, x, projectVariationAdjustments)
+            List<BASELINE_ITEMProgress> baseline_item_progresses = baseline_item_projection.Select(x => new BASELINE_ITEMProgress(PROJECT, PROGRESS, x, projectVariationAdjustments, useReportDate)
             {
                 Entity = x,
                 Live_PROGRESS = PROGRESS,
@@ -195,13 +195,13 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
 
         public static IQueryable<ReportablesDisplay> SiteDirectProgressItemTransformation(
-            IQueryable<ESTIMATE_ITEM> ESTIMATE_ITEMS, PROJECT PROJECT, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<STOCK_GROUP> STOCK_GROUPS, IEnumerable<STOCK_CODE> projectSTOCK_CODES, IEnumerable<RATE> projectRATES)
+            IQueryable<ESTIMATE_ITEM> ESTIMATE_ITEMS, PROJECT PROJECT, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<STOCK_GROUP> STOCK_GROUPS, IEnumerable<STOCK_CODE> projectSTOCK_CODES, IEnumerable<RATE> projectRATES, bool useReportDate)
         {
             IEnumerable<PROGRESS_ITEM> arrPROGRESS_ITEMS = PROGRESS_ITEMS.ToArray();
             List<ReportablesDisplay> display_items = new List<ReportablesDisplay>();
 
             IEnumerable<ESTIMATE_ITEMProgress> estimation_direct_item_progresses =
-                ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATE_ITEMS, PROJECT, projectRATES, PROGRESS, PROGRESS_ITEMS,
+                ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATE_ITEMS, PROJECT, projectRATES, PROGRESS, PROGRESS_ITEMS, false, 
                                                                                                 projectSTOCK_CODES,
                                                                                                 STOCK_GROUPS).AsEnumerable();
 
@@ -224,9 +224,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                         var deliverables_byStockGroupByAreaBySubAreas = deliverables_byStockGroupByArea.DeliverablesByStockGroupByArea.GroupBy(x => x.SubArea_Guid).Select(group => new { SubAreaGuid = group.Key, DeliverablesByStockGroupByAreaBySubArea = group.ToList() });
                         foreach (var deliverables_ByStockGroupByAreaBySubArea in deliverables_byStockGroupByAreaBySubAreas)
                         {
+                            DateTime reportDateToUse = useReportDate ? PROGRESS.REPORT_DATE != null ? (DateTime)PROGRESS.REPORT_DATE : PROGRESS.DATA_DATE : PROGRESS.DATA_DATE;
                             new_stock_group.Reportables = deliverables_ByStockGroupByAreaBySubArea.DeliverablesByStockGroupByAreaBySubArea;
                             new_stock_group.Entity.Deliverables = deliverables_ByStockGroupByAreaBySubArea.DeliverablesByStockGroupByAreaBySubArea.Select(x => x.Entity);
-                            new_stock_group.SetReportingDataDate(PROGRESS.DATA_DATE);
+                            new_stock_group.SetReportingDataDate(reportDateToUse);
                             ReportablesDisplay newProgressDisplay = new ReportablesDisplay();
                             newProgressDisplay.ProgressItem = new DisplayQuantityReportableGroup(new_stock_group);
                             display_items.Add(newProgressDisplay);

@@ -102,7 +102,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<ReportablesDisplay>> specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.SiteDirectProgressItemTransformation(query.Where(x => x.GUID_ESTIMATE == loadESTIMATE.GUID && x.GUID_PHASE != null), loadPROJECT, loadPROGRESS, PROGRESS_ITEMCollection, STOCK_GROUPCollection, STOCK_CODECollection, RATECollection);
+            return query => ProgressQueries.SiteDirectProgressItemTransformation(query.Where(x => x.GUID_ESTIMATE == loadESTIMATE.GUID && x.GUID_PHASE != null), loadPROJECT, loadPROGRESS, PROGRESS_ITEMCollection, STOCK_GROUPCollection, STOCK_CODECollection, RATECollection, false);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ReportablesDisplay> entities)

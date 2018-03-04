@@ -26,7 +26,7 @@ namespace BluePrints.Common.Projections
         {
             TimeSpan reporting_interval = ChronologicalHelpers.GetDefaultIntervalTimeSpan();
             DateTime? earliest_first_aligned_data_date = ChronologicalHelpers.GetEarliestFirstAlignedDataDate(PROGRESSES);
-            DateTime? latest_data_date = ChronologicalHelpers.GetLastDataDate(PROGRESSES);
+            DateTime? latest_data_date = ChronologicalHelpers.GetReportLastDataDate(PROGRESSES);
             
             List<VariationAdjustment> projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONS.AsQueryable(), reportableItems);
             FullStatsBuilder fullStatsBuilder = null;
@@ -139,7 +139,7 @@ namespace BluePrints.Common.Projections
                     //IEnumerable<BASELINE_ITEM> live_baseline_items = live_baseline.BASELINE_ITEM.Where(x => !x.BY_DURATION);
                     IEnumerable<BASELINE_ITEM> live_baseline_items = live_baseline.BASELINE_ITEM;
                     IEnumerable<BASELINE_ITEMProgress> project_baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(
-                    live_baseline_items.AsQueryable(), current_project, live_baseline_progress, project_rates, live_baseline_progresses, approved_project_variations, false, null, DeliverableInternalNumberMode.Default, null, USERCollection, BASELINE_ITEM_WORKCollection).ToArray().AsEnumerable();
+                    live_baseline_items.AsQueryable(), current_project, live_baseline_progress, project_rates, live_baseline_progresses, approved_project_variations, false, null, DeliverableInternalNumberMode.Default, true, null, USERCollection, BASELINE_ITEM_WORKCollection).ToArray().AsEnumerable();
                     reportables.AddRange(project_baseline_item_progresses);
                     current_project_progresses.Add(live_baseline_progress);
                 }
@@ -148,7 +148,7 @@ namespace BluePrints.Common.Projections
                 {
                     IEnumerable<ESTIMATE_ITEM> live_estimation_direct_items = live_estimation_direct.ESTIMATE_ITEM;
                     IEnumerable<ESTIMATE_ITEMProgress> project_estimation_direct_item_progresses =
-                    ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(live_estimation_direct_items.AsQueryable(), current_project, project_rates, live_estimation_direct_progress, live_estimation_direct_progresses, null, null, approved_project_variations);
+                    ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(live_estimation_direct_items.AsQueryable(), current_project, project_rates, live_estimation_direct_progress, live_estimation_direct_progresses, true, null, null, approved_project_variations);
                     reportables.AddRange(project_estimation_direct_item_progresses);
                     current_project_progresses.Add(live_estimation_direct_progress);
                 }

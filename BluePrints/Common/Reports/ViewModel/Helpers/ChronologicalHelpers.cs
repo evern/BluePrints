@@ -21,15 +21,15 @@ namespace BluePrints.Common.ViewModel.Reporting
             return earliest_first_aligned_data_date;
         }
 
-        public static DateTime? GetLastDataDate(IEnumerable<PROGRESS> PROGRESSES)
+        public static DateTime? GetReportLastDataDate(IEnumerable<PROGRESS> PROGRESSES)
         {
             DateTime? latest_data_date = null;
             foreach (PROGRESS PROGRESS in PROGRESSES)
             {
                 if (latest_data_date == null)
-                    latest_data_date = PROGRESS.DATA_DATE;
+                    latest_data_date = PROGRESS.REPORT_DATE != null ? PROGRESS.REPORT_DATE : PROGRESS.DATA_DATE;
                 else if (latest_data_date < PROGRESS.DATA_DATE)
-                    latest_data_date = PROGRESS.DATA_DATE;
+                    latest_data_date = PROGRESS.REPORT_DATE != null ? PROGRESS.REPORT_DATE : PROGRESS.DATA_DATE;
             }
 
             return latest_data_date;

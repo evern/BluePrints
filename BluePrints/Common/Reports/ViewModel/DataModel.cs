@@ -206,8 +206,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         }
 
-        public BASELINE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments)
-            : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments)
+        public BASELINE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool useReportDate)
+            : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments, useReportDate)
         {
 
         }
@@ -328,7 +328,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
 
         public BluePrintsProgressableByQuantityProjectionBase(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments)
-            : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments)
+            : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments, false)
         {
             
         }
@@ -549,11 +549,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             //Initialization without stats
         }
 
-        public BluePrintsProgressableProjectionBase(PROJECT PROJECT, PROGRESS Live_PROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> variation_adjustments)
+        public BluePrintsProgressableProjectionBase(PROJECT PROJECT, PROGRESS Live_PROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> variation_adjustments, bool useReportDate)
         {
             this.Live_PROGRESS = Live_PROGRESS;
             //DateTime reporting_data_date = Live_PROGRESS.DATA_DATE;
-            DateTime reporting_data_date = Live_PROGRESS.REPORT_DATE == null ? Live_PROGRESS.DATA_DATE : (DateTime)Live_PROGRESS.REPORT_DATE;
+            DateTime reporting_data_date = useReportDate ? Live_PROGRESS.REPORT_DATE == null ? Live_PROGRESS.DATA_DATE : (DateTime)Live_PROGRESS.REPORT_DATE : Live_PROGRESS.DATA_DATE;
             TimeSpan reporting_interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(Live_PROGRESS);
             DateTime first_aligned_data_date = ChronologicalHelpers.GenerateFirstAlignedDataDate(Live_PROGRESS);
             SetReportingDataDate(reporting_data_date);
