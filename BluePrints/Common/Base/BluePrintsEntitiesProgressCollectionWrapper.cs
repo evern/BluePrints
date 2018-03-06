@@ -1020,6 +1020,7 @@ namespace BluePrints.Common.Base
             return interpolationDate.OrderBy(x => x.Date).ToList();
         }
 
+
         bool isPushingToP6;
         protected abstract IEntitiesSchedulingCollectionWrapper scheduling_view_model { get; }
         private void PushToP6(BaselineMappingSelectionType mappingSelectionType)
