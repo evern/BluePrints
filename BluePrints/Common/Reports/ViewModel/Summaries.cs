@@ -34,14 +34,14 @@ namespace BluePrints.Common.ViewModel.Reporting
         public List<SUBJOB> ExoMissingSUBJOBS { get; private set; }
         #endregion
 
-        public ProjectSummaryStats(IEnumerable<IReportable> progressItem, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<VariationAdjustment> projectVariationAdjustments)
+        public ProjectSummaryStats(IEnumerable<IReportable> progressItem, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<VariationAdjustment> projectVariationAdjustments, DateTime? overrideLastProgressDate = null)
             : base(progressItem, reporting_data_date, reporting_interval, first_aligned_data_date, projectVariationAdjustments)
         {
             this.reporting_data_date = reporting_data_date;
             this.reporting_interval = reporting_interval;
             this.first_aligned_data_date = first_aligned_data_date;
             ExoMissingSUBJOBS = new List<SUBJOB>();
-            ProjectionHelpers.Initialize_Stats(progressItem, projectVariationAdjustments, reporting_data_date, reporting_interval, first_aligned_data_date, false);
+            ProjectionHelpers.Initialize_Stats(progressItem, projectVariationAdjustments, reporting_data_date, reporting_interval, first_aligned_data_date, false, overrideLastProgressDate);
         }
 
         public IEnumerable<ExoDataPoint> GetBurnedDataPoints()
@@ -308,7 +308,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public ProgressStats(DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, decimal budgetedUnits, decimal totalUnits, decimal budgetedCosts, decimal totalCosts, IEnumerable<VariationAdjustment> variationAdjustments)
+        public ProgressStats(DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, decimal budgetedUnits, decimal totalUnits, decimal budgetedCosts, decimal totalCosts, IEnumerable<VariationAdjustment> variationAdjustments, DateTime? extrapolateDate = null)
         {
             this.ReportingDataDate = reporting_data_date;
             this.ReportingInterval = reporting_interval;
@@ -321,11 +321,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.VariationAdjustments = variationAdjustments.ToList();
 
             //Budgeted = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, true);
-            Budgeted = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, true);
-            BudgetedLate = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, true);
-            Current = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments);
-            Earned = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments);
-            Remaining = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, true);
+            Budgeted = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, true, extrapolateDate);
+            BudgetedLate = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, true, extrapolateDate);
+            Current = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, false, extrapolateDate);
+            Earned = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, false, extrapolateDate);
+            Remaining = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, true, false, extrapolateDate);
             //RemainingActual = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, true);
         }
 

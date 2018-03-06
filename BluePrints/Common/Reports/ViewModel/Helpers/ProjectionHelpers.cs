@@ -11,7 +11,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     /// </summary>
     public static class ProjectionHelpers
     {
-        public static void Initialize_Stats(IEnumerable<IReportable> reportableItems, IEnumerable<VariationAdjustment> variationAdjustments, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, bool progressHaveStats)
+        public static void Initialize_Stats(IEnumerable<IReportable> reportableItems, IEnumerable<VariationAdjustment> variationAdjustments, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, bool progressHaveStats, DateTime? overrideLastProgressDate = null)
         {
             if (progressHaveStats)
                 return;
@@ -28,14 +28,14 @@ namespace BluePrints.Common.ViewModel.Reporting
                         foreach(IReportable reportable in reportable_Group.Reportables)
                         {
                             group_variation_adjustments.AddRange(variationAdjustments.Where(x => x.DeliverableOriginalGuid == reportable.OriginalEntityKey).ToList());
-                            reportable.Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, reportable.Budget_Units, reportable.Total_Units, reportable.Budget_Costs, reportable.Total_Costs, variationAdjustments.Where(x => x.DeliverableOriginalGuid == reportable.OriginalEntityKey));
+                            reportable.Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, reportable.Budget_Units, reportable.Total_Units, reportable.Budget_Costs, reportable.Total_Costs, variationAdjustments.Where(x => x.DeliverableOriginalGuid == reportable.OriginalEntityKey), overrideLastProgressDate);
                         }
 
-                        reportable_Group.Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, reportable_Group.Budget_Units, reportable_Group.Total_Units, reportable_Group.Budget_Costs, reportable_Group.Total_Costs, group_variation_adjustments);
+                        reportable_Group.Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, reportable_Group.Budget_Units, reportable_Group.Total_Units, reportable_Group.Budget_Costs, reportable_Group.Total_Costs, group_variation_adjustments, overrideLastProgressDate);
                     }
                 }
                 else
-                    reportableItem.Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, reportableItem.Budget_Units, reportableItem.Total_Units, reportableItem.Budget_Costs, reportableItem.Total_Costs, variationAdjustments.Where(x => x.DeliverableOriginalGuid == reportableItem.OriginalEntityKey));
+                    reportableItem.Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, reportableItem.Budget_Units, reportableItem.Total_Units, reportableItem.Budget_Costs, reportableItem.Total_Costs, variationAdjustments.Where(x => x.DeliverableOriginalGuid == reportableItem.OriginalEntityKey), overrideLastProgressDate);
             }
         }
 

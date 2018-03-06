@@ -18,13 +18,17 @@ namespace BluePrints.Common.ViewModel.Reporting
         public static ObservableCollection<DataPoint> GroupDataPointsByPeriod(
             IEnumerable<DataPoint> rawDataPoints, decimal budgetedUnits,
             decimal budgetedCosts, DateTime firstAlignedDataDate, TimeSpan progressInterval, Guid aggregateGuid,
-            IEnumerable<VariationAdjustment> rawVariationAdjustments = null)
+            IEnumerable<VariationAdjustment> rawVariationAdjustments = null, DateTime? overrideLastPeriodDate = null)
         {
             if (rawDataPoints == null || rawDataPoints.Count() == 0)
                 return null;
 
             var summaryDataPoints = new ObservableCollection<DataPoint>();
-            var progressLastDataDate = rawDataPoints.Max(dataPoint => dataPoint.ProgressDate);
+            DateTime progressLastDataDate;
+            if (overrideLastPeriodDate != null)
+                progressLastDataDate = (DateTime)overrideLastPeriodDate;
+            else
+                progressLastDataDate = rawDataPoints.Max(dataPoint => dataPoint.ProgressDate);
 
             //Add zero UOM data point so that line graph starts at 0%
             summaryDataPoints.Add(new DataPoint()

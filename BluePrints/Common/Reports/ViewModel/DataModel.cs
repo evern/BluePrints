@@ -206,8 +206,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         }
 
-        public BASELINE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool useReportDate)
-            : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments, useReportDate)
+        public BASELINE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool useReportDate, DateTime? extrapolateDate = null)
+            : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments, useReportDate, extrapolateDate)
         {
 
         }
@@ -549,7 +549,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             //Initialization without stats
         }
 
-        public BluePrintsProgressableProjectionBase(PROJECT PROJECT, PROGRESS Live_PROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> variation_adjustments, bool useReportDate)
+        public BluePrintsProgressableProjectionBase(PROJECT PROJECT, PROGRESS Live_PROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> variation_adjustments, bool useReportDate, DateTime? extrapolateDate = null)
         {
             this.Live_PROGRESS = Live_PROGRESS;
             //DateTime reporting_data_date = Live_PROGRESS.DATA_DATE;
@@ -560,7 +560,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             List<VariationAdjustment> currentProgressItemAdjustments = variation_adjustments.Where(x => x.DeliverableOriginalGuid == entity.OriginalEntityKey).ToList();
 
             PartialStatsBuilder partialStatsBuilder = new PartialStatsBuilder(PROJECT.CURRENCYCONVERSION);
-            Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, entity.Budget_Units, entity.Total_Units, entity.Budget_Costs, entity.Total_Costs, currentProgressItemAdjustments);
+            Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, entity.Budget_Units, entity.Total_Units, entity.Budget_Costs, entity.Total_Costs, currentProgressItemAdjustments, extrapolateDate);
             statsSummarizer = new SingleObjectSummarizer(this, partialStatsBuilder);
         }
 

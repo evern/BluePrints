@@ -38,7 +38,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         readonly bool alwaysBenchmarkAgainstBudgeted;
         readonly DateTime firstAlignedDataDate;
         readonly TimeSpan reportInterval;
-
+        readonly DateTime? extrapolateDate;
         public bool FromP6 { get; private set; }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.rawVariationAdjustments = summaryStats.VariationAdjustments;
         }
 
-        public Stats(DateTime reportingDataDate, decimal budgetedUnits, decimal totalUnits, decimal budgetedCosts, decimal totalCosts, DateTime firstAlignedDataDate, TimeSpan reportInterval, IEnumerable<VariationAdjustment> rawVariationAdjustments = null, bool hideDataPointsBeforeDataDate = false, bool alwaysBenchmarkAgainstBudgeted = false)
+        public Stats(DateTime reportingDataDate, decimal budgetedUnits, decimal totalUnits, decimal budgetedCosts, decimal totalCosts, DateTime firstAlignedDataDate, TimeSpan reportInterval, IEnumerable<VariationAdjustment> rawVariationAdjustments = null, bool hideDataPointsBeforeDataDate = false, bool alwaysBenchmarkAgainstBudgeted = false, DateTime? extrapolateDate = null)
         {
             this.reportingDataDate = reportingDataDate;
             this.BudgetedUnits = budgetedUnits;
@@ -68,6 +68,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.TotalCosts = totalCosts;
             this.firstAlignedDataDate = firstAlignedDataDate;
             this.reportInterval = reportInterval;
+            this.extrapolateDate = extrapolateDate;
             //Always use weekly
             //this.reportInterval = new TimeSpan(1, 0, 0, 0);
             this.rawVariationAdjustments = rawVariationAdjustments;
@@ -187,7 +188,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (cumulativeDataPoints == null && rawDataPoints != null && rawDataPoints.Count() > 0 && firstAlignedDataDate != null)
                 {
                     //Budgeted units are always used because variation adjustment will be added on if alwaysBenchmarkAgainstBudgeted is false and rawVariationAdjustments is not null
-                    cumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, BudgetedUnits, alwaysBenchmarkAgainstBudgeted ? BudgetedCosts : TotalCosts, firstAlignedDataDate, reportInterval, Guid.Empty, alwaysBenchmarkAgainstBudgeted ? null : rawVariationAdjustments);
+                    cumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, BudgetedUnits, alwaysBenchmarkAgainstBudgeted ? BudgetedCosts : TotalCosts, firstAlignedDataDate, reportInterval, Guid.Empty, alwaysBenchmarkAgainstBudgeted ? null : rawVariationAdjustments, extrapolateDate);
                 }
 
                 return cumulativeDataPoints;

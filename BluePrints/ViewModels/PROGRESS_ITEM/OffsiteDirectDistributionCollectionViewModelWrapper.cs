@@ -142,7 +142,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, DeliverableInternalNumberMode.Default, false, P6TASKCollection);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, DeliverableInternalNumberMode.Default, false, P6TASKCollection, null, null);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
@@ -291,13 +291,14 @@ namespace BluePrints.ViewModels
                             PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, null, null, null, EntityMessageType.Added);
                             progressToSave.Add(newPROGRESS_ITEM);
                         }
-                        else
+                        else if(currentPeriodPROGRESS_ITEM != null)
                         {
                             decimal postEditUnits = currentPeriodPROGRESS_ITEM.EARNED_UNITS + totalUnitsDifferences;
                             if (postEditUnits < 0)
                             {
                                 totalUnitsDifferences = -1 * currentPeriodPROGRESS_ITEM.EARNED_UNITS;
                                 postEditUnits = 0;
+                                MessageBoxService.ShowMessage("Cannot go below currently assigned units. Please check past progress to lower % further");
                             }
 
                             decimal oldProgressValue = currentPeriodPROGRESS_ITEM.EARNED_UNITS;
@@ -305,6 +306,7 @@ namespace BluePrints.ViewModels
                             PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, earnedUnitsFieldName, oldProgressValue, postEditUnits, EntityMessageType.Changed);
                             progressToSave.Add(currentPeriodPROGRESS_ITEM);
                         }
+
                         //The addition of removal of units from current data date needs to be balanced by progress in the future, starting from the next progress
                         totalUnitsDifferences = totalUnitsDifferences * -1;
                         for (int i = 0; i < futureProgressToEdit.Count; i++)
@@ -394,14 +396,10 @@ namespace BluePrints.ViewModels
 
                 if(dataPointsTable == null)
                 {
-                    //if (DisplayEntities.Any(x => x.Stats.Earned == null) || DisplayEntities.Any(x => x.Stats.Earned.CumulativeDataPoints == null))
-                    //    return null;
-
                     dataPointsTable = new DataTable();
                     TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
                     DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-                    DateTime lastDataDate = DisplayEntities.Where(x => x.Progresses != null && x.Progresses.Count() > 0).Max(x => x.Progresses.Max(y => y.EARNED_DATE));
-
+                    DateTime lastDataDate = loadPROGRESS.DATA_DATE.AddDays(-1 * interval.Days);
                     IEnumerable<DateTime> alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(firstAlignedDataDate, lastDataDate, interval);
 
                     dataPointsTable.Columns.Add(Id, typeof(Guid));
@@ -415,10 +413,6 @@ namespace BluePrints.ViewModels
                     {
                         dataPointsTable.Columns.Add(alignedDataDate.Date.ToShortDateString(), typeof(decimal));
                     }
-
-                    string currentDataDateColumn = loadPROGRESS.DATA_DATE.ToShortDateString();
-                    if (!dataPointsTable.Columns.Contains(currentDataDateColumn))
-                        dataPointsTable.Columns.Add(currentDataDateColumn, typeof(decimal));
 
                     foreach(BASELINE_ITEMProgress entity in DisplayEntities)
                     {
