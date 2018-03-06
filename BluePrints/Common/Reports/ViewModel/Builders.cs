@@ -110,7 +110,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 {
                     if (qualifiedSubjobs.Contains(jobTransaction.JOBCODE))
                     {
-                        if(!jobTransaction.COSTDESC3.Contains("G99"))
+                        if(!jobTransaction.COSTDESC3.Substring(0, 3).Contains("G99") && !jobTransaction.COSTDESC3.Substring(0, 3).Contains("010"))
                         {
                             ExoDataPoint burnedDataPoint = new ExoDataPoint();
                             burnedDataPoint.BudgetedUnits = 0;
