@@ -75,6 +75,18 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
+        public string Department_Name
+        {
+            get
+            {
+                if (DEPARTMENT == null)
+                    return string.Empty;
+
+                return DEPARTMENT.NAME;
+            }
+        }
+
+        [NotMapped]
         public string Phase_Code => PHASE == null ? string.Empty : PHASE.INTERNAL_NUM;
 
         [NotMapped]
@@ -107,6 +119,17 @@ namespace BluePrints.Data
                     return string.Empty;
 
                 return SUBJOB.INTERNAL_NAME1;
+            }
+        }
+
+        public string Workpack_Name
+        {
+            get
+            {
+                if (WORKPACK == null)
+                    return string.Empty;
+
+                return WORKPACK.NAME;
             }
         }
 

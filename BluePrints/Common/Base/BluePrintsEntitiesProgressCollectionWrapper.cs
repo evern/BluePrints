@@ -222,7 +222,7 @@ namespace BluePrints.Common.Base
             }
         }
 
-        protected void OnMappingAdditionalChangedEntitiesProperties(TMainProjectionEntity existingProjectionEntity, TMainProjectionEntity projectionEntity)
+        protected virtual void OnMappingAdditionalChangedEntitiesProperties(TMainProjectionEntity existingProjectionEntity, TMainProjectionEntity projectionEntity)
         {
             projectionEntity.Stats = existingProjectionEntity.Stats;
         }

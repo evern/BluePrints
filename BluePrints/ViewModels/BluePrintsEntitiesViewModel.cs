@@ -468,10 +468,10 @@ namespace BluePrints.ViewModels
                 construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectSiteDirectProgress" + keyString, projectKey, childTitlePrefix + "Site Direct Progress", "SiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress"));
             }
 
-            //if (LoginCredentials.hasPermission(PermissionResources.ManageProgressDistribution))
-            //{
-            //    design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectOffsiteProgressDistribution" + keyString, projectKey, childTitlePrefix + "Design Progress Distribution", "OffsiteDirectDistributionCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress Distribution"));
-            //}
+            if (LoginCredentials.hasPermission(PermissionResources.ManageProgressDistribution))
+            {
+                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectOffsiteProgressDistribution" + keyString, projectKey, childTitlePrefix + "Design Progress Distribution", "OffsiteDirectDistributionCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress Distribution"));
+            }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageVariation))
             {
