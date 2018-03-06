@@ -21,6 +21,7 @@ using DevExpress.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Editors;
+using DevExpress.Xpf.Editors.Settings;
 using DevExpress.Xpf.Grid;
 using DevExpress.Xpf.Printing;
 using System;
@@ -197,39 +198,9 @@ namespace BluePrints.ViewModels
         {
             FilterTreeViewModel = FiltersSettings.GetBASELINE_ITEMProgressFilterTree(this, entities);
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
+            OnDisplaySelectedEntityChangedCallBack = reselectRowInDataPointsTable;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
-
-        //protected override void CellValueExistingRowChanging(CellValueChangedEventArgs e)
-        //{
-        //    string fieldName = DataUtils.FormatColumnFieldname(e.Column.FieldName);
-        //    if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.DeliverableStatusGuid))
-        //    {
-        //        BASELINE_ITEMProgress deliverable = (BASELINE_ITEMProgress)e.Row;
-
-        //        if(e.Value != null)
-        //        {
-        //            Guid current_deliverable_status_guid = (Guid)e.Value;
-        //            DELIVERABLES_STATUS current_deliverable_status = deliverable.Entity.Entity.DeliverableStatusCollection.FirstOrDefault(x => x.GUID == current_deliverable_status_guid);
-        //            if (current_deliverable_status != null && current_deliverable_status.AUTO_PERCENTAGE != null)
-        //            {
-        //                decimal auto_percentage = (decimal)current_deliverable_status.AUTO_PERCENTAGE;
-        //                if (current_deliverable_status.AUTO_PERCENTAGE > deliverable.Total_Earned_Percentage)
-        //                {
-        //                    decimal oldValue = deliverable.Total_Earned_Percentage;
-        //                    deliverable.Total_Earned_Percentage = auto_percentage;
-
-        //                    string undo_redo_fieldname = BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage);
-
-        //                    MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-        //                    MainViewModel.EntitiesUndoRedoManager.AddUndo(deliverable, undo_redo_fieldname, oldValue, auto_percentage, EntityMessageType.Changed);
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    base.CellValueExistingRowChanging(e);
-        //}
         #region Collection Call Backs
 
         public bool ValidateFillDownCallBack(BASELINE_ITEMProgress fillDownEntity, string fieldName, object fillValue)
@@ -262,8 +233,63 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
         }
 
+        protected override void onAfterRefresh()
+        {
+            base.onAfterRefresh();
+            refreshDataPointsTable();
+        }
+
+        public void AutoGeneratingPercentageColumns(AutoGeneratingColumnEventArgs e)
+        {
+            if (e.Column.FieldName != deliverableKeyFieldName)
+            {
+                SpinEditSettings spinEdit = new SpinEditSettings();
+                spinEdit.DisplayFormat = "p2";
+                spinEdit.MaskUseAsDisplayFormat = true;
+                spinEdit.Increment = 0.05m;
+                e.Column.EditSettings = spinEdit;
+            }
+            else
+            {
+                e.Column.Visible = false;
+            }
+        }
+
+        private void reselectRowInDataPointsTable(BASELINE_ITEMProgress changedEntity)
+        {
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.SelectedDataRow)));
+        }
+
+        private void reselectDeliverable()
+        {
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DisplaySelectedEntity)));
+        }
+
+
         string deliverableKeyFieldName = "OriginalEntityKey";
-        DataTable dataPointsTable;
+        DataTable dataPointsTable = null;
+        private DataRow selectedDataRow { get; set; }
+        public DataRow SelectedDataRow
+        {
+            get
+            {
+                if (dataPointsTable == null || DisplaySelectedEntity == null)
+                    return null;
+
+                DataRow selectedRow = (from DataRow dr in dataPointsTable.Rows
+                            where (Guid)dr[deliverableKeyFieldName] == DisplaySelectedEntity.OriginalEntityKey
+                            select dr).FirstOrDefault();
+
+                return selectedRow;
+            }
+            set
+            {
+                selectedDataRow = value;
+            }
+        }
+
+
+
         public DataTable DataPointsTable
         {
             get
@@ -273,10 +299,13 @@ namespace BluePrints.ViewModels
 
                 if(dataPointsTable == null)
                 {
+                    //if (DisplayEntities.Any(x => x.Stats.Earned == null) || DisplayEntities.Any(x => x.Stats.Earned.CumulativeDataPoints == null))
+                    //    return null;
+
                     dataPointsTable = new DataTable();
                     TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
                     DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-                    DateTime lastDataDate = DisplayEntities.Max(x => x.Progresses.Max(y => y.EARNED_DATE));
+                    DateTime lastDataDate = DisplayEntities.Where(x => x.Progresses != null && x.Progresses.Count() > 0).Max(x => x.Progresses.Max(y => y.EARNED_DATE));
 
                     IEnumerable<DateTime> alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(firstAlignedDataDate, lastDataDate, interval);
                     dataPointsTable.Columns.Add(deliverableKeyFieldName, typeof(Guid));
@@ -289,52 +318,35 @@ namespace BluePrints.ViewModels
                     {
                         DataRow newDataRow = dataPointsTable.NewRow();
                         newDataRow[deliverableKeyFieldName] = entity.OriginalEntityKey;
-                        foreach(Common.ViewModel.Reporting.DataPoint progress in entity.Stats.Earned.CumulativeDataPoints)
+
+                        string s;
+                        if (entity.OriginalEntityKey.ToString() == "63fba242-f15d-4163-8f36-06b9ba6e9f54")
+                            s = string.Empty;
+
+                        for(int i = 0; i < newDataRow.ItemArray.Count(); i++)
                         {
-                            string dateField = progress.ProgressDate.Date.ToShortDateString();
-                            newDataRow[dateField] = progress.UnitsPercentage;
+                            string columnName = dataPointsTable.Columns[i].ColumnName;
+                            if (columnName != deliverableKeyFieldName)
+                                newDataRow[columnName] = 0.00m;
                         }
+
+                        if(entity.Stats.Earned != null && entity.Stats.Earned.CumulativeDataPoints != null)
+                            foreach(Common.ViewModel.Reporting.DataPoint progress in entity.Stats.Earned.CumulativeDataPoints)
+                            {
+                                string dateField = progress.ProgressDate.Date.ToShortDateString();
+                                if(dataPointsTable.Columns.Contains(dateField))
+                                {
+                                    newDataRow[dateField] = progress.UnitsPercentage;
+                                }
+                            }
+
+                        dataPointsTable.Rows.Add(newDataRow);
                     }
                 }
 
                 return dataPointsTable;
             }
         }
-        //public void OnCustomColumnSort(CustomColumnSortEventArgs e)
-        //{
-        //    string baseEntityString = "Entity.Entity.";
-        //    if (e.Column.FieldName == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.BUDGET_HOURS) ||
-        //        e.Column.FieldName == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.DC_HOURS) ||
-        //        e.Column.FieldName == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.Total_Units) ||
-        //        e.Column.FieldName == "Entity." + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.ItemRate) || 
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Baseline_Percentage) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Percentage_ToDate) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().SchedulePercentage) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Earned_Units_ToDate) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Earned_Costs_ToDate) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().ScheduleCurrentPeriodPercentage) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Earned_Percentage_OnDataDate) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Earned_Units_OnDataDate) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Earned_Costs_OnDataDate))
-        //    {
-        //        decimal decimal_value1 = e.Value1 == null ? 0 : (decimal)e.Value1;
-        //        decimal decimal_value2 = e.Value2 == null ? 0 : (decimal)e.Value2;
-
-        //        e.Result = decimal_value1.CompareTo(decimal_value2);
-        //        e.Handled = true;
-        //    }
-        //    else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().ForecastDate) ||
-        //            e.Column.FieldName == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.TARGET_DATE) ||
-        //            e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DueDate))
-        //    {
-        //        DateTime datetime_value1 = e.Value1 == null ? new DateTime() : (DateTime)e.Value1;
-        //        DateTime datetime_value2 = e.Value2 == null ? new DateTime() : (DateTime)e.Value2;
-
-        //        e.Result = datetime_value1.CompareTo(datetime_value2);
-        //        e.Handled = true;
-        //    }
-        //}
 
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent

@@ -169,6 +169,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to pull progresses or sync progresses with P6.
+        /// </summary>
+        internal static string ManageProgressDistribution {
+            get {
+                return ResourceManager.GetString("ManageProgressDistribution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to manage projects.
         /// </summary>
         internal static string ManageProject {
@@ -250,11 +259,11 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to pull progresses or sync progresses with P6.
+        ///   Looks up a localized string similar to Allow user to manage progress distribution.
         /// </summary>
-        internal static string ProgressInteractionWithP6 {
+        internal static string ProgressDistribution {
             get {
-                return ResourceManager.GetString("ProgressInteractionWithP6", resourceCulture);
+                return ResourceManager.GetString("ProgressDistribution", resourceCulture);
             }
         }
         

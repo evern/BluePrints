@@ -223,7 +223,10 @@
                         </custom:GridControlEx>
                     </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}">
-                        <custom:GridControlEx x:Name="GridControlDataPoints" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlDataPoints" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="RemoveOld" ItemsSource="{Binding DataPointsTable}">
+                        <custom:GridControlEx x:Name="GridControlDataPoints" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlDataPoints" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="RemoveOld" CurrentItem="{Binding DataContext.SelectedDataRow, Mode=TwoWay, ElementName=userControl}" ItemsSource="{Binding DataPointsTable}" Style="{StaticResource DefaultGridControlTemplate}">
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
+                            </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.View>
                                 <dxg:TableView x:Name="tableViewDataPoints" />
                             </dxg:GridControl.View>

@@ -110,25 +110,28 @@ namespace BluePrints.Common.ViewModel.Reporting
                 {
                     if (qualifiedSubjobs.Contains(jobTransaction.JOBCODE))
                     {
-                        ExoDataPoint burnedDataPoint = new ExoDataPoint();
-                        burnedDataPoint.BudgetedUnits = 0;
-                        burnedDataPoint.BudgetedCosts = 0;
-                        burnedDataPoint.Units = (decimal)jobTransaction.QUANTITY;
-                        burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * this.CurrencyConversion;
-                        burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
-                        burnedDataPoint.Subjob_Name = jobTransaction.JOBCODE;
-                        burnedDataPoint.ResourceName = jobTransaction.RESOURCENAME;
-                        burnedDataPoint.Quantity = (decimal)jobTransaction.QUANTITY;
-                        burnedDataPoint.Role = jobTransaction.TITLE;
-                        burnedDataPoint.CostGroup = jobTransaction.COSTDESC;
-                        burnedDataPoint.CostType = jobTransaction.COSTDESC3;
+                        if(!jobTransaction.COSTDESC3.Contains("G99"))
+                        {
+                            ExoDataPoint burnedDataPoint = new ExoDataPoint();
+                            burnedDataPoint.BudgetedUnits = 0;
+                            burnedDataPoint.BudgetedCosts = 0;
+                            burnedDataPoint.Units = (decimal)jobTransaction.QUANTITY;
+                            burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * this.CurrencyConversion;
+                            burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
+                            burnedDataPoint.Subjob_Name = jobTransaction.JOBCODE;
+                            burnedDataPoint.ResourceName = jobTransaction.RESOURCENAME;
+                            burnedDataPoint.Quantity = (decimal)jobTransaction.QUANTITY;
+                            burnedDataPoint.Role = jobTransaction.TITLE;
+                            burnedDataPoint.CostGroup = jobTransaction.COSTDESC;
+                            burnedDataPoint.CostType = jobTransaction.COSTDESC3;
 
-                        burnedDataPoints.Add(burnedDataPoint);
+                            burnedDataPoints.Add(burnedDataPoint);
 
-                        ExoDataPoint actualDataPoint = new ExoDataPoint();
-                        DataUtils.ShallowCopy(actualDataPoint, burnedDataPoint);
-                        actualDataPoint.Costs = jobTransaction.LINECOST == null ? 0 : (decimal)jobTransaction.LINECOST;
-                        actualDataPoints.Add(actualDataPoint);
+                            ExoDataPoint actualDataPoint = new ExoDataPoint();
+                            DataUtils.ShallowCopy(actualDataPoint, burnedDataPoint);
+                            actualDataPoint.Costs = jobTransaction.LINECOST == null ? 0 : (decimal)jobTransaction.LINECOST;
+                            actualDataPoints.Add(actualDataPoint);
+                        }
                     }
                     else
                         missingSubJobs.Add(jobTransaction.JOBCODE);
