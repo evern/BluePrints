@@ -15,6 +15,9 @@
                         <dxr:RibbonPage Caption="Progress">
                             <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                            <dxr:RibbonPageGroup Caption="Tools">
+                                <dxb:BarButtonItem Content="Backup Selected" ToolTip="Create Backup of Selected Progress" Command="{Binding DataContext.BackupCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=SelectDataMember_32x32.png}" Glyph="{dx:DXImage Image=SelectDataMember_16x16.png}" />
+                            </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>

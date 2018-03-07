@@ -1,10 +1,12 @@
-﻿using BaseModel.DataModel;
+﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Document;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
+using BluePrints.Common.Resources;
 using BluePrints.Data;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
@@ -31,6 +33,7 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new PROGRESSCollectionViewModelWrapper(unitOfWorkFactory));
         }
 
+        
         /// <summary>
         /// Initializes a new instance of the PROGRESSCollectionViewModelWrapper class.
         /// This constructor is declared protected to avoid undesired instantiation of the PROGRESSCollectionViewModelWrapper type without the POCO proxy factory.
@@ -149,6 +152,55 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region ISupportCustomDocumentTypeAndParameter
+
+        public bool CanBackup()
+        {
+            if (DisplaySelectedEntity == null)
+                return false;
+
+            return true;
+        }
+
+        public void Backup()
+        {
+            if (MessageBoxService.ShowMessage("This will created a backup of your selected progress with current data date, do you wish to continue?", BluePrintsResources.Warning_Caption, MessageButton.YesNo) == MessageResult.No)
+                return;
+
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+
+            PROGRESS selectedPROGRESS = DisplaySelectedEntity;
+            if (selectedPROGRESS == null)
+                return;
+
+            PROGRESS backupPROGRESS = new PROGRESS();
+            DataUtils.ShallowCopy(backupPROGRESS, selectedPROGRESS);
+            backupPROGRESS.GUID = Guid.Empty;
+            backupPROGRESS.NAME = "BACKUP " + DateTime.Now.ToShortDateString() + " - " + DateTime.Now.ToShortTimeString();
+            backupPROGRESS.STATUS = ProgressStatus.Superseded;
+            bluePrintsUOW.PROGRESSES.Add(backupPROGRESS);
+            //need to save progress to get GUID
+            bluePrintsUOW.SaveChanges();
+
+            LoadingScreenManager.ShowLoadingScreen(selectedPROGRESS.PROGRESS_ITEM.Count());
+            LoadingScreenManager.SetMessage("Creating Backup of Selected Progress");
+
+            foreach (PROGRESS_ITEM progress_item in selectedPROGRESS.PROGRESS_ITEM)
+            {
+                PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
+                DataUtils.ShallowCopy(newPROGRESS_ITEM, progress_item);
+                newPROGRESS_ITEM.GUID = Guid.Empty;
+                newPROGRESS_ITEM.GUID_PROGRESS = backupPROGRESS.GUID;
+                bluePrintsUOW.PROGRESS_ITEMS.Add(newPROGRESS_ITEM);
+                LoadingScreenManager.Progress();
+            }
+
+            bluePrintsUOW.SaveChanges();
+            LoadingScreenManager.CloseLoadingScreen();
+
+            FullRefresh();
+        }
+
 
         public bool CanEdit()
         {
