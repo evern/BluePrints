@@ -251,11 +251,13 @@ namespace BluePrints.Common.Base
         protected FullSummarizer fullSummarizer;
         protected ProjectSummaryStats projectSummary;
         private IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-
+        protected bool statsCalculatedOnProjection = false;
         protected virtual void onMainViewModelFirstLoaded(object sender, EventArgs e)
         {
             onMainViewModelFirstLoadedTimer.Stop();
-            InitializeSummarizer();
+            if(!statsCalculatedOnProjection)
+                InitializeSummarizer();
+
             calculatePlannedBackgroundWorker.RunWorkerAsync();
         }
 
@@ -528,15 +530,16 @@ namespace BluePrints.Common.Base
             LoadingScreenManager.ShowLoadingScreen(loadPROGRESS.PROGRESS_ITEM.Count());
                 LoadingScreenManager.SetMessage("Phase 1 of 2: Creating Backup of Progress");
 
-            foreach (PROGRESS_ITEM progress_item in loadPROGRESS.PROGRESS_ITEM)
-            {
-                PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
-                DataUtils.ShallowCopy(newPROGRESS_ITEM, progress_item);
-                newPROGRESS_ITEM.GUID = Guid.Empty;
-                newPROGRESS_ITEM.GUID_PROGRESS = backupPROGRESS.GUID;
-                bluePrintsUOW.PROGRESS_ITEMS.Add(newPROGRESS_ITEM);
-                LoadingScreenManager.Progress();
-            }
+            if(loadPROGRESS.PROGRESS_ITEM != null)
+                foreach (PROGRESS_ITEM progress_item in loadPROGRESS.PROGRESS_ITEM)
+                {
+                    PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
+                    DataUtils.ShallowCopy(newPROGRESS_ITEM, progress_item);
+                    newPROGRESS_ITEM.GUID = Guid.Empty;
+                    newPROGRESS_ITEM.GUID_PROGRESS = backupPROGRESS.GUID;
+                    bluePrintsUOW.PROGRESS_ITEMS.Add(newPROGRESS_ITEM);
+                    LoadingScreenManager.Progress();
+                }
 
             bluePrintsUOW.SaveChanges();
             LoadingScreenManager.CloseLoadingScreen();

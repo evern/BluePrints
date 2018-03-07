@@ -173,7 +173,6 @@ namespace BluePrints.ViewModels
             return false;
         }
 
-
         #region View Properties
         public IEnumerable<SUBJOB> SUBJOBCollection => baseline_itemCollectionViewModelWrapper == null ? null : baseline_itemCollectionViewModelWrapper.SUBJOBCollection;
         public IEnumerable<WORKPACK> WORKPACKCollection => baseline_itemCollectionViewModelWrapper == null ? null : baseline_itemCollectionViewModelWrapper.WORKPACKCollection;

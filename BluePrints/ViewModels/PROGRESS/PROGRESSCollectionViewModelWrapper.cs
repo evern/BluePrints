@@ -183,17 +183,20 @@ namespace BluePrints.ViewModels
             bluePrintsUOW.SaveChanges();
 
             LoadingScreenManager.ShowLoadingScreen(selectedPROGRESS.PROGRESS_ITEM.Count());
-            LoadingScreenManager.SetMessage("Creating Backup of Selected Progress");
+            decimal totalBackupUnits = 0;
+            if (selectedPROGRESS.PROGRESS_ITEM != null)
+                foreach (PROGRESS_ITEM progress_item in selectedPROGRESS.PROGRESS_ITEM)
+                {
+                    totalBackupUnits += progress_item.EARNED_UNITS;
+                    LoadingScreenManager.SetMessage("Total backed up units: " + totalBackupUnits);
 
-            foreach (PROGRESS_ITEM progress_item in selectedPROGRESS.PROGRESS_ITEM)
-            {
-                PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
-                DataUtils.ShallowCopy(newPROGRESS_ITEM, progress_item);
-                newPROGRESS_ITEM.GUID = Guid.Empty;
-                newPROGRESS_ITEM.GUID_PROGRESS = backupPROGRESS.GUID;
-                bluePrintsUOW.PROGRESS_ITEMS.Add(newPROGRESS_ITEM);
-                LoadingScreenManager.Progress();
-            }
+                    PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
+                    DataUtils.ShallowCopy(newPROGRESS_ITEM, progress_item);
+                    newPROGRESS_ITEM.GUID = Guid.Empty;
+                    newPROGRESS_ITEM.GUID_PROGRESS = backupPROGRESS.GUID;
+                    bluePrintsUOW.PROGRESS_ITEMS.Add(newPROGRESS_ITEM);
+                    LoadingScreenManager.Progress();
+                }
 
             bluePrintsUOW.SaveChanges();
             LoadingScreenManager.CloseLoadingScreen();

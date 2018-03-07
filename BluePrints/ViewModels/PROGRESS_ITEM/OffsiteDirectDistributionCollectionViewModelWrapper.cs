@@ -89,6 +89,7 @@ namespace BluePrints.ViewModels
         string columnTotalEarnedCosts = "Total Earned Costs";
         protected override void resolveParameters(object parameter)
         {
+            //statsCalculatedOnProjection = true;
             defaultColumnFieldNames.Add(columnId);
             defaultColumnFieldNames.Add(columnSubJob);
             defaultColumnFieldNames.Add(columnWorkpack);
@@ -201,7 +202,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, DeliverableInternalNumberMode.Default, false, P6TASKCollection, null, null);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, DeliverableInternalNumberMode.Default, true, P6TASKCollection, null, null, true);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
@@ -250,17 +251,30 @@ namespace BluePrints.ViewModels
 
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
-            if (changedType == typeof(PROGRESS_ITEM))
+            //if (changedType == typeof(PROGRESS_ITEM))
+            //{
+            //    BASELINE_ITEMProgress deliverable = DisplayEntities.FirstOrDefault(x => x.PROGRESS_ITEMS.Any(y => y.GUID == (Guid)key));
+
+            //    if (deliverable != null)
+            //    {
+            //        deliverable.BuildStats();
+            //        BuildRowStats(deliverable, true);
+            //        mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
+            //    }
+
+            //    return;
+            //}
+            //else
+
+            if (changedType == typeof(BASELINE_ITEM))
             {
-                BASELINE_ITEMProgress deliverable = DisplayEntities.FirstOrDefault(x => x.PROGRESS_ITEMS.Any(y => y.GUID == (Guid)key));
+                BASELINE_ITEMProgress deliverable = DisplayEntities.FirstOrDefault(x => x.GUID == (Guid)key);
                 if (deliverable != null)
                 {
                     deliverable.BuildStats();
                     BuildRowStats(deliverable, true);
                     mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
                 }
-
-                return;
             }
 
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
@@ -477,11 +491,14 @@ namespace BluePrints.ViewModels
                     //    }
                     //}
 
+                    string s;
                     foreach (PROGRESS_ITEM progress in progressToSave)
                     {
                         PROGRESS_ITEMSCollectionViewModel.Save(progress);
                     }
 
+                    //do this so that deliverable goes through the projection refresh
+                    Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(currentDeliverable.GUID, EntityMessageType.Changed));
                     PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.UnpauseActionId();
                     //will be unpaused in existingrow or newrow save
                 }
@@ -492,7 +509,7 @@ namespace BluePrints.ViewModels
         {
             if (deliverable.Stats.Budgeted.CurrentPeriodDataPoint != null && deliverable.Stats.Budgeted.CurrentPeriodDataPoint.BudgetedUnits != 0)
                 return deliverable.Stats.Budgeted.CurrentPeriodDataPoint.BudgetedUnits;
-            else if (deliverable.Stats.Budgeted.CumulativeDataPoints.Count > 0)
+            else if (deliverable.Stats.Budgeted.CurrentPeriodDataPoint != null && deliverable.Stats.Budgeted.CumulativeDataPoints.Count > 0)
                 return deliverable.Stats.Budgeted.CumulativeDataPoints.Last().BudgetedUnits;
             else
                 return deliverable.Total_Units;

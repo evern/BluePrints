@@ -114,7 +114,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null)
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool useProgressDate = false)
         {
             IQueryable<BASELINE_ITEMProjection> baseline_item_queryable;
 
@@ -159,7 +159,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             else
                 projectVariationAdjustments = new List<VariationAdjustment>();
 
-            List<BASELINE_ITEMProgress> baseline_item_progresses = baseline_item_projection.Select(x => new BASELINE_ITEMProgress(PROJECT, PROGRESS, x, projectVariationAdjustments, useReportDate)
+            DateTime? progressDate = null;
+            if (useProgressDate)
+                progressDate = PROGRESS.DATA_DATE;
+
+            List<BASELINE_ITEMProgress> baseline_item_progresses = baseline_item_projection.Select(x => new BASELINE_ITEMProgress(PROJECT, PROGRESS, x, projectVariationAdjustments, useReportDate, progressDate)
             {
                 Entity = x,
                 Live_PROGRESS = PROGRESS,

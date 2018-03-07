@@ -44,7 +44,11 @@ namespace BluePrints.Common.Base
                 (DualEntitiesParameter<PROJECT, VARIATION>)parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadVARIATION = receiveParameter.GetSecondEntity();
+            reinitializeCollectionViewModelWrapper();
+        }
 
+        private void reinitializeCollectionViewModelWrapper()
+        {
             #region CollectionViewModelWrapper CallBacks
             collectionViewModelWrapper.InterfaceAddUndoRedoCallBack = AddUndo;
             collectionViewModelWrapper.InterfacePauseUndoRedoCallBack = PauseUndoRedo;
@@ -510,9 +514,15 @@ namespace BluePrints.Common.Base
             }
         }
 
-        public override void CleanUpEntitiesLoader()
+        protected override void onBeforeDestroy()
         {
             collectionViewModelWrapper.CleanUpEntitiesLoader();
+            base.onBeforeDestroy();
+        }
+
+        public override void CleanUpEntitiesLoader()
+        {
+            //collectionViewModelWrapper.CleanUpEntitiesLoader();
             base.CleanUpEntitiesLoader();
         }
         #endregion

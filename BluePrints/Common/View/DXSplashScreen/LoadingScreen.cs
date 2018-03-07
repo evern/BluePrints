@@ -31,7 +31,14 @@ namespace BluePrints.Common
 
         public static void SetMessage(string message)
         {
-            DXSplashScreen.SetState(message);
+            try
+            {
+                DXSplashScreen.SetState(message);
+            }
+            catch
+            {
+
+            }
         }
 
         public static void ResetCurrentProgress()
