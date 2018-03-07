@@ -187,9 +187,6 @@
     <value>Allow user to manage budget</value>
   </data>
   <data name="ManageProgressDistribution" xml:space="preserve">
-    <value>Allow user to pull progresses or sync progresses with P6</value>
-  </data>
-  <data name="ProgressDistribution" xml:space="preserve">
     <value>Allow user to manage progress distribution</value>
   </data>
 </root>
